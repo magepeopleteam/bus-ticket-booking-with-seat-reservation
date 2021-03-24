@@ -1,0 +1,41 @@
+div[class^="mage"] [class*='mage_icon']{display: inline-block;}
+
+
+[class*='mage_icon_circle']{
+    height: 10px;width: 10px;
+}
+/*****bus icon******/
+span.mage_bus_seat_icon{
+    position: relative;
+    width: 30px;
+    height: 35px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+span.mage_bus_seat_icon::before,
+span.mage_bus_seat_icon::after,
+span.mage_bus_seat_icon{
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+span.mage_bus_seat_icon::before,
+span.mage_bus_seat_icon::after{
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 20px;
+    border: 1px solid #ddd;
+    bottom: -1px;
+    background-color: #fff;
+}
+span.mage_bus_seat_icon::before{left: -4px;}
+span.mage_bus_seat_icon::after{right: -4px;}
+span.bus_handle{
+    position: absolute;
+    width: 25px;
+    height: 6px;
+    bottom:0;
+    left: 2px;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+}

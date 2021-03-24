@@ -1,0 +1,9 @@
+div[class^='mage'] ul{list-style-type: none;}
+/******All in one line*****/
+ul.mage_list_inline li{margin: 5px;background-color: var(--default-button-bg);text-align: center;}
+ul.mage_list_inline li a{padding: var(--default-mp-xs) 0;color: #0a4b78;font-size: 18px;display: block;}
+ul.mage_list_inline li.mage_active{background-color: var(--default-active-color)}
+ul.mage_list_inline li.mage_active a{color: #fff;}
+/***lint inline two li***/
+ul.mage-list-double li{width: 50%;padding: var(--default-mp-xs);}
+ul.mage-list-double li span{margin: 0 var(--default-mp-xs) 0 0;}

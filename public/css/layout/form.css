@@ -1,0 +1,71 @@
+form.mage_form {}
+form.mage_form label {margin: var(--default-mp-xs) 0 0 0;text-transform: capitalize;position: relative;}
+form.mage_form label p {width: 100%;margin: 0 0 var(--default-mp-xs) var(--default-mp-xs);}
+form.mage_form button[class*='mage_button'] {height: 40px;}
+.mage_form_control {
+    width: 100%;color: #222;
+    height: 40px !important;
+    border: 1px solid var(--default-border-color) !important;
+    padding: 7px var(--default-mp) !important;
+    font-size: var(--default-font-size) !important;
+}
+/****************/
+.mage_form_list {margin: var(--default-mp) 0 0 0;}
+.mage_form_list textarea.mage_form_control { height: auto !important;}
+/******* group form*********/
+.mage_group_input {width: 100%;padding: 0 0 var(--default-mp-xs) 0;}
+div.mage_group_input label {width: auto;padding: 0 var(--default-mp) 0 0;}
+div.mage_group_input label input[type='checkbox'] {margin: 0 var(--default-mp-xs);}
+/******* input as a select*********/
+div.mage_form_list .mage_input_select .mage_form_control:focus {border-color: var(--default-border-color);}
+div[class^="mage"] ul.mage_input_select_list {
+    display: none;z-index: 111;overflow: auto;max-height: 250px;height: auto;width: 100%;margin: 1px 0 0 0 !important;padding: 10px !important;
+    position: absolute;left: 0;top: 100%;right: 0;
+    border: 1px solid var(--default-border-color);
+    background-color: var(--default-content-bg);
+    min-width: 200px;
+}
+ul.mage_input_select_list li {padding: 10px;cursor: pointer;margin: 0;list-style-type: none;display:block;border-bottom: 1px solid var(--default-border-color);}
+ul.mage_input_select_list li:hover {color: var(--default-active-color);}
+/*****Form horizontal*******/
+.mage_form_horizontal {max-width: 500px;margin: 0 auto;}
+/*****Form inline*******/
+.mage_form_inline {padding: 15px;margin: 15px 0 0 0;}
+.mage_form_inline .mage_form_list {width: 100%;margin: 0 5px;min-width: 150px;position: relative;}
+/********Form Horizontal**************/
+.mage_form_horizontal {max-width: 500px;width: 100%;margin: 0 auto;padding: var(--default-mp);}
+/*****Form Qty inc dec*******/
+div.mage_form_qty {max-width: 140px;border: 1px solid var(--default-border-color);margin: 0;background-color: var(--default-content-bg);text-align: center;}
+div.mage_form_qty .mage_form_control {width: 50%;border-top: none !important;border-bottom: none !important;text-align: center;}
+[class*="mage_qty"] {width: 25%;color: #777;font-size: var(--default-font-size) !important;cursor: pointer;}
+[class*="mage_qty"] span {margin: 0 !important;}
+.mage_form {
+    position: relative;
+}
+input[type="text"].mage_form_control::-webkit-input-placeholder {
+    color: #bdd1ff;
+}
+input[type="text"].mage_form_control::-moz-placeholder {
+    color: #bdd1ff;
+}
+input[type="text"].mage_form_control::-ms-input-placeholder {
+    color: #bdd1ff;
+}
+
+
+
+
+
+/**********Responsive*********/
+/* @media only screen and (max-width: 1250px) {
+    .mage_form_inline .mage_form_list {max-width: calc(25% - 10px);}
+}
+@media only screen and (max-width: 1050px) {
+    .mage_form_inline .mage_form_list {max-width: calc(33.33% - 10px);}
+}
+@media only screen and (max-width: 850px) {
+    .mage_form_inline .mage_form_list {max-width: calc(50% - 10px);}
+} */
+@media only screen and (max-width: 600px) {
+    .mage_form_inline .mage_form_list {max-width: 100%;min-width: 100%;}
+}

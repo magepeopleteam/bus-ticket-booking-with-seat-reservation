@@ -1,0 +1,9 @@
+div[class*='mage_default'] {
+    padding: var(--default-mp);
+    background-color: var(--default-content-bg);
+    border: 1px solid var(--default-content-border-color);
+    margin: 0 0 var(--default-mp-xs) 0;
+}
+div[class*='mage_default_xs'] {
+    padding: var(--default-mp-xs);
+}

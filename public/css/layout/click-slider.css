@@ -1,0 +1,12 @@
+/*******Click slider***************/
+.mage_click_slide{background-color: var(--click-slide-bg);padding: var(--default-mp);}
+div.mage_slide_list img{width: 100%;}
+div.mage_slide_list.active{display: block !important;}
+
+div.mage_slide_indicator_area{margin: var(--default-mp) 0 0 0;}
+
+div.mage_slide_indicator{border: 5px solid var(--default-border-color);margin: 0 5px;background-color: var(--default-border-color);}
+div.mage_slide_indicator.active{border-color: var(--default-active-color);background-color: var(--default-active-color)}
+
+div.mage_slide_indicator img{height: 50px;width: auto;}
+div.mage_slide_indicator.active img{height: 60px;}

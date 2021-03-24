@@ -1,0 +1,16 @@
+/************Box shadow**********/
+div.mage_slide_indicator.active,
+.mage_item_list.booked.active,
+.mage_bus_seat_item.mage_selected>div,
+.mage_bus_seat_item.mage_selected span.mage_bus_seat_icon{
+    -webkit-box-shadow: 0 2px 10px #444;
+    -moz-box-shadow: 0 2px 10px #444;
+    -o-box-shadow: 0 2px 10px #444;
+    box-shadow: 0 2px 10px #444;
+}
+ul.mage_input_select_list{
+    -webkit-box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+    -o-box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+}

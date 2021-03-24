@@ -1,0 +1,44 @@
+/************Border radius**********/
+[class*='radius'],
+[class^='mage'] img,
+[class^='mage'] button[class*='mage_button'],
+div[class*='mage_default'],
+div.mage_item_list,
+div.mage_form_horizontal,
+form.mage_form .mage_form_control,
+div.mage_click_slide,
+div.mage_slide_indicator,
+.mage_faq_list,
+div.mage_form_qty {
+    -webkit-border-radius: var(--default-border-radious) !important;
+    border-radius: var(--default-border-radious) !important;
+}
+[class*='radiusTop'],
+div.mage_input_select .mage_form_control:focus {
+    -webkit-border-radius: var(--default-border-radious) var(--default-border-radious) 0 0 !important;
+    border-radius: var(--default-border-radious) var(--default-border-radious) 0 0 !important;
+}
+ul.mage_input_select_list {
+    -webkit-border-radius: 0 0 var(--default-border-radious) var(--default-border-radious) !important;
+    border-radius: 0 0 var(--default-border-radious) var(--default-border-radious) !important;
+}
+[class*='mage_icon_circle'] {
+    -webkit-border-radius: 50% !important;
+    border-radius: 50% !important;
+}
+[class*='mediumRadius'] {
+    -webkit-border-radius: var(--medium-border-radious) !important;
+    border-radius: var(--medium-border-radious) !important;
+}
+[class*='mediumRadiusTop'] {
+    -webkit-border-radius: var(--medium-border-radious) var(--medium-border-radious) 0 0 !important;
+    border-radius: var(--medium-border-radious) var(--medium-border-radious) 0 0 !important;
+}
+[class*='mediumRadiusBottom'] {
+    -webkit-border-radius: 0 0 var(--medium-border-radious) var(--medium-border-radious) !important;
+    border-radius: 0 0 var(--medium-border-radious) var(--medium-border-radious) !important;
+}
+div.mage_form_qty .mage_form_control {
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+}

@@ -1,0 +1,130 @@
+/****/
+div[class^="mage"] div.mage_extra_bag,
+div[class^="mage"] form.mage_bus_info_form {display: none;}
+/****/
+.mage_bus_lists {}
+.mage_bus_item {border-bottom: 1px solid var(--default-border-color);padding: var(--default-mp-xs);background-color: #fff;}
+div.mage_bus_list_title h6,
+div.mage_bus_item h6 {padding: 0 0 0 var(--default-mp-xs);}
+.mage_bus_list_title {background-color: #0A4B78;padding: 10px 0;}
+div.mage_bus_list_title h6 {color: #FFF !important;}
+.mage_bus_img {width: 100px;}
+div.mage_bus_img img {width: 100%;height: auto;border: 1px solid var(--default-border-color);padding: 2px;}
+div.mage_bus_list_title div.mage_bus_img h6 {border: none;}
+.mage_bus_info {width: calc(100% - 100px);}
+div.mage_bus_info h6 span {font-size: 12px !important;}
+/****/
+div[class^="mage"] .mage_bus_seat_details {padding: var(--default-mp) 0 0 0;margin: 10px 0;border-top: 1px solid var(--default-border-color);display: none;}
+.mage_bus_seat_plan {}
+.mage_bus_customer_sec {}
+.mage_bus_seat,
+.mage_bus_selected_list {padding: var(--default-mp-xs) 0;}
+.mage_bus_selected_list {border-bottom: 1px solid var(--default-border-color);}
+/*********/
+.mage_bus_seat_item,
+.mage_bus_seat_unselect {cursor: pointer;padding:2px;}
+.mage_bus_seat_item.mage_selected span.mage_bus_seat_icon,
+.mage_bus_seat_item.mage_selected span.bus_handle,
+.mage_bus_seat_item.mage_selected span::before,
+.mage_bus_seat_item.mage_selected span::after {
+    background-color: var(--seat-selected-bg-color) !important;
+    border-color: var(--seat-selected-border-color) !important;
+    color: var(--seat-selected-text-color) !important;
+}
+.mage_seat_booked span,
+.mage_seat_booked span::before,
+.mage_seat_booked span::after {
+    background-color: var(--seat-booked-bg-color) !important;
+    border-color: var(--seat-booked-border-color) !important;
+    color: var(--seat-booked-text-color) !important;
+    opacity: 0.7;
+}
+.mage_seat_confirmed span,
+.mage_seat_confirmed span::before,
+.mage_seat_confirmed span::after {
+    background-color: var(--seat-confirm-bg-color) !important;
+    border-color: var(--seat-confirm-border-color) !important;
+    color: var(--seat-confirm-text-color) !important;
+    opacity: 0.7;
+}
+.mage_seat_in_cart span,
+.mage_seat_in_cart span::before,
+.mage_seat_in_cart span::after {
+    background-color: var(--seat-cart-bg-color) !important;
+    border-color: var(--seat-cart-border-color) !important;
+    color: var(--seat-cart-text-color) !important;
+    opacity: 0.7;
+}
+.mage_bus_selected_seat_item {
+    padding: var(--default-mp) 0;
+    border-bottom: 1px dotted var(--default-border-color);
+}
+.mage_bus_selected_seat_list .mage_bus_selected_seat_item:last-child {border-bottom-style: solid;}
+.mage_bus_seat_unselect {color: var(--danger-color);}
+/******Mage customer info area******/
+div[class^="mage"] div.mage_hidden_customer_info_form {display: none !important;}
+.mage_customer_info_area label {width: calc(50% - 8px);}
+.mage_form_list_body {padding: var(--default-mp);}
+.mage_customer_info_area .mage_title {
+    background-color: #F2F2F2;
+    padding: var(--default-mp-xs);
+    text-align: center;
+}
+div[class^="mage"] .mage_customer_info_area .mage_form_list {
+    display: none;
+    border: 1px dashed var(--default-border-color);
+    background-color: #fff;
+}
+form.mage_bus_info_form {
+    margin: var(--default-mp) 0 0 0 !important;
+    border-top: 1px solid var(--default-border-color);
+}
+div.mage_bus_in_cart .mage_bus_info h6 {color: #2CA41B;}
+/****************/
+div.mage_single_bus_search_page .mage_bus_seat_details {display: block;}
+.mage_bus_details_short {border-right: 1px dashed var(--default-border-color);}
+.mage_bus_seat_list {padding: 0 0 0 15px;}
+.mage_bus_drop_board > div:last-child {margin: 0 0 0 15px;}
+/******************/
+div[class^="mage"] .passenger_type_list {
+    position: absolute;
+    display: none;
+    left: 0;
+    background-color: #ffefd6;
+    z-index: 111;
+    right: 0;
+    top: calc(100% - 4px);
+    border-radius: 5px;
+    border: 1px solid #dedede;
+    padding: 2px 3px;
+    font-size: 13px;
+}
+div[class^="mage"] .passenger_type_list li {
+    padding: 5px;
+    border-bottom: 1px dotted #f7d079;
+    cursor: pointer;
+}
+div[class^="mage"] .passenger_type_list li:last-child {
+    border-bottom: none;
+}
+div[class^="mage"] .passenger_type_list li:hover{background-color: #0A4B78;color:#fff;}
+.mage_bus_seat {position: relative;}
+div.mage_bus_seat_item:hover .passenger_type_list {display: block;}
+[class^='mage'] span.woocommerce-Price-currencySymbol{margin:0 !important;}
+.mage_bus_seat_item p{text-align:center;}
+[class^='mage'] img.driver_img{max-width:60px;}
+
+[class^="mage"] .mage_form_list label span{margin:0 0 7px 0 !important;}
+[class^="mage"] .mage_form_list label span::before{margin:0 7px 0 0;}
+#wbtm_show_msg {position: absolute;top: 0px;right: 0;margin-bottom: 0 !important;line-height: .7em;color:#FFC107}
+.fusion-main-menu .fusion-dropdown-menu {overflow: initial!important;}
+
+.ui-datepicker {
+    z-index: 99999!important;
+}
+.no-bus-found {
+    text-align: center;
+    color: #F44336!important;
+    font-weight: 700;
+    padding: 10px 0!important;
+}

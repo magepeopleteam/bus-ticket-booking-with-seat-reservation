@@ -1,0 +1,31 @@
+/********Faq***********/
+.mage_faq_list {
+    margin: var(--default-mp) 0 0 0;
+    background-color: var(--section-bg);
+}
+.mage_faq_list:hover {
+    background-color: #f7f7f7;
+}
+.mage_faq_list.mage_faq_active {
+    border: 1px solid var(--default-border-color);
+    background-color: var(--default-active-color);
+    color: #fff;
+}
+div.mage_faq_list h6 {
+    color: #555555;
+    padding: var(--default-mp);
+    cursor: pointer;
+    margin: 0 !important;
+}
+div.mage_faq_list h6 span {
+    margin: 0 7px 0 0;
+    color: #707;
+}
+div.mage_faq_list p {
+    display: none;
+    padding: var(--default-mp);
+    color: #222;
+    background-color: #f7f7f7;
+    border-top: 1px solid var(--default-border-color);
+    margin: 0 !important;
+}

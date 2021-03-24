@@ -1,0 +1,19 @@
+/********Font weight***********/
+[class^='mage'] h1,
+[class^='mage'] h2,
+[class^='mage'] h3,
+[class^='mage'] h4,
+[class^='mage'] h5,
+[class^='mage'] h6{font-weight: 500 !important;}
+[class^='mage'] strong{font-weight: bold !important;}
+/********Font Size***********/
+[class^='mage'] h1{font-size: var(--font-size-h1) !important;}
+[class^='mage'] h2{font-size: var(--font-size-h2) !important;}
+[class^='mage'] h3{font-size: var(--font-size-h3) !important;}
+[class^='mage'] h4{font-size: var(--font-size-h4) !important;}
+[class^='mage'] h5{font-size: var(--font-size-h5) !important;}
+[class^='mage'] h6{font-size: var(--font-size-h6) !important;}
+[class^='mage'] label{font-size: var(--font-size-label) !important;}
+[class^='mage'] button[class*='mage_button']{font-size: var(--font-size-button) !important;}
+[class^='mage'] button[class*='mage_button_xs']{font-size: var(--default-font-size)  !important;}
+[class^='mage'] p{font-size: var(--default-font-size) !important;}

@@ -1,0 +1,18 @@
+/**********Button************/
+[class^='mage'] button[class*='mage_button'] {
+    padding: 0 var(--default-mp) !important;
+    color: #fff;
+    background-color: #0a4b78;
+    width: 100%;
+    cursor: pointer;
+    min-width: 100px;
+    height: auto;
+    min-height: 40px;
+}
+[class^='mage'] button[class*='mage_button_xs']{
+    min-width:auto;
+    padding: var(--default-mp-xs) !important;
+}
+[class^='mage'] button[class*='mage_button'] span {padding: 0;font-size:14px}
+[class^='mage'] button[class*='mage_button']:hover,
+[class^='mage'] button[class*='mage_button']:focus {text-decoration: none;opacity: 0.9;}

@@ -1,0 +1,21 @@
+/*****Success*********/
+[class*='textSuccess']{
+    color: var(--success-color);
+}
+[class*='bgSuccess']{
+    background-color: var(--success-color);
+}
+/*****danger*********/
+[class*='textDanger']{
+    color: var(--danger-color);
+}
+[class*='bgDanger']{
+    background-color: var(--danger-color);
+}
+/*****Light*********/
+[class*='textLight']{
+    color: var(--light-color);
+}
+[class*='bgLight']{
+    background-color: var(--light-color);
+}

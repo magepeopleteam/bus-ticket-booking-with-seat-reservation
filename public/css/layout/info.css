@@ -1,0 +1,6 @@
+div[class*='mage_info'] {
+    padding: var(--default-mp);
+    background-color: var(--info-bg);
+    margin: var(--default-mp) 0 0 0;
+}
+div[class*='mage_info'] p {margin: 10px 0 0 0;}

@@ -1,0 +1,10 @@
+section[class^='mage']{
+    padding: 50px 0;
+    background-color: var(--section-bg);
+    margin: 0 !important;
+}
+/********Sidebar Content**************/
+[class^='mage'] .mage_sidebar{width: 100%;max-width: 300px;}
+[class^='mage'] .mage_content{width: 100%;max-width: calc(100% - 315px);margin: 0 0 0 15px;}
+[class^='mage'] .mage_content_full{width: 100%;max-width: 100%;}
+/****************/

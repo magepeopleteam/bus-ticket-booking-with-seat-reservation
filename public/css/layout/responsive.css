@@ -1,0 +1,41 @@
+@media only screen and (max-width: 1050px) {
+    ul.mage_next_date li{min-width: calc(33.333% - 10px);}
+    .mage_bus_details_short,
+    .mage_bus_seat_list{min-width: 100%;border:none;padding:0;}
+    .mage_bus_seat_list{margin: 15px 0;}
+    .mage_customer_info_area label {width: 100%;}
+    div[class^="mage"] .mage_hidden_md{display: none !important;}
+}
+@media only screen and (max-width: 850px) {
+    div[class^="mage"] .mage_hidden_xs{display: none !important;}
+    .mage_bus_drop_board>div,
+    .mage_bus_drop_board>div:last-child{min-width: 100%;margin: 10px 0 0 0 !important;}
+}
+@media only screen and (max-width: 750px) {
+    :root {
+        --default-mp: 10px;
+        --default-mp-xs: 5px;
+
+        --default-font-size: 12px;
+        --font-size-label: 14px;
+        --font-size-button: 14px;
+        --font-size-h6: 14px;
+        --font-size-h5: 16px;
+        --font-size-h4: 18px;
+        --font-size-h3: 20px;
+        --font-size-h2: 22px;
+        --font-size-h1: 25px;
+    }
+    ul.mage_next_date li{min-width: calc(50% - 10px);}
+    .mage_bus_customer_sec{min-width:100%;margin: 10px 0;}
+    .mage_bus_seat_details>div{-webkit-justify-content: center;justify-content: center;}
+    div[class^="mage"] .mage_hidden_xxs{display: none !important;}
+    .mage_bus_img {width: 70px;}
+    .mage_bus_info {width: calc(100% - 70px);}
+}
+@media only screen and (max-width: 600px) {
+    .mage_xs_full{min-width: 100%;margin: 0 !important;}
+}
+@media only screen and (max-width: 450px) {
+    ul.mage_next_date li{min-width: 100%;margin:5px 0;}
+}

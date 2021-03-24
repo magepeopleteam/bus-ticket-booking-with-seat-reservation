@@ -1,0 +1,53 @@
+:root {
+    --container-max-width:1400px;
+    --default-text-color:#444;
+
+    --default-mp: 15px;
+    --default-mp-xs: 5px;
+
+    --default-font-size: 16px;
+    --font-size-label: 14px;
+    --font-size-button: 18px;
+    --font-size-h6: 16px;
+    --font-size-h5: 22px;
+    --font-size-h4: 25px;
+    --font-size-h3: 30px;
+    --font-size-h2: 35px;
+    --font-size-h1: 40px;
+
+    --default-border-color: #ddd;
+    --default-border-radious: 5px;
+
+    --default-active-color: #777;
+    --default-button-bg:#f2f2f2;
+
+    --medium-border-radious:10px;
+
+    --section-bg:transparent;
+
+    --default-content-bg:#fff;
+    --default-content-border-color:#ddd;
+
+    --info-bg: #f2f2f2;
+    --success-color: #0fa958;
+    --danger-color: red;
+    --light-color: #f2f2f2;
+
+    --seat-selected-bg-color:green;
+    --seat-selected-border-color:darkgreen;
+    --seat-selected-text-color:#fff;
+
+    --seat-booked-bg-color:#777;
+    --seat-booked-border-color:#fff;
+    --seat-booked-text-color:#fff;
+
+    --seat-confirm-bg-color:#777;
+    --seat-confirm-border-color:#fff;
+    --seat-confirm-text-color:#fff;
+
+    --seat-cart-bg-color:#77bf44;
+    --seat-cart-border-color:darkgreen;
+    --seat-cart-text-color:#fff;
+
+    --click-slide-bg:#f2f2f2;
+}

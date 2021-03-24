@@ -1,0 +1,44 @@
+ *, *::after, *::before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+div[class^='mage'] {
+    font-size: var(--default-font-size) !important;
+    font-weight: normal !important;
+    color: var(--default-text-color);
+    line-height: 1.25 !important;
+}
+div.mage_container {
+    max-width: var(--container-max-width) !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: var(--default-mp);
+}
+div.mage_row {min-height: 1px;}
+
+div[class^='mage'] div {display: block;line-height: 1.25 !important;}
+div[class^='mage'] * {line-height: 1.25 !important;}
+
+div[class^='mage'] h1,
+div[class^='mage'] h2,
+div[class^='mage'] h3,
+div[class^='mage'] h4,
+div[class^='mage'] h5,
+div[class^='mage'] h6,
+div[class^='mage'] p,
+div[class^='mage'] form.mage_form,
+div[class^='mage'] ul {margin: 0;padding: 0;color: inherit;}
+
+[class^='mage'] a,
+[class^='mage'] a:hover {text-decoration: none;}
+[class^='mage'] a:hover {color: var(--default-active-color);}
+
+[class^='mage'] a,
+.mage_faq_list,
+[class^='mage'] button[class*='mage_button'],
+.mage_bus_seat_item {
+    -webkit-transition: 250ms ease-in-out;
+    -moz-transition: 250ms ease-in-out;
+    -o-transition: 250ms ease-in-out;
+    transition: 250ms ease-in-out;
+}
