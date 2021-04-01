@@ -524,6 +524,8 @@ function mage_bus_sold_seat($return) {
 //seat price
 function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $return_price = false) {
     $price_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_prices', true));
+    // var_dump($return_price);
+    // echo '<pre>'; print_r($start);
     // echo '<pre>'; print_r($price_arr); die;
     if(!empty($price_arr) && is_array($price_arr)) {
         // $price_arr = array_values($price_arr);
@@ -536,8 +538,8 @@ function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $retu
         return false;
     }
 
-    // $seat_dd_increase = (int)get_post_meta($bus_id, 'wbtm_seat_dd_price_parcent', true);
-    $seat_dd_increase = 10;
+    $seat_dd_increase = (int)get_post_meta($bus_id, 'wbtm_seat_dd_price_parcent', true);
+    // $seat_dd_increase = 10;
     $dd_price_increase = ($dd && $seat_dd_increase) ? $seat_dd_increase : 0;
 
     $return_price_data = false;
@@ -547,7 +549,7 @@ function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $retu
 
         $start = strtolower($start);
         $end = strtolower($end);
-        if ($p_start === $start && $p_end === $end && !$return_price) {
+        if ($p_start === $start && $p_end === $end && !$return_price) { // Not return
             if (1 == $seat_type) {
 
                 $price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
@@ -566,21 +568,22 @@ function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $retu
             $return_price_data = $price;
             break;
         }
-        if ($p_start === $end && $p_end === $start && $return_price) {
+        if ($p_start === $start && $p_end === $end && $return_price) { // Return
             if (1 == $seat_type) {
-
-                $price = $val['wbtm_bus_child_price_return'] + ($val['wbtm_bus_child_price_return'] * $dd_price_increase / 100);
+                $p = (($val['wbtm_bus_child_price_return']) ? $val['wbtm_bus_child_price_return'] : $val['wbtm_bus_child_price']);
+                $price = $p + ($p * $dd_price_increase / 100);
 
             } elseif (2 == $seat_type) {
-
-                $price = $val['wbtm_bus_infant_price_return'] + ($val['wbtm_bus_infant_price_return'] * $dd_price_increase / 100);
+                $p = (($val['wbtm_bus_infant_price_return']) ? $val['wbtm_bus_infant_price_return'] : $val['wbtm_bus_infant_price']);
+                $price = $p + ($p * $dd_price_increase / 100);
 
             } elseif (3 == $seat_type) {
-                
-                $price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
+                $p = (($val['wbtm_bus_special_price']) ? $val['wbtm_bus_special_price'] : 0);
+                $price = $p + ($p * $dd_price_increase / 100);
 
             } else {
-                $price = $val['wbtm_bus_price_return'] + ($val['wbtm_bus_price_return'] * $dd_price_increase / 100);
+                $p = (($val['wbtm_bus_price_return']) ? $val['wbtm_bus_price_return'] : $val['wbtm_bus_price']);
+                $price = $p + ($p * $dd_price_increase / 100);
             }
             $return_price_data = $price;
             break;
@@ -674,10 +677,6 @@ function mage_bus_passenger_type_admin($return, $dd) {
                             $price = $val['wbtm_bus_infant_price'] + ( $dd_price_increase != 0 ? ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100) : 0 );
                             echo '<li data-seat-price="' . $price . '" data-seat-type="2" data-seat-label="'. $infant_label .'">' . $infant_label .' '. wc_price($price) . __('/ Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
                         }
-                        // if ($val['wbtm_bus_special_price'] > 0) {
-                        //     $price = $val['wbtm_bus_special_price'] + ( $dd_price_increase != 0 ? ($val['wbtm_bus_special_price'] * $dd_price_increase / 100) : 0 );
-                        //     echo '<li data-seat-price="' . $price . '" data-seat-type="3" data-seat-label="'. $special_label .'">' . $special_label.' ' . wc_price($price) . __('/ Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
-                        // }
                         ?>
                     </ul>
                 </div>
@@ -1045,16 +1044,15 @@ function mage_time_24_to_12($time, $full = true) {
     return $t;
 }
 
-// Extra services
-function extra_sercie_qty_check($bus_id, $start, $end, $j_date, $service_type) {
+// Extra services qty check
+function extra_service_qty_check($bus_id, $start, $end, $j_date, $service_type) {
 
-    $count = 0;
+    $count_q = 0;
 
-    $args = array(
+    $argss = array(
         'post_type' => 'wbtm_bus_booking',
         'posts_per_page' => -1,
         'meta_query' => array(
-            'relation' => 'AND',
             array(
                 'relation' => 'AND',
                 array(
@@ -1072,28 +1070,28 @@ function extra_sercie_qty_check($bus_id, $start, $end, $j_date, $service_type) {
                     'compare' => '=',
                     'value' => $bus_id,
                 ),
-            ),
-            array(
-                'key' => 'wbtm_status',
-                'compare' => 'IN',
-                'value' => array(1, 2),
+                array(
+                    'key' => 'wbtm_status',
+                    'compare' => 'IN',
+                    'value' => array(1, 2),
+                ),
             ),
         )
     );
 
-    $res = new WP_Query($args);
-    if($res->found_posts > 0) {
-        while($res->have_posts()) {
-            $res->the_post();
+    $ress = new WP_Query($argss);
+    // echo '<pre>'; print_r($ress);
+    if($ress->found_posts > 0) {
+        while($ress->have_posts()) {
+            $ress->the_post();
             $id = get_the_ID();
             $qty = get_post_meta($id, 'extra_services_type_qty_'.$service_type, true);
-            $count += $qty ? (int)$qty : 0;
+            $count_q += ($qty ? (int)$qty : 0);
         }
+        wp_reset_postdata();
     }
 
-    wp_reset_postdata();
-
-    return $count;
+    return $count_q;
 }
 
 
@@ -1106,24 +1104,26 @@ function wbtm_extra_services_section($bus_id) {
     $extra_services = get_post_meta($bus_id, 'mep_events_extra_prices', true);
 
     if($extra_services) :
+        ob_start();
     ?>
     <div class="wbtm_extra_service_wrap">
     <p class="wbtm_heading"><strong><?php echo __('Extra Service', 'Extra Service:'); ?></strong></p>
     <table class='wbtm_extra_service_table'>
         <thead>
         <tr>
-            <td align="left"><?php echo __('Name:', 'mage-eventpress'); ?></td>
-            <td class="mage_text_center"><?php echo __('Quantity:', 'mage-eventpress'); ?></td>
-            <td class="mage_text_center"><?php echo __('Price:', 'mage-eventpress'); ?></td>
+            <td align="left"><?php echo __('Name:', 'bus-ticket-booking-with-seat-reservation'); ?></td>
+            <td class="mage_text_center"><?php echo __('Quantity:', 'bus-ticket-booking-with-seat-reservation'); ?></td>
+            <td class="mage_text_center"><?php echo __('Price:', 'bus-ticket-booking-with-seat-reservation'); ?></td>
         </tr>
         </thead>
         <tbody>
         <?php
-        $count = 0;
-        foreach ($extra_services as $field) {                    
+        $count_extra = 0;
+        foreach ($extra_services as $field) {
             $total_extra_service = (int) $field['option_qty'];
             $qty_type = $field['option_qty_type'];
-            $total_sold = extra_sercie_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
+            // $total_sold = extra_service_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
+            $total_sold = 0;
 
             $ext_left = ($total_extra_service - $total_sold);
             
@@ -1131,12 +1131,12 @@ function wbtm_extra_services_section($bus_id) {
             $data_price=str_replace(get_woocommerce_currency_symbol(), '', $actual_price);
             $data_price=str_replace(wc_get_price_thousand_separator(), '', $data_price);
             $data_price=str_replace(wc_get_price_decimal_separator(), '.', $data_price);
-        ?>
+            ?>
             
             <tr data-total="0">
                 <td align="Left"><?php echo $field['option_name']; ?>
                     <div class="xtra-item-left"><?php echo $ext_left; ?>
-                        <?php _e('Left:', 'mage-eventpress');  ?>
+                        <?php _e('Left:', 'bus-ticket-booking-with-seat-reservation');  ?>
                     </div>
                     <!-- <input type="hidden" name='mep_event_start_date_es[]' value='<?php //echo $event_date; ?>'> -->
                 </td>
@@ -1144,7 +1144,7 @@ function wbtm_extra_services_section($bus_id) {
                     <?php
                     if ($ext_left > 0) {
                         if ($qty_type == 'dropdown') { ?>
-                            <select name="extra_service_qty[]" id="eventpxtp_<?php //echo $count;
+                            <select name="extra_service_qty[]" id="eventpxtp_<?php echo $count_extra;
                                                                                     ?>" class='extra-qty-box' data-price='<?php echo $data_price; ?>'>
                                 <?php for ($i = 0; $i <= $ext_left; $i++) { ?>
                                     <option value="<?php echo $i; ?>"><?php echo $i; ?> <?php echo $field['option_name']; ?></option>
@@ -1153,13 +1153,12 @@ function wbtm_extra_services_section($bus_id) {
                         <?php } else { ?>
                             <div class="mage_input_group">
                                 <button class="fa fa-minus qty_dec" style="font-size:9px"></button>
-                                <input <?php //if($ext_left<=0){ echo "disabled"; }
-                                                    ?> size="4" inputmode="numeric" type="text" class='extra-qty-box' name='extra_service_qty[]' data-price='<?php echo $data_price; ?>' value='0' min="0" max="<?php echo $ext_left; ?>">
+                                <input size="4" inputmode="numeric" type="text" class='extra-qty-box' name='extra_service_qty[]' data-price='<?php echo $data_price; ?>' value='0' min="0" max="<?php echo $ext_left; ?>">
                                 <button class="fa fa-plus qty_inc" style="font-size:9px"></button>
                             </div>
                     <?php }
                     } else {
-                        echo mep_get_option('mep_not_available_text', 'label_setting_sec') ? mep_get_option('mep_not_available_text', 'label_setting_sec') : _e('Not Available', 'mage-eventpress');
+                        echo __('Not Available', 'bus-ticket-booking-with-seat-reservation');
                     } ?>
                 </td>
                 <td class="mage_text_center"><?php echo wc_price($field['option_price']);
@@ -1170,8 +1169,8 @@ function wbtm_extra_services_section($bus_id) {
                     <?php } ?>
                 </td>
             </tr>
-        <?php
-            $count++;
+            <?php
+            $count_extra++;
         }
         ?>
         </tbody>
@@ -1179,6 +1178,30 @@ function wbtm_extra_services_section($bus_id) {
     </div>
 
     <?php
+    return ob_get_contents();
     endif;
 }
 // Extra services END
+
+
+// Get bus type
+function wbtm_bus_type($bus_id) {
+    $type = 'Seat Plan';
+    $get_bus_type = get_post_meta($bus_id, 'wbtm_seat_type_conf', true);
+    if($get_bus_type) {
+        switch ($get_bus_type) {
+            case 'wbtm_seat_private' :
+                $type = 'Private';
+                break;
+            case 'wbtm_seat_subscription' :
+                $type = 'Subscription';
+                break;
+            case 'wbtm_without_seat_plan' :
+                $type = 'Without plan';
+                break;
+            default :
+                $type = 'Seat Plan';
+        }
+    }
+    return $type;
+}

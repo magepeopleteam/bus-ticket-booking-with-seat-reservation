@@ -78,17 +78,24 @@ class Wbtm_Base{
 		$plugin = new Wbtm_Plugin();
 		$plugin->run();
 
-		// if(is_admin()) {
-		// 	$role = get_role('administrator');
+		$this->setBusPermission();
+	}
 
-		// 	$role->add_cap('publish_wbtm_buses');
-		// 	$role->add_cap('edit_wbtm_buses');
-		// 	$role->add_cap('edit_others_wbtm_buses');
-		// 	$role->add_cap('read_private_wbtm_buses');
-		// 	$role->add_cap('edit_wbtm_buse');
-		// 	$role->add_cap('delete_wbtm_buse');
-		// 	$role->add_cap('read_wbtm_buse');
-		// }
+	// Give bus all permission to admin
+	public function setBusPermission()
+	{
+		if(is_admin()) {
+			$role = get_role('administrator');
+
+			( !$role->has_cap('publish_wbtm_buses') ) ? $role->add_cap('publish_wbtm_buses') : null;
+			( !$role->has_cap('edit_wbtm_buses') ) ? $role->add_cap('edit_wbtm_buses') : null;
+			( !$role->has_cap('edit_others_wbtm_buses') ) ? $role->add_cap('edit_others_wbtm_buses') : null;
+			( !$role->has_cap('read_private_wbtm_buses') ) ? $role->add_cap('read_private_wbtm_buses') : null;
+			( !$role->has_cap('edit_wbtm_bus') ) ? $role->add_cap('edit_wbtm_bus') : null;
+			( !$role->has_cap('delete_wbtm_bus') ) ? $role->add_cap('delete_wbtm_bus') : null;
+			( !$role->has_cap('read_wbtm_bus') ) ? $role->add_cap('read_wbtm_bus') : null;
+			( !$role->has_cap('wbtm_permission_page') ) ? $role->add_cap('wbtm_permission_page') : null;
+		}
 	}
 }
 new Wbtm_Base();

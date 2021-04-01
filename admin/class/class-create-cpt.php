@@ -49,19 +49,22 @@ class WBTM_Cpt{
 			'rewrite'               => array('slug' => $slug),
 			'show_in_rest'          => true,
 			'rest_base'             => 'wbtm_bus',
-			// 'capability_type' => 'wbtm_bus',
-			// 'capabilities' => array(
-			// 	'publish_posts' => 'publish_wbtm_buses',
-			// 	'edit_posts' => 'edit_wbtm_buses',
-			// 	'edit_others_posts' => 'edit_others_wbtm_buses',
-			// 	'read_private_posts' => 'read_private_wbtm_buses',
-			// 	'edit_post' => 'edit_wbtm_buse',
-			// 	'delete_post' => 'delete_wbtm_buse',
-			// 	'read_post' => 'read_wbtm_buse',
-			// ),
-
+			'capability_type' => 'wbtm_bus',
+			'capabilities' => array(
+				'publish_posts' => 'publish_wbtm_buses',
+				'edit_posts' => 'edit_wbtm_buses',
+				'edit_others_posts' => 'edit_others_wbtm_buses',
+				'read_private_posts' => 'read_private_wbtm_buses',
+				'edit_post' => 'edit_wbtm_bus',
+				'delete_post' => 'delete_wbtm_bus',
+				'read_post' => 'read_wbtm_bus',
+				'wbtm_permission_page' => 'wbtm_permission_page',
+			),
 	    );
-	   	 register_post_type( 'wbtm_bus', $args );
+
+		$args = apply_filters('wbtm_add_cap', $args);
+
+	   	register_post_type( 'wbtm_bus', $args );
 
 	}
 

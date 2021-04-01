@@ -104,7 +104,31 @@
       return false;
     });
     // Tab script END
-  
+    
+
+    // Hit Bulk Checkbox
+    $('.wbtm_bulkcheck_hit').change(function () {
+      let col_no = $(this).attr('data-col-no');
+
+      if ($(this).is(":checked")) {
+
+        $('.wbtm_permission_table tbody tr').each(function () {
+          let el = $(this).find('td').eq(col_no);
+          el.find('.wbtm_perm_checkbox').prop("checked", true);
+        });
+
+      } else {
+        
+        $('.wbtm_permission_table tbody tr').each(function () {
+          let el = $(this).find('td').eq(col_no);
+          el.find('.wbtm_perm_checkbox').prop("checked", false);
+        });
+
+      }
+    });
+
+    // notification
+    
   
   });
   

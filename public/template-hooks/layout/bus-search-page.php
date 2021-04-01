@@ -503,7 +503,7 @@ function mage_bus_item_seat_details($return)
                     ?>
             <div class="mage_bus_customer_sec mage_default"
                 style="width: calc(100% - 8px - <?php echo $bus_width; ?>px);">
-                <div class="flexEqual">
+                <div class="flexEqual" style="align-items:flex-start">
                     <div class="mage_bus_details_short">
                         <h6>
                             <span class='wbtm-details-page-list-label'><span

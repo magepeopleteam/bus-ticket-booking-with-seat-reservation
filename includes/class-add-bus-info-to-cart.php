@@ -17,6 +17,8 @@ class WbtmAddToCart
         add_filter('woocommerce_add_cart_item_data', array($this, 'wbtm_add_custom_fields_text_to_cart_item'), 10, 3);
         add_action('woocommerce_before_calculate_totals', array($this, 'wbtm_add_custom_price'));
         add_filter('woocommerce_get_item_data', array($this, 'wbtm_display_custom_fields_text_cart'), 10, 2);
+        add_action('woocommerce_after_order_notes', array($this, 'wbtm_custom_checkout_field'));
+        add_action('woocommerce_checkout_update_order_meta', array($this, 'wbtm_custom_checkout_field_update_order_meta'));
         add_action('woocommerce_after_checkout_validation', array($this, 'rei_after_checkout_validation'));
         add_action('woocommerce_checkout_create_order_line_item', array($this, 'wbtm_add_custom_fields_text_to_order_items'), 10, 4);
     }
@@ -48,6 +50,7 @@ class WbtmAddToCart
         if (get_post_type($bus_id) === 'wbtm_bus') {
 
             $custom_reg_yes_user = array();
+            $custom_reg_additional = array();
             $basic_info_user = array();
             $seat_name = array();
             $return_discount = 0;
@@ -145,11 +148,22 @@ class WbtmAddToCart
                             $custom_reg_yes_user[$j]['wbtm_user_name'] = (isset($_POST['wbtm_user_name'][$j]) ? $_POST['wbtm_user_name'][$j] : '');
                             $custom_reg_yes_user[$j]['wbtm_user_email'] = (isset($_POST['wbtm_user_email'][$j]) ? $_POST['wbtm_user_email'][$j] : '');
                             $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
+                            $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
                             $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
 
                             $bag_price = ($bag_qty * $extra_per_bag_price);
-
                             $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
+
+                            // Additional reg builder field
+                            $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
+                            if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
+                                foreach ($reg_form_arr as $builder) {
+                                    $custom_reg_additional[$j][] = array(
+                                        'name' => $builder['field_label'],
+                                        'value' => (isset($_POST[$builder['field_id']][$j]) ? $_POST[$builder['field_id']][$j] : ''),
+                                    );
+                                }
+                            }
                         }
 
                         // Price
@@ -210,6 +224,7 @@ class WbtmAddToCart
                                     $per_seat_price = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]]);
                                     $per_seat_price_original = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]]);
                                     $per_seat_price_return = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]], true);
+
                                 }
 
                                 // Custom reg user yes
@@ -217,11 +232,22 @@ class WbtmAddToCart
                                     $custom_reg_yes_user[$j]['wbtm_user_name'] = (isset($_POST['wbtm_user_name'][$j]) ? $_POST['wbtm_user_name'][$j] : '');
                                     $custom_reg_yes_user[$j]['wbtm_user_email'] = (isset($_POST['wbtm_user_email'][$j]) ? $_POST['wbtm_user_email'][$j] : '');
                                     $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
+                                    $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
                                     $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
 
                                     $bag_price = ($bag_qty * $extra_per_bag_price);
-
                                     $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
+
+                                    // Additional reg builder field
+                                    $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
+                                    if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
+                                        foreach ($reg_form_arr as $builder) {
+                                            $custom_reg_additional[$j][] = array(
+                                                'name' => $builder['field_label'],
+                                                'value' => (isset($_POST[$builder['field_id']][$j]) ? $_POST[$builder['field_id']][$j] : ''),
+                                            );
+                                        }
+                                    }
                                 }
 
                                 // Price
@@ -289,6 +315,7 @@ class WbtmAddToCart
             $cart_item_data['extra_services'] = $extra_services;
 
             $cart_item_data['wbtm_passenger_info'] = $custom_reg_yes_user;
+            $cart_item_data['wbtm_passenger_info_additional'] = $custom_reg_additional;
             $cart_item_data['wbtm_single_passenger_info'] = $custom_reg_yes_user;
             $cart_item_data['wbtm_basic_passenger_info'] = $basic_info_user;
             $cart_item_data['wbtm_tp'] = $total_fare;
@@ -324,6 +351,7 @@ class WbtmAddToCart
             $wbtm_seats = $cart_item['wbtm_seats'];
             $extra_bag_quantity = isset($cart_item['extra_bag_quantity']) ? $cart_item['extra_bag_quantity'] : 0;
             $passenger_info = $cart_item['wbtm_passenger_info'];
+            $passenger_info_additional = $cart_item['wbtm_passenger_info_additional'];
             $basic_passenger_info = $cart_item['wbtm_basic_passenger_info'];
             $date_format = get_option('date_format');
             $time_format = get_option('time_format');
@@ -373,7 +401,7 @@ class WbtmAddToCart
                                 </li>
                                 <?php
                             }
-                            if (isset($_passenger['wbtm_user_gender'])) {
+                            if (isset($_passenger['wbtm_user_gender']) && $_passenger['wbtm_user_gender'] != '') {
                                 ?>
                                 <li>
                                     <strong><?php mage_bus_label('wbtm_cart_gender_text', __('Gender:', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
@@ -390,12 +418,13 @@ class WbtmAddToCart
                                 <?php
                             }
 
-                            $reg_form_arr = unserialize(get_post_meta($cart_item['bus_id'], 'attendee_reg_form', true));
-                            if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
-                                foreach ($reg_form_arr as $builder) {
+                            // $reg_form_arr = unserialize(get_post_meta($cart_item['bus_id'], 'attendee_reg_form', true));
+                            // echo '<pre>'; print_r($passenger_info_additional); die;
+                            if (is_array($passenger_info_additional) && sizeof($passenger_info_additional) > 0) {
+                                foreach ($passenger_info_additional[$i] as $builder) {
                                     ?>
                                     <li>
-                                        <strong><?php echo $builder['field_label'] . ':</strong> ' . $_passenger[$builder['field_id']]; ?>
+                                        <strong><?php echo $builder['name'] . ':</strong> ' . $builder['value']; ?>
                                     </li>
                                     <?php
                                 }
@@ -619,6 +648,7 @@ class WbtmAddToCart
             if (get_post_type($values['bus_id']) == 'wbtm_bus') {
                 $wbtm_seats = $values['wbtm_seats'];
                 $wbtm_passenger_info = $values['wbtm_passenger_info'];
+                $wbtm_passenger_info_additional = $values['wbtm_passenger_info_additional'];
                 $wbtm_basic_passenger_info = $values['wbtm_basic_passenger_info'];
                 $wbtm_start_stops = $values['wbtm_start_stops'];
                 $wbtm_end_stops = $values['wbtm_end_stops'];
@@ -646,6 +676,7 @@ class WbtmAddToCart
         if (get_post_type($eid) == 'wbtm_bus') {
             $wbtm_seats = $values['wbtm_seats'];
             $wbtm_passenger_info = $values['wbtm_passenger_info'];
+            $wbtm_passenger_info_additional = $values['wbtm_passenger_info_additional'];
             $wbtm_single_passenger_info = $values['wbtm_single_passenger_info'];
             $wbtm_basic_passenger_info = $values['wbtm_basic_passenger_info'];
             $wbtm_billing_type = $values['wbtm_billing_type'];
@@ -698,6 +729,7 @@ class WbtmAddToCart
             $item->add_meta_data('_bus_id', $wbtm_bus_id);
             $item->add_meta_data('_btime', $wbtm_bus_start_time);
             $item->add_meta_data('_wbtm_passenger_info', $wbtm_passenger_info);
+            $item->add_meta_data('_wbtm_passenger_info_additional', $wbtm_passenger_info_additional);
             $item->add_meta_data('_wbtm_single_passenger_info', $wbtm_single_passenger_info);
             $item->add_meta_data('_wbtm_basic_passenger_info', $wbtm_basic_passenger_info);
             $item->add_meta_data('_wbtm_billing_type', $wbtm_billing_type);
@@ -709,6 +741,60 @@ class WbtmAddToCart
         }
 
     }
+
+    /**
+    * Add custom field to the checkout page
+    */
+    function wbtm_custom_checkout_field($checkout)
+    {
+        $get_settings = get_option('wbtm_bus_settings');
+        $get_val = isset($get_settings['custom_fields']) ? $get_settings['custom_fields'] : '';
+        $output = $get_val ? $get_val : null;
+        if ($output) {
+            $get_custom_fields_arr = explode(',', $output);
+            if ($get_custom_fields_arr) {
+                echo '<div id="custom_checkout_field"><h2>' . __('Additional field') . '</h2>';
+
+                foreach ($get_custom_fields_arr as $item) {
+                    $item = trim($item);
+                    $name = ucfirst(str_replace('_', ' ', $item));
+
+                    woocommerce_form_field('wbtm_custom_field_'.$item, array(
+                        'type' => 'text',
+                        'class' => array(
+                        'my-field-class form-row-wide'
+                        ),
+                        'label' => __($name) ,
+                        'placeholder' => __($name) ,
+                    ),
+            
+                    $checkout->get_value('wbtm_custom_field_'.$item));
+                }
+
+                echo '</div>';
+            }
+        }
+
+    }
+
+    function wbtm_custom_checkout_field_update_order_meta($order_id)
+    {
+        $get_settings = get_option('wbtm_bus_settings');
+        $get_val = isset($get_settings['custom_fields']) ? $get_settings['custom_fields'] : '';
+        $output = $get_val ? $get_val : null;
+        if ($output) {
+            $get_custom_fields_arr = explode(',', $output);
+            if ($get_custom_fields_arr) {
+                foreach ($get_custom_fields_arr as $item) {
+                    $item = trim($item);
+                    if (!empty($_POST['wbtm_custom_field_'.$item])) {
+                        update_post_meta($order_id, 'wbtm_custom_field_'.$item, sanitize_text_field($_POST['wbtm_custom_field_'.$item]));
+                    }
+                }
+            }
+        }
+    }
+    
 
 }
 

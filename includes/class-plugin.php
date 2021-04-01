@@ -30,6 +30,7 @@ class Wbtm_Plugin {
 		require_once WBTM_PLUGIN_DIR . 'includes/class-upgrade.php';
 		require_once WBTM_PLUGIN_DIR . 'public/seat-template/seat_plan.php';
 		require_once WBTM_PLUGIN_DIR . 'includes/class-functions.php';
+		require_once WBTM_PLUGIN_DIR . 'includes/class-permissions.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class-plugin-admin.php';
 		require_once WBTM_PLUGIN_DIR . 'public/template-hooks/templating.php';		
 		require_once WBTM_PLUGIN_DIR . 'public/class-plugin-public.php';		
