@@ -52,13 +52,17 @@ class WBTM_Plugin_Public {
 		global $post;
 		if ($post->post_type == "wbtm_bus"){
 			$template_name = 'single-bus.php';
-			$template_path = 'wbtm-bus/';
+			$template_path = 'bus-ticket-booking-with-seat-reservation/';
 			$default_path = WBTM_PLUGIN_DIR. 'public/templates/';
 			
 			$bus_type = get_post_meta($post->ID, 'wbtm_seat_type_conf', true);
 			if($bus_type === 'wbtm_seat_subscription') {
-				$template_path = WP_PLUGIN_DIR. '/addon-bus-ticket-subscription/inc/';
-				$default_path = WP_PLUGIN_DIR. '/addon-bus-ticket-subscription/inc/';
+				if(is_plugin_active('addon-bus-ticket-subscription/plugin.php')) {
+					$template_path = WP_PLUGIN_DIR. '/addon-bus-ticket-subscription/inc/';
+					$default_path = WP_PLUGIN_DIR. '/addon-bus-ticket-subscription/inc/';
+				} else {
+					$template_name = 'template-not-found.php';
+				}
 			}
 
 			$template = locate_template( array($template_path . $template_name) );
@@ -66,7 +70,6 @@ class WBTM_Plugin_Public {
 			if ( ! $template ) :
 				$template = $default_path . $template_name;
 			endif;
-			
 			return $template;
 		}
 		return $template;

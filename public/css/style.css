@@ -719,7 +719,7 @@ table.bus-search-list tr td a.button {
     text-align: center;
     border: 1px solid #ddd;
     width: 400px;
-    margin: 0 auto;
+    margin: 0 auto 30px;
 }
 
 .ticket-check-box ul {
