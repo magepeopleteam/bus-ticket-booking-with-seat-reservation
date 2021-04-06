@@ -87,14 +87,15 @@ class Wbtm_Base{
 		if(is_admin()) {
 			$role = get_role('administrator');
 
-			( !$role->has_cap('publish_wbtm_buses') ) ? $role->add_cap('publish_wbtm_buses') : null;
-			( !$role->has_cap('edit_wbtm_buses') ) ? $role->add_cap('edit_wbtm_buses') : null;
-			( !$role->has_cap('edit_others_wbtm_buses') ) ? $role->add_cap('edit_others_wbtm_buses') : null;
-			( !$role->has_cap('read_private_wbtm_buses') ) ? $role->add_cap('read_private_wbtm_buses') : null;
-			( !$role->has_cap('edit_wbtm_bus') ) ? $role->add_cap('edit_wbtm_bus') : null;
-			( !$role->has_cap('delete_wbtm_bus') ) ? $role->add_cap('delete_wbtm_bus') : null;
-			( !$role->has_cap('read_wbtm_bus') ) ? $role->add_cap('read_wbtm_bus') : null;
-			( !$role->has_cap('wbtm_permission_page') ) ? $role->add_cap('wbtm_permission_page') : null;
+			// ( !$role->has_cap('publish_wbtm_buses') ) ? $role->add_cap('publish_wbtm_buses') : null;
+			// ( !$role->has_cap('edit_wbtm_buses') ) ? $role->add_cap('edit_wbtm_buses') : null;
+			// ( !$role->has_cap('edit_others_wbtm_buses') ) ? $role->add_cap('edit_others_wbtm_buses') : null;
+			// ( !$role->has_cap('read_private_wbtm_buses') ) ? $role->add_cap('read_private_wbtm_buses') : null;
+			// ( !$role->has_cap('edit_wbtm_bus') ) ? $role->add_cap('edit_wbtm_bus') : null;
+			// ( !$role->has_cap('delete_wbtm_bus') ) ? $role->add_cap('delete_wbtm_bus') : null;
+			// ( !$role->has_cap('read_wbtm_bus') ) ? $role->add_cap('read_wbtm_bus') : null;
+			// ( !$role->has_cap('wbtm_permission_page') ) ? $role->add_cap('wbtm_permission_page') : null;
+			// ( !$role->has_cap('extra_service_wbtm_bus') ) ? $role->add_cap('extra_service_wbtm_bus') : null;
 		}
 	}
 }

@@ -625,7 +625,7 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
     justify-content: space-between;
     align-items: center;
 }
-.wbtm-page-notification {
+#wbtm-perm-notification {
     color: #fff;
     background: #f779a5;
     padding: 5px 20px;

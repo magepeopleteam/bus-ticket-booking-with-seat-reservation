@@ -454,7 +454,7 @@ function mage_bus_item_seat_details($return)
                     </table>
                     <?php if($pickpoints) : ?>
                     <div class="wbtm-pickpoint-wrap">
-                        <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point:', 'bus-ticket-booking-with-seat-reservation') ?></label>
+                        <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?><span class="wbtm_required">*</span></label>
                         <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
                             <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
                             <?php foreach($pickpoints as $point) : 
@@ -584,7 +584,7 @@ function mage_bus_item_seat_details($return)
                         </div>
                         <?php if($pickpoints) : ?>
                         <div class="wbtm-pickpoint-wrap" style="margin-top:20px">
-                            <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point:', 'bus-ticket-booking-with-seat-reservation') ?></label>
+                            <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?><span class="wbtm_required">*</span></label>
                             <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
                                 <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
                                 <?php foreach($pickpoints as $point) : 

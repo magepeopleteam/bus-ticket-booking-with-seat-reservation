@@ -779,6 +779,17 @@ class WbtmAddToCart
 
     function wbtm_custom_checkout_field_update_order_meta($order_id)
     {
+
+        $order = wc_get_order($order_id);
+        foreach ($order->get_items() as $item_id => $item_obj) {
+
+            $has_extra_service = wc_get_order_item_meta($item_id, '_extra_services');
+            if($has_extra_service) {
+                update_post_meta($order_id, '_extra_services', $has_extra_service);
+            }
+
+        }
+
         $get_settings = get_option('wbtm_bus_settings');
         $get_val = isset($get_settings['custom_fields']) ? $get_settings['custom_fields'] : '';
         $output = $get_val ? $get_val : null;

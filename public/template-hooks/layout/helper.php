@@ -500,6 +500,11 @@ function mage_bus_sold_seat($return) {
                     'key' => 'wbtm_bus_id',
                     'value' => $bus_id,
                     'compare' => '='
+                ),
+                array(
+                    'key' => 'wbtm_seat',
+                    'value' => NULL,
+                    'compare' => '!='
                 )
             ),
             array(
@@ -1204,4 +1209,32 @@ function wbtm_bus_type($bus_id) {
         }
     }
     return $type;
+}
+
+// Pagination 
+function wbtm_pagination($current_page, $pages)
+{
+    $main_link = '?post_type=wbtm_bus&page=passenger_list';
+    $bus_id = (isset($_GET['bus_id']) ? $_GET['bus_id'] : null);
+    if ($bus_id) {
+        $bus_id = explode('-', $bus_id);
+        $bus_id = $bus_id[0];
+
+        $main_link .= '&bus_id=' . $bus_id;
+    }
+
+    $j_date = (isset($_GET['j_date']) ? $_GET['j_date'] : null);
+    if ($j_date) {
+        $main_link .= '&j_date=' . $j_date;
+    }
+
+    // The "back" link
+    $prevlink = ($current_page > 1) ? '<a class="mage_paginate_link" href="' . $main_link . '&paged=1" title="First page">&laquo;</a> <a class="mage_paginate_link" href="' . $main_link . '&paged=' . ($current_page - 1) . '" title="Previous page">&lsaquo;</a>' : '<span class="disabled">&laquo;</span> <span class="disabled">&lsaquo;</span>';
+
+    // The "forward" link
+    $nextlink = ($current_page < $pages) ? '<a class="mage_paginate_link" href="' . $main_link . '&paged=' . ($current_page + 1) . '" title="Next page">&rsaquo;</a> <a class="mage_paginate_link" href="' . $main_link . '&paged=' . $pages . '" title="Last page">&raquo;</a>' : '<span class="disabled">&rsaquo;</span> <span class="disabled">&raquo;</span>';
+
+    // Display the paging information
+    $output = '<div class="mage-pagination"><p>' . $prevlink . ' Page ' . $current_page . ' of ' . $pages . ' ' . $nextlink . ' </p></div>';
+    return $output;
 }

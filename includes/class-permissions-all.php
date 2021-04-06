@@ -43,19 +43,17 @@ if(!class_exists('WBTMPermission')) {
             $role_count = count($all_roles);
 
             // Bus Capabilities
-            // $wbtm_post_args = get_post_type_object('wbtm_bus');
-            $wbtm_post_args = array(
-                'extra_service_wbtm_bus',
-                'sales_agent_wbtm_bus',
-                'my_sell_wbtm_bus',
-            );
+            $wbtm_post_args = get_post_type_object('wbtm_bus');
+            // echo '<pre>'; print_r($wbtm_post_args->cap); die;
 
             if(isset($_POST['wbtm_permission'])) {
+                // echo '<pre>'; print_r($_POST); die;
                 $prefix = 'wbtm_permission_';
                 $prefix_length = strlen($prefix);
                 foreach($all_roles as $key => $role) {
-                    foreach($wbtm_post_args as $cap) {
+                    foreach($wbtm_post_args->cap as $cap) {
                         $role = get_role($key);
+                        // echo $key.' => '.$cap.'<br>';
                         if(isset($_POST[$prefix.$key][$cap])) {
                             if($_POST[$prefix.$key][$cap] == 'on') {
                                 $role->add_cap($cap);
@@ -84,12 +82,8 @@ if(!class_exists('WBTMPermission')) {
                     ?>
                     </div>
                     <?php if(isset($_SESSION['wbtm_permission_notification'])) : ?>
-                        <div id="wbtm-perm-notification">
-                            <?php 
-                                echo $_SESSION['wbtm_permission_notification'];
-                                unset($_SESSION['wbtm_permission_notification']);
-                                echo '<script>setTimeout(function(){ document.getElementById("wbtm-perm-notification").remove() }, 5000)</script>';
-                            ?>
+                        <div class="wbtm-page-notification">
+                            <?php echo $_SESSION['wbtm_permission_notification']; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -126,11 +120,20 @@ if(!class_exists('WBTMPermission')) {
                                 endforeach;
                                 echo '</tr>';
 
-                                foreach( $wbtm_post_args as $cap ) :
+                                foreach( $wbtm_post_args->cap as $cap ) :
                                     $name = str_replace('_', ' ', $cap);
                                     echo '<tr>';
                                     echo '<td>'.ucwords($name).'</td>';
                                     foreach( $all_roles as $key => $role ) :
+                                        // if($role['name'] != 'Administrator') {
+                                        //     echo '<td>';
+                                        //     if(isset($role['capabilities'][$cap])) {
+                                        //         echo '<input class="wbtm_perm_checkbox" type="checkbox" checked name="wbtm_permission_'.$key.'['.$cap.']" />';
+                                        //     } else {
+                                        //         echo '<input class="wbtm_perm_checkbox" type="checkbox" name="wbtm_permission_'.$key.'['.$cap.']"/>';
+                                        //     }
+                                        //     echo '</td>';
+                                        // }
                                         echo '<td>';
                                         if(isset($role['capabilities'][$cap])) {
                                             echo '<input class="wbtm_perm_checkbox" type="checkbox" checked name="wbtm_permission_'.$key.'['.$cap.']" />';

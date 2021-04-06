@@ -1305,9 +1305,9 @@ jQuery(document).ready(function($) {
                         'compare' => '=',
                     ),
                     array(
-                        'key' => 'wbtm_status',
-                        'value' => 3,
-                        'compare' => '!=',
+                        'key' => 'wbtm_seat',
+                        'value' => NULL,
+                        'compare' => '!='
                     ),
                 ),
                 array(

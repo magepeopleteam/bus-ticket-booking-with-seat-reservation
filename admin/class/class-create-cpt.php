@@ -59,6 +59,7 @@ class WBTM_Cpt{
 				'delete_post' => 'delete_wbtm_bus',
 				'read_post' => 'read_wbtm_bus',
 				'wbtm_permission_page' => 'wbtm_permission_page',
+				'extra_service_wbtm_bus' => 'extra_service_wbtm_bus',
 			),
 	    );
 

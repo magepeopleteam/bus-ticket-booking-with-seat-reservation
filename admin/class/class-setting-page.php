@@ -650,6 +650,14 @@ $color_settings = array(
                     'value'		=> '#fff',
                     'type'		=> 'colorpicker',
                 ),
+                array(
+                    'id'		=> 'wbtm_form_route_item_color',
+                    'title'		=> __('Search Form Dropdown Text Color','bus-ticket-booking-with-seat-reservation'),
+                    'details'	=> __('It will be applied in Search Form Dropdown Text Color','bus-ticket-booking-with-seat-reservation'),
+                    'default'	=> '#333',
+                    'value'		=> '#333',
+                    'type'		=> 'colorpicker',
+                ),
                 /**
                  * Search Listing Page Next Date Tab Default & Active Background & Text Color
                  */                

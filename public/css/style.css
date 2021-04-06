@@ -5,7 +5,9 @@
  tr.seat_lists>:last-child {
     /*display: none;*/
 }
-
+.wbtm_required {
+    color: red;
+}
 .mage_old_price .woocommerce-Price-amount {
     text-decoration: line-through;
     color: #ddd;
@@ -504,8 +506,6 @@ a.button.remove-seat-row {
     list-style: none;
 }
 
-a {}
-
 .wbtm-bus-lists a {
     display: block;
     text-align: center;
@@ -754,14 +754,7 @@ html body .admin-bus-details td a {
     padding: 8px;
 }
 
-html body .admin-bus-details td {
-    /* padding: 0; */
-    /*width: -46px;*/
-}
-/*.seat_booked, .seat_booked:hover {
-    background: green!important;
-    color: #fff;
-}*/
+
 .wbtm-content-wrappers {
     padding: 30px 0;
     overflow: hidden;

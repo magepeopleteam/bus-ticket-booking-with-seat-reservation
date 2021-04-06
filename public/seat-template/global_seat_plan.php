@@ -14,7 +14,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
 
     $blank_sold_image = $seat_panel_settings['seat_sold_image'] ? wp_get_attachment_url($seat_panel_settings['seat_sold_image'], 'full') : WBTM_PLUGIN_URL . '/public/css/images/seat-sold.png';
 
-    $useer_deck_title = $seat_panel_settings['useer_deck_title'] ? $seat_panel_settings['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation');
+    $useer_deck_title = ($seat_panel_settings['useer_deck_title'] != '' ? $seat_panel_settings['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation'));
 
     ?>
     <style>
@@ -141,7 +141,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
 			<?php
                 // upper deck
                 $seats_dd = get_post_meta(get_the_id(), 'wbtm_bus_seats_info_dd', true);
-                $upper_deck = (!empty(get_option('wbtm_bus_settings')) ? get_option('wbtm_bus_settings')['useer_deck_title'] : '');
+                // $$useer_deck_title = (!empty(get_option('wbtm_bus_settings')) ? get_option('wbtm_bus_settings')['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation'));
                 if(!empty($seats_dd)) {
                     echo '<strong style="width:216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">'.__('Lower Deck', 'bus-ticket-booking-with-seat-reservation').'</strong>';
                 }
@@ -192,7 +192,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
             
             if( is_array($seats_dd) && sizeof($seats_dd) > 0 ) : 
             if(!empty($seats_dd)) {
-                echo '<strong style="width: 216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">'.__($upper_deck, 'bus-ticket-booking-with-seat-reservation').'</strong>';
+                echo '<strong style="width: 216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">'.$useer_deck_title.'</strong>';
             }
             ?>
             <table class="bus-seats" width="300" border="1" style="width: 220px;margin-left:-2px;
