@@ -54,7 +54,8 @@ form.mage_form button[class*='mage_button_search'] {
     background: <?php echo wbtm_get_style('wbtm_search_list_bus_details_title_bg_color','#ddd'); ?>;
     color:<?php echo wbtm_get_style('wbtm_search_list_bus_details_title_text_color','#000'); ?>!important;
 }
-form.mage_form .mage_form_list .mage_input_select_list {
+form.mage_form .mage_form_list .mage_input_select_list,
+form.mage_form .mage_form_list #wbtm_show_msg {
     color: <?php echo wbtm_get_style('wbtm_form_route_item_color','#333'); ?>;;
 }
 </style>

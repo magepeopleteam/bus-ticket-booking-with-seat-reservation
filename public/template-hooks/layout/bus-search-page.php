@@ -258,12 +258,12 @@ function mage_bus_search_item($return, $id)
                 <div class="mage_hidden_xxs">
                     <h6>
                         <span class="fa fa-angle-double-right"></span>
-                        <span><?php echo $start; ?> ( <?php echo mage_time_24_to_12($start_time); ?>
+                        <span><?php echo $start; ?> ( <?php echo mage_wp_time($start_time); ?>
                             )</span>
                     </h6>
                     <h6>
                         <span class="fa fa-stop"></span>
-                        <span><?php echo $end; ?> ( <?php echo mage_time_24_to_12($end_time); ?>
+                        <span><?php echo $end; ?> ( <?php echo mage_wp_time($end_time); ?>
                             )</span>
                     </h6>
                 </div>
@@ -297,8 +297,10 @@ function mage_bus_item_seat_details($return)
     $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
-    $start_time = get_wbtm_datetime(mage_bus_time($return, false), 'time');
-    $end_time = get_wbtm_datetime(mage_bus_time($return, true), 'time');
+    // $start_time = get_wbtm_datetime(mage_bus_time($return, false), 'time');
+    $start_time = mage_wp_time(mage_bus_time($return, false));
+    // $end_time = get_wbtm_datetime(mage_bus_time($return, true), 'time');
+    $end_time = mage_wp_time(mage_bus_time($return, true));
     $date = wbtm_convert_date_to_php($date);
     $return_date = isset($_GET['r_date']) && $_GET['r_date'] != '' ? wbtm_convert_date_to_php($_GET['r_date']) : null;
 

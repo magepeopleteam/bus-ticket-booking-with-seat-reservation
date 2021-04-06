@@ -954,7 +954,7 @@ jQuery(document).ready(function($) {
     public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats=null, $fare, $j_date, $add_datetime, $user_name=null, $user_email=null, $passenger_type=null, $passenger_type_num=null, $user_phone=null, $user_gender=null, $user_address=null, $wbtm_extra_bag_qty=null, $usr_inf=null, $counter=null, $status, $order_meta, $wbtm_billing_type, $city_zone, $wbtm_pickpoint, $extra_services = array(), $user_additional = null)
     {
 
-        $add_datetime = current_time("Y-m-d h:i a");
+        $add_datetime = current_time("Y-m-d").' '.mage_wp_time(current_time("H:i"));
         $name = '#' . $order_id . get_the_title($bus_id);
         $new_post = array(
             'post_title' => $name,

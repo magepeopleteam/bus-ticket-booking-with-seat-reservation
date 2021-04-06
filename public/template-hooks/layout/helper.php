@@ -1021,10 +1021,24 @@ function mage_cart_has_opposite_route_P() {
 //     return $t;
 // }
 
-// Convert 24 to 12 time
+
+/* Convert 24 to 12 time
+@param 1 24 hours time string
+@param 2 Bool
+Is show 12 hours time with am/pm.
+Is true show full time
+Is false show only am/pm
+*/
 function mage_time_24_to_12($time, $full = true) {
     $t = '';
     if($time && strpos($time, ':') !== false) {
+        if(strpos($time, 'AM') || strpos($time, 'am') || strpos($time, 'PM') || strpos($time, 'pm')) {
+            $time = trim(str_replace('AM', '', $time));
+            $time = trim(str_replace('am', '', $time));
+            $time = trim(str_replace('PM', '', $time));
+            $time = trim(str_replace('pm', '', $time));
+        }
+
         $t = explode(':', $time);
         $h = $t[0];
         $m = $t[1];
@@ -1047,6 +1061,17 @@ function mage_time_24_to_12($time, $full = true) {
     }
 
     return $t;
+}
+
+// Convert to wp time format
+function mage_wp_time($time) {
+    $wp_time_format = get_option('time_format');
+
+    if($time && $wp_time_format) {
+        $time  = date($wp_time_format, strtotime($time));
+    }
+
+    return $time;
 }
 
 // Extra services qty check
