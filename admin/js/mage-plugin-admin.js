@@ -25,11 +25,11 @@
 
     // Off Dates
   $('#add-offday-row').on('click', function (e) {
-    e.preventDefault();
-    let datePickerOpt = {
-      dateFormat: "yy-mm-dd",
-      minDate: 0
-    }
+      e.preventDefault();
+      let datePickerOpt = {
+        dateFormat: "yy-mm-dd",
+        minDate: 0
+      };
       let now = Date.now();
       let row = $('.empty-row-offday.screen-reader-text').clone(true);
       row.removeClass('empty-row-offday screen-reader-text');

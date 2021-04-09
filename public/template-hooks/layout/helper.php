@@ -1191,12 +1191,31 @@ function wbtm_extra_services_section($bus_id) {
                         echo __('Not Available', 'bus-ticket-booking-with-seat-reservation');
                     } ?>
                 </td>
-                <td class="mage_text_center"><?php echo wc_price($field['option_price']);
-                                                if ($ext_left > 0) { ?>
-                        <p style="display: none;" class="price_jq"><?php echo $data_price > 0 ? $data_price : 0;  ?></p>
-                        <input type="hidden" name='extra_service_name[]' value='<?php echo $field['option_name']; ?>'>
-                        <input type="hidden" name='extra_service_price[]' value='<?php echo $field['option_price']; ?>'>
-                    <?php } ?>
+                <td class="mage_text_center">
+                    <?php 
+                        $user = get_current_user_id();
+                        $user_roles = array();
+                        if($user) {
+                            $user_meta = get_userdata($user);
+                            $user_roles = $user_meta->roles;
+                        }
+
+                        if ( in_array( 'bus_sales_agent', $user_roles, true ) ) {
+                            echo '<input class="extra_service_per_price" type="text" name="extra_service_price[]" value="'.$field['option_price'].'" style="width: 80px"/>';
+                            if ($ext_left > 0) { ?>
+                                <p style="display: none;" class="price_jq"><?php echo $data_price > 0 ? $data_price : 0;  ?></p>
+                                <input type="hidden" name='extra_service_name[]' value='<?php echo $field['option_name']; ?>'>
+                            <?php }
+                        } else {
+                            echo wc_price($field['option_price']);
+                            if ($ext_left > 0) { ?>
+                                <p style="display: none;" class="price_jq"><?php echo $data_price > 0 ? $data_price : 0;  ?></p>
+                                <input type="hidden" name='extra_service_name[]' value='<?php echo $field['option_name']; ?>'>
+                                <input type="hidden" name='extra_service_price[]' value='<?php echo $field['option_price']; ?>'>
+                            <?php }
+                        }
+                    
+                        ?>
                 </td>
             </tr>
             <?php
