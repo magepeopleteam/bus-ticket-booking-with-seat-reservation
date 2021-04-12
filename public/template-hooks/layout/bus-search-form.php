@@ -38,7 +38,8 @@ function mage_bus_search_form_only($single_bus,$target) {
         </div>
         <?php
         $return = (mage_bus_isset('bus-r') == 'oneway') ? false : true;
-        if (!$single_bus) {
+        // if (!$single_bus) {
+        if (1==1) {
             ?>
             <div class="mage_form_list mage_return_date <?php echo $return ? '' : 'mage_hidden' ?>">
                 <label>

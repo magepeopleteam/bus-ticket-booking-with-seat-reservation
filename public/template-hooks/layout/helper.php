@@ -1282,3 +1282,85 @@ function wbtm_pagination($current_page, $pages)
     $output = '<div class="mage-pagination"><p>' . $prevlink . ' Page ' . $current_page . ' of ' . $pages . ' ' . $nextlink . ' </p></div>';
     return $output;
 }
+
+// Single page bus show operation
+function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $has_bus = false) {
+    global $wbtmmain;
+
+    $bus_next_stops_array = get_post_meta($id, 'wbtm_bus_next_stops', true) ? get_post_meta($id, 'wbtm_bus_next_stops', true) : [];
+    $bus_next_stops_array = maybe_unserialize($bus_next_stops_array);
+
+    // Intermidiate Route
+    $o_1 = mage_bus_end_has_prev($start, $end, $bus_bp_array);
+    $o_2 = mage_bus_start_has_next($start, $end, $bus_next_stops_array);
+
+    // if ($o_1 && $o_2) {
+    //     return;
+    // }
+    // Intermidiate Route END
+
+    // Buffer Time Calculation
+    $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
+    $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
+    // Buffer Time Calculation END
+
+    if ($is_buffer == 'yes') {
+        // Operational on day
+        $is_on_date = false;
+        $bus_on_dates = array();
+        $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+        if( $bus_on_date != null ) {
+            $bus_on_dates = explode( ', ', $bus_on_date );
+            $is_on_date = true;
+        }
+
+        if( $is_on_date ) {
+            if( in_array( $j_date, $bus_on_dates ) ) {
+                $has_bus = true;
+            }
+        } else {
+
+            // Offday schedule check
+            // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
+            $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
+            
+            // Get Bus Start Time
+            $start_time = '';
+            foreach($bus_bp_array as $stop) {
+                if($stop['wbtm_bus_bp_stops_name'] == $start) {
+                    $start_time = $stop['wbtm_bus_bp_start_time'];
+                    break;
+                }
+            }
+
+            $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
+
+            $offday_current_bus = false;
+            if(!empty($bus_offday_schedules)) {
+                $s_datetime = new DateTime( $j_date.' '.$start_time );
+
+                foreach($bus_offday_schedules as $item) {
+
+                    $c_iterate_date_from = $item['from_date'];
+                    $c_iterate_datetime_from = new DateTime( $c_iterate_date_from.' '.$item['from_time'] );
+
+                    $c_iterate_date_to = $item['to_date'];
+                    $c_iterate_datetime_to = new DateTime( $c_iterate_date_to.' '.$item['to_time'] );
+
+                    if( $s_datetime >= $c_iterate_datetime_from && $s_datetime <= $c_iterate_datetime_to ) {
+                        $offday_current_bus = true;
+                        break;
+                    }
+                }
+            }
+
+            // Check Offday and date
+            if(!$offday_current_bus && !mage_check_search_day_off($id, $j_date)) {
+                $has_bus = true;
+            }
+        }
+
+    }
+
+    return $has_bus;
+}
