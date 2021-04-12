@@ -569,10 +569,7 @@ class WbtmAddToCart
                         endif;
 
                         if ($cart_item['wbtm_billing_type'] != '') :
-                            $expire_str = trim($cart_item['wbtm_billing_type']);
-                            $j_date = $cart_item['wbtm_journey_date'];
-                            $date_str = strtotime($j_date);
-                            $valid_till = date('Y-m-d', strtotime('+' . $expire_str, $date_str));
+                            $valid_till = mtsa_calculate_valid_date(get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'), $cart_item['wbtm_billing_type']);
                             ?>
                             <li><?php _e('Start Date: ', 'bus-ticket-booking-with-seat-reservation');
                                 ?><?php echo $cart_item['wbtm_journey_date']; ?></li>
