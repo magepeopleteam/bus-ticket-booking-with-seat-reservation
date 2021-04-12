@@ -945,7 +945,7 @@ button{
 	margin: 20px auto;
 	border: none;
 }
-.no-seat-submit-btn:disabled {
+button[name="add-to-cart"]:disabled {
     opacity: .5!important;
     color: #ddd!important;
     cursor:not-allowed!important;

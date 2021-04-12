@@ -160,9 +160,10 @@
 
         if (grand_total) {
             grand_ele.text(php_vars.currency_symbol + grand_total.toFixed(2));
-            parent.find('.no-seat-submit-btn').prop('disabled', false);
+            parent.find('button[name="add-to-cart"]').prop('disabled', false);
         } else {
             grand_ele.text(php_vars.currency_symbol + "0.00");
+            parent.find('button[name="add-to-cart"]').prop('disabled', true);
         }
     }
 

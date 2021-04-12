@@ -613,7 +613,7 @@ function mage_bus_item_seat_details($return)
                         <strong><?php mage_bus_label('wbtm_total_text', __('Total :', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
                         <strong class="mage_bus_total_price mage-grand-total"> <span class="mage-price-figure">0.00</span></strong>
                     </h4>
-                    <button class="mage_button" type="submit" name="add-to-cart"
+                    <button class="mage_button" type="submit" disabled name="add-to-cart"
                         value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); //echo esc_attr(get_the_id()); ?>"
                         class="single_add_to_cart_button">
                         <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
