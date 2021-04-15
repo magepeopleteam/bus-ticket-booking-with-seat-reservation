@@ -1246,6 +1246,18 @@ class WBTMMetaBox
         $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
         if ($boarding_points) {
             $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
+        } else {
+            $boarding_points = array();
+            $bus_stops = get_terms(array(
+                'taxonomy' => 'wbtm_bus_stops',
+                'hide_empty' => false
+            ));
+
+            if($bus_stops) {
+                foreach($bus_stops as $s) {
+                    $boarding_points[] = $s->name;
+                }
+            }
         }
 
         // Pickup  point 
