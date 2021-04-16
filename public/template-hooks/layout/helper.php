@@ -380,7 +380,7 @@ function mage_bus_time($return, $dropping) {
 //return setting value
 function mage_bus_setting_value($key, $default = null) {
     $settings = get_option('wbtm_bus_settings');
-    $val = $settings[$key];
+    $val = isset($settings[$key]) ? $settings[$key] : null;
     return $val ? $val : $default;
 }
 
@@ -1072,6 +1072,22 @@ function mage_wp_time($time) {
     }
 
     return $time;
+}
+
+function mage_wp_date($date, $format = false) {
+    $wp_date_format = get_option('date_format');
+
+    if($date && $format) {
+        $date = date($format, strtotime($date));
+
+        return $date;
+    }
+
+    if($date && $wp_date_format) {
+        $date  = date($wp_date_format, strtotime($date));
+    }
+
+    return $date;
 }
 
 // Extra services qty check

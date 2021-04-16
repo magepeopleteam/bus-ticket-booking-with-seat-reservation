@@ -388,7 +388,7 @@ function mage_bus_item_seat_details($return)
                             <th><i class="fa fa-calendar" aria-hidden="true"></i>
                                 <?php mage_bus_label('wbtm_date_text', __('Date:', 'bus-ticket-booking-with-seat-reservation')); ?>
                             </th>
-                            <td><?php echo get_wbtm_datetime($date, 'date'); ?></td>
+                            <td><?php echo mage_wp_date($date); ?></td>
                         </tr>
                         <tr>
                             <th><i class="fa fa-clock-o" aria-hidden="true"></i>
@@ -844,10 +844,11 @@ function mage_next_date_suggestion($return, $single_bus)
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
     $date = wbtm_convert_date_to_php($date);
     if ($date) {
-        $tab_date = isset($_GET['tab_date']) ? $_GET['tab_date'] : mage_convert_date_format(mage_bus_isset('j_date'), 'Y-m-d');
-        $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_convert_date_format(mage_bus_isset('r_date'), 'Y-m-d');
+        $tab_date = isset($_GET['tab_date']) ? $_GET['tab_date'] : mage_wp_date(mage_bus_isset('j_date'), 'Y-m-d');
+        $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
         $next_date = $return ? $tab_date_r : $tab_date;
-        $next_date_text = get_wbtm_datetime($next_date, 'date-text');
+        // $next_date_text = get_wbtm_datetime($next_date, 'date-text');
+        $next_date_text = $next_date;
         ?>
 <div class="mage_default_xs">
     <ul class="mage_list_inline flexEqual mage_next_date">
@@ -862,11 +863,13 @@ function mage_next_date_suggestion($return, $single_bus)
                 data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>'
                 class='wbtm_next_day_search'>
                 <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
+                <?php //echo mage_wp_date($next_date); ?>
             </a>
         </li>
         <?php
                     $next_date = date('Y-m-d', strtotime($next_date . ' +1 day'));
-                    $next_date_text = get_wbtm_datetime($next_date, 'date-text');
+                    // $next_date_text = get_wbtm_datetime($next_date, 'date-text');
+                    $next_date_text = $next_date;
                 }
                 ?>
     </ul>
