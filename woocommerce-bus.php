@@ -25,7 +25,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' )) {
  */
 function wbtm_activate_wbtm_plugin() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-plugin-activator.php';
-	// WBTM_Plugin_Activator::activate();
+	WBTM_Plugin_Activator::activate();
 }
 
 /**
