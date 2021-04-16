@@ -65,6 +65,15 @@ class WBTM_Plugin_Public {
 				}
 			}
 
+			if($bus_type === 'wbtm_seat_private') {
+				if(is_plugin_active('addon-bus-ticket-private/plugin.php')) {
+					$template_path = WP_PLUGIN_DIR. '/addon-bus-ticket-private/inc/';
+					$default_path = WP_PLUGIN_DIR. '/addon-bus-ticket-private/inc/';
+				} else {
+					$template_name = 'template-not-found.php';
+				}
+			}
+
 			$template = locate_template( array($template_path . $template_name) );
 
 			if ( ! $template ) :

@@ -42,8 +42,7 @@ class WbtmAddToCart
     public function wbtm_add_custom_fields_text_to_cart_item($cart_item_data, $product_id, $variation_id)
     {
         global $wbtmmain;
-        // echo '<pre>';
-        // print_r($_POST);die;
+        // echo '<pre>';print_r($_POST);die;
 
         $bus_id = isset($_POST['bus_id']) ? sanitize_text_field($_POST['bus_id']) : $product_id;
 
@@ -197,7 +196,11 @@ class WbtmAddToCart
                             for ($i = 0; $i < (int)$qty; $i++) {
                                 $bag_price = 0;
                                 // Seat
-                                $seat_name[$j]['wbtm_seat_name'] = $passenger_type[$key]. '(1)';
+                                if($passenger_type) {
+                                    $seat_name[$j]['wbtm_seat_name'] = $passenger_type[$key]. '(1)';
+                                } else {
+                                    $seat_name[$j]['wbtm_seat_name'] = 'Private';
+                                }
 
                                 if ($bus_type === 'sub') { // Subscription Bus
                                     // Price
@@ -260,7 +263,7 @@ class WbtmAddToCart
 
                                 // Basic Info
                                 $basic_info_user[$j]['wbtm_seat_fare'] = $per_seat_price;
-                                $basic_info_user[$j]['wbtm_passenger_type'] = $passenger_type[$key];
+                                $basic_info_user[$j]['wbtm_passenger_type'] = is_array($passenger_type) ? $passenger_type[$key] : 'Private';
 
                                 $j++;
                             }
