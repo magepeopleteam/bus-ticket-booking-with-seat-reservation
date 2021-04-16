@@ -78,8 +78,9 @@ class WBTM_Tax{
 		'update_count_callback' => '_update_post_term_count',
 		'query_var'             => true,
 		'rewrite'               => array( 'slug' => 'bus-pickuppoint' ),
-		'show_in_rest'          => true,
-		'rest_base'             => 'bus_pickpoint',				
+		'show_in_rest'          => false,
+		'rest_base'             => 'bus_pickpoint',		
+		'meta_box_cb'           => false,		
 	);
 	register_taxonomy('wbtm_bus_pickpoint', 'wbtm_bus', $args);
 	
