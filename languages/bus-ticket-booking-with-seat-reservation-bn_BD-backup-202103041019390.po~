@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-14 11:11+0000\n"
-"PO-Revision-Date: 2021-03-04 10:39+0000\n"
+"PO-Revision-Date: 2021-03-04 10:19+0000\n"
 "Last-Translator: Shohan Kenshin\n"
 "Language-Team: বাংলা\n"
 "Language: bn_BD\n"
@@ -129,10 +129,6 @@ msgstr ""
 
 #: admin/class/class-setting-page.php:196
 msgid "<i class=\"fas fa fa-cog\"></i> Translation Settings"
-msgstr ""
-
-#: admin/class/class-meta-box.php:24
-msgid "<span class=\"dashicons dashicons-info\"></span>Bus Information : "
 msgstr ""
 
 #: woocommerce-bus.php:187
@@ -311,7 +307,7 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:47
 msgid "Bus Information and Configuration"
-msgstr "বাসের তথ্য ও কনফিগারেশন"
+msgstr ""
 
 #: admin/class/class-setting-page.php:32
 msgid "Bus Label"

@@ -660,15 +660,21 @@ class WbtmAddToCart
             }
         }
 
-        // echo $se = $wbtm_seats[0]['w/btm_seat_name'];
+         $se = $wbtm_seats[0]['wbtm_seat_name'];
 
-        // $check_before_order = $wbtmmain->wbtm_get_seat_cehck_before_place_order($wbtm_seats, $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops);
+        // $check_before_order_1 = $wbtmmain->wbtm_get_seat_cehck_before_place_order('A1', $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops);
+        $check_before_order =   (int) $wbtmmain->wbtm_get_seat_status($se, $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops, $wbtm_end_stops);
 
-        // if ($check_before_order > 0) {
-        //     WC()->cart->empty_cart();
-        //     wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
 
-        // }
+        // wc_add_notice(__("$se $check_before_order Sorry, Your Selected Seat Already Booked by another user $check_before_order", 'woocommerce'), 'error');
+
+
+
+        if ($check_before_order > 0) {
+            WC()->cart->empty_cart();
+            wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+
+        }
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)

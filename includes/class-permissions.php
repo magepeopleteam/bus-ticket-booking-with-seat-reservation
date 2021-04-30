@@ -21,7 +21,7 @@ if(!class_exists('WBTMPermission')) {
             $this->text_domain  = $text_domain;
 
             // Call hooks
-            add_action('admin_menu', array($this, 'wbtm_permission_page'), 90);
+            // add_action('admin_menu', array($this, 'wbtm_permission_page'), 90);
         }
 
         public function wbtm_permission_page()

@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-14 11:11+0000\n"
-"PO-Revision-Date: 2021-03-04 10:39+0000\n"
-"Last-Translator: Shohan Kenshin\n"
+"PO-Revision-Date: 2021-03-04 11:05+0000\n"
+"Last-Translator: \n"
 "Language-Team: বাংলা\n"
 "Language: bn_BD\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.4.3; wp-5.5.1"
+"X-Loco-Version: 2.5.1; wp-5.6.2"
 
 #: admin/class/class-meta-box.php:78
 msgid " Bus Info & Configuration :"
-msgstr ""
+msgstr "বাসের তথ্য ও কনফিগারেশন:"
 
 #: admin/class/class-meta-box.php:99
 msgid " Bus Onday & Offday:"
@@ -52,19 +52,19 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:52
 msgid " Pickup Point"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট"
 
 #: admin/class/class-meta-box.php:94
 msgid " Pickup Point :"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট"
 
 #: admin/class/class-create-tax.php:68
 msgid " Pickup Point list"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট তালিকা"
 
 #: admin/class/class-create-tax.php:69
 msgid " Pickup Point list navigation"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট নেভিগেশন"
 
 #: admin/class/class-meta-box.php:83
 msgid " Routing :"
@@ -133,7 +133,7 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:24
 msgid "<span class=\"dashicons dashicons-info\"></span>Bus Information : "
-msgstr ""
+msgstr "বাসের তথ্য"
 
 #: woocommerce-bus.php:187
 msgid ">Click Here to Install</a> "
@@ -162,7 +162,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:57
 msgid "Add New Bus Pickup Point"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট যোগ করুন"
 
 #: admin/class/class-create-tax.php:20
 msgid "Add New Bus Type"
@@ -170,7 +170,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:62
 msgid "Add or remove Bus Pickup Point"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট মুছুন"
 
 #: admin/class/class-create-tax.php:25
 msgid "Add or remove Bus Type"
@@ -178,7 +178,7 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:1233
 msgid "Add Pickup point"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট যোগ করুন"
 
 #: includes/class-add-bus-info-to-cart copy.php:385
 #: includes/class-add-bus-info-to-cart.php:342
@@ -204,7 +204,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:53
 msgid "All Bus Pickup Point"
-msgstr ""
+msgstr "সকল পিকআপ পয়েন্ট"
 
 #: admin/class/class-create-tax.php:16
 msgid "All Bus Type"
@@ -394,7 +394,7 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:137
 msgid "Coach No"
-msgstr ""
+msgstr "কোচ নং"
 
 #: public/template-hooks/layout/helper.php:280
 msgid "Coach Type"
@@ -490,7 +490,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:58
 msgid "Edit Bus Pickup Point"
-msgstr ""
+msgstr "পিকআপ পয়েন্ট পরিবর্তন করুন"
 
 #: admin/class/class-create-tax.php:21
 msgid "Edit Bus Type"
@@ -960,7 +960,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:56
 msgid "New Bus Pickup Point Name"
-msgstr ""
+msgstr "নতুন পিকআপ পয়েন্টের নাম"
 
 #: admin/class/class-create-tax.php:19
 msgid "New Bus Type Name"
@@ -983,7 +983,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:67
 msgid "No Bus Pickup Point"
-msgstr ""
+msgstr "কোন পিকআপ পয়েন্ট নে্ই"
 
 #: admin/class/class-create-tax.php:30
 msgid "No Bus Type"
@@ -991,7 +991,7 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:1295
 msgid "No pickup point added yet!"
-msgstr ""
+msgstr "কোন পিকআপ পয়েন্ট যোগ করা হয় না্ই"
 
 #: admin/class/class-create-tax.php:29 admin/class/class-create-tax.php:66
 msgid "Not Found"

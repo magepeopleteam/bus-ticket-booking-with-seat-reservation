@@ -74,12 +74,12 @@ $gen_settings = array(
                 // 'value'		    => array('option_2'),
                 'args'		=> array(
                         '3'    => __('Pending payment','bus-ticket-booking-with-seat-reservation'),
+                        '4'    => __('On hold','bus-ticket-booking-with-seat-reservation'),                        
                         '1'    => __('Processing','bus-ticket-booking-with-seat-reservation'),
-                        '4'    => __('On hold','bus-ticket-booking-with-seat-reservation'),
                         '2'    => __('Completed','bus-ticket-booking-with-seat-reservation'),
-                        '5'    => __('Cancelled','bus-ticket-booking-with-seat-reservation'),
-                        '6'    => __('Refund','bus-ticket-booking-with-seat-reservation'),
-                        '7'    => __('Failed','bus-ticket-booking-with-seat-reservation'),
+                        // '5'    => __('Cancelled','bus-ticket-booking-with-seat-reservation'),
+                        // '6'    => __('Refund','bus-ticket-booking-with-seat-reservation'),
+                        // '7'    => __('Failed','bus-ticket-booking-with-seat-reservation'),
                     ),
                 ),
                array(
