@@ -62,7 +62,7 @@ div[class^="mage"] .mage_bus_seat_details {padding: var(--default-mp) 0 0 0;marg
 .mage_bus_selected_seat_list .mage_bus_selected_seat_item:last-child {border-bottom-style: solid;}
 .mage_bus_seat_unselect {color: var(--danger-color);}
 /******Mage customer info area******/
-div[class^="mage"] div.mage_hidden_customer_info_form {display: none !important;}
+/* div[class^="mage"] div.mage_hidden_customer_info_form {display: none !important;} */
 .mage_customer_info_area label {width: calc(50% - 8px);}
 .mage_form_list_body {padding: var(--default-mp);}
 .mage_customer_info_area .mage_title {
@@ -71,7 +71,7 @@ div[class^="mage"] div.mage_hidden_customer_info_form {display: none !important;
     text-align: center;
 }
 div[class^="mage"] .mage_customer_info_area .mage_form_list {
-    display: none;
+    /* display: none; */
     border: 1px dashed var(--default-border-color);
     background-color: #fff;
 }

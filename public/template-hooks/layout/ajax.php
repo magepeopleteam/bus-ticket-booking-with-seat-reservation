@@ -78,7 +78,7 @@ function wbtm_form_builder_callback() {
     $seats = $_POST['seats'];
     if (class_exists('WbtmProFunction')) {
         for ($i = 1; $i <= $seats; $i++) {
-            WbtmProFunction::bus_hidden_customer_info_form($busId);
+            WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType);
         }
     } else {
         echo '<input type="hidden" name="custom_reg_user" value="no" />';

@@ -141,7 +141,6 @@ class WbtmAddToCart
                         $per_seat_price = mage_bus_seat_price($bus_id, $start_stops, $end_stops, $d, $passenger_type[$j]);
                         $per_seat_price_original = mage_bus_seat_price($bus_id, $start_stops, $end_stops, $d, $passenger_type[$j]);
                         $per_seat_price_return = mage_bus_seat_price($bus_id, $start_stops, $end_stops, $d, $passenger_type[$j], true);
-
                         // Custom reg user yes
                         if ($_POST['custom_reg_user'] == 'yes') {
                             $custom_reg_yes_user[$j]['wbtm_user_name'] = (isset($_POST['wbtm_user_name'][$j]) ? $_POST['wbtm_user_name'][$j] : '');
@@ -292,6 +291,30 @@ class WbtmAddToCart
 
                     $extra_service_i++;
                 }
+
+                // Custom reg user yes
+                $j = 0;
+                if ($_POST['custom_reg_user'] == 'yes' && empty($custom_reg_yes_user)) {
+                    $custom_reg_yes_user[$j]['wbtm_user_name'] = (isset($_POST['wbtm_user_name'][$j]) ? $_POST['wbtm_user_name'][$j] : '');
+                    $custom_reg_yes_user[$j]['wbtm_user_email'] = (isset($_POST['wbtm_user_email'][$j]) ? $_POST['wbtm_user_email'][$j] : '');
+                    $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
+                    $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
+                    $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
+
+                    $bag_price = ($bag_qty * $extra_per_bag_price);
+                    $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
+
+                    // Additional reg builder field
+                    $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
+                    if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
+                        foreach ($reg_form_arr as $builder) {
+                            $custom_reg_additional[$j][] = array(
+                                'name' => $builder['field_label'],
+                                'value' => (isset($_POST[$builder['field_id']][$j]) ? $_POST[$builder['field_id']][$j] : ''),
+                            );
+                        }
+                    }
+                }
             }
             $total_fare = $total_fare + $total_extra_price;
             // Extra Service END
@@ -434,13 +457,14 @@ class WbtmAddToCart
                             }
                             ?>
 
-
+                            <?php if(isset($wbtm_seats[$i]['wbtm_seat_name'])) : ?>
                             <li>
                                 <strong><?php mage_bus_label('wbtm_seat_no_text', __('Seat No', 'bus-ticket-booking-with-seat-reservation')); ?>
                                     :</strong>
                                 <?php echo $wbtm_seats[$i]['wbtm_seat_name']; ?>
                             </li>
-                            <?php if ($basic_passenger_info[$i]['wbtm_passenger_type']) { ?>
+                            <?php endif; ?>
+                            <?php if (isset($basic_passenger_info[$i]['wbtm_passenger_type'])) { ?>
                                 <li>
                                     <strong><?php _e('Passenger Type', 'bus-ticket-booking-with-seat-reservation'); ?>
                                         :</strong>
@@ -517,11 +541,13 @@ class WbtmAddToCart
                                     <?php echo $cart_item['wbtm_pickpoint']; ?>
                                 </li>
                             <?php endif; ?>
+                            <?php if(isset($basic_passenger_info[$i]['wbtm_seat_fare'])) : ?>
                             <li>
                                 <strong><?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>
                                     :</strong>
                                 <?php echo wc_price($basic_passenger_info[$i]['wbtm_seat_fare']); ?>
                             </li>
+                            <?php endif; ?>
                             <?php
                             if (isset($_passenger['wbtm_extra_bag_qty'])) {
                                 if ($_passenger['wbtm_extra_bag_qty'] > 0) {
@@ -558,7 +584,6 @@ class WbtmAddToCart
                     }
 
                 } else {
-
                     ?>
                     <ul class='event-custom-price'>
                         <?php
@@ -670,11 +695,11 @@ class WbtmAddToCart
 
 
 
-        if ($check_before_order > 0) {
-            WC()->cart->empty_cart();
-            wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+        // if ($check_before_order > 0) {
+        //     WC()->cart->empty_cart();
+        //     wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
 
-        }
+        // }
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)

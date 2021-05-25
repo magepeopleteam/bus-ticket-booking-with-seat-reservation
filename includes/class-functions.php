@@ -305,7 +305,8 @@ jQuery(document).ready(function($) {
         $('#seat<?php echo $id; ?>_' + seatNumber).removeClass('seat_booked');
 
         wbt_calculate_total(parents);
-        wbt_update_passenger_form();
+        // wbt_update_passenger_form();
+        wbtm_remove_form_builder(parents, seatNumber); // Seat form builder form remove
     })
 
     $(document).on('click', '.seat<?php echo $id; ?>_booked', function() {
@@ -348,6 +349,8 @@ jQuery(document).ready(function($) {
             var fare = <?php echo $fare; ?>;
         }
 
+        let seat_name = seat<?php echo $id; ?>_name;
+
         var foo = "<tr class='seat_selected_price' id='selected_list<?php echo $id; ?>_" +
             seat<?php echo $id; ?>_name +
             "'><td align=center><input type='hidden' name='passenger_label[]' value='Adult'/>" +
@@ -384,7 +387,9 @@ jQuery(document).ready(function($) {
         }
         // alert(totalFare);
         mageGrandPrice(parents);
-        wbt_update_passenger_form();
+        // wbt_update_passenger_form(seat_name);
+        wbtm_seat_plan_form_builder_new($(this), seat_name); // New
+
     });
 
     // *******Admin Ticket Purchase*******
@@ -404,10 +409,11 @@ jQuery(document).ready(function($) {
         parent.addClass('seat<?php echo $id; ?>_booked');
         parent.addClass('seat_booked');
 
-        console.log('hkdkf');
         var seat<?php echo $id; ?>_name = parent.data("seat");
         var seat<?php echo $id; ?>_class = parent.data("sclass");
         var fare = price;
+
+        let seat_name = seat<?php echo $id; ?>_name;
         var foo = "<tr class='seat_selected_price' id='selected_list<?php echo $id; ?>_" +
             seat<?php echo $id; ?>_name +
             "'><td align=center><input type='hidden' name='passenger_label[]' value='" + label + "'/>" +
@@ -444,10 +450,12 @@ jQuery(document).ready(function($) {
         }
 
         mageGrandPrice(parents);
-        wbt_update_passenger_form();
+        // wbt_update_passenger_form(seat_name);
+        wbtm_seat_plan_form_builder_new($(this), seat_name); // New
+
 
     });
-    // ******Admin Ticket Purchase********
+    // ******Admin Ticket Purchase (Dropdown)********
 
     // Show Grand Price
     function mageGrandPrice(parent) {
@@ -467,10 +475,12 @@ jQuery(document).ready(function($) {
         if (grand_total) {
             grand_ele.text(php_vars.currency_symbol + grand_total.toFixed(2));
             parent.find('.no-seat-submit-btn').prop('disabled', false);
+            parent.find('button[name="add-to-cart-admin"]').prop('disabled', false);
         } else {
             grand_ele.text(php_vars.currency_symbol + "0.00");
+            parent.find('.no-seat-submit-btn').prop('disabled', true);
+            parent.find('button[name="add-to-cart-admin"]').prop('disabled', true);
         }
-        console.log(grand_total)
     }
 
     function wbt_calculate_total(parents) {
@@ -489,15 +499,14 @@ jQuery(document).ready(function($) {
         jQuery('#tq<?php echo $id; ?>').val(rowCount);
         jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>"+totalFare.toFixed(2)+"</span>");
         jQuery('#tfi<?php echo $id; ?>').val(totalFare.toFixed(2));
-        if (totalFare == 0) {
-            jQuery('#bus-booking-btn<?php echo $id; ?>').hide();
-        }
+        // if (totalFare == 0) {
+        //     jQuery('#bus-booking-btn<?php echo $id; ?>').hide();
+        // }
         // alert(totalFare);
-        console.log(parents)
         mageGrandPrice(parents);
     }
 
-    function wbt_update_passenger_form() {
+    function wbt_update_passenger_form(seat_name = '') {
 
         var input = jQuery('#tq<?php echo $id; ?>').val() || 0;
         var children = jQuery('#divParent<?php echo $id; ?> > div').length || 0;
@@ -512,9 +521,100 @@ jQuery(document).ready(function($) {
             jQuery('#divParent<?php echo $id; ?>').append(
                 jQuery('<div/>')
                 .attr("id", "newDiv" + i)
-                .html("<?php do_action('wbtm_reg_fields');?>")
+                .html("<?php do_action('wbtm_reg_fields', '"+seat_name+"');?>")
             );
         }
+    }
+
+    // Seat plan Passenger info form (New)
+    function wbtm_seat_plan_form_builder_new($this, seat_name, onlyES = false) {
+        let parent = $this.parents('.admin-bus-details');
+        let bus_id = parent.attr('data-bus-id');
+        let qty = 1;
+        let seatType = seat_name;
+        let isSeatPlan = true;
+
+        $.ajax({
+            url: wbtm_ajaxurl,
+            type: 'POST',
+            async: true,
+            data: { busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
+            beforeSend: function () {
+                parent.find('#wbtm-form-builder .wbtm-loading').show();
+            },
+            success: function (data) {
+                if (data !== '') {
+                    
+                    if( parent.find(".mage_customer_info_area").children().length == 0 ) {
+                        parent.find(".mage_customer_info_area").html(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
+                    } else {
+
+                        if (seat_name != 'ES') {
+                            parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                            parent.find(".mage_customer_info_area .seat_name_ES").remove();
+                        }
+                        
+                        // if (seat_name != 'ES') {
+                        //     parent.find(".mage_customer_info_area").append(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
+                        // } else {
+                        //     parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                        //     parent.find(".mage_customer_info_area .seat_name_ES").remove();
+                        // }
+                    }
+                    onlyES ? parent.find('input[name="seat_name[]"]').remove() : null;
+
+                } else {
+                    parent.find(".mage_customer_info_area").empty();
+                }
+                // Loading hide
+                parent.find('.wbtm-form-builder .wbtm-loading').hide();
+            }
+        });
+    }
+
+    function wbtm_remove_form_builder($this, seat_name) {
+        $this.find(".mage_customer_info_area .seat_name_"+seat_name).remove();
+        // ES qty
+        let es_table = $this.find('.wbtm_extra_service_table');
+        let es_qty = 0;
+        es_table.find('tbody tr').each(function () {
+            tp = $(this).find('.extra-qty-box').val();
+            es_qty += tp > 0 ? parseInt(tp) : 0;
+        });
+
+        if(es_qty > 0) {
+            wbtm_seat_plan_form_builder_new($this.find('.bus-info-sec'), 'ES', true);
+        }
+    }
+
+    // Custom Reg Field New way
+    function mageCustomRegField($this, seatType, qty, onlyES = false) {
+        let parent = $this.parents('.admin-bus-details');
+        let bus_id = parent.attr('data-bus-id');
+        
+        $.ajax({
+            url: wbtm_ajaxurl,
+            type: 'POST',
+            async: true,
+            data: { busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
+            beforeSend: function () {
+                parent.find('#wbtm-form-builder .wbtm-loading').show();
+            },
+            success: function (data) {
+                let s = seatType.toLowerCase();
+                if (data !== '') {
+                    $(".wbtm-form-builder-" + s).html(data).find('.mage_hidden_customer_info_form').each(function (index) {
+                        onlyES ? $(this).find('input[name="seat_name[]"]').remove() : null;
+                        $(this).find('.mage_title h5').html(seatType+' : '+(index+1));
+                        $(this).removeClass('mage_hidden_customer_info_form').find('.mage_form_list').slideDown(200);
+                    });
+
+                } else {
+                    parent.find(".wbtm-form-builder-" + s).empty();
+                }
+                parent.find('.wbtm-form-builder .wbtm-loading').hide();
+            }
+        });
     }
 
     jQuery("#view_panel_<?php echo $id; ?>").click(function() {
@@ -1181,12 +1281,73 @@ jQuery(document).ready(function($) {
                             }
                         }
 
-                        $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
-                        $user_email = $order_meta['_billing_email'][0];
-                        $user_phone = $order_meta['_billing_phone'][0];
-                        $user_address = $order_meta['_billing_address_1'][0];
+                        // Passenger Info
+                        if (is_array($user_single_info_arr) && sizeof($user_single_info_arr) > 0) {
 
-                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, null, null, null, null, null, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr);
+                            if(isset($usr_inf[$counter]['wbtm_user_name'])) {
+                                if($usr_inf[$counter]['wbtm_user_name'] != '') {
+                                    $user_name = $usr_inf[$counter]['wbtm_user_name'];
+                                } else {
+                                    $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
+                                }
+                            } else {
+                                $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
+                            }
+
+                            if(isset($usr_inf[$counter]['wbtm_user_email'])) {
+                                if($usr_inf[$counter]['wbtm_user_email'] != '') {
+                                    $user_email = $usr_inf[$counter]['wbtm_user_email'];
+                                } else {
+                                    $user_email = $order_meta['_billing_email'][0];
+                                }
+                            } else {
+                                $user_email = $order_meta['_billing_email'][0];
+                            }
+
+                            if(isset($usr_inf[$counter]['wbtm_user_phone'])) {
+                                if($usr_inf[$counter]['wbtm_user_phone'] != '') {
+                                    $user_phone = $usr_inf[$counter]['wbtm_user_phone'];
+                                } else {
+                                    $user_phone = $order_meta['_billing_phone'][0];
+                                }
+                            } else {
+                                $user_phone = $order_meta['_billing_phone'][0];
+                            }
+
+                            if(isset($usr_inf[$counter]['wbtm_user_address'])) {
+                                if($usr_inf[$counter]['wbtm_user_address'] != '') {
+                                    $user_address = $usr_inf[$counter]['wbtm_user_address'];
+                                } else {
+                                    $user_address = $order_meta['_billing_address_1'][0];
+                                }
+                            } else {
+                                $user_address = $order_meta['_billing_address_1'][0];
+                            }
+
+                            $user_gender = isset($usr_inf[$counter]['wbtm_user_gender']) ? $usr_inf[$counter]['wbtm_user_gender'] : '';
+                            $user_additional = ($user_info_additional_arr ? maybe_serialize($user_info_additional_arr[$counter]) : '');
+                        } else {
+                            $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
+                            $user_email = $order_meta['_billing_email'][0];
+                            $user_phone = $order_meta['_billing_phone'][0];
+                            $user_address = $order_meta['_billing_address_1'][0];
+                            $user_gender = '';
+                            $user_additional = '';
+                        }
+
+                        if (isset($usr_inf[$counter]['wbtm_extra_bag_qty'])) {
+                            $wbtm_extra_bag_qty = $usr_inf[$counter]['wbtm_extra_bag_qty'];
+                            $fare               = $fare + ($extra_bag_price * $wbtm_extra_bag_qty);
+                        } else {
+                            $wbtm_extra_bag_qty = 0;
+                        }
+
+                        // $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
+                        // $user_email = $order_meta['_billing_email'][0];
+                        // $user_phone = $order_meta['_billing_phone'][0];
+                        // $user_address = $order_meta['_billing_address_1'][0];
+
+                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $usr_inf, $counter, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr);
                     }
                 }
             }

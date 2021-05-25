@@ -481,6 +481,7 @@ function mage_bus_item_seat_details($return)
                 <div id="wbtm-form-builder-adult" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                 <div id="wbtm-form-builder-child" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                 <div id="wbtm-form-builder-infant" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
+                <div id="wbtm-form-builder-es" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
             </div>
             <button class="mage_button no-seat-submit-btn" disabled type="submit" name="add-to-cart"
                 value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>"
@@ -606,7 +607,7 @@ function mage_bus_item_seat_details($return)
                     </div>
                 </div>
                 <div class="mage_customer_info_area">
-                    <input type="hidden" name="custom_reg_user" value="no" />
+                    <!-- <input type="hidden" name="custom_reg_user" value="no" /> -->
                 </div>
                 <div class="flexEqual flexCenter textCenter_mar_t">
                     <h4>
@@ -625,14 +626,14 @@ function mage_bus_item_seat_details($return)
 
         <?php endif; ?>
     </div>
-    <input type="hidden" name="mage_bus_title"
-        value="<?php mage_bus_label('wbtm_passenger_info_seat_text', __('Passenger Info seat :', 'bus-ticket-booking-with-seat-reservation')); ?>" />
+    <!-- <input type="hidden" name="mage_bus_title"
+        value="<?php //mage_bus_label('wbtm_passenger_info_seat_text', __('Passenger Info seat :', 'bus-ticket-booking-with-seat-reservation')); ?>" /> -->
 
 </form>
 <?php 
-        if ($bus_seat_type_conf === 'wbtm_seat_plan') {
-            do_action('mage_bus_hidden_customer_info_form');
-        }
+        // if ($bus_seat_type_conf === 'wbtm_seat_plan') {
+        //     do_action('mage_bus_hidden_customer_info_form');
+        // }
     ?>
 <?php
 }
