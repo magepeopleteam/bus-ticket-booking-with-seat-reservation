@@ -598,7 +598,7 @@
                             parent.find(".mage_customer_info_area .seat_name_ES").remove();
                         }
                     }
-                    onlyES ? parent.find('input[name="seat_name[]"]').remove() : null;
+                    onlyES ? parent.find('.mage_customer_info_area input[name="seat_name[]"]').remove() : null;
 
                 } else {
                     parent.find(".mage_customer_info_area").empty();
@@ -623,13 +623,17 @@
         // Seat qty
         let seat_qty = 0;
         if (seat_plan_type == 'yes') {
-            seat_qty = $this.parents('.mage_bus_item').find('input[name="total_seat"]').val();
-            seat_qty = seat_qty ? seat_qty : 0;
+            $this.parents('.mage_bus_item').find('.mage_bus_selected_seat_list .mage_bus_selected_seat_item').each(function () {
+                if ($this.attr('data-seat-name') != '') {
+                    seat_qty += 1;
+                }
+            });
+            console.log(seat_qty)
 
             if (es_qty > 0 && parseInt(seat_qty) < 1) { // Only es
                 wbtm_seat_plan_form_builder_new($this, 'ES', true);
             }
-            if (es_qty == 0) { // Only es
+            if (es_qty == 0) {
                 $this.parents('.mage_bus_item').find(".mage_customer_info_area .seat_name_ES").remove();
             }
 

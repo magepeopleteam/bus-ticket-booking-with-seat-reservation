@@ -388,7 +388,7 @@ jQuery(document).ready(function($) {
         // alert(totalFare);
         mageGrandPrice(parents);
         // wbt_update_passenger_form(seat_name);
-        wbtm_seat_plan_form_builder_new($(this), seat_name); // New
+        wbtm_seat_plan_form_builder_new($(this), seat_name, true); // New
 
     });
 
@@ -451,7 +451,7 @@ jQuery(document).ready(function($) {
 
         mageGrandPrice(parents);
         // wbt_update_passenger_form(seat_name);
-        wbtm_seat_plan_form_builder_new($(this), seat_name); // New
+        wbtm_seat_plan_form_builder_new($(this), seat_name, true); // New
 
 
     });
@@ -506,25 +506,25 @@ jQuery(document).ready(function($) {
         mageGrandPrice(parents);
     }
 
-    function wbt_update_passenger_form(seat_name = '') {
+    // function wbt_update_passenger_form(seat_name = '') {
 
-        var input = jQuery('#tq<?php echo $id; ?>').val() || 0;
-        var children = jQuery('#divParent<?php echo $id; ?> > div').length || 0;
+    //     var input = jQuery('#tq<?php //echo $id; ?>').val() || 0;
+    //     var children = jQuery('#divParent<?php //echo $id; ?> > div').length || 0;
 
-        if (input < children) {
-            jQuery('#divParent<?php echo $id; ?>').empty();
-            children = 0;
-        }
+    //     if (input < children) {
+    //         jQuery('#divParent<?php //echo $id; ?>').empty();
+    //         children = 0;
+    //     }
 
-        for (var i = children + 1; i <= input; i++) {
+    //     for (var i = children + 1; i <= input; i++) {
 
-            jQuery('#divParent<?php echo $id; ?>').append(
-                jQuery('<div/>')
-                .attr("id", "newDiv" + i)
-                .html("<?php do_action('wbtm_reg_fields', '"+seat_name+"');?>")
-            );
-        }
-    }
+    //         jQuery('#divParent<?php //echo $id; ?>').append(
+    //             jQuery('<div/>')
+    //             .attr("id", "newDiv" + i)
+    //             .html("<?php //do_action('wbtm_reg_fields', '"+seat_name+"');?>")
+    //         );
+    //     }
+    // }
 
     // Seat plan Passenger info form (New)
     function wbtm_seat_plan_form_builder_new($this, seat_name, onlyES = false) {
@@ -540,7 +540,7 @@ jQuery(document).ready(function($) {
             async: true,
             data: { busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
             beforeSend: function () {
-                parent.find('#wbtm-form-builder .wbtm-loading').show();
+                parent.find('.wbtm-form-builder-loading').show();
             },
             success: function (data) {
                 if (data !== '') {
@@ -561,13 +561,13 @@ jQuery(document).ready(function($) {
                         //     parent.find(".mage_customer_info_area .seat_name_ES").remove();
                         // }
                     }
-                    onlyES ? parent.find('input[name="seat_name[]"]').remove() : null;
+                    onlyES ? parent.find('.mage_customer_info_area input[name="seat_name[]"]').remove() : null;
 
                 } else {
                     parent.find(".mage_customer_info_area").empty();
                 }
                 // Loading hide
-                parent.find('.wbtm-form-builder .wbtm-loading').hide();
+                parent.find('.wbtm-form-builder-loading').hide();
             }
         });
     }
@@ -598,21 +598,22 @@ jQuery(document).ready(function($) {
             async: true,
             data: { busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
             beforeSend: function () {
-                parent.find('#wbtm-form-builder .wbtm-loading').show();
+                parent.find('.wbtm-form-builder-loading').show();
             },
             success: function (data) {
                 let s = seatType.toLowerCase();
                 if (data !== '') {
-                    $(".wbtm-form-builder-" + s).html(data).find('.mage_hidden_customer_info_form').each(function (index) {
+                    $(".wbtm-form-builder-" + s).html(data);
+                    $(".wbtm-form-builder-" + s).find('.mage_hidden_customer_info_form').each(function (index) {
+                        $(this).removeClass('mage_hidden_customer_info_form').find('.mage_form_list').slideDown(200);
                         onlyES ? $(this).find('input[name="seat_name[]"]').remove() : null;
                         $(this).find('.mage_title h5').html(seatType+' : '+(index+1));
-                        $(this).removeClass('mage_hidden_customer_info_form').find('.mage_form_list').slideDown(200);
                     });
 
                 } else {
                     parent.find(".wbtm-form-builder-" + s).empty();
                 }
-                parent.find('.wbtm-form-builder .wbtm-loading').hide();
+                parent.find('.wbtm-form-builder-loading').hide();
             }
         });
     }

@@ -695,11 +695,11 @@ class WbtmAddToCart
 
 
 
-        // if ($check_before_order > 0) {
-        //     WC()->cart->empty_cart();
-        //     wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+        if ($check_before_order > 0) {
+            WC()->cart->empty_cart();
+            wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
 
-        // }
+        }
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)
