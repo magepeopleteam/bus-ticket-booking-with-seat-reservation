@@ -595,6 +595,9 @@ function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $retu
         }
     }
 
+    // With Tax
+    // $return_price_data = wc_price(wbtm_get_price_including_tax($bus_id, $total_fare));
+
     return $return_price_data;
 }
 
@@ -1199,7 +1202,7 @@ function wbtm_extra_services_section($bus_id) {
                         <?php } else { ?>
                             <div class="mage_input_group">
                                 <button class="fa fa-minus qty_dec" style="font-size:9px"></button>
-                                <input size="4" inputmode="numeric" type="text" class='extra-qty-box' name='extra_service_qty[]' data-price='<?php echo $data_price; ?>' value='0' min="0" max="<?php echo $ext_left; ?>">
+                                <input size="4" inputmode="numeric" type="text" class='extra-qty-box' name='extra_service_qty[]' data-price='<?php echo wbtm_get_price_including_tax($bus_id, $data_price); ?>' value='0' min="0" max="<?php echo $ext_left; ?>">
                                 <button class="fa fa-plus qty_inc" style="font-size:9px"></button>
                             </div>
                     <?php }
@@ -1217,13 +1220,13 @@ function wbtm_extra_services_section($bus_id) {
                         }
 
                         if ( in_array( 'bus_sales_agent', $user_roles, true ) ) {
-                            echo '<input class="extra_service_per_price" type="text" name="extra_service_price[]" value="'.$field['option_price'].'" style="width: 80px"/>';
+                            echo '<input class="extra_service_per_price" type="text" name="extra_service_price[]" value="'.wbtm_get_price_including_tax($bus_id, $field['option_price']).'" style="width: 80px"/>';
                             if ($ext_left > 0) { ?>
                                 <p style="display: none;" class="price_jq"><?php echo $data_price > 0 ? $data_price : 0;  ?></p>
                                 <input type="hidden" name='extra_service_name[]' value='<?php echo $field['option_name']; ?>'>
                             <?php }
                         } else {
-                            echo wc_price($field['option_price']);
+                            echo wc_price(wbtm_get_price_including_tax($bus_id, $field['option_price']));
                             if ($ext_left > 0) { ?>
                                 <p style="display: none;" class="price_jq"><?php echo $data_price > 0 ? $data_price : 0;  ?></p>
                                 <input type="hidden" name='extra_service_name[]' value='<?php echo $field['option_name']; ?>'>

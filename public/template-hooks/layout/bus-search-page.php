@@ -400,7 +400,7 @@ function mage_bus_item_seat_details($return)
                             <th><i class="fas fa-map-marker"></i>
                                 <?php mage_bus_label('wbtm_fare_text', __('Fare:', 'bus-ticket-booking-with-seat-reservation')); ?>
                             </th>
-                            <td><?php echo wc_price($seat_price); ?> /
+                            <td><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $seat_price)); ?> /
                                 <?php mage_bus_label('wbtm_seat_text', __('Seat', 'bus-ticket-booking-with-seat-reservation')); ?>
                             </td>
                         </tr>
@@ -432,7 +432,7 @@ function mage_bus_item_seat_details($return)
                                     <input type="hidden" name="passenger_type[]" value="<?php echo $type['type'] ?>">
                                     <input type="hidden" name="bus_dd[]" value="no">
                                 </td>
-                                <td><?php echo get_woocommerce_currency_symbol() . $type['price'] . '<sub> / seat</sub>'; ?>
+                                <td><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $type['price'])) . '<sub> / seat</sub>'; ?>
                                 </td>
                                 <td class="mage-seat-price">
                                     <?php echo get_woocommerce_currency_symbol() . '<span class="price-figure">0.00</span>' ?>
@@ -539,7 +539,7 @@ function mage_bus_item_seat_details($return)
                             <span class='wbtm-details-page-list-label'>
                                 <i class="fa fa-money" aria-hidden="true"></i>
                                 <?php mage_bus_label('wbtm_fare_text', __('Fare:', 'bus-ticket-booking-with-seat-reservation')); ?></span>
-                            <?php echo wc_price($seat_price); ?>/
+                            <?php echo wc_price(wbtm_get_price_including_tax($bus_id, $seat_price)); ?>/
                             <span><?php mage_bus_label('wbtm_seat_text', __('Seat', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                         </h6>
                         <h6 class="mar_t_xs wbtm-details-page-list-total-avl-seat">

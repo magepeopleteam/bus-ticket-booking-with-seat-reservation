@@ -466,7 +466,7 @@
             });
 
             // Load Form Builder New
-            wbtm_seat_plan_form_builder_new(target, seatName);
+            wbtm_seat_plan_form_builder_new(target, seatName, passengerType, busDd);
         }
 
 
@@ -523,15 +523,18 @@
     function mageCustomerInfoFormBus(parent, seatName, passengerType, busDd) {
         let formTitle = parent.find('input[name="mage_bus_title"]').val() + seatName;
         let currentTarget = parent.find('.mage_hidden_customer_info_form');
+        console.log('lksjdfkl')
         if (currentTarget.length > 0) {
+            currentTarget.append('<input type="hidden" name="custom_reg_user" value="no" />');
             currentTarget.find('input[name="seat_name[]"]').val(seatName);
             currentTarget.find('input[name="passenger_type[]"]').val(passengerType);
             currentTarget.find('input[name="bus_dd[]"]').val(busDd);
             currentTarget.find('.mage_form_list').attr('data-seat-name', seatName).find('.mage_title h5').html(formTitle);
             return currentTarget.html();
         } else {
-            return '<div data-seat-selected-wrap="' + seatName + '"><input type="hidden" name="bus_dd[]" value="' + busDd + '" /><input type="hidden" name="seat_name[]" value="' + seatName + '" /><input type="hidden" name="passenger_type[]" value="' + passengerType + '" /></div>';
+            return '<div data-seat-selected-wrap="' + seatName + '"><input type="hidden" name="custom_reg_user" value="no" /><input type="hidden" name="bus_dd[]" value="' + busDd + '" /><input type="hidden" name="seat_name[]" value="' + seatName + '" /><input type="hidden" name="passenger_type[]" value="' + passengerType + '" /></div>';
         }
+        
 
     }
 
@@ -573,7 +576,7 @@
     }
 
     // Seat plan Passenger info form (New)
-    function wbtm_seat_plan_form_builder_new($this, seat_name, onlyES = false) {
+    function wbtm_seat_plan_form_builder_new($this, seat_name, passengerType = null, busDd = null, onlyES = false) {
         let parent = $this.parents('.mage_bus_item');
         let bus_id = parent.attr('data-bus-id');
         let qty = 1;
@@ -588,6 +591,7 @@
                 parent.find('#wbtm-form-builder .wbtm-loading').show();
             },
             success: function (data) {
+
                 if (data !== '') {
                     
                     if (parent.find(".mage_customer_info_area").children().length == 0) {
@@ -601,7 +605,9 @@
                     onlyES ? parent.find('.mage_customer_info_area input[name="seat_name[]"]').remove() : null;
 
                 } else {
-                    parent.find(".mage_customer_info_area").empty();
+                    // parent.find(".mage_customer_info_area").empty();
+                    
+                    parent.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parent, seat_name, passengerType, busDd)).find('[data-seat-name="' + seat_name + '"]').slideDown(200);
                 }
                 // Loading hide
                 parent.find('.wbtm-form-builder .wbtm-loading').hide();
@@ -631,7 +637,7 @@
             console.log(seat_qty)
 
             if (es_qty > 0 && parseInt(seat_qty) < 1) { // Only es
-                wbtm_seat_plan_form_builder_new($this, 'ES', true);
+                wbtm_seat_plan_form_builder_new($this, 'ES', '', '', true);
             }
             if (es_qty == 0) {
                 $this.parents('.mage_bus_item').find(".mage_customer_info_area .seat_name_ES").remove();
@@ -654,7 +660,8 @@
     }
 
     function wbtm_remove_form_builder($this, seat_name) {
-        $this.find(".mage_customer_info_area .seat_name_"+seat_name).remove();
+        $this.find(".mage_customer_info_area .seat_name_" + seat_name).remove(); //  without seat
+        $this.find('.mage_customer_info_area').find('div[data-seat-selected-wrap="' + seat_name + '"]').remove(); // with seat
         // ES qty
         let es_table = $this.find('.wbtm_extra_service_table');
         let es_qty = 0;
@@ -664,7 +671,7 @@
         });
 
         if(es_qty > 0) {
-            wbtm_seat_plan_form_builder_new($this, 'ES', true);
+            wbtm_seat_plan_form_builder_new($this, 'ES', '', '', true);
         }
     }
 

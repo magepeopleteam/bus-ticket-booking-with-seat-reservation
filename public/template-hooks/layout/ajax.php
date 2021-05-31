@@ -40,7 +40,7 @@ function mage_bus_selected_seat_item(){
         }
 
         $dd = ($_POST['dd'] == 'yes') ? true : false;
-        $price_final = '<span data-current-price="'.$_POST["price"].'" style="margin-right:0!important">'.wc_price($_POST["price"]).'</span>';
+        $price_final = '<span data-current-price="'.wbtm_get_price_including_tax($_POST["id"], $_POST["price"]).'" style="margin-right:0!important">'.wc_price(wbtm_get_price_including_tax($_POST["id"], $_POST["price"])).'</span>';
         // if($_POST['has_seat'] == 0) {
             if($_POST['is_return'] && $_POST['r_date']) {
                 $return_discount = mage_cart_has_opposite_route($_POST['start'], $_POST['end'], $_POST['j_date'], true, $_POST['r_date']); // Return
@@ -53,10 +53,10 @@ function mage_bus_selected_seat_item(){
                 if($return_discount == 1 && !$is_multiple_passenger) {
                     $price = mage_bus_seat_price($_POST['id'], $_POST['start'], $_POST['end'], $dd, $_POST['passenger_type'], true);
                     if($price != $_POST['price']) {
-                        $price_final = '<span data-old-price="'.$_POST["price"].'" data-price="'.$price.'" data-current-price="'.$price.'" style="margin-right:0!important">'.wc_price($price).'</span>';
-                        $price_final .= '<span class="return_price_cal mage_old_price" data-price="'.$_POST["price"].'" style="display:block">'.wc_price($_POST["price"]).'</span>';
+                        $price_final = '<span data-old-price="'.$_POST["price"].'" data-price="'.$price.'" data-current-price="'.wbtm_get_price_including_tax($_POST["id"], $price).'" style="margin-right:0!important">'.wc_price(wbtm_get_price_including_tax($_POST["id"], $price)).'</span>';
+                        $price_final .= '<span class="return_price_cal mage_old_price" data-price="'.$_POST["price"].'" style="display:block">'.wc_price(wbtm_get_price_including_tax($_POST['id'], $_POST["price"])).'</span>';
                     } else {
-                        $price_final = '<span data-old-price="'.$_POST["price"].'" data-price="'.$price.'" data-current-price="'.$price.'" style="margin-right:0!important">'.wc_price($price).'</span>';
+                        $price_final = '<span data-old-price="'.$_POST["price"].'" data-price="'.$price.'" data-current-price="'.wbtm_get_price_including_tax($_POST["id"], $price).'" style="margin-right:0!important">'.wc_price(wbtm_get_price_including_tax($_POST['id'], $price)).'</span>';
                     }
                 }
             }

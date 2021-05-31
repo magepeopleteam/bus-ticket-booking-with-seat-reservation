@@ -66,6 +66,11 @@ class WBTMMetaBox
                     class="dashicons dashicons-calendar-alt"></span>&nbsp;&nbsp;<?php echo __('Bus Onday & Offday', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
+        <?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
+		<li data-target-tabs="#wbtm_bus_tax">
+			<span class="dashicons dashicons-admin-settings"></span>&nbsp;&nbsp;<?php _e('Tax', 'bus-ticket-booking-with-seat-reservation'); ?>
+		</li>
+		<?php } ?>
         <?php
 
     }
@@ -100,6 +105,11 @@ class WBTMMetaBox
             <hr/>
             <?php $this->wbtmBusOnDate(); ?>
         </div>
+        <div class="mp_tab_item" data-tab-item="#wbtm_bus_tax">
+            <h3><?php _e(' Bus Tax Settings:', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+            <hr/>
+            <?php $this->wbtm_tax($tour_id); ?>
+        </div>
         <?php
     }
 
@@ -117,6 +127,66 @@ class WBTMMetaBox
         remove_meta_box('wbtm_bus_stopsdiv', 'wbtm_bus', 'side');
         remove_meta_box('wbtm_bus_routediv', 'wbtm_bus', 'side');
     }
+
+    function wbtm_tax($post_id) 
+	{
+        // echo $post_id;
+		$values = get_post_custom($post_id);
+		wp_nonce_field('mep_event_reg_btn_nonce', 'mep_event_reg_btn_nonce');
+		if (array_key_exists('_tax_status', $values)) {
+			$tx_status = $values['_tax_status'][0];
+		} else {
+			$tx_status = '';
+		}
+
+		if (array_key_exists('_tax_class', $values)) {
+			$tx_class = $values['_tax_class'][0];
+		} else {
+			$tx_class = '';
+		}
+	?>
+		<table>
+			<tr>
+				<th><span><?php _e('Tax status:', 'bus-ticket-booking-with-seat-reservation'); ?></span></th>
+				<td colspan="3">
+					<label>
+						<select class="mp_formControl" name="_tax_status">
+							<option value="taxable" <?php echo ($tx_status == 'taxable') ? 'selected' : ''; ?>><?php _e('Taxable', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+							<option value="shipping" <?php echo ($tx_status == 'shipping') ? 'selected' : ''; ?>><?php _e('Shipping only', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+							<option value="none" <?php echo ($tx_status == 'none') ? 'selected' : ''; ?>><?php _e('None', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+						</select>
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<th><span><?php _e('Tax class:', 'bus-ticket-booking-with-seat-reservation'); ?></span></th>
+				<td colspan="3">				
+					<label>
+						<select class="mp_formControl" name="_tax_class">
+							<option value="standard" <?php echo ($tx_class == 'standard') ? 'selected' : ''; ?>><?php _e('Standard', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+							<?php $this->get_all_tax_list($tx_class); ?>
+						</select>
+					</label>
+					<p class="event_meta_help_txt">
+						<?php _e('To add any new tax class , Please go to WooCommerce ->Settings->Tax Area', 'bus-ticket-booking-with-seat-reservation'); ?>
+					</p>
+				</td>
+			</tr>
+		</table>
+	<?php
+	}
+
+    function get_all_tax_list($current_tax=null){
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wc_tax_rate_classes';
+        $result = $wpdb->get_results( "SELECT * FROM $table_name" );
+      
+        foreach ( $result as $tax ){
+        ?>
+        <option value="<?php echo $tax->slug;  ?>" <?php if($current_tax == $tax->slug ){ echo 'Selected'; } ?>><?php echo $tax->name;  ?></option>
+        <?php
+        }
+      }
 
 
     public function wbtm_bus_ticket_type()
@@ -586,6 +656,13 @@ class WBTMMetaBox
 
             }
             update_post_meta($pid, 'mtsa_subscription_route_type', $subscription_route_type);
+
+            // Tax
+            $_tax_status 			= isset($_POST['_tax_status']) ? strip_tags($_POST['_tax_status']) : 'none';
+            $_tax_class 			= isset($_POST['_tax_class']) ? strip_tags($_POST['_tax_class']) : '';
+
+            update_post_meta($pid, '_tax_status', $_tax_status);
+            update_post_meta($pid, '_tax_class', $_tax_class);
 
             // Private Pricing
             if (isset($_POST['mtpa_private_boarding_point'])) {
