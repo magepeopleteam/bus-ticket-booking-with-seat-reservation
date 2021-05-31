@@ -173,12 +173,12 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
     $wbtm_bus_bp_stops_array = array();
     $bus_start_time_array = array();
     foreach ($has_bus_data as $bus) {
-        $wbtm_bus_bp_stops = get_post_meta($bus['id'], 'wbtm_bus_bp_stops', true);
+        $which_way = mage_determine_route($bus['id'], $return);
+        $wbtm_bus_bp_stops = get_post_meta($bus['id'], $which_way, true);
         if ($wbtm_bus_bp_stops) {
             $wbtm_bus_bp_stops_array[$bus['id']] = array_values(maybe_unserialize($wbtm_bus_bp_stops));
         }
     }
-
 
     $target_bus_start_time = array();
     foreach ($wbtm_bus_bp_stops_array as $key => $stops) {
@@ -201,7 +201,6 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
     foreach ($target_bus_start_time as $id => $bus) {
         $final_sorted_ids[] = $id;
     }
-
 
     $sorted_bus_list = new WP_Query(array(
         'post_type' => 'wbtm_bus',
@@ -317,7 +316,8 @@ function mage_bus_item_seat_details($return)
 
     if ($bus_seat_type_conf === 'wbtm_without_seat_plan') {
         // Price
-        $seatPrices = get_post_meta($bus_id, 'wbtm_bus_prices', true);
+        // $seatPrices = get_post_meta($bus_id, 'wbtm_bus_prices', true);
+        $seatPrices = mage_bus_seat_prices($bus_id, $start, $end);
         $available_seat_type = array();
         if ($seatPrices) {
             $i = 0;

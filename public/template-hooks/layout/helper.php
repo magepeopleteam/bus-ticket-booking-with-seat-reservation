@@ -149,14 +149,30 @@ function mage_search_bus_query($return) {
         'meta_query' => array(
             'relation' => 'AND',
             array(
-                'key' => 'wbtm_bus_bp_stops',
-                'value' => $start,
-                'compare' => 'LIKE',
+                'relation' => 'OR',
+                array(
+                    'key' => 'wbtm_bus_bp_stops',
+                    'value' => $start,
+                    'compare' => 'LIKE',
+                ),
+                array(
+                    'key' => 'wbtm_bus_bp_stops_return',
+                    'value' => $start,
+                    'compare' => 'LIKE',
+                )
             ),
             array(
-                'key' => 'wbtm_bus_next_stops',
-                'value' => $end,
-                'compare' => 'LIKE',
+                'relation' => 'OR',
+                array(
+                    'key' => 'wbtm_bus_next_stops',
+                    'value' => $end,
+                    'compare' => 'LIKE',
+                ),
+                array(
+                    'key' => 'wbtm_bus_next_stops_return',
+                    'value' => $end,
+                    'compare' => 'LIKE',
+                )
             ),
             array(
                 'relation' => 'OR',
@@ -365,7 +381,14 @@ function mage_bus_time($return, $dropping) {
         $start = mage_bus_isset($return ? 'bus_end_route' : 'bus_start_route');
     }
 
-    $meta_key = $dropping ? 'wbtm_bus_next_stops' : 'wbtm_bus_bp_stops';
+    $determine_route = mage_determine_route(get_the_id(), $return);
+    if($determine_route == 'wbtm_bus_bp_stops') {
+        $meta_key = $dropping ? 'wbtm_bus_next_stops' : 'wbtm_bus_bp_stops';
+    } else {
+        $meta_key = $dropping ? 'wbtm_bus_next_stops_return' : 'wbtm_bus_bp_stops_return';
+    }
+
+    
     $array_key = $dropping ? 'wbtm_bus_next_stops_name' : 'wbtm_bus_bp_stops_name';
     $array_value = $dropping ? 'wbtm_bus_next_end_time' : 'wbtm_bus_bp_start_time';
     $array = maybe_unserialize(get_post_meta(get_the_id(), $meta_key, true));
@@ -527,85 +550,140 @@ function mage_bus_sold_seat($return) {
 }
 
 //seat price
-function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $return_price = false) {
+function mage_bus_seat_price($bus_id,$start, $end, $dd, $seat_type = null, $return_price = false, $count = 0) {
+    $flag = false;
+
     $price_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_prices', true));
-    // var_dump($return_price);
-    // echo '<pre>'; print_r($start);
-    // echo '<pre>'; print_r($price_arr); die;
+    
     if(!empty($price_arr) && is_array($price_arr)) {
-        // $price_arr = array_values($price_arr);
         foreach($price_arr as $value) {
-            if( (strtolower($value['wbtm_bus_bp_price_stop']) == strtolower($start)) && (strtolower($value['wbtm_bus_dp_price_stop']) == strtolower($end)) && ($value['wbtm_bus_price'] == 0 || $value['wbtm_bus_price'] == null) ) {
-                return false;
+            if( (strtolower($value['wbtm_bus_bp_price_stop']) == strtolower($start)) && (strtolower($value['wbtm_bus_dp_price_stop']) == strtolower($end)) ) {
+                $flag = true;
+                break;
             }
         }
     } else {
-        return false;
+        $flag = false;
     }
 
-    $seat_dd_increase = (int)get_post_meta($bus_id, 'wbtm_seat_dd_price_parcent', true);
-    // $seat_dd_increase = 10;
-    $dd_price_increase = ($dd && $seat_dd_increase) ? $seat_dd_increase : 0;
+    if(!$flag) {
+        $price_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_prices_return', true));
+        if(!empty($price_arr) && is_array($price_arr)) {
+            foreach($price_arr as $value) {
+                if( (strtolower($value['wbtm_bus_bp_price_stop']) == strtolower($start)) && (strtolower($value['wbtm_bus_dp_price_stop']) == strtolower($end)) ) {
+                    $flag = true;
+                    break;
+                }
+            }
+        }
+
+        if(!$flag) {
+            return false;
+        }
+    }
 
     $return_price_data = false;
-    foreach ($price_arr as $key => $val) {
-        $p_start = strtolower($val['wbtm_bus_bp_price_stop']);
-        $p_end = strtolower($val['wbtm_bus_dp_price_stop']);
+    if($flag) {
+        $seat_dd_increase = (int)get_post_meta($bus_id, 'wbtm_seat_dd_price_parcent', true);
+        // $seat_dd_increase = 10;
+        $dd_price_increase = ($dd && $seat_dd_increase) ? $seat_dd_increase : 0;
 
-        $start = strtolower($start);
-        $end = strtolower($end);
-        if ($p_start === $start && $p_end === $end && !$return_price) { // Not return
-            if (1 == $seat_type) {
+        foreach ($price_arr as $key => $val) {
+            $p_start = strtolower($val['wbtm_bus_bp_price_stop']);
+            $p_end = strtolower($val['wbtm_bus_dp_price_stop']);
 
-                $price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
+            $start = strtolower($start);
+            $end = strtolower($end);
+            if ($p_start === $start && $p_end === $end && !$return_price) { // Not return
+                if (1 == $seat_type) {
 
-            } elseif (2 == $seat_type) {
+                    $price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
 
-                $price = $val['wbtm_bus_infant_price'] + ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100);
+                } elseif (2 == $seat_type) {
 
-            } elseif (3 == $seat_type) {
-                
-                $price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
+                    $price = $val['wbtm_bus_infant_price'] + ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100);
 
-            } else {
-                $price = $val['wbtm_bus_price'] + ($val['wbtm_bus_price'] * $dd_price_increase / 100);
+                } elseif (3 == $seat_type) {
+                    
+                    $price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
+
+                } else {
+                    $price = $val['wbtm_bus_price'] + ($val['wbtm_bus_price'] * $dd_price_increase / 100);
+                }
+                $return_price_data = $price;
+                break;
             }
-            $return_price_data = $price;
-            break;
+            if ($p_start === $start && $p_end === $end && $return_price) { // Return
+                if (1 == $seat_type) {
+                    $p = (($val['wbtm_bus_child_price_return']) ? $val['wbtm_bus_child_price_return'] : $val['wbtm_bus_child_price']);
+                    $price = $p + ($p * $dd_price_increase / 100);
+
+                } elseif (2 == $seat_type) {
+                    $p = (($val['wbtm_bus_infant_price_return']) ? $val['wbtm_bus_infant_price_return'] : $val['wbtm_bus_infant_price']);
+                    $price = $p + ($p * $dd_price_increase / 100);
+
+                } elseif (3 == $seat_type) {
+                    $p = (($val['wbtm_bus_special_price']) ? $val['wbtm_bus_special_price'] : 0);
+                    $price = $p + ($p * $dd_price_increase / 100);
+
+                } else {
+                    $p = (($val['wbtm_bus_price_return']) ? $val['wbtm_bus_price_return'] : $val['wbtm_bus_price']);
+                    $price = $p + ($p * $dd_price_increase / 100);
+                }
+                $return_price_data = $price;
+                break;
+            }
         }
-        if ($p_start === $start && $p_end === $end && $return_price) { // Return
-            if (1 == $seat_type) {
-                $p = (($val['wbtm_bus_child_price_return']) ? $val['wbtm_bus_child_price_return'] : $val['wbtm_bus_child_price']);
-                $price = $p + ($p * $dd_price_increase / 100);
+        return $return_price_data;
+    }
+    
+}
 
-            } elseif (2 == $seat_type) {
-                $p = (($val['wbtm_bus_infant_price_return']) ? $val['wbtm_bus_infant_price_return'] : $val['wbtm_bus_infant_price']);
-                $price = $p + ($p * $dd_price_increase / 100);
+function mage_bus_seat_prices($bus_id, $start, $end) {
+    $flag = false;
+    $price_arr = array();
 
-            } elseif (3 == $seat_type) {
-                $p = (($val['wbtm_bus_special_price']) ? $val['wbtm_bus_special_price'] : 0);
-                $price = $p + ($p * $dd_price_increase / 100);
-
-            } else {
-                $p = (($val['wbtm_bus_price_return']) ? $val['wbtm_bus_price_return'] : $val['wbtm_bus_price']);
-                $price = $p + ($p * $dd_price_increase / 100);
+    $price_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_prices', true));
+    
+    if(!empty($price_arr) && is_array($price_arr)) {
+        foreach($price_arr as $value) {
+            if( (strtolower($value['wbtm_bus_bp_price_stop']) == strtolower($start)) && (strtolower($value['wbtm_bus_dp_price_stop']) == strtolower($end)) ) {
+                $flag = true;
+                break;
             }
-            $return_price_data = $price;
-            break;
+        }
+    } else {
+        $flag = false;
+    }
+
+    if(!$flag) {
+        $price_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_prices_return', true));
+        if(!empty($price_arr) && is_array($price_arr)) {
+            foreach($price_arr as $value) {
+                if( (strtolower($value['wbtm_bus_bp_price_stop']) == strtolower($start)) && (strtolower($value['wbtm_bus_dp_price_stop']) == strtolower($end)) ) {
+                    $flag = true;
+                    break;
+                }
+            }
+        }
+
+        if(!$flag) {
+            return false;
         }
     }
 
     // With Tax
     // $return_price_data = wc_price(wbtm_get_price_including_tax($bus_id, $total_fare));
 
-    return $return_price_data;
+    return $price_arr;
 }
 
 function mage_bus_passenger_type($return, $dd) {
     $id = get_the_id();
     $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
-    $price_arr = maybe_unserialize(get_post_meta($id, 'wbtm_bus_prices', true));
+    // $price_arr = maybe_unserialize(get_post_meta($id, 'wbtm_bus_prices', true));
+    $price_arr = mage_bus_seat_prices($id, $start, $end);
     $seat_panel_settings = get_option('wbtm_bus_settings');
     $adult_label = $seat_panel_settings['wbtm_seat_type_adult_label'];
     $child_label = $seat_panel_settings['wbtm_seat_type_child_label'];
@@ -1382,4 +1460,48 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $has_bu
     }
 
     return $has_bus;
+}
+
+// Is one way route or Return route
+function mage_determine_route($id, $return, $start = null, $end = null) {
+    $route_key = 'wbtm_bus_bp_stops';
+
+    if(!$start) {
+        $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
+    }
+    
+    if(!$end) {
+        $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
+    }
+
+    $one_way_start = get_post_meta($id, 'wbtm_bus_bp_stops', true);
+    $one_way_end = get_post_meta($id, 'wbtm_bus_next_stops', true);
+
+    $return_start = get_post_meta($id, 'wbtm_bus_bp_stops_return', true);
+    $return_end = get_post_meta($id, 'wbtm_bus_next_stops_return', true);
+
+    if(!empty($one_way_start) && !empty($one_way_end)) {
+        $one_way_start = array_column(maybe_unserialize($one_way_start), 'wbtm_bus_bp_stops_name');
+        $one_way_end = array_column(maybe_unserialize($one_way_end), 'wbtm_bus_next_stops_name');
+        $one_s = array_search($start, $one_way_start);
+        $one_e = array_search($end, $one_way_end);
+
+        if( ($one_s == $one_e) && in_array($start, $one_way_start) && in_array($end, $one_way_end) ) {
+            $route_key = 'wbtm_bus_bp_stops';
+        } else {
+            if($return_start && $return_end) {
+                $return_start = array_column(maybe_unserialize($return_start), 'wbtm_bus_bp_stops_name');
+                $return_end = array_column(maybe_unserialize($return_end), 'wbtm_bus_next_stops_name');
+                $return_s = array_search($start, $return_start);
+                $return_e = array_search($end, $return_end);
+
+                if( ($return_s == $return_e) && in_array($start, $return_start) && in_array($end, $return_end) ) {
+                    $route_key = 'wbtm_bus_bp_stops_return';
+                }
+
+            }
+        }
+    }
+
+    return $route_key;
 }

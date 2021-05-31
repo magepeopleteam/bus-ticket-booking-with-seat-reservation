@@ -1,6 +1,10 @@
 <?php
 add_action('wbtm_search_form', 'mage_bus_search_form_only');
 function mage_bus_search_form_only($single_bus,$target) {
+    $has_return_route = false;
+    if($single_bus) {
+        $has_return_route = get_post_meta(get_the_ID(), 'wbtm_bus_bp_stops_return', true);
+    }
     ?>
     <h4>
         <?php 
@@ -38,8 +42,7 @@ function mage_bus_search_form_only($single_bus,$target) {
         </div>
         <?php
         $return = (mage_bus_isset('bus-r') == 'oneway') ? false : true;
-        // if (!$single_bus) {
-        if (1==1) {
+        if (!$single_bus || $has_return_route) {
             ?>
             <div class="mage_form_list mage_return_date <?php echo $return ? '' : 'mage_hidden' ?>">
                 <label>
