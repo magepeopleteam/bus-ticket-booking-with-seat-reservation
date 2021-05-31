@@ -88,6 +88,13 @@ class WbtmAddToCart
             $wbtm_pickpoint = isset($_POST['wbtm_pickpoint']) ? $_POST['wbtm_pickpoint'] : '';
 
             $bus_start_stops = get_post_meta($bus_id, 'wbtm_bus_bp_stops', true);
+            if($start_stops && $end_stops) {
+                $determine_route = mage_determine_route($bus_id, false, $start_stops, $end_stops);
+                if($determine_route != 'wbtm_bus_bp_stops') {
+                    $bus_start_stops = get_post_meta($bus_id, 'wbtm_bus_bp_stops_return', true);
+                }
+            }
+            
             $bus_start_stops = maybe_unserialize($bus_start_stops);
 
             $extra_per_bag_price = get_post_meta($bus_id, 'wbtm_extra_bag_price', true);
@@ -372,7 +379,7 @@ class WbtmAddToCart
             // if ($wbtm_seats) {
                 $extra_bag_price = get_post_meta($cart_item['bus_id'], 'wbtm_extra_bag_price', true);
                 // echo '<pre>'; print_r($passenger_info); die;
-                if (is_array($passenger_info) && sizeof($passenger_info) > 0) {
+                if (is_array($passenger_info) && sizeof($passenger_info) > 0) { // With Form builder
                     $i = 0;
                     foreach ($passenger_info as $_passenger) {
                         //echo '<pre>';print_r($_passenger);echo '</pre>';
@@ -557,7 +564,7 @@ class WbtmAddToCart
                         $i++;
                     }
 
-                } else {
+                } else { // Without form builder
 
                     ?>
                     <ul class='event-custom-price'>
@@ -670,11 +677,11 @@ class WbtmAddToCart
 
 
 
-        if ($check_before_order > 0) {
-            WC()->cart->empty_cart();
-            wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+        // if ($check_before_order > 0) {
+        //     WC()->cart->empty_cart();
+        //     wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
 
-        }
+        // }
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)

@@ -520,7 +520,7 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 /* Routing */
 .bus-stops-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     position: relative;
 }
 
