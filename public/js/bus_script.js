@@ -244,7 +244,6 @@
     function mage_bus_dropping_point(target) {
         if (target.parents().hasClass('mage_bus_boarding_point')) {
             var boarding_point = target.attr('data-route');
-            console.log(boarding_point);
             if (boarding_point !== undefined) {
                 $.ajax({
                     type: 'POST',

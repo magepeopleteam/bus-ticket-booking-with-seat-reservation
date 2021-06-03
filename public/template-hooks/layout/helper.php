@@ -1463,15 +1463,15 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $has_bu
 }
 
 // Is one way route or Return route
-function mage_determine_route($id, $return, $start = null, $end = null) {
-    $route_key = 'wbtm_bus_bp_stops';
+function mage_determine_direction($id, $is_return, $start = null, $end = null) {
+    $route_key = 'one'; // Default value
 
     if(!$start) {
-        $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
+        $start = $is_return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
     }
     
     if(!$end) {
-        $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
+        $end = $is_return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     }
 
     $one_way_start = get_post_meta($id, 'wbtm_bus_bp_stops', true);
@@ -1487,7 +1487,7 @@ function mage_determine_route($id, $return, $start = null, $end = null) {
         $one_e = array_search($end, $one_way_end);
 
         if( ($one_s == $one_e) && in_array($start, $one_way_start) && in_array($end, $one_way_end) ) {
-            $route_key = 'wbtm_bus_bp_stops';
+            $route_key = 'one';
         } else {
             if($return_start && $return_end) {
                 $return_start = array_column(maybe_unserialize($return_start), 'wbtm_bus_bp_stops_name');
@@ -1496,7 +1496,7 @@ function mage_determine_route($id, $return, $start = null, $end = null) {
                 $return_e = array_search($end, $return_end);
 
                 if( ($return_s == $return_e) && in_array($start, $return_start) && in_array($end, $return_end) ) {
-                    $route_key = 'wbtm_bus_bp_stops_return';
+                    $route_key = 'return';
                 }
 
             }
@@ -1504,4 +1504,61 @@ function mage_determine_route($id, $return, $start = null, $end = null) {
     }
 
     return $route_key;
+}
+
+// Is one way route or Return route
+function mage_determine_route($id, $is_return, $start = null, $end = null) {
+
+    $direction = mage_determine_direction($id, $is_return, $start, $end);
+
+    if($direction == 'return') {
+        $route_key = 'wbtm_bus_bp_stops_return';
+    } else {
+        $route_key = 'wbtm_bus_bp_stops';
+    }
+
+    return $route_key;
+}
+
+
+// Get Pickup Point
+function mage_determine_pickuppoint($id, $is_return, $start, $end) {
+
+    $direction = mage_determine_direction($id, $is_return, $start, $end);
+
+    if($direction == 'return') {
+        $pickup_point = get_post_meta($id, 'wbtm_selected_pickpoint_return_name_'.strtolower($start), true);
+    } else {
+        $pickup_point = get_post_meta($id, 'wbtm_selected_pickpoint_name_'.strtolower($start), true);
+    }
+
+    return $pickup_point;
+}
+
+// Get ondates
+function mage_determine_ondate($id, $is_return, $start, $end) {
+
+    $direction = mage_determine_direction($id, $is_return, $start, $end);
+
+    if($direction == 'return') {
+        $ondates = get_post_meta($id, 'wbtm_bus_on_dates_return', true);
+    } else {
+        $ondates = get_post_meta($id, 'wbtm_bus_on_dates', true);
+    }
+
+    return $ondates;
+}
+
+// Get offdates
+function mage_determine_offdate($id, $is_return, $start, $end) {
+
+    $direction = mage_determine_direction($id, $is_return, $start, $end);
+
+    if($direction == 'return') {
+        $offdates = get_post_meta($id, 'wbtm_offday_schedule_return', true);
+    } else {
+        $offdates = get_post_meta($id, 'wbtm_offday_schedule', true);
+    }
+
+    return $offdates;
 }

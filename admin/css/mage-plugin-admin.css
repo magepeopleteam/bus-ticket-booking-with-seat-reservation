@@ -280,7 +280,7 @@ iframe#gmap_canvas {width: 100%; height: 300px;}
 .mp_event_all_meta_in_tab {display: -webkit-flex;display: flex;min-height: 300px;flex-direction: column;}
 .mp_tab_menu {width: 100%;background-color: #444;color: #fff;font-size: 15px;font-weight: 600;}
 .mp_tab_menu ul {border-top: 1px solid #FFF;display: flex;justify-content: space-between;margin: 0;}
-.mp_tab_menu ul li {width: 100%;padding:8px;margin: 0;cursor: pointer;color:#c6d4db; position: relative;text-align: center;font-size:14px;display: -webkit-flex;display: flex;-webkit-align-items: center;align-items: center;-webkit-justify-content: center;justify-content: center;border-right: 1px dotted #fff;}
+.mp_tab_menu ul li {width: 100%;padding:8px;margin: 0;cursor: pointer;color:#c6d4db; position: relative;text-align: center;font-size:12px;display: -webkit-flex;display: flex;-webkit-align-items: center;align-items: center;-webkit-justify-content: center;justify-content: center;border-right: 1px dotted #fff;}
 .mp_tab_menu ul li:last-child{border: none;}
 .mp_tab_menu ul li span {width:initial;height: initial;display: block;}
 .mp_tab_menu ul li.active{color: #fff;font-size: 15px;background-color: #0C88B4;}
@@ -466,10 +466,10 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 .wbtm-ondates-wrapper input {
     width: 100%;
 }
-#repeatable-fieldset-offday th {
+.repeatable-fieldset-offday th {
     text-align: left;
 }
-#repeatable-fieldset-offday .th-time {
+.repeatable-fieldset-offday .th-time {
     width: 15%;
 }
 .wbtm-ondates-inner {
@@ -770,11 +770,12 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
     border-radius: 3px;
     box-shadow: 1px 1px 5px 3px #e0e0e0;
     cursor: pointer;
+    font-size: 11px;
 }
 
 .wbtm_add_pickpoint_this_city {
     margin-top: 10px;
-    padding: 7px 27px;
+    padding: 7px 20px;
 }
 
 .wbtm_selected_city_item .wbtm_add_more_pickpoint:hover,
@@ -795,6 +796,14 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 	font-weight: 700;
 	min-width: 188px;
 	display: inline-block;
+}
+.wbtm-single-return-header {
+    background: #909ca1;
+    text-align: center;
+    padding: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    margin: 15px -28px 10px;
 }
 #mtsa-repeatable-fieldset-ticket-type {
     width: 100%

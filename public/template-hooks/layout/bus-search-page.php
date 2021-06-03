@@ -88,7 +88,8 @@ function mage_bus_search_list($return)
                 // Operational on day
                 $is_on_date = false;
                 $bus_on_dates = array();
-                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+//                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+                $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
                 if( $bus_on_date != null ) {
                     $bus_on_dates = explode( ', ', $bus_on_date );
                     $is_on_date = true;
@@ -102,8 +103,9 @@ function mage_bus_search_list($return)
 
                     // Offday schedule check
                     // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
-                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
-                    
+//                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
+                    $bus_offday_schedules = mage_determine_offdate($id, $return, $start, $end);
+
                     // Get Bus Start Time
                     $start_time = '';
                     foreach($bus_bp_array as $stop) {
@@ -306,7 +308,8 @@ function mage_bus_item_seat_details($return)
     $seat_price = mage_bus_seat_price($bus_id, $start, $end, false);
 
     // Pickpoint
-    $pickpoints = get_post_meta($bus_id, 'wbtm_selected_pickpoint_name_'.strtolower($start), true);
+    // $pickpoints = get_post_meta($bus_id, 'wbtm_selected_pickpoint_name_'.strtolower($start), true);
+    $pickpoints = mage_determine_pickuppoint($bus_id, $return, $start, $end);
     if($pickpoints != '') {
         $pickpoints = maybe_unserialize($pickpoints);
     }

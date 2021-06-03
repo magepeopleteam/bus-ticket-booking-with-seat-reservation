@@ -3,10 +3,16 @@
 
     // Init
     wbtmSeatTypeConf();
+    wbtmSameBusReturn();
     
     // Seat Type Selection
     $('select[name="wbtm_seat_type_conf"]').change(function () {
       wbtmSeatTypeConf();
+    });
+
+    // Single bus return Config
+    $('input[name="wbtm_general_same_bus_return"]').change(function() {
+      wbtmSameBusReturn();
     });
   
     // $("#od_start, #on_start, #on_end, #j_date").datepicker({
@@ -23,17 +29,23 @@
       // minDate:0
     });
 
+    $("input[name='wbtm_bus_on_dates_return']").multiDatesPicker({
+      dateFormat: "yy-mm-dd",
+      // minDate:0
+    });
+
     // Off Dates
-  $('#add-offday-row').on('click', function (e) {
+  $('.add-offday-row').on('click', function (e) {
       e.preventDefault();
       let datePickerOpt = {
         dateFormat: "yy-mm-dd",
         minDate: 0
       };
       let now = Date.now();
-      let row = $('.empty-row-offday.screen-reader-text').clone(true);
+      let parent = $(this).parents('.wbtm-offdates-wrapper');
+      let row = parent.find('.empty-row-offday.screen-reader-text').clone(true);
       row.removeClass('empty-row-offday screen-reader-text');
-      row.insertBefore('#repeatable-fieldset-offday tbody>tr:last');
+      row.insertBefore(parent.find('.repeatable-fieldset-offday > tbody>tr:last'));
       row.find(".repeatable-offday-from-field").attr('id', 'offday_from'+ now);
       row.find(".repeatable-offday-to-field").attr('id', 'offday_to'+ now);
 
@@ -139,28 +151,43 @@
 
     $('#mtsa_city_zone').hide();
     $('#mtpa_car_type').hide();
-    
+
     if (value === 'wbtm_seat_plan') {
       $('.wbtm-seat-plan-wrapper').show();
       wbtmPriceType('general');
+      $('#wbtm_same_bus_return').show();
     } else {
       $('.wbtm-seat-plan-wrapper').hide();
 
       if (value === 'wbtm_without_seat_plan') {
         wbtmPriceType('general');
+        $('#wbtm_same_bus_return').show();
 
       } else if (value === 'wbtm_seat_private') {
         $('#mtpa_car_type').show();
         wbtmPriceType('private');
+        $('#wbtm_same_bus_return').hide();
 
       } else {
 
         $('#mtsa_city_zone').show();
         wbtmPriceType('subscription');
         wbtmSubscriptionRouteType();
+        $('#wbtm_same_bus_return').hide();
       }
     }
 
+  }
+
+  // Same Bus Return condition
+  function wbtmSameBusReturn() {
+    let currentVal = $('input[name="wbtm_general_same_bus_return"]:checked').val();
+
+    if(currentVal === 'yes') {
+      $('.wbtm-only-for-return-enable').show();
+    } else {
+      $('.wbtm-only-for-return-enable').hide();
+    }
   }
 
   function wbtmPriceType(priceType) {
