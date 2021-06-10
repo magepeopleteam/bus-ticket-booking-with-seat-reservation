@@ -79,7 +79,7 @@ class WbtmAddToCart
             $seat_qty = isset($_POST['seat_qty']) ? $_POST['seat_qty'] : null;
             $passenger_type = isset($_POST['passenger_type']) ? $_POST['passenger_type'] : '';
             $dd = isset($_POST['bus_dd']) ? $_POST['bus_dd'] : '';
-            $custom_reg_user = sanitize_text_field($_POST['custom_reg_user']);
+//            $custom_reg_user = sanitize_text_field($_POST['custom_reg_user']);
             $wbtm_order_seat_plan = sanitize_text_field($_POST['wbtm_order_seat_plan']);
             $bus_type = $_POST['wbtm_bus_type'];
             $mtsa_billing_type = isset($_POST['mtsa_billing_type']) ? $_POST['mtsa_billing_type'] : '';
@@ -702,11 +702,11 @@ class WbtmAddToCart
 
 
 
-        // if ($check_before_order > 0) {
-        //     WC()->cart->empty_cart();
-        //     wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+         if ( ($check_before_order == 1 || $check_before_order == 2) ) {
+             WC()->cart->empty_cart();
+             wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
 
-        // }
+         }
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)

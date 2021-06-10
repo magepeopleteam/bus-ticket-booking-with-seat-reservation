@@ -10,8 +10,8 @@ class WBTMMetaBox
 
         // Custom Metabox
         add_action('add_meta_boxes', array($this, 'add_meta_box_func'));        
-        add_action('ttbm_meta_box_tab_name', array($this, 'ttbm_add_meta_box_tab_name'), 20);        
-        add_action('ttbm_meta_box_tab_content', array($this, 'ttbm_add_meta_box_tab_content'), 10);
+        add_action('wbtm_meta_box_tab_name', array($this, 'wbtm_add_meta_box_tab_name'), 20);        
+        add_action('wbtm_meta_box_tab_content', array($this, 'wbtm_add_meta_box_tab_content'), 10);
         add_action('save_post', array($this, 'wbtm_bus_seat_panels_meta_save'));
         add_action('admin_menu', array($this, 'wbtm_remove_post_custom_fields'));
     }
@@ -25,7 +25,7 @@ class WBTMMetaBox
 
     public function add_meta_box_func()
     {
-        add_meta_box('ttbm_add_meta_box', __('<span class="dashicons dashicons-info"></span>Bus Information : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'mp_event_all_in_tab'), 'wbtm_bus', 'normal', 'high');
+        add_meta_box('wbtm_add_meta_box', __('<span class="dashicons dashicons-info"></span>Bus Information : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'mp_event_all_in_tab'), 'wbtm_bus', 'normal', 'high');
     }
 
     public function mp_event_all_in_tab()
@@ -35,18 +35,18 @@ class WBTMMetaBox
         <div class="mp_event_all_meta_in_tab mp_event_tab_area">
             <div class="mp_tab_menu">
                 <ul>
-                    <?php do_action('ttbm_meta_box_tab_name', $post_id); ?>
+                    <?php do_action('wbtm_meta_box_tab_name', $post_id); ?>
                 </ul>
             </div>
             <div class="mp_tab_details">
-                <?php do_action('ttbm_meta_box_tab_content', $post_id); ?>
+                <?php do_action('wbtm_meta_box_tab_content', $post_id); ?>
             </div>
         </div>
         <?php
     }
 
     // Tab lists
-    public function ttbm_add_meta_box_tab_name($tour_id)
+    public function wbtm_add_meta_box_tab_name($tour_id)
     {
 
         ?>
@@ -79,7 +79,7 @@ class WBTMMetaBox
     }
 
     // Tab Contents
-    public function ttbm_add_meta_box_tab_content($tour_id)
+    public function wbtm_add_meta_box_tab_content($tour_id)
     {
         ?>
         <div class="mp_tab_item" data-tab-item="#wbtm_ticket_panel" style="display:block;">

@@ -46,7 +46,6 @@ function mage_bus_search_list($return)
         $end = $_GET['bus_start_route'];
     }
 
-    $single_offday = false;
 
     $j_date = mage_convert_date_format($j_date, 'Y-m-d');
 
@@ -59,7 +58,6 @@ function mage_bus_search_list($return)
         $has_bus = false;
 
         $bus_list_loop->the_post();
-        $index = $bus_list_loop->current_post;
         $id = get_the_id();
 
         $bus_bp_array = get_post_meta($id, 'wbtm_bus_bp_stops', true) ? get_post_meta($id, 'wbtm_bus_bp_stops', true) : [];
@@ -173,7 +171,6 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
 {
 
     $wbtm_bus_bp_stops_array = array();
-    $bus_start_time_array = array();
     foreach ($has_bus_data as $bus) {
         $which_way = mage_determine_route($bus['id'], $return);
         $wbtm_bus_bp_stops = get_post_meta($bus['id'], $which_way, true);
@@ -220,8 +217,6 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
 
 function mage_bus_search_item($return, $id)
 {
-
-    $time_format = get_option('time_format');
 
     $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
@@ -290,8 +285,8 @@ function mage_bus_item_seat_details($return)
 {
     global $mage_bus_total_seats_availabel;
 
-    $date_format = get_option('date_format');
-    $time_format = get_option('time_format');
+//    $date_format = get_option('date_format');
+//    $time_format = get_option('time_format');
     $bus_id = get_the_id();
 
     // Search Data
@@ -793,7 +788,7 @@ function mage_bus_seat($seat_plan_type, $seat_name, $price, $dd, $return, $seat_
         $seat_booked_status = (isset(get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status']) ? get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status'] : $seat_booked_status_default);
         // Seat booked show policy in search
 
-        if (wbtm_find_seat_in_cart($seat_name, $return)) {
+        if (wbtm_find_seat_in_cart($seat_name)) {
             ?>
             <div class="flex_justifyCenter mage_seat_in_cart"
                  title="<?php _e('Already Added in cart !', 'bus-ticket-booking-with-seat-reservation'); ?>">

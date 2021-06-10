@@ -14,8 +14,8 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 
 			$this->data = &$args;
 			if ( $this->get_meta_box_screen()[0] == 'wbtm_bus' && $this->get_meta_box_context() == 'normal' ) {
-				add_action( 'ttbm_meta_box_tab_name', array( $this, 'mp_event_all_in_tab_menu_list' ),90 );
-				add_action( 'ttbm_meta_box_tab_content', array( $this, 'meta_box_callback' ), 10, 1 );
+				add_action( 'wbtm_meta_box_tab_name', array( $this, 'mp_event_all_in_tab_menu_list' ),90 );
+				add_action( 'wbtm_meta_box_tab_content', array( $this, 'meta_box_callback' ), 10, 1 );
 			}else{
 				add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 12 );
 			}
@@ -36,8 +36,8 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 
 
 			// if (
-			// 	!isset($_POST['ttbm_ticket_type_nonce']) ||
-			// 	!wp_verify_nonce($_POST['ttbm_ticket_type_nonce'], 'ttbm_ticket_type_nonce')
+			// 	!isset($_POST['wbtm_ticket_type_nonce']) ||
+			// 	!wp_verify_nonce($_POST['wbtm_ticket_type_nonce'], 'wbtm_ticket_type_nonce')
 			// ) {
 			// 	return;
 			// }

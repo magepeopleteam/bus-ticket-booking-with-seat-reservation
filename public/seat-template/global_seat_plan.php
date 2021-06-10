@@ -138,13 +138,13 @@ function wbtm_seat_global($b_start, $date, $type = '')
             } ?>'>
                 <img src="<?php echo $driver_image; ?>" alt="">
             </div>
-			<?php
-                // upper deck
-                $seats_dd = get_post_meta(get_the_id(), 'wbtm_bus_seats_info_dd', true);
-                // $$useer_deck_title = (!empty(get_option('wbtm_bus_settings')) ? get_option('wbtm_bus_settings')['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation'));
-                if(!empty($seats_dd)) {
-                    echo '<strong style="width:216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">'.__('Lower Deck', 'bus-ticket-booking-with-seat-reservation').'</strong>';
-                }
+            <?php
+            // upper deck
+            $seats_dd = get_post_meta(get_the_id(), 'wbtm_bus_seats_info_dd', true);
+            // $$useer_deck_title = (!empty(get_option('wbtm_bus_settings')) ? get_option('wbtm_bus_settings')['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation'));
+            if (!empty($seats_dd)) {
+                echo '<strong style="width:216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">' . __('Lower Deck', 'bus-ticket-booking-with-seat-reservation') . '</strong>';
+            }
             ?>
             <table class="bus-seats" width="300" border="1" style="width: 220px;margin-left:-2px;
     border: 0px solid #ddd;">
@@ -162,13 +162,36 @@ function wbtm_seat_global($b_start, $date, $type = '')
                             } else {
                                 $seat_status = 0;
                             }
+                            // Intermidiate route check
+                            // GET status, boarding_point, dropping_point
+                            $all_stopages_name = get_post_meta(get_the_ID(), 'wbtm_bus_bp_stops', true);
+                            $all_stopages_name = is_array($all_stopages_name) ? $all_stopages_name : unserialize($all_stopages_name);
+                            $all_stopages_name = array_column($all_stopages_name, 'wbtm_bus_bp_stops_name');
+
+                            $partial_route_condition = false; // init value
+                            $get_search_start_position = array_search($start, $all_stopages_name);
+                            $get_search_droping_position = array_search($end, $all_stopages_name);
+
+                            $get_search_droping_position = (is_bool($get_search_droping_position) && !$get_search_droping_position ? count($all_stopages_name) : $get_search_droping_position); // Last Stopage position assign
+
+                            $get_booking_data = get_seat_booking_data($seat_name, $get_search_start_position, $get_search_droping_position, $all_stopages_name, false, get_the_ID());
+                            $seat_status = isset($get_booking_data['status']) ? $get_booking_data['status'] : 0;
+                            $partial_route_condition = isset($get_booking_data['has_booked']) ? $get_booking_data['has_booked'] : false;
+
+
+                            // Seat booked show policy in search
+                            $seat_booked_status_default = array(1, 2);
+                            $seat_booked_status = (isset(get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status']) ? get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status'] : $seat_booked_status_default);
+                            // Intermidiate route check End
+
                             ?>
-                            <td align="center" class="mage-admin-bus-seat <?php echo ( $_seats[$text_field_name] == '' ? 'bus-col-divider' : '' ) ?>">
+                            <td align="center"
+                                class="mage-admin-bus-seat <?php echo($_seats[$text_field_name] == '' ? 'bus-col-divider' : '') ?>">
                                 <?php
                                 if ($_seats[$text_field_name]) { ?>
-                                    <?php if ($seat_status == 1) { ?> <span
+                                    <?php if ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true && ($seat_status == 1) ) { ?> <span
                                             class="booked-seat"><?php echo $seat_name; ?></span>
-                                    <?php } elseif ($seat_status == 2) { ?><span
+                                    <?php } elseif ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true && ($seat_status == 2) ) { ?><span
                                             class="confirmed-seat"><?php echo $seat_name; ?></span>
                                     <?php } else { ?>
                                         <a data-seat='<?php echo $_seats[$text_field_name]; ?>' data-seat-pos="lower"
@@ -176,7 +199,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
                                            data-sclass='Economic'
                                            class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
                                             <?php echo $_seats[$text_field_name]; ?></a>
-                                            <?php mage_bus_passenger_type_admin(false, false) ?>
+                                        <?php mage_bus_passenger_type_admin(false, false) ?>
                                     <?php }
                                 } ?>
                             </td>
@@ -186,58 +209,60 @@ function wbtm_seat_global($b_start, $date, $type = '')
                     </tr>
                 <?php } ?>
             </table>
-        <?php
-            
+            <?php
+
             $seat_col_dd = get_post_meta(get_the_id(), 'wbtm_seat_cols_dd', true);
-            
-            if( is_array($seats_dd) && sizeof($seats_dd) > 0 ) : 
-            if(!empty($seats_dd)) {
-                echo '<strong style="width: 216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">'.$useer_deck_title.'</strong>';
-            }
-            ?>
-            <table class="bus-seats" width="300" border="1" style="width: 220px;margin-left:-2px;
+
+            if (is_array($seats_dd) && sizeof($seats_dd) > 0) :
+                if (!empty($seats_dd)) {
+                    echo '<strong style="width: 216px;background:#f1f1f1;text-align: center;display: block;font-size: 11px;color: #4CAF50;">' . $useer_deck_title . '</strong>';
+                }
+                ?>
+                <table class="bus-seats" width="300" border="1" style="width: 220px;margin-left:-2px;
     border: 0px solid #ddd;">
 
-                <?php
-                foreach( $seats_dd as $_seats ) : ?>
-                <tr class="seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_lists ">
-                    <?php for ($x = 1; $x <= $seat_col_dd; $x++) : 
-                        
-                        $text_field_name = "dd_seat" . $x;
-                        $seat_name = $_seats[$text_field_name];
-                        $get_seat_status = $wbtmmain->wbtm_get_seat_status($_seats[$text_field_name], $date, get_the_id(), $b_start, $end);
-                        if ($get_seat_status) {
-                            $seat_status = $get_seat_status;
-                        } else {
-                            $seat_status = 0;
-                        }
-                    
-                    ?>
-                    <td align="center" class="mage-admin-bus-seat <?php echo ( $_seats[$text_field_name] == '' ? 'bus-col-divider' : '' ) ?>">
-                        
-                        <?php 
-                        if( $_seats[$text_field_name] ) : ?>
+                    <?php
+                    foreach ($seats_dd as $_seats) : ?>
+                        <tr class="seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_lists ">
+                            <?php for ($x = 1; $x <= $seat_col_dd; $x++) :
 
-                        <?php if ($seat_status == 1) { ?> <span
-                                            class="booked-seat"><?php echo $seat_name; ?></span>
-                        <?php } elseif ($seat_status == 2) { ?><span
-                                class="confirmed-seat"><?php echo $seat_name; ?></span>
-                        <?php } else { ?>
-                            <a data-seat='<?php echo $_seats[$text_field_name]; ?>' data-seat-pos="upper"
-                                id='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
-                                data-sclass='Economic'
-                                class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
-                                <?php echo $_seats[$text_field_name]; ?></a>
-                                <?php mage_bus_passenger_type_admin(false, true) ?>
-                        <?php } ?>
+                                $text_field_name = "dd_seat" . $x;
+                                $seat_name = $_seats[$text_field_name];
+                                $get_seat_status = $wbtmmain->wbtm_get_seat_status($_seats[$text_field_name], $date, get_the_id(), $b_start, $end);
+                                if ($get_seat_status) {
+                                    $seat_status = $get_seat_status;
+                                } else {
+                                    $seat_status = 0;
+                                }
 
-                        <?php endif; ?>
+                                ?>
+                                <td align="center"
+                                    class="mage-admin-bus-seat <?php echo($_seats[$text_field_name] == '' ? 'bus-col-divider' : '') ?>">
 
-                    </td>
-                    <?php endfor; ?>
-                </tr>
-                <?php endforeach; ?>
-            </table>
+                                    <?php
+                                    if ($_seats[$text_field_name]) : ?>
+
+                                        <?php if ($seat_status == 1) { ?> <span
+                                                class="booked-seat"><?php echo $seat_name; ?></span>
+                                        <?php } elseif ($seat_status == 2) { ?><span
+                                                class="confirmed-seat"><?php echo $seat_name; ?></span>
+                                        <?php } else { ?>
+                                            <a data-seat='<?php echo $_seats[$text_field_name]; ?>'
+                                               data-seat-pos="upper"
+                                               id='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
+                                               data-sclass='Economic'
+                                               class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
+                                                <?php echo $_seats[$text_field_name]; ?></a>
+                                            <?php mage_bus_passenger_type_admin(false, true) ?>
+                                        <?php } ?>
+
+                                    <?php endif; ?>
+
+                                </td>
+                            <?php endfor; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
 
             <?php endif; ?>
         </div>
