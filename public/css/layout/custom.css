@@ -93,7 +93,7 @@ div[class^="mage"] .passenger_type_list {
     background-color: #ffefd6;
     z-index: 111;
     right: 0;
-    top: calc(100% - 4px);
+    top: calc(100% - 12px);
     border-radius: 5px;
     border: 1px solid #dedede;
     padding: 2px 3px;

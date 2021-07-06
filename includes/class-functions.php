@@ -1065,7 +1065,7 @@ class WBTM_Plugin_Functions
         }
     }
 
-    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare, $j_date, $add_datetime, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $usr_inf = null, $counter = null, $status, $order_meta, $wbtm_billing_type, $city_zone, $wbtm_pickpoint, $extra_services = array(), $user_additional = null)
+    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare, $j_date, $add_datetime, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status, $order_meta, $wbtm_billing_type, $city_zone, $wbtm_pickpoint, $extra_services = array(), $user_additional = null)
     {
 
         $add_datetime = current_time("Y-m-d") . ' ' . mage_wp_time(current_time("H:i"));
@@ -1101,6 +1101,7 @@ class WBTM_Plugin_Functions
         update_post_meta($pid, 'wbtm_user_gender', $user_gender);
         update_post_meta($pid, 'wbtm_user_address', $user_address);
         update_post_meta($pid, 'wbtm_user_extra_bag', $wbtm_extra_bag_qty);
+        update_post_meta($pid, 'wbtm_user_extra_bag_price', $extra_bag_price);
         update_post_meta($pid, 'wbtm_passenger_type', $passenger_type);
         update_post_meta($pid, 'wbtm_passenger_type_num', $passenger_type_num);
         update_post_meta($pid, 'wbtm_billing_type', $wbtm_billing_type);
@@ -1216,7 +1217,7 @@ class WBTM_Plugin_Functions
                                         $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
                                     }
 
-                                    $passenger_type = isset($usr_inf[$counter]['wbtm_passenger_type']) ? $usr_inf[$counter]['wbtm_passenger_type'] : '';
+                                    $passenger_type = isset($user_basic_info_arr[$counter]['wbtm_passenger_type']) ? $user_basic_info_arr[$counter]['wbtm_passenger_type'] : '';
 
                                     $passenger_type_num = isset($usr_inf[$counter]['wbtm_passenger_type_num']) ? $usr_inf[$counter]['wbtm_passenger_type_num'] : '';
 
@@ -1271,6 +1272,7 @@ class WBTM_Plugin_Functions
                                     $fare = $fare + ($extra_bag_price * $wbtm_extra_bag_qty);
                                 } else {
                                     $wbtm_extra_bag_qty = 0;
+                                    $extra_bag_price = 0;
                                 }
 
                                 // Extra Service with seat
@@ -1281,12 +1283,12 @@ class WBTM_Plugin_Functions
                                 //     }
                                 // }
 
-                                $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $usr_inf, $counter, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional);
+                                $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional);
                             }
 
                             $counter++;
                         }
-                    } else {
+                    } else { // Only Extra Service
                         $fare = 0;
                         $extra_services_arr = maybe_unserialize($extra_services);
                         if ($extra_services_arr) {
@@ -1354,6 +1356,7 @@ class WBTM_Plugin_Functions
                             $fare = $fare + ($extra_bag_price * $wbtm_extra_bag_qty);
                         } else {
                             $wbtm_extra_bag_qty = 0;
+                            $extra_bag_price = 0;
                         }
 
                         // $user_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
@@ -1361,7 +1364,7 @@ class WBTM_Plugin_Functions
                         // $user_phone = $order_meta['_billing_phone'][0];
                         // $user_address = $order_meta['_billing_address_1'][0];
 
-                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $usr_inf, $counter, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr);
+                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 0, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr);
                     }
                 }
             }
@@ -1760,21 +1763,46 @@ add_action('wp_ajax_nopriv_wbtm_load_dropping_point', 'wbtm_load_dropping_point'
 function wbtm_load_dropping_point()
 {
     $boardingPoint = strip_tags($_POST['boarding_point']);
+    $busId = isset($_POST['bus_id']) ? strip_tags($_POST['bus_id']) : null;
     $category = get_term_by('name', $boardingPoint, 'wbtm_bus_stops');
     $allStopArr = get_terms(array(
         'taxonomy' => 'wbtm_bus_stops',
         'hide_empty' => false,
     ));
-    $dropingarray = get_term_meta($category->term_id, 'wbtm_bus_routes_name_list', true) ? maybe_unserialize(get_term_meta($category->term_id, 'wbtm_bus_routes_name_list', true)) : array();
-    if (sizeof($dropingarray) > 0) {
-        foreach ($dropingarray as $dp) {
-            $name = $dp['wbtm_bus_routes_name'];
-            echo "<li data-route='$name'><span class='fa fa-map-marker'></span>$name</li>";
+    
+    if($busId) {
+        $dropingarray = array();
+        $prices = get_post_meta($busId, 'wbtm_bus_prices', true);
+        if($prices) {
+            foreach($prices as $price) {
+                if($price['wbtm_bus_bp_price_stop'] == $boardingPoint) {
+                    $dropingarray[] = $price['wbtm_bus_dp_price_stop'];
+                }
+            }
+
+            if (sizeof($dropingarray) > 0) {
+                foreach ($dropingarray as $dp) {
+                    echo "<li data-route='$dp'><span class='fa fa-map-marker'></span>$dp</li>";
+                }
+            } else {
+                foreach ($allStopArr as $dp) {
+                    $name = $dp->name;
+                    echo "<li data-route='$name'><span class='fa fa-map-marker'></span>$name</li>";
+                }
+            }
         }
     } else {
-        foreach ($allStopArr as $dp) {
-            $name = $dp->name;
-            echo "<li data-route='$name'><span class='fa fa-map-marker'></span>$name</li>";
+        $dropingarray = get_term_meta($category->term_id, 'wbtm_bus_routes_name_list', true) ? maybe_unserialize(get_term_meta($category->term_id, 'wbtm_bus_routes_name_list', true)) : array();
+        if (sizeof($dropingarray) > 0) {
+            foreach ($dropingarray as $dp) {
+                $name = $dp['wbtm_bus_routes_name'];
+                echo "<li data-route='$name'><span class='fa fa-map-marker'></span>$name</li>";
+            }
+        } else {
+            foreach ($allStopArr as $dp) {
+                $name = $dp->name;
+                echo "<li data-route='$name'><span class='fa fa-map-marker'></span>$name</li>";
+            }
         }
     }
     die();
@@ -2093,6 +2121,7 @@ function wbtm_find_product_in_cart()
     $product_id = get_the_id();
 
     $jdate = $_GET['j_date'];
+    $jdate = mage_wp_date($jdate, 'Y-m-d');
     $start = $_GET['bus_start_route'];
     $end = $_GET['bus_end_route'];
 
@@ -2111,7 +2140,7 @@ function wbtm_find_seat_in_cart($seat_name)
 
     $product_id = get_the_id();
     $cart = WC()->cart->get_cart();
-    $jdate = $_GET['j_date'];
+    $jdate = mage_wp_date($_GET['j_date'], 'Y-m-d');
     $start = $_GET['bus_start_route'];
     $end = $_GET['bus_end_route'];
     foreach ($cart as $cart_item) {
@@ -2124,6 +2153,14 @@ function wbtm_find_seat_in_cart($seat_name)
         }
     }
     return null;
+}
+
+add_action('woocommerce_order_item_display_meta_value', 'mage_woocommerce_order_item_display_meta_value', 10, 3);
+function mage_woocommerce_order_item_display_meta_value($value, $meta, $item)
+{
+    if ( 'Date' === $meta->key ) { $value = mage_wp_date($value); }
+     
+    return $value;
 }
 
 add_action('woocommerce_after_order_itemmeta', 'mage_show_passenger_info_in_order_details', 10, 3);
@@ -2204,6 +2241,7 @@ function mage_show_passenger_info_in_order_details($item_id, $item, $_product)
         }
 
     }
+
 }
 
 // Ajax Issue

@@ -177,6 +177,7 @@ class WbtmAddToCart
                             $original_fare = (float)$per_seat_price_original + $original_fare + $bag_price;
                             $return_fare = (float)$per_seat_price_return + $return_fare + $bag_price;
                         }
+                        
 
                         // Basic Info
                         $basic_info_user[$j]['wbtm_seat_fare'] = $per_seat_price;
@@ -283,7 +284,9 @@ class WbtmAddToCart
             $extra_service_name = isset($_POST['extra_service_name']) ? $_POST['extra_service_name'] : array();
             $extra_service_price = isset($_POST['extra_service_price']) ? $_POST['extra_service_price'] : array();
 
-            if($extra_service_qty) {
+            $total_extra_service_qty = array_sum($extra_service_qty);
+
+            if($total_extra_service_qty > 0) {
                 $extra_service_i = 0;
                 foreach($extra_service_qty as $extra_item) {
                     if($extra_item > 0) {
@@ -322,7 +325,12 @@ class WbtmAddToCart
                         }
                     }
                 }
+
+                // Basic Info
+                $basic_info_user[$j]['wbtm_seat_fare'] = $total_extra_price;
+                $total_fare = $bag_price;
             }
+            
             $total_fare = $total_fare + $total_extra_price;
             // Extra Service END
 
@@ -472,11 +480,13 @@ class WbtmAddToCart
                             </li>
                             <?php endif; ?>
                             <?php if (isset($basic_passenger_info[$i]['wbtm_passenger_type'])) { ?>
-                                <li>
-                                    <strong><?php _e('Passenger Type', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                        :</strong>
-                                    <?php echo $basic_passenger_info[$i]['wbtm_passenger_type']; ?>
-                                </li>
+                                <?php if ($basic_passenger_info[$i]['wbtm_passenger_type'] != '') { ?>
+                                    <li>
+                                        <strong><?php _e('Passenger Type', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                            :</strong>
+                                        <?php echo $basic_passenger_info[$i]['wbtm_passenger_type']; ?>
+                                    </li>
+                                <?php } ?>
                             <?php } ?>
                             <?php
                             if ($cart_item['wbtm_billing_type'] != '') {
@@ -695,18 +705,30 @@ class WbtmAddToCart
          $se = $wbtm_seats[0]['wbtm_seat_name'];
 
         // $check_before_order_1 = $wbtmmain->wbtm_get_seat_cehck_before_place_order('A1', $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops);
-        $check_before_order =   (int) $wbtmmain->wbtm_get_seat_status($se, $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops, $wbtm_end_stops);
+        // $check_before_order =   (int) $wbtmmain->wbtm_get_seat_status($se, $wbtm_journey_date, $wbtm_bus_id, $wbtm_start_stops, $wbtm_end_stops);
 
+        $is_booked = false;
 
-        // wc_add_notice(__("$se $check_before_order Sorry, Your Selected Seat Already Booked by another user $check_before_order", 'woocommerce'), 'error');
+        $is_booked = mage_partial_seat_booked_count(false, $se, $wbtm_bus_id, $wbtm_start_stops, $wbtm_end_stops, $wbtm_journey_date);
 
+        $bus_type = get_post_meta($wbtm_bus_id, 'wbtm_seat_type_conf', true);
+        if($bus_type == 'wbtm_seat_plan') {
 
+            if ( $is_booked['has_booked'] ) {
+                 WC()->cart->empty_cart();
+                wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+            }
+        }
 
-         if ( ($check_before_order == 1 || $check_before_order == 2) ) {
-             WC()->cart->empty_cart();
-             wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+        if($bus_type == 'wbtm_without_seat_plan') {
+            $total_seat = get_post_meta($wbtm_bus_id, 'wbtm_total_seat', true);
+            if ( $total_seat <= $is_booked ) {
+                 WC()->cart->empty_cart();
+                wc_add_notice(__("Sorry, Your Selected Seat Already Booked by another user", 'woocommerce'), 'error');
+            }
+        }
 
-         }
+        
     }
 
     public function wbtm_add_custom_fields_text_to_order_items($item, $cart_item_key, $values, $order)
@@ -728,7 +750,7 @@ class WbtmAddToCart
             $wbtm_journey_time = $values['wbtm_journey_time'];
             $wbtm_bus_start_time = $values['wbtm_bus_time'];
             $wbtm_bus_id = $values['wbtm_bus_id'];
-            $extra_bag_quantity = isset($values['extra_bag_quantity']) ? $values['extra_bag_quantity'] : 0;
+            $extra_bag_quantity = isset($values['extra_bag_quantity']) ? $values['extra_bag_quantity'] : null;
             $wbtm_tp = $values['wbtm_tp'];
 
             $seat = "";
@@ -762,7 +784,6 @@ class WbtmAddToCart
             $item->add_meta_data('End', $wbtm_end_stops);
             $item->add_meta_data('Date', $wbtm_journey_date);
             $item->add_meta_data('Time', $wbtm_journey_time);
-            $item->add_meta_data('Extra Bag', $extra_bag_quantity);
             $item->add_meta_data('Extra Services', $extra_service_html);
             $item->add_meta_data('_wbtm_tp', $wbtm_tp);
             $item->add_meta_data('_bus_id', $wbtm_bus_id);

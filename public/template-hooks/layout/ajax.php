@@ -75,10 +75,11 @@ add_action('wp_ajax_nopriv_wbtm_form_builder', 'wbtm_form_builder_callback');
 function wbtm_form_builder_callback() {
     $busId = $_POST['busID'];
     $seatType = $_POST['seatType'];
+    $passengerType = isset($_POST['passengerType']) ? $_POST['passengerType'] : 0;
     $seats = $_POST['seats'];
     if (class_exists('WbtmProFunction')) {
         for ($i = 1; $i <= $seats; $i++) {
-            WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType);
+            WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType, $passengerType);
         }
     } else {
         echo '<input type="hidden" name="custom_reg_user" value="no" />';

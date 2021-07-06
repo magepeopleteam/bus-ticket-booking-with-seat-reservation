@@ -85,13 +85,29 @@ class WBTMMetaBox
             <?php $this->wbtm_bus_ticket_type(); ?>
         </div>
         <div class="mp_tab_item" data-tab-item="#wbtm_routing">
-            <h3><?php _e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+            <div class="wbtm_tab_content_heading">
+                <h3><?php _e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                <div class="wbtm-section-info">
+                    <span><i class="fas fa-info-circle"></i></span>
+                    <div class="wbtm-section-info-content">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est minus ducimus enim eligendi, ipsa voluptate vel repellat vero mollitia incidunt.
+                    </div>
+                </div>
+            </div>
             <hr/>
             <?php $this->wbtmRouting(); ?>
         </div>
 
         <div class="mp_tab_item" data-tab-item="#wbtm_seat_price">
-            <h3><?php _e(' Seat Pricing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+            <div class="wbtm_tab_content_heading">
+                <h3><?php _e(' Seat Pricing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                <div class="wbtm-section-info">
+                    <span><i class="fas fa-info-circle"></i></span>
+                    <div class="wbtm-section-info-content">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est minus ducimus enim eligendi, ipsa voluptate vel repellat vero mollitia incidunt.
+                    </div>
+                </div>
+            </div>
             <hr/>
             <?php $this->wbtmPricing(); ?>
         </div>
@@ -229,11 +245,11 @@ class WBTMMetaBox
             </select>
         </div>
 
-        <div id="wbtm_same_bus_return" class="wbtm-item-row">
-            <label class="item-label"><?php _e("Same Bus return", "bus-ticket-booking-with-seat-reservation") ?></label>
-            <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" <?php echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?> value="no"> <label for="wbtm_same_bus_return_no"><?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>
-            <input type="radio" id="wbtm_same_bus_return_yes" name="wbtm_general_same_bus_return" <?php echo ($wbtm_general_same_bus_return == "yes" ? " checked" : ""); ?> value="yes" style="margin-left: 20px"> <label for="wbtm_same_bus_return_yes"><?php _e('Yes', 'bus-ticket-booking-with-seat-reservation') ?></label>
-        </div>
+<!--        <div id="wbtm_same_bus_return" class="wbtm-item-row">-->
+<!--            <label class="item-label">--><?php //_e("Same Bus return", "bus-ticket-booking-with-seat-reservation") ?><!--</label>-->
+<!--            <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" --><?php //echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?><!-- value="no"> <label for="wbtm_same_bus_return_no">--><?php //_e('No', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
+<!--            <input type="radio" id="wbtm_same_bus_return_yes" name="wbtm_general_same_bus_return" --><?php //echo ($wbtm_general_same_bus_return == "yes" ? " checked" : ""); ?><!-- value="yes" style="margin-left: 20px"> <label for="wbtm_same_bus_return_yes">--><?php //_e('Yes', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
+<!--        </div>-->
 
         <div id="mtsa_city_zone" class="wbtm-item-row">
             <?php do_action('wbtm_subscription_route_type', $subscription_type); ?>
@@ -1176,11 +1192,13 @@ class WBTMMetaBox
                 <div class="bus-stops-left-col">
                     <h3 class="bus-tops-sec-title"><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <table class="repeatable-fieldset">
-                        <tr>
-                            <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th width="30px"><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th></th>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                <th width="30px"><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                            </tr>
+                        </thead>
                         <tbody>
                         <?php
                         if ($wbbm_bus_bp) :
@@ -1253,7 +1271,7 @@ class WBTMMetaBox
                         <tr>
                             <th><?php _e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                             <th><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th></th>
+                            <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                         </tr>
                         <tbody>
                         <?php
@@ -1330,11 +1348,13 @@ class WBTMMetaBox
                     <div class="bus-stops-left-col">
                         <h3 class="bus-tops-sec-title"><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                         <table class="repeatable-fieldset">
-                            <tr>
-                                <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                                <th width="30px"><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                                <th></th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                    <th width="30px"><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                    <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                </tr>
+                            </thead>
                             <tbody>
                             <?php
                             if ($wbbm_bus_bp_return) :
@@ -1407,7 +1427,7 @@ class WBTMMetaBox
                             <tr>
                                 <th><?php _e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                                 <th><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                                <th></th>
+                                <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                             </tr>
                             <tbody>
                             <?php
@@ -2058,13 +2078,13 @@ class WBTMMetaBox
                     var html =
                         '<div class="wbtm_selected_city_item"><span class="remove_city_for_pickpoint"><i class="fas fa-minus-circle"></i></i></span>' +
                         '<h4 class="wbtm_pickpoint_title">' + get_boarding_point_name + '</h4>' +
-                        '<input type="hidden" name='+ (isReturn ? "wbtm_pickpoint_selected_city_return[]" : "wbtm_pickpoint_selected_city[]") +' value="' + get_boarding_point +
+                        '<input type="hidden" name='+ ((isReturn == "yes") ? "wbtm_pickpoint_selected_city_return[]" : "wbtm_pickpoint_selected_city[]") +' value="' + get_boarding_point +
                         '">' +
                         '<div class="pickpoint-adding-wrap"><div class="pickpoint-adding">' +
-                        '<select name="' + (isReturn ? "wbtm_selected_pickpoint_return_name_" : "wbtm_selected_pickpoint_name_") + get_boarding_point + '[]">' +
+                        '<select name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_name_" : "wbtm_selected_pickpoint_name_") + get_boarding_point + '[]">' +
                         '<?php echo $pickpoints; ?>' +
                         '</select>' +
-                        '<input type="text" name="' + (isReturn ? "wbtm_selected_pickpoint_return_time_" : "wbtm_selected_pickpoint_time_") + get_boarding_point +
+                        '<input type="text" name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_time_" : "wbtm_selected_pickpoint_time_") + get_boarding_point +
                         '[]" placeholder="Pickup Time">' +
                         '<button class="wbtm_remove_pickpoint"><i class="fas fa-minus-circle"></i></button>' +
                         '</div></div>' +

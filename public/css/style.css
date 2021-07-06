@@ -51,6 +51,11 @@ span.confirmed-seat {
     color: #fff;
     text-align: center;
 }
+.wbtm-booking-error {
+    text-align:center;
+    color: #9d1111!important;
+    display: none;
+}
 table {
     border-collapse: separate;
     border-spacing: 0;
@@ -1001,6 +1006,30 @@ button[name="add-to-cart"]:disabled {
     color: #fff;
 }
 
+/* My Account */
+.wbtm_myaccount_wrapper table tr {
+    border-bottom: 1px solid #ddd;
+}
+.wbtm_myaccount_wrapper table th {
+    text-align: left;
+    padding: 10px 5px;
+}
+.wbtm_myaccount_wrapper table td {
+    padding: 25px 5px;
+    line-height: 1;
+    font-size: .9em;
+}
+.wbtm_myaccount_wrapper table td a {
+    color: #1172c1
+}
+.wbtm_myaccount_wrapper table tbody tr:last-child {
+    border-bottom: none;
+}
+.wbtm_myaccount_wrapper table tbody tr:last-child td {
+    padding-bottom: 0;
+}
+/* My Account END */
+
 
 
 /* Responsive CSS
@@ -1116,6 +1145,27 @@ button[name="add-to-cart"]:disabled {
     .bus-seat-panel {
         margin: 0 auto 40px;
         text-align: center;
+    }
+}
+
+@media only screen and (min-width: 320px) and  (max-width: 767px) {
+    .mage-no-seat .mage-no-seat-inner {
+        flex-wrap: wrap;
+    }
+    .mage-no-seat .mage-no-seat-left, .mage-no-seat .mage-no-seat-right {
+        width: 100%;
+    }
+    .mage-seat-table th, .mage-seat-table td {
+        padding: 5px 7px;
+    }
+    .mage-no-seat .mage-bus-short-info th, .mage-no-seat .mage-bus-short-info td {
+        padding: 9px 6px;
+    }
+    .mage-no-seat .mage-bus-short-info th span, .mage-no-seat .mage-bus-short-info th i {
+        min-width: initial;
+    }
+    .mage-grand-total {
+        padding: 15px 0;
     }
 }
 

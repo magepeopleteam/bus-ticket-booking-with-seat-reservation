@@ -14,6 +14,7 @@ class Wbtm_Plugin {
 	protected $version;
 	public function __construct() {
 		$this->load_dependencies();
+		add_action('init', array($this, 'wbtm_add_endpoint'), 10);
 	}
 
 	private function load_dependencies() {
@@ -33,7 +34,8 @@ class Wbtm_Plugin {
 		require_once WBTM_PLUGIN_DIR . 'includes/class-permissions.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class-plugin-admin.php';
 		require_once WBTM_PLUGIN_DIR . 'public/template-hooks/templating.php';		
-		require_once WBTM_PLUGIN_DIR . 'public/class-plugin-public.php';		
+		require_once WBTM_PLUGIN_DIR . 'public/class-plugin-public.php';	
+		require_once WBTM_PLUGIN_DIR . 'includes/my-account/bus-ticket.php';	
 		$this->loader = new Wbtm_Plugin_Loader();
 		// WBTM_UPGRADE::run_upgrade();
 	}
@@ -55,6 +57,12 @@ class Wbtm_Plugin {
 
 	public function get_version() {
 		return $this->version;
+	}
+
+	function wbtm_add_endpoint() {
+
+		add_rewrite_endpoint( 'bus-panel',  EP_ROOT | EP_PAGES );
+
 	}
 
 }

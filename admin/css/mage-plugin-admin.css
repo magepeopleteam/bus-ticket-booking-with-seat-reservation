@@ -45,7 +45,7 @@
 }
 .mb-box-class {
     width: calc(100% - 40px);
-    padding: 0px 15px 15px;
+    padding: 0 15px 15px;
     margin: 20px 0;
     border-bottom: 1px solid #e2e2e2;
 }
@@ -61,7 +61,6 @@
     display: inline-block;
     font-size: 14px;
     font-weight: 500;
-    display: inline-block;
     vertical-align: middle;
 }
 #postbox-container-2 .description {
@@ -109,18 +108,17 @@
 .ap-meta-fields select {
     -webkit-appearance: button;
     -webkit-border-radius: 2px;
-    -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     -webkit-padding-end: 20px;
     -webkit-padding-start: 2px;
     -webkit-user-select: none;
-    background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+    /*background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);*/
     background-position: 97% center;
     background-repeat: no-repeat;
     border: 1px solid #AAA;
     color: #555;
-    font-size: inherit;
     overflow: hidden;
-    padding: 0px 15px;
+    padding: 0 15px;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 300px;
@@ -193,7 +191,7 @@ select2 param css
 }
 .mb-box-class {
     width: calc(100% - 40px);
-    padding: 0px 15px 15px;
+    padding: 0 15px 15px;
     margin: 20px 0;
     border-bottom: 1px solid #e2e2e2;
 }
@@ -205,11 +203,11 @@ select2 param css
 #postbox-container-1 .mb-box-class>input:not([type=radio]) {width:100%;}
 
 #postbox-container-1 .mb-box-class {
-    padding: 0px 15px 0 0px;
+    padding: 0 15px 0 0;
     width: 100%;
     margin: 0;
 }
-/* 
+/*
 .postbox table.form-table tr td{
     padding: 0;
     margin: 0;
@@ -283,7 +281,7 @@ iframe#gmap_canvas {width: 100%; height: 300px;}
 .mp_tab_menu ul li {width: 100%;padding:8px;margin: 0;cursor: pointer;color:#c6d4db; position: relative;text-align: center;font-size:12px;display: -webkit-flex;display: flex;-webkit-align-items: center;align-items: center;-webkit-justify-content: center;justify-content: center;border-right: 1px dotted #fff;}
 .mp_tab_menu ul li:last-child{border: none;}
 .mp_tab_menu ul li span {width:initial;height: initial;display: block;}
-.mp_tab_menu ul li.active{color: #fff;font-size: 15px;background-color: #0C88B4;}
+.mp_tab_menu ul li.active{color: #fff;font-size: 12px;background-color: #0C88B4;}
 .mp_tab_menu ul li:hover {color: #f2f2f2;}
 .mp_tab_menu ul li.active::after{
     position: absolute;
@@ -452,6 +450,9 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 .repeatable-fieldset td select {
     margin: 0;
 }
+.bus-stops-wrapper .repeatable-fieldset select {
+    max-width: 188px;
+}
 .tb-repeat-btn {
     font-size: 13px!important;
     margin: 0 0 0 3px!important;
@@ -520,11 +521,11 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 /* Routing */
 .bus-stops-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     position: relative;
 }
 
-.bus-stops-wrapper:before {
+/* .bus-stops-wrapper:before {
     content: '\f101\f101\f101';
     position: absolute;
     width: 80px;
@@ -536,7 +537,7 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
     font-weight: 900;
     font-size: 31px;
     color: #ffbe02;
-}
+} */
 
 .bus-stops-wrapper .bus-stops-left-col,
 .bus-stops-wrapper .bus-stops-right-col {
@@ -546,6 +547,20 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 
 .bus-stops-wrapper .bus-stops-right-col {
     background: #ffe9b5;
+    margin-left: 30px;
+}
+.bus-stops-wrapper table tbody tr {
+    position: relative;
+}
+.bus-stops-wrapper .bus-stops-left-col table tbody tr:after {
+    content: '\f30b';
+    position: absolute;
+    left: 107%;
+    top: 7px;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 16px;
+    color: #19aa9c;
 }
 
 .bus-tops-sec-title {
@@ -629,9 +644,49 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
     color: #fff;
     background: #f779a5;
     padding: 5px 20px;
-    box-shadow: 0px 1px 2px 2px #f779a5;
+    box-shadow: 0 1px 2px 2px #f779a5;
 }
 /* Perminssion page END */
+
+.wbtm_tab_content_heading {
+    display: flex;
+    align-items: center;
+}
+.wbtm_tab_content_heading .wbtm-section-info span {
+    font-size: 16px;
+    display: inline-block;
+    margin: 2px 0 0 13px;
+    color: #17cb5e;
+}
+.wbtm_tab_content_heading .wbtm-section-info {
+    position: relative;
+}
+.wbtm_tab_content_heading .wbtm-section-info .wbtm-section-info-content {
+    background: #555;
+    color: #fcfcfc;
+    width: 300px;
+    border-radius: 5px;
+    padding: 5px;
+    line-height: 1.5;
+    font-size: 12px;
+    z-index: 99;
+    position: absolute;
+    top: 111%;
+    display: none;
+}
+.wbtm_tab_content_heading .wbtm-section-info .wbtm-section-info-content:before {
+    content: '';
+    display: block;
+    position: absolute;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid #555555;
+    bottom: 100%;
+    left: 16px;
+}
+.wbtm_tab_content_heading .wbtm-section-info:hover .wbtm-section-info-content {
+    display: block;
+}
 
 /* Responsive */
 
@@ -642,11 +697,11 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 }
 
 @media only screen and (max-width: 1440px) {
-    .bus-stops-wrapper:before {
+    /* .bus-stops-wrapper:before {
         content: '\f101';
         width: 22px;
         font-size: 26px;
-    }
+    } */
 }
 
 @media only screen and (max-width: 1024px) {
@@ -811,6 +866,15 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 #mtsa-repeatable-fieldset-ticket-type th {text-align: center;font-size: 18px;padding: 7px;border: 1px solid #ddd;}
 #mtsa-repeatable-fieldset-ticket-type td {
     vertical-align: middle;border: 1px solid #ddd;padding: 7px;text-align: center;
+}
+.wbtm_content_wrapper .repeatable-fieldset .wbtm-remove-row-t {
+    color: #d63638;
+    border: 1px solid #d63638;
+    line-height: 1;
+    padding: 7px;
+}
+.wbtm_content_wrapper .repeatable-fieldset .wbtm-remove-row-t:hover {
+    background: #ffb5b6;
 }
 #mtsa-repeatable-fieldset-ticket-type tbody tr td.wbtm_boarding_dropping {
     width: 150px;

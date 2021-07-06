@@ -56,6 +56,19 @@ class WBTMSettingPage
                             'placeholder' => __('', 'bus-ticket-booking-with-seat-reservation'),
                         ),
                         array(
+                            'id' => 'bus_return_show',
+                            'title' => __('Show return field', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Disable if you don\'t want to show return field in search. By default is Enable', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => 'enable',
+                            'value' => 'enable',
+                            'multiple' => false,
+                            'type' => 'select',
+                            'args' => array(
+                                'disable' => __('Disable', 'bus-ticket-booking-with-seat-reservation'),
+                                'enable' => __('Enable', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),
+                        array(
                             'id' => 'bus_return_discount',
                             'title' => __('Return Discount Enable', 'bus-ticket-booking-with-seat-reservation'),
                             'details' => __('Enable if you want round trip price discont. By default is No', 'bus-ticket-booking-with-seat-reservation'),

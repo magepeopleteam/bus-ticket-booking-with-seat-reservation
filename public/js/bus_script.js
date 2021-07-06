@@ -50,12 +50,14 @@
                 mageCustomRegField($(this), type, qty);
             }
 
-            mage_form_builder_conditional_show($this);
+            //mage_form_builder_conditional_show($this);
 
             // Grand Price
             mageGrandPrice(parent);
 
         });
+
+        // Extra bag
 
         $('.wbtm-qty-change').click(function (e) {
             e.preventDefault();
@@ -72,6 +74,31 @@
 
             targetEle.val(qtyUpdated); // Update qty
             targetEle.trigger('input');
+        });
+
+        // No seat book now validation
+        $('.wbtm_bus_booking').submit(function(e) {
+            $(this).find('.wbtm-booking-error').hide();
+
+            let total = 0;
+            let bus_type = $(this).find('input[name="wbtm_order_seat_plan"]').val();
+            let bus_id = $(this).find('input[name="bus_id"]').val();
+            let seat_available = $(this).find('input[name="seat_available"]').val();
+            if(bus_type == 'no') {
+                $(this).find('.mage-no-seat-right .mage-seat-table tbody tr').each(function() {
+                    let qty = $(this).find('.qty-input').val();
+                    if(qty) {
+                        total += parseInt(qty);
+                    }
+                });
+
+                if(seat_available >= total) {
+                    return true;
+                } else {
+                    $(this).find('.wbtm-booking-error').show();
+                    return false;
+                }
+            }
         });
     });
     //one way return
@@ -155,7 +182,12 @@
     // Extra service END
 
     function mageGrandPrice(parent) {
+        let bus_type = parent.find('input[name="wbtm_bus_type"]').val();
         let grand_ele = parent.find('.mage-grand-total .mage-price-figure');
+
+        let bagPerPrice = 0;
+        let bagQty = 0;
+        let bagPrice = 0;
 
         // price items
         let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').text()); // 1
@@ -164,15 +196,22 @@
             extra_price += parseFloat($(this).attr('data-total'));
         });
 
+        // Extra bag price
+        parent.find('.mage_customer_info_area input[name="extra_bag_quantity[]"]').each(function (index) {
+            bagPerPrice = parseFloat($(this).attr('data-price'));
+            bagQty += parseInt($(this).val());
+            bagPrice += parseFloat($(this).val()) * bagPerPrice;
+        });
+
         // Sum all items
-        let grand_total = seat_price + extra_price;
+        let grand_total = seat_price + extra_price + bagPrice;
 
         if (grand_total) {
             grand_ele.text(php_vars.currency_symbol + grand_total.toFixed(2));
             parent.find('button[name="add-to-cart"]').prop('disabled', false);
         } else {
             grand_ele.text(php_vars.currency_symbol + "0.00");
-            parent.find('button[name="add-to-cart"]').prop('disabled', true);
+            (bus_type == 'general') ? parent.find('button[name="add-to-cart"]').prop('disabled', true) : null;
         }
     }
 
@@ -242,6 +281,7 @@
     }, '.mage_input_select_list li');
 
     function mage_bus_dropping_point(target) {
+        let bus_id = target.parents('.mage_single_bus_search_page').attr('data-busId');
         if (target.parents().hasClass('mage_bus_boarding_point')) {
             var boarding_point = target.attr('data-route');
             if (boarding_point !== undefined) {
@@ -249,7 +289,7 @@
                     type: 'POST',
                     // url: wbtm_ajax.wbtm_ajaxurl,
                     url: wbtm_ajaxurl,
-                    data: { "action": "wbtm_load_dropping_point", "boarding_point": boarding_point },
+                    data: { "action": "wbtm_load_dropping_point", "boarding_point": boarding_point, bus_id: bus_id },
                     beforeSend: function () {
                         $('#wbtm_dropping_point_inupt').val('');
                         $('#wbtm_dropping_point_list').slideUp(200);
@@ -316,7 +356,7 @@
                 seatType = 'Infant';
             }
 
-            mageCustomRegField($(this), seatType, 1);
+            //mageCustomRegField($(this), seatType, 1);
         }
     }, '.mage_bus_seat_item');
     $(document).on({
@@ -506,6 +546,7 @@
         let totalPrice = subTotal + (bagPrice > 0 ? parseFloat(bagPrice) : 0);
         // mage_bus_price_convert(totalPrice, parents.find('.mage_bus_total_price'),true);
 
+        mageGrandPrice(parents);
     }
 
     function mage_bus_seat_item(seatName, price, passengerType) {
@@ -562,7 +603,11 @@
                 if (data !== '') {
                     $("#wbtm-form-builder-" + s).html(data).find('.mage_hidden_customer_info_form').each(function (index) {
                         onlyES ? $(this).find('input[name="seat_name[]"]').remove() : null;
-                        $(this).find('.mage_title h5').html(seatType.toUpperCase()+' : '+(index+1));
+                        // $(this).find('.mage_title h5').html(seatType.toUpperCase()+' : '+(index+1));
+                        if(seatType != 'es') {
+                            let h = $(this).find('.mage_title h5').text();
+                            $(this).find('.mage_title h5').html(h+' '+(index+1));
+                        }
                         $(this).removeClass('mage_hidden_customer_info_form').find('.mage_form_list').slideDown(200);
                     });
                     
@@ -585,19 +630,21 @@
             url: wbtm_ajaxurl,
             type: 'POST',
             async: true,
-            data: { busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
+            data: { busID: bus_id, seatType: seatType, passengerType: passengerType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
             beforeSend: function () {
                 parent.find('#wbtm-form-builder .wbtm-loading').show();
             },
             success: function (data) {
 
                 if (data !== '') {
-                    
+                    console.log(seat_name);
                     if (parent.find(".mage_customer_info_area").children().length == 0) {
-                        parent.find(".mage_customer_info_area").html(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
+                        // parent.find(".mage_customer_info_area").html(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
+                        parent.find(".mage_customer_info_area").html(data);
                     } else {
                         if (seat_name != 'ES') {
-                            parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                            // parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                            parent.find(".mage_customer_info_area").append(data);
                             parent.find(".mage_customer_info_area .seat_name_ES").remove();
                         }
                     }
@@ -633,7 +680,6 @@
                     seat_qty += 1;
                 }
             });
-            console.log(seat_qty)
 
             if (es_qty > 0 && parseInt(seat_qty) < 1) { // Only es
                 wbtm_seat_plan_form_builder_new($this, 'ES', '', '', true);

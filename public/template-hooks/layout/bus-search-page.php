@@ -18,14 +18,16 @@ function mage_bus_search_page()
 
 
     }
-    if (isset($_GET['bus_start_route']) && ($_GET['bus_end_route']) && ($_GET['r_date'])) {
-        $return_trip_text = mage_bus_label('wbtm_return_trip_text_heading', __('Return Trip :', 'bus-ticket-booking-with-seat-reservation'), true);
-        echo '<p style="margin:40px 0 7px;color: #587275;text-decoration: underline;font-family: sans-serif;text-align:center;font-size: 1.8em!important;">' . $return_trip_text . '</p>';
-        mage_next_date_suggestion(true, false);
-        echo '<div class="wbtm_search_part">';
-        mage_bus_route_title(true);
-        mage_bus_search_list(true);
-        echo '</div>';
+    if (isset($_GET['bus_start_route']) && ($_GET['bus_end_route']) && (isset($_GET['r_date']))) {
+        if($_GET['r_date']) {
+            $return_trip_text = mage_bus_label('wbtm_return_trip_text_heading', __('Return Trip', 'bus-ticket-booking-with-seat-reservation'), true).':';
+            echo '<p style="margin:40px 0 7px;color: #587275;text-decoration: underline;font-family: sans-serif;text-align:center;font-size: 1.8em!important;">' . $return_trip_text . '</p>';
+            mage_next_date_suggestion(true, false);
+            echo '<div class="wbtm_search_part">';
+            mage_bus_route_title(true);
+            mage_bus_search_list(true);
+            echo '</div>';
+        }
     }
     echo '</div></div>';
 }
@@ -38,6 +40,7 @@ function mage_bus_search_list($return)
     $bus_list = mage_search_bus_query($return);
     $bus_list_loop = new WP_Query($bus_list);
     $j_date = $_GET['j_date'];
+    $j_date = mage_wp_date($j_date, 'Y-m-d');
     $start = $_GET['bus_start_route'];
     $end = $_GET['bus_end_route'];
 
@@ -47,7 +50,7 @@ function mage_bus_search_list($return)
     }
 
 
-    $j_date = mage_convert_date_format($j_date, 'Y-m-d');
+    //$j_date = mage_convert_date_format($j_date, 'Y-m-d');
 
     echo '<div class="mar_t mage_bus_lists">';
     mage_bus_title();
@@ -117,17 +120,20 @@ function mage_bus_search_list($return)
 
                     $offday_current_bus = false;
                     if (!empty($bus_offday_schedules)) {
-                        $s_datetime = new DateTime($j_date . ' ' . $start_time);
+                        //$s_datetime = new DateTime($j_date . ' ' . $start_time);
+                        $s_datetime = date('Y-m-d H:i:s', strtotime($j_date . ' ' . $start_time));
 
                         foreach ($bus_offday_schedules as $item) {
 
                             $c_iterate_date_from = $item['from_date'];
-                            $c_iterate_datetime_from = new DateTime($c_iterate_date_from . ' ' . $item['from_time']);
+                            //$c_iterate_datetime_from = new DateTime($c_iterate_date_from . ' ' . $item['from_time']);
+                            $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
 
                             $c_iterate_date_to = $item['to_date'];
-                            $c_iterate_datetime_to = new DateTime($c_iterate_date_to . ' ' . $item['to_time']);
+                            // $c_iterate_datetime_to = new DateTime($c_iterate_date_to . ' ' . $item['to_time']);
+                            $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
 
-                            if ($s_datetime >= $c_iterate_datetime_from && $s_datetime <= $c_iterate_datetime_to) {
+                            if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
                                 $offday_current_bus = true;
                                 break;
                             }
@@ -233,6 +239,10 @@ function mage_bus_search_item($return, $id)
         return;
     }
 
+    // Partial route available
+    $partial_seat_booked = mage_partial_seat_booked_count($return);
+    // Partial route available END
+
     ?>
     <div class="mage_bus_item <?php echo $cart_class; ?>" data-bus-id="<?php echo $bus_id; ?>"
          data-is-return="<?php echo $return; ?>">
@@ -241,7 +251,7 @@ function mage_bus_search_item($return, $id)
             <div class="mage_bus_info flexEqual_flexCenter">
                 <div class="flexEqual_flexCenter">
                     <h6>
-                        <strong class="dBlock_mar_zero"><?php the_title(); ?></strong>
+                        <strong class="dBlock_mar_zero"><?php echo '<a href="'.get_the_permalink().'">'.get_the_title().'</a>'; ?></strong>
                         <small class="dBlock"><?php echo $values['wbtm_bus_no'][0]; ?></small>
                         <?php
                         if ($cart_class) {
@@ -270,7 +280,9 @@ function mage_bus_search_item($return, $id)
                         <strong><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $seat_price)); ?></strong>/<span><?php mage_bus_label('wbtm_seat_text', __('Seat', 'bus-ticket-booking-with-seat-reservation')); ?>
                     </h6>
                     <h6 class="mage_hidden_md">
-                        <?php echo mage_bus_available_seat($return) . ' / ' . mage_bus_total_seat_new(); ?></h6>
+                        <?php //echo mage_bus_available_seat($return) . ' / ' . mage_bus_total_seat_new(); ?>
+                        <?php echo (mage_bus_total_seat_new() - $partial_seat_booked) . ' / ' . mage_bus_total_seat_new(); ?>
+                    </h6>
                     <button type="button"
                             class="mage_button_xs mage_bus_details_toggle"><?php mage_bus_label('wbtm_view_seats_text', __('View Seats', 'bus-ticket-booking-with-seat-reservation')); ?></button>
                 </div>
@@ -309,6 +321,9 @@ function mage_bus_item_seat_details($return)
         $pickpoints = maybe_unserialize($pickpoints);
     }
 
+    $partial_seat_booked = mage_partial_seat_booked_count($return);
+    $seat_available = mage_bus_total_seat_new() - $partial_seat_booked;
+
     // Bus Seat Type
     $bus_seat_type_conf = get_post_meta($bus_id, 'wbtm_seat_type_conf', true);
 
@@ -326,12 +341,12 @@ function mage_bus_item_seat_details($return)
                         $available_seat_type[$i]['price'] = $price['wbtm_bus_price'];
                         $i++;
                     }
-                    if ((float)$price['wbtm_bus_child_price'] > 0) {
+                    if ((float)$price['wbtm_bus_child_price'] >= 0 && $price['wbtm_bus_child_price'] != '') {
                         $available_seat_type[$i]['type'] = 'Child';
                         $available_seat_type[$i]['price'] = $price['wbtm_bus_child_price'];
                         $i++;
                     }
-                    if ((float)$price['wbtm_bus_infant_price'] > 0) {
+                    if ((float)$price['wbtm_bus_infant_price'] >= 0 && $price['wbtm_bus_infant_price'] != '') {
                         $available_seat_type[$i]['type'] = 'Infant';
                         $available_seat_type[$i]['price'] = $price['wbtm_bus_infant_price'];
                         $i++;
@@ -343,7 +358,7 @@ function mage_bus_item_seat_details($return)
     } // end if
 
     ?>
-    <form class="mage_form" action="" method="post">
+    <form class="mage_form wbtm_bus_booking" action="" method="post">
         <div class="mage_bus_seat_details">
             <input type="hidden" name='journey_date' value='<?php echo $date; ?>'/>
             <input type="hidden" name='return_date' value='<?php echo $return_date; ?>'/>
@@ -352,6 +367,7 @@ function mage_bus_item_seat_details($return)
             <input type="hidden" name="user_start_time" value="<?php echo $start_time; ?>"/>
             <input type="hidden" name="bus_start_time" value="<?php echo $start_time; ?>"/>
             <input type="hidden" name="bus_id" value="<?php echo $bus_id; ?>"/>
+            <input type="hidden" name="seat_available" value="<?php echo $seat_available; ?>"/>
             <input type="hidden" name='total_seat' value="0"/>
             <input type="hidden" name="wbtm_bus_type" value="general">
             <?php
@@ -366,37 +382,37 @@ function mage_bus_item_seat_details($return)
                             <table class="mage-seat-table mage-bus-short-info">
                                 <tr>
                                     <th><i class="fas fa-map-marker"></i>
-                                        <?php mage_bus_label('wbtm_boarding_points_text', __('Boarding', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        <?php mage_bus_label('wbtm_boarding_points_text', __('Boarding', 'bus-ticket-booking-with-seat-reservation')); ?>:
                                     </th>
                                     <td><?php echo $start; ?> ( <?php echo $start_time; ?> )</td>
                                 </tr>
                                 <tr>
                                     <th><i class="fas fa-map-marker"></i>
-                                        <?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')) ?>
+                                        <?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')) ?>:
                                     </th>
                                     <td><?php echo $end; ?> ( <?php echo $end_time; ?> )</td>
                                 </tr>
                                 <tr>
                                     <th><i class="fa fa-bus" aria-hidden="true"></i>
-                                        <?php mage_bus_label('wbtm_type_text', __('Coach Type:', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        <?php mage_bus_label('wbtm_type_text', __('Coach Type', 'bus-ticket-booking-with-seat-reservation')); ?>:
                                     </th>
                                     <td><?php echo mage_bus_type(); ?></td>
                                 </tr>
                                 <tr>
                                     <th><i class="fa fa-calendar" aria-hidden="true"></i>
-                                        <?php mage_bus_label('wbtm_date_text', __('Date:', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        <?php mage_bus_label('wbtm_date_text', __('Date', 'bus-ticket-booking-with-seat-reservation')); ?>:
                                     </th>
                                     <td><?php echo mage_wp_date($date); ?></td>
                                 </tr>
                                 <tr>
                                     <th><i class="fa fa-clock-o" aria-hidden="true"></i>
-                                        <?php mage_bus_label('wbtm_start_time_text', __('Start Time:', 'bus-ticket-booking-with-seat-reservation')) ?>
+                                        <?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')) ?>:
                                     </th>
                                     <td><?php echo $start_time; ?></td>
                                 </tr>
                                 <tr>
                                     <th><i class="fas fa-map-marker"></i>
-                                        <?php mage_bus_label('wbtm_fare_text', __('Fare:', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        <?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>:
                                     </th>
                                     <td><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $seat_price)); ?> /
                                         <?php mage_bus_label('wbtm_seat_text', __('Seat', 'bus-ticket-booking-with-seat-reservation')); ?>
@@ -419,7 +435,8 @@ function mage_bus_item_seat_details($return)
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($available_seat_type as $type) : ?>
+                                <?php foreach ($available_seat_type as $type) : 
+                                    if($type['price'] >= 0 && $type['price'] != '') : ?>
                                     <tr>
                                         <td><?php echo $type['type'] ?></td>
                                         <td class="mage-seat-qty">
@@ -440,7 +457,7 @@ function mage_bus_item_seat_details($return)
                                             <?php echo get_woocommerce_currency_symbol() . '<span class="price-figure">0.00</span>' ?>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php endif; endforeach; ?>
                                 </tbody>
                                 <tfoot>
                                 <tr>
@@ -480,6 +497,7 @@ function mage_bus_item_seat_details($return)
                             <!-- Extra Services END -->
                         </div>
                     </div>
+                    <p class="wbtm-booking-error"><?php _e('Seat limit exceeded!', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                     <div id="wbtm-form-builder">
                         <img class="wbtm-loading"
                              src="<?php echo plugin_dir_url(__FILE__) . '../../' . '/images/new-loading.gif'; ?>"
@@ -493,11 +511,13 @@ function mage_bus_item_seat_details($return)
                         <div id="wbtm-form-builder-es"
                              class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                     </div>
+                    <?php if( mage_bus_total_seat_new() > $partial_seat_booked ) : ?>
                     <button class="mage_button no-seat-submit-btn" disabled type="submit" name="add-to-cart"
                             value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>"
                             class="single_add_to_cart_button">
                         <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
                     </button>
+                    <?php endif; ?>
                 </div>
                 <!-- No Seat Plan END -->
             <?php else : ?>
@@ -626,11 +646,13 @@ function mage_bus_item_seat_details($return)
                                 <strong><?php mage_bus_label('wbtm_total_text', __('Total :', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
                                 <strong class="mage_bus_total_price mage-grand-total"> <span class="mage-price-figure">0.00</span></strong>
                             </h4>
+                            <?php if( mage_bus_total_seat_new() > $partial_seat_booked ) : ?>
                             <button class="mage_button" type="submit" disabled name="add-to-cart"
                                     value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); //echo esc_attr(get_the_id()); ?>"
                                     class="single_add_to_cart_button">
                                 <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
                             </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -658,7 +680,15 @@ function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return)
     $bus_id = get_the_id();
     $current_driver_position = get_post_meta($bus_id, 'driver_seat_position', true);
     $seat_panel_settings = get_option('wbtm_bus_settings');
-    $driver_image = $seat_panel_settings['diriver_image'] ? wp_get_attachment_url($seat_panel_settings['diriver_image']) : WBTM_PLUGIN_URL . 'public/images/driver-default.png';
+    if(isset($seat_panel_settings['diriver_image'])) {
+        if($seat_panel_settings['diriver_image'] != '') {
+            $driver_image = wp_get_attachment_url($seat_panel_settings['diriver_image']);
+        } else {
+            $driver_image = WBTM_PLUGIN_URL . 'public/images/driver-default.png';
+        }
+    } else {
+        $driver_image = WBTM_PLUGIN_URL . 'public/images/driver-default.png';
+    }
 
     $all_stopages_name = mage_bus_get_all_stopages(get_the_id());
 
@@ -669,7 +699,7 @@ function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return)
     ?>
     <div class="mage_bus_seat_plan" style="width: <?php echo $bus_width; ?>px;">
         <?php
-        $upper_deck = (!empty(get_option('wbtm_bus_settings')) ? get_option('wbtm_bus_settings')['useer_deck_title'] : '');
+        $upper_deck = (isset($seat_panel_settings['useer_deck_title']) ? $seat_panel_settings['useer_deck_title'] : '');
         if (!empty($seats_dd)) {
             echo '<strong class="deck-type-text">' . __('Lower Deck', 'bus-ticket-booking-with-seat-reservation') . '</strong>';
         }
@@ -805,7 +835,7 @@ function mage_bus_seat($seat_plan_type, $seat_name, $price, $dd, $return, $seat_
             $mage_bus_total_seats_availabel--; // for seat available
             ?>
             <div class="flex_justifyCenter mage_seat_booked"
-                 title="<?php _e('Already Booked By another !', 'bus-ticket-booking-with-seat-reservation'); ?>">
+                 title="<?php _e('Already Booked By another!', 'bus-ticket-booking-with-seat-reservation'); ?>">
                 <?php
                 if ($block_seat_img) {
                     echo '<div><p>' . $seat_name . '</p><img src="' . wp_get_attachment_url($block_seat_img) . '" alt="Block" /></div>';
@@ -819,7 +849,7 @@ function mage_bus_seat($seat_plan_type, $seat_name, $price, $dd, $return, $seat_
             $mage_bus_total_seats_availabel--; // for seat available
             ?>
             <div class="flex_justifyCenter mage_seat_confirmed"
-                 title="<?php _e('Already Sold By another !', 'bus-ticket-booking-with-seat-reservation'); ?>">
+                 title="<?php _e('Already Sold By another!', 'bus-ticket-booking-with-seat-reservation'); ?>">
                 <?php
                 if ($sold_seat_img) {
                     echo '<div><p>' . $seat_name . '</p><img src="' . wp_get_attachment_url($sold_seat_img) . '" alt="Block" /></div>';
