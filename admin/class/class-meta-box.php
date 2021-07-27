@@ -214,6 +214,7 @@ class WBTMMetaBox
 
         $coach_no = array_key_exists('wbtm_bus_no', $values) ? $values['wbtm_bus_no'][0] : '';
         $total_seat = array_key_exists('wbtm_total_seat', $values) ? $values['wbtm_total_seat'][0] : '';
+        $as_driver = array_key_exists('as_driver', $values) ? $values['as_driver'][0] : null;
 
         $wbtm_general_same_bus_return = array_key_exists('wbtm_general_same_bus_return', $values) ? $values['wbtm_general_same_bus_return'][0] : '';
 
@@ -229,6 +230,9 @@ class WBTMMetaBox
             <label class="item-label"><?php _e('Total Seat', 'bus-ticket-booking-with-seat-reservation'); ?></label>
             <input type="number" name="wbtm_total_seat" value="<?php echo $total_seat; ?>">
         </div>
+
+        <?php do_action('mdpa_assign_driver', $as_driver); ?> <!-- Assign Driver -->
+
         <div class="wbtm-item-row wbtm-seat-type-conf">
             <label class="item-label"><?php _e('Seat Type', 'bus-ticket-booking-with-seat-reservation'); ?></label>
             <select name="wbtm_seat_type_conf" id="">
@@ -581,6 +585,7 @@ class WBTMMetaBox
             $wbtm_seat_type_conf = $_POST['wbtm_seat_type_conf'];
             $wbtm_bus_no = $_POST['wbtm_bus_no'];
             $wbtm_total_seat = $_POST['wbtm_total_seat'];
+            $as_driver = isset($_POST['as_driver']) ? $_POST['as_driver'] : null;
             $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no';
             
 
@@ -1103,6 +1108,12 @@ class WBTMMetaBox
             update_post_meta($pid, 'wbtm_seat_type_conf', $wbtm_seat_type_conf);
             update_post_meta($pid, 'wbtm_bus_no', $wbtm_bus_no);
             update_post_meta($pid, 'wbtm_total_seat', $wbtm_total_seat);
+            $prev_as_driver = get_post_meta($pid, 'as_driver', true);
+            // echo '<pre>';print_r($as_driver);
+            // echo '<pre>';print_r($prev_as_driver);die;
+            $as_driver ? update_user_meta($prev_as_driver, 'for_bus', $pid) : update_user_meta($prev_as_driver, 'for_bus', null);
+            update_post_meta($pid, 'as_driver', $as_driver);
+
             update_post_meta($pid, 'wbtm_general_same_bus_return', $wbtm_general_same_bus_return);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             

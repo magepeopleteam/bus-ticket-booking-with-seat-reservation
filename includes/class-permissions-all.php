@@ -163,6 +163,12 @@ if(!class_exists('WBTMPermission')) {
             $output = $get_val ? $get_val : $default;
             return $output;
         }
+
+        public function __destruct()
+        {
+            if( session_id() )
+                session_write_close();
+        }
     }
     
 

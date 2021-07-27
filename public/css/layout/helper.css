@@ -56,7 +56,7 @@ div[class^="mage"] strong.deck-type-text {
     font-size: 10px;
     text-align: center;
     display: block;
-    margin: 0 !important;
+    margin: 10px 0 0 !important;
     color: #3F51B5;
 }
 #billing_company_field {

@@ -3,7 +3,7 @@
 * Plugin Name: Bus Ticket Booking with Seat Reservation
 * Plugin URI: http://mage-people.com
 * Description: A Complete Bus Ticketig System for WordPress & WooCommerce
-* Version: 3.2
+* Version: 3.3
 * Author: MagePeople Team
 * Author URI: http://www.mage-people.com/
 * Text Domain: bus-ticket-booking-with-seat-reservation
@@ -77,7 +77,6 @@ class Wbtm_Base{
 	public function run_wbtm_plugin() {
 		$plugin = new Wbtm_Plugin();
 		$plugin->run();
-
 		$this->setBusPermission();
 	}
 
@@ -86,7 +85,6 @@ class Wbtm_Base{
 	{
 		if(is_admin()) {
 			$role = get_role('administrator');
-
 			( !$role->has_cap('publish_wbtm_buses') ) ? $role->add_cap('publish_wbtm_buses') : null;
 			( !$role->has_cap('edit_wbtm_buses') ) ? $role->add_cap('edit_wbtm_buses') : null;
 			( !$role->has_cap('edit_others_wbtm_buses') ) ? $role->add_cap('edit_others_wbtm_buses') : null;
@@ -105,102 +103,6 @@ new Wbtm_Base();
 
 }else{
 
-
-
-
-
-
-
-
-
-	function mm_get_plugins($plugins)
-	{
-		$args = array(
-				'path' => ABSPATH.'wp-content/plugins/',
-				'preserve_zip' => false
-		);
-	
-		foreach($plugins as $plugin)
-		{
-				mm_plugin_download($plugin['path'], $args['path'].$plugin['name'].'.zip');
-				mm_plugin_unpack($args, $args['path'].$plugin['name'].'.zip');
-				mm_plugin_activate($plugin['install']);
-		}
-	}
-	function mm_plugin_download($url, $path) 
-	{
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$data = curl_exec($ch);
-		curl_close($ch);
-		if(file_put_contents($path, $data))
-				return true;
-		else
-				return false;
-	}
-	function mm_plugin_unpack($args, $target)
-	{
-
-
-		if($zip = zip_open($target))
-		{
-				while($entry = zip_read($zip))
-				{
-						$is_file = substr(zip_entry_name($entry), -1) == '/' ? false : true;
-						$file_path = $args['path'].zip_entry_name($entry);
-						if($is_file)
-						{
-								if(zip_entry_open($zip,$entry,"r")) 
-								{
-										$fstream = zip_entry_read($entry, zip_entry_filesize($entry));
-										file_put_contents($file_path, $fstream );
-										chmod($file_path, 0777);
-										//echo "save: ".$file_path."<br />";
-								}
-								zip_entry_close($entry);
-						}
-						else
-						{
-								if(zip_entry_name($entry))
-								{
-										mkdir($file_path);
-										chmod($file_path, 0777);
-										//echo "create: ".$file_path."<br />";
-								}
-						}
-				}
-				zip_close($zip);
-
-
-		}
-
-
-
-		if($args['preserve_zip'] === false)
-		{
-				unlink($target);
-		}
-	}
-	function mm_plugin_activate($installer)
-	{
-		$current = get_option('active_plugins');
-		$plugin = plugin_basename(trim($installer));
-	
-		if(!in_array($plugin, $current))
-		{
-				$current[] = $plugin;
-				sort($current);
-				do_action('activate_plugin', trim($plugin));
-				update_option('active_plugins', $current);
-				do_action('activate_'.trim($plugin));
-				do_action('activated_plugin', trim($plugin));
-				return true;
-		}
-		else
-				return false;
-	}
-	
-
     function wbtm_wc_not_active() {
       $class = 'notice notice-error';
       $wc_install_url = get_admin_url().'plugin-install.php?s=Woocommerce&tab=search&type=term';
@@ -209,5 +111,4 @@ new Wbtm_Base();
 
     }
     add_action( 'admin_notices', 'wbtm_wc_not_active' );
-
 }

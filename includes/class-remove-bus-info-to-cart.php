@@ -19,44 +19,47 @@ function wbtm_cart_item_have_two_way_route() {
     if( is_cart() || is_checkout() ) {
 
         $items = $woocommerce->cart->get_cart();
-        // echo '<pre>'; print_r($items); die;
+        $count_have_return = 0;
         if($items) {
             $item_count = count($items);
             foreach($items as $key => $value) {
                 if( $value['is_return'] && $item_count == 1 ) { // If cart item is single and has return route
                     wbtm_update_cart_return_price($key, true); // Update Return Price to original
                     
-                } elseif( $value['is_return'] == 1 && $item_count > 1 ) { // If cart item is more than 1 and has return route
+                } elseif( ($value['is_return'] == 1 || $value['is_return'] == 2) && $item_count > 1 ) { // If cart item is more than 1 and has return route
 
                     $start = $value['wbtm_start_stops'];
                     $stop = $value['wbtm_end_stops'];
                     $j_date = $value['wbtm_journey_date'];
 
                     $has_one_way = wbtm_check_has_one_way($start, $stop, $j_date);
-                    
-                     if(!$has_one_way) {
-                        
-                        wbtm_update_cart_return_price($key, true); // Update Return Price to original
-                    } else {
-                        
-                        wbtm_update_cart_return_price($key, false); // Update Return Price to return
-                    }
-                    
-                } elseif( $value['is_return'] == 2 && $item_count > 1 ) { // If cart item is more than 1 and has return route (Cart item delete happend)
-
-                    $start = $value['wbtm_start_stops'];
-                    $stop = $value['wbtm_end_stops'];
-                    $j_date = $value['wbtm_journey_date'];
-
-                    $has_one_way = wbtm_check_has_one_way($start, $stop, $j_date);
-                    
                     if(!$has_one_way) {
                         wbtm_update_cart_return_price($key, true); // Update Return Price to original
                     } else {
-                        wbtm_update_cart_return_price($key, false); // Update Return Price to return
+                        $count_have_return++;
+                        if($count_have_return <= 2) { // Only single return route get discount (One way and return way) nothing else
+                            wbtm_update_cart_return_price($key, false); // Update Return Price to return
+                        } else {
+                            wbtm_update_cart_return_price($key, true); // Update Return Price to original
+                        }
                     }
                     
-                } else {
+                } 
+                // elseif( $value['is_return'] == 2 && $item_count > 1 ) { // If cart item is more than 1 and has return route (Cart item delete happend)
+
+                //     $start = $value['wbtm_start_stops'];
+                //     $stop = $value['wbtm_end_stops'];
+                //     $j_date = $value['wbtm_journey_date'];
+
+                //     $has_one_way = wbtm_check_has_one_way($start, $stop, $j_date);
+                //     if(!$has_one_way) {
+                //         wbtm_update_cart_return_price($key, true); // Update Return Price to original
+                //     } else {
+                //         wbtm_update_cart_return_price($key, false); // Update Return Price to return
+                //     }
+                    
+                // } 
+                else {
                     // Nothing to do!
                 }
             }

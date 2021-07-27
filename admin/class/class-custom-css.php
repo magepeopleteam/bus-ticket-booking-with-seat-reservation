@@ -44,6 +44,7 @@ button.mage_button_xs.mage_bus_details_toggle {
 form.mage_form button[class*='mage_button'] {
     background: <?php echo wbtm_get_style('wbtm_book_now_btn_bg_color','#0a4b78'); ?>;
     color:<?php echo wbtm_get_style('wbtm_book_now_btn_text_color','#fff'); ?>;
+    border: 1px solid <?php echo wbtm_get_style('wbtm_book_now_btn_bg_color','#0a4b78'); ?>;
 }
 form.mage_form button[class*='mage_button_search'] {
     color: <?php echo wbtm_get_style('wbtm_search_btn_text_color','#fff'); ?>;

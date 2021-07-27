@@ -327,8 +327,12 @@ class WbtmAddToCart
                 }
 
                 // Basic Info
-                $basic_info_user[$j]['wbtm_seat_fare'] = $total_extra_price;
-                $total_fare = $bag_price;
+                if(empty($basic_info_user)) {
+                    $basic_info_user[$j]['wbtm_seat_fare'] = $total_extra_price;
+                }
+                if($total_fare == 0) {
+                    $total_fare += $bag_price;
+                }
             }
             
             $total_fare = $total_fare + $total_extra_price;
@@ -484,7 +488,7 @@ class WbtmAddToCart
                                     <li>
                                         <strong><?php _e('Passenger Type', 'bus-ticket-booking-with-seat-reservation'); ?>
                                             :</strong>
-                                        <?php echo $basic_passenger_info[$i]['wbtm_passenger_type']; ?>
+                                        <?php echo wbtm_get_seat_type_label(strtolower($basic_passenger_info[$i]['wbtm_passenger_type']), $basic_passenger_info[$i]['wbtm_passenger_type']); ?>
                                     </li>
                                 <?php } ?>
                             <?php } ?>
@@ -570,16 +574,16 @@ class WbtmAddToCart
                                 if ($_passenger['wbtm_extra_bag_qty'] > 0) {
                                     ?>
                                     <li>
-                                        <strong><?php mage_bus_label('wbtm_extra_bag_text', __('Extra Bag:', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
+                                        <strong><?php mage_bus_label('wbtm_extra_bag_text', __('Extra Bag', 'bus-ticket-booking-with-seat-reservation')); ?>:</strong>
                                         <?php echo $_passenger['wbtm_extra_bag_qty']; ?>
                                     </li>
                                     <li>
-                                        <strong><?php mage_bus_label('wbtm_extra_bag_price_text', __('Extra Bag Price:', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
+                                        <strong><?php mage_bus_label('wbtm_extra_bag_price_text', __('Extra Bag Price', 'bus-ticket-booking-with-seat-reservation')); ?>:</strong>
                                         <?php echo wc_price($_passenger['wbtm_extra_bag_price']); ?>
                                     </li>
 
                                     <li>
-                                        <strong><?php mage_bus_label('wbtm_total_text', __('Total:', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
+                                        <strong><?php mage_bus_label('wbtm_total_text', __('Total', 'bus-ticket-booking-with-seat-reservation')); ?>:</strong>
                                         <?php echo wc_price($basic_passenger_info[$i]['wbtm_seat_fare']) . ' + ' . wc_price($_passenger['wbtm_extra_bag_price']) . ' = ' . wc_price($basic_passenger_info[$i]['wbtm_seat_fare'] + $_passenger['wbtm_extra_bag_price']); ?>
                                     </li>
                                     <?php

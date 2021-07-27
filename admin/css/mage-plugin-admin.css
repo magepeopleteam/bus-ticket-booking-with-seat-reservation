@@ -433,8 +433,7 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 	border-radius: 3px;
 }
 /* .wbtm-seat-type-conf label {font-size: 16px;color: #555;} */
-.wbtm-seat-type-conf select {
-	border: 1px solid green;
+.wbtm-item-row select {
 	min-width: 223px;
 	border-radius: 5px;
 }
@@ -687,6 +686,28 @@ table#repeatable-fieldset-seat-one tr td input, table#repeatable-fieldset-seat-o
 .wbtm_tab_content_heading .wbtm-section-info:hover .wbtm-section-info-content {
     display: block;
 }
+/* DatePicker */
+.ui-datepicker {
+    border-color: #d9d6d6;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+}
+.ui-datepicker .ui-datepicker-header {
+    background: #F4F4F4;
+    border: none;
+}
+.ui-datepicker table {
+    background: #F4F4F4;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 1px solid #F4F4F4;
+    color: #161616;
+    background: none;
+}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+    border: none;
+    color: #0f62fe;
+}
+/* DatePicker END */
 
 /* Responsive */
 
