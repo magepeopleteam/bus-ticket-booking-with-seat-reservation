@@ -3,6 +3,28 @@ if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
 
+function outdated_item_remove() {
+    global $woocommerce;
+    $has_outdate = false;
+    $items = $woocommerce->cart->get_cart();
+
+    if($items) {
+        $buffer_time = mage_bus_setting_value('bus_buffer_time');
+        $buffer_time_sec = ($buffer_time && is_numeric($buffer_time)) ? $buffer_time * 60 * 60 : 0;
+        $current = current_time('Y-m-d H:i');
+        $c_str = strtotime($current);
+        foreach($items as $key => $value) {
+            $j_datetime = $value["wbtm_journey_date"]." ".$value["wbtm_journey_time"];
+            $j_str = strtotime($j_datetime) - $buffer_time_sec; // journey time in seconds less buffer
+            if($c_str > $j_str) {
+                $woocommerce->cart->remove_cart_item($key);
+                $has_outdate = true;
+            }
+        }
+    }
+
+    return ($has_outdate ? $woocommerce->cart->get_cart() : $items);
+}
 
 add_action('template_redirect', 'wbtm_cart_item_have_two_way_route', 10);
 
@@ -18,7 +40,7 @@ function wbtm_cart_item_have_two_way_route() {
 
     if( is_cart() || is_checkout() ) {
 
-        $items = $woocommerce->cart->get_cart();
+        $items = outdated_item_remove(); // Remove outdated item
         $count_have_return = 0;
         if($items) {
             $item_count = count($items);
