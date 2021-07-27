@@ -104,7 +104,7 @@ class WbtmAddToCart
             if ($bus_start_stops) {
                 foreach ($bus_start_stops as $stop) {
                     if ($stop['wbtm_bus_bp_stops_name'] == $start_stops) {
-                        $bus_start_time = mage_wp_time($stop['wbtm_bus_bp_start_time']);
+                        $bus_start_time = $stop['wbtm_bus_bp_start_time'];
                         break;
                     }
                 }
