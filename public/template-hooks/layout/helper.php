@@ -142,6 +142,7 @@ function mage_search_bus_query($return) {
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     return array(
         'post_type' => array('wbtm_bus'),
+        // 'p' => 3692, // TEST
         'posts_per_page' => -1,
         'order' => 'ASC',
         'orderby' => 'meta_value',

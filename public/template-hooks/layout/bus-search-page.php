@@ -86,6 +86,13 @@ function mage_bus_search_list($return)
             $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
             // Buffer Time Calculation END
 
+            // Midnight Calculation
+            $is_midnight = mage_bus_is_midnight_trip($bus_bp_array, $start);
+            if($is_midnight) {
+                $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date)));
+            }
+            // Midnight Calculation END
+
             if ($is_buffer == 'yes') {
                 // Operational on day
                 $is_on_date = false;
@@ -98,6 +105,10 @@ function mage_bus_search_list($return)
                 }
 
                 if ($is_on_date) {
+                    
+                    // echo $j_date.'<br>';
+                    // echo '<pre>';print_r($bus_on_dates);die;
+                    // die;
                     if (in_array($j_date, $bus_on_dates)) {
                         $has_bus = true;
                     }
@@ -121,17 +132,14 @@ function mage_bus_search_list($return)
 
                     $offday_current_bus = false;
                     if (!empty($bus_offday_schedules)) {
-                        //$s_datetime = new DateTime($j_date . ' ' . $start_time);
                         $s_datetime = date('Y-m-d H:i:s', strtotime($j_date . ' ' . $start_time));
 
                         foreach ($bus_offday_schedules as $item) {
 
                             $c_iterate_date_from = $item['from_date'];
-                            //$c_iterate_datetime_from = new DateTime($c_iterate_date_from . ' ' . $item['from_time']);
                             $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
 
                             $c_iterate_date_to = $item['to_date'];
-                            // $c_iterate_datetime_to = new DateTime($c_iterate_date_to . ' ' . $item['to_time']);
                             $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
 
                             if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
