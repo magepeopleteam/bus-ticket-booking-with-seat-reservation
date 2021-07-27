@@ -39,6 +39,7 @@ ul.mage_list_inline li a {
 button.mage_button_xs.mage_bus_details_toggle {
     background: <?php echo wbtm_get_style('wbtm_view_seat_btn_bg_color','#0a4b78'); ?>;
     color:<?php echo wbtm_get_style('wbtm_view_seat_btn_text_color','#fff'); ?>;
+    border-color: <?php echo wbtm_get_style('wbtm_view_seat_btn_bg_color','#0a4b78'); ?>;
 }
 
 form.mage_form button[class*='mage_button'] {
