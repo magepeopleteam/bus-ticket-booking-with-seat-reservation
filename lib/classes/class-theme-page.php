@@ -29,7 +29,7 @@ if( ! class_exists( 'AddThemePage' ) ) {
         public function add_menu_in_admin_menu(){
 
             if( "main" == $this->get_menu_type() ) {
-                add_theme_page( $this->get_menu_name(), $this->get_menu_title(), $this->get_capability(), $this->get_menu_slug(), array( $this, 'display_function' ), $this->get_menu_icon() );
+                add_theme_page( $this->get_menu_name(), $this->get_menu_title(), $this->get_capability(), $this->get_menu_slug(), array( $this, 'display_function' ), 4 );
             }
 
             if( "sub" == $this->get_menu_type() ) {
