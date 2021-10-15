@@ -79,7 +79,7 @@ class WbtmAddToCart
             $seat_qty = isset($_POST['seat_qty']) ? $_POST['seat_qty'] : null;
             $passenger_type = isset($_POST['passenger_type']) ? $_POST['passenger_type'] : '';
             $dd = isset($_POST['bus_dd']) ? $_POST['bus_dd'] : '';
-//            $custom_reg_user = sanitize_text_field($_POST['custom_reg_user']);
+            $custom_reg_user = sanitize_text_field($_POST['custom_reg_user']);
             $wbtm_order_seat_plan = sanitize_text_field($_POST['wbtm_order_seat_plan']);
             $bus_type = $_POST['wbtm_bus_type'];
             $mtsa_billing_type = isset($_POST['mtsa_billing_type']) ? $_POST['mtsa_billing_type'] : '';
@@ -425,7 +425,7 @@ class WbtmAddToCart
                             if (isset($_passenger['wbtm_user_name']) && $_passenger['wbtm_user_name'] != '') {
                                 ?>
                                 <li>
-                                    <strong><?php mage_bus_label('wbtm_cart_name_text', __('Name:', 'bus-ticket-booking-with-seat-reservation')); ?></strong>
+                                    <strong><?php mage_bus_label('wbtm_cart_name_text', __('Name', 'bus-ticket-booking-with-seat-reservation')); ?> :</strong>
                                     <?php echo $_passenger['wbtm_user_name']; ?>
                                 </li>
                                 <?php
@@ -494,12 +494,12 @@ class WbtmAddToCart
                             <?php } ?>
                             <?php
                             if ($cart_item['wbtm_billing_type'] != '') {
-                                $valid_till = mtsa_calculate_valid_date(get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'), $cart_item['wbtm_billing_type']);
+                                $valid_till = mtsa_calculate_valid_date(mage_wp_date($cart_item['wbtm_journey_date'], 'Y-m-d'), $cart_item['wbtm_billing_type']);
                                 ?>
                                 <li>
                                     <strong><?php _e(__('Start Date', 'bus-ticket-booking-with-seat-reservation')); ?>
                                         :</strong>
-                                    <?php echo get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'); ?>
+                                    <?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?>
                                 </li>
                                 <li>
                                     <strong><?php _e('Valid Till', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -619,12 +619,12 @@ class WbtmAddToCart
                         endif;
 
                         if ($cart_item['wbtm_billing_type'] != '') :
-                            $valid_till = mtsa_calculate_valid_date(get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'), $cart_item['wbtm_billing_type']);
+                            $valid_till = mtsa_calculate_valid_date($cart_item['wbtm_journey_date'], $cart_item['wbtm_billing_type']);
                             ?>
                             <li><?php _e('Start Date: ', 'bus-ticket-booking-with-seat-reservation');
-                                ?><?php echo $cart_item['wbtm_journey_date']; ?></li>
+                                ?><?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?></li>
                             <li><?php _e('Valid Till: ', 'bus-ticket-booking-with-seat-reservation');
-                                ?><?php echo $valid_till; ?></li>
+                                ?><?php echo mage_wp_date($valid_till); ?></li>
                             <li><?php _e('Billing Type: ', 'bus-ticket-booking-with-seat-reservation');
                                 ?><?php echo $cart_item['wbtm_billing_type']; ?></li>
 
@@ -756,6 +756,7 @@ class WbtmAddToCart
             $wbtm_bus_id = $values['wbtm_bus_id'];
             $extra_bag_quantity = isset($values['extra_bag_quantity']) ? $values['extra_bag_quantity'] : null;
             $wbtm_tp = $values['wbtm_tp'];
+            $wbtm_is_return = $values['is_return'];
 
             $seat = "";
             foreach ($wbtm_seats as $field) {
@@ -800,6 +801,7 @@ class WbtmAddToCart
             $item->add_meta_data('_wbtm_city_zone', $wbtm_city_zone);
             $item->add_meta_data('_wbtm_pickpoint', $wbtm_pickpoint);
             $item->add_meta_data('_extra_services', $extra_services);
+            $item->add_meta_data('_wbtm_is_return', $wbtm_is_return);
 
             $item->add_meta_data('_wbtm_bus_id', $eid);
         }

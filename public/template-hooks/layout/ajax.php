@@ -82,7 +82,7 @@ function wbtm_form_builder_callback() {
             WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType, $passengerType);
         }
     } else {
-        echo '<input type="hidden" name="custom_reg_user" value="no" />';
+        // echo '<input type="hidden" name="custom_reg_user" value="no" />';
     }
     exit;
 }

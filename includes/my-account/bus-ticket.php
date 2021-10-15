@@ -162,10 +162,16 @@ function wbtm_bus_panel_endpoint_content() {
                 <td><?php echo mage_wp_date(get_post_meta($id, 'wbtm_journey_date', true)).' '.mage_wp_time(get_post_meta($id, 'wbtm_bus_start', true)); ?></td>
                 <td><?php echo get_post_meta($id, 'wbtm_seat', true); ?></td>
                 <td><?php echo get_post_meta($id, 'wbtm_pickpoint', true); ?></td>
-                <td><?php echo ucfirst($order->get_status()); ?></td>
+                <td>
+                    <?php 
+                        if($order) {
+                            echo ucfirst($order->get_status()); 
+                        }
+                    ?>
+                </td>
 
                 <?php if($is_show_ticket) : ?>
-                <td><a href="<?php echo $download_url; ?>"><?php _e('Show Ticket', 'bus-ticket-booking-with-seat-reservation') ?></a></td>
+                <td><a class="wbtm-btn" href="<?php echo $download_url; ?>"><?php _e('Show Ticket', 'bus-ticket-booking-with-seat-reservation') ?></a></td>
                 <?php endif; ?>
 
             </tr>

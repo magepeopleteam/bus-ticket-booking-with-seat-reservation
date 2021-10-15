@@ -3,7 +3,7 @@
 * Plugin Name: Bus Ticket Booking with Seat Reservation
 * Plugin URI: http://mage-people.com
 * Description: A Complete Bus Ticketig System for WordPress & WooCommerce
-* Version: 3.3
+* Version: 3.4
 * Author: MagePeople Team
 * Author URI: http://www.mage-people.com/
 * Text Domain: bus-ticket-booking-with-seat-reservation
@@ -93,7 +93,7 @@ class Wbtm_Base{
 			( !$role->has_cap('delete_wbtm_bus') ) ? $role->add_cap('delete_wbtm_bus') : null;
 			( !$role->has_cap('read_wbtm_bus') ) ? $role->add_cap('read_wbtm_bus') : null;
 			( !$role->has_cap('wbtm_permission_page') ) ? $role->add_cap('wbtm_permission_page') : null;
-			// ( !$role->has_cap('extra_service_wbtm_bus') ) ? $role->add_cap('extra_service_wbtm_bus') : null;
+			( !$role->has_cap('extra_service_wbtm_bus') ) ? $role->add_cap('extra_service_wbtm_bus') : null;
 		}
 	}
 }

@@ -7,7 +7,7 @@ div[class^="mage"] form.mage_bus_info_form {display: none;}
 div.mage_bus_list_title h6,
 div.mage_bus_item h6 {padding: 0 0 0 var(--default-mp-xs);}
 .mage_bus_list_title {background-color: #0A4B78;padding: 10px 0;}
-div.mage_bus_list_title h6 {color: #FFF !important;}
+div.mage_bus_list_title h6 {color: #FFF !important;font-size: 15px!important;}
 .mage_bus_img {width: 100px;}
 div.mage_bus_img img {width: 100%;height: auto;border: 1px solid var(--default-border-color);padding: 2px;}
 div.mage_bus_list_title div.mage_bus_img h6 {border: none;}
@@ -90,19 +90,20 @@ div[class^="mage"] .passenger_type_list {
     position: absolute;
     display: none;
     left: 0;
-    background-color: #ffefd6;
+    background-color: #c4d1da;
     z-index: 111;
     right: 0;
     top: calc(100% - 12px);
     border-radius: 5px;
     border: 1px solid #dedede;
-    padding: 2px 3px;
+    padding: 2px;
     font-size: 13px;
 }
 div[class^="mage"] .passenger_type_list li {
     padding: 5px;
-    border-bottom: 1px dotted #f7d079;
+    border-bottom: 1px solid #c4d1d9;
     cursor: pointer;
+    border-radius: 5px;
 }
 div[class^="mage"] .passenger_type_list li:last-child {
     border-bottom: none;

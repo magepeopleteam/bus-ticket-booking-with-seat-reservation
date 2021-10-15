@@ -316,7 +316,8 @@ button.single_add_to_cart_button.button.alt.btn-mep-event-cart {
     text-align: center;
     padding: 20px;
     margin: 30px auto;
-    border: 1px solid #ddd;
+    border: 1px solid #fff;
+    box-shadow: 0px 2px 2px 2px #e0e0e0;
 }
 
 .ticket-search h2 {
@@ -353,6 +354,7 @@ span.wbtm-ticket-confirm {
 input.ticket-input {
     padding: 10px !important;
     margin-bottom: 30px !important;
+    border: 1px solid #676fec;
 }
 
 .bus-details {
@@ -973,6 +975,7 @@ button[name="add-to-cart"]:disabled {
 }
 .wbtm-pickpoint-wrap select {
     width: 100%;
+    height: 42px;
 }
 /* Merge Plugin css END */
 
@@ -1007,6 +1010,12 @@ button[name="add-to-cart"]:disabled {
 }
 
 /* My Account */
+.wbtm_myaccount_wrapper table {
+    table-layout: fixed;
+}
+.wbtm_myaccount_wrapper table thead {
+    background: #dfd7ff;
+}
 .wbtm_myaccount_wrapper table tr {
     border-bottom: 1px solid #ddd;
 }
@@ -1015,12 +1024,15 @@ button[name="add-to-cart"]:disabled {
     padding: 10px 5px;
 }
 .wbtm_myaccount_wrapper table td {
-    padding: 25px 5px;
-    line-height: 1;
+    padding: 13px 8px;
+    line-height: 1.3;
     font-size: .9em;
 }
 .wbtm_myaccount_wrapper table td a {
     color: #1172c1
+}
+.wbtm_myaccount_wrapper table tbody tr:nth-child(even) {
+    background: #edeafa;
 }
 .wbtm_myaccount_wrapper table tbody tr:last-child {
     border-bottom: none;
@@ -1029,6 +1041,12 @@ button[name="add-to-cart"]:disabled {
     padding-bottom: 0;
 }
 /* My Account END */
+.wbtm-btn {
+    background: #c4b3ff;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px;
+}
 
 /* DatePicker */
 .ui-datepicker {
@@ -1052,6 +1070,59 @@ button[name="add-to-cart"]:disabled {
     color: #0f62fe;
 }
 /* DatePicker END */
+.mage_next_date li {
+    border-radius: 5px;
+}
+
+/* View Ticket */
+.wbtm-view-ticket.wbtm-ticket-body {
+    width: 350px
+}
+.wbtm-view-ticket .wbtm-ticket {
+    background: #fff9e9;
+    border: 2px dashed #77a464;
+    padding: 0 8px 7px;
+    border-radius: 3px;
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-ticket-single {
+    background: #f4efa4;
+    margin: 2px 0;
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-ticket-qr-code {
+    text-align: center;
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-ticket-qr-code img {
+    width: 150px;
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-ticket-single strong {
+    min-width: 103px;
+    display: inline-block;
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-ticket-single .wbtm-ticket-inline {
+    font-size: 14px;
+    color: #414141;
+    font-family: 'Poppins', 'sans-serif';
+}
+.wbtm-view-ticket .wbtm-ticket .wbtm-bus-title {
+    color: #aa1a1a!important;
+    font-weight: 700;
+    font-size: 15px!important;
+    margin-bottom: 5px;
+}
+/* View Ticket END */
+.wbtm-download-ticket {
+    text-decoration: none;
+    background: #3a3fda;
+    padding: 10px;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    margin: 5px;
+    line-height: 1.3;
+}
+.wbtm-download-ticket:hover {
+    background: #0008f8;
+}
 
 
 /* Responsive CSS
@@ -1416,8 +1487,9 @@ a.wbtm-button:hover {
     padding: 8px 20px;
     margin: 15px 0;
     display: inline-block;
-    border-radius: 3px;
+    border-radius: 5px;
     cursor: pointer;
+    text-decoration: none;
 }
 .wbbm-single-search-form .fields-li .search-radio-sec label {
     display: inline-block !important;

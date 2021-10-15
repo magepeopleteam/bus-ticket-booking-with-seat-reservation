@@ -78,6 +78,13 @@ class WBTMMetaBox
     // Tab Contents
     public function wbtm_add_meta_box_tab_content($tour_id)
     {
+        $routing_info = esc_html('Boarding Time & Dropping Time should not be empty.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('If you set those field empty you might get unwanted result.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('If you want to hide dropping time from your customer.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('Just set "Show dropping time" to "no" from Bus configuration tab.', 'bus-ticket-booking-with-seat-reservation');
         ?>
         <div class="mp_tab_item" data-tab-item="#wbtm_ticket_panel" style="display:block;">
             <h3><?php _e(' Bus Configuration :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -90,7 +97,7 @@ class WBTMMetaBox
                 <div class="wbtm-section-info">
                     <span><i class="fas fa-info-circle"></i></span>
                     <div class="wbtm-section-info-content">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est minus ducimus enim eligendi, ipsa voluptate vel repellat vero mollitia incidunt.
+                        <?php echo $routing_info; ?>
                     </div>
                 </div>
             </div>
@@ -217,10 +224,14 @@ class WBTMMetaBox
         $as_driver = array_key_exists('as_driver', $values) ? $values['as_driver'][0] : null;
 
         $wbtm_general_same_bus_return = array_key_exists('wbtm_general_same_bus_return', $values) ? $values['wbtm_general_same_bus_return'][0] : '';
+        $show_dropping_time = array_key_exists('show_dropping_time', $values) ? $values['show_dropping_time'][0] : 'yes';
 
         $subscription_type = array_key_exists('mtsa_subscription_route_type', $values) ? $values['mtsa_subscription_route_type'][0] : 'wbtm_city_zone';
 
         $mtpa_car_type = array_key_exists('mtpa_car_type', $values) ? $values['mtpa_car_type'][0] : '';
+
+        $settings = get_option('wbtm_bus_settings');
+        $same_bus_return_val = isset($settings['same_bus_return_setting']) ? $settings['same_bus_return_setting'] : 'disable';
         ?>
         <div class="wbtm-item-row">
             <label class="item-label"><?php _e('Coach No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
@@ -229,6 +240,12 @@ class WBTMMetaBox
         <div class="wbtm-item-row">
             <label class="item-label"><?php _e('Total Seat', 'bus-ticket-booking-with-seat-reservation'); ?></label>
             <input type="number" name="wbtm_total_seat" value="<?php echo $total_seat; ?>">
+        </div>
+
+        <div id="wbtm_show_dropping_time" class="wbtm-item-row">
+            <label class="item-label"><?php _e("Show dropping time", "bus-ticket-booking-with-seat-reservation") ?></label>
+            <input type="radio" id="show_dropping_time_no" name="show_dropping_time" <?php echo (($show_dropping_time == "no" || $show_dropping_time == '') ? " checked" : ""); ?> value="no"> <label for="show_dropping_time_no"> <?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>
+                <input type="radio" id="show_dropping_time_yes" name="show_dropping_time" <?php echo ($show_dropping_time == "yes" ? " checked" : ""); ?> value="yes" style="margin-left: 20px"> <label for="show_dropping_time_yes"> <?php _e('Yes', 'bus-ticket-booking-with-seat-reservation') ?></label>
         </div>
 
         <?php do_action('mdpa_assign_driver', $as_driver); ?> <!-- Assign Driver -->
@@ -249,11 +266,13 @@ class WBTMMetaBox
             </select>
         </div>
 
-<!--        <div id="wbtm_same_bus_return" class="wbtm-item-row">-->
-<!--            <label class="item-label">--><?php //_e("Same Bus return", "bus-ticket-booking-with-seat-reservation") ?><!--</label>-->
-<!--            <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" --><?php //echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?><!-- value="no"> <label for="wbtm_same_bus_return_no">--><?php //_e('No', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
-<!--            <input type="radio" id="wbtm_same_bus_return_yes" name="wbtm_general_same_bus_return" --><?php //echo ($wbtm_general_same_bus_return == "yes" ? " checked" : ""); ?><!-- value="yes" style="margin-left: 20px"> <label for="wbtm_same_bus_return_yes">--><?php //_e('Yes', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
-<!--        </div>-->
+        <?php if($same_bus_return_val == 'enable') : ?>
+        <div id="wbtm_same_bus_return" class="wbtm-item-row">
+            <label class="item-label"><?php _e("Same Bus return", "bus-ticket-booking-with-seat-reservation") ?></label>
+            <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" <?php echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?> value="no"> <label for="wbtm_same_bus_return_no"> <?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>
+                <input type="radio" id="wbtm_same_bus_return_yes" name="wbtm_general_same_bus_return" <?php echo ($wbtm_general_same_bus_return == "yes" ? " checked" : ""); ?> value="yes" style="margin-left: 20px"> <label for="wbtm_same_bus_return_yes"> <?php _e('Yes', 'bus-ticket-booking-with-seat-reservation') ?></label>
+        </div>
+        <?php endif; ?>
 
         <div id="mtsa_city_zone" class="wbtm-item-row">
             <?php do_action('wbtm_subscription_route_type', $subscription_type); ?>
@@ -587,6 +606,7 @@ class WBTMMetaBox
             $wbtm_total_seat = $_POST['wbtm_total_seat'];
             $as_driver = isset($_POST['as_driver']) ? $_POST['as_driver'] : null;
             $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no';
+            $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
             
 
             // Routing
@@ -793,26 +813,30 @@ class WBTMMetaBox
             for ($i = 0; $i < $count; $i++) {
                 if ($names[$i] != '') :
                     $extra_service_new[$i]['option_name'] = stripslashes(strip_tags($names[$i]));
+                else :
+                    continue;
                 endif;
 
                 if ($urls[$i] != '') :
                     $extra_service_new[$i]['option_price'] = stripslashes(strip_tags($urls[$i]));
+                else : 
+                    $extra_service_new[$i]['option_price'] = 0;
                 endif;
 
                 if ($qty[$i] != '') :
                     $extra_service_new[$i]['option_qty'] = stripslashes(strip_tags($qty[$i]));
+                else : 
+                    $extra_service_new[$i]['option_qty'] = 0;
                 endif;
 
                 if ($qty_type[$i] != '') :
                     $extra_service_new[$i]['option_qty_type'] = stripslashes(strip_tags($qty_type[$i]));
+                else :
+                    $extra_service_new[$i]['option_qty_type'] = 'inputbox';
                 endif;
             }
 
-            if (!empty($extra_service_new) && $extra_service_new != $extra_service_old) {
-                update_post_meta($post_id, 'mep_events_extra_prices', $extra_service_new);
-            } elseif (empty($extra_service_new) && $extra_service_old) {
-                delete_post_meta($post_id, 'mep_events_extra_prices', $extra_service_old);
-            }
+            update_post_meta($post_id, 'mep_events_extra_prices', $extra_service_new ? $extra_service_new : null);
             // Extra services END
 
             // ******Pickup Point******
@@ -929,16 +953,16 @@ class WBTMMetaBox
                 }
             } else {
                 // If need delete
-                $prev_selected_city = get_post_meta($pid, $selected_city_key, true);
-                if ($prev_selected_city) {
-                    $prev_selected_city = explode(',', $prev_selected_city);
+                 $prev_selected_city = get_post_meta($pid, $selected_city_key, true);
+                 if ($prev_selected_city) {
+                     $prev_selected_city = explode(',', $prev_selected_city);
 
-                    delete_post_meta($pid, $selected_city_key);
+                     delete_post_meta($pid, $selected_city_key);
 
-                    foreach ($prev_selected_city as $s) {
-                        delete_post_meta($pid, 'wbtm_selected_pickpoint_return_name_' . $s);
-                    }
-                }
+                     foreach ($prev_selected_city as $s) {
+                         delete_post_meta($pid, 'wbtm_selected_pickpoint_return_name_' . $s);
+                     }
+                 }
                 // If need delete END
             }
             // Pickup Point Return END
@@ -1115,6 +1139,7 @@ class WBTMMetaBox
             update_post_meta($pid, 'as_driver', $as_driver);
 
             update_post_meta($pid, 'wbtm_general_same_bus_return', $wbtm_general_same_bus_return);
+            update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             
 
@@ -1596,7 +1621,7 @@ class WBTMMetaBox
                                     <input type="text" class="widefat <?php echo $return_class; ?>"
                                            name="wbtm_bus_price_return[]"
                                            placeholder="<?php _e('Adult Return Price', 'bus-ticket-booking-with-seat-reservation') ?>"
-                                           value="<?php echo $price['wbtm_bus_price_return']; ?>"/>
+                                           value="<?php echo isset($price['wbtm_bus_price_return']) ? $price['wbtm_bus_price_return'] : ''; ?>"/>
                                 </td>
                                 <td class="wbtm-wid-15">
                                     <input type="text" class="widefat"
@@ -1606,17 +1631,17 @@ class WBTMMetaBox
                                     <input type="text" class="widefat <?php echo $return_class; ?>"
                                            name="wbtm_bus_child_price_return[]"
                                            placeholder="<?php _e('Child return price', 'bus-ticket-booking-with-seat-reservation') ?>"
-                                           value="<?php echo $price['wbtm_bus_child_price_return']; ?>"/>
+                                           value="<?php echo isset($price['wbtm_bus_child_price_return']) ? $price['wbtm_bus_child_price_return'] : ''; ?>"/>
                                 </td>
                                 <td class="wbtm-wid-15">
                                     <input type="text" class="widefat"
                                            name="wbtm_bus_infant_price[]"
                                            placeholder="<?php _e('1000', 'bus-ticket-booking-with-seat-reservation') ?>"
-                                           value="<?php echo $price['wbtm_bus_infant_price']; ?>"/>
+                                           value="<?php echo isset($price['wbtm_bus_infant_price']) ? $price['wbtm_bus_infant_price'] : ''; ?>"/>
                                     <input type="text" class="widefat <?php echo $return_class; ?>"
                                            name="wbtm_bus_infant_price_return[]"
                                            placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>"
-                                           value="<?php echo $price['wbtm_bus_infant_price_return']; ?>"/>
+                                           value="<?php echo isset($price['wbtm_bus_infant_price_return']) ? $price['wbtm_bus_infant_price_return'] : ''; ?>"/>
                                 </td>
                                 <td class="wbtm-wid-5">
                                     <button class="button wbtm-remove-row-t"><span
@@ -1851,19 +1876,36 @@ class WBTMMetaBox
         global $wbtmmain, $wbtmcore, $post;
 
         // Boarding Points
-        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
-        if ($boarding_points) {
-            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
-        } else {
-            $boarding_points = array();
-            $bus_stops = get_terms(array(
-                'taxonomy' => 'wbtm_bus_stops',
-                'hide_empty' => false
-            ));
+//        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+//        if ($boarding_points) {
+//            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
+//        } else {
+//            $boarding_points = array();
+//            $bus_stops = get_terms(array(
+//                'taxonomy' => 'wbtm_bus_stops',
+//                'hide_empty' => false
+//            ));
+//
+//            if($bus_stops) {
+//                foreach($bus_stops as $s) {
+//                    $boarding_points[] = $s->name;
+//                }
+//            }
+//        }
 
-            if($bus_stops) {
-                foreach($bus_stops as $s) {
-                    $boarding_points[] = $s->name;
+        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+        $bus_stops = get_terms(array(
+            'taxonomy' => 'wbtm_bus_stops',
+            'hide_empty' => false
+        ));
+        $boarding_points_array = array();
+        if($boarding_points && $bus_stops) {
+            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
+            foreach($bus_stops as $s) {
+                foreach($boarding_points as $item) {
+                    if($item == $s->name) {
+                        $boarding_points_array[] = $s;
+                    }
                 }
             }
         }
@@ -1877,7 +1919,7 @@ class WBTMMetaBox
         $pickpoints = '';
         if ($bus_pickpoints) {
             foreach ($bus_pickpoints as $points) {
-                $pickpoints .= '<option value="' . $points->slug . '">' . str_replace("'", '', $points->name) . '</option>';
+                $pickpoints .= '<option value="' . $points->name . '">' . str_replace("'", '', $points->name) . '</option>';
             }
         }
         ?>
@@ -1885,15 +1927,15 @@ class WBTMMetaBox
         <div class="wbtm_bus_pickpint_wrapper" data-isReturn="no">
             <div class="wbtm_left_col">
                 <div class="wbtm_field_group">
-                    <?php if ($boarding_points) : ?>
+                    <?php if ($boarding_points_array) : ?>
                         <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
                             <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                            <?php foreach ($boarding_points as $stop) :
-                                $stop_slug = $stop;
-                                $stop_slug = strtolower($stop_slug);
-                                $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
+                            <?php foreach ($boarding_points_array as $stop) :
+//                                $stop_slug = $stop;
+//                                $stop_slug = strtolower($stop_slug);
+//                                $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
                                 ?>
-                                <option value="<?php echo $stop_slug ?>"><?php echo $stop ?></option>
+                                <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
                             <?php endforeach; ?>
                         </select>
                         <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1916,7 +1958,7 @@ class WBTMMetaBox
                             $get_pickpoints_data = get_post_meta($post->ID, 'wbtm_selected_pickpoint_name_' . $single, true); ?>
                             <div class="wbtm_selected_city_item">
                                 <span class="remove_city_for_pickpoint"><i class="fas fa-minus-circle"></i></span>
-                                <h4 class="wbtm_pickpoint_title"><?php echo ucfirst($single); ?></h4>
+                                <h4 class="wbtm_pickpoint_title"><?php echo (mage_get_term($single, 'wbtm_bus_stops') ? mage_get_term($single, 'wbtm_bus_stops')->name : ''); ?></h4>
                                 <input type="hidden" name="wbtm_pickpoint_selected_city[]"
                                        value="<?php echo $single; ?>">
                                 <div class="pickpoint-adding-wrap">
@@ -1972,15 +2014,15 @@ class WBTMMetaBox
             <div class="wbtm_bus_pickpint_wrapper" data-isReturn="yes">
                 <div class="wbtm_left_col">
                     <div class="wbtm_field_group">
-                        <?php if ($boarding_points) : ?>
+                        <?php if ($boarding_points_array) : ?>
                             <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
                                 <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                <?php foreach ($boarding_points as $stop) :
-                                    $stop_slug = $stop;
-                                    $stop_slug = strtolower($stop_slug);
-                                    $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
+                                <?php foreach ($boarding_points_array as $stop) :
+                                    // $stop_slug = $stop;
+                                    // $stop_slug = strtolower($stop_slug);
+                                    // $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
                                     ?>
-                                    <option value="<?php echo $stop_slug ?>"><?php echo $stop ?></option>
+                                    <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -2003,7 +2045,7 @@ class WBTMMetaBox
                                 $get_pickpoints_data = get_post_meta($post->ID, 'wbtm_selected_pickpoint_return_name_' . $single, true); ?>
                                 <div class="wbtm_selected_city_item">
                                     <span class="remove_city_for_pickpoint"><i class="fas fa-minus-circle"></i></span>
-                                    <h4 class="wbtm_pickpoint_title"><?php echo ucfirst($single); ?></h4>
+                                    <h4 class="wbtm_pickpoint_title"><?php echo (mage_get_term($single, 'wbtm_bus_stops') ? mage_get_term($single, 'wbtm_bus_stops')->name : ''); ?></h4>
                                     <input type="hidden" name="wbtm_pickpoint_selected_city_return[]"
                                         value="<?php echo $single; ?>">
                                     <div class="pickpoint-adding-wrap">

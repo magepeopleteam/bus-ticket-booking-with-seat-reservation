@@ -14,11 +14,13 @@ function outdated_item_remove() {
         $current = current_time('Y-m-d H:i');
         $c_str = strtotime($current);
         foreach($items as $key => $value) {
-            $j_datetime = $value["wbtm_journey_date"]." ".$value["wbtm_journey_time"];
-            $j_str = strtotime($j_datetime) - $buffer_time_sec; // journey time in seconds less buffer
-            if($c_str > $j_str) {
-                $woocommerce->cart->remove_cart_item($key);
-                $has_outdate = true;
+            if(isset($value['wbtm_bus_id'])) {
+                $j_datetime = $value["wbtm_journey_date"]." ".($value["wbtm_journey_time"] ? $value["wbtm_journey_time"] : '23:59');
+                $j_str = strtotime($j_datetime) - $buffer_time_sec; // journey time in seconds less buffer
+                if($c_str > $j_str) {
+                    $woocommerce->cart->remove_cart_item($key);
+                    $has_outdate = true;
+                }
             }
         }
     }
@@ -45,21 +47,23 @@ function wbtm_cart_item_have_two_way_route() {
         if($items) {
             $item_count = count($items);
             foreach($items as $key => $value) {
+                // echo $key.' ----> '. $value['is_return'].'<br>';
                 if( $value['is_return'] && $item_count == 1 ) { // If cart item is single and has return route
                     wbtm_update_cart_return_price($key, true); // Update Return Price to original
                     
-                } elseif( ($value['is_return'] == 1 || $value['is_return'] == 2) && $item_count > 1 ) { // If cart item is more than 1 and has return route
+                } elseif( ($value['is_return'] == 1 || $value['is_return'] == 2 || $value['is_return'] == '') && $item_count > 1 ) { // If cart item is more than 1 and has return route
 
                     $start = $value['wbtm_start_stops'];
                     $stop = $value['wbtm_end_stops'];
                     $j_date = $value['wbtm_journey_date'];
 
                     $has_one_way = wbtm_check_has_one_way($start, $stop, $j_date);
+                    //var_dump($has_one_way);
                     if(!$has_one_way) {
                         wbtm_update_cart_return_price($key, true); // Update Return Price to original
                     } else {
                         $count_have_return++;
-                        if($count_have_return <= 2) { // Only single return route get discount (One way and return way) nothing else
+                        if(($count_have_return % 2) == 0) { // Only single return route get discount (One way and return way) nothing else
                             wbtm_update_cart_return_price($key, false); // Update Return Price to return
                         } else {
                             wbtm_update_cart_return_price($key, true); // Update Return Price to original

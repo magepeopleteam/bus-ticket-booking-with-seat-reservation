@@ -72,10 +72,10 @@ $values = get_post_custom($id);
             $start = $_GET['bus_start_route'];
             $end = $_GET['bus_end_route'];
             $j_date = $_GET['j_date'];
-            $j_date = mage_convert_date_format($j_date, 'Y-m-d');
+            $j_date = mage_wp_date($j_date, 'Y-m-d');
             $r_date = isset($_GET['r_date']) ? $_GET['r_date'] : null;
             if($r_date) {
-                $r_date = mage_convert_date_format($r_date, 'Y-m-d');
+                $r_date = mage_wp_date($r_date, 'Y-m-d');
             }
             $check_has_price = mage_bus_seat_price($id, $start, $end, false);
             $has_bus = false;
@@ -87,12 +87,12 @@ $values = get_post_custom($id);
             if($bus_bp_array) {
                 $has_bus = mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $has_bus);
                 if($r_date) {
-                    $has_bus_return = mage_single_bus_show($id, $end, $start, $r_date, $bus_bp_array, $has_bus_return);
+                    $has_bus_return = mage_single_bus_show($id, $end, $start, $r_date, $bus_bp_array, true);
                 }
             }
 
             // Final
-            mage_next_date_suggestion(false, true);
+            mage_next_date_suggestion(false, true, $target);
             if ($has_bus && $check_has_price) {
 
                 mage_bus_search_item(false, $id);
