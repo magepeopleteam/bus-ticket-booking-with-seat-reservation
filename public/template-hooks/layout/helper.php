@@ -151,7 +151,7 @@ function mage_search_bus_query($return)
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     return array(
         'post_type' => array('wbtm_bus'),
-        // 'p' => 3692, // TEST
+        'p' => 3664, // TEST
         'posts_per_page' => -1,
         'order' => 'ASC',
         'orderby' => 'meta_value',
@@ -907,6 +907,9 @@ function mage_bus_seat_status($field_name, $return)
 // Get seat Booking Data
 function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stopages_name, $return, $bus_id = null, $start = null, $end = null, $date = null)
 {
+    // $backtrace = debug_backtrace();
+    // echo '<pre>';print_r($backtrace);
+
     if (!$seat_name) {
         return false;
     }
@@ -939,6 +942,9 @@ function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stop
         $prev_date = date('Y-m-d', strtotime('-1 day', strtotime($date)));
         array_push($j_dates, $prev_date);
     }
+
+    // $next_date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
+    // array_push($j_dates, $next_date);
 
 
     $args = array(
