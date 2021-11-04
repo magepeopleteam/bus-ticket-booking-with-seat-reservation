@@ -151,7 +151,7 @@ function mage_search_bus_query($return)
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     return array(
         'post_type' => array('wbtm_bus'),
-        'p' => 3664, // TEST
+        // 'p' => 3664, // TEST
         'posts_per_page' => -1,
         'order' => 'ASC',
         'orderby' => 'meta_value',
@@ -936,6 +936,31 @@ function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stop
     $bus_id = $bus_id ? $bus_id : get_the_id();
 
     $bus_start_stops_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_bp_stops', true)); // $bus_id bus start points
+    $bus_stop_stops_arr = maybe_unserialize(get_post_meta($bus_id, 'wbtm_bus_next_stops', true)); // $bus_id bus start points
+
+    if($bus_stop_stops_arr) {
+        $next_count = count($bus_stop_stops_arr);
+        array_push($bus_start_stops_arr, $bus_stop_stops_arr[$next_count - 1]);
+    }
+
+    $merged_array = [];
+    $stop_index = 0;
+    foreach($bus_start_stops_arr as $item) {
+        if(count($bus_start_stops_arr) - 1 == $stop_index) {
+            $merged_array[] = array(
+                'name' => $item['wbtm_bus_next_stops_name'],
+                'time' => $item['wbtm_bus_next_end_time']
+            );
+        } else {
+            $merged_array[] = array(
+                'name' => $item['wbtm_bus_bp_stops_name'],
+                'time' => $item['wbtm_bus_bp_start_time']
+            );
+        }
+
+        $stop_index++;
+    }
+
 
     // If trip is midnight trip
     if (mage_bus_is_midnight_trip($bus_start_stops_arr, $start, $end)) {
@@ -943,8 +968,12 @@ function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stop
         array_push($j_dates, $prev_date);
     }
 
-    // $next_date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
-    // array_push($j_dates, $next_date);
+    $is_date_change = mage_date_change_trip($merged_array, $start, $end);
+
+    if($is_date_change) { // If trip touch next date
+        $next_date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
+        array_push($j_dates, $next_date);
+    }
 
 
     $args = array(
@@ -1147,6 +1176,73 @@ function mage_bus_is_midnight_trip($bus_start_stops_arr, $start = null, $end = n
         // Check date is changed
         if ($start_hour && $boarding_hour) {
             if (($start_hour > $boarding_hour) || ($boarding_hour == 24)) {
+                $return = true;
+            }
+        }
+    }
+
+    return $return;
+}
+
+function mage_date_change_trip($bus_start_stops_arr, $start = null, $end = null) {
+    $return = false;
+    $start_point = '';
+    $start_point_time = '';
+    $boarding_point = '';
+    $boarding_point_time = '';
+    $dropping_point_time = '';
+
+    if ($bus_start_stops_arr) {
+        $i = 0;
+        foreach ($bus_start_stops_arr as $stops) {
+            if ($i == 0) {
+                $start_point = $stops['name']; // Start Point
+                $start_point_time = $stops['time']; // Start Point
+            }
+
+            if ($start) { // Get $start data
+                if ($stops['name'] == $start) {
+                    $boarding_point = $stops['name']; // Boarding Point
+                    $boarding_point_time = $stops['time']; // Boarding Point
+                }
+            } else { // Get last data of Array
+                if ((count($bus_start_stops_arr) - 1) == $i) {
+                    $boarding_point = $stops['name']; // Boarding Point
+                    $boarding_point_time = $stops['time']; // Boarding Point
+                }
+            }
+
+            if ($stops['name'] == $end) {
+                $dropping_point_time = $stops['time']; // Dropping Point
+            }
+
+            $i++;
+        }
+
+        // Start Time
+        $start_hour = '';
+        if ($start_point_time) {
+            $start_hour = explode(':', $start_point_time);
+            $start_hour = $start_hour ? (int)$start_hour[0] : null;
+        }
+
+        // Start Time
+        $boarding_hour = '';
+        if ($boarding_point_time) {
+            $boarding_hour = explode(':', $boarding_point_time);
+            $boarding_hour = $boarding_hour ? (int)$boarding_hour[0] : null;
+        }
+
+        // End Time
+        $dropping_hour = '';
+        if ($dropping_point_time) {
+            $dropping_hour = explode(':', $dropping_point_time);
+            $dropping_hour = $dropping_hour ? (int)$dropping_hour[0] : null;
+        }
+
+        // Check Start and End Date different
+        if ($start_hour && $boarding_hour) {
+            if ( (($start_hour <= $boarding_hour) || ($boarding_hour == 24)) && ($start_hour > $dropping_hour) ) {
                 $return = true;
             }
         }
