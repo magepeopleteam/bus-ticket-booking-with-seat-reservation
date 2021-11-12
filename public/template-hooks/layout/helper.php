@@ -1335,7 +1335,7 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping)
 
     // Check date is changed
     if ($boarding_hour && $dropping_hour) {
-        if (($boarding_hour > $dropping_hour) || ($dropping_hour == 24)) {
+        if ( $boarding_hour != 24 && (($boarding_hour > $dropping_hour) || ($dropping_hour == 24))) {
             $data['dropping'] = date('Y-m-d', strtotime('+1 day', strtotime($date)));
         }
     }
