@@ -1664,17 +1664,17 @@ function mage_wp_time($time)
 function mage_wp_date($date, $format = false)
 {
     $wp_date_format = get_option('date_format');
-
+    $timezone = wp_timezone_string();
     $date = mage_date_format_issue($date);
+    $timestamp = strtotime($date . ' ' . $timezone);
+
 
     if ($date && $format) {
-        $date = date($format, strtotime($date));
-
-        return $date;
+        return wp_date($format, $timestamp);
     }
 
     if ($date && $wp_date_format) {
-        $date = date($wp_date_format, strtotime($date));
+        return wp_date($wp_date_format, $timestamp);
     }
 
     return $date;
