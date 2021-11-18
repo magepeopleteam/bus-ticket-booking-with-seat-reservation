@@ -48,7 +48,7 @@ function mage_bus_search_form_only($single_bus, $target)
                 <input type="text" class="mage_form_control"
                        id="<?php echo apply_filters('wbtm_journey_date_input_id', 'j_date'); ?>" name="j_date"
                        value="<?php echo mage_bus_isset('j_date'); ?>"
-                       placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off"
+                       placeholder="<?php echo mage_wp_date(date('Y-m-d')); ?>" autocomplete="off"
                        required/>
             </label>
         </div>
@@ -63,7 +63,7 @@ function mage_bus_search_form_only($single_bus, $target)
                         <span class="fa fa-calendar"><?php mage_bus_label('wbtm_return_date_text', __('Return Date (Optional)', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                         <input type="text" class="mage_form_control" id="r_date" name="r_date"
                                value="<?php echo mage_bus_isset('r_date'); ?>"
-                               placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off"/>
+                               placeholder="<?php echo mage_wp_date(date('Y-m-d')); ?>" autocomplete="off"/>
                     </label>
                 </div>
             <?php }
