@@ -1,0 +1,410 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: bus-seat-plugin\n"
+"POT-Creation-Date: 2018-12-12 14:04+0600\n"
+"PO-Revision-Date: 2019-04-08 06:58+0000\n"
+"Last-Translator: aamahin <a.a.mahin@gmail.com>\n"
+"Language-Team: English (United States)\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: .\n"
+"Report-Msgid-Bugs-To: \n"
+"X-Loco-Version: 2.2.2; wp-5.1.1"
+
+#: inc/wbtm_bus_ticket_meta.php:218 inc/wbtm_bus_ticket_meta.php:232
+#: inc/wbtm_bus_ticket_meta.php:263 inc/wbtm_bus_ticket_meta.php:277
+#: inc/wbtm_bus_ticket_meta.php:357 inc/wbtm_bus_ticket_meta.php:372
+#: inc/wbtm_shortcode.php:334 inc/wbtm_shortcode.php:782
+#: templates/single-bus.php:249
+msgid "Remove"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:236
+msgid "Add More Boarding Point"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:250 inc/wbtm_bus_ticket_meta.php:340
+msgid "Dropping Point"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:251
+msgid "Time"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:281
+msgid "Add More Droping Point"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:285
+msgid "Don't Show Boarding and Dropping Points in Details Page."
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:339 templates/single-bus.php:97
+msgid "Boarding Point"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:341 inc/wbtm_shortcode.php:333
+#: inc/wbtm_shortcode.php:781 templates/single-bus.php:248
+msgid "Fare"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:376
+msgid "Add More Price"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:604
+msgid "Sunday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:607
+msgid "Monday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:610
+msgid "Tuesday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:613
+msgid "Wednesday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:616
+msgid "Thursday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:619
+msgid "Friday"
+msgstr ""
+
+#: inc/wbtm_bus_ticket_meta.php:622
+msgid "Saturday"
+msgstr ""
+
+#: inc/wbtm_cpt.php:10 inc/wbtm_cpt.php:11
+msgid "Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:12 inc/wbtm_cpt.php:13
+msgid "Bus List"
+msgstr ""
+
+#: inc/wbtm_cpt.php:14
+msgid "Bus Item:"
+msgstr ""
+
+#: inc/wbtm_cpt.php:15
+msgid "All Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:16 inc/wbtm_cpt.php:17
+msgid "Add New Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:18
+msgid "New Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:19
+msgid "Edit Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:20
+msgid "Update Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:21 inc/wbtm_cpt.php:22
+msgid "View Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:23
+msgid "Search Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:24
+msgid "Bus Not found"
+msgstr ""
+
+#: inc/wbtm_cpt.php:25
+msgid "Bus Not found in Trash"
+msgstr ""
+
+#: inc/wbtm_cpt.php:26
+msgid "Bus Feature Image"
+msgstr ""
+
+#: inc/wbtm_cpt.php:27
+msgid "Set Bus featured image"
+msgstr ""
+
+#: inc/wbtm_cpt.php:28
+msgid "Remove Bus featured image"
+msgstr ""
+
+#: inc/wbtm_cpt.php:29
+msgid "Use as Bus featured image"
+msgstr ""
+
+#: inc/wbtm_cpt.php:30
+msgid "Insert into Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:31
+msgid "Uploaded to this Bus"
+msgstr ""
+
+#: inc/wbtm_cpt.php:32
+msgid "Bus list"
+msgstr ""
+
+#: inc/wbtm_cpt.php:33
+msgid "Bus list navigation"
+msgstr ""
+
+#: inc/wbtm_cpt.php:34
+msgid "Filter Bus list"
+msgstr ""
+
+#: inc/wbtm_extra_price.php:141
+msgid "Journey Date:"
+msgstr ""
+
+#: inc/wbtm_extra_price.php:142
+msgid "Journey Time:"
+msgstr ""
+
+#: inc/wbtm_extra_price.php:143
+msgid "Boarding Point:"
+msgstr ""
+
+#: inc/wbtm_extra_price.php:144
+msgid "Dropping Point:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:61 templates/taxonomy-organozer.php:41
+msgid "Type:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:62 templates/single-bus.php:40
+#: templates/taxonomy-organozer.php:42
+msgid "Bus No:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:63 templates/taxonomy-organozer.php:44
+msgid "Start From:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:64 templates/taxonomy-organozer.php:45
+msgid "End at:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:65 templates/taxonomy-organozer.php:46
+msgid "Fare:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:67 inc/wbtm_shortcode.php:344
+#: inc/wbtm_shortcode.php:792 templates/single-bus.php:259
+#: templates/taxonomy-category.php:48 templates/taxonomy-organozer.php:48
+msgid "Book Now"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:127 inc/wbtm_shortcode.php:536
+#: inc/wbtm_shortcode.php:601 inc/wbtm_shortcode.php:979
+msgid "DEPARTING"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:128 inc/wbtm_shortcode.php:540
+#: inc/wbtm_shortcode.php:602 inc/wbtm_shortcode.php:983
+msgid "COACH NO"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:129 inc/wbtm_shortcode.php:544
+#: inc/wbtm_shortcode.php:603 inc/wbtm_shortcode.php:987
+msgid "STARTING"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:130 inc/wbtm_shortcode.php:548
+#: inc/wbtm_shortcode.php:604 inc/wbtm_shortcode.php:991
+msgid "END"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:131 inc/wbtm_shortcode.php:552
+#: inc/wbtm_shortcode.php:605 inc/wbtm_shortcode.php:995
+msgid "FARE"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:132 inc/wbtm_shortcode.php:556
+#: inc/wbtm_shortcode.php:606 inc/wbtm_shortcode.php:999
+msgid "TYPE"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:133 inc/wbtm_shortcode.php:560
+#: inc/wbtm_shortcode.php:607 inc/wbtm_shortcode.php:1003
+msgid "ARRIVAL"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:134 inc/wbtm_shortcode.php:564
+#: inc/wbtm_shortcode.php:608 inc/wbtm_shortcode.php:1007
+msgid "SEATS AVAILABLE"
+msgstr "SEATS AVAILABLE"
+
+#: inc/wbtm_shortcode.php:135 inc/wbtm_shortcode.php:609
+msgid "VIEW"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:315 inc/wbtm_shortcode.php:763
+#: templates/single-bus.php:230
+msgid "Start & Arrival Time"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:332 inc/wbtm_shortcode.php:780
+#: templates/single-bus.php:247
+msgid "Seat No"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:337 inc/wbtm_shortcode.php:785
+#: templates/single-bus.php:252
+msgid "Total"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:532 inc/wbtm_shortcode.php:600
+#: inc/wbtm_shortcode.php:975
+msgid "Bus Name"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:568 inc/wbtm_shortcode.php:1011
+msgid "View"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:593 inc/wbtm_shortcode.php:750
+#: templates/single-bus.php:215
+msgid "Route"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:594
+msgid "Date:"
+msgstr ""
+
+#: inc/wbtm_shortcode.php:757 templates/single-bus.php:223
+msgid "Date"
+msgstr ""
+
+#: inc/wbtm_tax.php:9
+msgid "Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:10
+msgid "All Bus Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:11
+msgid "Parent Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:12
+msgid "Parent Category:"
+msgstr ""
+
+#: inc/wbtm_tax.php:13
+msgid "New Category Name"
+msgstr ""
+
+#: inc/wbtm_tax.php:14
+msgid "Add New Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:15
+msgid "Edit Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:16
+msgid "Update Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:17
+msgid "View Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:18
+msgid "Separate Category with commas"
+msgstr ""
+
+#: inc/wbtm_tax.php:19
+msgid "Add or remove Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:20
+msgid "Choose from the most used"
+msgstr ""
+
+#: inc/wbtm_tax.php:21
+msgid "Popular Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:22
+msgid "Search Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:23
+msgid "Not Found"
+msgstr ""
+
+#: inc/wbtm_tax.php:24
+msgid "No Category"
+msgstr ""
+
+#: inc/wbtm_tax.php:25
+msgid "Category list"
+msgstr ""
+
+#: inc/wbtm_tax.php:26
+msgid "Category list navigation"
+msgstr ""
+
+#: templates/single-bus.php:41 templates/taxonomy-organozer.php:43
+msgid "Total Seat:"
+msgstr ""
+
+#: templates/single-bus.php:47
+msgid "Boarding Points"
+msgstr ""
+
+#: templates/single-bus.php:61
+msgid "Dropping Points"
+msgstr ""
+
+#: templates/single-bus.php:99
+msgid "Select Boarding Point"
+msgstr ""
+
+#: templates/single-bus.php:113
+msgid "Drop Off Point"
+msgstr ""
+
+#: templates/single-bus.php:115
+msgid "Select Drop Off Point"
+msgstr ""
+
+#: templates/single-bus.php:129
+msgid "Select Journey Date"
+msgstr ""
+
+#: templates/single-bus.php:134
+msgid "Search"
+msgstr ""
+
+#: woocommerce-bus.php:192
+msgid "Invalid product."
+msgstr ""
+
+#: woocommerce-bus.php:822
+msgid ""
+"Bus Ticket Booking with Seat Reservation Plugin is Dependent on WooCommerce, "
+"But currently WooCommerce is not Active. Please Active WooCommerce plugin "
+"first"
+msgstr ""

@@ -50,12 +50,7 @@ foreach ($dp_arr as $_dp_arr) {
             <li><strong><?php echo $wbtmmain->bus_get_option('wbtm_fare_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_fare_text', 'label_setting_sec') : _e('Fare', 'bus-ticket-booking-with-seat-reservation'); ?></strong> <?php echo get_woocommerce_currency_symbol() . $wbtmmain->wbtm_get_bus_price($bp, $dp, $price_arr); ?>
             </li>
         </ul>
-        <?php 
-            $book_now_text_color = wbtm_get_style('wbtm_book_now_btn_text_color','#ffffff');
-            $book_now_bg_color = wbtm_get_style('wbtm_book_now_btn_bg_color','#0a4b78');
-            $book_now_style = sprintf('background:%s;color:%s', $book_now_bg_color, $book_now_text_color);
-        ?>
-        <a href="<?php the_permalink(); ?>" class='btn wbtm-bus-list-btn' style="<?php echo $book_now_style; ?>">
+        <a href="<?php the_permalink(); ?>" class='btn wbtm-bus-list-btn'>
             <?php echo $wbtmmain->bus_get_option('wbtm_book_now_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_book_now_text', 'label_setting_sec') : _e('Book Now', 'bus-ticket-booking-with-seat-reservation'); ?>
         </a>
     </div>

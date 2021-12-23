@@ -66,6 +66,7 @@ class WBTM_Plugin_Admin {
 		// require_once WBTM_PLUGIN_DIR . 'admin/class/class-menu-page.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-tax-meta.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-custom-css.php';
+		require_once WBTM_PLUGIN_DIR . 'admin/class/class-welcome-page.php';
 	}
 
 

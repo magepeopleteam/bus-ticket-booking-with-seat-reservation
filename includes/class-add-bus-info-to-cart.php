@@ -619,12 +619,12 @@ class WbtmAddToCart
                         endif;
 
                         if ($cart_item['wbtm_billing_type'] != '') :
-                            $valid_till = mtsa_calculate_valid_date($cart_item['wbtm_journey_date'], $cart_item['wbtm_billing_type']);
+                            $valid_till = mtsa_calculate_valid_date(get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'), $cart_item['wbtm_billing_type']);
                             ?>
                             <li><?php _e('Start Date: ', 'bus-ticket-booking-with-seat-reservation');
-                                ?><?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?></li>
+                                ?><?php echo $cart_item['wbtm_journey_date']; ?></li>
                             <li><?php _e('Valid Till: ', 'bus-ticket-booking-with-seat-reservation');
-                                ?><?php echo mage_wp_date($valid_till); ?></li>
+                                ?><?php echo $valid_till; ?></li>
                             <li><?php _e('Billing Type: ', 'bus-ticket-booking-with-seat-reservation');
                                 ?><?php echo $cart_item['wbtm_billing_type']; ?></li>
 

@@ -3,6 +3,10 @@ get_header();
 the_post();
 $id = get_the_id();
 $values = get_post_custom($id);
+/**
+ * Hook: wbtm_before_single_bus_search_page.
+ */
+do_action('wbtm_before_single_bus_search_page');
 ?>
     <div class="mage mage_single_bus_search_page" data-busId="<?php echo $id; ?>">
         <?php do_action('woocommerce_before_single_product'); ?>
@@ -118,6 +122,9 @@ $values = get_post_custom($id);
         ?>
     </div>
 
-
 <?php
+/**
+ * Hook: wbtm_after_single_bus_search_page.
+ */
+do_action('wbtm_after_single_bus_search_page');
 get_footer();

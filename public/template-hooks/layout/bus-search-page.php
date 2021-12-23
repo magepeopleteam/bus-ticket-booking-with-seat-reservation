@@ -40,7 +40,7 @@ function mage_bus_search_list($return)
     $bus_list = mage_search_bus_query($return);
     $bus_list_loop = new WP_Query($bus_list);
     $j_date = $return ? $_GET['r_date'] : $_GET['j_date'];
-    $j_date_search = mage_wp_date($j_date, 'Y-m-d');
+    $j_date = mage_wp_date($j_date, 'Y-m-d');
     $start = $_GET['bus_start_route'];
     $end = $_GET['bus_end_route'];
 
@@ -48,6 +48,9 @@ function mage_bus_search_list($return)
         $start = $_GET['bus_end_route'];
         $end = $_GET['bus_start_route'];
     }
+
+
+    //$j_date = mage_convert_date_format($j_date, 'Y-m-d');
 
     echo '<div class="mar_t mage_bus_lists">';
     mage_bus_title();
@@ -61,8 +64,7 @@ function mage_bus_search_list($return)
         $bus_list_loop->the_post();
         $id = get_the_id();
 
-        $bus_bp_key = mage_determine_route($id, $return, $start, $end);
-        $bus_bp_array = get_post_meta($id, $bus_bp_key, true) ? get_post_meta($id, $bus_bp_key, true) : [];
+        $bus_bp_array = get_post_meta($id, 'wbtm_bus_bp_stops', true) ? get_post_meta($id, 'wbtm_bus_bp_stops', true) : [];
         $bus_bp_array = maybe_unserialize($bus_bp_array);
 
         if ($bus_bp_array) {
@@ -81,15 +83,13 @@ function mage_bus_search_list($return)
 
             // Buffer Time Calculation
             $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
-            $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date_search)));
+            $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
             // Buffer Time Calculation END
 
             // Midnight Calculation
             $is_midnight = mage_bus_is_midnight_trip($bus_bp_array, $start);
             if ($is_midnight) {
-                $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date_search)));
-            } else {
-                $j_date = $j_date_search;
+                $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date)));
             }
             // Midnight Calculation END
 
@@ -97,7 +97,7 @@ function mage_bus_search_list($return)
                 // Operational on day
                 $is_on_date = false;
                 $bus_on_dates = array();
-                // $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+//                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
                 $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
                 if ($bus_on_date != null) {
                     $bus_on_dates = explode(', ', $bus_on_date);
@@ -105,6 +105,7 @@ function mage_bus_search_list($return)
                 }
 
                 if ($is_on_date) {
+
                     // echo $j_date.'<br>';
                     // echo '<pre>';print_r($bus_on_dates);die;
                     // die;
@@ -240,11 +241,6 @@ function mage_bus_search_item($return, $id)
     $start_time = mage_bus_time($return, false);
     $end_time = mage_bus_time($return, true);
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
-    $bus_bp_array = get_post_meta($bus_id, 'wbtm_bus_bp_stops', true) ? get_post_meta($bus_id, 'wbtm_bus_bp_stops', true) : [];
-    $bus_bp_array = maybe_unserialize($bus_bp_array);
-    if(mage_bus_is_midnight_trip($bus_bp_array, $start)) { // If Boarding point is after 11:59 pm then journey date will be search date +1 day
-        $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
-    }
     $get_stops_dates = mage_get_bus_stops_date($bus_id, $date, $start, $end);
     $arrival_date = $get_stops_dates['dropping'];
 
@@ -288,7 +284,7 @@ function mage_bus_search_item($return, $id)
                         </h6>
                         <h6>
                             <span class="fa fa-stop"></span>
-                            <span><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('( %s %s )', mage_wp_date($arrival_date), mage_wp_time($end_time)) : null); ?>
+                            <span><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('(%s %s)', mage_wp_date($arrival_date), mage_wp_time($end_time)) : null); ?>
                             </span>
                         </h6>
                     </div>
@@ -322,13 +318,6 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
     $start = $return ? mage_bus_isset('bus_end_route') : mage_bus_isset('bus_start_route');
     $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
-    
-    $bus_bp_array = get_post_meta($bus_id, 'wbtm_bus_bp_stops', true) ? get_post_meta($bus_id, 'wbtm_bus_bp_stops', true) : [];
-    $bus_bp_array = maybe_unserialize($bus_bp_array);
-    if(mage_bus_is_midnight_trip($bus_bp_array, $start)) { // If Boarding point is after 11:59 pm then journey date will be search date +1 day
-        $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
-    }
-    // echo $date.'<br>';
     // $start_time = get_wbtm_datetime(mage_bus_time($return, false), 'time');
     $start_time = mage_wp_time(mage_bus_time($return, false));
     // $end_time = get_wbtm_datetime(mage_bus_time($return, true), 'time');
@@ -966,7 +955,7 @@ function mage_bus_route_title($return)
         <h4>
             <strong>
                 <span><?php echo $start; ?></span>
-                <i class="fas fa-long-arrow-alt-right"></i>
+                <span class="fa fa-long-arrow-right"></span>
                 <span><?php echo $end; ?></span>
             </strong>
         </h4>
