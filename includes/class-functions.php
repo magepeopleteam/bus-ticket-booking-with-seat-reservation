@@ -1716,11 +1716,42 @@ function wbtm_journey_date_js()
 
 
             <?php }
-            } else {?>
+            } else {
+            $settings = get_option('wbtm_bus_settings');
+            $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : '';
+            $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : '';
+
+            if ($global_offdates) {
+                $global_offdates_arr = explode(', ', $global_offdates);
+                $pday = array();
+                foreach ($global_offdates_arr as $offdate) {
+                    $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
+                }
+                $particular_date = implode(',', $pday);
+            }
+
+            if ($global_offdays) {
+                $particular_offdays = implode(',', $global_offdays);
+            }
+            ?>
+            var disableDates = [<?php echo $particular_date; ?>];
+            var disableDays = [<?php echo $particular_offdays; ?>];
+
+            function disableAllTheseDays(date) {
+                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                if (jQuery.inArray(sdate, disableDates) != -1) {
+                    return [false];
+                }
+                if (disableDays.includes(date.getDay())) {
+                    return [false];
+                }
+                return [true];
+            }
 
             jQuery("#j_date").datepicker({
                 dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
                 minDate: 0,
+                beforeShowDay: disableAllTheseDays,
                 onSelect: function (dateText, inst) {
                     var date = jQuery.datepicker.parseDate(inst.settings.dateFormat || jQuery.datepicker
                         ._defaults.dateFormat, dateText, inst.settings);

@@ -127,6 +127,53 @@ class WBTMSettingPage
             ),
         );
 
+        $global_offday_settings = array(
+            'page_nav' => __('<i class="fas fa fa-cog"></i> Global Offday', 'bus-ticket-booking-with-seat-reservation'),
+            'priority' => 10,
+            'page_settings' => array(
+                'section_1' => array(
+                    'description' => __('This is section details', 'bus-ticket-booking-with-seat-reservation'),
+                    'options' => array(
+                        array(
+                            'id' => 'wbtm_bus_global_offdates',
+                            'title' => __('Global Off-Dates ', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please select global offdate', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => '',
+                            'type' => 'datepicker_multi',
+                            'placeholder' => __('', 'bus-ticket-booking-with-seat-reservation'),
+                        ),
+                        array(
+                            'id' => 'wbtm_bus_global_offdays',
+                            'title' => __('Global Off-Days ', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please select global offday', 'bus-ticket-booking-with-seat-reservation'),
+                            'type' => 'checkbox_multi',
+                            // 'value'		    => array('option_2'),
+                            'args' => array(
+                                '0' => __('Sunday', 'bus-ticket-booking-with-seat-reservation'),
+                                '1' => __('Monday', 'bus-ticket-booking-with-seat-reservation'),
+                                '2' => __('Tuesday', 'bus-ticket-booking-with-seat-reservation'),
+                                '3' => __('Wednesday', 'bus-ticket-booking-with-seat-reservation'),
+                                '4' => __('Thursday', 'bus-ticket-booking-with-seat-reservation'),
+                                '5' => __('Friday', 'bus-ticket-booking-with-seat-reservation'),
+                                '6' => __('Saturday', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),
+//                        array(
+//                            'id'        => 'wbtm_allow_dropping_point',
+//                            'title'     => __('Allowed Dropping Point', 'bus-ticket-booking-with-seat-reservation-qr-code'),
+//                            'details'   => __('Please select the user role who can access the QR Details page and able to checkin Attendee', 'bus-ticket-booking-with-seat-reservation-qr-code'),
+//                            'type'      => 'select2',
+//                            'multiple'  => true,
+//                            'args'      => array(
+//                                'enable'   => __('Enable', 'bus-ticket-booking-with-seat-reservation-qr-code'),
+//                                'disable'    => __('Disable', 'bus-ticket-booking-with-seat-reservation-qr-code')
+//                            ),
+//                        ),
+                    )
+                )
+            )
+        );
+
         $seat_panel_settings = array(
             'page_nav' => __('<i class="fas fa fa-cog"></i> Seat Panel Settings', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
@@ -863,6 +910,7 @@ class WBTMSettingPage
             'item_version' => "1.0.0",
             'panels' => apply_filters('wbtm_submenu_setings_panels', array(
                 'gensettings' => $gen_settings,
+                'globaloffdaysettings' => $global_offday_settings,
                 'seat_panel_settings' => $seat_panel_settings,
                 'transsettings' => $translation_settings,
                 'colorsettings' => $color_settings,
