@@ -157,6 +157,9 @@ if( ! class_exists( 'AddThemePage' ) ) {
             elseif( isset($option['type']) && $option['type'] === 'datepicker' ){
                 echo $FormFieldsGenerator->field_datepicker($option);
             }
+            elseif( isset($option['type']) && $option['type'] === 'datepicker_multi' ){
+                echo $FormFieldsGenerator->field_datepicker_multi($option);
+            }
             elseif( isset($option['type']) && $option['type'] === 'color_sets' ){
                 echo $FormFieldsGenerator->field_color_sets($option);
             }
