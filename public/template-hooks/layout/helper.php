@@ -118,7 +118,7 @@ function mage_bus_on_date($id, $j_date)
     }
 }
 
-function mage_route_list($single_bus, $start_route)
+function mage_route_list($single_bus, $start_route, $is_hide_consider = false)
 {
     echo '<ul class="mage_input_select_list">';
     if ($single_bus) {
@@ -139,7 +139,15 @@ function mage_route_list($single_bus, $start_route)
             'hide_empty' => false,
         ));
         foreach ($routes as $route) {
-            echo '<li data-route="' . $route->name . '"><span class="fa fa-map-marker"></span>' . $route->name . '</li>';
+            if($is_hide_consider) {
+                $get_term = get_term_by('name', $route->name, 'wbtm_bus_stops');
+                $is_hide_on_boarding = get_term_meta($get_term->term_id, 'wbtm_is_hide_global_boarding', true);
+                if($is_hide_on_boarding !== 'yes') {
+                    echo '<li data-route="' . $route->name . '"><span class="fa fa-map-marker"></span>' . $route->name . '</li>';
+                }
+            } else {
+                echo '<li data-route="' . $route->name . '"><span class="fa fa-map-marker"></span>' . $route->name . '</li>';
+            }
         }
     }
     echo '</ul>';

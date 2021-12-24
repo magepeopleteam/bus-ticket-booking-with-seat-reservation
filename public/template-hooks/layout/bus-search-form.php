@@ -26,7 +26,7 @@ function mage_bus_search_form_only($single_bus, $target)
                            placeholder="<?php mage_bus_label('wbtm_please_select_text', __('Please Select', 'bus-ticket-booking-with-seat-reservation')) ?>"
                            autocomplete="off" required/>
                 </label>
-                <?php mage_route_list($single_bus, true); ?>
+                <?php mage_route_list($single_bus, true, true); ?>
             </div>
         </div>
         <div class="mage_form_list">
