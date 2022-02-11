@@ -35,7 +35,7 @@ class WBTM_Plugin_Public {
 
 
 	public function enqueue_scripts() {
-        wp_enqueue_script('jquery');
+        wp_enqueue_script('jquery', '', array(), false, true);
 		wp_enqueue_script('jquery-ui-datepicker');
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script ('wbtm-select2-style-cdn',"https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js",null,1);
