@@ -563,7 +563,6 @@
     function mageCustomerInfoFormBus(parent, seatName, passengerType, busDd) {
         let formTitle = parent.find('input[name="mage_bus_title"]').val() + seatName;
         let currentTarget = parent.find('.mage_hidden_customer_info_form');
-        console.log('lksjdfkl')
         if (currentTarget.length > 0) {
             currentTarget.append('<input type="hidden" name="custom_reg_user" value="no" />');
             currentTarget.find('input[name="seat_name[]"]').val(seatName);

@@ -1682,11 +1682,15 @@ function wbtm_journey_date_js()
             if (is_single()) {
 
             $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : array();
+            if($wbtm_bus_on_dates) {
+                $wbtm_bus_on_dates = explode(', ', $wbtm_bus_on_dates);
+            }
 
             if (is_array($wbtm_bus_on_dates) && sizeof($wbtm_bus_on_dates) > 0) {
             $pday = array();
             foreach ($wbtm_bus_on_dates as $_wbtm_bus_on_dates) {
-                $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
+                // $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
+                $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates)) . '"';
             }
             $particular_date = implode(',', $pday);
             ?>
@@ -1728,22 +1732,34 @@ function wbtm_journey_date_js()
                     $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
                 }
                 $particular_date = implode(',', $pday);
+
+                echo 'var disableDates = ['.$particular_date.'];';
+            } else {
+                echo 'var disableDates = [];';
             }
 
             if ($global_offdays) {
                 $particular_offdays = implode(',', $global_offdays);
+
+                echo 'var disableDays = ['.$particular_offdays.'];';
+            } else {
+                echo 'var disableDays = [];';
             }
             ?>
-            var disableDates = [<?php echo $particular_date; ?>];
-            var disableDays = [<?php echo $particular_offdays; ?>];
+
 
             function disableAllTheseDays(date) {
                 var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if (jQuery.inArray(sdate, disableDates) != -1) {
-                    return [false];
+                if(disableDates.length > 0) {
+                    if (jQuery.inArray(sdate, disableDates) != -1) {
+                        return [false];
+                    }
                 }
-                if (disableDays.includes(date.getDay())) {
-                    return [false];
+                
+                if(disableDays.length > 0) {
+                    if (disableDays.includes(date.getDay())) {
+                        return [false];
+                    }
                 }
                 return [true];
             }
