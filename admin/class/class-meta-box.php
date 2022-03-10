@@ -111,7 +111,7 @@ class WBTMMetaBox
                 <div class="wbtm-section-info">
                     <span><i class="fas fa-info-circle"></i></span>
                     <div class="wbtm-section-info-content">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est minus ducimus enim eligendi, ipsa voluptate vel repellat vero mollitia incidunt.
+                        <?php _e('Individual prices for boarding point to dropping point with seat types.', 'bus-ticket-booking-with-seat-reservation'); ?>
                     </div>
                 </div>
             </div>
@@ -232,6 +232,7 @@ class WBTMMetaBox
 
         $settings = get_option('wbtm_bus_settings');
         $same_bus_return_val = isset($settings['same_bus_return_setting']) ? $settings['same_bus_return_setting'] : 'disable';
+        $zero_price_allow = array_key_exists('zero_price_allow', $values) ? $values['zero_price_allow'][0] : 'no';
         ?>
         <div class="wbtm-item-row">
             <label class="item-label"><?php _e('Coach No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
@@ -283,6 +284,12 @@ class WBTMMetaBox
             <?php do_action('wbtm_car_type', $mtpa_car_type); ?>
         </div>
     <?php endif; ?>
+
+        <div id="wbtm_zero_price_allow" class="wbtm-item-row">
+            <label class="item-label"><?php _e("Zero Price Allow?", "bus-ticket-booking-with-seat-reservation") ?></label>
+            <input type="radio" id="zero_price_allow_no" name="zero_price_allow" <?php echo (($zero_price_allow == "no" || $zero_price_allow == '') ? " checked" : ""); ?> value="no"> <label for="zero_price_allow_no"> <?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>
+                <input type="radio" id="zero_price_allow_yes" name="zero_price_allow" <?php echo ($zero_price_allow == "yes" ? " checked" : ""); ?> value="yes" style="margin-left: 20px"> <label for="zero_price_allow_yes"> <?php _e('Yes', 'bus-ticket-booking-with-seat-reservation') ?></label>
+        </div>
 
         <div class="wbtm-seat-plan-wrapper">
             <h2 class="wbtm-deck-title"><?php _e('Seat Plan for Lower Deck', 'bus-ticket-booking-with-seat-reservation') ?></h2>
@@ -402,7 +409,7 @@ class WBTMMetaBox
                             </table>
 
                             <div id="add-seat-row" class="add-seat-row-btn">
-                                <i class="fas fa-plus"></i>
+                                <i class="fas fa-plus"></i> <?php _e('Add Seat Row', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </div>
 
                         <?php } ?>
@@ -470,7 +477,7 @@ class WBTMMetaBox
                             echo $values['wbtm_seat_dd_price_parcent'][0];
                         } ?>' name="wbtm_seat_dd_price_parcent" id='wbtm_seat_dd_price_parcent' style="width: 70px;"
                                pattern="[1-9]*" inputmode="numeric" min="0" max=""><span
-                                style="position: absolute;right: 4px;top: 5px;color: #555;">%</span>
+                                style="position: absolute;right: 0px;top: 15px;color: #555;font-weight:bold">%</span>
                     </p>
                     <p class="wbtm-control-row">
                         <button id="create_seat_plan_dd" class="create_seat_plan"><span
@@ -548,7 +555,7 @@ class WBTMMetaBox
                                 </tr>
                                 </tbody>
                             </table>
-                            <div id="add-seat-row-dd" class="add-seat-row-btn"><i class="fas fa-plus"></i></div>
+                            <div id="add-seat-row-dd" class="add-seat-row-btn"><i class="fas fa-plus"></i> <?php _e('Add Seat Row', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                         <?php } ?>
                     </div>
                 </div>
@@ -607,6 +614,7 @@ class WBTMMetaBox
             $as_driver = isset($_POST['as_driver']) ? $_POST['as_driver'] : null;
             $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no';
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
+            $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
             
 
             // Routing
@@ -677,6 +685,8 @@ class WBTMMetaBox
 
 
             // Seat Prices
+            // $zero_price_allow = get_post_meta($pid, 'zero_price_allow', true) ?: 'no';
+
             $seat_prices = array();
             $boarding_points = $_POST['wbtm_bus_bp_price_stop'];
             $dropping_points = $_POST['wbtm_bus_dp_price_stop'];
@@ -690,7 +700,12 @@ class WBTMMetaBox
             if (!empty($boarding_points)) {
                 $i = 0;
                 foreach ($boarding_points as $point) {
-                    if ($point && $dropping_points[$i] && $adult_prices[$i]) {
+                    if ($point && $dropping_points[$i] && $adult_prices[$i] !== '') {
+
+                        if($zero_price_allow === 'no' && !$adult_prices[$i]) {
+                            continue;
+                        }
+
                         $seat_prices[$i]['wbtm_bus_bp_price_stop'] = $point;
                         $seat_prices[$i]['wbtm_bus_dp_price_stop'] = $dropping_points[$i];
                         $seat_prices[$i]['wbtm_bus_price'] = $adult_prices[$i];
@@ -719,7 +734,12 @@ class WBTMMetaBox
             if (!empty($boarding_points_return)) {
                 $i = 0;
                 foreach ($boarding_points_return as $point) {
-                    if ($point && $dropping_points_return[$i] && $adult_prices_return[$i]) {
+                    if ($point && $dropping_points_return[$i] && $adult_prices_return[$i] !== '') {
+
+                        if($zero_price_allow === 'no' && !$adult_prices_return[$i]) {
+                            continue;
+                        }
+
                         $seat_prices_return[$i]['wbtm_bus_bp_price_stop'] = $point;
                         $seat_prices_return[$i]['wbtm_bus_dp_price_stop'] = $dropping_points_return[$i];
                         $seat_prices_return[$i]['wbtm_bus_price'] = $adult_prices_return[$i];
@@ -803,7 +823,7 @@ class WBTMMetaBox
             // Extra services
             $extra_service_old = get_post_meta($post_id, 'mep_events_extra_prices', true);
             $extra_service_new = array();
-            $names = $_POST['option_name'];
+            $names = isset($_POST['option_name']) ? $_POST['option_name'] : array();
             $urls = $_POST['option_price'];
             $qty = $_POST['option_qty'];
             $qty_type = $_POST['option_qty_type'];
@@ -1140,6 +1160,7 @@ class WBTMMetaBox
 
             update_post_meta($pid, 'wbtm_general_same_bus_return', $wbtm_general_same_bus_return);
             update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
+            update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             
 
@@ -1259,7 +1280,7 @@ class WBTMMetaBox
                                     <td align="center" width="30px"><input type="text" data-clocklet
                                                                            name='wbtm_bus_bp_start_time[]'
                                                                            value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>"
-                                                                           class="text"></td>
+                                                                           class="text" placeholder="15:00"></td>
                                     <td align="center"><a class="button wbtm-remove-row-t" href="#"><i
                                                     class="fas fa-minus-circle"></i>
                                             <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1288,7 +1309,7 @@ class WBTMMetaBox
                                 </select>
                             </td>
                             <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value=""
-                                                      class="text"></td>
+                                                      class="text" placeholder="15:00"></td>
                             <td align="center"><a class="button remove-bp-row" href="#"><i
                                             class="fas fa-minus-circle"></i>
                                     <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1332,7 +1353,7 @@ class WBTMMetaBox
                                     </td>
                                     <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time[]'
                                                               value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>"
-                                                              class="text"></td>
+                                                              class="text" placeholder="15:00"></td>
                                     <td align="center"><a class="button wbtm-remove-row-t" href="#"><i
                                                     class="fas fa-minus-circle"></i>
                                             <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1362,7 +1383,7 @@ class WBTMMetaBox
                                 </select>
                             </td>
                             <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value=""
-                                                      class="text"></td>
+                                                      class="text" placeholder="15:00"></td>
                             <td align="center"><a class="button remove-bp-row" href="#"><i
                                             class="fas fa-minus-circle"></i>
                                     <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1415,7 +1436,7 @@ class WBTMMetaBox
                                         <td align="center" width="30px"><input type="text" data-clocklet
                                                                             name='wbtm_bus_bp_start_time_return[]'
                                                                             value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>"
-                                                                            class="text"></td>
+                                                                            class="text" placeholder="15:00"></td>
                                         <td align="center"><a class="button wbtm-remove-row-t" href="#"><i
                                                         class="fas fa-minus-circle"></i>
                                                 <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1444,7 +1465,7 @@ class WBTMMetaBox
                                     </select>
                                 </td>
                                 <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time_return[]' value=""
-                                                        class="text"></td>
+                                                        class="text" placeholder="15:00"></td>
                                 <td align="center"><a class="button remove-bp-row" href="#"><i
                                                 class="fas fa-minus-circle"></i>
                                         <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1488,7 +1509,7 @@ class WBTMMetaBox
                                         </td>
                                         <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]'
                                                                 value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>"
-                                                                class="text"></td>
+                                                                class="text" placeholder="15:00"></td>
                                         <td align="center"><a class="button wbtm-remove-row-t" href="#"><i
                                                         class="fas fa-minus-circle"></i>
                                                 <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1518,7 +1539,7 @@ class WBTMMetaBox
                                     </select>
                                 </td>
                                 <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value=""
-                                                        class="text"></td>
+                                                        class="text" placeholder="15:00"></td>
                                 <td align="center"><a class="button remove-bp-row" href="#"><i
                                                 class="fas fa-minus-circle"></i>
                                         <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -2138,7 +2159,7 @@ class WBTMMetaBox
                         '<?php echo $pickpoints; ?>' +
                         '</select>' +
                         '<input type="text" name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_time_" : "wbtm_selected_pickpoint_time_") + get_boarding_point +
-                        '[]" placeholder="Pickup Time">' +
+                        '[]" placeholder="15:00">' +
                         '<button class="wbtm_remove_pickpoint"><i class="fas fa-minus-circle"></i></button>' +
                         '</div></div>' +
                         '<button class="wbtm_add_more_pickpoint"><i class="fas fa-plus"></i> <?php _e("Add more", "bus-ticket-booking-with-seat-reservation"); ?></button>' +

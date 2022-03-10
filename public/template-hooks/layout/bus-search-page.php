@@ -248,9 +248,11 @@ function mage_bus_search_item($return, $id)
 
     $cart_class = wbtm_find_product_in_cart($return);
 
+    $zero_price_allow = get_post_meta($bus_id, 'zero_price_allow', true) ?: 'no';
+
     // Check this route has price if not, return
     // $check_has_price = mage_bus_seat_price($bus_id, $start, $end, false);
-    if (!$seat_price) {
+    if(($zero_price_allow === 'no' && !$seat_price) || $seat_price === '') {
         return;
     }
 

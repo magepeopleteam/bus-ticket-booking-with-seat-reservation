@@ -734,39 +734,41 @@ function mage_bus_passenger_type($return, $dd)
     $child_label = $seat_panel_settings['wbtm_seat_type_child_label'];
     $infant_label = $seat_panel_settings['wbtm_seat_type_infant_label'];
     $special_label = $seat_panel_settings['wbtm_seat_type_special_label'];
-    foreach ($price_arr as $key => $val) {
-        if (strtolower($val['wbtm_bus_bp_price_stop']) === strtolower($start) && strtolower($val['wbtm_bus_dp_price_stop']) === strtolower($end)) {
-            // if (mage_bus_multiple_passenger_type_check($id, $start, $end)) {
-            $dd_price_increase = 0;
-            if ($dd) {
-                $seat_dd_increase = (int)get_post_meta($id, 'wbtm_seat_dd_price_parcent', true);
-                $dd_price_increase = $seat_dd_increase ? $seat_dd_increase : 0;
+    if($price_arr) {
+        foreach ($price_arr as $key => $val) {
+            if (strtolower($val['wbtm_bus_bp_price_stop']) === strtolower($start) && strtolower($val['wbtm_bus_dp_price_stop']) === strtolower($end)) {
+                // if (mage_bus_multiple_passenger_type_check($id, $start, $end)) {
+                $dd_price_increase = 0;
+                if ($dd) {
+                    $seat_dd_increase = (int)get_post_meta($id, 'wbtm_seat_dd_price_parcent', true);
+                    $dd_price_increase = $seat_dd_increase ? $seat_dd_increase : 0;
+                }
+                ?>
+                <div class="passenger_type_list">
+                    <ul>
+                        <?php
+                        if ($val['wbtm_bus_price'] !== '') {
+                            $price = $val['wbtm_bus_price'] + ($val['wbtm_bus_price'] * $dd_price_increase / 100);
+                            echo '<li data-seat-price="' . $price . '" data-seat-type="0" data-seat-label="' . $adult_label . '">' . $adult_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
+                        }
+                        if ($val['wbtm_bus_child_price'] != '') {
+                            $price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
+                            echo '<li data-seat-price="' . $price . '" data-seat-type="1" data-seat-label="' . $child_label . '">' . $child_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
+                        }
+                        if ($val['wbtm_bus_infant_price'] != '') {
+                            $price = $val['wbtm_bus_infant_price'] + ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100);
+                            echo '<li data-seat-price="' . $price . '" data-seat-type="2" data-seat-label="' . $infant_label . '">' . $infant_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
+                        }
+                        // if ($val['wbtm_bus_special_price'] > 0) {
+                        //     $price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
+                        //     echo '<li data-seat-price="' . $price . '" data-seat-type="3" data-seat-label="'. $special_label .'">' . $special_label.' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
+                        // }
+                        ?>
+                    </ul>
+                </div>
+                <?php
+                // }
             }
-            ?>
-            <div class="passenger_type_list">
-                <ul>
-                    <?php
-                    if ($val['wbtm_bus_price'] > 0) {
-                        $price = $val['wbtm_bus_price'] + ($val['wbtm_bus_price'] * $dd_price_increase / 100);
-                        echo '<li data-seat-price="' . $price . '" data-seat-type="0" data-seat-label="' . $adult_label . '">' . $adult_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
-                    }
-                    if ($val['wbtm_bus_child_price'] >= 0 && $val['wbtm_bus_child_price'] != '') {
-                        $price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
-                        echo '<li data-seat-price="' . $price . '" data-seat-type="1" data-seat-label="' . $child_label . '">' . $child_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
-                    }
-                    if ($val['wbtm_bus_infant_price'] >= 0 && $val['wbtm_bus_infant_price'] != '') {
-                        $price = $val['wbtm_bus_infant_price'] + ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100);
-                        echo '<li data-seat-price="' . $price . '" data-seat-type="2" data-seat-label="' . $infant_label . '">' . $infant_label . ' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
-                    }
-                    // if ($val['wbtm_bus_special_price'] > 0) {
-                    //     $price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
-                    //     echo '<li data-seat-price="' . $price . '" data-seat-type="3" data-seat-label="'. $special_label .'">' . $special_label.' ' . wc_price($price) . __('/Seat', 'bus-ticket-booking-with-seat-reservation') . '</li>';
-                    // }
-                    ?>
-                </ul>
-            </div>
-            <?php
-            // }
         }
     }
 }
