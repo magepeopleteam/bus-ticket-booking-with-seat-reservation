@@ -1723,10 +1723,11 @@ function wbtm_extra_services_section($bus_id)
                     if(!isset($field['option_name']) || !isset($field['option_price'])) {
                         continue;
                     }
-                    $actual_price = strip_tags(wc_price($field['option_price']));
-                    $data_price = str_replace(get_woocommerce_currency_symbol(), '', $actual_price);
-                    $data_price = str_replace(wc_get_price_thousand_separator(), '', $data_price);
-                    $data_price = str_replace(wc_get_price_decimal_separator(), '.', $data_price);
+                    // $actual_price = strip_tags(wc_price($field['option_price']));
+                    // $data_price = str_replace(get_woocommerce_currency_symbol(), '', $actual_price);
+                    // $data_price = str_replace(wc_get_price_thousand_separator(), '', $data_price);
+                    // $data_price = str_replace(wc_get_price_decimal_separator(), '.', $data_price);
+                    $data_price = strip_tags($field['option_price']);
                     ?>
 
                     <tr data-total="0">
