@@ -189,9 +189,9 @@ function wbtm_seat_global($b_start, $date, $type = '')
                                 class="mage-admin-bus-seat <?php echo($_seats[$text_field_name] == '' ? 'bus-col-divider' : '') ?>">
                                 <?php
                                 if ($_seats[$text_field_name]) { ?>
-                                    <?php if ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true && ($seat_status == 1) ) { ?> <span
+                                    <?php if ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true ) { ?> <span
                                             class="booked-seat"><?php echo $seat_name; ?></span>
-                                    <?php } elseif ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true && ($seat_status == 2) ) { ?><span
+                                    <?php } elseif ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true ) { ?><span
                                             class="confirmed-seat"><?php echo $seat_name; ?></span>
                                     <?php } else { ?>
                                         <a data-seat='<?php echo $_seats[$text_field_name]; ?>' data-seat-pos="lower"

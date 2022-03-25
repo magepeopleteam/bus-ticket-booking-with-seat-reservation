@@ -3,7 +3,7 @@
 * Plugin Name: Bus Ticket Booking with Seat Reservation
 * Plugin URI: http://mage-people.com
 * Description: A Complete Bus Ticketig System for WordPress & WooCommerce
-* Version: 3.6
+* Version: 3.7
 * Author: MagePeople Team
 * Author URI: http://www.mage-people.com/
 * Text Domain: bus-ticket-booking-with-seat-reservation
@@ -99,7 +99,45 @@ class Wbtm_Base{
 }
 new Wbtm_Base();
 
+// Get Plugin Data
+if(!function_exists('wbtm_get_plugin_data')) {
+    function wbtm_get_plugin_data($data) {
+        $get_wbtm_plugin_data = get_plugin_data( __FILE__ );
+        $wbtm_data = $get_wbtm_plugin_data[$data];
+        return $wbtm_data;
+    }
+}
 
+// Added Settings link to plugin action links
+add_filter( 'plugin_action_links', 'wbtm_plugin_action_link', 10, 2 );
+
+function wbtm_plugin_action_link( $links_array, $plugin_file_name ){
+
+	if( strpos( $plugin_file_name, basename(__FILE__) ) ) {
+
+		array_unshift( $links_array, '<a href="'.esc_url(admin_url()).'edit.php?post_type=wbtm_bus&page=wbtm-bus-manager-settings">'.__('Settings','bus-booking-manager').'</a>');
+	}
+	
+	return $links_array;
+}
+
+// Added links to plugin row meta
+add_filter( 'plugin_row_meta', 'wbtm_plugin_row_meta', 10, 2 );
+ 
+function wbtm_plugin_row_meta( $links_array, $plugin_file_name ) {
+ 
+    if( strpos( $plugin_file_name, basename(__FILE__) ) ) {
+        $wbtm_links = array(
+                'docs' 	  => '<a href="'.esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/").'" target="_blank">'.__('Docs','bus-booking-manager').'</a>',
+                'support' => '<a href="'.esc_url("https://mage-people.com/my-account").'" target="_blank">'.__('Support','bus-booking-manager').'</a>',
+                'get_pro' => '<a href="'.esc_url("https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/").'" target="_blank" class="wbtm_plugin_pro_meta_link">'.__('Upgrade to PRO Version','bus-booking-manager').'</a>'
+                );
+         
+        $links_array = array_merge( $links_array, $wbtm_links );
+    }
+     
+    return $links_array;
+}
 
 }else{
 
@@ -112,3 +150,8 @@ new Wbtm_Base();
     }
     add_action( 'admin_notices', 'wbtm_wc_not_active' );
 }
+
+/*************************
+Check the required plugins
+***************************/
+require_once(dirname(__FILE__) . "/includes/class-wbtm-required-plugins.php");

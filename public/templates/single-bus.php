@@ -97,7 +97,7 @@ do_action('wbtm_before_single_bus_search_page');
 
             // Final
             mage_next_date_suggestion(false, true, $target);
-            if ($has_bus && $check_has_price) {
+            if ($has_bus && $check_has_price !== '') {
 
                 mage_bus_search_item(false, $id);
 

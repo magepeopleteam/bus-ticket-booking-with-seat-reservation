@@ -950,6 +950,10 @@ function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stop
         array_push($j_dates, $prev_date);
     }
 
+    // Seat booked show policy in search
+    $seat_booked_status_default = array(1, 2);
+    $seat_booked_status = (isset(get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status']) ? get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status'] : $seat_booked_status_default);
+
 
     $args = array(
         'post_type' => 'wbtm_bus_booking',
@@ -974,7 +978,7 @@ function get_seat_booking_data($seat_name, $search_start, $search_end, $all_stop
                 ),
                 array(
                     'key' => 'wbtm_status',
-                    'value' => array(1,2),
+                    'value' => $seat_booked_status,
                     'compare' => 'IN'
                 ),
             )
@@ -1052,6 +1056,10 @@ function mage_partial_without_seat_booked_count($return = false, $bus_id = null,
         array_push($j_dates, $prev_date);
     }
 
+    // Seat booked show policy in search
+    $seat_booked_status_default = array(1, 2);
+    $seat_booked_status = (isset(get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status']) ? get_option('wbtm_bus_settings')['bus_seat_booked_on_order_status'] : $seat_booked_status_default);
+
     if ($bus_start_stops_arr && $bus_end_stops_arr) {
         $bus_stops = array_column($bus_start_stops_arr, 'wbtm_bus_bp_stops_name'); // remove time
         $bus_ends = array_column($bus_end_stops_arr, 'wbtm_bus_next_stops_name'); // remove time
@@ -1086,7 +1094,7 @@ function mage_partial_without_seat_booked_count($return = false, $bus_id = null,
                     ),
                     array(
                         'key' => 'wbtm_status',
-                        'value' => array(1,2),
+                        'value' => $seat_booked_status,
                         'compare' => 'IN'
                     ),
                 )

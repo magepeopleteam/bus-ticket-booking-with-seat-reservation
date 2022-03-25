@@ -348,6 +348,8 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
     $child_label = $seat_panel_settings['wbtm_seat_type_child_label'];
     $infant_label = $seat_panel_settings['wbtm_seat_type_infant_label'];
     $special_label = $seat_panel_settings['wbtm_seat_type_special_label'];
+    // Bus Zero Price
+    $bus_zero_price_allow = get_post_meta($bus_id, 'zero_price_allow') ? get_post_meta($bus_id, 'zero_price_allow')[0] : '';
 
     if ($bus_seat_type_conf === 'wbtm_without_seat_plan') {
         // Price
@@ -392,6 +394,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
             <input type="hidden" name="seat_available" value="<?php echo $seat_available; ?>"/>
             <input type="hidden" name='total_seat' value="0"/>
             <input type="hidden" name="wbtm_bus_type" value="general"/>
+            <input type="hidden" name="wbtm_bus_zero_price_allow" value="<?php echo $bus_zero_price_allow; ?>"/>
             <?php
             if ($bus_seat_type_conf === 'wbtm_without_seat_plan') : ?>
 

@@ -46,12 +46,10 @@ class WBTMMetaBox
     {
         $label_bus_configuration = __('Bus Configuration', 'bus-ticket-booking-with-seat-reservation');
         ?>
-        <li data-target-tabs="#wbtm_ticket_panel" class="active"><span
-                    class="dashicons dashicons-id"></span>&nbsp;&nbsp;<?php echo $label_bus_configuration; ?>
+        <li data-target-tabs="#wbtm_ticket_panel" class="active"><i class="fas fa-sliders-h"></i>&nbsp;&nbsp;<?php echo $label_bus_configuration; ?>
         </li>
 
-        <li data-target-tabs="#wbtm_routing"><span
-                    class="dashicons dashicons-palmtree"></span>&nbsp;&nbsp;<?php echo __('Routing', 'bus-ticket-booking-with-seat-reservation'); ?>
+        <li data-target-tabs="#wbtm_routing"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;<?php echo __('Routing', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
         <li data-target-tabs="#wbtm_seat_price"><span
@@ -685,8 +683,6 @@ class WBTMMetaBox
 
 
             // Seat Prices
-            // $zero_price_allow = get_post_meta($pid, 'zero_price_allow', true) ?: 'no';
-
             $seat_prices = array();
             $boarding_points = $_POST['wbtm_bus_bp_price_stop'];
             $dropping_points = $_POST['wbtm_bus_dp_price_stop'];
@@ -1160,9 +1156,8 @@ class WBTMMetaBox
 
             update_post_meta($pid, 'wbtm_general_same_bus_return', $wbtm_general_same_bus_return);
             update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
-            update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
-            
+            update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
 
 
             update_post_meta($pid, '_price', 0);

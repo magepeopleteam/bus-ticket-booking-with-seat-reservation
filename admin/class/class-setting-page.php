@@ -128,7 +128,7 @@ class WBTMSettingPage
         );
 
         $global_offday_settings = array(
-            'page_nav' => __('<i class="fas fa fa-cog"></i> Global Offday', 'bus-ticket-booking-with-seat-reservation'),
+            'page_nav' => __('<i class="fas fa-calendar-minus"></i> Global Offday', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
             'page_settings' => array(
                 'section_1' => array(
@@ -175,7 +175,7 @@ class WBTMSettingPage
         );
 
         $seat_panel_settings = array(
-            'page_nav' => __('<i class="fas fa fa-cog"></i> Seat Panel Settings', 'bus-ticket-booking-with-seat-reservation'),
+            'page_nav' => __('<i class="fas fa-user-cog"></i> Seat Panel Settings', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
             'page_settings' => array(
                 'section_1' => array(
@@ -266,7 +266,7 @@ class WBTMSettingPage
 
 
         $translation_settings = array(
-            'page_nav' => __('<i class="fas fa fa-cog"></i> Translation Settings', 'bus-ticket-booking-with-seat-reservation'),
+            'page_nav' => __('<i class="fas fa-language"></i> Translation Settings', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
             'page_settings' => array(
 
@@ -695,7 +695,7 @@ class WBTMSettingPage
         );
 
         $color_settings = array(
-            'page_nav' => __('<i class="fas fa fa-cog"></i> Color & Styles', 'bus-ticket-booking-with-seat-reservation'),
+            'page_nav' => __('<i class="fas fa-palette"></i> Color & Styles', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
             'page_settings' => array(
 
@@ -873,7 +873,7 @@ class WBTMSettingPage
 
 
         $custom_css_settings = array(
-            'page_nav' => __('<i class="fas fa fa-cog"></i> Custom CSS', 'bus-ticket-booking-with-seat-reservation'),
+            'page_nav' => __('<i class="fas fa-file-code"></i> Custom CSS', 'bus-ticket-booking-with-seat-reservation'),
             'priority' => 10,
             'page_settings' => array(
                 'section_4' => array(

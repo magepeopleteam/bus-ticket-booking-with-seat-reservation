@@ -1,10 +1,10 @@
 === Bus Ticket Booking with Seat Reservation ===
-Contributors: magepeopleteam, aamahin, shohan777
+Contributors: magepeopleteam, aamahin, shohan777, arifulislamnayem
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress,woocommerce
 seat reservation for wordpress woocommerce
 Requires at least: 4.5
 Stable tag: trunk
-Tested up to: 5.6
+Tested up to: 5.9
 Requires PHP: 7.0
 WC requires at least: 3.0
 WC tested up to: 4.9
@@ -35,10 +35,8 @@ This is one of the best and simple bus booking plugin in WordPress directory, It
 &#9989;  100% Customizable
 &#9989;  Easy to modify templates
 &#9989;  Template Override feature.
-&#9989;  [Live Demo](https://demo.vaincode.com/bus-ticket/)
-&#9989;  [Online Documentation](https://demo.vaincode.com/bus-ticket/documentation/)
-
-
+&#9989;  [Live Demo](https://bus.mage-people.com/)
+&#9989;  [Online Documentation](https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/)
 
 
 
@@ -46,11 +44,22 @@ This is one of the best and simple bus booking plugin in WordPress directory, It
 
 ### Shortcodes included withBus Ticket Booking with Seat Reservation
 
+**To display the search form:**  
+`
+[wbtm-bus-search-form]
+`
+You can add this shortcode to any page where you like to add search form. and then you have to create another page for search result with slug **/bus-search-list/** and shortcode
+`
+[wbtm-bus-search]
+`
+normally this page create automatically during installation so make sure you have a page bus search list and this page selected from settings->bus search page option.
+
+we have some other shortcode that you may need to display bus list
 
 `
-[wbtm-bus-list cat=''show='']
+[wbtm-bus-list cat=''show='10']
 `
-
+here show 10 means it will display 10 bus in list, you can change as needed
 
 **cat:**  
 By default showing all bus, but if you want to show bus list of a particular category you can use this attribute, just put the category id with this. example: 
@@ -59,28 +68,7 @@ By default showing all bus, but if you want to show bus list of a particular cat
 [wbtm-bus-list cat='ID']
 `
 
-**show:**  
-By default showing 20 bus per page. If you want to change it and set limit input the limit number. example:  
-
-`
-[wbtm-bus-list show='10']
-`
-**To display the search form:**  
-`
-[wbtm-bus-search-form]
-`
-
-**To display the search result and form:** 
-
-and you must have a search result page with page slug **/bus-search-list/**
-
-`
-[wbtm-bus-search]
-`
-
-This shortcode will also print a bus search form but it will also show the search result on the same page, below of the search form.
-
-
+We have dummy import option and guideline. if you check welcome link left sidebar of our plugin. you will dummy import guideline.
 
 
 There is a PRO Addon available for this plugin. Features are available in PRO Addon are below:
@@ -93,31 +81,14 @@ There is a PRO Addon available for this plugin. Features are available in PRO Ad
 &#9989;  Create Tickt by Ticket pin in Dashboard.
 &#9989;  Successfully Purchased Ticket List in My Account Section in Frontend
 &#9989;  [Buy PRO Addon](https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/)
-&#9989;  [Live Demo](https://demo.vaincode.com/bus-ticket/)
-&#9989;  [Online Documentation](https://demo.vaincode.com/bus-ticket/documentation/)
+&#9989;  [Live Demo](https://bus.mage-people.com/)
+&#9989;  [Online Documentation](https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/)
 
 
 
-### How to install the plugin:
-Please watch the video to know how you can install the plugin.
 
-
-https://www.youtube.com/watch?v=1kY9vFIJdE4
-
-
-### How to add a New Bus:
-After install the plugin you can add a new bus. Please watch the video to know how you can do it:
-
-https://www.youtube.com/watch?v=N_6MbfzZw84
-
-
-### How to book a bus ticket?
-In this video you can know how easy to place a order to book a bus ticket:
-
-https://www.youtube.com/watch?v=vAMln7298eg
-
-
-
+**Available Bus Theme with import feature** 
+- [Bahon -Bus booking Theme](https://mage-people.com/product/bahon-bus-ferry-or-any-transport-booking-wordpress-theme/)
 
 
 
@@ -132,6 +103,8 @@ our support team will back to you shortly.
 ](https://wordpress.org/plugins/bus-booking-manager/)
 - [Bus Ticket Booking with Seat Reservation](https://wordpress.org/plugins/bus-ticket-booking-with-seat-reservation/)
 - [Woocommerce Events Manager](https://wordpress.org/plugins/mage-eventpress/)
+- [Advanced – Deposit & Partial Payments](https://wordpress.org/plugins/advanced-partial-payment-or-deposit-for-woocommerce/)
+- [Tour & Travel Booking Manager](https://wordpress.org/plugins/tour-booking-manager/)
 
 
 
@@ -168,6 +141,10 @@ Attendee information form, passenger booking from dashboard, customized email se
 
 = Do you offer customization =
 Yes We like to hear from our customer, If you want to add any customization or you need any new feature. you can send us email: magepeopleteam@gmail.com. our team will check and get back to you.
+
+
+
+
 
 
 
@@ -353,3 +330,17 @@ Yes We like to hear from our customer, If you want to add any customization or y
 ==> Some minor bug fixed
 ==> Design issue fixed
 . - 15 Feb 2021*
+
+= 3.6 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+==> welcome page adding
+==> global offday settings
+. - 28 dec 2021*
+
+= 3.7 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+. - 14 March 2022*

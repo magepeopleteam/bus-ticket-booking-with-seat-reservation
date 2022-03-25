@@ -38,7 +38,7 @@ class WBTM_Plugin_Functions
     public function direct_ticket_download()
     {
         global $magepdf;
-        if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'download_pdf_ticket') {
+        if ( isset($_REQUEST['action'] ) && $_REQUEST['action'] == 'download_pdf_ticket' )  {
             $magepdf->generate_pdf($_REQUEST['order_id'], '', true);
         }
     }
@@ -1075,7 +1075,7 @@ class WBTM_Plugin_Functions
         }
     }
 
-    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare, $j_date, $add_datetime, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status, $order_meta, $wbtm_billing_type, $city_zone, $wbtm_pickpoint, $extra_services = array(), $user_additional = null, $wbtm_is_return = 0)
+    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare = null, $j_date = null, $add_datetime = null, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status = null, $order_meta = null, $wbtm_billing_type = null, $city_zone = null, $wbtm_pickpoint = null, $extra_services = array(), $user_additional = null, $wbtm_is_return = 0)
     {
 
         $add_datetime = current_time("Y-m-d") . ' ' . mage_wp_time(current_time("H:i"));
@@ -1120,7 +1120,7 @@ class WBTM_Plugin_Functions
         update_post_meta($pid, 'wbtm_user_additional', $user_additional);
         update_post_meta($pid, 'wbtm_is_return', $wbtm_is_return);
 
-        if ($wbtm_billing_type && $j_date && function_exists('mtsa_calculate_valid_date')) {
+        if($wbtm_billing_type && $j_date && function_exists('mtsa_calculate_valid_date')) {
             $sub_end_date = mtsa_calculate_valid_date($j_date, $wbtm_billing_type);
             update_post_meta($pid, 'wbtm_sub_end_date', $sub_end_date);
         }
@@ -1682,15 +1682,11 @@ function wbtm_journey_date_js()
             if (is_single()) {
 
             $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : array();
-            if($wbtm_bus_on_dates) {
-                $wbtm_bus_on_dates = explode(', ', $wbtm_bus_on_dates);
-            }
 
             if (is_array($wbtm_bus_on_dates) && sizeof($wbtm_bus_on_dates) > 0) {
             $pday = array();
             foreach ($wbtm_bus_on_dates as $_wbtm_bus_on_dates) {
-                // $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
-                $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates)) . '"';
+                $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
             }
             $particular_date = implode(',', $pday);
             ?>
@@ -1833,13 +1829,13 @@ function wbtm_load_dropping_point()
         'taxonomy' => 'wbtm_bus_stops',
         'hide_empty' => false,
     ));
-
-    if ($busId) {
+    
+    if($busId) {
         $dropingarray = array();
         $prices = get_post_meta($busId, 'wbtm_bus_prices', true);
-        if ($prices) {
-            foreach ($prices as $price) {
-                if ($price['wbtm_bus_bp_price_stop'] == $boardingPoint) {
+        if($prices) {
+            foreach($prices as $price) {
+                if($price['wbtm_bus_bp_price_stop'] == $boardingPoint) {
                     $dropingarray[] = $price['wbtm_bus_dp_price_stop'];
                 }
             }
@@ -2226,10 +2222,8 @@ function wbtm_find_seat_in_cart($seat_name, $return = false)
 add_action('woocommerce_order_item_display_meta_value', 'mage_woocommerce_order_item_display_meta_value', 10, 3);
 function mage_woocommerce_order_item_display_meta_value($value, $meta, $item)
 {
-    if ('Date' === $meta->key) {
-        $value = mage_wp_date($value);
-    }
-
+    if ( 'Date' === $meta->key ) { $value = mage_wp_date($value); }
+     
     return $value;
 }
 
@@ -2342,7 +2336,9 @@ if (!function_exists('wbtm_get_bus_custom_meta_for_api')) {
         $post_id = $object['id'];
         $post_meta = get_post_meta($post_id);
         $post_image = get_post_thumbnail_id($post_id);
-        $post_meta["bus_feature_image"] = $post_image ? wp_get_attachment_image_src($post_image, 'full')[0] : null;
+        if($post_image){
+            $post_meta["bus_feature_image"] = $post_image ? wp_get_attachment_image_src($post_image, 'full')[0] : null;
+        }
         return $post_meta;
     }
 }
@@ -2476,4 +2472,20 @@ function wbtm_posts_custom_column_callback($column, $post_id)
             echo "<span class=''>" . wbtm_bus_type($post_id) . "</span>";
             break;
     }
+}
+
+add_filter('manage_edit-wbtm_bus_stops_columns', 'wbtm_bus_stops_custom_column');
+function wbtm_bus_stops_custom_column($columns){
+    $columns['id'] = 'ID';
+    return $columns;
+}
+
+add_filter('manage_wbtm_bus_stops_custom_column', 'wbtm_bus_stops_custom_column_callback', 10, 3);
+function wbtm_bus_stops_custom_column_callback($content, $column_name, $term_id){
+    switch ( $column_name ) {
+        case 'id' :
+            $content = $term_id;
+        break;
+    }
+    return $content;
 }
