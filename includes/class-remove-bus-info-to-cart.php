@@ -127,9 +127,13 @@ function wbtm_update_cart_return_price($key, $return, $recall = false) {
     if($return) {
         foreach($cart as $id => $cart_item) {
             if($id == $key) {
-                $cart_item['line_subtotal']                                 = $cart_item['wbtm_seat_original_fare'];
-                $cart_item['wbtm_tp']                                       = $cart_item['wbtm_seat_original_fare'];
-                $cart_item['line_total']                                    = $cart_item['wbtm_seat_original_fare'];
+                $ticket_price = $cart_item['wbtm_seat_original_fare'];
+                $extra_service = extra_price($cart_item['extra_services']);
+                $total_price = $ticket_price + $extra_service;
+
+                $cart_item['line_subtotal']                                 = $total_price;
+                $cart_item['wbtm_tp']                                       = $total_price;
+                $cart_item['line_total']                                    = $total_price;
                 // $cart_item['wbtm_passenger_info'][0]['wbtm_seat_fare']      = $cart_item['wbtm_seat_original_fare'];
                 $cart_item['is_return']                                     = 2;
 
@@ -142,9 +146,13 @@ function wbtm_update_cart_return_price($key, $return, $recall = false) {
 
         foreach($cart as $id => $cart_item) {
             if($id == $key) {
-                $cart_item['line_subtotal']                                 = $cart_item['wbtm_seat_return_fare'];
-                $cart_item['wbtm_tp']                                       = $cart_item['wbtm_seat_return_fare'];
-                $cart_item['line_total']                                    = $cart_item['wbtm_seat_return_fare'];
+                $ticket_price = $cart_item['wbtm_seat_return_fare'];
+                $extra_service = extra_price($cart_item['extra_services']);
+                $total_price = $ticket_price + $extra_service;
+
+                $cart_item['line_subtotal']                                 = $total_price;
+                $cart_item['wbtm_tp']                                       = $total_price;
+                $cart_item['line_total']                                    = $total_price;
                 // $cart_item['wbtm_passenger_info'][0]['wbtm_seat_fare']      = $cart_item['wbtm_seat_return_fare'];
                 $cart_item['is_return']                                     = 1;
 

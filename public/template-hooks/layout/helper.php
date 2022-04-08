@@ -2189,3 +2189,15 @@ function wbtm_search_target_page() {
 
     return $get_page;
 }
+
+// Get Extra Price
+function extra_price($extra_services) {
+    $price = 0;
+    if(is_array($extra_services)) {
+        foreach($extra_services as $service) {
+            $price += $service['price'] * $service['qty'];
+        }
+    }
+
+    return $price;
+}
