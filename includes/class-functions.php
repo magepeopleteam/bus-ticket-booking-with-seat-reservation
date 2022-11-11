@@ -38,7 +38,7 @@ class WBTM_Plugin_Functions
     public function direct_ticket_download()
     {
         global $magepdf;
-        if ( isset($_REQUEST['action'] ) && $_REQUEST['action'] == 'download_pdf_ticket' )  {
+        if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'download_pdf_ticket') {
             $magepdf->generate_pdf($_REQUEST['order_id'], '', true);
         }
     }
@@ -69,29 +69,29 @@ class WBTM_Plugin_Functions
 
     public function wbtm_get_driver_position($current_plan)
     {
-        ?>
+?>
         <select name="driver_seat_position">
             <option <?php if ($current_plan == 'driver_left') {
-                echo 'Selected';
-            } ?> value="driver_left"><?php _e('Left', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        echo 'Selected';
+                    } ?> value="driver_left"><?php _e('Left', 'bus-ticket-booking-with-seat-reservation'); ?></option>
             <option <?php if ($current_plan == 'driver_right') {
-                echo 'Selected';
-            } ?> value="driver_right"><?php _e('Right', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        echo 'Selected';
+                    } ?> value="driver_right"><?php _e('Right', 'bus-ticket-booking-with-seat-reservation'); ?></option>
             <?php do_action('wbtm_after_driver_position_dd'); ?>
         </select>
-        <?php
+    <?php
     }
 
     public function wbtm_seat_plan()
     {
         $seat_col = strip_tags($_POST['seat_col']);
         $seat_row = strip_tags($_POST['seat_row']);
-        ?>
+    ?>
 
         <div>
             <script type="text/javascript">
-                jQuery(document).ready(function ($) {
-                    $('#add-seat-row').on('click', function () {
+                jQuery(document).ready(function($) {
+                    $('#add-seat-row').on('click', function() {
                         var row = $('.empty-row-seat.screen-reader-text').clone(true);
                         row.removeClass('empty-row-seat screen-reader-text');
                         row.insertBefore('#repeatable-fieldset-seat-one tbody>tr:last');
@@ -99,59 +99,57 @@ class WBTM_Plugin_Functions
                         $('#seat_rows').val(qtt + 1);
                         return false;
                     });
-                    $('.remove-seat-row').on('click', function () {
+                    $('.remove-seat-row').on('click', function() {
                         $(this).parents('tr').remove();
                         var qtt = parseInt($('#seat_rows').val(), 10);
                         $('#seat_rows').val(qtt - 1);
+
                         return false;
                     });
                 });
             </script>
             <table id="repeatable-fieldset-seat-one" width="100%">
                 <tbody>
-                <?php
-                for ($x = 1; $x <= $seat_row; $x++) {
+                    <?php
+                    for ($x = 1; $x <= $seat_row; $x++) {
                     ?>
-                    <tr>
+                        <tr>
+                            <?php
+                            for ($row = 1; $row <= $seat_col; $row++) {
+                                $seat_type_name = "seat_types" . $row;
+                            ?>
+                                <td align="center">
+                                    <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
+                                    <?php wbtm_get_seat_type_list($seat_type_name); ?>
+                                </td>
+                            <?php } ?>
+                            <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                <input type="hidden" name="bus_seat_panels[]">
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                    <!-- empty hidden one for jQuery -->
+                    <tr class="empty-row-seat screen-reader-text">
                         <?php
                         for ($row = 1; $row <= $seat_col; $row++) {
                             $seat_type_name = "seat_types" . $row;
-                            ?>
+                        ?>
                             <td align="center">
                                 <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
                                 <?php wbtm_get_seat_type_list($seat_type_name); ?>
+
+
                             </td>
                         <?php } ?>
-                        <td align="center"><a class="button remove-seat-row"
-                                              href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-                            <input type="hidden" name="bus_seat_panels[]">
-                        </td>
+                        <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels[]"></td>
                     </tr>
-                    <?php
-                }
-                ?>
-                <!-- empty hidden one for jQuery -->
-                <tr class="empty-row-seat screen-reader-text">
-                    <?php
-                    for ($row = 1; $row <= $seat_col; $row++) {
-                        $seat_type_name = "seat_types" . $row;
-                        ?>
-                        <td align="center">
-                            <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
-                            <?php wbtm_get_seat_type_list($seat_type_name); ?>
-
-
-                        </td>
-                    <?php } ?>
-                    <td align="center"><a class="button remove-seat-row"
-                                          href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input
-                                type="hidden" name="bus_seat_panels[]"></td>
-                </tr>
                 </tbody>
             </table>
             <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
         </div>
-        <?php
+    <?php
         die();
     }
 
@@ -159,12 +157,12 @@ class WBTM_Plugin_Functions
     {
         $seat_col = strip_tags($_POST['seat_col']);
         $seat_row = strip_tags($_POST['seat_row']);
-        ?>
+    ?>
 
         <div>
             <script type="text/javascript">
-                jQuery(document).ready(function ($) {
-                    $('#add-seat-row-dd').on('click', function () {
+                jQuery(document).ready(function($) {
+                    $('#add-seat-row-dd').on('click', function() {
                         var row = $('.empty-row-seat-dd.screen-reader-text').clone(true);
                         row.removeClass('empty-row-seat-dd screen-reader-text');
                         row.insertBefore('#repeatable-fieldset-seat-one-dd tbody>tr:last');
@@ -172,7 +170,7 @@ class WBTM_Plugin_Functions
                         $('#seat_rows_dd').val(qtt + 1);
                         return false;
                     });
-                    $('.remove-seat-row-dd').on('click', function () {
+                    $('.remove-seat-row-dd').on('click', function() {
                         $(this).parents('tr').remove();
                         var qtt = parseInt($('#seat_rows_dd').val(), 10);
                         $('#seat_rows_dd').val(qtt - 1);
@@ -182,41 +180,37 @@ class WBTM_Plugin_Functions
             </script>
             <table id="repeatable-fieldset-seat-one-dd" width="100%">
                 <tbody>
-                <?php
-                for ($x = 1; $x <= $seat_row; $x++) {
+                    <?php
+                    for ($x = 1; $x <= $seat_row; $x++) {
                     ?>
-                    <tr>
+                        <tr>
+                            <?php
+                            for ($row = 1; $row <= $seat_col; $row++) {
+                            ?>
+                                <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text"></td>
+                            <?php } ?>
+                            <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                <input type="hidden" name="bus_seat_panels_dd[]">
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                    <!-- empty hidden one for jQuery -->
+                    <tr class="empty-row-seat-dd screen-reader-text">
                         <?php
                         for ($row = 1; $row <= $seat_col; $row++) {
-                            ?>
-                            <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]"
-                                                      class="text"></td>
-                        <?php } ?>
-                        <td align="center"><a class="button remove-seat-row-dd"
-                                              href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-                            <input type="hidden" name="bus_seat_panels_dd[]">
-                        </td>
-                    </tr>
-                    <?php
-                }
-                ?>
-                <!-- empty hidden one for jQuery -->
-                <tr class="empty-row-seat-dd screen-reader-text">
-                    <?php
-                    for ($row = 1; $row <= $seat_col; $row++) {
                         ?>
-                        <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text">
-                        </td>
-                    <?php } ?>
-                    <td align="center"><a class="button remove-seat-row-dd"
-                                          href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input
-                                type="hidden" name="bus_seat_panels_dd[]"></td>
-                </tr>
+                            <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text">
+                            </td>
+                        <?php } ?>
+                        <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels_dd[]"></td>
+                    </tr>
                 </tbody>
             </table>
             <p><a id="add-seat-row-dd" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
         </div>
-        <?php
+    <?php
         die();
     }
 
@@ -298,17 +292,17 @@ class WBTM_Plugin_Functions
     }
 
     // create bus js
-    public function wbtm_seat_booking_js($id, $fare)
+    public function  wbtm_seat_booking_js($id, $fare)
     {
         $fare = isset($fare) ? $fare : 0;
         $upper_price_percent = (int)get_post_meta(get_the_ID(), 'wbtm_seat_dd_price_parcent', true);
-        ?>
+    ?>
         <script>
-            jQuery(document).ready(function ($) {
+            jQuery(document).ready(function($) {
 
                 $('#bus-booking-btn<?php echo $id; ?>').hide();
 
-                $(document).on('remove_selection<?php echo $id; ?>', function (e, seatNumber, parents) {
+                $(document).on('remove_selection<?php echo $id; ?>', function(e, seatNumber, parents) {
 
                     $('#selected_list<?php echo $id; ?>_' + seatNumber).remove();
                     $('#seat<?php echo $id; ?>_' + seatNumber).removeClass('seat<?php echo $id; ?>_booked');
@@ -319,24 +313,26 @@ class WBTM_Plugin_Functions
                     wbtm_remove_form_builder(parents, seatNumber); // Seat form builder form remove
                 })
 
-                $(document).on('click', '.seat<?php echo $id; ?>_booked', function () {
-                    // $( document.body ).trigger( 'remove_selection<?php //echo $id; ?>', [ $(this).data("seat") ] );
+                $(document).on('click', '.seat<?php echo $id; ?>_booked', function() {
+                    // $( document.body ).trigger( 'remove_selection<?php //echo $id; 
+                                                                    ?>', [ $(this).data("seat") ] );
                 })
 
-                $(document).on('click', '.remove-seat-row<?php echo $id; ?>', function () {
+                $(document).on('click', '.remove-seat-row<?php echo $id; ?>', function() {
                     let parents = $(this).parents('.admin-bus-details');
                     $(document.body).trigger('remove_selection<?php echo $id; ?>', [$(this).data("seat"), parents]);
+                    parents.find('.wbtm_anydate_return_switch label:first-child').trigger('click');
+                    parents.find('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                    parents.find('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
                 });
 
-                jQuery('#start_stops<?php echo $id; ?>').on('change', function () {
+                jQuery('#start_stops<?php echo $id; ?>').on('change', function() {
                     var start_time = jQuery(this).find(':selected').data('start');
-                    jQuery('#user_start_time<?php echo $id; ?>').val(start_time);
-                    ;
+                    jQuery('#user_start_time<?php echo $id; ?>').val(start_time);;
                 });
 
 
-                jQuery(".seat<?php echo $id; ?>_blank").on('click', function () {
-
+                jQuery(".seat<?php echo $id; ?>_blank").on('click', function() {
                     let parents = $(this).parents('.admin-bus-details');
 
                     if (jQuery(this).hasClass('seat<?php echo $id; ?>_booked')) {
@@ -381,7 +377,7 @@ class WBTM_Plugin_Functions
                     //                  var totalFare = (rowCount * fare);
                     //
                     var totalFare = 0;
-                    jQuery('.selected-seat-table tbody tr').each(function () {
+                    jQuery('.selected-seat-table tbody tr').each(function() {
                         if ($(this).hasClass('seat_selected_price')) {
                             totalFare = totalFare + parseFloat($(this).find('.seat_fare').val());
                         }
@@ -404,15 +400,15 @@ class WBTM_Plugin_Functions
                 });
 
                 // *******Admin Ticket Purchase*******
-                jQuery('.admin_<?php echo $id; ?> li').on('click', function () {
-                    var $this = jQuery(this);
+                jQuery('.admin_<?php echo $id; ?> li').on('click', function() {
+                    const $this = $(this);
                     let parents = $(this).parents('.admin-bus-details');
-                    var parent = $this.parents('.admin_<?php echo $id; ?>').siblings(
+                    const parent = $this.parents('.admin_<?php echo $id; ?>').siblings(
                         '.seat<?php echo $id; ?>_blank');
                     var price = $this.attr('data-seat-price');
                     var label = $this.attr('data-seat-label');
                     var passenger_type = $this.attr('data-seat-type');
-
+                    let seat_label = label;
                     if (parent.hasClass('seat<?php echo $id; ?>_booked')) {
                         jQuery(document.body).trigger('remove_selection<?php echo $id; ?>', [parent.data("seat")]);
                     }
@@ -423,9 +419,8 @@ class WBTM_Plugin_Functions
                     var seat<?php echo $id; ?>_name = parent.data("seat");
                     var seat<?php echo $id; ?>_class = parent.data("sclass");
                     var fare = price;
-
                     let seat_name = seat<?php echo $id; ?>_name;
-                    var foo = "<tr class='seat_selected_price' id='selected_list<?php echo $id; ?>_" +
+                    let foo = "<tr class='seat_selected_price' id='selected_list<?php echo $id; ?>_" +
                         seat<?php echo $id; ?>_name +
                         "'><td align=center><input type='hidden' name='passenger_label[]' value='" + label + "'/>" +
                         "<input type='hidden' name='passenger_type[]' value='" + passenger_type + "'/>" +
@@ -443,7 +438,7 @@ class WBTM_Plugin_Functions
                     var rowCount = jQuery('.selected-seat-list<?php echo $id; ?> tr').length - 2;
 
                     var totalFare = 0;
-                    jQuery('.selected-seat-table tbody tr').each(function () {
+                    jQuery('.selected-seat-table tbody tr').each(function() {
                         // totalFare = totalFare + parseFloat($(this).find('.seat_selected_price').val());
                         if ($(this).hasClass('seat_selected_price')) {
                             totalFare = totalFare + parseFloat($(this).find('.seat_fare').val());
@@ -462,7 +457,7 @@ class WBTM_Plugin_Functions
 
                     mageGrandPrice(parents);
                     // wbt_update_passenger_form(seat_name);
-                    wbtm_seat_plan_form_builder_new($(this), seat_name, true); // New
+                    wbtm_seat_plan_form_builder_new($(this), seat_name, true, seat_label); // New
 
 
                 });
@@ -476,7 +471,7 @@ class WBTM_Plugin_Functions
                     let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').text()); // 1
 
                     let extra_price = 0;
-                    parent.find('.wbtm_extra_service_table tbody tr').each(function () { // 2
+                    parent.find('.wbtm_extra_service_table tbody tr').each(function() { // 2
                         extra_price += parseFloat($(this).attr('data-total'));
                     });
 
@@ -500,7 +495,7 @@ class WBTM_Plugin_Functions
                     var rowCount = jQuery('.selected-seat-list<?php echo $id; ?> tr').length - 2;
 
                     var totalFare = 0;
-                    jQuery('.selected-seat-table tbody tr').each(function () {
+                    jQuery('.selected-seat-table tbody tr').each(function() {
                         if ($(this).hasClass('seat_selected_price')) {
                             totalFare = totalFare + parseFloat($(this).find('.seat_fare').val());
                         }
@@ -519,28 +514,35 @@ class WBTM_Plugin_Functions
 
                 // function wbt_update_passenger_form(seat_name = '') {
 
-                //     var input = jQuery('#tq<?php //echo $id; ?>').val() || 0;
-                //     var children = jQuery('#divParent<?php //echo $id; ?> > div').length || 0;
+                //     var input = jQuery('#tq<?php //echo $id; 
+                                                ?>').val() || 0;
+                //     var children = jQuery('#divParent<?php //echo $id; 
+                                                        ?> > div').length || 0;
 
                 //     if (input < children) {
-                //         jQuery('#divParent<?php //echo $id; ?>').empty();
+                //         jQuery('#divParent<?php //echo $id; 
+                                                ?>').empty();
                 //         children = 0;
                 //     }
 
                 //     for (var i = children + 1; i <= input; i++) {
 
-                //         jQuery('#divParent<?php //echo $id; ?>').append(
+                //         jQuery('#divParent<?php //echo $id; 
+                                                ?>').append(
                 //             jQuery('<div/>')
                 //             .attr("id", "newDiv" + i)
-                //             .html("<?php //do_action('wbtm_reg_fields', '"+seat_name+"');?>")
+                //             .html("<?php //do_action('wbtm_reg_fields', '"+seat_name+"');
+                                        ?>")
                 //         );
                 //     }
                 // }
 
                 // Seat plan Passenger info form (New)
-                function wbtm_seat_plan_form_builder_new($this, seat_name, onlyES = false) {
+                function wbtm_seat_plan_form_builder_new($this, seat_name, onlyES = false, seat_label = '') {
+
                     let parent = $this.parents('.admin-bus-details');
                     let bus_id = parent.attr('data-bus-id');
+
                     let qty = 1;
                     let seatType = seat_name;
                     let isSeatPlan = true;
@@ -556,27 +558,21 @@ class WBTM_Plugin_Functions
                             onlyES: onlyES,
                             action: 'wbtm_form_builder'
                         },
-                        beforeSend: function () {
+                        beforeSend: function() {
                             parent.find('.wbtm-form-builder-loading').show();
                         },
-                        success: function (data) {
+                        success: function(data) {
                             if (data !== '') {
 
                                 if (parent.find(".mage_customer_info_area").children().length == 0) {
-                                    parent.find(".mage_customer_info_area").html(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                                    parent.find(".mage_customer_info_area").html(data).find('.seat_name_' + seat_name + ' .mage_title h5').html('Passenger Information<br>Seat Type: ' + seat_label + ' | Seat No: ' + seat_name);
                                 } else {
 
                                     if (seat_name != 'ES') {
-                                        parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
+                                        parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html('Passenger Information<br>Seat Type: ' + seat_label + ' | Seat No: ' + seat_name);
                                         parent.find(".mage_customer_info_area .seat_name_ES").remove();
                                     }
 
-                                    // if (seat_name != 'ES') {
-                                    //     parent.find(".mage_customer_info_area").append(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
-                                    // } else {
-                                    //     parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
-                                    //     parent.find(".mage_customer_info_area .seat_name_ES").remove();
-                                    // }
                                 }
                                 onlyES ? parent.find('.mage_customer_info_area input[name="seat_name[]"]').remove() : null;
 
@@ -589,12 +585,17 @@ class WBTM_Plugin_Functions
                     });
                 }
 
+
+
+
+
+
                 function wbtm_remove_form_builder($this, seat_name) {
                     $this.find(".mage_customer_info_area .seat_name_" + seat_name).remove();
                     // ES qty
                     let es_table = $this.find('.wbtm_extra_service_table');
                     let es_qty = 0;
-                    es_table.find('tbody tr').each(function () {
+                    es_table.find('tbody tr').each(function() {
                         tp = $(this).find('.extra-qty-box').val();
                         es_qty += tp > 0 ? parseInt(tp) : 0;
                     });
@@ -620,14 +621,14 @@ class WBTM_Plugin_Functions
                             onlyES: onlyES,
                             action: 'wbtm_form_builder'
                         },
-                        beforeSend: function () {
+                        beforeSend: function() {
                             parent.find('.wbtm-form-builder-loading').show();
                         },
-                        success: function (data) {
+                        success: function(data) {
                             let s = seatType.toLowerCase();
                             if (data !== '') {
                                 $(".wbtm-form-builder-" + s).html(data);
-                                $(".wbtm-form-builder-" + s).find('.mage_hidden_customer_info_form').each(function (index) {
+                                $(".wbtm-form-builder-" + s).find('.mage_hidden_customer_info_form').each(function(index) {
                                     $(this).removeClass('mage_hidden_customer_info_form').find('.mage_form_list').slideDown(200);
                                     onlyES ? $(this).find('input[name="seat_name[]"]').remove() : null;
                                     $(this).find('.mage_title h5').html(seatType + ' : ' + (index + 1));
@@ -641,21 +642,167 @@ class WBTM_Plugin_Functions
                     });
                 }
 
-                jQuery("#view_panel_<?php echo $id; ?>").click(function () {
-                    jQuery("#admin-bus-details<?php echo $id; ?>").slideToggle("slow", function () {
+                jQuery("#view_panel_<?php echo $id; ?>").click(function() {
+                    jQuery("#admin-bus-details<?php echo $id; ?>").slideToggle("slow", function() {
                         // Animation complete.
                     });
                 });
+
+                // Any date return
+
+                jQuery('.wbtm_anydate_return_wrap').hide();
+                jQuery('.blank_seat,.admin_passenger_type_list ul li,.selected-seat-table a.button').click(function(e) {
+                    // e.stopImmediatePropagation();
+                    e.preventDefault();
+
+                    jQuery('.wbtm_anydate_return_wrap').hide();
+                    let $this = jQuery(this);
+                    let parent = $this.parents('form');
+                    let seat_list = parent.find('.selected-seat-table tbody').children('.seat_selected_price');
+
+                    setTimeout(
+                        function() {
+                            if (seat_list.length > 0) {
+                                jQuery('.wbtm_anydate_return_wrap').show();
+                                jQuery('.wbtm_anydate_return_switch label:first-child').trigger('click');
+                                jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                                jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+                            } else {
+                                jQuery('.wbtm_anydate_return_wrap').hide();
+                            }
+                        },
+                        1000);
+
+                });
+
+                jQuery('.mage-seat-qty input').on('input', function() {
+                    let $this = $(this);
+                    let type = $this.attr('data-seat-type');
+                    let qty = $this.val();
+                    qty = qty > 0 ? qty : 0;
+
+                    if (type) {
+                        if (qty > 0) {
+                            jQuery('.wbtm_anydate_return_wrap').show();
+                            jQuery('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
+                            jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                            jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+                        } else {
+                            jQuery('.wbtm_anydate_return_wrap').hide();
+                        }
+                    }
+
+                });
+
+                jQuery('.wbtm_anydate_return_switch label').click(function(e) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+
+                    let $this = jQuery(this);
+                    let parent = $this.parents('form');
+                    let target = jQuery('.wbtm_anydate_return_switch label');
+
+                    target.removeClass('active');
+
+                    $this.addClass('active');
+                    target.find('.wbtm_anydate_return').prop('checked', false);
+
+                    $this.find('.wbtm_anydate_return').prop('checked', true);
+                    let value = $this.find('.wbtm_anydate_return').val();
+                    let seat_plan_price = parent.find('.selected-seat-table tbody .mage-price-total .price-figure');
+                    let without_seat_plan_price = parent.find('.mage-price-total .price-figure');
+
+                    let curr_symbol = php_vars.currency_symbol;
+
+
+
+                    if (value == 'on') {
+
+                        if (seat_plan_price.length > 0) {
+                            let seat_list = parent.find('.selected-seat-table tbody').children();
+                            let amount = 0;
+                            for (let i = 1; i <= seat_list.length; i++) {
+                                let current_price = parent.find('.selected-seat-table tbody tr:nth-child(' + i + ') input.seat_fare').val();
+                                if (typeof current_price !== "undefined") {
+                                    amount += parseFloat(current_price);
+                                }
+                            }
+                            let new_amount = amount * 2;
+                            let thisSubtotal = seat_plan_price;
+                            thisSubtotal.html(new_amount);
+                            parent.find('#wbtm_anydate_return_price').val(amount);
+
+                        } else {
+                            let seat_list = parent.find('.mage-seat-table tbody').children();
+                            let amount = 0;
+                            for (let i = 1; i <= seat_list.length; i++) {
+                                let current_price = parent.find('.mage-seat-table tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
+
+                                if (typeof current_price !== "undefined") {
+                                    amount += parseFloat(current_price);
+                                }
+
+                            }
+
+                            let new_amount = amount * 2;
+                            let thisSubtotal = without_seat_plan_price;
+                            thisSubtotal.html(new_amount);
+                            $this.parents('form').find('#wbtm_anydate_return_price').val(amount);
+
+                        }
+
+                    }
+
+                    if (value == 'off') {
+
+                        if (seat_plan_price.length > 0) {
+                            let seat_list = parent.find('.selected-seat-table tbody').children();
+                            let amount = 0;
+                            for (let i = 1; i <= seat_list.length; i++) {
+                                let current_price = parent.find('.selected-seat-table tbody tr:nth-child(' + i + ') input.seat_fare').val();
+                                if (typeof current_price !== "undefined") {
+                                    amount += parseFloat(current_price);
+                                }
+                            }
+                            let thisSubtotal = seat_plan_price;
+                            thisSubtotal.html(amount);
+                            parent.find('#wbtm_anydate_return_price').val('');
+
+                        } else {
+                            let seat_list = parent.find('.mage-seat-table tbody').children();
+                            let amount = 0;
+                            for (let i = 1; i <= seat_list.length; i++) {
+                                let current_price = parent.find('.mage-seat-table tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
+
+                                if (typeof current_price !== "undefined") {
+                                    amount += parseFloat(current_price);
+                                }
+
+                            }
+
+                            let thisSubtotal = without_seat_plan_price;
+                            thisSubtotal.html(amount);
+                            $this.parents('form').find('#wbtm_anydate_return_price').val('');
+
+                        }
+
+                    }
+
+                    mageGrandPrice(parent);
+                });
+
+                // Any date return END
+
             });
         </script>
         <?php
     }
 
-    public function wbtm_bus_seat_plan($current_plan, $start, $date)
+    public function wbtm_bus_seat_plan($current_plan, $start, $date, $return = false)
     {
         $global_plan = get_post_meta(get_the_id(), 'wbtm_bus_seats_info', true);
         if (!empty($global_plan)) {
-            wbtm_seat_global($start, $date);
+            wbtm_seat_global($start, $date, '', $return);
         } else {
             if ($current_plan == 'seat_plan_1') {
                 wbtm_seat_plan_1($start, $date);
@@ -737,15 +884,24 @@ class WBTM_Plugin_Functions
 
             // $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 3600, 1); // In Hour
             $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60, 1); // In Minute
+            if(abs($diff) != $diff) {
+                return 'no';
+            }
+
             if ($diff >= $bus_buffer_time) {
                 return 'yes';
             } else {
                 return 'no';
             }
         } else {
+            $bus_start_time = date('H:i:s', strtotime($bp_time));
+            $start_bus = $date . ' ' . $bus_start_time;
+            $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60, 1); // In Minute
+            if (abs($diff) != $diff) {
+                return 'no';
+            }
             return 'yes';
         }
-
     }
 
     public function wbtm_get_seat_status($seat, $date, $bus_id, $start, $end)
@@ -1075,7 +1231,7 @@ class WBTM_Plugin_Functions
         }
     }
 
-    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare = null, $j_date = null, $add_datetime = null, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status = null, $order_meta = null, $wbtm_billing_type = null, $city_zone = null, $wbtm_pickpoint = null, $extra_services = array(), $user_additional = null, $wbtm_is_return = 0)
+    public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare = null, $j_date = null, $add_datetime = null, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status = null, $order_meta = null, $wbtm_billing_type = null, $city_zone = null, $wbtm_pickpoint = null, $extra_services = array(), $user_additional = null, $wbtm_is_return = 0, $wbtm_anydate_return = null, $wbtm_anydate_return_price = null, $calculated_fare = null)
     {
 
         $add_datetime = current_time("Y-m-d") . ' ' . mage_wp_time(current_time("H:i"));
@@ -1119,14 +1275,17 @@ class WBTM_Plugin_Functions
         update_post_meta($pid, 'wbtm_pickpoint', $wbtm_pickpoint);
         update_post_meta($pid, 'wbtm_user_additional', $user_additional);
         update_post_meta($pid, 'wbtm_is_return', $wbtm_is_return);
+        update_post_meta($pid, '_wbtm_anydate_return', $wbtm_anydate_return);
+        update_post_meta($pid, '_wbtm_anydate_return_price', $wbtm_anydate_return_price);
+        update_post_meta($pid, '_wbtm_tp', $calculated_fare);
 
-        if($wbtm_billing_type && $j_date && function_exists('mtsa_calculate_valid_date')) {
+        if ($wbtm_billing_type && $j_date && function_exists('mtsa_calculate_valid_date')) {
             $sub_end_date = mtsa_calculate_valid_date($j_date, $wbtm_billing_type);
             update_post_meta($pid, 'wbtm_sub_end_date', $sub_end_date);
         }
 
 
-        if ($extra_services) {
+        if (!empty($extra_services)) {
             foreach ($extra_services as $service) {
                 update_post_meta($pid, 'extra_services_type_qty_' . $service['name'], $service['qty']);
                 update_post_meta($pid, 'extra_services_type_price_' . $service['name'], $service['price']);
@@ -1206,6 +1365,9 @@ class WBTM_Plugin_Functions
                     $extra_bag = $this->wbtm_get_order_meta($item_id, 'Extra Bag');
                     $wbtm_tp = $this->wbtm_get_order_meta($item_id, '_wbtm_tp');
                     $wbtm_is_return = $this->wbtm_get_order_meta($item_id, '_wbtm_is_return');
+                    $wbtm_anydate_return = $this->wbtm_get_order_meta($item_id, '_wbtm_anydate_return');
+                    $wbtm_anydate_return_price = $this->wbtm_get_order_meta($item_id, '_wbtm_anydate_return_price');
+                    $calculated_fare = $this->wbtm_get_order_meta($item_id, '_wbtm_tp');
                     $seats = ($seat) ? explode(",", $seat) : null;
                     $usr_inf = unserialize($user_info_arr);
 
@@ -1300,7 +1462,7 @@ class WBTM_Plugin_Functions
                                 //     }
                                 // }
 
-                                $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional, $wbtm_is_return);
+                                $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional, $wbtm_is_return, $wbtm_anydate_return, $wbtm_anydate_return_price, $calculated_fare);
                             }
 
                             $counter++;
@@ -1381,7 +1543,7 @@ class WBTM_Plugin_Functions
                         // $user_phone = $order_meta['_billing_phone'][0];
                         // $user_address = $order_meta['_billing_address_1'][0];
 
-                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $wbtm_is_return);
+                        $this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $wbtm_is_return, $wbtm_anydate_return, $wbtm_anydate_return_price, $calculated_fare);
                     }
                 }
             }
@@ -1455,10 +1617,10 @@ class WBTM_Plugin_Functions
             'taxonomy' => 'wbtm_bus_stops',
             'hide_empty' => false,
         ));
-        if (!empty($terms) && !is_wp_error($terms)): ob_start(); ?>
+        if (!empty($terms) && !is_wp_error($terms)) : ob_start(); ?>
             <select name="<?php echo $name; ?>" class='seat_type' required>
                 <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                <?php foreach ($terms as $term):
+                <?php foreach ($terms as $term) :
                     $selected = $type_name == $term->name ? 'selected' : '';
                     if (!empty($value)) {
                         $selected = $term->name == $value ? 'selected' : '';
@@ -1467,7 +1629,7 @@ class WBTM_Plugin_Functions
                     printf('<option %s value="%s">%s</option>', $selected, $term->name, $term->name);
                 endforeach; ?>
             </select>
-        <?php endif;
+    <?php endif;
         return ob_get_clean();
     }
 
@@ -1534,7 +1696,6 @@ class WBTM_Plugin_Functions
             if ($product_in_cart === $product_id) {
                 $in_cart = true;
             }
-
         }
 
         if ($in_cart) {
@@ -1560,7 +1721,6 @@ class WBTM_Plugin_Functions
             } else {
                 $return = false;
             }
-
         } else {
             $return = false;
         }
@@ -1585,8 +1745,8 @@ function wbtm_get_seat_type_list($name, $bus_id = '')
     <?php do_action('wbtm_seat_type_list_init'); ?>
 </select>
 </div> -->
-    <?php
-//echo ob_get_clean();
+<?php
+    //echo ob_get_clean();
 
     echo '';
 }
@@ -1675,118 +1835,119 @@ function wbtm_journey_date_js()
 {
     global $post;
     ob_start();
-    ?>
+?>
     <script>
-        jQuery(function () {
+        jQuery(function() {
             <?php
             if (is_single()) {
 
-            $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : array();
+                $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : array();
 
-            if (is_array($wbtm_bus_on_dates) && sizeof($wbtm_bus_on_dates) > 0) {
-            $pday = array();
-            foreach ($wbtm_bus_on_dates as $_wbtm_bus_on_dates) {
-                $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
-            }
-            $particular_date = implode(',', $pday);
+                if (is_array($wbtm_bus_on_dates) && sizeof($wbtm_bus_on_dates) > 0) {
+                    $pday = array();
+                    foreach ($wbtm_bus_on_dates as $_wbtm_bus_on_dates) {
+                        $pday[] = '"' . date('d-m-Y', strtotime($_wbtm_bus_on_dates['wbtm_on_date_name'])) . '"';
+                    }
+                    $particular_date = implode(',', $pday);
             ?>
 
-            var enableDays = [<?php echo $particular_date; ?>];
+                    var enableDays = [<?php echo $particular_date; ?>];
 
-            function enableAllTheseDays(date) {
-                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if (jQuery.inArray(sdate, enableDays) != -1) {
+                    function enableAllTheseDays(date) {
+                        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                        if (jQuery.inArray(sdate, enableDays) != -1) {
+                            return [true];
+                        }
+                        return [false];
+                    }
+
+                    jQuery('#j_date').datepicker({
+                        dateFormat: '<?php echo wbtm_convert_datepicker_dateformat(); ?>',
+                        minDate: 0,
+                        beforeShowDay: enableAllTheseDays
+                    });
+
+                <?php } else { ?>
+
+                    jQuery("#j_date").datepicker({
+                        dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                        minDate: 0
+                    });
+
+
+                <?php }
+            } else {
+                $settings = get_option('wbtm_bus_settings');
+                $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : '';
+                $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : '';
+
+                if ($global_offdates) {
+                    $global_offdates_arr = explode(', ', $global_offdates);
+                    $pday = array();
+                    foreach ($global_offdates_arr as $offdate) {
+                        $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
+                    }
+                    $particular_date = implode(',', $pday);
+
+                    echo 'var disableDates = [' . $particular_date . '];';
+                } else {
+                    echo 'var disableDates = [];';
+                }
+
+                if ($global_offdays) {
+                    $particular_offdays = implode(',', $global_offdays);
+
+                    echo 'var disableDays = [' . $particular_offdays . '];';
+                } else {
+                    echo 'var disableDays = [];';
+                }
+                ?>
+
+
+                function disableAllTheseDays(date) {
+                    var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                    if (disableDates.length > 0) {
+                        if (jQuery.inArray(sdate, disableDates) != -1) {
+                            return [false];
+                        }
+                    }
+
+                    if (disableDays.length > 0) {
+                        if (disableDays.includes(date.getDay())) {
+                            return [false];
+                        }
+                    }
                     return [true];
                 }
-                return [false];
-            }
 
-            jQuery('#j_date').datepicker({
-                dateFormat: '<?php echo wbtm_convert_datepicker_dateformat(); ?>',
-                minDate: 0,
-                beforeShowDay: enableAllTheseDays
-            });
-
-            <?php } else {?>
-
-            jQuery("#j_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0
-            });
-
-
-            <?php }
-            } else {
-            $settings = get_option('wbtm_bus_settings');
-            $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : '';
-            $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : '';
-
-            if ($global_offdates) {
-                $global_offdates_arr = explode(', ', $global_offdates);
-                $pday = array();
-                foreach ($global_offdates_arr as $offdate) {
-                    $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
-                }
-                $particular_date = implode(',', $pday);
-
-                echo 'var disableDates = ['.$particular_date.'];';
-            } else {
-                echo 'var disableDates = [];';
-            }
-
-            if ($global_offdays) {
-                $particular_offdays = implode(',', $global_offdays);
-
-                echo 'var disableDays = ['.$particular_offdays.'];';
-            } else {
-                echo 'var disableDays = [];';
-            }
-            ?>
-
-
-            function disableAllTheseDays(date) {
-                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if(disableDates.length > 0) {
-                    if (jQuery.inArray(sdate, disableDates) != -1) {
-                        return [false];
+                jQuery("#j_date").datepicker({
+                    dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                    minDate: 0,
+                    beforeShowDay: disableAllTheseDays,
+                    onSelect: function(dateText, inst) {
+                        var date = jQuery.datepicker.parseDate(inst.settings.dateFormat || jQuery.datepicker
+                            ._defaults.dateFormat, dateText, inst.settings);
+                        var dateText = jQuery.datepicker.formatDate("DD", date, inst.settings);
+                        var selectedDate = new Date(date);
+                        var msecsInADay = 86400000;
+                        var endDate = new Date(selectedDate.getTime());
+                        //var endDate = new Date(selectedDate.getTime() + msecsInADay);
+                        jQuery("#r_date").datepicker("option", "minDate", endDate);
                     }
-                }
-                
-                if(disableDays.length > 0) {
-                    if (disableDays.includes(date.getDay())) {
-                        return [false];
-                    }
-                }
-                return [true];
-            }
+                });
 
-            jQuery("#j_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0,
-                beforeShowDay: disableAllTheseDays,
-                onSelect: function (dateText, inst) {
-                    var date = jQuery.datepicker.parseDate(inst.settings.dateFormat || jQuery.datepicker
-                        ._defaults.dateFormat, dateText, inst.settings);
-                    var dateText = jQuery.datepicker.formatDate("DD", date, inst.settings);
-                    var selectedDate = new Date(date);
-                    var msecsInADay = 86400000;
-                    var endDate = new Date(selectedDate.getTime());
-                    //var endDate = new Date(selectedDate.getTime() + msecsInADay);
-                    jQuery("#r_date").datepicker("option", "minDate", endDate);
-                }
-            });
-
-            <?php }?>
+            <?php } ?>
 
             jQuery("#r_date").datepicker({
                 dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0
+                minDate: 0,
+                beforeShowDay: disableAllTheseDays,
             });
 
         })
 
 
-        jQuery('#wbtm_boarding_point').on('change', function () {
+        jQuery('#wbtm_boarding_point').on('change', function() {
             var boarding_point = jQuery(this).val();
             jQuery.ajax({
                 type: 'POST',
@@ -1795,12 +1956,12 @@ function wbtm_journey_date_js()
                     "action": "wbtm_load_dropping_point",
                     "boarding_point": boarding_point
                 },
-                beforeSend: function () {
+                beforeSend: function() {
                     jQuery('#wbtm_show_notice').html(
                         '<span class=search-text style="display:block;background:#ddd:color:#000:font-weight:bold;text-align:center">Time List Loading..</span>'
                     );
                 },
-                success: function (data) {
+                success: function(data) {
                     jQuery('#wbtm_dropping_ponit_sec').html(data);
                 }
             });
@@ -1808,7 +1969,7 @@ function wbtm_journey_date_js()
 
         });
     </script>
-    <?php
+<?php
     echo ob_get_clean();
 }
 
@@ -1829,13 +1990,13 @@ function wbtm_load_dropping_point()
         'taxonomy' => 'wbtm_bus_stops',
         'hide_empty' => false,
     ));
-    
-    if($busId) {
+
+    if ($busId) {
         $dropingarray = array();
         $prices = get_post_meta($busId, 'wbtm_bus_prices', true);
-        if($prices) {
-            foreach($prices as $price) {
-                if($price['wbtm_bus_bp_price_stop'] == $boardingPoint) {
+        if ($prices) {
+            foreach ($prices as $price) {
+                if ($price['wbtm_bus_bp_price_stop'] == $boardingPoint) {
                     $dropingarray[] = $price['wbtm_bus_dp_price_stop'];
                 }
             }
@@ -1873,9 +2034,9 @@ function wbtm_load_dropping_point()
 function wbtm_search_result_list_script()
 {
     ob_start();
-    ?>
+?>
     <script>
-        jQuery('#mage_bus_search_button').on('click', function () {
+        jQuery('#mage_bus_search_button').on('click', function() {
 
             var bus_start_route = jQuery('#wbtm_starting_point_inupt').val();
             var bus_end_route = jQuery('#wbtm_dropping_point_inupt').val();
@@ -1891,12 +2052,12 @@ function wbtm_search_result_list_script()
                     "j_date": j_date,
                     "r_date": r_date
                 },
-                beforeSend: function () {
+                beforeSend: function() {
                     jQuery('#wbtm_search_result_section').html(
                         '<span class=wbtm-loading-animation><img src="<?php echo WBTM_PLUGIN_URL . 'public/images/'; ?>loading.gif"</span>'
                     );
                 },
-                success: function (data) {
+                success: function(data) {
                     jQuery('#wbtm_search_result_section').html(data);
                 }
             });
@@ -1906,7 +2067,7 @@ function wbtm_search_result_list_script()
         });
 
 
-        jQuery('.wbtm_next_day_search').on('click', function () {
+        jQuery('.wbtm_next_day_search').on('click', function() {
 
             var bus_start_route = jQuery(this).data('sroute');
             var bus_end_route = jQuery(this).data('eroute');
@@ -1922,12 +2083,12 @@ function wbtm_search_result_list_script()
                     "j_date": j_date,
                     "r_date": r_date
                 },
-                beforeSend: function () {
+                beforeSend: function() {
                     jQuery('.wbtm_search_part').html(
                         '<span class=wbtm-loading-animation><img src="<?php echo WBTM_PLUGIN_URL . 'public/images/'; ?>loading.gif"</span>'
                     );
                 },
-                success: function (data) {
+                success: function(data) {
                     jQuery('.wbtm_search_part').html(data);
                     jQuery('#j_date').val(j_date);
 
@@ -1939,7 +2100,7 @@ function wbtm_search_result_list_script()
 
         });
     </script>
-    <?php
+<?php
     echo ob_get_clean();
 }
 
@@ -2222,15 +2383,17 @@ function wbtm_find_seat_in_cart($seat_name, $return = false)
 add_action('woocommerce_order_item_display_meta_value', 'mage_woocommerce_order_item_display_meta_value', 10, 3);
 function mage_woocommerce_order_item_display_meta_value($value, $meta, $item)
 {
-    if ( 'Date' === $meta->key ) { $value = mage_wp_date($value); }
-     
+    if ('Date' === $meta->key) {
+        $value = mage_wp_date($value);
+    }
+
     return $value;
 }
 
 add_action('woocommerce_after_order_itemmeta', 'mage_show_passenger_info_in_order_details', 10, 3);
 function mage_show_passenger_info_in_order_details($item_id, $item, $_product)
 {
-    ?>
+?>
     <style type="text/css">
         .th__title {
             text-transform: capitalize;
@@ -2303,9 +2466,7 @@ function mage_show_passenger_info_in_order_details($item_id, $item, $_product)
 
             echo '</ul>';
         }
-
     }
-
 }
 
 // Ajax Issue
@@ -2317,7 +2478,7 @@ function wbtm_ajax_url()
     <script type="text/javascript">
         var wbtm_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
     </script>
-    <?php
+<?php
 }
 
 add_action('rest_api_init', 'wbtm_bus_cunstom_fields_to_rest_init');
@@ -2336,7 +2497,7 @@ if (!function_exists('wbtm_get_bus_custom_meta_for_api')) {
         $post_id = $object['id'];
         $post_meta = get_post_meta($post_id);
         $post_image = get_post_thumbnail_id($post_id);
-        if($post_image){
+        if ($post_image) {
             $post_meta["bus_feature_image"] = $post_image ? wp_get_attachment_image_src($post_image, 'full')[0] : null;
         }
         return $post_meta;
@@ -2378,7 +2539,7 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
 
 
         if (!wc_prices_include_tax()) {
-// echo get_option( 'woocommerce_prices_include_tax' );
+            // echo get_option( 'woocommerce_prices_include_tax' );
             $tax_rates = WC_Tax::get_rates($product->get_tax_class());
             $taxes = WC_Tax::calc_tax($line_price, $tax_rates, false);
 
@@ -2387,15 +2548,12 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
             if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
 
                 $taxes_total = array_sum($taxes);
-
             } else {
 
                 $taxes_total = array_sum(array_map('wc_round_tax_total', $taxes));
             }
 
             $return_price = $tax_with_price == 'excl' ? round($line_price, wc_get_price_decimals()) : round($line_price + $taxes_total, wc_get_price_decimals());
-
-
         } else {
 
 
@@ -2465,27 +2623,29 @@ add_action('manage_wbtm_bus_posts_custom_column', 'wbtm_posts_custom_column_call
 function wbtm_posts_custom_column_callback($column, $post_id)
 {
     switch ($column) {
-        case 'wbtm_coach_no' :
+        case 'wbtm_coach_no':
             echo "<span class=''>" . get_post_meta($post_id, 'wbtm_bus_no', true) . "</span>";
             break;
-        case 'wbtm_bus_type' :
+        case 'wbtm_bus_type':
             echo "<span class=''>" . wbtm_bus_type($post_id) . "</span>";
             break;
     }
 }
 
 add_filter('manage_edit-wbtm_bus_stops_columns', 'wbtm_bus_stops_custom_column');
-function wbtm_bus_stops_custom_column($columns){
+function wbtm_bus_stops_custom_column($columns)
+{
     $columns['id'] = 'ID';
     return $columns;
 }
 
 add_filter('manage_wbtm_bus_stops_custom_column', 'wbtm_bus_stops_custom_column_callback', 10, 3);
-function wbtm_bus_stops_custom_column_callback($content, $column_name, $term_id){
-    switch ( $column_name ) {
-        case 'id' :
+function wbtm_bus_stops_custom_column_callback($content, $column_name, $term_id)
+{
+    switch ($column_name) {
+        case 'id':
             $content = $term_id;
-        break;
+            break;
     }
     return $content;
 }

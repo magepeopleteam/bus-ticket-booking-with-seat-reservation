@@ -12,9 +12,9 @@ function mage_bus_selected_seat_item(){
     $price_final = 0;
     $dd = false;
 
-    // Return Discoutn setting
+    // Return Discount setting
     $settings = get_option('wbtm_bus_settings');
-    $val = $settings['bus_return_discount'];
+    $val = mage_bus_setting_value('bus_return_discount');
     $is_return_discount_enable = $val ? $val : 'no';
     // $price_final = '<span data-current-price="'.$_POST["price"].'" style="margin-right:0!important">'.wc_price($_POST["price"]).'</span>';
     ?>
@@ -23,10 +23,10 @@ function mage_bus_selected_seat_item(){
         <?php
         if(mage_bus_multiple_passenger_type_check($_POST['id'],$_POST['start'],$_POST['end'])){
             $seat_panel_settings = get_option('wbtm_bus_settings');
-            $adult_label = $seat_panel_settings['wbtm_seat_type_adult_label'];
-            $child_label = $seat_panel_settings['wbtm_seat_type_child_label'];
-            $infant_label = $seat_panel_settings['wbtm_seat_type_infant_label'];
-            $special_label = $seat_panel_settings['wbtm_seat_type_special_label'];
+            $adult_label = mage_bus_setting_value('wbtm_seat_type_adult_label');
+            $child_label = mage_bus_setting_value('wbtm_seat_type_child_label');
+            $infant_label = mage_bus_setting_value('wbtm_seat_type_infant_label');
+            $special_label = mage_bus_setting_value('wbtm_seat_type_special_label');
             if(1==$_POST['passenger_type']){
                 $type=$child_label;
             }elseif(2==$_POST['passenger_type']){
@@ -77,9 +77,13 @@ function wbtm_form_builder_callback() {
     $seatType = $_POST['seatType'];
     $passengerType = isset($_POST['passengerType']) ? $_POST['passengerType'] : 0;
     $seats = $_POST['seats'];
+    $dd = 'no';
+    if(isset($_POST['dd'])) {
+        $dd = ($_POST['dd'] == 'yes' ? 'yes' : 'no');
+    }
     if (class_exists('WbtmProFunction')) {
         for ($i = 1; $i <= $seats; $i++) {
-            WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType, $passengerType);
+            WbtmProFunction::bus_hidden_customer_info_form($busId, $seatType, $passengerType, $dd);
         }
     } else {
         // echo '<input type="hidden" name="custom_reg_user" value="no" />';

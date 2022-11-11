@@ -1,5 +1,5 @@
 <?php
-function wbtm_seat_global($b_start, $date, $type = '')
+function wbtm_seat_global($b_start, $date, $type = '', $return = false)
 {
     global $wbtmmain;
 
@@ -199,7 +199,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
                                            data-sclass='Economic'
                                            class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
                                             <?php echo $_seats[$text_field_name]; ?></a>
-                                        <?php mage_bus_passenger_type_admin(false, false) ?>
+                                        <?php mage_bus_passenger_type_admin($return, false) ?>
                                     <?php }
                                 } ?>
                             </td>
@@ -253,7 +253,7 @@ function wbtm_seat_global($b_start, $date, $type = '')
                                                data-sclass='Economic'
                                                class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
                                                 <?php echo $_seats[$text_field_name]; ?></a>
-                                            <?php mage_bus_passenger_type_admin(false, true) ?>
+                                            <?php mage_bus_passenger_type_admin($return, true) ?>
                                         <?php } ?>
 
                                     <?php endif; ?>

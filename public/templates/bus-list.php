@@ -38,7 +38,7 @@ foreach ($dp_arr as $_dp_arr) {
                     <?php echo $wbtmmain->bus_get_option('wbtm_type_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_type_text', 'label_setting_sec') : _e('Type:', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </strong> <?php echo(isset($term[0]) ? $term[0]->name : ''); ?></li>
             <li><strong>
-                    <?php echo $wbtmmain->bus_get_option('wbtm_bus_no_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_bus_no_text', 'label_setting_sec') : _e('Bus No:', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <?php echo mage_bus_setting_value('bus_menu_label', 'Bus') . ' ' . __('No', 'bus-ticket-booking-with-seat-reservation'); ?>:
                 </strong> <?php echo get_post_meta(get_the_id(), 'wbtm_bus_no', true); ?></li>
             <li><strong>
                     <?php echo $wbtmmain->bus_get_option('wbtm_from_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_from_text', 'label_setting_sec') : _e('Start From:', 'bus-ticket-booking-with-seat-reservation'); ?>

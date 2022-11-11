@@ -352,7 +352,7 @@ if (!class_exists("AddThemePage")) {
 
                             $page_settings_count = count($page_settings);
 
-                            //var_dump($page_settings);
+                            // var_dump($page_settings);
                             ?>
                             <li class="nav-item-wrap <?php if (
                                 $page_settings_count > 1
@@ -429,6 +429,7 @@ if (!class_exists("AddThemePage")) {
                                     echo "active";
                                 } ?>  tab-content-<?php echo $panelsIndex; ?>">
                                     <?php do_settings_sections($panelsIndex); ?>
+                                    <?php do_action("mage_settings_panel_content_".$panelsIndex); ?>
                                 </div>
                             <?php endforeach;
 

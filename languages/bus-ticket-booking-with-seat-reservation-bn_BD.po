@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-14 11:11+0000\n"
-"PO-Revision-Date: 2021-03-11 05:19+0000\n"
-"Last-Translator: Shohan Kenshin\n"
+"PO-Revision-Date: 2022-11-05 12:20+0000\n"
+"Last-Translator: \n"
 "Language-Team: বাংলা\n"
 "Language: bn_BD\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -12,15 +12,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.5.1; wp-5.6.2"
+"X-Loco-Version: 2.6.3; wp-6.1"
 
-#: admin/class/class-meta-box.php:78
-msgid " Bus Info & Configuration :"
-msgstr " বাস তথ্য ও কনফিগারেশন :"
+#: includes/class-wbtm-required-plugins.php:314
+msgid ""
+"\t\n"
+"\t\t\t\t\tBus Ticket Booking with Seat Reservation required the following "
+"plugin: "
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্রয়োজন, নিম্নলিখিত প্লাগ: "
 
-#: admin/class/class-meta-box.php:99
-msgid " Bus Onday & Offday:"
-msgstr "বাস বন্ধ ও চালুর দিন:"
+#: includes/class-wbtm-required-plugins.php:318
+msgid ""
+"\t\n"
+"\t\t\t\t\tBus Ticket Booking with Seat Reservation required the following "
+"plugins: "
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্রয়োজন নিম্নলিখিত প্লাগইন: "
+
+#: includes/class-wbtm-required-plugins.php:340
+msgid ""
+"\t\n"
+"\t\t\t\t\tBus Ticket Booking with Seat Reservation:"
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন:"
+
+#: includes/class-wbtm-required-plugins.php:261
+#: includes/class-wbtm-required-plugins.php:282
+msgid ""
+"\t\n"
+"\t\t\tBus Ticket Booking with Seat Reservation"
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন"
+
+#: includes/class-wbtm-required-plugins.php:179
+msgid ""
+"\t\n"
+"Bus Ticket Booking with Seat Reservation"
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন"
+
+#: includes/class-wbtm-required-plugins.php:169
+msgid ""
+"\t\n"
+"Bus Ticket Booking with Seat Reservation Required Plugins"
+msgstr " বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্লাগইন প্রয়োজন"
 
 #: admin/class/class-create-cpt.php:33
 msgid " Feature Image"
@@ -50,29 +81,17 @@ msgstr " না পাওয়া"
 msgid " Not found in Trash"
 msgstr " না পাওয়া যায়, ট্র্যাশ"
 
-#: admin/class/class-create-tax.php:52
+#: admin/class/class-create-tax.php:95
 msgid " Pickup Point"
 msgstr "পিকআপ পয়েন্ট"
 
-#: admin/class/class-meta-box.php:94
-msgid " Pickup Point :"
-msgstr "পিকআপ পয়েন্ট"
-
-#: admin/class/class-create-tax.php:68
+#: admin/class/class-create-tax.php:111
 msgid " Pickup Point list"
 msgstr "পিকআপ পয়েন্ট তালিকা"
 
-#: admin/class/class-create-tax.php:69
+#: admin/class/class-create-tax.php:112
 msgid " Pickup Point list navigation"
 msgstr "পিকআপ পয়েন্ট নেভিগেশন"
-
-#: admin/class/class-meta-box.php:83
-msgid " Routing :"
-msgstr "রা্উটিং :"
-
-#: admin/class/class-meta-box.php:89
-msgid " Seat Pricing :"
-msgstr " আসন প্রাইসিং :"
 
 #: admin/class/class-create-tax.php:15
 msgid " Type"
@@ -86,56 +105,47 @@ msgstr " টাইপ তালিকা"
 msgid " Type list navigation"
 msgstr " টাইপ তালিকা, গৌণ"
 
-#: public/template-hooks/layout/helper.php:691
-#: public/template-hooks/layout/helper.php:695
-#: public/template-hooks/layout/helper.php:699
-#: public/template-hooks/layout/helper.php:703
+#: public/template-hooks/layout/helper.php:814
+#: public/template-hooks/layout/helper.php:818
+#: public/template-hooks/layout/helper.php:822
 msgid "/ Seat"
 msgstr "/ আসন"
 
-#: public/template-hooks/layout/helper.php:641
-#: public/template-hooks/layout/helper.php:645
-#: public/template-hooks/layout/helper.php:649
+#: public/template-hooks/layout/helper.php:757
+#: public/template-hooks/layout/helper.php:761
+#: public/template-hooks/layout/helper.php:765
 msgid "/Seat"
 msgstr "/আসন"
 
-#: admin/class/class-meta-box.php:1111 admin/class/class-meta-box.php:1162
-msgid "1000"
-msgstr "1000"
+#: public/templates/template-not-found.php:4
+msgid "404 not found"
+msgstr "404 পাওয়া যায়নি"
 
-#: admin/class/class-meta-box.php:1101 admin/class/class-meta-box.php:1154
-msgid "1200"
-msgstr "1200"
-
-#: admin/class/class-meta-box.php:1091 admin/class/class-meta-box.php:1147
-msgid "1500"
-msgstr "1500"
-
-#: admin/class/class-setting-page.php:625
-msgid "<i class=\"fas fa fa-cog\"></i> Color & Styles"
-msgstr ""
-
-#: admin/class/class-setting-page.php:796
-msgid "<i class=\"fas fa fa-cog\"></i> Custom CSS"
-msgstr ""
-
-#: admin/class/class-setting-page.php:23
+#: admin/class/class-setting-page.php:35
 msgid "<i class=\"fas fa fa-cog\"></i> General Settings"
 msgstr ""
 
-#: admin/class/class-setting-page.php:104
-msgid "<i class=\"fas fa fa-cog\"></i> Seat Panel Settings"
+#: admin/class/class-setting-page.php:193
+msgid "<i class=\"fas fa-calendar-minus\"></i> Global Offday"
 msgstr ""
 
-#: admin/class/class-setting-page.php:196
-msgid "<i class=\"fas fa fa-cog\"></i> Translation Settings"
+#: admin/class/class-setting-page.php:945
+msgid "<i class=\"fas fa-file-code\"></i> Custom CSS"
 msgstr ""
 
-#: admin/class/class-meta-box.php:24
-msgid "<span class=\"dashicons dashicons-info\"></span>Bus Information : "
+#: admin/class/class-setting-page.php:331
+msgid "<i class=\"fas fa-language\"></i> Translation Settings"
 msgstr ""
 
-#: woocommerce-bus.php:187
+#: admin/class/class-setting-page.php:767
+msgid "<i class=\"fas fa-palette\"></i> Color & Styles"
+msgstr ""
+
+#: admin/class/class-setting-page.php:240
+msgid "<i class=\"fas fa-user-cog\"></i> Seat Panel Settings"
+msgstr ""
+
+#: woocommerce-bus.php:156
 msgid ">Click Here to Install</a> "
 msgstr ""
 
@@ -143,24 +153,28 @@ msgstr ""
 msgid "A Complete Bus Ticketig System for WordPress & WooCommerce"
 msgstr "একটি সম্পূর্ণ বাস Ticketig সিস্টেমের জন্য ওয়ার্ডপ্রেস ও ওয়ার্ডপ্রেস"
 
-#: public/template-hooks/layout/helper.php:283
+#: includes/my-account/bus-ticket.php:153
+#: public/template-hooks/layout/helper.php:326
 msgid "Action"
 msgstr "কর্ম"
 
-#: admin/class/class-meta-box.php:932 admin/class/class-meta-box.php:1005
-msgid "Add More"
-msgstr "আরো যোগ করুন"
+#: includes/class-wbtm-required-plugins.php:135
+#: includes/class-wbtm-required-plugins.php:146
+#: includes/class-wbtm-required-plugins.php:158
+msgid "Activate"
+msgstr "সক্রিয়"
 
-#: admin/class/class-meta-box.php:1176 admin/class/class-meta-box.php:1288
-#: admin/class/class-meta-box.php:1344
-msgid "Add more"
-msgstr "আরো যোগ করুন"
+#: includes/class-wbtm-required-plugins.php:378
+msgid "Activate installed plugin"
+msgstr "ইনস্টল প্লাগইন সক্রিয়"
 
-#: admin/class/class-meta-box.php:1505
-msgid "Add More offdate"
-msgstr "আরো যোগ offdate"
+#: includes/class-wbtm-required-plugins.php:138
+#: includes/class-wbtm-required-plugins.php:149
+#: includes/class-wbtm-required-plugins.php:161
+msgid "Activated"
+msgstr "সক্রিয়"
 
-#: admin/class/class-create-tax.php:57
+#: admin/class/class-create-tax.php:100
 msgid "Add New Bus Pickup Point"
 msgstr "পিকআপ পয়েন্ট যোগ করুন"
 
@@ -168,7 +182,7 @@ msgstr "পিকআপ পয়েন্ট যোগ করুন"
 msgid "Add New Bus Type"
 msgstr "যোগ নতুন বাস টাইপ"
 
-#: admin/class/class-create-tax.php:62
+#: admin/class/class-create-tax.php:105
 msgid "Add or remove Bus Pickup Point"
 msgstr "পিকআপ পয়েন্ট মুছুন"
 
@@ -176,33 +190,32 @@ msgstr "পিকআপ পয়েন্ট মুছুন"
 msgid "Add or remove Bus Type"
 msgstr "যোগ অথবা অপসারণ বাস টাইপ"
 
-#: admin/class/class-meta-box.php:1233
-msgid "Add Pickup point"
-msgstr "পিকআপ পয়েন্ট যোগ করুন"
-
-#: includes/class-add-bus-info-to-cart copy.php:385
-#: includes/class-add-bus-info-to-cart.php:342
-#: admin/class/class-setting-page.php:600
+#: includes/class-add-bus-info-to-cart.php:468
+#: admin/class/class-setting-page.php:735
 msgid "Address:"
 msgstr "ঠিকানা:"
 
-#: admin/class/class-setting-page.php:117
+#: admin/class/class-setting-page.php:253
 msgid "Adult"
 msgstr "প্রাপ্তবয়স্ক"
 
-#: admin/class/class-meta-box.php:1056
-msgid "Adult Price"
-msgstr "প্রাপ্তবয়স্ক মূল্য"
-
-#: admin/class/class-meta-box.php:1095 admin/class/class-meta-box.php:1150
-msgid "Adult Return Price"
-msgstr "প্রাপ্তবয়স্ক, ফিরতি মূল্য"
-
-#: admin/class/class-setting-page.php:113
+#: admin/class/class-setting-page.php:249
 msgid "Adult Seat Type Label "
 msgstr "প্রাপ্তবয়স্ক আসন ধরন লেবেল "
 
-#: admin/class/class-create-tax.php:53
+#: admin/class/class-welcome-page.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "পরে ডাউনলোড XML ফাইল এ যান:"
+
+#: admin/class/class-welcome-page.php:86
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"পরে, প্লাগইন ইনস্টল করুন, আপনি যোগ করতে পারেন একটি নতুন বাস. ভিডিও দেখতে "
+"দয়া করে জানেন কিভাবে আপনি এটা করতে পারেন:"
+
+#: admin/class/class-create-tax.php:96
 msgid "All Bus Pickup Point"
 msgstr "সকল পিকআপ পয়েন্ট"
 
@@ -210,110 +223,131 @@ msgstr "সকল পিকআপ পয়েন্ট"
 msgid "All Bus Type"
 msgstr "সব বাস টাইপ"
 
-#: admin/class/class-setting-page.php:286
-#: public/template-hooks/layout/bus-search-page.php:253
-#: public/template-hooks/layout/bus-search-page.php:764
+#: includes/bus-search-page.php:276 includes/bus-search-page.php:931
+#: admin/class/class-setting-page.php:421
+#: public/template-hooks/layout/bus-search-page.php:276
+#: public/template-hooks/layout/bus-search-page.php:900
 msgid "Already Added in cart !"
 msgstr "ইতিমধ্যে যোগ করা হয়েছে কার্ট !"
 
-#: public/template-hooks/layout/bus-search-page.php:778
-msgid "Already Booked By another !"
+#: includes/bus-search-page.php:945
+#: public/template-hooks/layout/bus-search-page.php:913
+#, fuzzy
+#| msgid "Already Booked By another !"
+msgid "Already Booked By another!"
 msgstr "আগে থেকেই বুক করে অন্য !"
 
-#: public/template-hooks/layout/bus-search-page.php:792
-msgid "Already Sold By another !"
+#: includes/bus-search-page.php:959
+#: public/template-hooks/layout/bus-search-page.php:873
+#: public/template-hooks/layout/bus-search-page.php:926
+#, fuzzy
+#| msgid "Already Sold By another !"
+msgid "Already Sold By another!"
 msgstr "ইতিমধ্যে বিক্রি করে অন্য !"
 
+#: admin/class/class-setting-page.php:756
+msgid "Any Date Return Description"
+msgstr "কোন আপলোড আসতে বিবরণ:"
+
+#: includes/bus-search-page.php:654 includes/class-add-bus-info-to-cart.php:696
+#: public/template-hooks/layout/bus-search-page.php:512
+#: public/template-hooks/layout/bus-search-page.php:659
+msgid "Any Date Return:"
+msgstr "কোন আপলোড প্রত্যাবর্তন:"
+
+#: admin/class/class-setting-page.php:512
 #: public/templates/search-table-head.php:21
-#: admin/class/class-setting-page.php:377
 msgid "ARRIVAL"
 msgstr "আগমনের"
 
-#: public/template-hooks/layout/helper.php:282
+#: admin/class/class-setting-page.php:176
+msgid "Auto Cancel?"
+msgstr "অটো বাতিল?"
+
+#: public/template-hooks/layout/helper.php:325
 msgid "Available"
 msgstr "পাওয়া যায়"
 
-#: includes/class-add-bus-info-to-cart.php:388
+#: includes/class-wbtm-required-plugins.php:368
+msgid "Begin installing plugins"
+msgstr "প্লাগইন ইনস্টল শুরু"
+
+#: includes/class-add-bus-info-to-cart.php:518
 msgid "Billing Type"
 msgstr "বিলিং টাইপ"
 
-#: includes/class-add-bus-info-to-cart.php:503
+#: includes/class-add-bus-info-to-cart.php:636
 msgid "Billing Type: "
 msgstr "বিলিং টাইপ: "
 
-#: admin/class/class-setting-page.php:162
+#: admin/class/class-setting-page.php:298
 msgid "Blank Seat Image"
 msgstr "ফাঁকা আসন ইমেজ"
 
-#: admin/class/class-setting-page.php:161
+#: admin/class/class-setting-page.php:297
 msgid "Blank Seat Image "
 msgstr "ফাঁকা আসন ইমেজ "
 
-#: public/template-hooks/layout/bus-search-page.php:369
-#: public/template-hooks/layout/bus-search-page.php:503
+#: includes/bus-search-page.php:411 includes/bus-search-page.php:578
+#: public/template-hooks/layout/bus-search-page.php:412
+#: public/template-hooks/layout/bus-search-page.php:581
 msgid "Boarding"
 msgstr "বোর্ডিং"
 
-#: includes/class-add-bus-info-to-cart copy.php:418
-#: includes/class-add-bus-info-to-cart.php:403
-#: includes/class-add-bus-info-to-cart.php:425
-#: includes/class-add-bus-info-to-cart.php:513
-#: public/templates/single-bus.php:30 admin/class/class-meta-box.php:863
-#: admin/class/class-meta-box.php:866 admin/class/class-meta-box.php:1054
+#: includes/class-add-bus-info-to-cart.php:533
+#: includes/class-add-bus-info-to-cart.php:556
+#: includes/class-add-bus-info-to-cart.php:646
+#: public/templates/single-bus.php:34
 msgid "Boarding Point"
 msgstr "বোর্ডিং বিন্দু"
 
-#: includes/class-add-bus-info-to-cart copy.php:470
-#: includes/class-add-bus-info-to-cart.php:524
+#: includes/class-add-bus-info-to-cart.php:657
 msgid "Boarding Point:"
 msgstr "বোর্ডিং পয়েন্ট:"
 
-#: admin/class/class-setting-page.php:529
+#: admin/class/class-setting-page.php:664
 msgid "Boarding Points"
 msgstr "বোর্ডিং পয়েন্ট"
 
-#: admin/class/class-setting-page.php:507
+#: admin/class/class-setting-page.php:642
 msgid "BOOK NOW"
 msgstr "বই এখন"
 
-#: public/templates/bus-list.php:54 public/templates/bus-search-result.php:158
+#: includes/bus-search-page.php:552 includes/bus-search-page.php:763
+#: public/templates/bus-list.php:54
 #: public/templates/bus-search-result-return.php:128
-#: public/template-hooks/layout/bus-search-page.php:478
-#: public/template-hooks/layout/bus-search-page.php:603
+#: public/templates/bus-search-result.php:158
+#: public/template-hooks/layout/bus-search-page.php:557
+#: public/template-hooks/layout/bus-search-page.php:706
 msgid "Book Now"
 msgstr "বই এখন"
 
-#: admin/class/class-setting-page.php:753
+#: admin/class/class-setting-page.php:903
 msgid "Book Now Button Background Color"
 msgstr "বই এখন বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:761
+#: admin/class/class-setting-page.php:911
 msgid "Book Now Button Text Color"
 msgstr "বই এখন বাটন টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:175
-#: admin/class/class-setting-page.php:176
+#: admin/class/class-setting-page.php:311
+#: admin/class/class-setting-page.php:312
 msgid "Booked Seat Image "
 msgstr "বুক আসন ইমেজ "
 
-#: admin/class/class-setting-page.php:49
+#: admin/class/class-setting-page.php:61
 msgid "Buffer Time"
 msgstr "বাফার সময়"
 
-#: admin/class/class-setting-page.php:36
-#: public/template-hooks/layout/helper.php:276
+#: admin/class/class-setting-page.php:48
 msgid "Bus"
 msgstr "বাস"
 
-#: admin/class/class-setting-page.php:44
+#: admin/class/class-setting-page.php:56
 msgid "bus"
 msgstr "বাস"
 
-#: admin/class/class-meta-box.php:47
-msgid "Bus Information and Configuration"
-msgstr "বাসের তথ্য ও কনফিগারেশন"
-
-#: admin/class/class-setting-page.php:32
+#: admin/class/class-setting-page.php:44
 msgid "Bus Label"
 msgstr "বাস লেবেল"
 
@@ -321,23 +355,19 @@ msgstr "বাস লেবেল"
 msgid "Bus Name"
 msgstr "বাসের নাম"
 
-#: admin/class/class-setting-page.php:314
+#: admin/class/class-setting-page.php:449
 msgid "Bus Name:"
 msgstr "বাসের নাম:"
 
-#: public/templates/bus-list.php:41 admin/class/class-setting-page.php:515
+#: admin/class/class-setting-page.php:650
 msgid "Bus No:"
 msgstr "বাস না:"
 
-#: admin/class/class-setting-page.php:370
+#: admin/class/class-setting-page.php:505
 msgid "Bus not availabe in this date :"
 msgstr "বাস না availabe এই তারিখ :"
 
-#: admin/class/class-meta-box.php:66
-msgid "Bus Onday & Offday"
-msgstr "বাস বন্ধ ও চালুর দিন"
-
-#: admin/class/class-setting-page.php:40
+#: admin/class/class-setting-page.php:52
 msgid "Bus Slug"
 msgstr "বাস স্লাগ্"
 
@@ -345,150 +375,192 @@ msgstr "বাস স্লাগ্"
 msgid "Bus Ticket Booking with Seat Reservation"
 msgstr "বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন"
 
-#: public/templates/single-bus.php:18
-msgid "Bus Type :"
-msgstr "বাস প্রকার :"
+#: admin/class/class-welcome-page.php:170
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্রো"
 
-#: admin/class/class-setting-page.php:207
+#: admin/class/class-welcome-page.php:74 admin/class/class-welcome-page.php:171
+msgid "BUY PRO"
+msgstr "প্রো কিনতে"
+
+#: admin/class/class-setting-page.php:342
 msgid "BUY TICKET"
 msgstr "টিকেট কিনতে"
 
+#: public/template-hooks/layout/bus-search-form.php:13
 #: public/template-hooks/search-form/title.php:5
-#: public/template-hooks/layout/bus-search-form.php:7
 msgid "BUY TICKET:"
 msgstr "কিনতে টিকেট:"
 
-#: admin/class/class-setting-page.php:80
-msgid "Cancelled"
-msgstr "বাতিল"
+#: admin/class/class-welcome-page.php:189
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"ডিফল্টরূপে দেখাচ্ছে 20 বাস প্রতি পৃষ্ঠা. যদি আপনি এটি পরিবর্তন করতে চান এবং "
+"সেট সীমা ইনপুট সীমা সংখ্যা. উদাহরণ:"
+
+#: admin/class/class-welcome-page.php:185
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"ডিফল্ট দ্বারা দেখানো সব বাস, কিন্তু আপনি দেখাতে চান বাস তালিকা একটি "
+"নির্দিষ্ট বিষয়শ্রেণীতে, আপনি করতে পারেন এই বৈশিষ্ট্য ব্যবহার করুন, শুধু "
+"বিষয়শ্রেণীতে আইডি দিয়ে এই. উদাহরণ:"
+
+#: admin/class/class-setting-page.php:109
+#: admin/class/class-setting-page.php:122
+msgid "By default: Off"
+msgstr "ডিফল্টরূপে: বন্ধ"
+
+#: admin/class/class-setting-page.php:160
+msgid "Cancel Req. Allowed before"
+msgstr "বাতিল Req. আগে অনুমোদিত"
 
 #: admin/class/class-setting-page.php:168
-#: admin/class/class-setting-page.php:169
+msgid "Cancel Req. Allowed User Role?"
+msgstr "বাতিল Req. অনুমতি ব্যবহারকারী ভূমিকা?"
+
+#: admin/class/class-setting-page.php:304
+#: admin/class/class-setting-page.php:305
 msgid "Cart Seat Image "
 msgstr "কার্ট আসন ইমেজ "
 
-#: admin/class/class-setting-page.php:125
+#: admin/class/class-welcome-page.php:184
+msgid "cat"
+msgstr "বিড়াল"
+
+#: admin/class/class-welcome-page.php:45
+msgid "category.xml"
+msgstr "category.xml"
+
+#: admin/class/class-setting-page.php:261
 msgid "Child"
 msgstr "শিশু"
 
-#: admin/class/class-meta-box.php:1057
-msgid "Child Price"
-msgstr "সন্তানের মূল্য"
-
-#: admin/class/class-meta-box.php:1105 admin/class/class-meta-box.php:1158
-msgid "Child return price"
-msgstr "সন্তানের ফিরতি মূল্য"
-
-#: admin/class/class-setting-page.php:121
+#: admin/class/class-setting-page.php:257
 msgid "Child Seat Type Label "
 msgstr "সন্তানের আসন ধরন লেবেল "
 
-#: admin/class/class-create-tax.php:26 admin/class/class-create-tax.php:63
+#: admin/class/class-create-tax.php:26 admin/class/class-create-tax.php:106
 msgid "Choose from the most used"
 msgstr "থেকে পছন্দ করে নিন সবচেয়ে ব্যবহৃত"
 
+#: admin/class/class-setting-page.php:463
 #: public/templates/search-table-head.php:11
-#: admin/class/class-setting-page.php:328
 msgid "COACH NO"
 msgstr "কোচ কোন"
 
-#: admin/class/class-meta-box.php:137
-msgid "Coach No"
-msgstr "কোচ কোন"
-
-#: public/template-hooks/layout/helper.php:280
+#: includes/bus-search-page.php:425
+#: public/template-hooks/layout/bus-search-page.php:426
+#: public/template-hooks/layout/helper.php:323
 msgid "Coach Type"
 msgstr "কোচ টাইপ"
 
-#: public/template-hooks/layout/bus-search-page.php:381
-#: public/template-hooks/layout/bus-search-page.php:514
+#: includes/bus-search-page.php:589
+#: public/template-hooks/layout/bus-search-page.php:591
 msgid "Coach Type:"
 msgstr "কোচ প্রকার:"
 
-#: admin/class/class-setting-page.php:79
+#: admin/class/class-setting-page.php:143
 msgid "Completed"
 msgstr "সম্পন্ন"
 
-#: includes/class-add-bus-info-to-cart copy.php:452
-#: includes/class-add-bus-info-to-cart copy.php:483
-#: includes/class-add-bus-info-to-cart.php:476
-#: includes/class-add-bus-info-to-cart.php:544
+#: includes/class-add-bus-info-to-cart.php:609
+#: includes/class-add-bus-info-to-cart.php:677
 msgid "Congratulation!"
 msgstr "সংবর্ধনা!"
 
-#: admin/class/class-meta-box.php:205 admin/class/class-meta-box.php:360
-msgid "Create Seat Plan"
-msgstr "তৈরি সীট প্ল্যান"
+#: admin/class/class-welcome-page.php:46
+msgid "content.xml"
+msgstr "content.xml"
 
-#: admin/class/class-setting-page.php:804
+#: admin/class/class-setting-page.php:953
 msgid "Custom CSS"
 msgstr "কাস্টম CSS"
 
-#: public/templates/bus-search-result.php:109
+#: includes/bus-search-page.php:432 public/templates/bus-search-result.php:109
+#: public/template-hooks/layout/bus-search-page.php:433
 msgid "Date"
 msgstr "আপলোড"
 
-#: public/template-hooks/layout/bus-search-form.php:35
+#: public/template-hooks/layout/bus-search-form.php:47
 msgid "Date of Journey"
 msgstr "প্রতিষ্ঠার যাত্রা"
 
-#: admin/class/class-setting-page.php:230
+#: admin/class/class-setting-page.php:365
 #: public/template-hooks/search-form/dates.php:8
 msgid "Date of Journey:"
 msgstr "প্রতিষ্ঠার যাত্রা:"
 
+#: includes/bus-search-page.php:594 admin/class/class-setting-page.php:435
 #: public/templates/bus-search-result-return.php:90
-#: admin/class/class-setting-page.php:300
-#: public/template-hooks/layout/bus-search-page.php:387
-#: public/template-hooks/layout/bus-search-page.php:519
+#: public/template-hooks/layout/bus-search-page.php:596
 msgid "Date:"
 msgstr "তারিখ:"
 
+#: admin/class/class-setting-page.php:456
 #: public/templates/search-table-head.php:9
-#: admin/class/class-setting-page.php:321
 msgid "DEPARTING"
 msgstr "বিদায়ী"
 
-#: includes/class-add-bus-info-to-cart copy.php:452
-#: includes/class-add-bus-info-to-cart copy.php:483
-#: includes/class-add-bus-info-to-cart.php:476
-#: includes/class-add-bus-info-to-cart.php:544
+#: admin/class/class-welcome-page.php:180
+msgid "Description"
+msgstr "বিবরণ:"
+
+#: admin/class/class-setting-page.php:76 admin/class/class-setting-page.php:89
+msgid "Disable"
+msgstr "নিষ্ক্রিয়"
+
+#: admin/class/class-setting-page.php:83
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"নিষ্ক্রিয় করা না হলে, আপনি প্রদর্শন করতে চান, ফিরে ক্ষেত্রের মধ্যে "
+"অনুসন্ধান. ডিফল্টরূপে সক্রিয়"
+
+#: includes/class-add-bus-info-to-cart.php:609
+#: includes/class-add-bus-info-to-cart.php:677
 msgid "discount on this trip"
 msgstr "ডিসকাউন্ট, এই ট্রিপ"
 
-#: admin/class/class-setting-page.php:154
-#: admin/class/class-setting-page.php:155
+#: admin/class/class-welcome-page.php:49
+msgid "Download the Zip of XML Files"
+msgstr "ডাউনলোড করে জিপ এর XML ফাইল"
+
+#: includes/my-account/bus-ticket.php:189
+msgid "Download Ticket"
+msgstr "ডাউনলোড টিকেট"
+
+#: admin/class/class-setting-page.php:290
+#: admin/class/class-setting-page.php:291
 msgid "Driver Image "
 msgstr "ড্রাইভার ইমেজ "
 
-#: admin/class/class-meta-box.php:176
-msgid "Driver Seat Position"
-msgstr "ড্রাইভার সীট অবস্থান"
-
-#: public/template-hooks/layout/bus-search-page.php:375
-#: public/template-hooks/layout/bus-search-page.php:509
+#: includes/bus-search-page.php:418 includes/bus-search-page.php:584
+#: public/template-hooks/layout/bus-search-page.php:419
+#: public/template-hooks/layout/bus-search-page.php:586
 msgid "Dropping"
 msgstr "ড্রপ"
 
-#: includes/class-add-bus-info-to-cart copy.php:421
-#: includes/class-add-bus-info-to-cart.php:408
-#: includes/class-add-bus-info-to-cart.php:430
-#: includes/class-add-bus-info-to-cart.php:515
-#: public/templates/single-bus.php:41 admin/class/class-meta-box.php:936
-#: admin/class/class-meta-box.php:939 admin/class/class-meta-box.php:1055
+#: includes/class-add-bus-info-to-cart.php:538
+#: includes/class-add-bus-info-to-cart.php:561
+#: includes/class-add-bus-info-to-cart.php:648
+#: public/templates/single-bus.php:45
 msgid "Dropping Point"
 msgstr "ড্রপ বিন্দু"
 
-#: includes/class-add-bus-info-to-cart copy.php:472
-#: includes/class-add-bus-info-to-cart.php:526
+#: includes/class-add-bus-info-to-cart.php:659
 msgid "Dropping Point:"
 msgstr "ড্রপ বিন্দু:"
 
-#: admin/class/class-setting-page.php:536
+#: admin/class/class-setting-page.php:671
 msgid "Dropping Points"
 msgstr "ড্রপ পয়েন্ট"
 
-#: admin/class/class-create-tax.php:58
+#: admin/class/class-create-tax.php:101
 msgid "Edit Bus Pickup Point"
 msgstr "পিকআপ পয়েন্ট পরিবর্তন করুন"
 
@@ -496,18 +568,29 @@ msgstr "পিকআপ পয়েন্ট পরিবর্তন করুন
 msgid "Edit Bus Type"
 msgstr "সম্পাদনা, বাস, টাইপ"
 
-#: includes/class-add-bus-info-to-cart copy.php:364
-#: includes/class-add-bus-info-to-cart.php:318
-#: admin/class/class-setting-page.php:577
+#: includes/class-add-bus-info-to-cart.php:444
+#: admin/class/class-setting-page.php:712
 msgid "Email:"
 msgstr "ইমেইল:"
 
-#: admin/class/class-setting-page.php:58
+#: admin/class/class-setting-page.php:77 admin/class/class-setting-page.php:90
+msgid "Enable"
+msgstr "সক্রিয়"
+
+#: admin/class/class-setting-page.php:96
 msgid "Enable if you want round trip price discont. By default is No"
 msgstr "সক্রিয় যদি আপনি চান রাউন্ড ট্রিপ মূল্য discont. ডিফল্ট দ্বারা হয় না"
 
+#: admin/class/class-setting-page.php:70
+msgid ""
+"Enable if you want to see the same bus should return option in the bus edit "
+"page. By default Disable"
+msgstr ""
+"সক্রিয় করা হলে, আপনি দেখতে চান, একই বাস, উচিত, ফেরত অপশন মধ্যে বাস সম্পাদনা "
+"পৃষ্ঠা. ডিফল্টরূপে নিষ্ক্রিয়"
+
+#: admin/class/class-setting-page.php:477
 #: public/templates/search-table-head.php:15
-#: admin/class/class-setting-page.php:342
 msgid "END"
 msgstr "শেষ"
 
@@ -515,24 +598,30 @@ msgstr "শেষ"
 msgid "End"
 msgstr "শেষ"
 
-#: admin/class/class-setting-page.php:601
+#: admin/class/class-setting-page.php:736
 msgid "Enter the text which you want to display as Address in cart Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, ঠিকানা কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:287
+#: admin/class/class-setting-page.php:422
 msgid "Enter the text which you want to display as Already Added in cart !."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে ইতিমধ্যে যোগ করা হয়েছে "
 "কার্ট !."
 
-#: admin/class/class-setting-page.php:378
+#: admin/class/class-setting-page.php:757
+msgid ""
+"Enter the text which you want to display as any date return description."
+msgstr ""
+"পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে কোনো তারিখ আসতে বিবরণ."
+
+#: admin/class/class-setting-page.php:513
 msgid "Enter the text which you want to display as ARRIVAL Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আগমনের অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:530
+#: admin/class/class-setting-page.php:665
 msgid ""
 "Enter the text which you want to display as Boarding Points single bus "
 "details Page."
@@ -540,63 +629,63 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বোর্ডিং পয়েন্ট একা বাস "
 "বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:508
+#: admin/class/class-setting-page.php:643
 msgid ""
 "Enter the text which you want to display as BOOK NOW button details Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বই এখন বাটন বিবরণ "
 "পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:315
+#: admin/class/class-setting-page.php:450
 msgid ""
 "Enter the text which you want to display as Bus Name Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বাস নাম অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:516
+#: admin/class/class-setting-page.php:651
 msgid ""
 "Enter the text which you want to display as Bus No single bus details Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বাস কোন একক বাস বিবরণ "
 "পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:371
+#: admin/class/class-setting-page.php:506
 msgid ""
 "Enter the text which you want to display as Bus not availabe in this date."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বাস না availabe এই "
 "তারিখ."
 
-#: admin/class/class-setting-page.php:329
+#: admin/class/class-setting-page.php:464
 msgid ""
 "Enter the text which you want to display as COACH NO Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান কোচ হিসেবে কোন অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:231
-#: admin/class/class-setting-page.php:239
+#: admin/class/class-setting-page.php:366
+#: admin/class/class-setting-page.php:374
 msgid ""
 "Enter the text which you want to display as Date of Journey Search form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে প্রতিষ্ঠার যাত্রা "
 "অনুসন্ধান ফর্ম পাতা."
 
-#: admin/class/class-setting-page.php:301
+#: admin/class/class-setting-page.php:436
 msgid "Enter the text which you want to display as Date Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আপলোড অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:322
+#: admin/class/class-setting-page.php:457
 msgid ""
 "Enter the text which you want to display as DEPARTING Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে বিদায়ী অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:537
+#: admin/class/class-setting-page.php:672
 msgid ""
 "Enter the text which you want to display as Dropping Points single bus "
 "details Page."
@@ -604,122 +693,122 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান ড্রপ হিসাবে পয়েন্ট একা বাস "
 "বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:578
+#: admin/class/class-setting-page.php:713
 msgid "Enter the text which you want to display as Email in cart Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, ইমেইল কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:343
+#: admin/class/class-setting-page.php:478
 msgid "Enter the text which you want to display as END Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে শেষ অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:462
+#: admin/class/class-setting-page.php:597
 msgid "Enter the text which you want to display as Extra Bag :"
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে অতিরিক্ত ব্যাগ :"
 
-#: admin/class/class-setting-page.php:469
+#: admin/class/class-setting-page.php:604
 msgid "Enter the text which you want to display as Extra Bag Price :"
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে অতিরিক্ত ব্যাগ দাম :"
 
-#: admin/class/class-setting-page.php:350
+#: admin/class/class-setting-page.php:485
 msgid "Enter the text which you want to display as FARE Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে ভাড়া অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:594
+#: admin/class/class-setting-page.php:729
 msgid "Enter the text which you want to display as Gender in cart Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে জেন্ডার কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:486
+#: admin/class/class-setting-page.php:621
 msgid "Enter the text which you want to display as Image."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে ইমেজ."
 
-#: admin/class/class-setting-page.php:608
+#: admin/class/class-setting-page.php:743
 msgid "Enter the text which you want to display as Journey Date in cart Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে যাত্রা আপলোড কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:570
+#: admin/class/class-setting-page.php:705
 msgid "Enter the text which you want to display as Name in cart Page."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে নাম কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:279
+#: admin/class/class-setting-page.php:414
 msgid "Enter the text which you want to display as No Bus Found!."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে কোন বাস পাওয়া যায় নি!."
 
-#: admin/class/class-setting-page.php:247
+#: admin/class/class-setting-page.php:382
 msgid "Enter the text which you want to display as One Way Search form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে একটি উপায় অনুসন্ধান "
 "ফর্ম পাতা."
 
-#: admin/class/class-setting-page.php:364
+#: admin/class/class-setting-page.php:499
 msgid "Enter the text which you want to display as Passenger Capacity :."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, যাত্রী ধারণক্ষমতা :."
 
-#: admin/class/class-setting-page.php:439
+#: admin/class/class-setting-page.php:574
 msgid "Enter the text which you want to display as Passenger Info seat :"
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, যাত্রী তথ্য আসন :"
 
-#: admin/class/class-setting-page.php:586
+#: admin/class/class-setting-page.php:721
 msgid "Enter the text which you want to display as Phone in cart Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে ফোন মধ্যে কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:271
+#: admin/class/class-setting-page.php:406
 msgid ""
 "Enter the text which you want to display as Please Select button form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, দয়া করে নির্বাচন করুন,"
 " বাটন, ফর্ম পাতা."
 
-#: admin/class/class-setting-page.php:447
+#: admin/class/class-setting-page.php:582
 msgid "Enter the text which you want to display as Qty :"
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে Qty :"
 
-#: admin/class/class-setting-page.php:494
+#: admin/class/class-setting-page.php:629
 msgid "Enter the text which you want to display as Remove Details Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে অপসারণ বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:255
+#: admin/class/class-setting-page.php:390
 msgid "Enter the text which you want to display as Return Search form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে রিটার্ন অনুসন্ধান ফর্ম "
 "পাতা."
 
-#: admin/class/class-setting-page.php:615
+#: admin/class/class-setting-page.php:750
 msgid "Enter the text which you want to display as Return Trip in search Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, ফিরতি ট্রিপ অনুসন্ধান "
 "পৃষ্ঠায়."
 
-#: admin/class/class-setting-page.php:294
+#: admin/class/class-setting-page.php:429
 msgid "Enter the text which you want to display as Route Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে রুট অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:478
+#: admin/class/class-setting-page.php:613
 msgid "Enter the text which you want to display as Schedule."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে সময়সূচী."
 
-#: admin/class/class-setting-page.php:263
+#: admin/class/class-setting-page.php:398
 msgid ""
 "Enter the text which you want to display as SEARCH BUSES button form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, অনুসন্ধান বাস, বাটন, "
 "ফর্ম পাতা."
 
-#: admin/class/class-setting-page.php:553
+#: admin/class/class-setting-page.php:688
 msgid ""
 "Enter the text which you want to display as search button single bus details "
 "Page."
@@ -727,7 +816,7 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, অনুসন্ধান বাটন একক বাস "
 "বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:561
+#: admin/class/class-setting-page.php:696
 msgid ""
 "Enter the text which you want to display as search button single bus seat "
 "list in cart Page."
@@ -735,20 +824,20 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, অনুসন্ধান বাটন একক "
 "বাসের সীট তালিকা কার্ট পাতা."
 
-#: admin/class/class-setting-page.php:431
+#: admin/class/class-setting-page.php:566
 msgid "Enter the text which you want to display as Seat Available."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আসন পাওয়া যায়."
 
-#: admin/class/class-setting-page.php:423
+#: admin/class/class-setting-page.php:558
 msgid "Enter the text which you want to display as Seat Details Page."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আসন বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:415
+#: admin/class/class-setting-page.php:550
 msgid "Enter the text which you want to display as Seat No Details Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আসন কোন বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:385
+#: admin/class/class-setting-page.php:520
 msgid ""
 "Enter the text which you want to display as SEATS AVAILABLE Search Result "
 "Page."
@@ -756,7 +845,7 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে আসন পাওয়া যায়, "
 "অনুসন্ধান ফলাফল পাতা."
 
-#: admin/class/class-setting-page.php:545
+#: admin/class/class-setting-page.php:680
 msgid ""
 "Enter the text which you want to display as Select Journey Date single bus "
 "details Page."
@@ -764,7 +853,7 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে নির্বাচন যাত্রা আপলোড "
 "একক বাস বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:407
+#: admin/class/class-setting-page.php:542
 msgid ""
 "Enter the text which you want to display as Start & Arrival Time Details "
 "Page."
@@ -772,103 +861,109 @@ msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে শুরু ও আগমনের সময় "
 "বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:308
+#: admin/class/class-setting-page.php:443
 msgid "Enter the text which you want to display as Start Time."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে সময় শুরু."
 
-#: admin/class/class-setting-page.php:336
+#: admin/class/class-setting-page.php:471
 msgid ""
 "Enter the text which you want to display as STARTING Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে শুরু, অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:455
+#: admin/class/class-setting-page.php:590
 msgid "Enter the text which you want to display as Sub Total :"
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে সাব মোট :"
 
-#: admin/class/class-setting-page.php:208
-#: admin/class/class-setting-page.php:216
-#: admin/class/class-setting-page.php:223
+#: admin/class/class-setting-page.php:343
+#: admin/class/class-setting-page.php:351
+#: admin/class/class-setting-page.php:358
 msgid "Enter the text which you want to display as To Search form page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে, অনুসন্ধান ফর্ম পাতা."
 
-#: admin/class/class-setting-page.php:501
+#: admin/class/class-setting-page.php:636
 msgid "Enter the text which you want to display as Total Details Page."
 msgstr "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে মোট বিবরণ পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:523
+#: admin/class/class-setting-page.php:658
 msgid ""
 "Enter the text which you want to display as Total Seat  bus details Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে মোট আসন, বাস, বিবরণ "
 "পৃষ্ঠা."
 
-#: admin/class/class-setting-page.php:357
+#: admin/class/class-setting-page.php:492
 msgid "Enter the text which you want to display as TYPE Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে টাইপ অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:392
+#: admin/class/class-setting-page.php:527
 msgid "Enter the text which you want to display as VIEW Search Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে দেখুন অনুসন্ধান ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:399
+#: admin/class/class-setting-page.php:534
 msgid ""
 "Enter the text which you want to display as View Seats button Result Page."
 msgstr ""
 "পাঠ্য সন্নিবেশ করুন যা আপনি প্রদর্শন করতে চান হিসাবে দেখুন আসন বাটন ফলাফল "
 "পাতা."
 
-#: admin/class/class-setting-page.php:461
-#: public/template-hooks/layout/bus-search-page.php:570
+msgid "Error, duplicate 1: Grand Total"
+msgstr "ত্রুটি প্রতিলিপি 1: সর্বোমোট"
+
+#: includes/class-add-bus-info-to-cart.php:585
+#, fuzzy
+#| msgid "Extra Bag:"
+msgid "Extra Bag"
+msgstr "অতিরিক্ত ব্যাগ:"
+
+#: includes/bus-search-page.php:646 admin/class/class-setting-page.php:596
+#: public/template-hooks/layout/bus-search-page.php:649
 msgid "Extra Bag :"
 msgstr "অতিরিক্ত ব্যাগ :"
 
-#: includes/class-add-bus-info-to-cart copy.php:434
-#: includes/class-add-bus-info-to-cart.php:456
-#: admin/class/class-setting-page.php:468
+#: includes/class-add-bus-info-to-cart.php:589
+msgid "Extra Bag Price"
+msgstr "অতিরিক্ত ব্যাগ মূল্য"
+
+#: admin/class/class-setting-page.php:603
 msgid "Extra Bag Price:"
 msgstr "অতিরিক্ত ব্যাগ দাম:"
 
-#: includes/class-add-bus-info-to-cart copy.php:431
-#: includes/class-add-bus-info-to-cart.php:452
-msgid "Extra Bag:"
-msgstr "অতিরিক্ত ব্যাগ:"
-
-#: includes/class-add-bus-info-to-cart copy.php:475
-#: includes/class-add-bus-info-to-cart.php:535
+#: includes/class-add-bus-info-to-cart.php:668
 msgid "Extra Bag: "
 msgstr "অতিরিক্ত ব্যাগ: "
 
-#: admin/class/class-setting-page.php:82
-msgid "Failed"
-msgstr "ব্যর্থ"
+#: includes/class-add-bus-info-to-cart.php:685
+msgid "Extra Services"
+msgstr "অতিরিক্ত সেবা"
 
+#: admin/class/class-setting-page.php:484
 #: public/templates/search-table-head.php:17
-#: admin/class/class-setting-page.php:349
 msgid "FARE"
 msgstr "ভাড়া"
 
-#: includes/class-add-bus-info-to-cart copy.php:424
-#: includes/class-add-bus-info-to-cart.php:443 public/templates/bus-list.php:50
-#: public/templates/bus-search-result.php:136
+#: includes/bus-search-page.php:446 includes/bus-search-page.php:627
+#: includes/class-add-bus-info-to-cart.php:575 public/templates/bus-list.php:50
 #: public/templates/bus-search-result-return.php:112
-#: public/template-hooks/layout/helper.php:281
-#: public/template-hooks/layout/bus-search-page.php:552
+#: public/templates/bus-search-result.php:136
+#: public/template-hooks/layout/bus-search-page.php:449
+#: public/template-hooks/layout/bus-search-page.php:632
+#: public/template-hooks/layout/helper.php:324
 msgid "Fare"
 msgstr "ভাড়া"
 
-#: public/templates/single-bus.php:22
+#: public/templates/single-bus.php:26
 msgid "Fare :"
 msgstr "ভাড়া :"
 
-#: public/template-hooks/layout/bus-search-page.php:399
-#: public/template-hooks/layout/bus-search-page.php:530
+#: includes/bus-search-page.php:605
+#: public/template-hooks/layout/bus-search-page.php:609
 msgid "Fare:"
 msgstr "ভাড়া:"
 
@@ -876,39 +971,105 @@ msgstr "ভাড়া:"
 msgid "Filter Bus list"
 msgstr "ফিল্টার বাস তালিকা"
 
-#: includes/class-add-bus-info-to-cart copy.php:452
-#: includes/class-add-bus-info-to-cart copy.php:483
-#: includes/class-add-bus-info-to-cart.php:476
-#: includes/class-add-bus-info-to-cart.php:544
+#: includes/class-add-bus-info-to-cart.php:609
+#: includes/class-add-bus-info-to-cart.php:677
 msgid "For a round trip, you got"
 msgstr "জন্য একটি রাউন্ড ট্রিপ, আপনি পেয়েছিলাম"
 
-#: admin/class/class-meta-box.php:1560
+#: admin/class/class-setting-page.php:219
 msgid "Friday"
 msgstr "শুক্রবার"
 
-#: admin/class/class-setting-page.php:215
+#: admin/class/class-setting-page.php:350
 #: public/template-hooks/search-form/bus-stops-list.php:10
 msgid "From"
 msgstr "থেকে"
 
-#: admin/class/class-meta-box.php:1422
-msgid "From Date"
-msgstr "থেকে আপলোড"
-
-#: admin/class/class-meta-box.php:1423
-msgid "From Time"
-msgstr "থেকে সময়"
-
-#: public/template-hooks/layout/bus-search-form.php:17
+#: public/template-hooks/layout/bus-search-form.php:23
 msgid "From:"
 msgstr "থেকে:"
 
-#: includes/class-add-bus-info-to-cart copy.php:378
-#: includes/class-add-bus-info-to-cart.php:334
-#: admin/class/class-setting-page.php:593
+#: includes/class-add-bus-info-to-cart.php:460
+#: admin/class/class-setting-page.php:728
 msgid "Gender:"
 msgstr "লিঙ্গ:"
+
+#: admin/class/class-setting-page.php:201
+msgid "Global Off-Dates "
+msgstr "গ্লোবাল বন্ধ-তারিখ "
+
+#: admin/class/class-setting-page.php:209
+msgid "Global Off-Days "
+msgstr "গ্লোবাল বন্ধ-দিন "
+
+#: includes/bus-search-page.php:455
+#: public/template-hooks/layout/bus-search-page.php:458
+msgid "Grand Total"
+msgstr "সর্বমোট"
+
+#: admin/class/class-tax-meta.php:8 admin/class/class-tax-meta.php:9
+msgid "Hide on global boarding point"
+msgstr "আড়াল গ্লোবাল বোর্ডিং বিন্দু"
+
+#: admin/class/class-welcome-page.php:84
+msgid "How to add a New Bus?"
+msgstr "কিভাবে যোগ করার জন্য একটি নতুন বাস?"
+
+#: admin/class/class-welcome-page.php:91
+msgid "How to book a bus ticket?"
+msgstr "কিভাবে বই, একটি বাসের টিকেট?"
+
+#: admin/class/class-welcome-page.php:161
+msgid "How to booking bus?"
+msgstr "কিভাবে বুকিং বাস?"
+
+#: admin/class/class-welcome-page.php:168
+msgid "How to buy PRO version?"
+msgstr "কিভাবে কিনতে প্রো সংস্করণে?"
+
+#: admin/class/class-welcome-page.php:154
+msgid "How to create three column seat plan?"
+msgstr "কিভাবে তৈরি করতে তিন কলাম সীট প্ল্যান?"
+
+#: admin/class/class-welcome-page.php:147
+msgid "How to create two door and four column seat plan?"
+msgstr "কিভাবে তৈরি করতে দুটি দরজা এবং চার কলাম সীট প্ল্যান?"
+
+#: admin/class/class-welcome-page.php:140
+msgid "How to export passenger list in CSV?"
+msgstr "কিভাবে রপ্তানি যাত্রী তালিকা CSV?"
+
+#: admin/class/class-welcome-page.php:133
+msgid "How to get ticket from admin panel?"
+msgstr "কিভাবে টিকেট পেতে অ্যাডমিন প্যানেল থেকে?"
+
+#: admin/class/class-welcome-page.php:37
+msgid "How to Import Dummy Content"
+msgstr "কিভাবে আমদানি ডামি বিষয়বস্তু"
+
+#: admin/class/class-welcome-page.php:77
+msgid "How to install the plugin?"
+msgstr "কিভাবে প্লাগইন ইনস্টল করার জন্য?"
+
+#: admin/class/class-welcome-page.php:126
+msgid "How to set bus booking buffer time?"
+msgstr "সেট কিভাবে বাস বুকিং বাফার সময়?"
+
+#: admin/class/class-welcome-page.php:119
+msgid "How to set bus on specific day?"
+msgstr "সেট কিভাবে বাস উপর নির্দিষ্ট দিন?"
+
+#: admin/class/class-welcome-page.php:112
+msgid "How to set bus on ticket price?"
+msgstr "সেট কিভাবে বাস টিকেট মূল্য?"
+
+#: admin/class/class-welcome-page.php:105
+msgid "How to setup email?"
+msgstr "কিভাবে সেটআপ ইমেইল?"
+
+#: admin/class/class-welcome-page.php:98
+msgid "How to setup PDF ticket?"
+msgstr "কিভাবে সেটআপ পিডিএফ টিকেট?"
 
 #. URI of the plugin
 msgid "http://mage-people.com"
@@ -918,36 +1079,62 @@ msgstr ""
 msgid "http://www.mage-people.com/"
 msgstr ""
 
-#: admin/class/class-setting-page.php:33
+#: admin/class/class-setting-page.php:45
 msgid ""
 "If you want to change the bus label in the dashboard menu you can change here"
 msgstr ""
 "যদি আপনি পরিবর্তন করতে চান বাস লেবেল ড্যাশবোর্ড মেনু, আপনি পরিবর্তন করতে "
 "পারেন এখানে"
 
-#: admin/class/class-setting-page.php:485
-#: public/template-hooks/layout/helper.php:272
+#: admin/class/class-setting-page.php:620
+#: public/template-hooks/layout/helper.php:315
 msgid "Image"
 msgstr "ইমেজ"
 
-#: admin/class/class-setting-page.php:133
+#: admin/class/class-welcome-page.php:32
+msgid "Import"
+msgstr "আমদানি"
+
+#: admin/class/class-welcome-page.php:56
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"মধ্যে এই পৃষ্ঠার নীচের অংশে আছে একটি ওয়ার্ডপ্রেস আমদানি বিকল্প. যদি আপনি "
+"ইতিমধ্যে সক্রিয়, এই আপনি দেখতে পারেন, চালান আমদানি. না হলে, ক্লিক এখন "
+"ইনস্টল লিঙ্ক. যে পরে ক্লিক করুন চালান আমদানিকারক এবং নির্বাচন করুন XML ফাইল "
+"আপনি downlaoded আগে."
+
+#: admin/class/class-welcome-page.php:93
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr ""
+"এই ভিডিওতে আপনি কিভাবে জানতে পারেন স্থাপন করার সহজ একটি অর্ডার বুক করতে একটি "
+"বাসের টিকেট:"
+
+#: admin/class/class-setting-page.php:269
 msgid "Infant"
 msgstr "শিশু"
 
-#: admin/class/class-meta-box.php:1058
-msgid "Infant Price"
-msgstr "শিশু দাম"
-
-#: admin/class/class-meta-box.php:1115 admin/class/class-meta-box.php:1166
-msgid "Infant return price"
-msgstr "শিশু ফিরতি মূল্য"
-
-#: admin/class/class-setting-page.php:129
+#: admin/class/class-setting-page.php:265
 msgid "Infant Seat Type Label "
 msgstr "শিশু আসন ধরন লেবেল "
 
-#: admin/class/class-setting-page.php:773
-#: admin/class/class-setting-page.php:781
+#: includes/class-wbtm-required-plugins.php:132
+#: includes/class-wbtm-required-plugins.php:143
+#: includes/class-wbtm-required-plugins.php:155
+msgid "Install"
+msgstr "ইনস্টল"
+
+#: includes/class-wbtm-required-plugins.php:32
+#: includes/class-wbtm-required-plugins.php:33
+msgid "Install WBTM Plugins"
+msgstr "ইনস্টল WBTM প্লাগইন"
+
+#: admin/class/class-setting-page.php:923
+#: admin/class/class-setting-page.php:931
 msgid ""
 "It will be applied in Available seat, Passenger Into Title, Seleted Seat "
 "Table Title Section. "
@@ -955,23 +1142,27 @@ msgstr ""
 "এটি প্রয়োগ করা হবে, মধ্যে উপলব্ধ সীট যাত্রী মধ্যে শিরোনাম Seleted আসন টেবিল "
 "শিরোনাম অধ্যায়. "
 
-#: admin/class/class-setting-page.php:640
+#: admin/class/class-setting-page.php:798
+msgid "It will be applied in Search Form Dropdown Text Color"
+msgstr "এটি প্রয়োগ করা হবে, অনুসন্ধান ফর্ম ড্রপডাউন টেক্সট রঙ"
+
+#: admin/class/class-setting-page.php:782
 msgid "It will be applied in Search Form Search Button Background Color"
 msgstr "এটি প্রয়োগ করা হবে, অনুসন্ধান ফর্ম, অনুসন্ধান বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:648
+#: admin/class/class-setting-page.php:790
 msgid "It will be applied in Search Form Search Button Text Color"
 msgstr "এটি প্রয়োগ করা হবে, অনুসন্ধান ফর্ম, অনুসন্ধান বাটন টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:754
+#: admin/class/class-setting-page.php:904
 msgid "It will be change Book Now Button Background Color"
 msgstr "এটা পরিবর্তন করা হবে বই এখন বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:762
+#: admin/class/class-setting-page.php:912
 msgid "It will be change Book Now Button Text Color"
 msgstr "এটা পরিবর্তন করা হবে বই এখন বাটন টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:695
+#: admin/class/class-setting-page.php:845
 msgid ""
 "It will be change the Route Text & Journey Date Section Background Color "
 "just above the search list table"
@@ -979,7 +1170,7 @@ msgstr ""
 "এটা হতে হবে রুট পরিবর্তন টেক্সট & যাত্রা আপলোড অনুচ্ছেদ পটভূমির রঙ শুধু "
 "উপরের সার্চ তালিকা টেবিল"
 
-#: admin/class/class-setting-page.php:703
+#: admin/class/class-setting-page.php:853
 msgid ""
 "It will be change the Route Text & Journey Date Section Text Color just "
 "above the search list table"
@@ -987,58 +1178,70 @@ msgstr ""
 "এটা হতে হবে রুট পরিবর্তন টেক্সট & যাত্রা আপলোড অধ্যায় টেক্সট রঙ শুধু উপরের "
 "সার্চ তালিকা টেবিল"
 
-#: admin/class/class-setting-page.php:735
+#: admin/class/class-setting-page.php:885
 msgid "It will be change View Seat Button Background Color"
 msgstr "এটা পরিবর্তন করা হবে দেখুন আসন বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:743
+#: admin/class/class-setting-page.php:893
 msgid "It will be change View Seat Button Text Color"
 msgstr "এটা পরিবর্তন করা হবে দেখুন আসন বাটন টেক্সট রঙ"
 
-#: includes/class-add-bus-info-to-cart copy.php:412
-#: includes/class-add-bus-info-to-cart.php:415
+#: includes/class-add-bus-info-to-cart.php:545
+#: includes/my-account/bus-ticket.php:148
 msgid "Journey Date"
 msgstr "যাত্রার তারিখ"
 
-#: includes/class-add-bus-info-to-cart copy.php:466
-#: includes/class-add-bus-info-to-cart.php:520
-#: admin/class/class-setting-page.php:607
+#: includes/class-add-bus-info-to-cart.php:653
+#: admin/class/class-setting-page.php:742
 msgid "Journey Date:"
 msgstr "যাত্রার তারিখ:"
 
-#: includes/class-add-bus-info-to-cart copy.php:468
-#: includes/class-add-bus-info-to-cart.php:522
+#: includes/class-add-bus-info-to-cart.php:655
 msgid "Journey Time:"
 msgstr "যাত্রা সময়:"
 
-#: includes/class-functions.php:67
-msgid "Left"
+#: admin/class/class-welcome-page.php:33
+msgid "Knowledge Base"
+msgstr "জ্ঞান বেস"
+
+#: public/template-hooks/layout/helper.php:1744
+#, fuzzy
+#| msgid "Left"
+msgid "Left:"
 msgstr "বাম"
 
+#: includes/bus-search-page.php:811
 #: public/seat-template/global_seat_plan.php:146
-#: public/template-hooks/layout/bus-search-page.php:644
+#: public/template-hooks/layout/bus-search-page.php:754
 msgid "Lower Deck"
 msgstr "নিচের ডেক"
+
+#: includes/class-wbtm-required-plugins.php:185
+#: includes/class-wbtm-required-plugins.php:266
+#: includes/class-wbtm-required-plugins.php:287
+msgid "MagePeople PDF Support"
+msgstr "MagePeople পিডিএফ সমর্থন"
 
 #. Author of the plugin
 msgid "MagePeople Team"
 msgstr "MagePeople দল"
 
-#: admin/class/class-meta-box.php:1528
+#: admin/class/class-setting-page.php:215
 msgid "Monday"
 msgstr "সোমবার"
 
-#: includes/class-functions.php:1893
+#: includes/class-add-bus-info-to-cart.php:436
+#: includes/my-account/bus-ticket.php:146
+#: public/template-hooks/layout/helper.php:319
 msgid "Name"
 msgstr "নাম"
 
-#: includes/class-add-bus-info-to-cart copy.php:357
-#: includes/class-add-bus-info-to-cart.php:310
-#: admin/class/class-setting-page.php:569
+#: admin/class/class-setting-page.php:704
+#: public/template-hooks/layout/helper.php:1716
 msgid "Name:"
 msgstr "নাম:"
 
-#: admin/class/class-create-tax.php:56
+#: admin/class/class-create-tax.php:99
 msgid "New Bus Pickup Point Name"
 msgstr "নতুন পিকআপ পয়েন্টের নাম"
 
@@ -1046,22 +1249,23 @@ msgstr "নতুন পিকআপ পয়েন্টের নাম"
 msgid "New Bus Type Name"
 msgstr "নতুন বাস টাইপ নাম"
 
-#: admin/class/class-setting-page.php:65
+#: admin/class/class-setting-page.php:103
+#: admin/class/class-setting-page.php:183 public/templates/bus-list.php:41
 msgid "No"
 msgstr "কোন"
 
-#: admin/class/class-setting-page.php:278
-#: public/template-hooks/layout/bus-search-page.php:161
+#: includes/bus-search-page.php:176 admin/class/class-setting-page.php:413
+#: public/template-hooks/layout/bus-search-page.php:178
 msgid "No Bus Found!"
 msgstr "কোন বাস পাওয়া যায়!"
 
 #: public/seat-template/seat_plan_1.php:88
-#: public/seat-template/seat_plan_3.php:86
 #: public/seat-template/seat_plan_2.php:87
+#: public/seat-template/seat_plan_3.php:86
 msgid "No Bus Found, Try Another Date."
 msgstr "কোন বাস পাওয়া চেষ্টা, অন্য তারিখ."
 
-#: admin/class/class-create-tax.php:67
+#: admin/class/class-create-tax.php:110
 msgid "No Bus Pickup Point"
 msgstr "কোন পিকআপ পয়েন্ট নে্ই"
 
@@ -1069,36 +1273,72 @@ msgstr "কোন পিকআপ পয়েন্ট নে্ই"
 msgid "No Bus Type"
 msgstr "কোন প্রকার বাস"
 
-#: admin/class/class-meta-box.php:1295
-msgid "No pickup point added yet!"
-msgstr "কোন পিকআপ পয়েন্ট যোগ করা হয় না্ই"
+#: public/template-hooks/layout/helper.php:1769
+msgid "Not Available"
+msgstr "পাওয়া যায় না"
 
-#: admin/class/class-create-tax.php:29 admin/class/class-create-tax.php:66
+#: admin/class/class-create-tax.php:29 admin/class/class-create-tax.php:109
 msgid "Not Found"
 msgstr "না পাওয়া"
 
-#: admin/class/class-setting-page.php:78
+#: admin/class/class-welcome-page.php:62
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"এখন ব্যবহারকারী নির্বাচন করুন আপনার ওয়েবসাইট এর জন্য বরাদ্দ বিষয়বস্তু থেকে,"
+" ড্রপডাউন, এবং টিক্ টিক্ শব্দ, ডাউনলোড Attachemnt টিক্ বক্স & চালান "
+"প্রক্রিয়া. পরে কয়েক মিনিট আপনি দেখতে পাবেন, বিজয় বার্তা. সব কাজ! মজা আছে."
+
+#: admin/class/class-setting-page.php:115
+#: admin/class/class-setting-page.php:128
+msgid "Off"
+msgstr "বন্ধ"
+
+#: admin/class/class-setting-page.php:116
+#: admin/class/class-setting-page.php:129
+msgid "On"
+msgstr "উপর"
+
+#: admin/class/class-setting-page.php:141
 msgid "On hold"
 msgstr "উপর রাখা"
 
-#: admin/class/class-setting-page.php:246
+#: admin/class/class-setting-page.php:108
+msgid "On/Off any date return switch"
+msgstr "চালু/বন্ধ কোনো তারিখ ফিরে সুইচ"
+
+#: admin/class/class-setting-page.php:381
 #: public/template-hooks/search-form/radio-button.php:8
 msgid "One Way"
 msgstr "এক উপায়"
 
-#: admin/class/class-meta-box.php:1418
-msgid "Operational Offday"
-msgstr "কর্মক্ষম Offday"
+#: admin/class/class-welcome-page.php:48
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"বা, আপনি ডাউনলোড করতে পারেন, XML ফাইল zip এবং এটি নিষ্কাশন করতে আপনার "
+"কম্পিউটার ডিরেক্টরি."
 
-#: admin/class/class-meta-box.php:1412
-msgid "Operational Onday"
-msgstr "কর্মক্ষম Onday"
+#: includes/my-account/bus-ticket.php:147
+msgid "Order Date"
+msgstr "যাতে আপলোড"
 
-#: admin/class/class-create-tax.php:54
+#: includes/my-account/bus-ticket.php:145
+msgid "Order no"
+msgstr "যাতে কোন"
+
+#: admin/class/class-welcome-page.php:179
+msgid "Parameter"
+msgstr "পরামিতি"
+
+#: admin/class/class-create-tax.php:97
 msgid "Parent Bus Pickup Point"
 msgstr "ঊর্ধ্বতন বাস পিক পয়েন্ট"
 
-#: admin/class/class-create-tax.php:55
+#: admin/class/class-create-tax.php:98
 msgid "Parent Bus Pickup Point:"
 msgstr "ঊর্ধ্বতন বাস পিক পয়েন্ট:"
 
@@ -1110,92 +1350,149 @@ msgstr "ঊর্ধ্বতন বাস টাইপ"
 msgid "Parent Bus Type:"
 msgstr "ঊর্ধ্বতন বাস প্রকার:"
 
-#: includes/class-functions.php:1892
-msgid "Passenger"
-msgstr "যাত্রী"
-
-#: public/templates/single-bus.php:19 admin/class/class-setting-page.php:363
+#: admin/class/class-setting-page.php:498 public/templates/single-bus.php:23
 msgid "Passenger Capacity :"
 msgstr "যাত্রী ধারণক্ষমতা :"
 
-#: admin/class/class-setting-page.php:438
-#: public/template-hooks/layout/bus-search-page.php:613
+#: admin/class/class-setting-page.php:573
 msgid "Passenger Info seat :"
 msgstr "যাত্রী তথ্য আসন :"
 
-#: includes/class-add-bus-info-to-cart.php:368
+#: includes/class-add-bus-info-to-cart.php:497
 msgid "Passenger Type"
 msgstr "যাত্রী টাইপ"
 
-#: admin/class/class-setting-page.php:76
+#: admin/class/class-setting-page.php:140
 msgid "Pending payment"
 msgstr "মুলতুবি পেমেন্ট"
 
-#: includes/class-functions.php:1894
-msgid "Phone"
-msgstr "ফোন"
-
-#: includes/class-add-bus-info-to-cart copy.php:371
-#: includes/class-add-bus-info-to-cart.php:326
-#: admin/class/class-setting-page.php:585
+#: includes/class-add-bus-info-to-cart.php:452
+#: admin/class/class-setting-page.php:720
 msgid "Phone:"
 msgstr "ফোন:"
 
-#: includes/class-add-bus-info-to-cart.php:438
-#: includes/class-add-bus-info-to-cart.php:531
-#: admin/class/class-meta-box.php:62
+#: includes/bus-search-page.php:512 includes/bus-search-page.php:728
+#: includes/class-add-bus-info-to-cart.php:569
+#: includes/class-add-bus-info-to-cart.php:664
+#: includes/my-account/bus-ticket.php:150
+#: public/template-hooks/layout/bus-search-page.php:525
+#: public/template-hooks/layout/bus-search-page.php:672
 msgid "Pickup Point"
 msgstr "পিকআপ পয়েন্ট"
 
-#: public/template-hooks/layout/bus-search-page.php:455
-#: public/template-hooks/layout/bus-search-page.php:579
-msgid "Pickup Point:"
-msgstr "পিকআপ পয়েন্ট"
-
-#: admin/class/class-setting-page.php:50
+#: admin/class/class-setting-page.php:62 admin/class/class-setting-page.php:161
 msgid "Please enter here car buffer time in Hours. By default is 0"
 msgstr "দয়া করে এখানে লিখুন গাড়ী বাফার সময় ঘন্টা. ডিফল্টরূপে 0"
 
-#: admin/class/class-setting-page.php:114
+#: admin/class/class-setting-page.php:250
 msgid "Please enter the lable of Adult Seat Type"
 msgstr "দয়া করে লিখুন lable পূর্ণবয়স্ক আসন টাইপ"
 
-#: admin/class/class-setting-page.php:122
+#: admin/class/class-setting-page.php:258
 msgid "Please enter the lable of Child Seat Type"
 msgstr "দয়া করে লিখুন lable শিশু আসন টাইপ"
 
-#: admin/class/class-setting-page.php:130
+#: admin/class/class-setting-page.php:266
 msgid "Please enter the lable of Infant Seat Type"
 msgstr "দয়া করে লিখুন lable এর শিশু আসন টাইপ"
 
-#: admin/class/class-setting-page.php:138
+#: admin/class/class-setting-page.php:274
 msgid "Please enter the lable of Special Seat Type"
 msgstr "দয়া করে লিখুন lable বিশেষ আসন টাইপ"
 
-#: admin/class/class-setting-page.php:41
+#: admin/class/class-setting-page.php:53
 msgid ""
 "Please enter the slug name you want. Remember after change this slug you "
 "need to flush permalink, Just go to Settings->Permalink hit the Save "
 "Settings button"
 msgstr ""
 
-#: admin/class/class-setting-page.php:805
+#: admin/class/class-setting-page.php:954
 msgid "Please enter your custom CSS Code Here"
 msgstr "দয়া করে প্রবেশ করুন আপনার কাস্টম CSS কোড এখানে"
 
-#: includes/class-functions.php:1163 admin/class/class-setting-page.php:270
-#: admin/class/class-meta-box.php:879 admin/class/class-meta-box.php:912
-#: admin/class/class-meta-box.php:952 admin/class/class-meta-box.php:984
-#: public/template-hooks/layout/bus-search-form.php:18
-#: public/template-hooks/layout/bus-search-form.php:28
+#: admin/class/class-welcome-page.php:38
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"অনুসরণ করুন নীচের প্রক্রিয়া থেকে আমদানি ডামি ইভেন্ট তথ্য, আপনার ওয়েবসাইটে."
+
+#: admin/class/class-setting-page.php:405
+#: public/template-hooks/layout/bus-search-form.php:26
+#: public/template-hooks/layout/bus-search-form.php:39
 msgid "Please Select"
 msgstr "দয়া করে নির্বাচন করুন"
 
-#: admin/class/class-tax-meta.php:10
+#: admin/class/class-setting-page.php:202
+msgid "Please select global offdate"
+msgstr "দয়া করে নির্বাচন করুন গ্লোবাল offdate"
+
+#: admin/class/class-setting-page.php:210
+msgid "Please select global offday"
+msgstr "দয়া করে নির্বাচন করুন গ্লোবাল offday"
+
+#: admin/class/class-tax-meta.php:19
 msgid "Please Select Route Point "
 msgstr "দয়া করে নির্বাচন করুন, রুট পয়েন্ট "
 
-#: admin/class/class-create-tax.php:64
+#: admin/class/class-setting-page.php:177
+msgid ""
+"Please select Yes if you want to automatically cancel the order, when user "
+"submit a cancellation request"
+msgstr ""
+"দয়া করে নির্বাচন করুন হ্যাঁ আপনি করতে চান তাহলে স্বয়ংক্রিয়ভাবে আদেশ বাতিল "
+"হলে, ব্যবহারকারী জমা বাতিলের অনুরোধ"
+
+#: admin/class/class-welcome-page.php:107
+msgid "Please watch the video to know how to setup Email."
+msgstr "ভিডিও দেখতে দয়া করতে জানেন কিভাবে সেটআপ ইমেইল."
+
+#: admin/class/class-welcome-page.php:100
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "ভিডিও দেখতে দয়া করতে জানেন কিভাবে সেটআপ পিডিএফ টিকেট."
+
+#: admin/class/class-welcome-page.php:79
+msgid "Please watch the video to know how you can install the plugin."
+msgstr "ভিডিও দেখতে দয়া করে জানেন কিভাবে আপনি প্লাগইন ইনস্টল করুন."
+
+#: admin/class/class-welcome-page.php:163
+msgid "Please watch this video to know how to booking bus."
+msgstr "এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে, বুকিং, বাস."
+
+#: admin/class/class-welcome-page.php:156
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr ""
+"এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে তৈরি করতে তিন কলাম সীট প্ল্যান."
+
+#: admin/class/class-welcome-page.php:149
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে তৈরি করতে দুটি দরজা এবং চার কলাম "
+"সীট প্ল্যান."
+
+#: admin/class/class-welcome-page.php:142
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr "এই ভিডিও দেখতে দয়া করে কিভাবে জানতে রপ্তানি যাত্রী তালিকা CSV."
+
+#: admin/class/class-welcome-page.php:135
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr "এই ভিডিও দেখতে দয়া করে পেতে জানতে টিকেট অ্যাডমিন প্যানেল থেকে."
+
+#: admin/class/class-welcome-page.php:128
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr "এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে সেট বাস বুকিং বাফার সময়."
+
+#: admin/class/class-welcome-page.php:121
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr "এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে সেট বাস উপর নির্দিষ্ট দিন."
+
+#: admin/class/class-welcome-page.php:114
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr "এই ভিডিও দেখতে দয়া করে করতে জানেন কিভাবে সেট বাস টিকেট মূল্য."
+
+#: admin/class/class-create-tax.php:107
 msgid "Popular Bus Pickup Point"
 msgstr "জনপ্রিয় বাস পিক পয়েন্ট"
 
@@ -1203,42 +1500,41 @@ msgstr "জনপ্রিয় বাস পিক পয়েন্ট"
 msgid "Popular Bus Type"
 msgstr "জনপ্রিয় বাস টাইপ"
 
-#: public/template-hooks/layout/bus-search-page.php:413
+#: includes/bus-search-page.php:465
+#: public/template-hooks/layout/bus-search-page.php:467
 msgid "Price"
 msgstr "মূল্য"
 
-#: admin/class/class-meta-box.php:351
-msgid "Price Increase"
-msgstr "মূল্য বৃদ্ধি"
+#: public/template-hooks/layout/helper.php:1718
+msgid "Price:"
+msgstr "দাম:"
 
-#: admin/class/class-setting-page.php:77
+#: admin/class/class-welcome-page.php:25
+msgid "PRO"
+msgstr "প্রো"
+
+#: admin/class/class-setting-page.php:142
 msgid "Processing"
 msgstr "প্রক্রিয়াকরণ"
 
-#: admin/class/class-setting-page.php:446
-#: public/template-hooks/layout/bus-search-page.php:561
+#: includes/bus-search-page.php:636 admin/class/class-setting-page.php:581
+#: public/template-hooks/layout/bus-search-page.php:641
 msgid "Qty :"
 msgstr "Qty :"
 
-#: public/template-hooks/layout/bus-search-page.php:412
+#: includes/bus-search-page.php:464
+#: public/template-hooks/layout/bus-search-page.php:466
 msgid "Quantity"
 msgstr "পরিমাণ"
 
-#: admin/class/class-setting-page.php:81
-msgid "Refund"
-msgstr "প্রত্যর্পণ"
+#: public/template-hooks/layout/helper.php:1717
+msgid "Quantity:"
+msgstr "পরিমাণ:"
 
-#: includes/class-functions.php:117 includes/class-functions.php:138
-#: includes/class-functions.php:186 includes/class-functions.php:202
-#: public/templates/bus-search-result.php:140
+#: includes/bus-search-page.php:630 admin/class/class-setting-page.php:628
 #: public/templates/bus-search-result-return.php:113
-#: admin/class/class-setting-page.php:493 admin/class/class-meta-box.php:263
-#: admin/class/class-meta-box.php:281 admin/class/class-meta-box.php:413
-#: admin/class/class-meta-box.php:428 admin/class/class-meta-box.php:897
-#: admin/class/class-meta-box.php:926 admin/class/class-meta-box.php:969
-#: admin/class/class-meta-box.php:999 admin/class/class-meta-box.php:1059
-#: admin/class/class-meta-box.php:1455 admin/class/class-meta-box.php:1497
-#: public/template-hooks/layout/bus-search-page.php:555
+#: public/templates/bus-search-result.php:140
+#: public/template-hooks/layout/bus-search-page.php:635
 msgid "Remove"
 msgstr "সরান"
 
@@ -1246,65 +1542,69 @@ msgstr "সরান"
 msgid "Remove Bus featured image"
 msgstr "অপসারণ বাস বৈশিষ্ট্যযুক্ত ইমেজ"
 
-#: admin/class/class-setting-page.php:254
+#: admin/class/class-setting-page.php:389
 #: public/template-hooks/search-form/radio-button.php:11
 msgid "Return"
 msgstr "রিটার্ন"
 
-#: public/template-hooks/layout/bus-search-form.php:46
+#: public/template-hooks/layout/bus-search-form.php:63
 msgid "Return Date (Optional)"
 msgstr "রিটার্ন তারিখ (ঐচ্ছিক)"
 
-#: admin/class/class-setting-page.php:238
+#: admin/class/class-setting-page.php:373
 #: public/template-hooks/search-form/dates.php:21
 msgid "Return Date:"
 msgstr "রিটার্ন তারিখ:"
 
-#: admin/class/class-setting-page.php:57
+#: admin/class/class-setting-page.php:95
 msgid "Return Discount Enable"
 msgstr "ফিরে ডিসকাউন্ট সক্রিয়"
 
-#: public/template-hooks/layout/bus-search-page.php:22
-msgid "Return Trip :"
+#: includes/bus-search-page.php:23 public/templates/single-bus.php:112
+#: public/template-hooks/layout/bus-search-page.php:21
+#, fuzzy
+#| msgid "Return Trip :"
+msgid "Return Trip"
 msgstr "ফিরতি ট্রিপ :"
 
-#: admin/class/class-setting-page.php:614
+#: admin/class/class-setting-page.php:749
 msgid "Return Trip:"
 msgstr "ফিরতি ট্রিপ:"
 
-#: includes/class-functions.php:70
-msgid "Right"
-msgstr "ডান"
-
-#: public/templates/bus-search-result.php:101
+#: admin/class/class-setting-page.php:428
 #: public/templates/bus-search-result-return.php:83
-#: admin/class/class-setting-page.php:293
+#: public/templates/bus-search-result.php:101
 msgid "Route"
 msgstr "রুট"
 
-#: admin/class/class-tax-meta.php:9
+#: admin/class/class-tax-meta.php:18
 msgid "Route Point"
 msgstr "রুট পয়েন্ট"
 
-#: admin/class/class-meta-box.php:54
-msgid "Routing"
-msgstr "রা্উটিং :"
+#: admin/class/class-setting-page.php:69
+msgid "Same bus return setting"
+msgstr "একই বাস আসতে সেটিং"
 
-#: admin/class/class-meta-box.php:1568
+#: public/template-hooks/layout/bus-search-page.php:513
+#: public/template-hooks/layout/bus-search-page.php:660
+msgid "Same ticket will be valid for return up to next 15 days"
+msgstr "একই টিকেট বৈধ হতে হবে, ফেরত পাঠানোর জন্য, আপ থেকে পরবর্তী 15 দিন"
+
+#: admin/class/class-setting-page.php:220
 msgid "Saturday"
 msgstr "শনিবার"
 
-#: admin/class/class-setting-page.php:477
-#: public/template-hooks/layout/helper.php:277
+#: admin/class/class-setting-page.php:612
+#: public/template-hooks/layout/helper.php:320
 msgid "Schedule"
 msgstr "সময়সূচী"
 
-#: admin/class/class-setting-page.php:552
-#: public/template-hooks/layout/bus-search-form.php:56
+#: admin/class/class-setting-page.php:687
+#: public/template-hooks/layout/bus-search-form.php:77
 msgid "Search"
 msgstr "অনুসন্ধান"
 
-#: admin/class/class-create-tax.php:65
+#: admin/class/class-create-tax.php:108
 msgid "Search Bus Pickup Point"
 msgstr "অনুসন্ধান বাস পিক পয়েন্ট"
 
@@ -1312,7 +1612,7 @@ msgstr "অনুসন্ধান বাস পিক পয়েন্ট"
 msgid "Search Bus Type"
 msgstr "বাস অনুসন্ধান টাইপ"
 
-#: admin/class/class-setting-page.php:262
+#: admin/class/class-setting-page.php:397
 msgid "SEARCH BUSES"
 msgstr "অনুসন্ধান বাস"
 
@@ -1320,153 +1620,119 @@ msgstr "অনুসন্ধান বাস"
 msgid "Search Buses"
 msgstr "অনুসন্ধান বাস"
 
-#: admin/class/class-setting-page.php:639
+#: admin/class/class-setting-page.php:781
 msgid "Search Button Background Color"
 msgstr "অনুসন্ধান বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:647
+#: admin/class/class-setting-page.php:789
 msgid "Search Button Text Color"
 msgstr "অনুসন্ধান বাটন টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:715
+#: admin/class/class-setting-page.php:797
+msgid "Search Form Dropdown Text Color"
+msgstr "অনুসন্ধান ফর্ম ড্রপডাউন টেক্সট রঙ"
+
+#: admin/class/class-setting-page.php:865
 msgid "Search List Background Color"
 msgstr "অনুসন্ধান তালিকা পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:772
+#: admin/class/class-setting-page.php:922
 msgid "Search List Bus Details Title Background Color"
 msgstr "অনুসন্ধান তালিকা বাস বিবরণ শিরোনাম পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:780
+#: admin/class/class-setting-page.php:930
 msgid "Search List Bus Details Title Text Color"
 msgstr "অনুসন্ধান তালিকা বাস বিবরণ শিরোনাম টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:702
+#: admin/class/class-setting-page.php:852
 msgid "Search List Route List  Title Text Color"
 msgstr "অনুসন্ধান তালিকা রুট তালিকা শিরোনাম টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:694
+#: admin/class/class-setting-page.php:844
 msgid "Search List Route List Title Background Color"
 msgstr "অনুসন্ধান তালিকা রুট তালিকা শিরোনাম পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:723
+#: admin/class/class-setting-page.php:873
 msgid "Search List Text Color"
 msgstr "অনুসন্ধান তালিকা টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:674
+#: admin/class/class-setting-page.php:824
 msgid "Search Next date Active Tab Background Color"
 msgstr "অনুসন্ধান পরবর্তী তারিখ সক্রিয় ট্যাব পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:682
+#: admin/class/class-setting-page.php:832
 msgid "Search Next date Active Tab Text Color"
 msgstr "অনুসন্ধান পরবর্তী তারিখ সক্রিয় ট্যাব টেক্সট কালার"
 
-#: admin/class/class-setting-page.php:658
+#: admin/class/class-setting-page.php:808
 msgid "Search Next date Tab Background Color"
 msgstr "অনুসন্ধান পরবর্তী তারিখ ট্যাবের পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:666
+#: admin/class/class-setting-page.php:816
 msgid "Search Next date Tab Text Color"
 msgstr "অনুসন্ধান পরবর্তী তারিখ ট্যাব টেক্সট কালার"
 
-#: admin/class/class-setting-page.php:87
+#: admin/class/class-setting-page.php:151
 msgid "Search Result Page"
 msgstr "অনুসন্ধান ফলাফল পাতা"
 
-#: includes/class-functions.php:1895 public/templates/single-bus.php:24
-#: admin/class/class-setting-page.php:422
-#: public/template-hooks/layout/bus-search-page.php:274
-#: public/template-hooks/layout/bus-search-page.php:402
-#: public/template-hooks/layout/bus-search-page.php:532
+#: includes/bus-search-page.php:297 includes/bus-search-page.php:450
+#: includes/bus-search-page.php:486 includes/bus-search-page.php:607
+#: admin/class/class-setting-page.php:557
+#: includes/my-account/bus-ticket.php:149 public/templates/single-bus.php:28
+#: public/template-hooks/layout/bus-search-page.php:297
+#: public/template-hooks/layout/bus-search-page.php:453
+#: public/template-hooks/layout/bus-search-page.php:485
+#: public/template-hooks/layout/bus-search-page.php:611
 msgid "Seat"
 msgstr "আসন"
 
-#: admin/class/class-setting-page.php:430
-#: public/template-hooks/layout/bus-search-page.php:536
+#: includes/bus-search-page.php:611 admin/class/class-setting-page.php:565
+#: public/template-hooks/layout/bus-search-page.php:616
 msgid "Seat Available"
 msgstr "সীট পাওয়া যায়"
 
-#: admin/class/class-setting-page.php:70
+#: admin/class/class-setting-page.php:134
 msgid "Seat booked on status"
 msgstr "আসন বুক স্ট্যাটাস"
 
-#: includes/class-functions.php:1897
-msgid "Seat Fear"
-msgstr "আসন ভয়"
+#: includes/bus-search-page.php:532
+#: public/template-hooks/layout/bus-search-page.php:545
+msgid "Seat limit exceeded!"
+msgstr "আসন সীমা ছাড়িয়ে গেছে!"
 
-#: includes/class-add-bus-info-to-cart copy.php:461
-#: includes/class-add-bus-info-to-cart.php:487
-#: admin/class/class-setting-page.php:560
+#: includes/class-add-bus-info-to-cart.php:621
+#: admin/class/class-setting-page.php:695
 msgid "Seat List:"
 msgstr "আসন তালিকা:"
 
-#: admin/class/class-meta-box.php:174 admin/class/class-meta-box.php:334
-msgid "Seat Maker"
-msgstr "আসন মেকার"
-
-#: includes/class-add-bus-info-to-cart copy.php:404
-#: includes/class-add-bus-info-to-cart.php:362
-#: public/templates/bus-search-result.php:132
+#: includes/bus-search-page.php:617 includes/class-add-bus-info-to-cart.php:489
+#: admin/class/class-setting-page.php:549
 #: public/templates/bus-search-result-return.php:111
-#: admin/class/class-setting-page.php:414
-#: public/template-hooks/layout/bus-search-page.php:542
+#: public/templates/bus-search-result.php:132
+#: public/template-hooks/layout/bus-search-page.php:622
 msgid "Seat No"
 msgstr "সিট কোন"
-
-#: admin/class/class-meta-box.php:149
-msgid "Seat Plan"
-msgstr "সীট প্ল্যান"
-
-#: admin/class/class-meta-box.php:171
-msgid "Seat Plan for Lower Deck"
-msgstr "সীট প্ল্যান জন্য নিচের ডেক"
-
-#: admin/class/class-meta-box.php:331
-msgid "Seat Plan For Upper Deck"
-msgstr "সীট প্ল্যান জন্য উপরের ডেক"
-
-#: admin/class/class-meta-box.php:212 admin/class/class-meta-box.php:366
-msgid "Seat Preview"
-msgstr "আসন সম্পূর্ণ বিবরণের পূর্বরূপ দেখুন"
-
-#: admin/class/class-meta-box.php:58
-msgid "Seat price"
-msgstr "দাম কনফিগারেশন"
-
-#: includes/class-functions.php:1896 admin/class/class-meta-box.php:145
-msgid "Seat Type"
-msgstr "আসন টাইপ"
 
 #: public/templates/search-table-head.php:23
 msgid "SEATS AVAILABLE"
 msgstr "আসন পাওয়া যায়"
 
-#: admin/class/class-setting-page.php:384
+#: admin/class/class-setting-page.php:519
 msgid "SEATS AVAILABLE "
 msgstr "আসন পাওয়া যায় "
 
-#: admin/class/class-meta-box.php:1070 admin/class/class-meta-box.php:1080
-#: admin/class/class-meta-box.php:1130 admin/class/class-meta-box.php:1138
-msgid "Select"
-msgstr "নির্বাচন"
-
-#: admin/class/class-meta-box.php:1223
-msgid "Select Boarding Point"
-msgstr "বোর্ডিং পয়েন্ট নির্বাচন করুন"
-
-#: admin/class/class-setting-page.php:544
+#: admin/class/class-setting-page.php:679
 msgid "Select Journey Date"
 msgstr "নির্বাচন যাত্রা আপলোড"
 
-#: public/template-hooks/layout/bus-search-page.php:457
-#: public/template-hooks/layout/bus-search-page.php:581
+#: includes/bus-search-page.php:515 includes/bus-search-page.php:731
+#: public/template-hooks/layout/bus-search-page.php:528
+#: public/template-hooks/layout/bus-search-page.php:675
 msgid "Select Pickup Point"
 msgstr "নির্বাচন পিক পয়েন্ট"
 
-#: admin/class/class-meta-box.php:147
-msgid "Select Seat Type"
-msgstr "নির্বাচন আসন টাইপ"
-
-#: admin/class/class-create-tax.php:24 admin/class/class-create-tax.php:61
+#: admin/class/class-create-tax.php:24 admin/class/class-create-tax.php:104
 msgid "Separate Category with commas"
 msgstr "কমা দিয়ে পৃথক বিভাগ"
 
@@ -1474,33 +1740,59 @@ msgstr "কমা দিয়ে পৃথক বিভাগ"
 msgid "Set Bus featured image"
 msgstr "সেট বাস বৈশিষ্ট্যযুক্ত ইমেজ"
 
-#: admin/class/class-setting-page.php:825
-#: admin/class/class-setting-page.php:826
-#: admin/class/class-setting-page.php:827
-#: admin/class/class-setting-page.php:828
+#: admin/class/class-setting-page.php:971
+#: admin/class/class-setting-page.php:972
+#: admin/class/class-setting-page.php:973
+#: admin/class/class-setting-page.php:974
 msgid "Settings"
 msgstr "সেটিংস"
 
-#: admin/class/class-setting-page.php:182
-#: admin/class/class-setting-page.php:183
+#: admin/class/class-welcome-page.php:178
+msgid "Shortcode"
+msgstr "সর্টকোড"
+
+#: admin/class/class-welcome-page.php:175
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr ""
+"Shortcodes অন্তর্ভুক্ত সঙ্গে, বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্লাগইন:"
+
+#: admin/class/class-welcome-page.php:188
+msgid "show"
+msgstr "শো"
+
+#: includes/my-account/bus-ticket.php:187
+msgid "Show Order"
+msgstr "প্রদর্শন আদেশ"
+
+#: admin/class/class-setting-page.php:82
+msgid "Show return field"
+msgstr "শো ফিরে ক্ষেত্র"
+
+#: admin/class/class-setting-page.php:121
+msgid "Show route disable switch"
+msgstr "শো রুট নিষ্ক্রিয় করুন"
+
+#: admin/class/class-setting-page.php:318
+#: admin/class/class-setting-page.php:319
 msgid "Sold Seat Image "
 msgstr "বিক্রি আসন ইমেজ "
 
-#: admin/class/class-setting-page.php:141
+#: admin/class/class-setting-page.php:277
 msgid "Special"
 msgstr "বিশেষ"
 
-#: admin/class/class-setting-page.php:137
+#: admin/class/class-setting-page.php:273
 msgid "Special Seat Type Label "
 msgstr "বিশেষ আসন ধরন লেবেল "
 
-#: public/templates/bus-search-result.php:117
+#: admin/class/class-setting-page.php:541
 #: public/templates/bus-search-result-return.php:96
-#: admin/class/class-setting-page.php:406
+#: public/templates/bus-search-result.php:117
 msgid "Start & Arrival Time"
 msgstr "শুরু ও আগমনের সময়"
 
-#: includes/class-add-bus-info-to-cart.php:499
+#: includes/class-add-bus-info-to-cart.php:632
 msgid "Start Date: "
 msgstr "শুরুর তারিখ: "
 
@@ -1508,47 +1800,100 @@ msgstr "শুরুর তারিখ: "
 msgid "Start From:"
 msgstr "শুরু থেকে:"
 
-#: includes/class-add-bus-info-to-cart copy.php:415
-#: includes/class-add-bus-info-to-cart.php:420
+#: includes/bus-search-page.php:439 includes/class-add-bus-info-to-cart.php:551
+#: public/template-hooks/layout/bus-search-page.php:442
 msgid "Start Time"
 msgstr "সময় শুরু"
 
-#: admin/class/class-setting-page.php:307
-#: public/template-hooks/layout/bus-search-page.php:393
-#: public/template-hooks/layout/bus-search-page.php:524
+#: includes/bus-search-page.php:599 admin/class/class-setting-page.php:442
+#: public/template-hooks/layout/bus-search-page.php:603
 msgid "Start Time:"
 msgstr "আরম্ভের সময়:"
 
+#: admin/class/class-setting-page.php:470
 #: public/templates/search-table-head.php:13
-#: admin/class/class-setting-page.php:335
 msgid "STARTING"
 msgstr "শুরু"
 
-#: admin/class/class-setting-page.php:454
-#: public/template-hooks/layout/bus-search-page.php:565
+#: includes/my-account/bus-ticket.php:151
+msgid "Status"
+msgstr "অবস্থা"
+
+#: admin/class/class-welcome-page.php:41
+msgid "Step-1:"
+msgstr "ধাপ-1:"
+
+#: admin/class/class-welcome-page.php:53
+msgid "Step-2:"
+msgstr "ধাপ-2:"
+
+#: admin/class/class-welcome-page.php:60
+msgid "Step-3:"
+msgstr "ধাপ-3:"
+
+#: includes/bus-search-page.php:640 admin/class/class-setting-page.php:589
+#: public/template-hooks/layout/bus-search-page.php:645
 msgid "Sub Total :"
 msgstr "সাব মোট :"
 
-#: public/template-hooks/layout/bus-search-page.php:414
+#: includes/bus-search-page.php:466
+#: public/template-hooks/layout/bus-search-page.php:468
 msgid "SubTotal"
 msgstr "সাবটোটাল"
 
-#: admin/class/class-meta-box.php:1520
+#: admin/class/class-setting-page.php:214
 msgid "Sunday"
 msgstr "রবিবার"
 
-#: public/templates/single-bus.php:167
+#: includes/class-wbtm-required-plugins.php:344
+msgid "The following required plugin is currently inactive: "
+msgstr "নিম্নলিখিত প্রয়োজনীয় প্লাগ বর্তমানে নিষ্ক্রিয়: "
+
+#: includes/class-wbtm-required-plugins.php:347
+msgid "The following required plugins are currently inactive: "
+msgstr "নিম্নলিখিত প্রয়োজনীয় প্লাগিন বর্তমানে নিষ্ক্রিয়: "
+
+#: public/templates/single-bus.php:106 public/templates/single-bus.php:117
 msgid "This bus available only in the particular date. :) "
 msgstr "এই বাস পাওয়া যায়, শুধুমাত্র বিশেষ তারিখ. :) "
 
-#: admin/class/class-setting-page.php:28 admin/class/class-setting-page.php:108
-#: admin/class/class-setting-page.php:203
-#: admin/class/class-setting-page.php:632
-#: admin/class/class-setting-page.php:800
+#: admin/class/class-setting-page.php:40 admin/class/class-setting-page.php:197
+#: admin/class/class-setting-page.php:244
+#: admin/class/class-setting-page.php:338
+#: admin/class/class-setting-page.php:774
+#: admin/class/class-setting-page.php:949
 msgid "This is section details"
 msgstr "এই বিভাগে বিস্তারিত"
 
-#: admin/class/class-setting-page.php:675
+#: admin/class/class-welcome-page.php:204
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"এই সর্টকোড হবে, এছাড়াও মুদ্রণ একটি বাস অনুসন্ধান ফর্ম কিন্তু এটি প্রদর্শন "
+"করা হবে অনুসন্ধান ফলাফল একই পৃষ্ঠায়, নীচের এর অনুসন্ধান ফর্ম."
+
+#: admin/class/class-welcome-page.php:199
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"এই সর্টকোড প্রদর্শন করা হবে অনুসন্ধান ফর্ম মত, যদি আপনি প্রদর্শন করতে চান "
+"একটি সার্চ বক্স মধ্যে কোথাও হোমপেজে বা কোনো পৃষ্ঠা, তাহলে শুধু এই সর্টকোড "
+"আছে, তা প্রিন্ট করবে বাস অনুসন্ধান ফর্ম."
+
+#: admin/class/class-welcome-page.php:194
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"এই সর্টকোড প্রদর্শন করা হবে তৈরি করুন টিকেট ফর্ম. একটি ব্যবহারকারী করা "
+"প্রয়োজন তাদের টিকেট পিন বক্সে এবং এন্টার বাটন, তারপর টিকেট প্রদর্শিত হবে. "
+"শুধুমাত্র লগইন ব্যবহারকারীদের দেখতে পারেন এই পেজে."
+
+#: admin/class/class-setting-page.php:825
 msgid ""
 "This will be applied in Search Listing Page Next Five Date Tab Active "
 "Background Color"
@@ -1556,7 +1901,7 @@ msgstr ""
 "এই প্রয়োগ করা হবে, অনুসন্ধান, তালিকা পৃষ্ঠা, আগামী পাঁচ তারিখ ট্যাব সক্রিয় "
 "পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:683
+#: admin/class/class-setting-page.php:833
 msgid ""
 "This will be applied in Search Listing Page Next Five Date Tab Active Text "
 "Color"
@@ -1564,7 +1909,7 @@ msgstr ""
 "এই প্রয়োগ করা হবে, অনুসন্ধান, তালিকা পৃষ্ঠা, আগামী পাঁচ তারিখ ট্যাব সক্রিয় "
 "টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:659
+#: admin/class/class-setting-page.php:809
 msgid ""
 "This will be applied in Search Listing Page Next Five Date Tab Default "
 "Background Color"
@@ -1572,7 +1917,7 @@ msgstr ""
 "এই প্রয়োগ করা হবে, অনুসন্ধান, তালিকা পৃষ্ঠা, আগামী পাঁচ তারিখ ট্যাব ডিফল্ট "
 "পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:667
+#: admin/class/class-setting-page.php:817
 msgid ""
 "This will be applied in Search Listing Page Next Five Date Tab Default Text "
 "Color"
@@ -1580,16 +1925,16 @@ msgstr ""
 "এই প্রয়োগ করা হবে, অনুসন্ধান, তালিকা পৃষ্ঠা, আগামী পাঁচ তারিখ ট্যাব ডিফল্ট "
 "টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:716
+#: admin/class/class-setting-page.php:866
 msgid ""
 "This will be applied in the Search Table Top and Bottom background color"
 msgstr "এই প্রয়োগ করা হবে অনুসন্ধান টেবিল, উপরে এবং নীচে পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:724
+#: admin/class/class-setting-page.php:874
 msgid "This will be applied in the Search Table Top and Bottom Text color"
 msgstr "এই প্রয়োগ করা হবে অনুসন্ধান টেবিল, উপরে এবং নীচে টেক্সট রঙ"
 
-#: admin/class/class-setting-page.php:88
+#: admin/class/class-setting-page.php:152
 msgid ""
 "This will be the global Search result page. By default the search result "
 "page is bus-search-list Page. If you want to change this you can select your "
@@ -1597,70 +1942,52 @@ msgid ""
 "also. Example: [wbtm-bus-search-form searh-page=\"page-slug-here\"]"
 msgstr ""
 
-#: admin/class/class-meta-box.php:1552
+#: admin/class/class-setting-page.php:218
 msgid "Thursday"
 msgstr "বৃহস্পতিবার"
 
-#: admin/class/class-meta-box.php:867 admin/class/class-meta-box.php:940
-msgid "Time"
-msgstr "সময়"
+#: includes/my-account/bus-ticket.php:70 includes/my-account/bus-ticket.php:221
+msgid "Ticket"
+msgstr "টিকেট"
 
-#: admin/class/class-meta-box.php:1424
-msgid "To Date"
-msgstr "তারিখ থেকে"
-
-#: admin/class/class-meta-box.php:1425
-msgid "To Time"
-msgstr "করার সময়"
-
-#: admin/class/class-setting-page.php:222
+#: admin/class/class-setting-page.php:357
+#: public/template-hooks/layout/bus-search-form.php:35
 #: public/template-hooks/search-form/bus-stops-list.php:26
-#: public/template-hooks/layout/bus-search-form.php:26
 msgid "To:"
 msgstr "করতে:"
 
-#: public/templates/bus-search-result.php:146
+#: admin/class/class-welcome-page.php:55
+msgid "Tools -> Import"
+msgstr ""
+
+#: includes/bus-search-page.php:501 includes/class-add-bus-info-to-cart.php:594
+#: admin/class/class-setting-page.php:635
 #: public/templates/bus-search-result-return.php:119
-#: admin/class/class-setting-page.php:500
-#: public/template-hooks/layout/bus-search-page.php:445
+#: public/templates/bus-search-result.php:146
+#: public/template-hooks/layout/bus-search-page.php:501
 msgid "Total"
 msgstr "মোট"
 
-#: public/template-hooks/layout/bus-search-page.php:597
+#: includes/bus-search-page.php:753
+#: public/template-hooks/layout/bus-search-page.php:697
 msgid "Total :"
 msgstr "মোট :"
 
-#: admin/class/class-meta-box.php:141
-msgid "Total Seat"
-msgstr "মোট আসন"
-
-#: admin/class/class-meta-box.php:190 admin/class/class-meta-box.php:336
-msgid "Total Seat Columns"
-msgstr "মোট আসন কলাম"
-
-#: admin/class/class-meta-box.php:197 admin/class/class-meta-box.php:344
-msgid "Total Seat Rows"
-msgstr "মোট আসন সারি"
-
-#: admin/class/class-setting-page.php:522
+#: admin/class/class-setting-page.php:657
 msgid "Total Seat:"
 msgstr "মোট আসন:"
 
-#: includes/class-add-bus-info-to-cart copy.php:438
-#: includes/class-add-bus-info-to-cart.php:461
-msgid "Total:"
-msgstr "মোট:"
-
-#: admin/class/class-meta-box.php:1536
+#: admin/class/class-setting-page.php:216
 msgid "Tuesday"
 msgstr "মঙ্গলবার"
 
+#: admin/class/class-setting-page.php:491
 #: public/templates/search-table-head.php:19
-#: admin/class/class-setting-page.php:356
 msgid "TYPE"
 msgstr "টাইপ"
 
-#: public/template-hooks/layout/bus-search-page.php:411
+#: includes/bus-search-page.php:463 public/templates/single-bus.php:22
+#: public/template-hooks/layout/bus-search-page.php:465
 msgid "Type"
 msgstr "টাইপ"
 
@@ -1668,7 +1995,7 @@ msgstr "টাইপ"
 msgid "Type:"
 msgstr "প্রকার:"
 
-#: admin/class/class-create-tax.php:59
+#: admin/class/class-create-tax.php:102
 msgid "Update Bus Pickup Point"
 msgstr "আপডেট বাস পিক পয়েন্ট"
 
@@ -1676,12 +2003,13 @@ msgstr "আপডেট বাস পিক পয়েন্ট"
 msgid "Update Bus Type"
 msgstr "আপডেট বাস টাইপ"
 
+#: includes/bus-search-page.php:809 admin/class/class-setting-page.php:285
 #: public/seat-template/global_seat_plan.php:17
-#: admin/class/class-setting-page.php:149
+#: public/template-hooks/layout/bus-search-page.php:752
 msgid "Upper Deck"
 msgstr "উপরের ডেক"
 
-#: admin/class/class-setting-page.php:146
+#: admin/class/class-setting-page.php:282
 msgid "Upper Deck Title "
 msgstr "উপরের ডেক শিরোনাম "
 
@@ -1689,20 +2017,24 @@ msgstr "উপরের ডেক শিরোনাম "
 msgid "Use as Bus featured image"
 msgstr "ব্যবহার হিসাবে বাস বৈশিষ্ট্যযুক্ত ইমেজ"
 
-#: includes/class-add-bus-info-to-cart.php:383
+#: includes/class-add-bus-info-to-cart.php:513
 msgid "Valid Till"
 msgstr "বৈধ পর্যন্ত"
 
-#: includes/class-add-bus-info-to-cart.php:501
+#: includes/class-add-bus-info-to-cart.php:634
 msgid "Valid Till: "
 msgstr "Valid Till: "
 
+#: admin/class/class-welcome-page.php:66
+msgid "Video Tutorial"
+msgstr "ভিডিও টিউটোরিয়াল"
+
+#: admin/class/class-setting-page.php:526
 #: public/templates/search-table-head.php:25
-#: admin/class/class-setting-page.php:391
 msgid "VIEW"
 msgstr "দেখুন"
 
-#: admin/class/class-create-tax.php:60
+#: admin/class/class-create-tax.php:103
 msgid "View Bus Pickup Point"
 msgstr "দেখুন বাস পিক পয়েন্ট"
 
@@ -1710,45 +2042,61 @@ msgstr "দেখুন বাস পিক পয়েন্ট"
 msgid "View Bus Type"
 msgstr "দেখুন বাস টাইপ"
 
-#: admin/class/class-setting-page.php:734
+#: admin/class/class-setting-page.php:884
 msgid "View Seat Button Background Color"
 msgstr "দেখুন আসন বাটন পটভূমির রঙ"
 
-#: admin/class/class-setting-page.php:742
+#: admin/class/class-setting-page.php:892
 msgid "View Seat Button Text Color"
 msgstr "দেখুন আসন বাটন টেক্সট রঙ"
 
-#: public/templates/bus-search-result.php:47
+#: includes/bus-search-page.php:305 admin/class/class-setting-page.php:533
 #: public/templates/bus-search-result-return.php:37
-#: admin/class/class-setting-page.php:398
-#: public/template-hooks/layout/bus-search-page.php:279
+#: public/templates/bus-search-result.php:47
+#: public/template-hooks/layout/bus-search-page.php:304
 msgid "View Seats"
 msgstr "দেখুন আসন"
 
-#: admin/class/class-meta-box.php:1544
+#: admin/class/class-setting-page.php:217
 msgid "Wednesday"
 msgstr "বুধবার"
 
-#: admin/class/class-meta-box.php:152
-msgid ""
-"Without Seat\n"
-"                    Plan"
-msgstr ""
-"ছাড়া আসন\n"
-" পরিকল্পনা"
+#: admin/class/class-welcome-page.php:17
+msgid "Welcome"
+msgstr "স্বাগতম"
 
-#: admin/class/class-setting-page.php:64
+#: admin/class/class-welcome-page.php:30
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "স্বাগতম বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন"
+
+#: admin/class/class-welcome-page.php:73
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr "স্বাগতম ডকুমেন্টেশন-বাস টিকেট বুকিং দিয়ে সিট রিজার্ভেশন প্লাগইন"
+
+#: admin/class/class-welcome-page.php:16
+msgid "Welcome to WBTM"
+msgstr "স্বাগতম WBTM"
+
+#: includes/class-wbtm-required-plugins.php:175
+#: includes/class-wbtm-required-plugins.php:258
+#: includes/class-wbtm-required-plugins.php:279
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: admin/class/class-setting-page.php:102
+#: admin/class/class-setting-page.php:184
 msgid "Yes"
 msgstr "হ্যাঁ"
 
-#: admin/class/class-setting-page.php:809
+#: admin/class/class-setting-page.php:958
 msgid "Your Custom CSS Code Here"
 msgstr "আপনার কাস্টম CSS কোড এখানে"
 
-#: includes/class-add-bus-info-to-cart.php:397
+#: includes/class-add-bus-info-to-cart.php:527
 msgid "Zone"
 msgstr "জোন"
 
-#: includes/class-add-bus-info-to-cart.php:508
+#: includes/class-add-bus-info-to-cart.php:641
 msgid "Zone: "
 msgstr "জোন: "

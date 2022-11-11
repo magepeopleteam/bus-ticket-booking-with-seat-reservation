@@ -140,6 +140,16 @@
     });
 
     // notification
+
+    // Route disable: Change routing
+    $(document).on('change', '.wbtm_boarding_point', function() {
+      const selectedRoute = $(this).find("option:selected").val();
+      const newNameAttrValue = `wbtm_bus_bp_start_disable[${selectedRoute}]`;
+      const parent = $(this).parents('tr');
+      const target = parent.find('.route_disable_container input[type="checkbox"]');
+      target.attr('name', newNameAttrValue);
+      console.log(target.attr('name'));
+    })
     
   
   });

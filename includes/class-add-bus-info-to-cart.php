@@ -8,15 +8,11 @@ class WbtmAddToCart
 
     public function __construct()
     {
-        $this->add_hooks();
-    }
-
-    private function add_hooks()
-    {
         add_filter('woocommerce_add_to_cart_validation', array($this, 'wbtm_check_seat_available_or_not'), 10, 5);
-        add_filter('woocommerce_add_cart_item_data', array($this, 'wbtm_add_custom_fields_text_to_cart_item'), 10, 3);
+        add_filter('woocommerce_add_cart_item_data', array($this, 'wbtm_add_custom_fields_text_to_cart_item'), 20, 2);
+        add_filter('woocommerce_get_item_data', array($this, 'wbtm_display_custom_fields_text_cart'), 20, 2);
         add_action('woocommerce_before_calculate_totals', array($this, 'wbtm_add_custom_price'));
-        add_filter('woocommerce_get_item_data', array($this, 'wbtm_display_custom_fields_text_cart'), 10, 2);
+        
         add_action('woocommerce_after_order_notes', array($this, 'wbtm_custom_checkout_field'));
         add_action('woocommerce_checkout_update_order_meta', array($this, 'wbtm_custom_checkout_field_update_order_meta'));
         add_action('woocommerce_after_checkout_validation', array($this, 'rei_after_checkout_validation'));
@@ -39,7 +35,7 @@ class WbtmAddToCart
         return $passed;
     }
 
-    public function wbtm_add_custom_fields_text_to_cart_item($cart_item_data, $product_id, $variation_id)
+    public function wbtm_add_custom_fields_text_to_cart_item($cart_item_data, $product_id, $variation_id = null)
     {
         global $wbtmmain;
         // echo '<pre>';print_r($_POST);die;
@@ -100,6 +96,11 @@ class WbtmAddToCart
             $extra_per_bag_price = get_post_meta($bus_id, 'wbtm_extra_bag_price', true);
             $extra_per_bag_price = $extra_per_bag_price ? $extra_per_bag_price : 0;
 
+            $wbtm_anydate_return = isset($_POST['wbtm_anydate_return']) ? $_POST['wbtm_anydate_return'] : '';
+            $wbtm_anydate_return_price = $_POST['wbtm_anydate_return_price'];
+            
+            
+
             // Get Bus Start Time
             if ($bus_start_stops) {
                 foreach ($bus_start_stops as $stop) {
@@ -123,7 +124,7 @@ class WbtmAddToCart
             $total_fare     = 0;
             $extra_services = array();
             $total_extra_price = 0;
-
+            $total_fare = $total_fare + (float)$wbtm_anydate_return_price;
             if ($wbtm_order_seat_plan === 'yes') {
                 // With Seat Plan
                 if ($return_discount == 1 && count($passenger_type) == 1) {
@@ -336,6 +337,7 @@ class WbtmAddToCart
             }
             
             $total_fare = $total_fare + $total_extra_price;
+            
             // Extra Service END
 
             // Add to Cart
@@ -358,6 +360,9 @@ class WbtmAddToCart
             $cart_item_data['wbtm_pickpoint'] = $wbtm_pickpoint;
 
             $cart_item_data['extra_services'] = $extra_services;
+
+            $cart_item_data['wbtm_anydate_return'] = $wbtm_anydate_return;
+            $cart_item_data['wbtm_anydate_return_price'] = $wbtm_anydate_return_price;
 
             $cart_item_data['wbtm_passenger_info'] = $custom_reg_yes_user;
             $cart_item_data['wbtm_passenger_info_additional'] = $custom_reg_additional;
@@ -401,6 +406,9 @@ class WbtmAddToCart
             $date_format = get_option('date_format');
             $time_format = get_option('time_format');
             $datetimeformat = $date_format . '  ' . $time_format;
+
+            $wbtm_anydate_return        = $cart_item['wbtm_anydate_return'];
+            $wbtm_anydate_return_price  = $cart_item['wbtm_anydate_return_price'];
 
             // echo '<pre>'; print_r($passenger_info); die;
 
@@ -683,6 +691,11 @@ class WbtmAddToCart
                 </ul>
             <?php 
             endif;
+
+            if($wbtm_anydate_return == 'on'){ ?>
+                <p style="margin:0"><strong><?php _e('Any Date Return:', 'bus-ticket-booking-with-seat-reservation') ?></strong> <?php echo wc_price($wbtm_anydate_return_price); ?></p>
+            <?php
+            }
         }
         return $item_data;
     }
@@ -754,9 +767,12 @@ class WbtmAddToCart
             $wbtm_journey_time = $values['wbtm_journey_time'];
             $wbtm_bus_start_time = $values['wbtm_bus_time'];
             $wbtm_bus_id = $values['wbtm_bus_id'];
+            $wbtm_is_return = $values['is_return'];
             $extra_bag_quantity = isset($values['extra_bag_quantity']) ? $values['extra_bag_quantity'] : null;
             $wbtm_tp = $values['wbtm_tp'];
-            $wbtm_is_return = $values['is_return'];
+
+            $wbtm_anydate_return = $values['wbtm_anydate_return'];
+            $wbtm_anydate_return_price = $values['wbtm_anydate_return_price'];
 
             $seat = "";
             foreach ($wbtm_seats as $field) {
@@ -790,6 +806,8 @@ class WbtmAddToCart
             $item->add_meta_data('Date', $wbtm_journey_date);
             $item->add_meta_data('Time', $wbtm_journey_time);
             $item->add_meta_data('Extra Services', $extra_service_html);
+            $item->add_meta_data('Anydate Return', $wbtm_anydate_return);
+            $item->add_meta_data('Anydate Return Price', $wbtm_anydate_return_price);
             $item->add_meta_data('_wbtm_tp', $wbtm_tp);
             $item->add_meta_data('_bus_id', $wbtm_bus_id);
             $item->add_meta_data('_btime', $wbtm_bus_start_time);
@@ -804,6 +822,9 @@ class WbtmAddToCart
             $item->add_meta_data('_wbtm_is_return', $wbtm_is_return);
 
             $item->add_meta_data('_wbtm_bus_id', $eid);
+
+            $item->add_meta_data('_wbtm_anydate_return', $wbtm_anydate_return);
+            $item->add_meta_data('_wbtm_anydate_return_price', $wbtm_anydate_return_price);
         }
 
     }

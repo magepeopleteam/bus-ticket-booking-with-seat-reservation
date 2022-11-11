@@ -24,7 +24,6 @@ div.mage {display: block !important;}
 [class*='bDot'] {border: 1px dotted var(--default-border-color) !important;}
 [class*='bDash'] {border: 1px dashed var(--default-border-color) !important;}
 
-[class*='b_r'] {border-right: 1px solid var(--default-border-color);}
 [class*='b_r_dash'] {border-right: 1px dashed var(--default-border-color);}
 [class*='b_r_dot'] {border-right: 1px dotted var(--default-border-color);}
 /**************/

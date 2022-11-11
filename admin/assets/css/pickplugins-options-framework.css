@@ -150,27 +150,30 @@ div>.ppof-metabox {
     box-sizing: border-box;
 }
 
-.ppof-settings .text-align-right {
+.wbtm_settings_wrapper .ppof-settings .text-align-right {
     text-align: right;
 }
 
-.ppof-settings .tab-content {
+.wbtm_settings_wrapper .ppof-settings .tab-content {
     display: none;
 }
 
-.ppof-settings .tab-content.active {
+.wbtm_settings_wrapper .ppof-settings .tab-content.active {
     display: block;
+    border: 1px solid #f5f5f5;
 }
 
-.ppof-settings .form-section {
+.wbtm_settings_wrapper .ppof-settings .form-section {
     padding: 15px;
 }
 
-.ppof-settings .navigation {
+.wbtm_settings_wrapper .ppof-settings .navigation {
     min-width: 20%;
+    max-width: 20%;
+    top: 0;
 }
 
-.ppof-settings .navigation .nav-item-wrap {
+.wbtm_settings_wrapper .ppof-settings .navigation .nav-item-wrap {
     padding: 0px;
     margin: 0;
     border-bottom: 1px solid #757575;
@@ -180,6 +183,7 @@ div>.ppof-metabox {
     text-decoration: none;
     position: relative;
     color: #fff;
+    background-color: #161b37;
 }
 
 .ppof-settings .navigation a {
@@ -232,54 +236,55 @@ div>.ppof-metabox {
 
 /*}*/
 
-.ppof-settings .nav-items {
+.wbtm_settings_wrapper .ppof-settings .nav-items {
     margin: 0;
 }
 
-.ppof-settings .child-navs {
+.wbtm_settings_wrapper .ppof-settings .child-navs {
     display: none;
 }
 
-.ppof-settings .nav-items li {
+.wbtm_settings_wrapper .ppof-settings .nav-items li {
     margin: 0;
 }
 
-.ppof-settings .nav-item-wrap.active .child-navs {
+.wbtm_settings_wrapper .ppof-settings .nav-item-wrap.active .child-navs {
     display: block;
 }
 
-.ppof-settings .nav-items .has-child.active .child-nav-icon {
+.wbtm_settings_wrapper .ppof-settings .nav-items .has-child.active .child-nav-icon {
     transform: rotate(-90deg);
     transition: all 0.4s;
 }
 
-.ppof-settings .nav-items .child-nav-icon {
+.wbtm_settings_wrapper .ppof-settings .nav-items .child-nav-icon {
     float: right;
     font-size: 17px;
     color: #d4d4d4;
     margin-right: 14px;
 }
 
-.ppof-settings .nav-items .nav-item {
+.wbtm_settings_wrapper .ppof-settings .nav-items .nav-item {
     outline: none;
     box-shadow: none;
 }
 
-.ppof-settings .nav-items .nav-item.active {
+.wbtm_settings_wrapper .ppof-settings .nav-items .nav-item.active {
     background: #EA2330;
     outline: none;
 }
 
-.ppof-settings .nav-items .nav-item:hover {
+.wbtm_settings_wrapper .ppof-settings .nav-items .nav-item:hover {
     background: #EA2330;
     transition: 0.2s;
 }
 
-.ppof-settings .nav-footer {
-    /*border-top: 1px solid #ddd;*/
+.wbtm_settings_wrapper .ppof-settings .nav-footer {
+    padding: 0;
+    margin: 0;
 }
 
-.ppof-settings .form-header {
+.wbtm_settings_wrapper .ppof-settings .form-header {
     padding: 20px;
     background: #165d94;
     border-bottom: 1px solid #165d94;
@@ -289,15 +294,16 @@ div>.ppof-metabox {
 
 .ppof-settings .form-header .submit {}
 
-.ppof-settings .form-header .search-options {
+.wbtm_settings_wrapper .ppof-settings .form-header .search-options {
     width: 200px;
     border-radius: 3px;
 }
 
-.ppof-settings .form-footer {
+.wbtm_settings_wrapper .ppof-settings .form-footer {
     margin-bottom: 10px;
     margin-top: 10px;
     border-top: 1px solid #ddd;
+    background: #fff;
 }
 
 .pp-col .button-primary,
@@ -338,9 +344,10 @@ div>.ppof-metabox {
     font-size: 13px;
 }
 
-.ppof-settings .form-wrapper {
+.wbtm_settings_wrapper .ppof-settings .form-wrapper {
     background: #fff;
     width: 80%;
+    margin-left: 0;
 }
 
 .ppof-settings .form-table {
@@ -455,7 +462,9 @@ div>.ppof-metabox {
 
 /*ppof-settings*/
 
-.ppof-settings {}
+.wbtm_settings_wrapper .ppof-settings {
+    margin-top: 0px;
+}
 
 .ppof-settings input[type="text"],
 .ppof-settings input[type="email"],
@@ -1999,4 +2008,17 @@ div>.ppof-metabox {
     background: #161b37;
     color: #fff !important;
     margin-top: 10px
+}
+
+.wbtm_settings_wrapper .field-checkbox-wrapper label {
+    display: block;
+}
+
+@media screen and (max-width: 768px) {
+    .wbtm_settings_wrapper .ppof-settings .navigation .nav-items {
+        display: block;
+    }
+    .wbtm_settings_wrapper .ppof-settings .form-wrapper {
+        margin-top: 0;
+    }
 }

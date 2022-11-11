@@ -16,6 +16,15 @@ class WBTMSettingPage
 
     public function settings_page()
     {
+        // Get user roles
+        $roleArr = array();
+        $rolesObj = new WP_Roles;
+        if($rolesObj->roles) {
+            foreach($rolesObj->roles as $key => $role) {
+                $roleArr[$key] = $role['name'];
+            }
+        }
+
 
         if ($post = get_page_by_path('bus-search-list', OBJECT, 'page'))
             $id = $post->ID;
@@ -95,6 +104,32 @@ class WBTMSettingPage
                             ),
                         ),
                         array(
+                            'id' => 'any_day_return',
+                            'title' => __('On/Off any date return switch', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('By default: Off', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => 'off',
+                            'value' => 'off',
+                            'multiple' => false,
+                            'type' => 'select',
+                            'args' => array(
+                                'off' => __('Off', 'bus-ticket-booking-with-seat-reservation'),
+                                'on' => __('On', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),
+                        array(
+                            'id' => 'route_disable_switch',
+                            'title' => __('Show route disable switch', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('By default: Off', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => 'off',
+                            'value' => 'off',
+                            'multiple' => false,
+                            'type' => 'select',
+                            'args' => array(
+                                'off' => __('Off', 'bus-ticket-booking-with-seat-reservation'),
+                                'on' => __('On', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),                      
+                        array(
                             'id' => 'bus_seat_booked_on_order_status',
                             'title' => __('Seat booked on status', 'bus-ticket-booking-with-seat-reservation'),
                             'details' => __('Seat will be booked in which state of seat order. <br> eg. If you want to showing seat as booked when seat status is "On hold" then check "On hold".'),
@@ -120,8 +155,35 @@ class WBTMSettingPage
                             'default' => $id,
                             'args' => 'PAGES_IDS_ARRAY',
                         ),
-
-
+                        array(
+                            'id' => 'bus_booked_cancellation_buffer_time',
+                            'title' => __('Cancel Req. Allowed before', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please enter here car buffer time in Hours. By default is 0', 'bus-ticket-booking-with-seat-reservation'),
+                            'type' => 'text',
+                            'default' => 0,
+                            'placeholder' => __('', 'bus-ticket-booking-with-seat-reservation'),
+                        ),
+                        array(
+                            'id' => 'bus_booked_cancellation_req_role',
+                            'title' => __('Cancel Req. Allowed User Role?', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please select the user role who can able to send cancel request of event order from My Account Page.'),
+                            'type' => 'checkbox_multi',
+                            'default' => array(),
+                            'args' => $roleArr,
+                        ),
+                        array(
+                            'id' => 'bus_booked_auto_cancel',
+                            'title' => __('Auto Cancel?', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please select Yes if you want to automatically cancel the order, when user submit a cancellation request', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => 'no',
+                            'value' => 'no',
+                            'multiple' => false,
+                            'type' => 'select',
+                            'args' => array(
+                                'no' => __('No', 'bus-ticket-booking-with-seat-reservation'),
+                                'yes' => __('Yes', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),
                     )
                 ),
             ),
@@ -689,6 +751,13 @@ class WBTMSettingPage
                             'type' => 'text',
                             'default' => 'Return Trip:'
                         ),
+                        array(
+                            'id' => 'wbtm_anydate_return_desc_text',
+                            'title' => __('Any Date Return Description', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Enter the text which you want to display as any date return description.', 'bus-ticket-booking-with-seat-reservation'),
+                            'type' => 'text',
+                            'default' => 'Same ticket will be valid for return up to next 15 days'
+                        )                      
                     )
                 ),
             ),
@@ -894,6 +963,8 @@ class WBTMSettingPage
         );
 
 
+
+
         $args = array(
             'add_in_menu' => true,
             'menu_type' => 'sub',
@@ -914,7 +985,8 @@ class WBTMSettingPage
                 'seat_panel_settings' => $seat_panel_settings,
                 'transsettings' => $translation_settings,
                 'colorsettings' => $color_settings,
-                'customcss' => $custom_css_settings
+                'customcss' => $custom_css_settings,
+                // 'license_settings' => $license_key_settings
 
             )),
         );

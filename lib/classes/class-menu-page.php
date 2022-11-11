@@ -359,7 +359,7 @@ if( ! class_exists( 'AddMenuPage' ) ) {
 
 
                             $page_settings_count = count($page_settings);
-                            //var_dump($page_settings);
+                            // var_dump($page_settings);
                             ?>
                             <li class="nav-item-wrap <?php if(($page_settings_count > 1)) echo 'has-child'; ?> <?php if($current_page==$page_id) echo 'active'; ?>">
                                 <a dataid="<?php echo $page_id; ?>" href='#<?php //echo $pagenow.'?'.$nav_menu_url; ?><?php echo

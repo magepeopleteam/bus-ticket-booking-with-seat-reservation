@@ -19,7 +19,7 @@ do_action('wbtm_before_single_bus_search_page');
                 <div class="ml_25 mage_xs_full">
                     <div class="mage_default_bDot">
                         <h4><?php the_title(); ?><small>( <?php echo $values['wbtm_bus_no'][0]; ?> )</small></h4>
-                        <h6 class="mar_t_xs"><strong><?php _e('Bus Type :', 'bus-ticket-booking-with-seat-reservation'); ?></strong><?php echo mage_bus_type(); ?></h6>
+                        <h6 class="mar_t_xs"><strong><?php echo mage_bus_setting_value('bus_menu_label', 'Bus') . ' ' . __('Type', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong><?php echo mage_bus_type(); ?></h6>
                         <h6 class="mar_t_xs"><strong><?php _e('Passenger Capacity :', 'bus-ticket-booking-with-seat-reservation'); ?></strong><?php echo mage_bus_total_seat_new(); ?></h6>
                         <?php if (mage_bus_run_on_date(false) && isset($_GET['bus_start_route']) && ($_GET['bus_end_route']) && ($_GET['j_date'])) { ?>
                             <h6 class="mar_t_xs">

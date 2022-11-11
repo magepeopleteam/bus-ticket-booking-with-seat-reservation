@@ -5,6 +5,13 @@
         $("#ja_date").datepicker({
             dateFormat: "yy-mm-dd"
         });
+        $('#r_date').datepicker({
+            dateFormat: "yy-mm-dd",
+        });
+        $('#j_date_exchange').datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: 0
+        });
         $(".the_select select").select2();
         $("#boarding_point, #drp_point").select2();
 
@@ -20,8 +27,12 @@
             let type = $this.attr('data-seat-type');
             let qty = $this.val();
             qty = qty > 0 ? qty : 0;
-            $this.parent().siblings('.mage-seat-price').find('.price-figure').text(price * qty);
-            $this.parent().siblings('.mage-seat-price').attr('data-price', (price * qty));
+            let subtotal = price*qty;
+            if(subtotal) {
+                subtotal = subtotal.toFixed(2);
+            }
+            $this.parent().siblings('.mage-seat-price').find('.price-figure').text(subtotal);
+            $this.parent().siblings('.mage-seat-price').attr('data-price', (subtotal));
 
             let p = 0.00;
             $this.parents('.mage-seat-table').find('tbody tr').each(function() {
@@ -31,7 +42,7 @@
 
             });
 
-            $this.parents('.mage-seat-table').find('.mage-price-total .price-figure').text(parseFloat(p));
+            $this.parents('.mage-seat-table').find('.mage-price-total .price-figure').text(p);
 
             // Enable Booking Button
             if (type == 'adult') {
@@ -100,6 +111,136 @@
                 }
             }
         });
+
+        // Any date return
+        $('.wbtm_anydate_return_wrap').hide();
+        $('.mage_bus_seat_item,.mage_bus_seat_item .mage_bus_seat_icon,.mage_bus_seat_item .passenger_type_list ul li,.bus_handle').click(function(e) {
+            $('.wbtm_anydate_return_wrap').hide();
+
+            setTimeout(
+                function() {
+                    let seat_list = $('.mage_bus_selected_seat_list');
+                    if (seat_list.children().length > 0) {
+                        $('.wbtm_anydate_return_wrap').show();
+                        $('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
+                        jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                        jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+                    } else {
+                        $('.wbtm_anydate_return_wrap').hide();
+                    }
+                },
+                1000);
+
+        });
+
+        $('.mage-seat-qty input').on('input', function() {
+            let $this = $(this);
+            let type = $this.attr('data-seat-type');
+            let qty = $this.val();
+            qty = qty > 0 ? qty : 0;
+
+            if (type) {
+                if (qty > 0) {
+                    $('.wbtm_anydate_return_wrap').show();
+                    $('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
+                    jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                    jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+                } else {
+                    $('.wbtm_anydate_return_wrap').hide();
+                }
+            }
+
+        });
+
+        $('.wbtm_anydate_return_switch label').click(function(e) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
+            let $this = jQuery(this);
+            let parent = $this.parents('.mage_bus_seat_details');
+            let target = jQuery('.wbtm_anydate_return_switch label');
+
+            target.removeClass('active');
+            target.find('.wbtm_anydate_return').prop('checked', false);
+            $this.addClass('active');
+            $this.find('.wbtm_anydate_return').prop('checked', true);
+            let value = $this.find('.wbtm_anydate_return').val();
+            let seat_plan_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage_bus_sub_total').find('.price-figure');
+            let without_seat_plan_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('.mage-price-total .price-figure');
+            let curr_symbol = php_vars.currency_symbol;
+
+
+            if (value == 'on') {
+
+                if (seat_plan_price.length > 0) {
+                    let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage_bus_selected_seat_list').children();
+                    let amount = 0;
+                    for (let i = 1; i <= seat_list.length; i++) {
+                        let current_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage_bus_selected_seat_list').find('.mage_bus_selected_seat_item:nth-child(' + i + ') span').attr('data-current-price');
+                        if (typeof current_price !== "undefined") {
+                            amount += parseFloat(current_price);
+                        }
+                    }
+                    let new_amount = amount * 2;
+                    let thisSubtotal = seat_plan_price;
+                    thisSubtotal.html(new_amount.toFixed(2));
+                    $this.parents('form').find('#wbtm_anydate_return_price').val(amount);
+                } else {
+                    let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody').children();
+                    let amount = 0;
+                    for (let i = 1; i <= seat_list.length; i++) {
+                        let current_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
+
+                        if (typeof current_price !== "undefined") {
+                            amount += parseFloat(current_price);
+                        }
+
+                    }
+
+                    let new_amount = amount * 2;
+                    let thisSubtotal = without_seat_plan_price;
+                    thisSubtotal.html(new_amount.toFixed(2));
+                    $this.parents('form').find('#wbtm_anydate_return_price').val(amount);
+
+                }
+
+            }
+
+            if (value == 'off') {
+
+
+                if (seat_plan_price.length > 0) {
+                    let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage_bus_selected_seat_list').children();
+                    let amount = 0;
+                    for (let i = 1; i <= seat_list.length; i++) {
+                        let current_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage_bus_selected_seat_list').find('.mage_bus_selected_seat_item:nth-child(' + i + ') span').attr('data-current-price');
+                        if (typeof current_price !== "undefined") {
+                            amount += parseFloat(current_price);
+                        }
+                    }
+
+                    let thisSubtotal = seat_plan_price;
+                    thisSubtotal.html(amount.toFixed(2));
+                } else {
+                    let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody').children();
+                    let amount = 0;
+                    for (let i = 1; i <= seat_list.length; i++) {
+                        let current_price = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
+                        if (typeof current_price !== "undefined") {
+                            amount += parseFloat(current_price);
+                        }
+                    }
+
+                    let thisSubtotal = without_seat_plan_price;
+                    thisSubtotal.html(amount.toFixed(2));
+                }
+
+                $this.parents('form').find('#wbtm_anydate_return_price').val('');
+            }
+
+            mageGrandPrice(parent);
+        });
+        // Any date return END
     });
     //one way return
     $(document).on({
@@ -117,6 +258,7 @@
         click: function() {
             let target = $(this).siblings('input');
             let value = (parseInt(target.val()) - 1) > 0 ? (parseInt(target.val()) - 1) : 0;
+            target.trigger('input');
             mageTicketQty(target, value);
         }
     }, '.mage_qty_dec');
@@ -124,6 +266,7 @@
         click: function() {
             let target = $(this).siblings('input');
             let value = parseInt(target.val()) + 1;
+            target.trigger('input');
             mageTicketQty(target, value);
         }
     }, '.mage_qty_inc');
@@ -413,7 +556,7 @@
 
         var totalPP = 0;
 
-        if (target.hasClass('mage_selected')) {
+        if (target.hasClass('mage_selected')) { // Seat already selected
             defaultLoaderFixedRemove();
             target.removeClass('mage_selected');
             parents.find('.mage_bus_selected_seat_list [data-seat-name="' + seatName + '"]').slideUp(200, function() {
@@ -467,7 +610,7 @@
             wbtm_remove_form_builder(detail, seatName);
 
 
-        } else {
+        } else { // Seat not selected
             target.addClass('mage_selected');
             has_seat = parents.find('.mage_bus_selected_seat_list').children().length;
             // parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
@@ -501,10 +644,8 @@
                             }
                         });
                     });
-                    // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').text(php_vars.currency_symbol + totalPP);
-                    parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(php_vars.currency_symbol + '<span class="price-figure">' + Number(totalPP).toFixed(2) + '</span>');
+                    parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(php_vars.currency_symbol + '<span class="price-figure">' + totalPP.toFixed(2) + '</span>');
                     mageGrandPrice(detail);
-                    // parents.find('.mage_bus_total_price').text(php_vars.currency_symbol + totalPP);
                 },
                 error: function(response) {
                     console.log(response);
@@ -568,6 +709,7 @@
 
     //customer form
     function mageCustomerInfoFormBus(parent, seatName, passengerType, busDd) {
+        
         let formTitle = parent.find('input[name="mage_bus_title"]').val() + seatName;
         let currentTarget = parent.find('.mage_hidden_customer_info_form');
         console.log('lksjdfkl')
@@ -637,7 +779,7 @@
             url: wbtm_ajaxurl,
             type: 'POST',
             async: true,
-            data: { busID: bus_id, seatType: seatType, passengerType: passengerType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder' },
+            data: { busID: bus_id, seatType: seatType, passengerType: passengerType, seats: qty, onlyES: onlyES, dd: busDd, action: 'wbtm_form_builder' },
             beforeSend: function() {
                 parent.find('#wbtm-form-builder .wbtm-loading').show();
             },
@@ -645,11 +787,9 @@
 
                 if (data !== '') {
                     if (parent.find(".mage_customer_info_area").children().length == 0) {
-                        // parent.find(".mage_customer_info_area").html(data).find('.seat_name_'+seat_name + ' .mage_title h5').html(seat_name);
                         parent.find(".mage_customer_info_area").html(data);
                     } else {
                         if (seat_name != 'ES') {
-                            // parent.find(".mage_customer_info_area").append(data).find('.seat_name_' + seat_name + ' .mage_title h5').html(seat_name);
                             parent.find(".mage_customer_info_area").append(data);
                             parent.find(".mage_customer_info_area .seat_name_ES").remove();
                         }

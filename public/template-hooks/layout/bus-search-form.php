@@ -73,7 +73,8 @@ function mage_bus_search_form_only($single_bus, $target)
             <div class="mage_form_search">
                 <button id='mage_bus_search_button' type="submit" class="mage_button_search">
                     <span class="fa fa-search"></span>
-                    <?php mage_bus_label('wbtm_search_buses_text', __('Search', 'bus-ticket-booking-with-seat-reservation')); ?>
+                    <?php //mage_bus_label('wbtm_search_buses_text', __('Search', 'bus-ticket-booking-with-seat-reservation')); ?>
+                    <?php echo mage_bus_setting_value('bus_menu_label', 'Bus').' '. __('Search', 'bus-ticket-booking-with-seat-reservation') ?>
                 </button>
             </div>
         </div>

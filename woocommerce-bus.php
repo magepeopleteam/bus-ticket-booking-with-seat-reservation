@@ -3,7 +3,7 @@
 * Plugin Name: Bus Ticket Booking with Seat Reservation
 * Plugin URI: http://mage-people.com
 * Description: A Complete Bus Ticketig System for WordPress & WooCommerce
-* Version: 3.7
+* Version: 3.9
 * Author: MagePeople Team
 * Author URI: http://www.mage-people.com/
 * Text Domain: bus-ticket-booking-with-seat-reservation
@@ -127,12 +127,21 @@ add_filter( 'plugin_row_meta', 'wbtm_plugin_row_meta', 10, 2 );
 function wbtm_plugin_row_meta( $links_array, $plugin_file_name ) {
  
     if( strpos( $plugin_file_name, basename(__FILE__) ) ) {
-        $wbtm_links = array(
+
+		if(!is_plugin_active('addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php')){
+			$wbtm_links = array(
                 'docs' 	  => '<a href="'.esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/").'" target="_blank">'.__('Docs','bus-booking-manager').'</a>',
                 'support' => '<a href="'.esc_url("https://mage-people.com/my-account").'" target="_blank">'.__('Support','bus-booking-manager').'</a>',
                 'get_pro' => '<a href="'.esc_url("https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/").'" target="_blank" class="wbtm_plugin_pro_meta_link">'.__('Upgrade to PRO Version','bus-booking-manager').'</a>'
                 );
-         
+		}
+		else{
+			$wbtm_links = array(
+                'docs' 	  => '<a href="'.esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/").'" target="_blank">'.__('Docs','bus-booking-manager').'</a>',
+                'support' => '<a href="'.esc_url("https://mage-people.com/my-account").'" target="_blank">'.__('Support','bus-booking-manager').'</a>',
+                );
+		}
+
         $links_array = array_merge( $links_array, $wbtm_links );
     }
      
@@ -149,6 +158,12 @@ function wbtm_plugin_row_meta( $links_array, $plugin_file_name ) {
 
     }
     add_action( 'admin_notices', 'wbtm_wc_not_active' );
+	deactivate_plugins(array('/bus-ticket-booking-with-seat-reservation/woocommerce-bus.php', '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php'));
+
+	add_action('admin_notices', 'wbtm_plugin_deactivated_notice', 70);
+	function wbtm_plugin_deactivated_notice() {
+		printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr('notice notice-error'),  'Plugin Deactivated!'); 
+	}
 }
 
 /*************************

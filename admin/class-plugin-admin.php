@@ -27,9 +27,14 @@ class WBTM_Plugin_Admin {
 	}
 
 	public function enqueue_styles() {
-		wp_enqueue_style('mage-jquery-ui-style',WBTM_PLUGIN_URL.'admin/css/jquery-ui.css',array());	
+		global $pagenow;
+		if (is_admin() && 'admin.php' == $pagenow && $_GET['page'] == 'et_divi_options'){
+			// do nothing
+		}
+		else{
+			wp_enqueue_style('jquery-ui', WBTM_PLUGIN_URL.'admin/assets/css/jquery-ui.css');
+		}
         wp_enqueue_style('pickplugins-options-framework', WBTM_PLUGIN_URL.'admin/assets/css/pickplugins-options-framework.css');
-		wp_enqueue_style('jquery-ui', WBTM_PLUGIN_URL.'admin/assets/css/jquery-ui.css');
 		wp_enqueue_style('select2.min', WBTM_PLUGIN_URL.'admin/assets/css/select2.min.css');
 		wp_enqueue_style('codemirror', WBTM_PLUGIN_URL.'admin/assets/css/codemirror.css');
 		wp_enqueue_style('font-awesome-css-cdn', "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.2.0/css/all.min.css", null, 1);
@@ -64,6 +69,7 @@ class WBTM_Plugin_Admin {
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-create-cpt.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-create-tax.php';
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-meta-box.php';
+		require_once WBTM_PLUGIN_DIR . 'admin/class/class-license.php';
 
 		require_once WBTM_PLUGIN_DIR . 'admin/class/class-setting-page.php';
 		// require_once WBTM_PLUGIN_DIR . 'admin/class/class-menu-page.php';
