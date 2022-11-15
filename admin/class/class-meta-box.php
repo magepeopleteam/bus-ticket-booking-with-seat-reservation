@@ -17,6 +17,23 @@ class WBTMMetaBox
 
         add_action('save_post', array($this, 'wbtm_bus_seat_panels_meta_save'));
         add_action('admin_menu', array($this, 'wbtm_remove_post_custom_fields'));
+
+        add_action( 'wp_ajax_wbtm_add_bus_stope', [ $this, 'wbtm_add_bus_stope' ] );
+        add_action( 'wp_ajax_nopriv_wbtm_add_bus_stope', [ $this, 'wbtm_add_bus_stope' ] );
+    }
+
+    public function wbtm_add_bus_stope(){
+        if ( isset($_POST['name'] )) {
+
+            $bus_stop = wp_insert_term(  $_POST['name'], 'wbtm_bus_stops',  $args = array() );
+
+            echo  json_encode(array(
+                'value'=> $bus_stop['term_id'],
+                'text' =>$_POST['name'],
+            ));
+
+        }
+        die();
     }
 
     public function add_meta_box_func()
@@ -92,18 +109,101 @@ class WBTMMetaBox
             <?php $this->wbtm_bus_ticket_type(); ?>
         </div>
         <div class="mp_tab_item" data-tab-item="#wbtm_routing">
-            <div class="wbtm_tab_content_heading">
-                <h3><?php _e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-                <div class="wbtm-section-info">
-                    <span><i class="fas fa-info-circle"></i></span>
-                    <div class="wbtm-section-info-content">
-                        <?php echo $routing_info; ?>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="wbtm_tab_content_heading">
+                        <h3><?php _e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+
+                        <div class="wbtm-section-info">
+                            <span><i class="fas fa-info-circle"></i></span>
+                            <div class="wbtm-section-info-content">
+                                <?php echo $routing_info; ?>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Add New Bus stop</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Add New bus stop</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-inline" action="/action_page.php">
+                                        <div class="form-group">
+                                            <label for="email">Name:</label>
+                                            <input type="text" class="form-control" id="name" name="name" >
+                                        </div>
+
+                                        <button type="submit" name="Submit" id="submit-bus-stop" class="btn btn-primary">Submit</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <hr />
             <?php $this->wbtmRouting(); ?>
         </div>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+
+                jQuery("#submit-bus-stop").click(function(e) {
+                    e.preventDefault();
+                    name = jQuery("#name").val().trim();
+                    jQuery.ajax({
+                        type: 'POST',
+                        // url:wbtm_ajax.wbtm_ajaxurl,
+                        url: wbtm_ajaxurl,
+                        dataType: 'JSON',
+                        data: {
+                            "action": "wbtm_add_bus_stope",
+                            "name": name,
+
+                        },
+
+                        success: function(data) {
+
+
+                                $('.wbtm_boarding_point').append($('<option>', {
+                                    value: data.text,
+                                    text : data.text
+                                }));
+
+                            $('.wbtm_dropping_point').append($('<option>', {
+                                value: data.text,
+                                text : data.text
+                            }));
+
+
+
+
+                            $('#myModal').modal('hide');
+                        }
+
+                    });
+                    return false;
+                });
+
+            });
+        </script>
 
         <div class="mp_tab_item" data-tab-item="#wbtm_seat_price">
             <div class="wbtm_tab_content_heading">
@@ -1241,7 +1341,7 @@ class WBTMMetaBox
         // Global Setting
         $settings = get_option('wbtm_bus_settings');
         $route_disable_switch = isset($settings['route_disable_switch']) ? $settings['route_disable_switch'] : 'off';
-        if ($terms) {
+
         ?>
 
             <div class="bus-stops-wrapper">
@@ -1271,9 +1371,7 @@ class WBTMMetaBox
                                                 <?php
                                                 foreach ($terms as $term) {
                                                 ?>
-                                                    <option value="<?php echo $term->name; ?>" <?php if ($term->name == $field['wbtm_bus_bp_stops_name']) {
-                                                                                                    echo "Selected";
-                                                                                                } ?>><?php echo $term->name; ?></option>
+                                                    <option value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_bp_stops_name'])?'Selected':'' ?>><?php echo $term->name; ?></option>
                                                 <?php
                                                 }
                                                 ?>
@@ -1349,7 +1447,7 @@ class WBTMMetaBox
                             ?>
                                     <tr>
                                         <td align="center">
-                                            <select name="wbtm_bus_next_stops_name[]" class='seat_type'>
+                                            <select name="wbtm_bus_next_stops_name[]" class='seat_type wbtm_dropping_point'>
                                                 <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                 <?php
                                                 foreach ($terms as $term) {
@@ -1567,9 +1665,7 @@ class WBTMMetaBox
             </div>
 
         <?php
-        } else {
-            echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first. <a style='color:#fff' href='" . get_admin_url() . "edit-tags.php?taxonomy=wbtm_bus_stops&post_type=wbtm_bus'>Click here for bus stops</a></div>";
-        }
+
     }
 
     public function wbtmPricing()
