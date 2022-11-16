@@ -28,7 +28,6 @@ class WBTMMetaBox
             $bus_stop = wp_insert_term(  $_POST['name'], 'wbtm_bus_stops',  $args = array() );
 
             echo  json_encode(array(
-                'value'=> $bus_stop['term_id'],
                 'text' =>$_POST['name'],
             ));
 
@@ -123,33 +122,34 @@ class WBTMMetaBox
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Add New Bus stop</button>
-                    <!-- Modal -->
-                    <div class="modal fade" id="myModal" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Add New bus stop</h4>
+                    <div class="mpStyle">
+                        <div class="mpPopup" data-popup="#wbtm_route_popup">
+                            <div class="popupMainArea">
+                                <div class="popupHeader">
+                                    <h4>
+                                        <?php esc_html_e( 'Add New Feature', 'tour-booking-manager' ); ?>
+                                    </h4>
+                                    <span class="fas fa-times popupClose"></span>
                                 </div>
-                                <div class="modal-body">
-                                    <form class="form-inline" action="/action_page.php">
-                                        <div class="form-group">
-                                            <label for="email">Name:</label>
-                                            <input type="text" class="form-control" id="name" name="name" >
-                                        </div>
+                                <div class="popupBody ttbm_feature_form_area">
+                                    <label>
+                                        <span>Name:</span>
+                                        <input type="text" class="formControl" id="name" name="name" >
+                                    </label>
 
-                                        <button type="submit" name="Submit" id="submit-bus-stop" class="btn btn-primary">Submit</button>
-                                    </form>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <div class="popupFooter">
+                                    <div class="buttonGroup">
+                                        <button class="_themeButton submit-bus-stop" type="button"><?php esc_html_e( 'Save', 'tour-booking-manager' ); ?></button>
+                                        <button class="_warningButton submit-bus-stop-close" type="button"><?php esc_html_e( 'Save & Close', 'tour-booking-manager' ); ?></button>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
+                        <button type="button" class="_dButton_bgBlue" data-target-popup="#wbtm_route_popup">
+                            <span class="fas fa-plus-square"></span>
+                            Add New Bus Stop
+                        </button>
                     </div>
 
                 </div>
@@ -158,16 +158,16 @@ class WBTMMetaBox
             <?php $this->wbtmRouting(); ?>
         </div>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
 
         <script type="text/javascript">
             jQuery(document).ready(function($) {
 
-                jQuery("#submit-bus-stop").click(function(e) {
+                jQuery(".submit-bus-stop, .submit-bus-stop-close").click(function(e) {
                     e.preventDefault();
-                    name = jQuery("#name").val().trim();
+                    let $this=jQuery(this);
+                    let $this_classes=jQuery(this).attr("class");
+                    let name = jQuery("#name").val().trim();
+
                     jQuery.ajax({
                         type: 'POST',
                         // url:wbtm_ajax.wbtm_ajaxurl,
@@ -182,6 +182,8 @@ class WBTMMetaBox
                         success: function(data) {
 
 
+
+
                                 $('.wbtm_boarding_point').append($('<option>', {
                                     value: data.text,
                                     text : data.text
@@ -192,10 +194,14 @@ class WBTMMetaBox
                                 text : data.text
                             }));
 
+                           if($this_classes=='_warningButton submit-bus-stop-close'){
+                               $this.closest('.popupMainArea').find('.popupClose').trigger('click');
+                           }
 
 
 
-                            $('#myModal').modal('hide');
+
+
                         }
 
                     });
