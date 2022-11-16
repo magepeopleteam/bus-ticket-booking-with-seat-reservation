@@ -410,4 +410,36 @@ function ttbm_pagination_page_management(parent, pagination_page, total_item) {
 			}
 		}
 	});
+
+
+	$(".submit-bus-stop, .submit-bus-stop-close").click(function(e) {
+		e.preventDefault();
+		let $this=$(this);
+		let $this_classes=$(this).attr("class");
+		let name = $("#name").val().trim();
+		let description = $("#description").val().trim();
+
+		$.ajax({
+			type: 'POST',
+			// url:wbtm_ajax.wbtm_ajaxurl,
+			url: wbtm_ajaxurl,
+			dataType: 'JSON',
+			data: {
+				"action": "wbtm_add_bus_stope",
+				"name": name,
+				"description": description,
+			},
+			success: function(data) {
+				$('.bus_stop_add_option').append($('<option>', {
+					value: data.text,
+					text : data.text
+				}));
+				if($this_classes=='_warningButton submit-bus-stop-close'){
+					$this.closest('.popupMainArea').find('.popupClose').trigger('click');
+				}
+			}
+		});
+		return false;
+	});
+
 }(jQuery));

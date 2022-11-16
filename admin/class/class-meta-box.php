@@ -22,15 +22,14 @@ class WBTMMetaBox
         add_action( 'wp_ajax_nopriv_wbtm_add_bus_stope', [ $this, 'wbtm_add_bus_stope' ] );
     }
 
+    /*Add Bus stop ajax function*/
     public function wbtm_add_bus_stope(){
         if ( isset($_POST['name'] )) {
-
-            $bus_stop = wp_insert_term(  $_POST['name'], 'wbtm_bus_stops',  $args = array() );
+            wp_insert_term(  $_POST['name'], 'wbtm_bus_stops',  $args = array('description'=>$_POST['description']) );
 
             echo  json_encode(array(
                 'text' =>$_POST['name'],
             ));
-
         }
         die();
     }
@@ -40,10 +39,12 @@ class WBTMMetaBox
         add_meta_box('wbtm_add_meta_box', __('<span class="dashicons dashicons-info"></span>Bus Information : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'mp_event_all_in_tab'), 'wbtm_bus', 'normal', 'high');
     }
 
+
     public function mp_event_all_in_tab()
     {
         $post_id = get_the_id();
-?>
+        ?>
+
         <div class="mp_event_all_meta_in_tab mp_event_tab_area">
             <div class="mp_tab_menu">
                 <ul>
@@ -54,7 +55,7 @@ class WBTMMetaBox
                 <?php do_action('wbtm_meta_box_tab_content', $post_id); ?>
             </div>
         </div>
-    <?php
+        <?php
     }
 
     // Tab lists
@@ -111,7 +112,7 @@ class WBTMMetaBox
             <div class="row">
                 <div class="col-md-6">
                     <div class="wbtm_tab_content_heading">
-                        <h3><?php _e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                        <h3><?php esc_html_e(' Routing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 
                         <div class="wbtm-section-info">
                             <span><i class="fas fa-info-circle"></i></span>
@@ -127,14 +128,19 @@ class WBTMMetaBox
                             <div class="popupMainArea">
                                 <div class="popupHeader">
                                     <h4>
-                                        <?php esc_html_e( 'Add New Feature', 'tour-booking-manager' ); ?>
+                                        <?php esc_html_e( 'Add New Bus Stop', 'bus-ticket-booking-with-seat-reservation' ); ?>
                                     </h4>
                                     <span class="fas fa-times popupClose"></span>
                                 </div>
                                 <div class="popupBody ttbm_feature_form_area">
                                     <label>
-                                        <span>Name:</span>
+                                        <span class="w_200"><?php esc_html_e( 'Name:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
                                         <input type="text" class="formControl" id="name" name="name" >
+                                    </label>
+
+                                    <label class="mT">
+                                        <span class="w_200"><?php esc_html_e( 'Description:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+                                        <textarea name="description" id="description" rows="5" cols="50" class="formControl"></textarea>
                                     </label>
 
                                 </div>
@@ -146,7 +152,7 @@ class WBTMMetaBox
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="_dButton_bgBlue" data-target-popup="#wbtm_route_popup">
+                        <button type="button" class="_dButton_xs_bgBlue" data-target-popup="#wbtm_route_popup">
                             <span class="fas fa-plus-square"></span>
                             Add New Bus Stop
                         </button>
@@ -159,57 +165,7 @@ class WBTMMetaBox
         </div>
 
 
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
 
-                jQuery(".submit-bus-stop, .submit-bus-stop-close").click(function(e) {
-                    e.preventDefault();
-                    let $this=jQuery(this);
-                    let $this_classes=jQuery(this).attr("class");
-                    let name = jQuery("#name").val().trim();
-
-                    jQuery.ajax({
-                        type: 'POST',
-                        // url:wbtm_ajax.wbtm_ajaxurl,
-                        url: wbtm_ajaxurl,
-                        dataType: 'JSON',
-                        data: {
-                            "action": "wbtm_add_bus_stope",
-                            "name": name,
-
-                        },
-
-                        success: function(data) {
-
-
-
-
-                                $('.wbtm_boarding_point').append($('<option>', {
-                                    value: data.text,
-                                    text : data.text
-                                }));
-
-                            $('.wbtm_dropping_point').append($('<option>', {
-                                value: data.text,
-                                text : data.text
-                            }));
-
-                           if($this_classes=='_warningButton submit-bus-stop-close'){
-                               $this.closest('.popupMainArea').find('.popupClose').trigger('click');
-                           }
-
-
-
-
-
-                        }
-
-                    });
-                    return false;
-                });
-
-            });
-        </script>
 
         <div class="mp_tab_item" data-tab-item="#wbtm_seat_price">
             <div class="wbtm_tab_content_heading">
@@ -1255,8 +1211,6 @@ class WBTMMetaBox
             update_post_meta($pid, 'wbtm_bus_no', $wbtm_bus_no);
             update_post_meta($pid, 'wbtm_total_seat', $wbtm_total_seat);
             $prev_as_driver = get_post_meta($pid, 'as_driver', true);
-            // echo '<pre>';print_r($as_driver);
-            // echo '<pre>';print_r($prev_as_driver);die;
             $as_driver ? update_user_meta($prev_as_driver, 'for_bus', $pid) : update_user_meta($prev_as_driver, 'for_bus', null);
             update_post_meta($pid, 'as_driver', $as_driver);
 
@@ -1268,64 +1222,12 @@ class WBTMMetaBox
 
             update_post_meta($pid, '_price', 0);
             $driver_seat_position = strip_tags($_POST['driver_seat_position']);
-            $update_wbtm_driver_seat_position = update_post_meta($pid, 'driver_seat_position', $driver_seat_position);
-            $update_seat_stock_status = update_post_meta($pid, '_sold_individually', 'yes');
+            update_post_meta($pid, 'driver_seat_position', $driver_seat_position);
+            update_post_meta($pid, '_sold_individually', 'yes');
         }
     }
 
-    public function wbtmInfo()
-    {
 
-
-        // $bus_information = array(
-        //     'page_nav' => __('<i class="fas fa-cog"></i> Nav Title 2', 'bus-ticket-booking-with-seat-reservation'),
-        //     'priority' => 10,
-        //     'sections' => array(
-        //         'section_2' => array(
-        //             'title' => __('', 'bus-ticket-booking-with-seat-reservation'),
-        //             'description' => __('', 'bus-ticket-booking-with-seat-reservation'),
-        //             'options' => array(
-
-        //                 array(
-        //                     'id' => 'wbtm_bus_no',
-        //                     'title' => __('Coach No', 'bus-ticket-booking-with-seat-reservation'),
-        //                     'details' => __('Please enter coach no here', 'bus-ticket-booking-with-seat-reservation'),
-        //                     'type' => 'text',
-        //                     'placeholder' => __('Coach No', 'bus-ticket-booking-with-seat-reservation'),
-        //                 ),
-
-        //                 array(
-        //                     'id' => 'wbtm_total_seat',
-        //                     'title' => __('Total Seat', 'bus-ticket-booking-with-seat-reservation'),
-        //                     'details' => __('Please enter Total Seat here', 'bus-ticket-booking-with-seat-reservation'),
-        //                     'type' => 'text',
-        //                     'placeholder' => __('Total Seat', 'bus-ticket-booking-with-seat-reservation'),
-        //                 ),
-
-        //             )
-        //         ),
-
-        //     ),
-        // );
-
-        // $info_args = array(
-        //     'meta_box_id' => 'bus_meta_boxes_info',
-        //     'meta_box_title' => '<span class="dashicons dashicons-info"></span>' . __('Bus Information', 'bus-ticket-booking-with-seat-reservation'),
-        //     //'callback'       => '_meta_box_callback',
-        //     'screen' => array('wbtm_bus'),
-        //     'context' => 'normal', // 'normal', 'side', and 'advanced'
-        //     'priority' => 'high', // 'high', 'low'
-        //     'callback_args' => array(),
-        //     'nav_position' => 'none', // right, top, left, none
-        //     'item_name' => "MagePeople",
-        //     'item_version' => "2.0",
-        //     'panels' => array(
-        //         'bus_information' => $bus_information
-        //     ),
-        // );
-
-        // new AddMetaBox($info_args);
-    }
 
     public function wbtmRouting()
     {
@@ -1372,7 +1274,7 @@ class WBTMMetaBox
                             ?>
                                     <tr>
                                         <td align="center">
-                                            <select name="wbtm_bus_bp_stops_name[]" class='seat_type wbtm_boarding_point'>
+                                            <select name="wbtm_bus_bp_stops_name[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
                                                 <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                 <?php
                                                 foreach ($terms as $term) {
@@ -1453,7 +1355,7 @@ class WBTMMetaBox
                             ?>
                                     <tr>
                                         <td align="center">
-                                            <select name="wbtm_bus_next_stops_name[]" class='seat_type wbtm_dropping_point'>
+                                            <select name="wbtm_bus_next_stops_name[]" class='seat_type wbtm_dropping_point bus_stop_add_option'>
                                                 <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                 <?php
                                                 foreach ($terms as $term) {
@@ -1996,7 +1898,7 @@ class WBTMMetaBox
                         <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
                             <i class="fas fa-arrow-right"></i></button>
                     <?php else :
-                        echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first. <a style='color:#fff' href='" . get_admin_url() . "edit-tags.php?taxonomy=wbtm_bus_stops&post_type=wbtm_bus'>Click here for bus stops</a></div>";
+                        echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first.<a style='color:#fff' href='" . get_admin_url() . "edit-tags.php?taxonomy=wbtm_bus_stops&post_type=wbtm_bus'>Click here for bus stops</a></div>";
                     endif; ?>
                 </div>
             </div>
