@@ -32,7 +32,7 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 
 		public function save_post( $post_id ) {
 
-
+//echo '<pre>';print_r($_POST);echo '</pre>';die();
 
 
 			// if (

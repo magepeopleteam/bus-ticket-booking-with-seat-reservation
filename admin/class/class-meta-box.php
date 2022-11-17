@@ -132,25 +132,28 @@ class WBTMMetaBox
                                     </h4>
                                     <span class="fas fa-times popupClose"></span>
                                 </div>
-                                <div class="popupBody ttbm_feature_form_area">
+                                <div class="popupBody bus-stop-form">
+                                    <h6 class="textSuccess success_text" style="display: none;">Added Succesfully</h6>
                                     <label>
                                         <span class="w_200"><?php esc_html_e( 'Name:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-                                        <input type="text" class="formControl" id="name" name="name" >
+                                        <input type="text"  class="formControl" id="bus_stop_name">
                                     </label>
+                                    <p class="name_required"><?php esc_html_e( 'Name is required', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 
                                     <label class="mT">
                                         <span class="w_200"><?php esc_html_e( 'Description:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-                                        <textarea name="description" id="description" rows="5" cols="50" class="formControl"></textarea>
+                                        <textarea  id="bus_stop_description" rows="5" cols="50" class="formControl"></textarea>
                                     </label>
 
                                 </div>
                                 <div class="popupFooter">
                                     <div class="buttonGroup">
                                         <button class="_themeButton submit-bus-stop" type="button"><?php esc_html_e( 'Save', 'tour-booking-manager' ); ?></button>
-                                        <button class="_warningButton submit-bus-stop-close" type="button"><?php esc_html_e( 'Save & Close', 'tour-booking-manager' ); ?></button>
+                                        <button class="_warningButton submit-bus-stop close_popup" type="button"><?php esc_html_e( 'Save & Close', 'tour-booking-manager' ); ?></button>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                         <button type="button" class="_dButton_xs_bgBlue" data-target-popup="#wbtm_route_popup">
                             <span class="fas fa-plus-square"></span>
@@ -1274,7 +1277,7 @@ class WBTMMetaBox
                             ?>
                                     <tr>
                                         <td align="center">
-                                            <select name="wbtm_bus_bp_stops_name[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
+                                            <select name="wbtm_bus_bp_stops_name[]" class='seat_type bus_stop_add_option'>
                                                 <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                 <?php
                                                 foreach ($terms as $term) {
@@ -1309,7 +1312,7 @@ class WBTMMetaBox
                             <!-- empty hidden one for jQuery -->
                             <tr class="mtsa-empty-row-t">
                                 <td align="center">
-                                    <select name="wbtm_bus_bp_stops_name[]" class='seat_type wbtm_boarding_point'>
+                                    <select name="wbtm_bus_bp_stops_name[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
                                         <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                         <?php
                                         foreach ($terms as $term) {
@@ -1384,7 +1387,7 @@ class WBTMMetaBox
                             <!-- empty hidden one for jQuery -->
                             <tr class="mtsa-empty-row-t">
                                 <td align="center">
-                                    <select name="wbtm_bus_next_stops_name[]" class='seat_type'>
+                                    <select name="wbtm_bus_next_stops_name[]" class='seat_type bus_stop_add_option'>
                                         <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                         <?php
                                         foreach ($terms as $term) {
@@ -1434,7 +1437,7 @@ class WBTMMetaBox
                                 ?>
                                         <tr>
                                             <td align="center">
-                                                <select name="wbtm_bus_bp_stops_name_return[]" class='seat_type wbtm_boarding_point'>
+                                                <select name="wbtm_bus_bp_stops_name_return[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
                                                     <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                     <?php
                                                     foreach ($terms as $term) {
@@ -1471,7 +1474,7 @@ class WBTMMetaBox
                                 <!-- empty hidden one for jQuery -->
                                 <tr class="mtsa-empty-row-t">
                                     <td align="center">
-                                        <select name="wbtm_bus_bp_stops_name_return[]" class='seat_type wbtm_boarding_point'>
+                                        <select name="wbtm_bus_bp_stops_name_return[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
                                             <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                             <?php
                                             foreach ($terms as $term) {
@@ -1517,7 +1520,7 @@ class WBTMMetaBox
                                 ?>
                                         <tr>
                                             <td align="center">
-                                                <select name="wbtm_bus_next_stops_name_return[]" class='seat_type'>
+                                                <select name="wbtm_bus_next_stops_name_return[]" class='seat_type bus_stop_add_option'>
                                                     <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                                     <?php
                                                     foreach ($terms as $term) {
@@ -1898,7 +1901,7 @@ class WBTMMetaBox
                         <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
                             <i class="fas fa-arrow-right"></i></button>
                     <?php else :
-                        echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first.<a style='color:#fff' href='" . get_admin_url() . "edit-tags.php?taxonomy=wbtm_bus_stops&post_type=wbtm_bus'>Click here for bus stops</a></div>";
+                        echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first.<span style='color:#fff' data-target-tabs='#wbtm_routing'>Click here for bus stops</span></div>";
                     endif; ?>
                 </div>
             </div>

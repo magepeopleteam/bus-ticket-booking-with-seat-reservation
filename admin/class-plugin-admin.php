@@ -41,6 +41,7 @@ class WBTM_Plugin_Admin {
 		wp_enqueue_style( 'mage-admin-css', WBTM_PLUGIN_URL . 'admin/css/mage-plugin-admin.css', array(), time(), 'all' );
 		wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
         wp_enqueue_style('wbtm_mp_style', WBTM_PLUGIN_URL.'admin/assets/css/mp_style.css','',time());
+        wp_enqueue_style('wbtm_extra_style', WBTM_PLUGIN_URL.'admin/assets/css/extra_style.css','',time());
         wp_enqueue_script( 'wbtm_mp_script', WBTM_PLUGIN_URL . 'admin/assets/js/mp_script.js', array( 'jquery' ), time(), true );
 	}
 
