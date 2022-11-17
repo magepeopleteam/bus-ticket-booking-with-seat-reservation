@@ -43,6 +43,7 @@ class WBTM_Plugin_Admin {
         wp_enqueue_style('wbtm_mp_style', WBTM_PLUGIN_URL.'admin/assets/css/mp_style.css','',time());
         wp_enqueue_style('wbtm_extra_style', WBTM_PLUGIN_URL.'admin/assets/css/extra_style.css','',time());
         wp_enqueue_script( 'wbtm_mp_script', WBTM_PLUGIN_URL . 'admin/assets/js/mp_script.js', array( 'jquery' ), time(), true );
+        wp_enqueue_script( 'wbtm_extra_script', WBTM_PLUGIN_URL . 'admin/assets/js/extra_script.js', array( 'jquery' ), time(), true );
 	}
 
 	public function enqueue_scripts() {

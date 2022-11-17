@@ -304,7 +304,10 @@ class WBTMMetaBox
         $as_driver = array_key_exists('as_driver', $values) ? $values['as_driver'][0] : null;
 
         $wbtm_general_same_bus_return = array_key_exists('wbtm_general_same_bus_return', $values) ? $values['wbtm_general_same_bus_return'][0] : '';
+
+        $show_boarding_time = array_key_exists('show_boarding_time', $values) ? $values['show_boarding_time'][0] : 'yes';
         $show_dropping_time = array_key_exists('show_dropping_time', $values) ? $values['show_dropping_time'][0] : 'yes';
+        $show_upper_desk = array_key_exists('show_upper_desk', $values) ? $values['show_upper_desk'][0] : '';
 
         $subscription_type = array_key_exists('mtsa_subscription_route_type', $values) ? $values['mtsa_subscription_route_type'][0] : 'wbtm_city_zone';
 
@@ -321,6 +324,12 @@ class WBTMMetaBox
         <div class="wbtm-item-row">
             <label class="item-label"><?php _e('Total Seat', 'bus-ticket-booking-with-seat-reservation'); ?></label>
             <input type="number" name="wbtm_total_seat" value="<?php echo $total_seat; ?>">
+        </div>
+
+        <div id="wbtm_show_dropping_time" class="wbtm-item-row">
+            <label class="item-label"><?php _e("Show boarding time", "bus-ticket-booking-with-seat-reservation") ?></label>
+            <input type="radio" id="show_boarding_time_no" name="show_boarding_time" <?php echo (($show_boarding_time == "no" || $show_boarding_time == '') ? " checked" : ""); ?> value="no"> <label for="show_boarding_time_no"> <?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>
+            <input type="radio" id="show_boarding_time_yes" name="show_boarding_time" <?php echo ($show_boarding_time == "yes" ? " checked" : ""); ?> value="yes" style="margin-left: 20px"> <label for="show_boarding_time_yes"> <?php _e('Yes', 'bus-ticket-booking-with-seat-reservation') ?></label>
         </div>
 
         <div id="wbtm_show_dropping_time" class="wbtm-item-row">
@@ -526,7 +535,18 @@ class WBTMMetaBox
 
             <!-- Double Decker Seat Plan Here -->
 
+            <h5 class="dFlex mpStyle">
+                <span class="mR">SEAT PLAN FOR UPPER DECK</span>
+                <label class="roundSwitchLabel">
+                    <input id="upper-desk-control" name="show_upper_desk" <?php echo ($show_upper_desk == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
+                    <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
+                </label>
+            </h5>
+
+            <div style="display: <?php echo ($show_upper_desk == "yes" ? "block" : "none"); ?> " id="upper-desk">
+
             <h2 class="wbtm-deck-title"><?php _e('Seat Plan For Upper Deck', 'bus-ticket-booking-with-seat-reservation') ?></h2>
+
             <div class="wbtm-lower-bus-seat-maker-wrapper">
                 <div class="wbtm-control-part">
                     <h3 class="wbtm-seat-title"><?php _e('Seat Maker', 'bus-ticket-booking-with-seat-reservation') ?></h3>
@@ -619,6 +639,7 @@ class WBTMMetaBox
                         <?php } ?>
                     </div>
                 </div>
+            </div>
 
 
                 <script type="text/javascript">
@@ -674,6 +695,8 @@ class WBTMMetaBox
             $as_driver = isset($_POST['as_driver']) ? $_POST['as_driver'] : null;
             $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no';
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
+            $show_boarding_time = isset($_POST['show_boarding_time']) ? $_POST['show_boarding_time'] : 'yes';
+            $show_upper_desk = isset($_POST['show_upper_desk']) ? $_POST['show_upper_desk'] : 'no';
             $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
 
 
@@ -1218,7 +1241,9 @@ class WBTMMetaBox
             update_post_meta($pid, 'as_driver', $as_driver);
 
             update_post_meta($pid, 'wbtm_general_same_bus_return', $wbtm_general_same_bus_return);
+            update_post_meta($pid, 'show_boarding_time', $show_boarding_time);
             update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
+            update_post_meta($pid, 'show_upper_desk', $show_upper_desk);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
 
