@@ -1470,6 +1470,18 @@ button[name="add-to-cart"]:disabled {
         margin: 0 auto 40px;
         text-align: center;
     }
+    .mage-seat-table th {
+        font-size: 0.8rem;
+    }
+    .wbtm_extra_service_table table td {
+        padding: 6px;
+    }
+    select[name="wbtm_pickpoint"] {
+        font-size: 14px;
+    }
+    .wbtm_extra_service_table .mage_input_group {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 319px) {
@@ -1563,6 +1575,9 @@ button[name="add-to-cart"]:disabled {
     .bus-seat-panel {
         margin: 0 auto 40px;
         text-align: center;
+    }
+    .mage-seat-table th {
+        font-size: 0.6rem;
     }
 }
 
