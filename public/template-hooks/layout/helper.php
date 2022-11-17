@@ -29,8 +29,14 @@ function mage_check_search_day_off($id, $j_date, $return = false)
 {
 
     $db_day_prefix = 'offday_';
-    $return_text = $return ? '_return' : '';
     if ($j_date) {
+        $same_bus_return_setting_global = mage_bus_setting_value('same_bus_return_setting', 'disable');
+        if($same_bus_return_setting_global === 'enable') {
+            $is_same_bus_return_allow = get_post_meta($id, 'wbtm_general_same_bus_return', true);
+            $return_text = $return && $is_same_bus_return_allow === 'yes' ? '_return' : '';
+        } else {
+            $return_text = '';
+        }
         $j_date_day = strtolower(date('D', strtotime($j_date)));
         $get_day = get_post_meta($id, $db_day_prefix . $j_date_day . $return_text, true);
         $get_day = ($get_day != null) ? strtolower($get_day) : null;
