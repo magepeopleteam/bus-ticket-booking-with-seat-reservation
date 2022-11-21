@@ -55,5 +55,17 @@
 		$("#upper-desk").slideToggle("slow");
 	});
 
+	$("#pickup-point-control").click(function(){
+		$("#pickup-point").slideToggle("slow");
+	});
+
+	$("#operational-on-day-control").click(function(){
+		$(".operational-on-day").slideToggle("slow");
+	});
+
+	$("#off-day-control").click(function(){
+		$(".off-day").slideToggle("slow");
+	});
+
 
 }(jQuery));

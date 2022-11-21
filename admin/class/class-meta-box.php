@@ -5,8 +5,6 @@ class WBTMMetaBox
 {
     public function __construct()
     {
-        // $this->meta_boxs();
-        // add_action('add_meta_boxes', array($this, 'wbtm_bus_meta_box_add'));
 
         // Custom Metabox
         add_action('add_meta_boxes', array($this, 'add_meta_box_func'));
@@ -95,6 +93,9 @@ class WBTMMetaBox
     // Tab Contents
     public function wbtm_add_meta_box_tab_content($tour_id)
     {
+        global $post, $wbtmmain;
+        $values = get_post_custom($post->ID);
+
         $routing_info = esc_html('Boarding Time & Dropping Time should not be empty.', 'bus-ticket-booking-with-seat-reservation');
         $routing_info .= '<br>';
         $routing_info .= esc_html('If you set those field empty you might get unwanted result.', 'bus-ticket-booking-with-seat-reservation');
@@ -102,6 +103,7 @@ class WBTMMetaBox
         $routing_info .= esc_html('If you want to hide dropping time from your customer.', 'bus-ticket-booking-with-seat-reservation');
         $routing_info .= '<br>';
         $routing_info .= esc_html('Just set "Show dropping time" to "no" from Bus configuration tab.', 'bus-ticket-booking-with-seat-reservation');
+        $show_pickup_point = array_key_exists('show_pickup_point', $values) ? $values['show_pickup_point'][0] : '';
         ?>
         <div class="mp_tab_item" data-tab-item="#wbtm_ticket_panel" style="display:block;">
             <h3><?php echo mage_bus_setting_value('bus_menu_label', 'Bus').' '. __('Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -172,6 +174,7 @@ class WBTMMetaBox
 
         <div class="mp_tab_item" data-tab-item="#wbtm_seat_price">
             <div class="wbtm_tab_content_heading">
+
                 <h3><?php _e(' Seat Pricing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                 <div class="wbtm-section-info">
                     <span><i class="fas fa-info-circle"></i></span>
@@ -179,14 +182,24 @@ class WBTMMetaBox
                         <?php _e('Individual prices for boarding point to dropping point with seat types.', 'bus-ticket-booking-with-seat-reservation'); ?>
                     </div>
                 </div>
+
             </div>
             <hr />
             <?php $this->wbtmPricing(); ?>
         </div>
         <div class="mp_tab_item" data-tab-item="#wbtm_pickuppoint">
             <h3><?php _e(' Pickup Point :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+            <h5 class="dFlex mpStyle">
+                <span class="pb-10"><b>Enable pickup point :</b>  Do you have multiple pickup point for single boarding point then enable this to add pickup point. </span>
+                <label class="roundSwitchLabel">
+                    <input id="pickup-point-control" name="show_pickup_point" <?php echo ($show_pickup_point == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
+                    <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
+                </label>
+            </h5>
             <hr />
-            <?php $this->wbtmPickupPoint(); ?>
+            <div style="display: <?php echo ($show_pickup_point == "yes" ? "block" : "none"); ?>" id="pickup-point">
+                <?php $this->wbtmPickupPoint(); ?>
+            </div>
         </div>
         <div class="mp_tab_item" data-tab-item="#wbtm_bus_off_on_date">
             <h3><?php _e(' Bus Onday & Offday:', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -308,6 +321,7 @@ class WBTMMetaBox
         $show_boarding_time = array_key_exists('show_boarding_time', $values) ? $values['show_boarding_time'][0] : 'yes';
         $show_dropping_time = array_key_exists('show_dropping_time', $values) ? $values['show_dropping_time'][0] : 'yes';
         $show_upper_desk = array_key_exists('show_upper_desk', $values) ? $values['show_upper_desk'][0] : '';
+
 
         $subscription_type = array_key_exists('mtsa_subscription_route_type', $values) ? $values['mtsa_subscription_route_type'][0] : 'wbtm_city_zone';
 
@@ -697,6 +711,9 @@ class WBTMMetaBox
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
             $show_boarding_time = isset($_POST['show_boarding_time']) ? $_POST['show_boarding_time'] : 'yes';
             $show_upper_desk = isset($_POST['show_upper_desk']) ? $_POST['show_upper_desk'] : 'no';
+            $show_operational_on_day = isset($_POST['show_operational_on_day']) ? $_POST['show_operational_on_day'] : 'no';
+            $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
+            $show_pickup_point = isset($_POST['show_pickup_point']) ? $_POST['show_pickup_point'] : 'no';
             $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
 
 
@@ -946,6 +963,8 @@ class WBTMMetaBox
             $selected_city_key = 'wbtm_pickpoint_selected_city';
             $selected_pickpoint_name = 'wbtm_selected_pickpoint_name_';
             $selected_pickpoint_time = 'wbtm_selected_pickpoint_time_';
+
+
 
             if (isset($_POST['wbtm_pickpoint_selected_city'])) {
                 $selected_city = $_POST['wbtm_pickpoint_selected_city'];
@@ -1244,6 +1263,9 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_boarding_time', $show_boarding_time);
             update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
             update_post_meta($pid, 'show_upper_desk', $show_upper_desk);
+            update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
+            update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
+            update_post_meta($pid, 'show_off_day', $show_off_day);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
 
@@ -2183,17 +2205,29 @@ class WBTMMetaBox
     {
         global $post;
         $values = get_post_custom($post->ID);
+
         $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
         $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
 
         // Return
         $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);
         $wbtm_offday_schedule_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule_return', true));
+
+        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
+        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
+
     ?>
         <div class="wbtm-content-wrapper">
             <div class="wbtm-content-inner">
                 <div class="wbtm-sec-row">
-                    <div class="wbtm-ondates-wrapper">
+                    <h5 class="dFlex mpStyle">
+                        <span class="pb-10"><b>Enable Operation on day settings :</b> If you want to operate bus on a certain date please enable it and configure operational day.</span>
+                        <label class="roundSwitchLabel">
+                            <input id="operational-on-day-control" name="show_operational_on_day" <?php echo ($show_operational_on_day == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
+                            <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
+                        </label>
+                    </h5>
+                    <div style="display: <?php echo ($show_operational_on_day == "yes" ? "block" : "none"); ?>" class="wbtm-ondates-wrapper operational-on-day">
                         <label for=""><?php _e('Operational Onday', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                         <div class="wbtm-ondates-inner">
                             <input type="text" name="wbtm_bus_on_dates" value="<?php echo $ondates; ?>">
@@ -2276,7 +2310,17 @@ class WBTMMetaBox
                         </div>
                     </div>
                 </div>
-                <div class="wbtm-dayoff-wrapper">
+
+
+                <h5 class="dFlex mpStyle">
+                    <span class="pb-10"><b>Enable offday settings</b> If you need to keep bus off for a certain date please enable it and configure offday</span>
+                    <label class="roundSwitchLabel">
+                        <input id="off-day-control" name="show_off_day" <?php echo ($show_off_day == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
+                        <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
+                    </label>
+                </h5>
+
+                <div style="display: <?php echo ($show_off_day == "yes" ? "block" : "none"); ?>" class="wbtm-dayoff-wrapper off-day">
                     <label for="">Offdays</label>
                     <div class='wbtm-dayoff-inner'>
                         <label for='sun'>
@@ -2487,8 +2531,10 @@ class WBTMMetaBox
 
     public function wbtm_extra_price_option($post_id)
     {
+
         $mep_events_extra_prices = get_post_meta($post_id, 'mep_events_extra_prices', true);
         wp_nonce_field('mep_events_extra_price_nonce', 'mep_events_extra_price_nonce');
+
     ?>
         <div id="wbtm_extra_service" style="margin-top:20px">
             <h3 style="margin:0;"><?php _e('Extra service Area :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
