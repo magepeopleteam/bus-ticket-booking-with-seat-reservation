@@ -68,4 +68,27 @@
 	});
 
 
+
+
+	$(".add-more-bd-point").click(function(e){
+		e.preventDefault();
+		$(this).siblings().children('.bd-point').append('<tr>'+$(this).siblings().children().children(".more-bd-point").html()+'</tr>');
+		$(this).parent().find('input.text').timepicker({
+			timeFormat: 'H:mm',
+			interval: 15,
+			minTime: '00:00',
+			maxTime: '23:59',
+			dynamic: true,
+			dropdown: true,
+			scrollbar: true
+		});
+	});
+
+	$(document).on('click','.remove-bp-row',function (e){
+		e.preventDefault();
+		$(this).parents('tr').remove();
+		return false;
+	});
+
+
 }(jQuery));
