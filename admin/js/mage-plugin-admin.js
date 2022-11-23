@@ -226,7 +226,7 @@
       $('#wbtm_general_price').show();
       routeTab.show();
       pickuppointTab.show();
-      extraService.show();
+      //extraService.show();
     }
   }
 

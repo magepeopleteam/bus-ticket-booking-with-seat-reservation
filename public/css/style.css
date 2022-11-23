@@ -1867,3 +1867,7 @@ div[class^="mage"] .wbtm_anydate_return_col {
     font-size: 15px;
     border-radius: 5px;
 }
+
+.wbtm_default_search_listing_page{max-width:1270px; margin: 0 auto; }
+
+
