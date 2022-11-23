@@ -247,7 +247,7 @@
     </h5>
 
 
-    <div style="margin-top:20px;" id="wbtm_extra_service" class="extra-service <?php echo ($show_extra_service == "yes" ? "extra-service-block" : "extra-service-none"); ?>">
+    <div style="margin-top:20px;display: <?php echo ($show_extra_service == "yes" ? "block" : "none"); ?>" id="wbtm_extra_service" class="extra-service">
         <h3 style="margin:0;"><?php _e('Extra service Area :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
         <p class="event_meta_help_txt" style="margin: 0 0 15px 0;">
             <?php _e('Extra Service as Product that you can sell and it is not included on ticket', 'bus-ticket-booking-with-seat-reservation'); ?>

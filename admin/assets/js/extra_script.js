@@ -72,7 +72,7 @@
 	});
 
 
-	$(".extra-service.extra-service-none").hide();
+
 
 
 
