@@ -1,23 +1,23 @@
+
 <div class="wbtm_bus_pickpint_wrapper" data-isReturn="no">
     <div class="wbtm_left_col">
-        <div class="wbtm_field_group">
-            <?php if ($boarding_points_array) : ?>
+        <div class="wbtm_field_group boarding_points <?php echo $boarding_points_class ?>">
+
                 <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
                     <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                    <?php foreach ($boarding_points_array as $stop) :
-                        //                                $stop_slug = $stop;
-                        //                                $stop_slug = strtolower($stop_slug);
-                        //                                $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
-                        ?>
+                    <?php foreach ($boarding_points_array as $stop) : ?>
                         <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
                     <?php endforeach; ?>
                 </select>
-                <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
-                    <i class="fas fa-arrow-right"></i></button>
-            <?php else :
-                echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first.<span style='color:#fff' data-target-tabs='#wbtm_routing'>Click here for bus stops</span></div>";
-            endif; ?>
+                <button class="wbtm_add_pickpoint_this_city">
+                    <?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?><i class="fas fa-arrow-right"></i>
+                </button>
+
+
+
+
         </div>
+        <button class="ra-button-style open-routing-tab <?php echo $boarding_points_class ?>"><?php _e('Please configure route plan first, To add root plan click here', 'bus-ticket-booking-with-seat-reservation'); ?></button>
     </div>
     <?php $selected_city_pickpoints = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city', true); ?>
     <div class="wbtm_right_col <?php echo ($selected_city_pickpoints == '' ? 'all-center' : ''); ?>">

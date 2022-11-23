@@ -14,17 +14,22 @@ class WBTMMetaBox
         add_action('wbtm_meta_box_tab_content', array($this, 'wbtm_add_meta_box_tab_content'), 10);
         add_action('save_post', array($this, 'wbtm_bus_seat_panels_meta_save'));
         add_action('admin_menu', array($this, 'wbtm_remove_post_custom_fields'));
-                         /*Bus stop ajax*/
-        add_action( 'wp_ajax_wbtm_add_bus_stope', [ $this, 'wbtm_add_bus_stope' ] );
-        add_action( 'wp_ajax_nopriv_wbtm_add_bus_stope', [ $this, 'wbtm_add_bus_stope' ] );
+        /*Bus stop ajax*/
+        add_action('wp_ajax_wbtm_add_bus_stope', [$this, 'wbtm_add_bus_stope']);
+        add_action('wp_ajax_nopriv_wbtm_add_bus_stope', [$this, 'wbtm_add_bus_stope']);
     }
 
     /*Add Bus stop ajax function*/
-    public function wbtm_add_bus_stope(){
-        if ( isset($_POST['name'] )) {
-            wp_insert_term(  $_POST['name'], 'wbtm_bus_stops',  $args = array('description'=>$_POST['description']) );
-            echo  json_encode(array(
-                'text' =>$_POST['name'],
+    public function wbtm_add_bus_stope()
+    {
+        if (isset($_POST['name'])) {
+            $terms = wp_insert_term($_POST['name'], 'wbtm_bus_stops', $args = array('description' => $_POST['description']));
+
+
+
+            echo json_encode(array(
+                'text' => $_POST['name'],
+                'term_id' => $terms['term_id']
             ));
         }
         die();
@@ -58,53 +63,51 @@ class WBTMMetaBox
     public function wbtm_add_meta_box_tab_name($tour_id)
     {
         $vehicle_name = mage_bus_setting_value('bus_menu_label', 'Bus');
-        $label_bus_configuration = $vehicle_name.' '. __('Configuration', 'bus-ticket-booking-with-seat-reservation');
+        $label_bus_configuration = $vehicle_name . ' ' . __('Configuration', 'bus-ticket-booking-with-seat-reservation');
         ?>
         <li data-target-tabs="#wbtm_ticket_panel" class="active">
             <i class="fas fa-sliders-h"></i>&nbsp;&nbsp;<?php echo $label_bus_configuration; ?>
         </li>
-        <li data-target-tabs="#wbtm_routing">
+        <li class="wbtm_routing_tab" data-target-tabs="#wbtm_routing">
             <i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;<?php echo __('Routing', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
         <li data-target-tabs="#wbtm_seat_price">
             <span class="dashicons dashicons-money-alt"></span>&nbsp;&nbsp;<?php _e('Seat price', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
-        <li data-target-tabs="#wbtm_pickuppoint">
+        <li class="wbtm_pickuppoint_tab" data-target-tabs="#wbtm_pickuppoint">
             <span class="dashicons dashicons-flag"></span>&nbsp;&nbsp;<?php echo __('Pickup Point', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
         <li data-target-tabs="#wbtm_bus_off_on_date">
-            <span class="dashicons dashicons-calendar-alt"></span>&nbsp;&nbsp;<?php echo $vehicle_name . ''. __(' Onday & Offday', 'bus-ticket-booking-with-seat-reservation'); ?>
+            <span class="dashicons dashicons-calendar-alt"></span>&nbsp;&nbsp;<?php echo $vehicle_name . '' . __(' Onday & Offday', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
         <?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
-            <li data-target-tabs="#wbtm_bus_tax">
-                <span class="dashicons dashicons-admin-settings"></span>&nbsp;&nbsp;<?php _e('Tax', 'bus-ticket-booking-with-seat-reservation'); ?>
-            </li>
-        <?php } ?>
+        <li data-target-tabs="#wbtm_bus_tax">
+            <span class="dashicons dashicons-admin-settings"></span>&nbsp;&nbsp;<?php _e('Tax', 'bus-ticket-booking-with-seat-reservation'); ?>
+        </li>
+    <?php } ?>
 
         <?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) : ?>
-            <li data-target-tabs="#_mep_pp_deposits_type">
-                <span class=""></span>&nbsp;&nbsp;<?php _e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
-            </li>
-        <?php endif;
+        <li data-target-tabs="#_mep_pp_deposits_type">
+            <span class=""></span>&nbsp;&nbsp;<?php _e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
+        </li>
+    <?php endif;
     }
 
     // Tab Contents
     public function wbtm_add_meta_box_tab_content($tour_id)
     {
-        global $post, $wbtmmain;
+        global $post;
         $values = get_post_custom($post->ID);
-
-        $routing_info = esc_html('Boarding Time & Dropping Time should not be empty.', 'bus-ticket-booking-with-seat-reservation');
-        $routing_info .= '<br>';
-        $routing_info .= esc_html('If you set those field empty you might get unwanted result.', 'bus-ticket-booking-with-seat-reservation');
-        $routing_info .= '<br>';
-        $routing_info .= esc_html('If you want to hide dropping time from your customer.', 'bus-ticket-booking-with-seat-reservation');
-        $routing_info .= '<br>';
-        $routing_info .= esc_html('Just set "Show dropping time" to "no" from Bus configuration tab.', 'bus-ticket-booking-with-seat-reservation');
         $show_pickup_point = array_key_exists('show_pickup_point', $values) ? $values['show_pickup_point'][0] : '';
+        $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
+
+
+
+        $this->wbtmRouting();
+        $this->wbtmPricing();
 
         require_once WBTM_PLUGIN_DIR . 'admin/template/meta_box_tab_content.php';
     }
@@ -140,7 +143,7 @@ class WBTMMetaBox
         } else {
             $tx_class = '';
         }
-    ?>
+        ?>
         <table>
             <tr>
                 <th><span><?php _e('Tax status:', 'bus-ticket-booking-with-seat-reservation'); ?></span></th>
@@ -186,11 +189,11 @@ class WBTMMetaBox
         $result = $wpdb->get_results("SELECT * FROM $table_name");
 
         foreach ($result as $tax) {
-        ?>
-            <option value="<?php echo $tax->slug;  ?>" <?php if ($current_tax == $tax->slug) {
-                                                            echo 'Selected';
-                                                        } ?>><?php echo $tax->name;  ?></option>
-        <?php
+            ?>
+            <option value="<?php echo $tax->slug; ?>" <?php if ($current_tax == $tax->slug) {
+                echo 'Selected';
+            } ?>><?php echo $tax->name; ?></option>
+            <?php
         }
     }
 
@@ -227,9 +230,171 @@ class WBTMMetaBox
     }
 
 
+
+
+    public function wbtmRouting()
+    {
+        global $post;
+        $wbbm_bus_bp = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+        $wbtm_bus_next_stops = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
+
+        $wbbm_bus_bp_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops_return', true));
+        $wbtm_bus_next_stops_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops_return', true));
+
+        $values = get_post_custom($post->ID);
+
+        $get_terms_default_attributes = array(
+            'taxonomy' => 'wbtm_bus_stops',
+            'hide_empty' => false
+        );
+        $terms = get_terms($get_terms_default_attributes);
+
+        // Global Setting
+        $settings = get_option('wbtm_bus_settings');
+        $route_disable_switch = isset($settings['route_disable_switch']) ? $settings['route_disable_switch'] : 'off';
+
+
+        $routing_info = esc_html('Boarding Time & Dropping Time should not be empty.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('If you set those field empty you might get unwanted result.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('If you want to hide dropping time from your customer.', 'bus-ticket-booking-with-seat-reservation');
+        $routing_info .= '<br>';
+        $routing_info .= esc_html('Just set "Show dropping time" to "no" from Bus configuration tab.', 'bus-ticket-booking-with-seat-reservation');
+
+
+
+        require_once WBTM_PLUGIN_DIR . 'admin/template/routing.php';
+
+
+    }
+
+    public function wbtmPricing()
+    {
+
+        global $wbtmmain, $wbtmcore, $post;
+
+        $settings = get_option('wbtm_bus_settings');
+        $val = isset($settings['bus_return_discount']) ? $settings['bus_return_discount'] : 'no';
+        if ($val == 'yes') {
+            $return_class = 'mage-return-class-enable';
+        } else {
+            $return_class = 'mage-return-class-disable';
+        }
+
+        // Boarding Points
+        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+        if ($boarding_points) {
+            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
+        }
+        // Boarding Points
+        $dropping_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
+        if ($dropping_points) {
+            $dropping_points = array_column($dropping_points, 'wbtm_bus_next_stops_name');
+        }
+        // Routing
+        $get_routes = array(
+            'taxonomy' => 'wbtm_bus_stops',
+            'hide_empty' => false
+        );
+        $routes = get_terms($get_routes);
+        // Prices
+        $prices = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_prices', true));
+        $prices_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_prices_return', true));
+
+
+        $mep_events_extra_prices = get_post_meta($post->ID, 'mep_events_extra_prices', true);
+        wp_nonce_field('mep_events_extra_price_nonce', 'mep_events_extra_price_nonce');
+
+        $values = get_post_custom($post->ID);
+        $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
+
+        require_once WBTM_PLUGIN_DIR . 'admin/template/seat_pricing.php';
+
+
+
+
+
+
+
+
+    }
+
+
+    // Pickup Point
+    public function wbtmPickupPoint()
+    {
+
+        global $wbtmmain, $wbtmcore, $post;
+
+
+        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+        $bus_stops = get_terms(array(
+            'taxonomy' => 'wbtm_bus_stops',
+            'hide_empty' => false
+        ));
+        $boarding_points_array = array();
+        if ($boarding_points && $bus_stops) {
+            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
+            foreach ($bus_stops as $s) {
+                foreach ($boarding_points as $item) {
+                    if ($item == $s->name) {
+                        $boarding_points_array[] = $s;
+                    }
+                }
+            }
+        }
+
+        $boarding_points_class = ($boarding_points_array == array())?'ra-display-button':'ra-display-boarding-point';
+
+        // Pickup  point 
+        $bus_pickpoints = get_terms(array(
+            'taxonomy' => 'wbtm_bus_pickpoint',
+            'hide_empty' => false
+        ));
+
+        $pickpoints = '';
+        if ($bus_pickpoints) {
+            foreach ($bus_pickpoints as $points) {
+                $pickpoints .= '<option value="' . $points->name . '">' . str_replace("'", '', $points->name) . '</option>';
+            }
+        }
+
+        require_once WBTM_PLUGIN_DIR . 'admin/template/pickup_point.php';
+
+
+    }
+
+    public function wbtmBusOnDate()
+    {
+        global $post;
+        $values = get_post_custom($post->ID);
+
+        $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
+        $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
+
+        // Return
+        $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);
+        $wbtm_offday_schedule_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule_return', true));
+
+        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
+        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
+
+        require_once WBTM_PLUGIN_DIR . 'admin/template/bus_onday_offday.php';
+
+        ?>
+
+
+        <?php
+    }
+
+
+
+
+
     function wbtm_bus_seat_panels_meta_save($post_id)
     {
-        // echo '<pre>'; print_r($_POST); die;
+         //echo '<pre>'; print_r($_POST); die;
         global $post, $wbtmmain;
         if ($post) {
             $pid = $post->ID;
@@ -250,6 +415,7 @@ class WBTMMetaBox
             $show_operational_on_day = isset($_POST['show_operational_on_day']) ? $_POST['show_operational_on_day'] : 'no';
             $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
             $show_pickup_point = isset($_POST['show_pickup_point']) ? $_POST['show_pickup_point'] : 'no';
+            $show_extra_service = isset($_POST['show_extra_service']) ? $_POST['show_extra_service'] : 'no';
             $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
 
 
@@ -429,8 +595,8 @@ class WBTMMetaBox
             update_post_meta($pid, 'mtsa_subscription_route_type', $subscription_route_type);
 
             // Tax
-            $_tax_status             = isset($_POST['_tax_status']) ? strip_tags($_POST['_tax_status']) : 'none';
-            $_tax_class             = isset($_POST['_tax_class']) ? strip_tags($_POST['_tax_class']) : '';
+            $_tax_status = isset($_POST['_tax_status']) ? strip_tags($_POST['_tax_status']) : 'none';
+            $_tax_class = isset($_POST['_tax_class']) ? strip_tags($_POST['_tax_class']) : '';
 
             update_post_meta($pid, '_tax_status', $_tax_status);
             update_post_meta($pid, '_tax_class', $_tax_class);
@@ -499,7 +665,6 @@ class WBTMMetaBox
             $selected_city_key = 'wbtm_pickpoint_selected_city';
             $selected_pickpoint_name = 'wbtm_selected_pickpoint_name_';
             $selected_pickpoint_time = 'wbtm_selected_pickpoint_time_';
-
 
 
             if (isset($_POST['wbtm_pickpoint_selected_city'])) {
@@ -800,6 +965,7 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_dropping_time', $show_dropping_time);
             update_post_meta($pid, 'show_upper_desk', $show_upper_desk);
             update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
+            update_post_meta($pid, 'show_extra_service', $show_extra_service);
             update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
             update_post_meta($pid, 'show_off_day', $show_off_day);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
@@ -815,158 +981,11 @@ class WBTMMetaBox
 
 
 
-    public function wbtmRouting()
-    {
-        global $post;
-        $wbbm_bus_bp = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
-        $wbtm_bus_next_stops = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
-
-        $wbbm_bus_bp_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops_return', true));
-        $wbtm_bus_next_stops_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops_return', true));
-
-        $values = get_post_custom($post->ID);
-
-        $get_terms_default_attributes = array(
-            'taxonomy' => 'wbtm_bus_stops',
-            'hide_empty' => false
-        );
-        $terms = get_terms($get_terms_default_attributes);
-
-        // Global Setting
-        $settings = get_option('wbtm_bus_settings');
-        $route_disable_switch = isset($settings['route_disable_switch']) ? $settings['route_disable_switch'] : 'off';
-
-        require_once WBTM_PLUGIN_DIR . 'admin/template/routing.php';
-
-
-    }
-
-    public function wbtmPricing()
-    {
-
-        global $wbtmmain, $wbtmcore, $post;
-
-        $settings = get_option('wbtm_bus_settings');
-        $val = isset($settings['bus_return_discount']) ? $settings['bus_return_discount'] : 'no';
-        if ($val == 'yes') {
-            $return_class = 'mage-return-class-enable';
-        } else {
-            $return_class = 'mage-return-class-disable';
-        }
-
-        // Boarding Points
-        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
-        if ($boarding_points) {
-            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
-        }
-        // Boarding Points
-        $dropping_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
-        if ($dropping_points) {
-            $dropping_points = array_column($dropping_points, 'wbtm_bus_next_stops_name');
-        }
-        // Routing
-        $get_routes = array(
-            'taxonomy' => 'wbtm_bus_stops',
-            'hide_empty' => false
-        );
-        $routes = get_terms($get_routes);
-        // Prices
-        $prices = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_prices', true));
-        $prices_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_prices_return', true));
-
-        require_once WBTM_PLUGIN_DIR . 'admin/template/seat_pricing.php';
-        ?>
 
 
 
-        <div id="wbtm_subs_price">
-            <?php echo do_action('wbtm_subscription_price'); ?>
-        </div>
-
-        <?php
-        if (has_action('wbtm_private_price')) {
-            echo do_action('wbtm_private_price');
-        }
 
 
-        $this->wbtm_extra_price_option($post->ID);
-    }
-
-    // Pickup Point
-    public function wbtmPickupPoint()
-    {
-
-        global $wbtmmain, $wbtmcore, $post;
-
-
-        $boarding_points = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
-        $bus_stops = get_terms(array(
-            'taxonomy' => 'wbtm_bus_stops',
-            'hide_empty' => false
-        ));
-        $boarding_points_array = array();
-        if ($boarding_points && $bus_stops) {
-            $boarding_points = array_column($boarding_points, 'wbtm_bus_bp_stops_name');
-            foreach ($bus_stops as $s) {
-                foreach ($boarding_points as $item) {
-                    if ($item == $s->name) {
-                        $boarding_points_array[] = $s;
-                    }
-                }
-            }
-        }
-
-        // Pickup  point 
-        $bus_pickpoints = get_terms(array(
-            'taxonomy' => 'wbtm_bus_pickpoint',
-            'hide_empty' => false
-        ));
-
-        $pickpoints = '';
-        if ($bus_pickpoints) {
-            foreach ($bus_pickpoints as $points) {
-                $pickpoints .= '<option value="' . $points->name . '">' . str_replace("'", '', $points->name) . '</option>';
-            }
-        }
-
-        require_once WBTM_PLUGIN_DIR . 'admin/template/pickup_point.php';
-
-
-
-    }
-
-    public function wbtmBusOnDate()
-    {
-        global $post;
-        $values = get_post_custom($post->ID);
-
-        $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
-        $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
-
-        // Return
-        $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);
-        $wbtm_offday_schedule_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule_return', true));
-
-        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
-        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
-
-        require_once WBTM_PLUGIN_DIR . 'admin/template/bus_onday_offday.php';
-
-    ?>
-
-
-
-    <?php
-    }
-
-    public function wbtm_extra_price_option($post_id)
-    {
-
-        $mep_events_extra_prices = get_post_meta($post_id, 'mep_events_extra_prices', true);
-        wp_nonce_field('mep_events_extra_price_nonce', 'mep_events_extra_price_nonce');
-        require_once WBTM_PLUGIN_DIR . 'admin/template/extra/extra_price_option.php';
-
-    }
 } // Class End
 
 new WBTMMetaBox();
