@@ -104,8 +104,11 @@ class WBTMMetaBox
         $show_pickup_point = array_key_exists('show_pickup_point', $values) ? $values['show_pickup_point'][0] : '';
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
         $this->wbtmRouting();
         $this->wbtmPricing();
 
@@ -306,9 +309,12 @@ class WBTMMetaBox
         $mep_events_extra_prices = get_post_meta($post->ID, 'mep_events_extra_prices', true);
         wp_nonce_field('mep_events_extra_price_nonce', 'mep_events_extra_price_nonce');
 
+<<<<<<< HEAD
+=======
         $values = get_post_custom($post->ID);
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
+>>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
         require_once WBTM_PLUGIN_DIR . 'admin/template/seat_pricing.php';
 
 
