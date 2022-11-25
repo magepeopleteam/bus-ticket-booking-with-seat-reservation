@@ -107,53 +107,32 @@
             <label for="">Offdays</label>
             <div class='wbtm-dayoff-inner'>
                 <label for='sun'>
-                    <input type="checkbox" id='sun' style="text-align: left;width: auto;" name="offday_sun" value='yes' <?php if (array_key_exists('offday_sun', $values)) {
-                        if ($values['offday_sun'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?> /> <?php _e('Sunday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='0' id='fri' <?php echo ((in_array(0, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Sunday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='mon'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_mon" value='yes' id='mon' <?php if (array_key_exists('offday_mon', $values)) {
-                        if ($values['offday_mon'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Monday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='1' id='fri' <?php echo ((in_array(1, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Monday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='tue'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_tue" value='yes' id='tue' <?php if (array_key_exists('offday_tue', $values)) {
-                        if ($values['offday_tue'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Tuesday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='2' id='fri' <?php echo ((in_array(2, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Tuesday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='wed'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_wed" value='yes' id='wed' <?php if (array_key_exists('offday_wed', $values)) {
-                        if ($values['offday_wed'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Wednesday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='3' id='fri' <?php echo ((in_array(3, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Wednesday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='thu'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_thu" value='yes' id='thu' <?php if (array_key_exists('offday_thu', $values)) {
-                        if ($values['offday_thu'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Thursday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='4' id='fri' <?php echo ((in_array(4, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Thursday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='fri'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_fri" value='yes' id='fri' <?php if (array_key_exists('offday_fri', $values)) {
-                        if ($values['offday_fri'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Friday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='5' id='fri' <?php echo ((in_array(5, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Friday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
                 <label for='sat'>
-                    <input type="checkbox" style="text-align: left;width: auto;" name="offday_sat" value='yes' id='sat' <?php if (array_key_exists('offday_sat', $values)) {
-                        if ($values['offday_sat'][0] == 'yes') {
-                            echo 'Checked';
-                        }
-                    } ?>> <?php _e('Saturday', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <input type="checkbox" style="text-align: left;width: auto;" name="weekly_offday[]" value='6' id='fri' <?php echo ((in_array(6, $weekly_offday))?'Checked':'') ?>>
+                    <?php _e('Saturday', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </label>
             </div>
         </div>
