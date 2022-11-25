@@ -1857,7 +1857,7 @@ function wbtm_journey_date_js()
 
             $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : '';
             $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true);
-            $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true);
+
 
             if ($wbtm_bus_on_dates) {
                 $wbtm_bus_on_dates_arr = explode(',',$wbtm_bus_on_dates);
@@ -1924,10 +1924,32 @@ function wbtm_journey_date_js()
 
             <?php } else{
 
+
+            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true);
+
+            $weekly_offday = implode(', ', $weekly_offday);
+
+            echo 'var weekly_offday = [' . $weekly_offday . '];';
               ?>
+
+
+
+            function weekly_offday_d(date) {
+
+
+                if (weekly_offday.length > 0) {
+                    if (weekly_offday.includes(date.getDay())) {
+                        return [false];
+                    }
+                }
+                return [true];
+            }
+
+
             jQuery("#j_date").datepicker({
                 dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0
+                minDate: 0,
+                beforeShowDay: weekly_offday_d
             });
 
             <?php

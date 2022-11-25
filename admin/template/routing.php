@@ -66,7 +66,7 @@
 
         <!-- ADD BOARDING POINT-->
         <div class="bus-stops-left-col">
-            <h3 class="bus-tops-sec-title"><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+            <h3 class="bus-tops-sec-title"><?php echo $offday ?>kkk<?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
             <table class="repeatable-fieldset">
                 <thead>
                 <tr>

@@ -118,16 +118,12 @@ class WBTMMetaBox
         global $post;
         $values = get_post_custom($post->ID);
         $show_pickup_point = array_key_exists('show_pickup_point', $values) ? $values['show_pickup_point'][0] : '';
-<<<<<<< HEAD
-=======
+
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
-<<<<<<< HEAD
-=======
->>>>>>> c842e4f4ba3f4ced69cdd185ba2f786ec0b2e8fe
+        $weekly_offday = maybe_unserialize(get_post_meta($post->ID, 'weekly_offday', true));
 
 
->>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
         $this->wbtmRouting();
         $this->wbtmPricing();
 
@@ -328,12 +324,11 @@ class WBTMMetaBox
         $mep_events_extra_prices = get_post_meta($post->ID, 'mep_events_extra_prices', true);
         wp_nonce_field('mep_events_extra_price_nonce', 'mep_events_extra_price_nonce');
 
-<<<<<<< HEAD
-=======
+
         $values = get_post_custom($post->ID);
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
->>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
+
         require_once WBTM_PLUGIN_DIR . 'admin/template/seat_pricing.php';
 
 
@@ -407,6 +402,14 @@ class WBTMMetaBox
         $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
         $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
 
+        $weekly_offday = array_key_exists('weekly_offday', $values) ? maybe_unserialize($values['weekly_offday'][0]) : '';
+
+        if(!is_array($weekly_offday)){
+            $weekly_offday = array();
+        }
+
+
+
         require_once WBTM_PLUGIN_DIR . 'admin/template/bus_onday_offday.php';
 
         ?>
@@ -421,7 +424,7 @@ class WBTMMetaBox
 
     function wbtm_bus_seat_panels_meta_save($post_id)
     {
-         //echo '<pre>'; print_r($_POST); die;
+
         global $post, $wbtmmain;
         if ($post) {
             $pid = $post->ID;
@@ -842,21 +845,14 @@ class WBTMMetaBox
                     }
                 }
             }
+
             update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);
-            $od_sun = isset($_POST['offday_sun']) ? strip_tags($_POST['offday_sun']) : '';
-            $od_mon = isset($_POST['offday_mon']) ? strip_tags($_POST['offday_mon']) : '';
-            $od_tue = isset($_POST['offday_tue']) ? strip_tags($_POST['offday_tue']) : '';
-            $od_wed = isset($_POST['offday_wed']) ? strip_tags($_POST['offday_wed']) : '';
-            $od_thu = isset($_POST['offday_thu']) ? strip_tags($_POST['offday_thu']) : '';
-            $od_fri = isset($_POST['offday_fri']) ? strip_tags($_POST['offday_fri']) : '';
-            $od_sat = isset($_POST['offday_sat']) ? strip_tags($_POST['offday_sat']) : '';
-            update_post_meta($pid, 'offday_sun', $od_sun);
-            update_post_meta($pid, 'offday_mon', $od_mon);
-            update_post_meta($pid, 'offday_tue', $od_tue);
-            update_post_meta($pid, 'offday_wed', $od_wed);
-            update_post_meta($pid, 'offday_thu', $od_thu);
-            update_post_meta($pid, 'offday_fri', $od_fri);
-            update_post_meta($pid, 'offday_sat', $od_sat);
+
+            $od = isset($_POST['weekly_offday']) ? $_POST['weekly_offday'] : '';
+
+
+            update_post_meta($pid, 'weekly_offday', $od);
+
             // Offday schedule END
             // Ondates & offdates END
 
