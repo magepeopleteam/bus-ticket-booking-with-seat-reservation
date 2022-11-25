@@ -88,3 +88,15 @@
 p.ra-stopage-desc{
 	padding-top: 10px !important;
 }
+#wbtm_add_meta_box .postbox-header{
+background-color: #444;
+}
+#wbtm_add_meta_box .postbox-header h2{
+	color: #c6d4db;
+}
+.mpStyle button.ra-picup-point-button{
+	display: inline !important;
+}
+.ra-text-center{
+	text-align: center;
+}

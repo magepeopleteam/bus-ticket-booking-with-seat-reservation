@@ -184,6 +184,15 @@ class WBTMSettingPage
                                 'yes' => __('Yes', 'bus-ticket-booking-with-seat-reservation'),
                             ),
                         ),
+
+                        array(
+                            'id' => 'alter_image',
+                            'title' => __('Alter Image ', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Alter Image ', 'bus-ticket-booking-with-seat-reservation'),
+                            'placeholder'	=> 'https://i.imgur.com/807vGSc.png',
+                            'type' => 'media',
+                        ),
+
                     )
                 ),
             ),

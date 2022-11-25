@@ -17,6 +17,10 @@ class WBTMMetaBox
         /*Bus stop ajax*/
         add_action('wp_ajax_wbtm_add_bus_stope', [$this, 'wbtm_add_bus_stope']);
         add_action('wp_ajax_nopriv_wbtm_add_bus_stope', [$this, 'wbtm_add_bus_stope']);
+
+        /*Bus stop ajax*/
+        add_action('wp_ajax_wbtm_add_pickup', [$this, 'wbtm_add_pickup']);
+        add_action('wp_ajax_nopriv_wbtm_add_pickup', [$this, 'wbtm_add_pickup']);
     }
 
     /*Add Bus stop ajax function*/
@@ -25,7 +29,19 @@ class WBTMMetaBox
         if (isset($_POST['name'])) {
             $terms = wp_insert_term($_POST['name'], 'wbtm_bus_stops', $args = array('description' => $_POST['description']));
 
+            echo json_encode(array(
+                'text' => $_POST['name'],
+                'term_id' => $terms['term_id']
+            ));
+        }
+        die();
+    }
 
+    /*Add Pickup ajax function*/
+    public function wbtm_add_pickup()
+    {
+        if (isset($_POST['name'])) {
+            $terms = wp_insert_term($_POST['name'], 'wbtm_bus_pickpoint', $args = array('description' => $_POST['description']));
 
             echo json_encode(array(
                 'text' => $_POST['name'],
@@ -102,10 +118,13 @@ class WBTMMetaBox
         global $post;
         $values = get_post_custom($post->ID);
         $show_pickup_point = array_key_exists('show_pickup_point', $values) ? $values['show_pickup_point'][0] : '';
+<<<<<<< HEAD
+=======
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
 <<<<<<< HEAD
 =======
+>>>>>>> c842e4f4ba3f4ced69cdd185ba2f786ec0b2e8fe
 
 
 >>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
@@ -378,6 +397,8 @@ class WBTMMetaBox
 
         $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
         $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
+
+
 
         // Return
         $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);

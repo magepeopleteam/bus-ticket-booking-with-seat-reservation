@@ -1,6 +1,5 @@
 <div class="mp_tab_item" data-tab-item="#wbtm_seat_price">
     <div class="wbtm_tab_content_heading">
-
         <h3><?php _e(' Seat Pricing :', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
         <div class="wbtm-section-info">
             <span><i class="fas fa-info-circle"></i></span>
@@ -8,35 +7,26 @@
                 <?php _e('Individual prices for boarding point to dropping point with seat types.', 'bus-ticket-booking-with-seat-reservation'); ?>
             </div>
         </div>
-
     </div>
     <hr />
 
 
-
-
-
-
-
-
-
     <div id="wbtm_general_price" class="wbtm_content_wrapper">
-    <div class="wbtm_content_inner">
-        <table id="mtsa-repeatable-fieldset-ticket-type" class="mtsa-table repeatable-fieldset">
-            <thead>
-            <tr>
-                <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                <th><?php _e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                <th><?php _e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                <th><?php _e('Child Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                <th><?php _e('Infant Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                <th><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <?php
-            if (!empty($prices)) :
+        <div class="wbtm_content_inner">
+            <table id="mtsa-repeatable-fieldset-ticket-type" class="mtsa-table repeatable-fieldset">
+                <thead>
+                <tr>
+                    <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <th><?php _e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <th><?php _e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <th><?php _e('Child Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <th><?php _e('Infant Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <th><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if (!empty($prices)) :
                 foreach ($prices as $price) : ?>
                     <tr>
                         <td class="wbtm-wid-25">
@@ -236,13 +226,12 @@
 
 
     <h5 class="dFlex mpStyle">
-        <span class="pb-10"><b class="ra-enable-button"><?php _e('Enable pickup point :', 'bus-ticket-booking-with-seat-reservation'); ?></b>
+        <span class="pb-10"><b class="ra-enable-button"><?php _e('Enable extra service :', 'bus-ticket-booking-with-seat-reservation'); ?></b>
             <label class="roundSwitchLabel">
-            <input id="extra-service-control" name="show_extra_service" <?php echo ($show_extra_service == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
-            <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
-        </label>
+                <input id="extra-service-control" name="show_extra_service" <?php echo ($show_extra_service == "yes" ? " checked" : ""); ?> value="yes" type="checkbox">
+                <span class="roundSwitch" data-collapse-target="#ttbm_display_related"></span>
+            </label>
         </span>
-
         <p><?php _e('You can offer extra services or sell products along with tickets by enabling this option. ', 'bus-ticket-booking-with-seat-reservation'); ?></p>
     </h5>
 

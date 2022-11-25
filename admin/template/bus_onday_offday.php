@@ -34,9 +34,7 @@
                     <table class="repeatable-fieldset-offday">
                         <tr>
                             <th><?php _e('From Date', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th class="th-time"><?php _e('From Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                             <th><?php _e('To Date', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th class="th-time"><?php _e('To Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                             <th></th>
                         </tr>
                         <tbody>
@@ -47,9 +45,9 @@
                                 ?>
                                 <tr class="">
                                     <td align="left"><input type="text" id="<?php echo 'db_offday_from_' . $count; ?>" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="2020-12-31" value="<?php echo $field['from_date'] ?>" /></td>
-                                    <td align="left"><input type="text" class="repeatable-offtime-from-field" name='wbtm_od_offtime_from[]' placeholder="09:00 am" value="<?php echo $field['from_time'] ?>" /></td>
+
                                     <td align="left"><input type="text" id="<?php echo 'db_offday_to_' . $count; ?>" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="2020-12-31" value="<?php echo $field['to_date'] ?>" /></td>
-                                    <td align="left"><input type="text" class="repeatable-offtime-to-field" name='wbtm_od_offtime_to[]' placeholder="09:59 pm" value="<?php echo $field['to_time'] ?>" /></td>
+
                                     <td align="left">
                                         <a class="button remove-bp-row" href="#">
                                             <i class="fas fa-minus-circle"></i>
@@ -85,9 +83,9 @@
                         <tr class="empty-row-offday screen-reader-text">
                             <td align="left"><input type="text" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="2020-12-31" />
                             </td>
-                            <td align="left"><input type="text" class="repeatable-offtime-from-field" name='wbtm_od_offtime_from[]' placeholder="09:00 am" /></td>
+
                             <td align="left"><input type="text" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="2020-12-31" /></td>
-                            <td align="left"><input type="text" class="repeatable-offtime-to-field" name='wbtm_od_offtime_to[]' placeholder="09:59 pm" /></td>
+
                             <td align="left">
                                 <a class="button remove-bp-row" href="#">
                                     <i class="fas fa-minus-circle"></i>

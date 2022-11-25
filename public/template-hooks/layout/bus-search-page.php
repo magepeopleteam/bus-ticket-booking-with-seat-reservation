@@ -261,7 +261,8 @@ function mage_bus_search_item($return, $id)
     ?>
     <div class="mage_bus_item <?php echo $cart_class; ?>" data-bus-id="<?php echo $bus_id; ?>" data-is-return="<?php echo $return; ?>">
         <div class="mage_flex">
-            <div class="mage_bus_img flexCenter"><?php the_post_thumbnail('thumb'); ?></div>
+            <?php $alt_image = (wp_get_attachment_url(mage_bus_setting_value('alter_image' )))?wp_get_attachment_url(mage_bus_setting_value('alter_image' )):'https://i.imgur.com/807vGSc.png'; ?>
+            <div class="mage_bus_img flexCenter"><?php echo has_post_thumbnail()?the_post_thumbnail('thumb'): "<img src=".$alt_image .">" ?></div>
             <div class="mage_bus_info flexEqual_flexCenter">
                 <div class="flexEqual_flexCenter">
                     <h6>
