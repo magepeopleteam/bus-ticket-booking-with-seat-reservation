@@ -42,6 +42,8 @@ class WBTM_Plugin_Public {
 
 		wp_enqueue_script( 'bus-public-js', WBTM_PLUGIN_URL . 'public/js/bus_script.js', array( 'jquery' ), time(), true );
 
+        wp_enqueue_script( 'ra-bus-public-js', WBTM_PLUGIN_URL . 'public/js/ra_bus_script.js', array( 'jquery' ), time(), true );
+
 		
 		wp_localize_script( 'bus-public-js', 'php_vars', array('currency_symbol' => get_woocommerce_currency_symbol()) );
 

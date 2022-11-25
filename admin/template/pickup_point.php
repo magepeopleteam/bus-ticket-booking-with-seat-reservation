@@ -1,50 +1,85 @@
+<div class="mpStyle">
+    <div class="mpPopup" data-popup="#wbtm_pickup_popup">
+        <div class="popupMainArea">
+            <div class="popupHeader">
+                <h4>
+                    <?php esc_html_e( 'Add new Pickup', 'bus-ticket-booking-with-seat-reservation' ); ?>
+                </h4>
+                <span class="fas fa-times popupClose"></span>
+            </div>
+            <div class="popupBody pickup-form">
+                <h6 class="textSuccess success_text" style="display: none;"><?php esc_html_e( 'Added Succesfully', 'bus-ticket-booking-with-seat-reservation' ); ?></h6>
+                <label>
+                    <span class="w_200"><?php esc_html_e( 'Name:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+                    <input type="text"  class="formControl" id="pickup_name">
+                </label>
+                <p class="name_required"><?php esc_html_e( 'Name is required', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+
+                <label class="mT">
+                    <span class="w_200"><?php esc_html_e( 'Description:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+                    <textarea  id="pickup_description" rows="5" cols="50" class="formControl"></textarea>
+                </label>
+
+            </div>
+            <div class="popupFooter">
+                <div class="buttonGroup">
+                    <button class="_themeButton submit-pickup" type="button"><?php esc_html_e( 'Save', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+                    <button class="_warningButton submit-pickup close_popup" type="button"><?php esc_html_e( 'Save & Close', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="ra-text-center">
+        <button type="button" class="_dButton_xs_bgBlue ra-picup-point-button" data-target-popup="#wbtm_pickup_popup">
+            <span class="fas fa-plus-square"></span>
+            Add new pickup point
+        </button>
+        <p class="ra-stopage-desc"><?php esc_html_e( "", 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+    </div>
+
+</div>
 
 <div class="wbtm_bus_pickpint_wrapper" data-isReturn="no">
+
+
     <div class="wbtm_left_col">
         <div class="wbtm_field_group boarding_points <?php echo $boarding_points_class ?>">
-
-                <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
-                    <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                    <?php foreach ($boarding_points_array as $stop) : ?>
-                        <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <button class="wbtm_add_pickpoint_this_city">
-                    <?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?><i class="fas fa-arrow-right"></i>
-                </button>
-
-
-
-
+            <select  name="wbtm_pick_boarding" class="wbtm_pick_boarding">
+                <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                <?php foreach ($boarding_points_array as $stop) : ?>
+                    <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
+                <?php endforeach; ?>
+            </select>
+            <button class="wbtm_add_pickpoint_this_city">
+                <?php _e('Configure Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?> <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
         <button class="ra-button-style open-routing-tab <?php echo $boarding_points_class ?>"><?php _e('Please configure route plan first, To add root plan click here', 'bus-ticket-booking-with-seat-reservation'); ?></button>
     </div>
+
     <?php $selected_city_pickpoints = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city', true); ?>
+
+
+
     <div class="wbtm_right_col <?php echo ($selected_city_pickpoints == '' ? 'all-center' : ''); ?>">
+
         <div id="wbtm_pickpoint_selected_city">
-
-            <?php
-
-            if ($selected_city_pickpoints != '') {
-
+            <?php if ($selected_city_pickpoints != '') {
                 $selected_city_pickpoints = explode(',', $selected_city_pickpoints);
                 foreach ($selected_city_pickpoints as $single) {
                     $get_pickpoints_data = get_post_meta($post->ID, 'wbtm_selected_pickpoint_name_' . $single, true); ?>
+
                     <div class="wbtm_selected_city_item">
                         <span class="remove_city_for_pickpoint"><i class="fas fa-minus-circle"></i></span>
                         <h4 class="wbtm_pickpoint_title"><?php echo (mage_get_term($single, 'wbtm_bus_stops') ? mage_get_term($single, 'wbtm_bus_stops')->name : ''); ?></h4>
                         <input type="hidden" name="wbtm_pickpoint_selected_city[]" value="<?php echo $single; ?>">
                         <div class="pickpoint-adding-wrap">
-                            <?php
-
-                            if ($get_pickpoints_data) {
+                            <?php if ($get_pickpoints_data) {
                                 $get_pickpoints_data = unserialize($get_pickpoints_data);
-
                                 foreach ($get_pickpoints_data as $pickpoint) : ?>
-
-
                                     <div class="pickpoint-adding">
-                                        <select name="wbtm_selected_pickpoint_name_<?php echo $single; ?>[]">
+                                        <select class="pickup_add_option"  name="wbtm_selected_pickpoint_name_<?php echo $single; ?>[]">
                                             <?php
                                             if ($bus_pickpoints) {
                                                 foreach ($bus_pickpoints as $bus_pickpoint) {
@@ -54,25 +89,21 @@
                                             ?>
                                         </select>
                                         <input type="text" name="wbtm_selected_pickpoint_time_<?php echo $single; ?>[]" value="<?php echo $pickpoint['time']; ?>">
-                                        <button class="wbtm_remove_pickpoint"><i class="fas fa-minus-circle"></i>
+                                        <button class="wbtm_remove_pickpoint">
+                                            <i class="fas fa-minus-circle"></i>
                                         </button>
                                     </div>
-
-                                <?php
-                                endforeach;
-                            } ?>
+                                <?php endforeach; } ?>
                         </div>
                         <button class="wbtm_add_more_pickpoint"><i class="fas fa-plus"></i>
                             <?php _e('Add more', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </button>
                     </div>
-                    <?php
-                }
+                    <?php }
             } else {
                 echo '<p class="blank-pickpoint" style="color: #FF9800;font-weight: 700;">' . __('No pickup point added yet!', 'bus-ticket-booking-with-seat-reservation') . '</p>';
             }
             ?>
-
         </div>
     </div>
 </div>
@@ -88,16 +119,14 @@
                 <?php if ($boarding_points_array) : ?>
                     <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
                         <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                        <?php foreach ($boarding_points_array as $stop) :
-                            // $stop_slug = $stop;
-                            // $stop_slug = strtolower($stop_slug);
-                            // $stop_slug = preg_replace('/[^A-Za-z0-9-]/', '_', $stop_slug);
-                            ?>
+                        <?php foreach ($boarding_points_array as $stop) : ?>
                             <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <button class="wbtm_add_pickpoint_this_city"><?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        <i class="fas fa-arrow-right"></i></button>
+                    <button class="wbtm_add_pickpoint_this_city">
+                        <?php _e('Add Pickup point', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 <?php else :
                     echo "<div style='padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;'>Please Enter some bus stops first. <a style='color:#fff' href='" . get_admin_url() . "edit-tags.php?taxonomy=wbtm_bus_stops&post_type=wbtm_bus'>Click here for bus stops</a></div>";
                 endif; ?>
@@ -128,7 +157,7 @@
 
 
                                         <div class="pickpoint-adding">
-                                            <select name="wbtm_selected_pickpoint_return_name_<?php echo $single; ?>[]">
+                                            <select class="pickup_add_option" name="wbtm_selected_pickpoint_return_name_<?php echo $single; ?>[]">
                                                 <?php
                                                 if ($bus_pickpoints) {
                                                     foreach ($bus_pickpoints as $bus_pickpoint) {
@@ -200,7 +229,7 @@
                 '<input type="hidden" name=' + ((isReturn == "yes") ? "wbtm_pickpoint_selected_city_return[]" : "wbtm_pickpoint_selected_city[]") + ' value="' + get_boarding_point +
                 '">' +
                 '<div class="pickpoint-adding-wrap"><div class="pickpoint-adding">' +
-                '<select name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_name_" : "wbtm_selected_pickpoint_name_") + get_boarding_point + '[]">' +
+                '<select class="pickup_add_option" name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_name_" : "wbtm_selected_pickpoint_name_") + get_boarding_point + '[]">' +
                 '<?php echo $pickpoints; ?>' +
                 '</select>' +
                 '<input type="text" name="' + ((isReturn == "yes") ? "wbtm_selected_pickpoint_return_time_" : "wbtm_selected_pickpoint_time_") + get_boarding_point +

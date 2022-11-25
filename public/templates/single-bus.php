@@ -15,7 +15,22 @@ do_action('wbtm_before_single_bus_search_page');
         </div>
         <div class="mage_default">
             <div class="flexEqual">
-                <div class="mage_xs_full"><?php the_post_thumbnail('full'); ?></div>
+<p>
+
+    <?php
+
+
+
+    //echo '<pre>'; print_r($date); die;
+
+    ?>
+
+</p>
+
+
+                <?php $alt_image = (wp_get_attachment_url(mage_bus_setting_value('alter_image' )))?wp_get_attachment_url(mage_bus_setting_value('alter_image' )):'https://i.imgur.com/807vGSc.png'; ?>
+                <div class="mage_xs_full"><?php echo has_post_thumbnail()?the_post_thumbnail('full'): "<img width='557' height='358' src=".$alt_image .">" ?></div>
+
                 <div class="ml_25 mage_xs_full">
                     <div class="mage_default_bDot">
                         <h4><?php the_title(); ?><small>( <?php echo $values['wbtm_bus_no'][0]; ?> )</small></h4>
@@ -103,7 +118,7 @@ do_action('wbtm_before_single_bus_search_page');
 
             } else {
                 echo '<div class="wbtm-warnig">';
-                _e('This bus available only in the particular date. :) ', 'bus-ticket-booking-with-seat-reservation');
+                _e("This bus  isn't available on this search criteria, Please try", 'bus-ticket-booking-with-seat-reservation');
                 echo '</div>';
             }
 
