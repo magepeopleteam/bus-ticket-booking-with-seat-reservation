@@ -18,7 +18,7 @@
 
 
 <div class="mp_tab_item" data-tab-item="#wbtm_bus_off_on_date">
-    <h3><?php _e(' Bus Onday & Offday:', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+    <h3><?php echo mage_bus_setting_value('bus_menu_label', 'Bus').' '.esc_html__('Onday & Offday', 'bus-ticket-booking-with-seat-reservation').':'; ?></h3>
     <hr />
     <?php $this->wbtmBusOnDate(); ?>
 </div>

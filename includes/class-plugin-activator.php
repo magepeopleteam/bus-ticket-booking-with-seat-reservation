@@ -30,17 +30,7 @@ class WBTM_Plugin_Activator{
           wp_insert_post($bus_search_page);
       }
 
-      if (! (new self())->wbtm_get_page_by_slug('view-ticket')) {
-          $view_ticket_page = array(
-          'post_type' => 'page',
-          'post_name' => 'view-ticket',
-          'post_title' => 'View Ticket',
-          'post_content' => '[view-ticket]',
-          'post_status' => 'publish',
-          );
 
-          wp_insert_post($view_ticket_page);
-      }
       
     }
 }

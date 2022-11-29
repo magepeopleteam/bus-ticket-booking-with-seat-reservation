@@ -295,8 +295,6 @@ function mage_bus_search_item($return, $id)
                         <strong><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $seat_price)); ?></strong>/<span><?php mage_bus_label('wbtm_seat_text', __('Seat', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                     </h6>
                     <h6 class="mage_hidden_md">
-                        <?php //echo mage_bus_available_seat($return) . ' / ' . mage_bus_total_seat_new();
-                        ?>
                         <?php echo (mage_bus_total_seat_new() - $partial_seat_booked) . ' / ' . mage_bus_total_seat_new(); ?>
                     </h6>
                     <button type="button" class="mage_button_xs mage_bus_details_toggle"><?php mage_bus_label('wbtm_view_seats_text', __('View Seats', 'bus-ticket-booking-with-seat-reservation')); ?></button>
@@ -753,8 +751,9 @@ function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return)
     <div class="mage_bus_seat_plan" style="box-sizing:border-box;width: <?php echo $bus_width; ?>px;">
         <?php
         $upper_deck = (isset($seat_panel_settings['useer_deck_title']) ? $seat_panel_settings['useer_deck_title'] : __('Upper Deck', 'bus-ticket-booking-with-seat-reservation'));
+        $lower_deck = (isset($seat_panel_settings['lower_deck_title']) ? $seat_panel_settings['lower_deck_title'] : __('Lower Deck', 'bus-ticket-booking-with-seat-reservation'));
         if (!empty($seats_dd)) {
-            echo '<strong class="deck-type-text">' . __('Lower Deck', 'bus-ticket-booking-with-seat-reservation') . '</strong>';
+            echo '<strong class="deck-type-text">' . __($lower_deck, 'bus-ticket-booking-with-seat-reservation') . '</strong>';
         }
         ?>
         <div class="mage_default_pad_xs">
@@ -778,18 +777,21 @@ function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return)
                 echo $seat_html;
             } elseif ($seat_plan_type == 'seat_plan_1' || $seat_plan_type == 'seat_plan_2' || $seat_plan_type == 'seat_plan_3') {
                 $bus_meta = get_post_custom($bus_id);
-                $seats_rows = explode(",", $bus_meta['wbtm_seat_row'][0]);
-                $seat_col = $bus_meta['wbtm_seat_col'][0];
-                $seat_col_arr = explode(",", $seat_col);
-                foreach ($seats_rows as $seat) {
-                    echo '<div class="flexEqual mage_bus_seat">';
-                    foreach ($seat_col_arr as $seat_col) {
-                        $seat_name = $seat . $seat_col;
-                        // $mage_bus_total_seats_availabel = mage_bus_seat($seat_plan_type, $seat_name, $price, false, $return, $seat_col, $all_stopages_name, $mage_bus_total_seats_availabel);
-                        echo mage_bus_seat($seat_plan_type, $seat_name, $price, false, $return, $seat_col);
+                if(isset($bus_meta['wbtm_seat_row'][0])){
+                    $seats_rows = explode(",", $bus_meta['wbtm_seat_row'][0]);
+                    $seat_col = $bus_meta['wbtm_seat_col'][0];
+                    $seat_col_arr = explode(",", $seat_col);
+                    foreach ($seats_rows as $seat) {
+                        echo '<div class="flexEqual mage_bus_seat">';
+                        foreach ($seat_col_arr as $seat_col) {
+                            $seat_name = $seat . $seat_col;
+                            // $mage_bus_total_seats_availabel = mage_bus_seat($seat_plan_type, $seat_name, $price, false, $return, $seat_col, $all_stopages_name, $mage_bus_total_seats_availabel);
+                            echo mage_bus_seat($seat_plan_type, $seat_name, $price, false, $return, $seat_col);
+                        }
+                        echo '</div>';
                     }
-                    echo '</div>';
                 }
+
             } else {
                 echo 'Please update Your Seat Plan !';
             }

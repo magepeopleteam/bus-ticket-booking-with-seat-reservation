@@ -121,14 +121,6 @@
 	$("#extra-service-control").click(function(){
 		$(".extra-service").slideToggle("slow");
 	});
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
-
-
 
 
 	$(".add-more-bd-point").click(function(e){
@@ -186,12 +178,6 @@
 			}
 		});
 
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> aaa2bd6ffa7d4cc5f84b0b24ea525974cc3557c6
 		return false;
 	});
 

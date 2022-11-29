@@ -11,24 +11,10 @@ do_action('wbtm_before_single_bus_search_page');
     <div class="mage mage_single_bus_search_page" data-busId="<?php echo $id; ?>">
         <?php do_action('woocommerce_before_single_product'); ?>
         <div class="post-content-wrap">
-        <?php echo the_content();?>
+            <?php echo the_content();?>
         </div>
         <div class="mage_default">
             <div class="flexEqual">
-<p>
-
-    <?php
-
-
-
-
-    //echo '<pre>'; print_r($date); die;
-
-    ?>
-
-</p>
-
-
                 <?php $alt_image = (wp_get_attachment_url(mage_bus_setting_value('alter_image' )))?wp_get_attachment_url(mage_bus_setting_value('alter_image' )):'https://i.imgur.com/807vGSc.png'; ?>
                 <div class="mage_xs_full"><?php echo has_post_thumbnail()?the_post_thumbnail('full'): "<img width='557' height='358' src=".$alt_image .">" ?></div>
 

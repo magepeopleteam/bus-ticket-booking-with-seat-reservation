@@ -89,8 +89,8 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 
 		public function mp_event_all_in_tab_menu_list() {
 			?>
-            <li data-target-tabs="#<?php echo $this->get_meta_box_id(); ?>">
-				<?php echo $this->get_meta_box_title(); ?>
+            <li  data-target-tabs="#<?php echo $this->get_meta_box_id(); ?>">
+                <span class="dashicons dashicons-admin-users"></span> <?php echo $this->get_meta_box_title(); ?>
             </li>
 			<?php
 		}

@@ -53,7 +53,10 @@ class WBTMMetaBox
 
     public function add_meta_box_func()
     {
-        add_meta_box('wbtm_add_meta_box', __('<span class="dashicons dashicons-info"></span>Bus Information : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'mp_event_all_in_tab'), 'wbtm_bus', 'normal', 'high');
+
+        $bus_information =  mage_bus_setting_value('bus_menu_label', 'Bus').__(' Information :', 'bus-ticket-booking-with-seat-reservation');
+
+        add_meta_box('wbtm_add_meta_box', '<span class="dashicons dashicons-info"></span>'.$bus_information . get_the_title(get_the_id()), array($this, 'mp_event_all_in_tab'), 'wbtm_bus', 'normal', 'high');
     }
 
 
@@ -96,7 +99,7 @@ class WBTMMetaBox
         </li>
 
         <li data-target-tabs="#wbtm_bus_off_on_date">
-            <span class="dashicons dashicons-calendar-alt"></span>&nbsp;&nbsp;<?php echo $vehicle_name . '' . __(' Onday & Offday', 'bus-ticket-booking-with-seat-reservation'); ?>
+            <span class="dashicons dashicons-calendar-alt"></span>&nbsp;&nbsp;<?php echo $vehicle_name . ' ' . __('Onday & Offday', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 
         <?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
