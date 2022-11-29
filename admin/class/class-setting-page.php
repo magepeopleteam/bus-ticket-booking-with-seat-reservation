@@ -295,6 +295,14 @@ class WBTMSettingPage
                         ),
 
                         array(
+                            'id' => 'lower_deck_title',
+                            'title' => __('Lower Deck Title ', 'bus-ticket-booking-with-seat-reservation'),
+                            // 'placeholder'	=> 'https://i.imgur.com/GD3zKtz.png',
+                            'type' => 'text',
+                            'placeholder' => __('Lower Deck', 'bus-ticket-booking-with-seat-reservation'),
+                        ),
+
+                        array(
                             'id' => 'diriver_image',
                             'title' => __('Driver Image ', 'bus-ticket-booking-with-seat-reservation'),
                             'details' => __('Driver Image ', 'bus-ticket-booking-with-seat-reservation'),

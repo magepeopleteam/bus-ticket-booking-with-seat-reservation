@@ -1716,7 +1716,7 @@ function wbtm_extra_services_section($bus_id)
         ?>
         <div class="wbtm_extra_service_wrap">
             <p class="wbtm_heading"><strong><?php echo __('Extra Service', 'Extra Service:'); ?></strong></p>
-            <table class='wbtm_extra_service_table'>
+            <table class='wbtm_extra_service_table ra_extra_service_table'>
                 <thead>
                 <tr>
                     <td align="left"><?php echo __('Name', 'bus-ticket-booking-with-seat-reservation'); ?>:</td>

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bus-seat-plugin\n"
 "POT-Creation-Date: 2018-12-12 14:04+0600\n"
-"PO-Revision-Date: 2022-11-29 05:44+0000\n"
+"PO-Revision-Date: 2022-11-29 04:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
@@ -1379,9 +1379,10 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:155
 #: admin/template/meta_box_tab_content.php:21
+#, fuzzy
 #| msgid " Bus Onday & Offday:"
 msgid "Onday & Offday:"
-msgstr ""
+msgstr "ffffffffff"
 
 #: admin/class/class-setting-page.php:398
 #: public/template-hooks/search-form/radio-button.php:8
@@ -1452,7 +1453,7 @@ msgstr ""
 #: public/template-hooks/layout/bus-search-page.php:526
 #: public/template-hooks/layout/bus-search-page.php:673
 msgid "Pickup Point"
-msgstr "ffffff"
+msgstr ""
 
 #: admin/template/pickup_point.php:115
 msgid "Pickup Point Return"

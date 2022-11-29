@@ -1,21 +1,19 @@
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: bus-seat-plugin\n"
-"POT-Creation-Date: 2018-12-12 14:04+0600\n"
-"PO-Revision-Date: 2022-11-29 05:44+0000\n"
-"Last-Translator: \n"
-"Language-Team: English (United States)\n"
-"Language: en_US\n"
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 04:30+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: __;_e\n"
-"X-Poedit-SearchPath-0: .\n"
-"Report-Msgid-Bugs-To: \n"
-"X-Loco-Version: 2.6.3; wp-6.1.1"
+"X-Loco-Version: 2.3.1; wp-5.3.2"
 
 #: includes/class-wbtm-required-plugins.php:314
 msgid ""
@@ -56,7 +54,6 @@ msgid ""
 "Bus Ticket Booking with Seat Reservation Required Plugins"
 msgstr ""
 
-#: admin/class/class-meta-box.php:162
 #: admin/template/meta_box_tab_content.php:28
 msgid " Bus Tax Settings:"
 msgstr ""
@@ -66,10 +63,8 @@ msgid " Feature Image"
 msgstr ""
 
 #: admin/class/class-meta-box.php:57
-#, fuzzy
-#| msgid "Bus Information :"
 msgid " Information :"
-msgstr "Bus Informations :"
+msgstr ""
 
 #: admin/class/class-create-cpt.php:21
 msgid " Item:"
@@ -97,16 +92,15 @@ msgstr ""
 
 #: admin/class/class-meta-box.php:102
 msgid " Onday & Offday"
-msgstr "vzvxzxvz"
+msgstr ""
 
-#: admin/class/class-meta-box.php:169
 #: admin/template/meta_box_tab_content.php:35
 msgid " Partial Payment Settings:"
 msgstr ""
 
-#: admin/class/class-meta-box.php:136 admin/template/meta_box_tab_content.php:2
+#: admin/template/meta_box_tab_content.php:2
 msgid " Pickup Point :"
-msgstr "Pickup Point ed :"
+msgstr ""
 
 #: admin/template/routing.php:10
 msgid " Routing :"
@@ -619,7 +613,6 @@ msgstr ""
 msgid "discount on this trip"
 msgstr ""
 
-#: admin/class/class-meta-box.php:145
 #: admin/template/meta_box_tab_content.php:11
 msgid ""
 "Do you have multiple pickup point for single boarding point then enable this "
@@ -695,7 +688,7 @@ msgid ""
 "page. By default Disable"
 msgstr ""
 
-#: admin/class/class-meta-box.php:138 admin/template/meta_box_tab_content.php:4
+#: admin/template/meta_box_tab_content.php:4
 msgid "Enable pickup point :"
 msgstr ""
 
@@ -1344,7 +1337,7 @@ msgstr ""
 msgid "No pickup point added yet!"
 msgstr ""
 
-#: admin/class/class-meta-box.php:216
+#: admin/class/class-meta-box.php:176
 msgid "None"
 msgstr ""
 
@@ -1377,9 +1370,7 @@ msgstr ""
 msgid "On/Off any date return switch"
 msgstr ""
 
-#: admin/class/class-meta-box.php:155
 #: admin/template/meta_box_tab_content.php:21
-#| msgid " Bus Onday & Offday:"
 msgid "Onday & Offday:"
 msgstr ""
 
@@ -1452,7 +1443,7 @@ msgstr ""
 #: public/template-hooks/layout/bus-search-page.php:526
 #: public/template-hooks/layout/bus-search-page.php:673
 msgid "Pickup Point"
-msgstr "ffffff"
+msgstr ""
 
 #: admin/template/pickup_point.php:115
 msgid "Pickup Point Return"
@@ -1863,7 +1854,7 @@ msgstr ""
 
 #: public/templates/search-table-head.php:23
 msgid "SEATS AVAILABLE"
-msgstr "SEATS AVAILABLE"
+msgstr ""
 
 #: admin/class/class-setting-page.php:536
 msgid "SEATS AVAILABLE "
@@ -1905,7 +1896,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: admin/class/class-meta-box.php:215
+#: admin/class/class-meta-box.php:175
 msgid "Shipping only"
 msgstr ""
 
@@ -1955,7 +1946,7 @@ msgstr ""
 msgid "Special Seat Type Label "
 msgstr ""
 
-#: admin/class/class-meta-box.php:226
+#: admin/class/class-meta-box.php:186
 msgid "Standard"
 msgstr ""
 
@@ -2024,15 +2015,15 @@ msgstr ""
 msgid "Tax"
 msgstr ""
 
-#: admin/class/class-meta-box.php:222
+#: admin/class/class-meta-box.php:182
 msgid "Tax class:"
 msgstr ""
 
-#: admin/class/class-meta-box.php:210
+#: admin/class/class-meta-box.php:170
 msgid "Tax status:"
 msgstr ""
 
-#: admin/class/class-meta-box.php:214
+#: admin/class/class-meta-box.php:174
 msgid "Taxable"
 msgstr ""
 
@@ -2136,7 +2127,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: admin/class/class-meta-box.php:231
+#: admin/class/class-meta-box.php:191
 msgid ""
 "To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
 msgstr ""
