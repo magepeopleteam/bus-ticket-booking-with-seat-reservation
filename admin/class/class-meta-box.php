@@ -90,7 +90,7 @@ class WBTMMetaBox
         <li class="wbtm_routing_tab" data-target-tabs="#wbtm_routing">
             <i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;<?php echo __('Routing', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
-        <li data-target-tabs="#wbtm_seat_price">
+        <li data-target-tabs="#wbtm_seat_price" class="ra_seat_price">
             <span class="dashicons dashicons-money-alt"></span>&nbsp;&nbsp;<?php _e('Seat price', 'bus-ticket-booking-with-seat-reservation'); ?>
         </li>
 

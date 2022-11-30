@@ -1855,8 +1855,8 @@ function wbtm_journey_date_js()
             <?php
             if (is_single()) {
 
-            $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : '';
-            $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true);
+            $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : [];
+            $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true)?get_post_meta($post->ID, 'wbtm_offday_schedule', true):[];
 
 
             if ($wbtm_bus_on_dates) {
@@ -1886,7 +1886,7 @@ function wbtm_journey_date_js()
 
             <?php } elseif($wbtm_offday_schedules) {
 
-            $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true);
+
 
             $alloffdays = array();
             foreach ($wbtm_offday_schedules as $wbtm_offday_schedule){
@@ -1938,7 +1938,7 @@ function wbtm_journey_date_js()
             <?php } else{
 
 
-            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true);
+            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true)?get_post_meta(get_the_id(), 'weekly_offday', true):[];
 
             $weekly_offday = implode(', ', $weekly_offday);
 
