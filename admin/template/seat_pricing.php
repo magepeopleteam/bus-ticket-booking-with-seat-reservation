@@ -70,7 +70,7 @@
             <!-- empty hidden one for jQuery -->
             <tr class="mtsa-empty-row-t">
                 <td>
-                    <select name="wbtm_bus_bp_price_stop[]" class="wbtm_bus_route_price_stop" style="width: 100%">
+                    <select name="wbtm_bus_bp_price_stop[]" class="ra_bus_bp_price_stop" style="width: 100%">
                         <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php if ($routes) : foreach ($routes as $route) : ?>
                             <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>
@@ -79,7 +79,7 @@
                     </select>
                 </td>
                 <td>
-                    <select name="wbtm_bus_dp_price_stop[]" class="wbtm_bus_route_price_stop" style="width: 100%">
+                    <select name="wbtm_bus_dp_price_stop[]" class="ra_bus_dp_price_stop" style="width: 100%">
                         <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php if ($routes) : foreach ($routes as $route) : ?>
                             <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>

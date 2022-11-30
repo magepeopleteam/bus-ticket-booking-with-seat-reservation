@@ -150,14 +150,15 @@
 		return false;
 	});
 
-	$(document).on('click','.wbtm_pickuppoint_tab, .ra_seat_price',function (e){
+	$(document).on('click','.wbtm_pickuppoint_tab',function (e){
 		e.preventDefault();
 		$('.wbtm_pick_boarding').html("<option value=''>Select Boarding Point</option>");
-		$('.wbtm_bus_route_price_stop').html("<option value=''>Select</option>");
 		let options = '';
 		$( ".boarding-point tr" ).each(function( index ) {
 			console.log( index + ": " + $(this).find(":selected").val() );
+
 			options = options+$(this).find(":selected").val();
+
 			if(options){
 				$('.boarding_points').show();
 				$('.open-routing-tab').hide();
@@ -167,8 +168,29 @@
 			}
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
-				$('.wbtm_pick_boarding').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>");
-				$('.wbtm_bus_route_price_stop').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+				$('.wbtm_pick_boarding').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+			}
+		});
+
+		return false;
+	});
+
+	$(document).on('click','.ra_seat_price',function (e){
+		e.preventDefault();
+
+		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarging Point</option>");
+		$( ".boarding-point tr" ).each(function( index ) {
+			let term_id = $(this).find(':selected').data('term_id');
+			if(term_id){
+				$('.ra_bus_bp_price_stop').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+			}
+		});
+
+		$('.ra_bus_dp_price_stop').html("<option value=''>Select Dropping Point</option>");
+		$( ".dropping-point tr" ).each(function( index ) {
+			let term_id = $(this).find(':selected').data('term_id');
+			if(term_id){
+				$('.ra_bus_dp_price_stop').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
 
