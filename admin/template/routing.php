@@ -104,7 +104,7 @@
                             </td>
                         <?php endif; ?>
                     </tr>
-                        <?php $count++; } else :
+                    <?php $count++; } else :
                     // show a blank one
                 endif; ?>
 
@@ -146,7 +146,7 @@
                     <th><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                     <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                 </tr>
-                <tbody class="bd-point">
+                <tbody class="bd-point dropping-point">
                 <?php
                 if ($wbtm_bus_next_stops) :
                     $count = 0;
@@ -158,7 +158,7 @@
                                     <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php
                                     foreach ($terms as $term) { ?>
-                                        <option value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_next_stops_name'])?'Selected':'' ?> ><?php echo $term->name; ?></option>
+                                        <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_next_stops_name'])?'Selected':'' ?> ><?php echo $term->name; ?></option>
                                     <?php } ?>
                                 </select>
                             </td>
@@ -185,7 +185,7 @@
                             <?php
                             foreach ($terms as $term) {
                                 ?>
-                                <option value="<?php echo $term->name; ?>"><?php echo $term->name; ?>
+                                <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>"><?php echo $term->name; ?>
                                 </option>
                                 <?php
                             }
