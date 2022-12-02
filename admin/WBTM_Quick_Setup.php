@@ -160,7 +160,7 @@
             public function setup_welcome_content() {
                 $status = Wbtm_Woocommerce_bus::check_woocommerce();
                 ?>
-                <h2><?php esc_html_e( 'Bus Ticket Booking For Woocommerce Plugin', 'bus-ticket-booking-with-seat-reservation' ); ?><?php echo $status ?></h2>
+                <h2><?php esc_html_e( 'Bus Ticket Booking For Woocommerce Plugin', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
                 <p><?php esc_html_e( 'Thanks for choosing Bus Ticket Booking Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                 <table class="wc_status_table widefat" id="status">
                     <tr>
