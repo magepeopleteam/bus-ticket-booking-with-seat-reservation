@@ -182,7 +182,7 @@
 		$( ".boarding-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
-				$('.ra_bus_bp_price_stop').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+				$('.ra_bus_bp_price_stop').append("<option value="+$(this).find(":selected").val()+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
 
@@ -190,7 +190,7 @@
 		$( ".dropping-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
-				$('.ra_bus_dp_price_stop').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+				$('.ra_bus_dp_price_stop').append("<option value="+$(this).find(":selected").val()+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
 
