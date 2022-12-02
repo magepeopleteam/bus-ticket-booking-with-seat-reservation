@@ -1,0 +1,47 @@
+/********Image upload******************/
+div.mp_multi_image { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 15px 0 0 0;}
+div.mp_single_image_item,
+div.mp_multi_image_item { position: relative; width: 25%; padding: var(--default-mp-xs);min-width: 150px;}
+span.mp_remove_single_image,
+div.mpStyle span.mp_remove_multi_image { cursor: pointer; position: absolute; top: 0; right: 0; background-color: var(--danger-color);margin: 0;}
+/********Global settings******************/
+div.ttbm_settings_panel {overflow: hidden;position: relative;display: -webkit-flex;display: flex; line-height: 1.4;}
+.ttbm_settings_panel_header { background: #161B37;padding: 30px 20px 30px 20px;color: #FFF;font-size: 20px;margin-top: 30px;}
+.ttbm_settings_panel_header small {margin-left: 10px;font-size: 13px;}
+.ttbm_settings_panel .nav-tab-wrapper {
+	width: 300px;padding: 0;margin: 0;overflow: hidden;
+	display: -webkit-flex;display: flex;
+	-webkit-flex-direction: column;flex-direction: column;
+	background: #161B37;border: 5px solid #C6C6C6;
+}
+.ttbm_settings_panel .nav-tab {
+	margin: 0;width: 100%; font-weight: 600;text-decoration: none;white-space: nowrap; line-height: 1.4;color: #FFF;
+	background-color: transparent;border: none;border-bottom: 1px dotted #FFF;
+	float: initial;padding: 10px 12px;font-size: 14px;transition: 0.2s;
+}
+.ttbm_settings_panel .nav-tab:hover {background: #49AC2F;transition: 0.2s;}
+.ttbm_settings_panel .nav-tab.nav-tab-active { background: #49AC2F;color: #FFF;}
+.ttbm_settings_panel .metabox-holder {background: #FFF;padding: 10px;margin: 0;width: calc(100% - 300px);border: 5px solid #C6C6C6;}
+.ttbm_settings_panel .metabox-holder h2 {border-bottom: 2px solid #0071A1;font-size: 20px; padding: 15px;margin: 0;background: #161B37; color: #FFF !important;}
+.ttbm_settings_panel select {min-width: 150px;}
+.ttbm_settings_panel table {width: 100%;overflow: hidden; border: 1px solid #DDD;}
+.ttbm_settings_panel table,
+.ttbm_settings_panel table td,
+.ttbm_settings_panel table th {border-collapse: collapse;}
+.ttbm_settings_panel table th {width: 300px;padding: 5px 10px;font-size: 14px;text-align: left;font-weight: 600;vertical-align: middle;color: #000;}
+.ttbm_settings_panel table td {padding: 5px 10px;font-size: 14px;}
+.ttbm_settings_panel table tr:nth-child(even) {background-color: #F2F2F2;}
+.ttbm_settings_panel p.submit {text-align: right; margin: 20px 0 0 0; padding: 0;}
+div.mpStyle .description,
+.ttbm_settings_panel .description {display: block;font-weight: normal;font-size: var(--fs_small) !important;color: #666;margin: var(--default-mp-xs) 0 0 0;}
+div.mpStyle .description span,
+.ttbm_settings_panel .description span {margin: 0 var(--default-mp-xs) 0 0;}
+.ttbm_settings_panel .description strong {color: #000;}
+.ttbm_settings_panel p.submit input {font-size: 16px;padding: 5px 30px;border-radius: 0;background: #49AC2F;border-color: #49AC2F;transition: 0.2s;}
+.ttbm_settings_panel p.submit input:hover {background: #239108;border-color: #239108;transition: 0.2s;}
+.ttbm_settings_panel #setting-error-tgmpa {order: 0;width: 100%}
+.ttbm_settings_panel .notice {display: none;}
+div.ttbm_settings_panel .formControl {max-width: 320px;}
+.ttbm_settings_panel table thead th {background-color: var(--section-bg);}
+.ttbm_settings_panel .select2-container {max-width: 320px;}
+.ttbm_settings_panel .selection {width: 100%;}
