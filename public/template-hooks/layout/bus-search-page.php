@@ -763,7 +763,7 @@ function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return)
             <?php
             $mage_bus_total_seats_availabel = mage_bus_total_seat_new();
             if ($seat_plan_type > 0) {
-                $seats_rows = get_post_meta($bus_id, 'wbtm_bus_seats_info', true);
+                $seats_rows = get_post_meta($bus_id, 'wbtm_bus_seats_info', true)?get_post_meta($bus_id, 'wbtm_bus_seats_info', true):[];
                 $seat_col = get_post_meta($bus_id, 'wbtm_seat_cols', true);
                 // $seat_html .= '<div class="defaultLoaderFixed"><span></span></div>';
                 foreach ($seats_rows as $seat) {
