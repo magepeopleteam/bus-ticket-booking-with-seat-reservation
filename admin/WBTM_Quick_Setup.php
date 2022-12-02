@@ -23,7 +23,7 @@
             public function quick_setup_menu() {
                 $status = Wbtm_Woocommerce_bus::check_woocommerce();
                 //echo $status;
-                if ( $status == 'yes' ) {
+                if ( $status === 'yes' ) {
                     //echo $status;exit();
                     add_submenu_page( 'edit.php?post_type=wbtm_bus', esc_html__( 'Quick Setup', 'bus-ticket-booking-with-seat-reservation' ), '<span style="color:#10dd10">' . esc_html__( 'Quick Setup', 'bus-ticket-booking-with-seat-reservation' ) . '</span>', 'manage_options', 'wbtm_quick_setup', array( $this, 'quick_setup' ) );
                     add_submenu_page( 'wbtm_bus', esc_html__( 'Quick Setup', 'bus-ticket-booking-with-seat-reservation' ), '<span style="color:#10dd10">' . esc_html__( 'Quick Setup', 'bus-ticket-booking-with-seat-reservation' ) . '</span>', 'manage_options', 'wbtm_quick_setup', array( $this, 'quick_setup' ) );
@@ -58,12 +58,14 @@
                     $tabs_sorted[ $page_key ] = $tab['priority'] ?? 0;
                 }
                 array_multisort( $tabs_sorted, SORT_ASC, $mep_settings_tab );
+               // echo '<pre>';print_r($_POST);echo '</pre>';exit();
                 if ( isset( $_POST['active_woo_btn'] ) ) {
                     activate_plugin( 'woocommerce/woocommerce.php' );
                     ?>
                     <script>
-                        window.location.href = '<?php echo admin_url("admin.php?page=wbtm_quick_setup") ?>';
-
+                        let ttbm_admin_location = window.location.href;
+                        ttbm_admin_location = ttbm_admin_location.replace('admin.php?page=wbtm_bus', 'edit.php?post_type=wbtm_bus&page=wbtm_quick_setup');
+                        window.location.href = ttbm_admin_location;
                     </script>
                     <?php
                 }
@@ -97,7 +99,11 @@
                     activate_plugin( 'woocommerce/woocommerce.php' );
                     echo '</div>';
                     ?>
-                    <script>  window.location.reload(); </script>
+                    <script>
+                        let ttbm_admin_location = window.location.href;
+                        ttbm_admin_location = ttbm_admin_location.replace('admin.php?page=wbtm_bus', 'edit.php?post_type=wbtm_bus&page=wbtm_quick_setup');
+                        window.location.href = ttbm_admin_location;
+                    </script>
                     <?php
                 }
                 if ( isset( $_POST['finish_quick_setup'] ) ) {
@@ -154,14 +160,14 @@
             public function setup_welcome_content() {
                 $status = Wbtm_Woocommerce_bus::check_woocommerce();
                 ?>
-                <h2><?php esc_html_e( 'Bus Ticket Booking For Woocommerce Plugin', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+                <h2><?php esc_html_e( 'Bus Ticket Booking For Woocommerce Plugin', 'bus-ticket-booking-with-seat-reservation' ); ?><?php echo $status ?></h2>
                 <p><?php esc_html_e( 'Thanks for choosing Bus Ticket Booking Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                 <table class="wc_status_table widefat" id="status">
                     <tr>
                         <td data-export-label="WC Version">
-                            <?php if ( $status == 'yes' ) {
+                            <?php if ( $status === 'yes' ) {
                                 esc_html_e( 'Woocommerce already installed and activated', 'bus-ticket-booking-with-seat-reservation' );
-                            } elseif ( $status == 'no' ) {
+                            } elseif ( $status === 'no' ) {
                                 esc_html_e( 'Woocommerce already install , please activate it', 'bus-ticket-booking-with-seat-reservation' );
                             } else {
                                 esc_html_e( 'Woocommerce need to install and active', 'bus-ticket-booking-with-seat-reservation' );
@@ -169,9 +175,9 @@
                         </td>
                         <td class="help"><span class="woocommerce-help-tip"></span></td>
                         <td class="woo_btn_td">
-                            <?php if ( $status == 'yes' ) { ?>
+                            <?php if ( $status === 'yes' ) { ?>
                                 <span class="fas fa-check-circle"></span>
-                            <?php } elseif ( $status == 'no' ) { ?>
+                            <?php } elseif ( $status === 'no' ) { ?>
                                 <button class="button" type="submit" name="active_woo_btn"><?php esc_html_e( 'Active Now', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
                             <?php } else { ?>
                                 <button class="button" type="submit" name="install_and_active_woo_btn"><?php esc_html_e( 'Install & Active Now', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
