@@ -145,3 +145,208 @@ Yes We like to hear from our customer, If you want to add any customization or y
 
 
 
+
+
+== Changelog ==
+
+= 1.0 =
+*Initial Release Date - 10 Sep 2018*
+
+= 1.1.0 =
+*Some Minor Bug Fixed - 11 Sep 2018*
+
+= 1.1.2 =
+*Some Minor Bug Fixed - 11 Sep 2018*
+
+= 1.1.3 =
+*Bus Category Template fixed - 11 Sep 2018*
+
+
+= 1.1.4 =
+*New Shortcode Added to show Bus Search Form and Search List & Huge Update - 17 Sep 2018*
+
+= 1.1.5 =
+*Price Exploit issue fixed - 19 Sep 2018*
+
+= 1.1.6 =
+*Bug and some sorting issue fixed - 10 Oct 2018*
+
+= 1.1.7 =
+*Seat booking of a cancled seat issue fixed - 16 Oct 2018*
+
+
+= 1.1.8 =
+*Some minor fixed - 23 Oct 2018*
+
+
+= 1.2.0 =
+*Return Ticket & Operational Date feature added Seat Panel UI changes modified and some bug fixed - 28 Oct 2018*
+
+
+= 1.2.6 =
+*Seat booking major issue fixed. - 28 Nov 2018*
+
+
+= 1.3.1 =
+* Update List:
+==> Translation Ready.
+==> Bangla Language added
+==> Offday issue fixed in Details Page
+. - 17 Dec 2018*
+
+
+
+= 1.3.2 =
+* Update List:
+==> Search Table Heading issue fixed
+. - 09 Jan 2019*
+
+= 1.3.3 =
+* Update List:
+==> Minor issue fixed
+. - 10 Jan 2019*
+
+
+
+= 1.4.0 =
+* Update List:
+==> A Big Update With Seat Panel Template, Now 3 Free Seat Template added in this vesrion
+. - 27 Jan 2019*
+
+
+
+= 1.5.0 =
+* Update List:
+==> A Big Update With a Brand New Seat Panel System, Now You can create any type of seat plan.
+. - 19 Feb 2019*
+
+
+= 1.5.8 =
+* Update List:
+==> Bus Search Page slug issue solved.
+. - 19 Feb 2019*
+
+
+
+= 1.6.0 =
+* Update List:
+==> PHP Warning issue fixed
+==> Operation On Day Feature
+. - 12 May 2019*
+
+
+
+= 1.6.1 =
+* Update List:
+==> Added seat checking before order place, so if the seat already booked it can't be booked
+==> Fixed bug on return bus list
+==> some minor design issue fixed.
+. - 07 July 2019*
+
+
+= 1.6.2 =
+* Update List:
+==> Fixed Return Date Search Result issue
+==> Fixed Buffer time issue
+. - 24 July 2019*
+
+
+= 1.6.3 =
+* Update List:
+==> Fixed Search Result issue
+. - 07 Aug 2019*
+
+
+= 1.6.4 =
+* Update List:
+==> Fixed Search calculation issue for same bus in round trip
+==> Mobile seat selection feature now availabe in search page
+==> Removed past date from the Operational on day list in the bus details page
+. - 21 Aug 2019*
+
+= 2.0 =
+* Update List:
+==> This is a Big update, we suggest you to backup your date before update to this Version
+==> New UI
+==> Ajax search field load
+==> Improved Performance
+==> Double Decker seat plan added
+==> Many bug fixed
+. - 24 Aug 2020*
+
+= 2.1 =
+* Update List:
+==> Adult & Child Seat Feature Added
+==> Translation Issue fixed for Translation setting page
+==> Improved Performance
+==> Code Optimize
+. - 08 Sep 2020*
+
+= 2.2 =
+* Update List:
+==> Double Booking Issue fixed
+==> Ajax not working mobile issue fixed
+==> Date issue fixed
+==> Code Optimize
+==> Some minor bug fixed
+. - 12 Sep 2020*
+
+= 2.3 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+. - 14 Sep 2020*
+
+= 2.5 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+==> Return Discount Price rule added
+==> Infant ticket type added
+==> Design issue fixed
+. - 19 Oct 2020*
+
+= 2.6 =
+* Update List:
+==> Booked seat not showing issue fixed
+==> Code Optimize
+==> Some minor bug fixed
+==> Return Discount Price issue fixed
+==> Design issue fixed
+. - 03 Nov 2020*
+
+= 2.8 =
+* Update List:
+==> New Backend UI
+==> Code Optimize
+==> Some minor bug fixed
+==> Design issue fixed
+. - 02 Feb 2021*
+
+= 3.0 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+==> Design issue fixed
+. - 15 Feb 2021*
+
+= 3.6 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+==> welcome page adding
+==> global offday settings
+. - 28 dec 2021*
+
+= 3.7 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+. - 14 March 2022*
+
+
+= 4.0 =
+* Update List:
+==> Code Optimize
+==> Some minor bug fixed
+. - 15 Nov 2022*
