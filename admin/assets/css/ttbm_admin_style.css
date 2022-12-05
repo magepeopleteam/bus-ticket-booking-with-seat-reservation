@@ -211,6 +211,7 @@ div.unlimited_section {background-color: #F2F2F2;margin: 15px 0 0 0;padding: 50p
 	position: relative;
 	font-size: 20px;
 }
+.welcome-tabs .tab-nav i{margin:0 10px 0 0;}
 .welcome-tabs .tab-nav.active { background: #2271B1; color: #FFF;border-bottom: 5px solid #000;}
 .welcome-tabs .tab-nav:after {
 	content: "";
