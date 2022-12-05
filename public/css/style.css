@@ -1642,7 +1642,10 @@ ul.event-custom-price li {
 .mage.mage_single_bus_search_page {
     background: #fff;
     padding: 20px;
+    max-width: 1320px;
+    margin: 0 auto;
 }
+
 
 .mage_bus_customer_sec.mage_default .mage_bus_details_short h6 {
     display: block;
