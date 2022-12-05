@@ -163,16 +163,7 @@ class Wbtm_Woocommerce_bus
             (!$role->has_cap('extra_service_wbtm_bus')) ? $role->add_cap('extra_service_wbtm_bus') : null;
         }
     }
-//    public static function check_woocommerce()
-//    {
-//        if (is_plugin_active('woocommerce/woocommerce.php')) {
-//            return 'yes';
-//        } elseif (is_plugin_inactive('woocommerce/woocommerce.php')) {
-//            return 'no';
-//        } else {
-//            return 'no_installed';
-//        }
-//    }
+
     public static function check_woocommerce() {
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
         $plugin_dir = ABSPATH . 'wp-content/plugins/woocommerce';

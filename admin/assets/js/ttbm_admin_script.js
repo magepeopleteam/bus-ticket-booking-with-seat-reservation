@@ -593,7 +593,7 @@ jQuery(document).ready(function ($) {
 			$('.next').slideUp('fast');
 		}
 	})
-	$(document).on('click', '.welcome-tabs .next-prev .prev', function () {  alert(33);
+	$(document).on('click', '.welcome-tabs .next-prev .prev', function () { 
 		welcomeTabs = $('.welcome-tabs .tab-nav');
 		welcomeTabsContent = $('.welcome-tabs .tab-content ');
 		for (i = 0; i < welcomeTabs.length; i++) {
