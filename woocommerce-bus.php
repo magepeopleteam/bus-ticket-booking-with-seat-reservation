@@ -196,4 +196,3 @@ if(!function_exists('wbtm_get_plugin_data')) {
         return $wbtm_data;
     }
 }
-//start git sumon from 05/12/21 ss hhhhh bbbb
