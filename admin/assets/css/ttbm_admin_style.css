@@ -301,3 +301,5 @@ table.wc_status_table td.woo_btn_td span {font-size: 20px; color: #10DD10;}
 .welcome-tabs .addon-list .addon-title { margin: 10px 0; font-size: 17px;}
 .welcome-tabs .addon-list .addon-link a { text-decoration: none;}
 /************************************************/
+#ttbm_quick_setup .welcome-tabs{display: flex;display: -webkit-flex;-webkit-flex-direction: column;flex-direction: column;}
+#ttbm_quick_setup .updated{display: none;}
