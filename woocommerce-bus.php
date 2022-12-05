@@ -25,14 +25,19 @@ class Wbtm_Woocommerce_bus
         $this->define_constants();
         $this->load_plugin();
         register_deactivation_hook(__FILE__,array($this,'wbtm_deactivate_wbtm_plugin') );
+        register_activation_hook(__FILE__, array($this, 'wbtm_activate_wbtm_plugin'));
     }
+
+
+
+
 
     private function load_plugin()
     {
 //echo self::check_woocommerce();exit();
         if (self::check_woocommerce() === 'yes') {
 
-            register_activation_hook(__FILE__, array($this, 'wbtm_activate_wbtm_plugin'));
+
             $this->appsero_init_tracker_bus_ticket_booking_with_seat_reservation();
             add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
             // Added links to plugin row meta
@@ -40,6 +45,7 @@ class Wbtm_Woocommerce_bus
 
             require WBTM_PLUGIN_DIR . 'includes/class-plugin.php';
             $this->run_wbtm_plugin();
+            flush_rewrite_rules();
             require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
             add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
         } else {
@@ -47,6 +53,9 @@ class Wbtm_Woocommerce_bus
             add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
         }
     }
+
+
+
 
     public function activation_redirect($plugin)
     {
@@ -70,7 +79,7 @@ class Wbtm_Woocommerce_bus
     }
     function wbtm_activate_wbtm_plugin()
     {
-        //flush_rewrite_rules();
+        flush_rewrite_rules();
         require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-activator.php';
         WBTM_Plugin_Activator::activate();
     }
