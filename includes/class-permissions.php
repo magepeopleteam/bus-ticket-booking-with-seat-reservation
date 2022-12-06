@@ -13,8 +13,7 @@ if(!class_exists('WBTMPermission')) {
 
         public function __construct($post_type, $post_slug, $text_domain)
         {
-            if( !session_id() )
-                session_start();
+            
             
             $this->post_type    = $post_type;
             $this->post_slug    = $post_slug;
