@@ -34,18 +34,15 @@ class Wbtm_Woocommerce_bus
 
     private function load_plugin()
     {
-//echo self::check_woocommerce();exit();
-        if (self::check_woocommerce() === 'yes') {
 
+        if (self::check_woocommerce() === 'yes') {
 
             $this->appsero_init_tracker_bus_ticket_booking_with_seat_reservation();
             add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
-            // Added links to plugin row meta
             add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
 
             require WBTM_PLUGIN_DIR . 'includes/class-plugin.php';
             $this->run_wbtm_plugin();
-            flush_rewrite_rules();
             require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
             add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
         } else {
