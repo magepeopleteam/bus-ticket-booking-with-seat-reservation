@@ -76,7 +76,6 @@ class Wbtm_Woocommerce_bus
     }
     function wbtm_activate_wbtm_plugin()
     {
-        flush_rewrite_rules();
         require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-activator.php';
         WBTM_Plugin_Activator::activate();
     }
