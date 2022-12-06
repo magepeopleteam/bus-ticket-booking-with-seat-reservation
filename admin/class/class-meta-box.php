@@ -130,6 +130,8 @@ class WBTMMetaBox
         $this->wbtmRouting();
         $this->wbtmPricing();
 
+
+
         require_once WBTM_PLUGIN_DIR . 'admin/template/meta_box_tab_content.php';
     }
 
