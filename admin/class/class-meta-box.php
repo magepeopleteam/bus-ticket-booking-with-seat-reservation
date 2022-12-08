@@ -29,10 +29,16 @@ class WBTMMetaBox
         if (isset($_POST['name'])) {
             $terms = wp_insert_term($_POST['name'], 'wbtm_bus_stops', $args = array('description' => $_POST['description']));
 
-            echo json_encode(array(
-                'text' => $_POST['name'],
-                'term_id' => $terms['term_id']
-            ));
+            if ( is_wp_error($terms) ) {
+                echo json_encode(array(
+                    'text' => 'error'
+                ));
+            }else{
+                echo json_encode(array(
+                    'text' => $_POST['name'],
+                    'term_id' => $terms['term_id']
+                ));
+            }
         }
         die();
     }

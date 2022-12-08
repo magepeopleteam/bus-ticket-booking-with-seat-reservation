@@ -29,23 +29,43 @@
 				},
 
 				success: function (data) {
-					$('.bus_stop_add_option').append($('<option>', {
-						value: data.text,
-						text: data.text,
-						'data-term_id': data.term_id
-					}));
 
-					$(".name_required").hide();
-					$("#bus_stop_name").val("");
-					$("#bus_stop_description").val("");
-					$(".success_text").slideDown('fast');
-					setTimeout(function() {
-						$('.success_text').fadeOut('fast');
-					}, 1000); // <-- time in milliseconds
-					dLoaderRemove(target);
-					if ($this.hasClass('close_popup')) {
-						$this.delay(2000).closest('.popupMainArea').find('.popupClose').trigger('click');
+					if(data.text == 'error'){
+
+						$(".name_required").hide();
+						$("#bus_stop_name").val("");
+						$("#bus_stop_description").val("");
+						$(".duplicate_text").slideDown('fast');
+						setTimeout(function() {
+							$('.duplicate_text').fadeOut('fast');
+						}, 3000); // <-- time in milliseconds
+						dLoaderRemove(target);
+
+
+
+					}else{
+						$('.bus_stop_add_option').append($('<option>', {
+							value: data.text,
+							text: data.text,
+							'data-term_id': data.term_id
+						}));
+
+						$(".name_required").hide();
+						$("#bus_stop_name").val("");
+						$("#bus_stop_description").val("");
+						$(".success_text").slideDown('fast');
+						setTimeout(function() {
+							$('.success_text').fadeOut('fast');
+						}, 1000); // <-- time in milliseconds
+						dLoaderRemove(target);
+						if ($this.hasClass('close_popup')) {
+							$this.delay(2000).closest('.popupMainArea').find('.popupClose').trigger('click');
+						}
+
 					}
+
+
+
 				}
 			});
 		}
