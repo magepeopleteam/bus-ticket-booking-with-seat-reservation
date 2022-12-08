@@ -384,6 +384,7 @@ function ttbm_pagination_page_management(parent, pagination_page, total_item) {
 }(jQuery));
 //==========Modal / Popup==========//
 (function ($) {
+
 	"use strict";
 	$(document).on('click', '.mpStyle [data-target-popup]', function () {
 		let target = $(this).data('target-popup');
@@ -393,11 +394,13 @@ function ttbm_pagination_page_management(parent, pagination_page, total_item) {
 		});
 		return false;
 	});
+
 	$(document).on('click', '.mpStyle .mpPopup  .popupClose', function () {
 		$(this).closest('[data-popup]').removeClass('in');
 		$('body').removeClass('noScroll');
 		return true;
 	});
+
 	$(document).click(function (e) {
 		let target = $(e.target);
 		let popup = target.closest('[data-popup]');

@@ -28,6 +28,7 @@
                         </div>
                         <div class="popupBody bus-stop-form">
                             <h6 class="textSuccess success_text" style="display: none;">Added Succesfully</h6>
+                            <h6 class="textSuccess duplicate_text" style="display: none;"><?php esc_html_e( 'This Bus Stop Alreadd Exist', 'bus-ticket-booking-with-seat-reservation' ); ?></h6>
                             <label>
                                 <span class="w_200"><?php esc_html_e( 'Name:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
                                 <input type="text"  class="formControl" id="bus_stop_name">
@@ -192,7 +193,9 @@
                             ?>
                         </select>
                     </td>
-                    <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="" class="text" placeholder="15:00"></td>
+                    <td align="center">
+                        <input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="" class="text" placeholder="15:00">
+                    </td>
                     <td align="center">
                         <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
                             <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>

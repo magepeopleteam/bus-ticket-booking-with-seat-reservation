@@ -5,7 +5,7 @@
 	font-size: 17px !important;
 	display: none;
 }
-.success_text{
+.success_text, .duplicate_text{
 	text-align: center;
 	padding-bottom: 10px !important;
 }
