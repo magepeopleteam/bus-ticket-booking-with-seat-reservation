@@ -100,3 +100,6 @@ background-color: #444;
 .ra-text-center{
 	text-align: center;
 }
+.color_danger{
+	color: red !important;
+}
