@@ -2027,6 +2027,9 @@ function wbtm_journey_date_js()
 
             <?php } ?>
 
+
+
+
             jQuery("#r_date").datepicker({
                 dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
                 minDate: 0,
