@@ -939,7 +939,7 @@ function mage_next_date_suggestion($return, $single_bus, $target)
         $tab_date = isset($_GET['tab_date']) ? $_GET['tab_date'] : mage_wp_date(mage_bus_isset('j_date'), 'Y-m-d');
         $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
         $next_date = $return ? $tab_date_r : $tab_date;
-        // $next_date_text = get_wbtm_datetime($next_date, 'date-text');
+
         $next_date_text = $next_date;
         ?>
         <div class="mage_default_xs">
@@ -950,7 +950,7 @@ function mage_next_date_suggestion($return, $single_bus, $target)
                     <li class="<?php echo $date == $next_date ? 'mage_active' : ''; ?>">
                         <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $next_date_text; ?>&r_date=<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>&tab_date=<?php echo $tab_date; ?>&tab_date_r=<?php echo $tab_date_r; ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
                             <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
-                            <?php //echo mage_wp_date($next_date); 
+                            <?php //echo mage_wp_date($next_date);
                             ?>
                         </a>
                     </li>
@@ -964,6 +964,53 @@ function mage_next_date_suggestion($return, $single_bus, $target)
         </div>
         <?php
     }
+}
+
+
+
+//nearest max 6  date suggestion for single bus
+function mage_next_date_suggestion_single($return, $single_bus, $target)
+{
+    $j_date = mage_bus_isset('j_date');
+    $j_date = wbtm_convert_date_to_php($j_date);
+
+    $wbtm_bus_on_dates = get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true)) : [];
+    if ($wbtm_bus_on_dates) {
+        ?>
+        <div class="mage_default_xs">
+            <ul class="mage_list_inline flexEqual mage_next_date">
+                <?php
+                $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
+                foreach ($wbtm_bus_on_dates_arr as $i=>$ondate) {
+                    if($j_date <= wbtm_convert_date_to_php($ondate)){
+                        $ondate = ($i)?wbtm_convert_date_to_php($ondate):$j_date;
+                    ?>
+                    <li class="<?php echo $j_date == $ondate ? 'mage_active' : ''; ?>">
+                        <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $ondate; ?>&r_date=<?php echo $return ? $ondate : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
+                            <?php
+                            echo get_wbtm_datetime($ondate, 'date-text')
+                            ?>
+                        </a>
+                    </li>
+                    <?php
+                    }
+                }
+                ?>
+
+            </ul>
+        </div>
+        <?php
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
 // bus list title

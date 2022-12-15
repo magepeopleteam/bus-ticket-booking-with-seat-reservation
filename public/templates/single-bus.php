@@ -66,7 +66,7 @@ do_action('wbtm_before_single_bus_search_page');
             if(isset($params)) {
                 $target = $params['search-page'] ? $params['search-page'] : $global_target;
             } else {
-                $target = $global_target;
+               $target = $global_target;
             }
 
             mage_bus_search_form_only(true, $target); ?>
@@ -98,7 +98,10 @@ do_action('wbtm_before_single_bus_search_page');
             }
 
             // Final
-            mage_next_date_suggestion(false, true, $target);
+
+             mage_next_date_suggestion_single(false, true, $target);
+
+
             if ($has_bus && $check_has_price !== '') {
 
                 mage_bus_search_item(false, $id);
