@@ -2732,6 +2732,7 @@ function wbtm_bus_stops_custom_column($columns)
 }
 
 add_filter('manage_wbtm_bus_stops_custom_column', 'wbtm_bus_stops_custom_column_callback', 10, 3);
+
 function wbtm_bus_stops_custom_column_callback($content, $column_name, $term_id)
 {
     switch ($column_name) {
