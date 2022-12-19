@@ -14,7 +14,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Bus Ticket Booking with Seat Reservation is a Bus booking Plugin for WordPress which is based on WooCommerce.
 
 == Description ==
-This is one of the best and simple bus booking plugin in WordPress directory, Its used Woocommerce for making payment so Its freedom to use any payment gateway via WooCommerce. This plugin will run with Woocommerce but it will work as event post it will not take any effect on woocommerce products so if you want you can sale your product along with it.
+This bus booking plugin is one of the best and simplest plugins in the WordPress directory. It uses WooCommerce for making payments, so it's free to use any payment gateway via WooCommerce. This plugin will run with Woocommerce but it will work as an custom post - it will not affect WooCommerce products. So if you want, you can sell your product along with the tickets.
 
 **Features:**
 &#9989;  Support Any Payment Method That support WooCommerce
@@ -42,19 +42,19 @@ This is one of the best and simple bus booking plugin in WordPress directory, It
 
 
 
-### Shortcodes included withBus Ticket Booking with Seat Reservation
+### Shortcodes included with Bus Ticket Booking with Seat Reservation
 
 **To display the search form:**  
 `
 [wbtm-bus-search-form]
 `
-You can add this shortcode to any page where you like to add search form. and then you have to create another page for search result with slug **/bus-search-list/** and shortcode
+This shortcode allows you to add a search form to any page but you must have to create another page for search result list showing with page slug **/bus-search-list/** and shortcode
 `
 [wbtm-bus-search]
 `
-normally this page create automatically during installation so make sure you have a page bus search list and this page selected from settings->bus search page option.
+if you don't have this page with slug bus-search-list then you may get 404 on search result, normally this page will create automatically during installation. So Please make sure, you have a page bus search list and this page selected to ** settings->General settings ** with option name Search Result Page. 
 
-we have some other shortcode that you may need to display bus list
+we have some other shortcode that you can use to display bus list
 
 `
 [wbtm-bus-list cat=''show='10']
@@ -62,7 +62,7 @@ we have some other shortcode that you may need to display bus list
 here show 10 means it will display 10 bus in list, you can change as needed
 
 **cat:**  
-By default showing all bus, but if you want to show bus list of a particular category you can use this attribute, just put the category id with this. example: 
+By default this shortcode will show showing all bus, but if you want to show bus list for  a particular category, you can use this cat attribute, just put the category id with this. example: 
 
 `
 [wbtm-bus-list cat='ID']
@@ -105,6 +105,7 @@ our support team will back to you shortly.
 - [Woocommerce Events Manager](https://wordpress.org/plugins/mage-eventpress/)
 - [Advanced – Deposit & Partial Payments](https://wordpress.org/plugins/advanced-partial-payment-or-deposit-for-woocommerce/)
 - [Tour & Travel Booking Manager](https://wordpress.org/plugins/bus-ticket-booking-with-seat-reservation/)
+- [Booking & Rental Manager](https://wordpress.org/plugins/booking-and-rental-manager-for-woocommerce/)
 
 
 

@@ -12,7 +12,6 @@ function mage_bus_search_form_only($single_bus, $target)
         <?php mage_bus_label('wbtm_buy_ticket_text', __('BUY TICKET:', 'bus-ticket-booking-with-seat-reservation')); ?>
     </h4>
 
-
     <form action="<?php echo $single_bus ? '' : get_site_url() . '/' . $target . '/'; ?>" method="get" class="mage_form">
         <div class="mage_form_list">
             <div class="mage_input_select mage_bus_boarding_point">

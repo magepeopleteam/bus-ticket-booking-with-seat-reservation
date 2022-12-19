@@ -8,7 +8,11 @@
                 <span class="fas fa-times popupClose"></span>
             </div>
             <div class="popupBody pickup-form">
+
                 <h6 class="textSuccess success_text" style="display: none;"><?php esc_html_e( 'Added Succesfully', 'bus-ticket-booking-with-seat-reservation' ); ?></h6>
+
+                <h6 class="duplicate_text color_danger" style="display: none;"><?php esc_html_e( 'This Bus Stop Alreadd Exist', 'bus-ticket-booking-with-seat-reservation' ); ?></h6>
+
                 <label>
                     <span class="w_200"><?php esc_html_e( 'Name:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
                     <input type="text"  class="formControl" id="pickup_name">
