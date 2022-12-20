@@ -1901,7 +1901,7 @@ function wbtm_journey_date_js()
 
             echo 'var off_particular_date = [' . $off_particular_date . '];';
 
-            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true);
+            $weekly_offday = get_post_meta($post->ID, 'weekly_offday', true) ? get_post_meta($post->ID, 'weekly_offday', true):[];
 
             $weekly_offday = implode(', ', $weekly_offday);
 
