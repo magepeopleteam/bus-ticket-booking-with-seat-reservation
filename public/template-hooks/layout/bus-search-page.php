@@ -526,7 +526,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?>
                                         <span class="wbtm_required">*</span></label>
                                     <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
-                                        <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
+                                        <option value=""><?php _e('Select Pickup Point nn', 'bus-ticket-booking-with-seat-reservation') ?></option>
                                         <?php foreach ($pickpoints as $point) :
                                             $d = ucfirst($point['pickpoint']) . ' [' . $point['time'] . ']';
                                             ?>
@@ -675,9 +675,9 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
                                             <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
                                             <?php foreach ($pickpoints as $point) :
-                                                $d = ucfirst($point['pickpoint']) . ' [' . $point['time'] . ']';
-                                                ?>
-                                                <option value="<?php echo $d; ?>"><?php echo $d; ?></option>
+                                                $d = ucfirst($point['pickpoint']).(($point['time'])?' [' . $point['time'] . ']':'');
+                                            ?>
+                                                <option value="<?php echo $d; ?>"><?php echo $d ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
