@@ -8,40 +8,47 @@
             <thead>
             <tr>
                 <th title="<?php _e('Extra Service Name', 'bus-ticket-booking-with-seat-reservation'); ?>">
-                    <?php _e('Name', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <?php _e('Name', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </th>
                 <th title="<?php _e('Extra Service Price', 'bus-ticket-booking-with-seat-reservation'); ?>">
-                    <?php _e('Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <?php _e('Price', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </th>
                 <th title="<?php _e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?>">
-                    <?php _e('Available', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <?php _e('Available', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </th>
                 <th title="<?php _e('Qty Box Type', 'bus-ticket-booking-with-seat-reservation'); ?>" style="min-width: 140px;">
-                    <?php _e('Qty Box', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                    <?php _e('Qty Box', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </th>
                 <th></th>
             </tr>
             </thead>
+
             <tbody class="mp_event_type_sortable">
             <?php
-
-            if ($mep_events_extra_prices) :
-
-                foreach ($mep_events_extra_prices as $field) {
-                    $qty_type = esc_attr($field['option_qty_type']);
-                    ?>
+            if ($mep_events_extra_prices) : foreach ($mep_events_extra_prices as $field) {
+                $qty_type = esc_attr($field['option_qty_type']); ?>
                     <tr>
-                        <td><input type="text" class="mp_formControl" name="option_name[]" placeholder="Ex: Cap" value="<?php if ($field['option_name'] != '') {
+                        <td>
+                            <input type="text" class="mp_formControl" name="option_name[]" placeholder="Ex: Cap" value="<?php if ($field['option_name'] != '') {
                                 echo esc_attr($field['option_name']);
-                            } ?>" /></td>
+                            } ?>" />
+                        </td>
 
-                        <td><input type="number" step="0.001" class="mp_formControl" name="option_price[]" placeholder="Ex: 10" value="<?php if ($field['option_price'] != '') {
+                        <td>
+                            <input type="number" step="0.001" class="mp_formControl" name="option_price[]" placeholder="Ex: 10" value="<?php if ($field['option_price'] != '') {
                                 echo esc_attr($field['option_price']);
                             } else {
                                 echo '';
-                            } ?>" /></td>
+                            } ?>" />
+                        </td>
 
-                        <td><input type="number" class="mp_formControl" name="option_qty[]" placeholder="Ex: 100" value="<?php if ($field['option_qty'] != '') {
+                        <td>
+                            <input type="number" class="mp_formControl" name="option_qty[]" placeholder="Ex: 100" value="<?php if ($field['option_qty'] != '') {
                                 echo esc_attr($field['option_qty']);
                             } else {
                                 echo '';
-                            } ?>" /></td>
+                            } ?>" />
+                        </td>
 
                         <td align="center">
                             <select name="option_qty_type[]" class='mp_formControl'>

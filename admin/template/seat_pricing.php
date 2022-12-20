@@ -34,7 +34,8 @@
                                 <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                 <?php foreach ($routes as $route) : ?>
                                     <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_bp_price_stop'] ? 'selected' : '') ?>>
-                                        <?php echo $route->name; ?></option>
+                                        <?php echo $route->name; ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
@@ -43,7 +44,8 @@
                                 <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                 <?php foreach ($routes as $route) : ?>
                                     <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_dp_price_stop'] ? 'selected' : '') ?>>
-                                        <?php echo $route->name; ?></option>
+                                        <?php echo $route->name; ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
