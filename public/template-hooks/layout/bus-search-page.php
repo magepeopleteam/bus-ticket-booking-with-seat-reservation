@@ -396,6 +396,8 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
             <input type="hidden" name="wbtm_bus_type" value="general" />
             <input type="hidden" name="wbtm_bus_zero_price_allow" value="<?php echo $bus_zero_price_allow; ?>" />
             <input type="hidden" name="wbtm_anydate_return_price" id="wbtm_anydate_return_price" value="" />
+            <input type="hidden" name="wbtm_bus_no" value="<?php echo  get_post_meta($bus_id, 'wbtm_bus_no', true)  ?>">
+            <input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title() ?>">
             <?php
             if ($bus_seat_type_conf === 'wbtm_without_seat_plan') : ?>
 
