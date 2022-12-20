@@ -7,7 +7,6 @@
     <list default="true" id="23890b8c-6e3d-4ba0-99aa-b0ed75bf982f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/includes/class-add-bus-info-to-cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-add-bus-info-to-cart.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-page.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
