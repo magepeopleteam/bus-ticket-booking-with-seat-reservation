@@ -113,7 +113,7 @@ class WBTM_Shortcode {
         ob_start();
 
         do_action('woocommerce_before_single_product');
-            mage_bus_search_page(); 
+            mage_bus_search_page();
         do_action('wbtm_after_search_result_section',$params);
         return ob_get_clean();
     }

@@ -39,12 +39,8 @@ class WBTM_Plugin_Public {
 		wp_enqueue_script('jquery-ui-datepicker');
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script ('wbtm-select2-style-cdn',"https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js",null,1);
-
 		wp_enqueue_script( 'bus-public-js', WBTM_PLUGIN_URL . 'public/js/bus_script.js', array( 'jquery' ), time(), true );
-
         wp_enqueue_script( 'ra-bus-public-js', WBTM_PLUGIN_URL . 'public/js/ra_bus_script.js', array( 'jquery' ), time(), true );
-
-		
 		wp_localize_script( 'bus-public-js', 'php_vars', array('currency_symbol' => get_woocommerce_currency_symbol()) );
 
 	}

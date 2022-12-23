@@ -83,6 +83,10 @@ class WbtmAddToCart
             // Pickup Point
             $wbtm_pickpoint = isset($_POST['wbtm_pickpoint']) ? $_POST['wbtm_pickpoint'] : '';
 
+            $wbtm_bus_no = isset($_POST['wbtm_bus_no']) ? $_POST['wbtm_bus_no'] : '';
+
+            $wbtm_bus_name = isset($_POST['wbtm_bus_name']) ? $_POST['wbtm_bus_name'] : '';
+
             $bus_start_stops = get_post_meta($bus_id, 'wbtm_bus_bp_stops', true);
             if($start_stops && $end_stops) {
                 $determine_route = mage_determine_route($bus_id, false, $start_stops, $end_stops);
@@ -359,6 +363,10 @@ class WbtmAddToCart
 
             $cart_item_data['wbtm_pickpoint'] = $wbtm_pickpoint;
 
+            $cart_item_data['wbtm_bus_no'] = $wbtm_bus_no;
+
+            $cart_item_data['wbtm_bus_name'] = $wbtm_bus_name;
+
             $cart_item_data['extra_services'] = $extra_services;
 
             $cart_item_data['wbtm_anydate_return'] = $wbtm_anydate_return;
@@ -374,7 +382,7 @@ class WbtmAddToCart
             $cart_item_data['line_subtotal'] = $total_fare;
         }
         $cart_item_data['bus_id'] = $product_id;
-        // echo '<pre>'; print_r($cart_item_data); die;
+         //echo '<pre>'; print_r($cart_item_data); die();
         return $cart_item_data;
     }
 
@@ -409,7 +417,7 @@ class WbtmAddToCart
 
             $wbtm_anydate_return        = $cart_item['wbtm_anydate_return'];
             $wbtm_anydate_return_price  = $cart_item['wbtm_anydate_return_price'];
-
+           // echo '<pre>';  print_r($cart_item);  echo '<pre>'; exit;
             // echo '<pre>'; print_r($passenger_info); die;
 
             // $billing_type_items = mtsa_get_billing_type_items();
@@ -616,6 +624,8 @@ class WbtmAddToCart
                     ?>
                     <ul class='event-custom-price'>
                         <?php
+
+
                         if($wbtm_seats) : ?>
                         <li>
                             <?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
@@ -643,9 +653,9 @@ class WbtmAddToCart
 
 
                         <?php else : ?>
-                            <li><?php mage_bus_label('wbtm_boarding_points_text', __('Boarding Point', 'bus-ticket-booking-with-seat-reservation'));
+                            <li>hh<?php mage_bus_label('wbtm_boarding_points_text', __('Boarding Point', 'bus-ticket-booking-with-seat-reservation'));
                                 ?><?php echo $cart_item['wbtm_start_stops']; ?></li>
-                            <li><?php mage_bus_label('wbtm_dropping_points_text', __('Dropping Point', 'bus-ticket-booking-with-seat-reservation'));
+                            <li>hh<?php mage_bus_label('wbtm_dropping_points_text', __('Dropping Point', 'bus-ticket-booking-with-seat-reservation'));
                                 ?><?php echo $cart_item['wbtm_end_stops']; ?></li>
                         <?php endif; ?>
 
@@ -660,9 +670,16 @@ class WbtmAddToCart
                             </li>
                         <?php endif; ?>
 
+                        <?php if($cart_item['wbtm_bus_no']) : ?>
+                            <li><?php _e('Bus No', 'bus-ticket-booking-with-seat-reservation');?>: <?php echo $cart_item['wbtm_bus_name']; ?> - <?php echo $cart_item['wbtm_bus_no']; ?></li>
+                        <?php endif; ?>
+
                         <?php if($cart_item['wbtm_pickpoint']) : ?>
                             <li><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation');?>: <?php echo $cart_item['wbtm_pickpoint']; ?></li>
                         <?php endif; ?>
+
+
+
 
                         <?php if ($extra_bag_quantity > 0) { ?>
                             <li><?php _e('Extra Bag: ', 'bus-ticket-booking-with-seat-reservation');
@@ -760,6 +777,7 @@ class WbtmAddToCart
             $wbtm_billing_type = $values['wbtm_billing_type'];
             $wbtm_city_zone = $values['wbtm_city_zone'];
             $wbtm_pickpoint = $values['wbtm_pickpoint'];
+            $wbtm_bus_no =  get_the_title($eid).(($values['wbtm_bus_no'])?(' - '.$values['wbtm_bus_no']):'');
             $extra_services = $values['extra_services'];
             $wbtm_start_stops = $values['wbtm_start_stops'];
             $wbtm_end_stops = $values['wbtm_end_stops'];
@@ -818,6 +836,7 @@ class WbtmAddToCart
             $item->add_meta_data('_wbtm_billing_type', $wbtm_billing_type);
             $item->add_meta_data('_wbtm_city_zone', $wbtm_city_zone);
             $item->add_meta_data('_wbtm_pickpoint', $wbtm_pickpoint);
+            $item->add_meta_data('_wbtm_bus_no', $wbtm_bus_no);
             $item->add_meta_data('_extra_services', $extra_services);
             $item->add_meta_data('_wbtm_is_return', $wbtm_is_return);
 

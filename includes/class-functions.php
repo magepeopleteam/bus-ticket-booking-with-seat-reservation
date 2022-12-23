@@ -1901,7 +1901,7 @@ function wbtm_journey_date_js()
 
             echo 'var off_particular_date = [' . $off_particular_date . '];';
 
-            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true);
+            $weekly_offday = get_post_meta($post->ID, 'weekly_offday', true) ? get_post_meta($post->ID, 'weekly_offday', true):[];
 
             $weekly_offday = implode(', ', $weekly_offday);
 
@@ -2026,6 +2026,9 @@ function wbtm_journey_date_js()
             });
 
             <?php } ?>
+
+
+
 
             jQuery("#r_date").datepicker({
                 dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
@@ -2729,6 +2732,7 @@ function wbtm_bus_stops_custom_column($columns)
 }
 
 add_filter('manage_wbtm_bus_stops_custom_column', 'wbtm_bus_stops_custom_column_callback', 10, 3);
+
 function wbtm_bus_stops_custom_column_callback($content, $column_name, $term_id)
 {
     switch ($column_name) {
