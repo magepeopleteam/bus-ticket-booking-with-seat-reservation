@@ -442,7 +442,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                             <?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')) ?>
                                             :
                                         </th>
-                                        <td><?php echo $start_time; ?> ggg</td>
+                                        <td><?php echo $start_time; ?></td>
                                     </tr>
                                 <?php } ?>
 
