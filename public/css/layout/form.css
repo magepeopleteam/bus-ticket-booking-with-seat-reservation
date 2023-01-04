@@ -32,7 +32,7 @@ ul.mage_input_select_list li:hover {color: var(--default-active-color);}
 /*****Form inline*******/
 .mage_form_inline {padding: 15px;margin: 15px 0 0 0;}
 .mage_form_inline .mage_form_list {width: 100%;margin: 0 5px;min-width: 150px;position: relative;}
-.mage_form_inline .mage_form_list label span {font-family: 'Font Awesome 5 Free';font-size: 13px}
+.mage_form_inline .mage_form_list label span {font-family: inherit;font-size: 13px}
 /********Form Horizontal**************/
 .mage_form_horizontal {max-width: 500px;width: 100%;margin: 0 auto;padding: var(--default-mp);}
 /*****Form Qty inc dec*******/

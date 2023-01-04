@@ -148,7 +148,7 @@ function mage_bus_search_list($return)
                     }
 
                     // Check Offday and date
-                    if (!$offday_current_bus && !mage_check_search_day_off($id, $j_date, true)) {
+                    if (!$offday_current_bus && !mage_check_search_day_off_new($id, $j_date, $return)) {
                         $has_bus = true;
                     }
                 }
