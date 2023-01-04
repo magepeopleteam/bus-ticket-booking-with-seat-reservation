@@ -52,6 +52,38 @@ function mage_check_search_day_off($id, $j_date, $return = false)
 
 }
 
+// check search day is off? (NEW)
+function mage_check_search_day_off_new($id, $j_date, $return = false)
+{
+    $get_day = null;
+    $db_day_prefix = 'offday_';
+    $weekly_offday = get_post_meta($id, 'weekly_offday', true) ?: array();
+    if ($j_date) {
+        $same_bus_return_setting_global = mage_bus_setting_value('same_bus_return_setting', 'disable');
+        if ($same_bus_return_setting_global === 'enable' && $return) {
+            $is_same_bus_return_allow = get_post_meta($id, 'wbtm_general_same_bus_return', true);
+            $return_text = $is_same_bus_return_allow === 'yes' ? '_return' : '';
+
+            $j_date_day = strtolower(date('D', strtotime($j_date)));
+            $get_day = get_post_meta($id, $db_day_prefix . $j_date_day . $return_text, true);
+            $get_day = ($get_day != null) ? strtolower($get_day) : null;
+        } else {
+            $j_date_day = strtolower(date('N', strtotime($j_date)));
+            if (in_array($j_date_day, $weekly_offday)) {
+                $get_day = 'yes';
+            }
+        }
+        
+        if ($get_day == 'yes') {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
 // convert date formate
 // function mage_convert_date_format($date, $format) {
 //     $wp_date_format = get_option('date_format');
@@ -1948,7 +1980,7 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
             }
 
             // Check Offday and date
-            if (!$offday_current_bus && !mage_check_search_day_off($id, $j_date)) {
+            if (!$offday_current_bus && !mage_check_search_day_off_new($id, $j_date)) {
                 $has_bus = true;
             }
         }
