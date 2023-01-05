@@ -164,12 +164,12 @@ function mage_route_list($single_bus, $start_route, $is_hide_consider = false)
         if ($start_route) {
             $start_stops = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_bp_stops', true));
             foreach ($start_stops as $route) {
-                echo '<li data-route="' . $route['wbtm_bus_bp_stops_name'] . '"><span class="fa fa-map-marker"></span>' . $route['wbtm_bus_bp_stops_name'] . '</li>';
+                echo '<li data-route="' . $route['wbtm_bus_bp_stops_name'] . '"><span><i class="fas fa-map-marker"></i></span>' . $route['wbtm_bus_bp_stops_name'] . '</li>';
             }
         } else {
             $end_stops = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_next_stops', true));
             foreach ($end_stops as $route) {
-                echo '<li data-route="' . $route['wbtm_bus_next_stops_name'] . '"><span class="fa fa-map-marker"></span>' . $route['wbtm_bus_next_stops_name'] . '</li>';
+                echo '<li data-route="' . $route['wbtm_bus_next_stops_name'] . '"><span><i class="fas fa-map-marker"></i></span>' . $route['wbtm_bus_next_stops_name'] . '</li>';
             }
         }
     } else {
