@@ -18,6 +18,12 @@
         //==============//
         $('.mage_default.mage_form_inline').closest('.fusion-text').css('transform', 'inherit');
 
+        // Date field clear
+        $('.mage-clear-date').click(function(e) {
+            e.preventDefault();
+            $(this).siblings('.mage_form_control').val('');
+        })
+
 
         // Mearge Plugin js
         $('.mage-seat-qty input').on('input', function() {

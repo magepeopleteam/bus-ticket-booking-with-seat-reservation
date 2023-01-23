@@ -1,6 +1,13 @@
-form.mage_form {}
 form.mage_form label {margin: var(--default-mp-xs) 0 0 0;text-transform: capitalize;position: relative;}
 form.mage_form label p {width: 100%;margin: 0 0 var(--default-mp-xs) var(--default-mp-xs);}
+form.mage_form label .mage-clear-date {
+    position: absolute;
+    right: 7px;
+    top: 56%;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+}
 form.mage_form button[class*='mage_button'] {height: 40px;}
 .mage_form_control {
     width: 100%;color: #222;
