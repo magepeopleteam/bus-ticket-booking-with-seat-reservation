@@ -241,6 +241,7 @@ function mage_bus_search_item($return, $id)
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
     $get_stops_dates = mage_get_bus_stops_date($bus_id, $date, $start, $end);
     $arrival_date = $get_stops_dates['dropping'];
+    $starting_date = $get_stops_dates['boarding'];
 
     $show_dropping_time = isset($values['show_dropping_time'][0]) ? $values['show_dropping_time'][0] : 'yes';
 
@@ -281,7 +282,7 @@ function mage_bus_search_item($return, $id)
                     <div class="mage_hidden_xxs">
                         <h6>
                             <span class="fa fa-angle-double-right"></span>
-                            <span><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' ? sprintf('(%s %s)', mage_wp_date($arrival_date), mage_wp_time($start_time)) : null); ?>
+                            <span><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' ? sprintf('(%s %s)', mage_wp_date($starting_date), mage_wp_time($start_time)) : null); ?>
                             </span>
                         </h6>
                         <h6>
