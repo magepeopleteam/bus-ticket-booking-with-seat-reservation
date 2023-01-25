@@ -978,6 +978,9 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
 
     $wbtm_bus_on_dates = get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true)) : [];
     $wbtm_offday_schedules = get_post_meta(get_the_id(), 'wbtm_offday_schedule', true)?get_post_meta(get_the_id(), 'wbtm_offday_schedule', true):[];
+    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true):[];
+
+   // echo '<pre>'; echo print_r($wbtm_offday_schedules); echo '<pre>';
 
     if ($wbtm_bus_on_dates) {
         ?>
@@ -1004,7 +1007,7 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
             </ul>
         </div>
         <?php
-    }elseif ($wbtm_offday_schedules){
+    }elseif ($wbtm_offday_schedules || $weekly_offday){
 
         $alloffdays = array();
         foreach ($wbtm_offday_schedules as $wbtm_offday_schedule){
@@ -1043,6 +1046,8 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
             </ul>
         </div>
         <?php
+    }else{
+        mage_next_date_suggestion(false, true, $target);
     }
 }
 
