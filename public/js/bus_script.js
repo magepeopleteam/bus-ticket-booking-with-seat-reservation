@@ -872,4 +872,19 @@
         }
     }
 
+    // currency format according to WooCommerce setting
+    function wbtm_woo_price_format(price) {
+        let price_text = '';
+        if (mptbm_currency_position === 'right') {
+            price_text = price + mptbm_currency_symbol;
+        } else if (mptbm_currency_position === 'right_space') {
+            price_text = price + '&nbsp;' + mptbm_currency_symbol;
+        } else if (mptbm_currency_position === 'left') {
+            price_text = mptbm_currency_symbol + price;
+        } else {
+            price_text = mptbm_currency_symbol + '&nbsp;' + price;
+        }
+        return price_text;
+    }
+
 })(jQuery);

@@ -25,6 +25,7 @@ class WBTM_Plugin_Functions
     private function add_hooks()
     {
         add_action('init', array($this, 'direct_ticket_download'));
+        add_action('wp_head', array($this, 'wbtm_js_constant'), 5);
 
         add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
         add_action('wp_ajax_wbtm_seat_plan', array($this, 'wbtm_seat_plan'));
@@ -33,6 +34,19 @@ class WBTM_Plugin_Functions
         add_action('wp_ajax_wbtm_seat_plan_dd', array($this, 'wbtm_seat_plan_dd'));
         add_action('wp_ajax_nopriv_wbtm_seat_plan_dd', array($this, 'wbtm_seat_plan_dd'));
         add_action('woocommerce_checkout_order_processed', array($this, 'bus_order_processed'), 10);
+    }
+
+    public function wbtm_js_constant()
+    {
+    ?>
+        <script type="text/javascript">
+            let mptbm_currency_symbol = "<?php echo get_woocommerce_currency_symbol(); ?>";
+            let mptbm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
+            let mptbm_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
+            let mptbm_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
+            let mptbm_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
+        </script>
+    <?php
     }
 
     public function direct_ticket_download()
@@ -69,7 +83,7 @@ class WBTM_Plugin_Functions
 
     public function wbtm_get_driver_position($current_plan)
     {
-?>
+    ?>
         <select name="driver_seat_position">
             <option <?php if ($current_plan == 'driver_left') {
                         echo 'Selected';
