@@ -35,7 +35,7 @@ function mage_bus_search_form_only($single_bus, $target)
         <div class="mage_form_list">
             <label>
                 <span><i class="fas fa-calendar-alt"></i> <?php mage_bus_label('wbtm_date_of_journey_text', __('Date of Journey', 'bus-ticket-booking-with-seat-reservation')); ?></span>
-                <input type="text" class="mage_form_control" id="<?php echo apply_filters('wbtm_journey_date_input_id', 'j_date'); ?>" readonly name="j_date" value="<?php echo mage_bus_isset('j_date'); ?>" placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off" required />
+                <input type="text" class="mage_form_control" id="<?php echo apply_filters('wbtm_journey_date_input_id', 'j_date'); ?>" name="j_date" value="<?php echo mage_bus_isset('j_date'); ?>" placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off" required />
                 <span class="mage-clear-date">x</span>
             </label>
         </div>
@@ -48,7 +48,7 @@ function mage_bus_search_form_only($single_bus, $target)
                     <label>
 
                         <span><i class="fas fa-calendar-alt"></i> <?php mage_bus_label('wbtm_return_date_text', __('Return Date (Optional)', 'bus-ticket-booking-with-seat-reservation')); ?></span>
-                        <input type="text" class="mage_form_control" id="r_date" readonly name="r_date" value="<?php echo mage_bus_isset('r_date'); ?>" placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off" />
+                        <input type="text" class="mage_form_control" id="r_date" name="r_date" value="<?php echo mage_bus_isset('r_date'); ?>" placeholder="<?php echo current_time(get_option('date_format')); ?>" autocomplete="off" />
                         <span class="mage-clear-date">x</span>
                     </label>
                 </div>
