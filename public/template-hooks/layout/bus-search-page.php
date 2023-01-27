@@ -182,7 +182,11 @@ function mage_bus_search_list($return)
         mage_bus_list_sorting($has_bus_data, $start, $return); // Bus list sorting
     } else {
         echo '<p class="no-bus-found">';
+<<<<<<< HEAD
+        mage_bus_label('wbtm_no_bus_found_text', __('No', 'bus-ticket-booking-with-seat-reservation').' '.mage_bus_setting_value('bus_menu_label', 'Bus').' '.__('Found!', 'bus-ticket-booking-with-seat-reservation'));
+=======
         mage_bus_label('wbtm_no_bus_found_text', sprintf('No %s Found!', mage_bus_setting_value('bus_menu_label')));
+>>>>>>> 1260f8334065adb6d174241fc1d7e23ad122a005
         echo '</p>';
     }
 

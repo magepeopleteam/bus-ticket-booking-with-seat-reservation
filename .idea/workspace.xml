@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23890b8c-6e3d-4ba0-99aa-b0ed75bf982f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-page.php" afterDir="false" />
-    </list>
+    <list default="true" id="23890b8c-6e3d-4ba0-99aa-b0ed75bf982f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -67,6 +64,8 @@
       <workItem from="1671066821092" duration="19907000" />
       <workItem from="1671412838107" duration="11954000" />
       <workItem from="1671498884265" duration="7017000" />
+      <workItem from="1674710492614" duration="7991000" />
+      <workItem from="1674782207080" duration="9278000" />
     </task>
     <servers />
   </component>
