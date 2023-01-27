@@ -25,6 +25,7 @@ class WBTM_Plugin_Functions
     private function add_hooks()
     {
         add_action('init', array($this, 'direct_ticket_download'));
+        add_action('wp_head', array($this, 'wbtm_js_constant'), 5);
 
         add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
         add_action('wp_ajax_wbtm_seat_plan', array($this, 'wbtm_seat_plan'));
@@ -33,6 +34,19 @@ class WBTM_Plugin_Functions
         add_action('wp_ajax_wbtm_seat_plan_dd', array($this, 'wbtm_seat_plan_dd'));
         add_action('wp_ajax_nopriv_wbtm_seat_plan_dd', array($this, 'wbtm_seat_plan_dd'));
         add_action('woocommerce_checkout_order_processed', array($this, 'bus_order_processed'), 10);
+    }
+
+    public function wbtm_js_constant()
+    {
+    ?>
+        <script type="text/javascript">
+            let mptbm_currency_symbol = "<?php echo html_entity_decode(get_woocommerce_currency_symbol()); ?>";
+            let mptbm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
+            let mptbm_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
+            let mptbm_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
+            let mptbm_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
+        </script>
+    <?php
     }
 
     public function direct_ticket_download()
@@ -69,24 +83,24 @@ class WBTM_Plugin_Functions
 
     public function wbtm_get_driver_position($current_plan)
     {
-        ?>
+    ?>
         <select name="driver_seat_position">
             <option <?php if ($current_plan == 'driver_left') {
-                echo 'Selected';
-            } ?> value="driver_left"><?php _e('Left', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        echo 'Selected';
+                    } ?> value="driver_left"><?php _e('Left', 'bus-ticket-booking-with-seat-reservation'); ?></option>
             <option <?php if ($current_plan == 'driver_right') {
-                echo 'Selected';
-            } ?> value="driver_right"><?php _e('Right', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        echo 'Selected';
+                    } ?> value="driver_right"><?php _e('Right', 'bus-ticket-booking-with-seat-reservation'); ?></option>
             <?php do_action('wbtm_after_driver_position_dd'); ?>
         </select>
-        <?php
+    <?php
     }
 
     public function wbtm_seat_plan()
     {
         $seat_col = strip_tags($_POST['seat_col']);
         $seat_row = strip_tags($_POST['seat_row']);
-        ?>
+    ?>
 
         <div>
             <script type="text/javascript">
@@ -110,46 +124,46 @@ class WBTM_Plugin_Functions
             </script>
             <table id="repeatable-fieldset-seat-one" width="100%">
                 <tbody>
-                <?php
-                for ($x = 1; $x <= $seat_row; $x++) {
+                    <?php
+                    for ($x = 1; $x <= $seat_row; $x++) {
                     ?>
-                    <tr>
+                        <tr>
+                            <?php
+                            for ($row = 1; $row <= $seat_col; $row++) {
+                                $seat_type_name = "seat_types" . $row;
+                            ?>
+                                <td align="center">
+                                    <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
+                                    <?php wbtm_get_seat_type_list($seat_type_name); ?>
+                                </td>
+                            <?php } ?>
+                            <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                <input type="hidden" name="bus_seat_panels[]">
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                    <!-- empty hidden one for jQuery -->
+                    <tr class="empty-row-seat screen-reader-text">
                         <?php
                         for ($row = 1; $row <= $seat_col; $row++) {
                             $seat_type_name = "seat_types" . $row;
-                            ?>
+                        ?>
                             <td align="center">
                                 <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
                                 <?php wbtm_get_seat_type_list($seat_type_name); ?>
+
+
                             </td>
                         <?php } ?>
-                        <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-                            <input type="hidden" name="bus_seat_panels[]">
-                        </td>
+                        <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels[]"></td>
                     </tr>
-                    <?php
-                }
-                ?>
-                <!-- empty hidden one for jQuery -->
-                <tr class="empty-row-seat screen-reader-text">
-                    <?php
-                    for ($row = 1; $row <= $seat_col; $row++) {
-                        $seat_type_name = "seat_types" . $row;
-                        ?>
-                        <td align="center">
-                            <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
-                            <?php wbtm_get_seat_type_list($seat_type_name); ?>
-
-
-                        </td>
-                    <?php } ?>
-                    <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels[]"></td>
-                </tr>
                 </tbody>
             </table>
             <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
         </div>
-        <?php
+    <?php
         die();
     }
 
@@ -157,7 +171,7 @@ class WBTM_Plugin_Functions
     {
         $seat_col = strip_tags($_POST['seat_col']);
         $seat_row = strip_tags($_POST['seat_row']);
-        ?>
+    ?>
 
         <div>
             <script type="text/javascript">
@@ -180,37 +194,37 @@ class WBTM_Plugin_Functions
             </script>
             <table id="repeatable-fieldset-seat-one-dd" width="100%">
                 <tbody>
-                <?php
-                for ($x = 1; $x <= $seat_row; $x++) {
+                    <?php
+                    for ($x = 1; $x <= $seat_row; $x++) {
                     ?>
-                    <tr>
+                        <tr>
+                            <?php
+                            for ($row = 1; $row <= $seat_col; $row++) {
+                            ?>
+                                <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text"></td>
+                            <?php } ?>
+                            <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                <input type="hidden" name="bus_seat_panels_dd[]">
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                    <!-- empty hidden one for jQuery -->
+                    <tr class="empty-row-seat-dd screen-reader-text">
                         <?php
                         for ($row = 1; $row <= $seat_col; $row++) {
-                            ?>
-                            <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text"></td>
-                        <?php } ?>
-                        <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-                            <input type="hidden" name="bus_seat_panels_dd[]">
-                        </td>
-                    </tr>
-                    <?php
-                }
-                ?>
-                <!-- empty hidden one for jQuery -->
-                <tr class="empty-row-seat-dd screen-reader-text">
-                    <?php
-                    for ($row = 1; $row <= $seat_col; $row++) {
                         ?>
-                        <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text">
-                        </td>
-                    <?php } ?>
-                    <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels_dd[]"></td>
-                </tr>
+                            <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text">
+                            </td>
+                        <?php } ?>
+                        <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels_dd[]"></td>
+                    </tr>
                 </tbody>
             </table>
             <p><a id="add-seat-row-dd" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
         </div>
-        <?php
+    <?php
         die();
     }
 
@@ -296,7 +310,7 @@ class WBTM_Plugin_Functions
     {
         $fare = isset($fare) ? $fare : 0;
         $upper_price_percent = (int)get_post_meta(get_the_ID(), 'wbtm_seat_dd_price_parcent', true);
-        ?>
+    ?>
         <script>
             jQuery(document).ready(function($) {
 
@@ -315,7 +329,7 @@ class WBTM_Plugin_Functions
 
                 $(document).on('click', '.seat<?php echo $id; ?>_booked', function() {
                     // $( document.body ).trigger( 'remove_selection<?php //echo $id; 
-                    ?>', [ $(this).data("seat") ] );
+                                                                    ?>', [ $(this).data("seat") ] );
                 })
 
                 $(document).on('click', '.remove-seat-row<?php echo $id; ?>', function() {
@@ -515,24 +529,24 @@ class WBTM_Plugin_Functions
                 // function wbt_update_passenger_form(seat_name = '') {
 
                 //     var input = jQuery('#tq<?php //echo $id; 
-                ?>').val() || 0;
+                                                ?>').val() || 0;
                 //     var children = jQuery('#divParent<?php //echo $id; 
-                ?> > div').length || 0;
+                                                        ?> > div').length || 0;
 
                 //     if (input < children) {
                 //         jQuery('#divParent<?php //echo $id; 
-                ?>').empty();
+                                                ?>').empty();
                 //         children = 0;
                 //     }
 
                 //     for (var i = children + 1; i <= input; i++) {
 
                 //         jQuery('#divParent<?php //echo $id; 
-                ?>').append(
+                                                ?>').append(
                 //             jQuery('<div/>')
                 //             .attr("id", "newDiv" + i)
                 //             .html("<?php //do_action('wbtm_reg_fields', '"+seat_name+"');
-                ?>")
+                                        ?>")
                 //         );
                 //     }
                 // }
@@ -884,7 +898,7 @@ class WBTM_Plugin_Functions
 
             // $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 3600, 1); // In Hour
             $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60, 1); // In Minute
-            if(abs($diff) != $diff) {
+            if (abs($diff) != $diff) {
                 return 'no';
             }
 
@@ -1629,7 +1643,7 @@ class WBTM_Plugin_Functions
                     printf('<option %s value="%s">%s</option>', $selected, $term->name, $term->name);
                 endforeach; ?>
             </select>
-        <?php endif;
+    <?php endif;
         return ob_get_clean();
     }
 
@@ -1745,7 +1759,7 @@ function wbtm_get_seat_type_list($name, $bus_id = '')
     <?php do_action('wbtm_seat_type_list_init'); ?>
 </select>
 </div> -->
-    <?php
+<?php
     //echo ob_get_clean();
 
     echo '';
@@ -1826,12 +1840,13 @@ function wbtm_convert_date_to_php($date)
     return date('Y-m-d', strtotime($date));
 }
 
-function displayDates($date1, $date2, $format = 'd-m-Y' ) {
+function displayDates($date1, $date2, $format = 'd-m-Y')
+{
     $dates = array();
     $current = strtotime($date1);
     $date2 = strtotime($date2);
     $stepVal = '+1 day';
-    while( $current <= $date2 ) {
+    while ($current <= $date2) {
         $dates[] = date($format, $current);
         $current = strtotime($stepVal, $current);
     }
@@ -1841,7 +1856,7 @@ function displayDates($date1, $date2, $format = 'd-m-Y' ) {
 /**
  * This Function will modify the journey date input box if there is any settings for particular on date, Then only particular on date will be enable in the datepicker calendar.
  * */
-add_action('wp_footer', 'wbtm_journey_date_js');
+add_action('wp_footer', 'wbtm_journey_date_js', 100);
 // add_action('wbtm_search_form_end','wbtm_journey_date_js');
 function wbtm_journey_date_js()
 {
@@ -1849,193 +1864,191 @@ function wbtm_journey_date_js()
     ob_start();
 
 
-    ?>
+?>
     <script>
         jQuery(function() {
             <?php
             if (is_single()) {
 
-            $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : [];
-            $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true)?get_post_meta($post->ID, 'wbtm_offday_schedule', true):[];
+                $wbtm_bus_on_dates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_on_dates', true)) : [];
+                $wbtm_offday_schedules = get_post_meta($post->ID, 'wbtm_offday_schedule', true) ? get_post_meta($post->ID, 'wbtm_offday_schedule', true) : [];
 
 
-            if ($wbtm_bus_on_dates) {
-                $wbtm_bus_on_dates_arr = explode(',',$wbtm_bus_on_dates);
-                $onday = array();
-                foreach ($wbtm_bus_on_dates_arr as $ondate) {
-                    $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
-                }
-                $on_particular_date = implode(',', $onday);
-                echo 'var enableDates = [' . $on_particular_date . '];';
+                if ($wbtm_bus_on_dates) {
+                    $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
+                    $onday = array();
+                    foreach ($wbtm_bus_on_dates_arr as $ondate) {
+                        $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
+                    }
+                    $on_particular_date = implode(',', $onday);
+                    echo 'var enableDates = [' . $on_particular_date . '];';
             ?>
-            function enableAllTheseDays(date) {
-                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if (enableDates.length > 0) {
-                    if (jQuery.inArray(sdate, enableDates) != -1) {
+
+                    function enableAllTheseDays(date) {
+                        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                        if (enableDates.length > 0) {
+                            if (jQuery.inArray(sdate, enableDates) != -1) {
+                                return [true];
+                            }
+                        }
+                        return [false];
+                    }
+
+                    jQuery('#j_date').datepicker({
+                        dateFormat: '<?php echo wbtm_convert_datepicker_dateformat(); ?>',
+                        minDate: 0,
+                        beforeShowDay: enableAllTheseDays
+                    });
+
+                <?php } elseif ($wbtm_offday_schedules) {
+
+
+
+                    $alloffdays = array();
+                    foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
+                        $alloffdays =  array_unique(array_merge($alloffdays, displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+                    }
+
+                    $offday = array();
+                    foreach ($alloffdays as $alloffday) {
+                        $offday[] = '"' . date('d-m-Y', strtotime($alloffday)) . '"';
+                    }
+                    $off_particular_date = implode(',', $offday);
+
+                    echo 'var off_particular_date = [' . $off_particular_date . '];';
+
+                    $weekly_offday = get_post_meta($post->ID, 'weekly_offday', true) ? get_post_meta($post->ID, 'weekly_offday', true) : [];
+
+                    $weekly_offday = implode(', ', $weekly_offday);
+
+                    echo 'var weekly_offday = [' . $weekly_offday . '];';
+
+
+
+                ?>
+
+                    function off_particular(date) {
+                        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                        if (off_particular_date.length > 0) {
+                            if (jQuery.inArray(sdate, off_particular_date) != -1) {
+                                return [false];
+                            }
+                        }
+
+
+                        if (weekly_offday.length > 0) {
+                            if (weekly_offday.includes(date.getDay())) {
+                                return [false];
+                            }
+                        }
                         return [true];
                     }
-                }
-                return [false];
-            }
 
-            jQuery('#j_date').datepicker({
-                dateFormat: '<?php echo wbtm_convert_datepicker_dateformat(); ?>',
-                minDate: 0,
-                beforeShowDay: enableAllTheseDays
-            });
-
-            <?php } elseif($wbtm_offday_schedules) {
+                    jQuery("#j_date").datepicker({
+                        dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                        minDate: 0,
+                        beforeShowDay: off_particular
+                    });
 
 
-
-            $alloffdays = array();
-            foreach ($wbtm_offday_schedules as $wbtm_offday_schedule){
-                $alloffdays =  array_unique( array_merge( $alloffdays ,displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])) ); ;
-            }
-
-            $offday = array();
-            foreach ($alloffdays as $alloffday) {
-                $offday[] = '"' . date('d-m-Y', strtotime($alloffday)) . '"';
-            }
-            $off_particular_date = implode(',', $offday);
-
-            echo 'var off_particular_date = [' . $off_particular_date . '];';
-
-            $weekly_offday = get_post_meta($post->ID, 'weekly_offday', true) ? get_post_meta($post->ID, 'weekly_offday', true):[];
-
-            $weekly_offday = implode(', ', $weekly_offday);
-
-            echo 'var weekly_offday = [' . $weekly_offday . '];';
+                <?php } else {
 
 
+                    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
 
-            ?>
+                    $weekly_offday = implode(', ', $weekly_offday);
 
-            function off_particular(date) {
-                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if (off_particular_date.length > 0) {
-                    if (jQuery.inArray(sdate, off_particular_date) != -1) {
-                        return [false];
+                    echo 'var weekly_offday = [' . $weekly_offday . '];';
+                ?>
+
+                    function weekly_offday_d(date) {
+                        if (weekly_offday.length > 0) {
+                            if (weekly_offday.includes(date.getDay())) {
+                                return [false];
+                            }
+                        }
+                        return [true];
+
                     }
+
+                    jQuery("#j_date").datepicker({
+                        dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                        minDate: 0,
+                        beforeShowDay: weekly_offday_d
+                    });
+
+                <?php
+
+                    /////
                 }
-
-
-                if (weekly_offday.length > 0) {
-                    if (weekly_offday.includes(date.getDay())) {
-                        return [false];
-                    }
-                }
-                return [true];
-            }
-
-            jQuery("#j_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0,
-                beforeShowDay: off_particular
-            });
-
-
-            <?php } else{
-
-
-            $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true)?get_post_meta(get_the_id(), 'weekly_offday', true):[];
-
-            $weekly_offday = implode(', ', $weekly_offday);
-
-            echo 'var weekly_offday = [' . $weekly_offday . '];';
-              ?>
-
-            function weekly_offday_d(date) {
-                if (weekly_offday.length > 0) {
-                    if (weekly_offday.includes(date.getDay())) {
-                        return [false];
-                    }
-                }
-                return [true];
-
-            }
-
-            jQuery("#j_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0,
-                beforeShowDay: weekly_offday_d
-            });
-
-            <?php
-
-                  /////
-            } } else {
-            $settings = get_option('wbtm_bus_settings');
-            $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : '';
-            $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : '';
-
-            if ($global_offdates) {
-                $global_offdates_arr = explode(', ', $global_offdates);
-                $pday = array();
-                foreach ($global_offdates_arr as $offdate) {
-                    $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
-                }
-                $particular_date = implode(',', $pday);
-
-                echo 'var disableDates = [' . $particular_date . '];';
             } else {
-                echo 'var disableDates = [];';
-            }
+                $settings = get_option('wbtm_bus_settings');
+                $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : '';
+                $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : '';
 
-            if ($global_offdays) {
-                $particular_offdays = implode(',', $global_offdays);
-
-                echo 'var disableDays = [' . $particular_offdays . '];';
-            } else {
-                echo 'var disableDays = [];';
-            }
-            ?>
-
-
-
-            function disableAllTheseDays(date) {
-                var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-                if (disableDates.length > 0) {
-                    if (jQuery.inArray(sdate, disableDates) != -1) {
-                        return [false];
+                if ($global_offdates) {
+                    $global_offdates_arr = explode(', ', $global_offdates);
+                    $pday = array();
+                    foreach ($global_offdates_arr as $offdate) {
+                        $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
                     }
+                    $particular_date = implode(',', $pday);
+
+                    echo 'var disableDates = [' . $particular_date . '];';
+                } else {
+                    echo 'var disableDates = [];';
                 }
 
-                if (disableDays.length > 0) {
-                    if (disableDays.includes(date.getDay())) {
-                        return [false];
+                if ($global_offdays) {
+                    $particular_offdays = implode(',', $global_offdays);
+
+                    echo 'var disableDays = [' . $particular_offdays . '];';
+                } else {
+                    echo 'var disableDays = [];';
+                }
+                ?>
+
+
+
+                function disableAllTheseDays(date) {
+                    var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+                    if (disableDates.length > 0) {
+                        if (jQuery.inArray(sdate, disableDates) != -1) {
+                            return [false];
+                        }
                     }
-                }
-                return [true];
-            }
 
-            jQuery("#j_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0,
-                beforeShowDay: disableAllTheseDays,
-                onSelect: function(dateText, inst) {
-                    var date = jQuery.datepicker.parseDate(inst.settings.dateFormat || jQuery.datepicker
-                        ._defaults.dateFormat, dateText, inst.settings);
-                    var dateText = jQuery.datepicker.formatDate("DD", date, inst.settings);
-                    var selectedDate = new Date(date);
-                    var msecsInADay = 86400000;
-                    var endDate = new Date(selectedDate.getTime());
-                    //var endDate = new Date(selectedDate.getTime() + msecsInADay);
-                    jQuery("#r_date").datepicker("option", "minDate", endDate);
+                    if (disableDays.length > 0) {
+                        if (disableDays.includes(date.getDay())) {
+                            return [false];
+                        }
+                    }
+                    return [true];
                 }
-            });
+
+                jQuery("#j_date").datepicker({
+                    dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                    minDate: 0,
+                    beforeShowDay: disableAllTheseDays,
+                    onSelect: function(dateText, inst) {
+                        var date = jQuery.datepicker.parseDate(inst.settings.dateFormat || jQuery.datepicker
+                            ._defaults.dateFormat, dateText, inst.settings);
+                        var dateText = jQuery.datepicker.formatDate("DD", date, inst.settings);
+                        var selectedDate = new Date(date);
+                        var msecsInADay = 86400000;
+                        var endDate = new Date(selectedDate.getTime());
+                        //var endDate = new Date(selectedDate.getTime() + msecsInADay);
+                        jQuery("#r_date").datepicker("option", "minDate", endDate);
+                    }
+                });
+
+                jQuery("#r_date").datepicker({
+                    dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
+                    minDate: 0,
+                    beforeShowDay: disableAllTheseDays,
+                });
 
             <?php } ?>
-
-
-
-
-            jQuery("#r_date").datepicker({
-                dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
-                minDate: 0,
-                beforeShowDay: disableAllTheseDays,
-            });
-
         })
 
 
@@ -2061,7 +2074,7 @@ function wbtm_journey_date_js()
 
         });
     </script>
-    <?php
+<?php
     echo ob_get_clean();
 }
 
@@ -2126,7 +2139,7 @@ function wbtm_load_dropping_point()
 function wbtm_search_result_list_script()
 {
     ob_start();
-    ?>
+?>
     <script>
         jQuery('#mage_bus_search_button').on('click', function() {
 
@@ -2192,7 +2205,7 @@ function wbtm_search_result_list_script()
 
         });
     </script>
-    <?php
+<?php
     echo ob_get_clean();
 }
 
@@ -2485,7 +2498,7 @@ function mage_woocommerce_order_item_display_meta_value($value, $meta, $item)
 add_action('woocommerce_after_order_itemmeta', 'mage_show_passenger_info_in_order_details', 10, 3);
 function mage_show_passenger_info_in_order_details($item_id, $item, $_product)
 {
-    ?>
+?>
     <style type="text/css">
         .th__title {
             text-transform: capitalize;
@@ -2570,7 +2583,7 @@ function wbtm_ajax_url()
     <script type="text/javascript">
         var wbtm_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
     </script>
-    <?php
+<?php
 }
 
 add_action('rest_api_init', 'wbtm_bus_cunstom_fields_to_rest_init');
@@ -2624,7 +2637,7 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
         return 0.0;
     }
 
-    $line_price = $price * $qty;
+    $line_price = (float) $price * $qty;
     $return_price = $line_price;
 
     if ($product->is_taxable()) {
