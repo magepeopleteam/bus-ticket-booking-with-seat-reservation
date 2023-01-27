@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-26 07:51+0000\n"
+"POT-Creation-Date: 2023-01-26 07:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -282,8 +282,12 @@ msgid ""
 "know how you can do it:"
 msgstr ""
 
-#: admin/class/class-create-cpt.php:22 admin/class/class-create-tax.php:16
+#: admin/class/class-create-tax.php:16
 msgid "All"
+msgstr ""
+
+#: admin/class/class-create-cpt.php:22
+msgid "All vvvv"
 msgstr ""
 
 #: includes/bus-search-page_no_need.php:276

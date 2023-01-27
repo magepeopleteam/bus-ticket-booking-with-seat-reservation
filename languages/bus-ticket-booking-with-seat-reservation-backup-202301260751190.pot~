@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-26 07:51+0000\n"
+"POT-Creation-Date: 2023-01-26 07:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -177,6 +177,10 @@ msgstr ""
 msgid "A Complete Bus Ticketig System for WordPress & WooCommerce"
 msgstr ""
 
+#: admin/class/class-create-cpt.php:22
+msgid "Abcdef "
+msgstr ""
+
 #: admin/template/routing.php:76 admin/template/routing.php:148
 #: admin/template/routing.php:229 admin/template/routing.php:319
 #: includes/my-account/bus-ticket.php:153
@@ -282,7 +286,7 @@ msgid ""
 "know how you can do it:"
 msgstr ""
 
-#: admin/class/class-create-cpt.php:22 admin/class/class-create-tax.php:16
+#: admin/class/class-create-tax.php:16
 msgid "All"
 msgstr ""
 

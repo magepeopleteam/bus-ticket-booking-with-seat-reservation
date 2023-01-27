@@ -1,19 +1,18 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-26 07:51+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"POT-Creation-Date: 2022-11-29 05:39+0000\n"
+"PO-Revision-Date: 2023-01-26 06:58+0000\n"
+"Last-Translator: \n"
+"Language-Team: Bengali (Bangladesh)\n"
+"Language: bn_BD\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.3.1; wp-5.3.2"
+"X-Loco-Version: 2.6.3; wp-6.1.1"
 
 #: includes/class-wbtm-required-plugins.php:314
 msgid ""
@@ -225,9 +224,10 @@ msgstr ""
 msgid "Add More offdate"
 msgstr ""
 
-#: admin/class/class-create-tax.php:20 admin/class/class-create-tax.php:100
+#: admin/class/class-create-cpt.php:23 admin/class/class-create-tax.php:20
+#: admin/class/class-create-tax.php:100
 msgid "Add New"
-msgstr ""
+msgstr "notun bus"
 
 #: admin/template/routing.php:25
 msgid "Add New Bus Stop"
@@ -282,7 +282,7 @@ msgid ""
 "know how you can do it:"
 msgstr ""
 
-#: admin/class/class-create-cpt.php:22 admin/class/class-create-tax.php:16
+#: admin/class/class-create-tax.php:16
 msgid "All"
 msgstr ""
 

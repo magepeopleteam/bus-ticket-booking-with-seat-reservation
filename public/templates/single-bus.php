@@ -108,7 +108,9 @@ do_action('wbtm_before_single_bus_search_page');
 
             } else {
                 echo '<div class="wbtm-warnig">';
-                _e("This bus  isn't available on this search criteria, Please try", 'bus-ticket-booking-with-seat-reservation');
+                _e("This", 'bus-ticket-booking-with-seat-reservation');
+                echo ' '.mage_bus_setting_value('bus_menu_label', 'Bus').' ';
+                _e("isn't available on this search criteria, Please try", 'bus-ticket-booking-with-seat-reservation');
                 echo '</div>';
             }
 
