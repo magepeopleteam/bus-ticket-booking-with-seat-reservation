@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-26 07:15+0000\n"
-"PO-Revision-Date: 2023-01-26 07:52+0000\n"
+"PO-Revision-Date: 2023-01-27 06:21+0000\n"
 "Last-Translator: \n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
@@ -230,7 +230,7 @@ msgstr ""
 
 #: admin/class/class-create-tax.php:20 admin/class/class-create-tax.php:100
 msgid "Add New"
-msgstr "notun jog"
+msgstr "Add New"
 
 #: admin/template/routing.php:25
 msgid "Add New Bus Stop"
