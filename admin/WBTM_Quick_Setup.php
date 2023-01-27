@@ -145,8 +145,8 @@
                                 $active = $tab['active'];
                                 ?>
                                 <div class="tab-content <?php echo $active ? 'active' : ''; ?>" id="<?php echo esc_html( $id ); ?>">
-                                    <?php do_action( 'ttbm_quick_setup_content_' . $id ); ?>
-                                    <?php do_action( 'ttbm_quick_setup_content_after', $tab ); ?>
+                                    <?php do_action( 'wbtm_quick_setup_content_' . $id ); ?>
+                                    <?php do_action( 'wbtm_quick_setup_content_after', $tab ); ?>
                                 </div>
                             <?php } ?>
                             <div class="next-prev">
