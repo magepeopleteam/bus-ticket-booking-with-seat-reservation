@@ -40,7 +40,7 @@ class WBTM_Plugin_Functions
     {
     ?>
         <script type="text/javascript">
-            let mptbm_currency_symbol = "<?php echo get_woocommerce_currency_symbol(); ?>";
+            let mptbm_currency_symbol = "<?php echo html_entity_decode(get_woocommerce_currency_symbol()); ?>";
             let mptbm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
             let mptbm_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
             let mptbm_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
@@ -1856,7 +1856,7 @@ function displayDates($date1, $date2, $format = 'd-m-Y')
 /**
  * This Function will modify the journey date input box if there is any settings for particular on date, Then only particular on date will be enable in the datepicker calendar.
  * */
-add_action('wp_footer', 'wbtm_journey_date_js');
+add_action('wp_footer', 'wbtm_journey_date_js', 100);
 // add_action('wbtm_search_form_end','wbtm_journey_date_js');
 function wbtm_journey_date_js()
 {
@@ -2637,7 +2637,7 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
         return 0.0;
     }
 
-    $line_price = $price * $qty;
+    $line_price = (float) $price * $qty;
     $return_price = $line_price;
 
     if ($product->is_taxable()) {

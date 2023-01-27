@@ -37,9 +37,17 @@ function mage_bus_search_page()
 function mage_bus_search_list($return)
 {
     global $wbtmmain;
+    $is_old_date = false;
     $bus_list = mage_search_bus_query($return);
     $bus_list_loop = new WP_Query($bus_list);
     $j_date = $return ? $_GET['r_date'] : $_GET['j_date'];
+
+    // Check is old date
+    $j_date_ = date('Y-m-d', strtotime($j_date));
+    if($j_date_ < date('Y-m-d')) {
+        $is_old_date = true;
+    }
+
     $j_date = mage_wp_date($j_date, 'Y-m-d');
     $start = $_GET['bus_start_route'];
     $end = $_GET['bus_end_route'];
@@ -57,114 +65,116 @@ function mage_bus_search_list($return)
 
     $has_bus_data = array();
     $bus_index = 0;
-    while ($bus_list_loop->have_posts()) {
-        $has_bus = false;
-        $is_buffer = null;
+    if(!$is_old_date) {
+        while ($bus_list_loop->have_posts()) {
+            $has_bus = false;
+            $is_buffer = null;
 
-        $bus_list_loop->the_post();
-        $id = get_the_id();
+            $bus_list_loop->the_post();
+            $id = get_the_id();
 
-        $bus_bp_array = get_post_meta($id, 'wbtm_bus_bp_stops', true) ? get_post_meta($id, 'wbtm_bus_bp_stops', true) : [];
-        $bus_bp_array = maybe_unserialize($bus_bp_array);
+            $bus_bp_array = get_post_meta($id, 'wbtm_bus_bp_stops', true) ? get_post_meta($id, 'wbtm_bus_bp_stops', true) : [];
+            $bus_bp_array = maybe_unserialize($bus_bp_array);
 
-        if ($bus_bp_array) {
-            $bus_next_stops_array = get_post_meta($id, 'wbtm_bus_next_stops', true) ? get_post_meta($id, 'wbtm_bus_next_stops', true) : [];
-            $bus_next_stops_array = maybe_unserialize($bus_next_stops_array);
+            if ($bus_bp_array) {
+                $bus_next_stops_array = get_post_meta($id, 'wbtm_bus_next_stops', true) ? get_post_meta($id, 'wbtm_bus_next_stops', true) : [];
+                $bus_next_stops_array = maybe_unserialize($bus_next_stops_array);
 
-            // Intermidiate Route
-            $o_1 = mage_bus_end_has_prev($start, $end, $bus_bp_array);
-            $o_2 = mage_bus_start_has_next($start, $end, $bus_next_stops_array);
+                // Intermidiate Route
+                $o_1 = mage_bus_end_has_prev($start, $end, $bus_bp_array);
+                $o_2 = mage_bus_start_has_next($start, $end, $bus_next_stops_array);
 
-            if ($o_1 && $o_2) {
-                continue;
-            }
-
-            // Intermidiate Route END
-
-            // Buffer Time Calculation
-            $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
-            $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
-            // Buffer Time Calculation END
-
-            // Midnight Calculation
-            $is_midnight = mage_bus_is_midnight_trip($bus_bp_array, $start);
-            if ($is_midnight) {
-                $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date)));
-            }
-            // Midnight Calculation END
-
-            if ($is_buffer == 'yes') {
-                // Operational on day
-                $is_on_date = false;
-                $bus_on_dates = array();
-                //                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
-                $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
-                if ($bus_on_date != null) {
-                    $bus_on_dates = explode(', ', $bus_on_date);
-                    $is_on_date = true;
+                if ($o_1 && $o_2) {
+                    continue;
                 }
 
-                if ($is_on_date) {
+                // Intermidiate Route END
 
-                    // echo $j_date.'<br>';
-                    // echo '<pre>';print_r($bus_on_dates);die;
-                    // die;
-                    if (in_array($j_date, $bus_on_dates)) {
-                        $has_bus = true;
+                // Buffer Time Calculation
+                $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
+                $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
+                // Buffer Time Calculation END
+
+                // Midnight Calculation
+                $is_midnight = mage_bus_is_midnight_trip($bus_bp_array, $start);
+                if ($is_midnight) {
+                    $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date)));
+                }
+                // Midnight Calculation END
+
+                if ($is_buffer == 'yes') {
+                    // Operational on day
+                    $is_on_date = false;
+                    $bus_on_dates = array();
+                    //                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+                    $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
+                    if ($bus_on_date != null) {
+                        $bus_on_dates = explode(', ', $bus_on_date);
+                        $is_on_date = true;
                     }
-                } else {
 
-                    // Offday schedule check
-                    // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
-                    //                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
-                    $bus_offday_schedules = mage_determine_offdate($id, $return, $start, $end);
+                    if ($is_on_date) {
 
-                    // Get Bus Start Time
-                    $start_time = '';
-                    foreach ($bus_bp_array as $stop) {
-                        if ($stop['wbtm_bus_bp_stops_name'] == $start) {
-                            $start_time = $stop['wbtm_bus_bp_start_time'];
-                            break;
+                        // echo $j_date.'<br>';
+                        // echo '<pre>';print_r($bus_on_dates);die;
+                        // die;
+                        if (in_array($j_date, $bus_on_dates)) {
+                            $has_bus = true;
                         }
-                    }
+                    } else {
 
-                    $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
+                        // Offday schedule check
+                        // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
+                        //                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
+                        $bus_offday_schedules = mage_determine_offdate($id, $return, $start, $end);
 
-                    $offday_current_bus = false;
-                    if (!empty($bus_offday_schedules)) {
-                        $s_datetime = date('Y-m-d H:i:s', strtotime($j_date . ' ' . $start_time));
-
-                        foreach ($bus_offday_schedules as $item) {
-
-                            $c_iterate_date_from = $item['from_date'];
-                            $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-
-                            $c_iterate_date_to = $item['to_date'];
-                            $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-
-                            if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
-                                $offday_current_bus = true;
+                        // Get Bus Start Time
+                        $start_time = '';
+                        foreach ($bus_bp_array as $stop) {
+                            if ($stop['wbtm_bus_bp_stops_name'] == $start) {
+                                $start_time = $stop['wbtm_bus_bp_start_time'];
                                 break;
                             }
                         }
-                    }
 
-                    // Check Offday and date
-                    if (!$offday_current_bus && !mage_check_search_day_off_new($id, $j_date, $return)) {
-                        $has_bus = true;
+                        $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
+
+                        $offday_current_bus = false;
+                        if (!empty($bus_offday_schedules)) {
+                            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date . ' ' . $start_time));
+
+                            foreach ($bus_offday_schedules as $item) {
+
+                                $c_iterate_date_from = $item['from_date'];
+                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+
+                                $c_iterate_date_to = $item['to_date'];
+                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+
+                                if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
+                                    $offday_current_bus = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Check Offday and date
+                        if (!$offday_current_bus && !mage_check_search_day_off_new($id, $j_date, $return)) {
+                            $has_bus = true;
+                        }
                     }
                 }
             }
-        }
-        // var_dump($has_bus);die;
+            // var_dump($has_bus);die;
 
-        // Has Bus
-        if ($has_bus === true) {
-            $has_bus_data[$bus_index]['return'] = $return;
-            $has_bus_data[$bus_index]['id'] = $id;
-        }
+            // Has Bus
+            if ($has_bus === true) {
+                $has_bus_data[$bus_index]['return'] = $return;
+                $has_bus_data[$bus_index]['id'] = $id;
+            }
 
-        $bus_index++;
+            $bus_index++;
+        }
     }
 
     // Final list showing
@@ -494,7 +504,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                                 <td><?php echo wc_price(wbtm_get_price_including_tax($bus_id, $type['price'])) . '<sub> / ' . __("Seat", "bus-ticket-booking-with-seat-reservation") . '</sub>'; ?>
                                                 </td>
                                                 <td class="mage-seat-price">
-                                                    <?php echo get_woocommerce_currency_symbol() . '<span class="price-figure">0.00</span>' ?>
+                                                    <?php echo '<span class="price-figure">0.00</span>' ?>
                                                 </td>
                                             </tr>
                                     <?php endif;
@@ -510,7 +520,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <td><strong><?php _e('Total', 'bus-ticket-booking-with-seat-reservation'); ?>
                                                 :</strong></td>
                                         <td class="mage-price-total">
-                                            <strong><?php echo get_woocommerce_currency_symbol(); ?><span class="price-figure">0.00</span></strong>
+                                            <strong><span class="price-figure">0.00</span></strong>
                                         </td>
                                     </tr>
                                 </tfoot>

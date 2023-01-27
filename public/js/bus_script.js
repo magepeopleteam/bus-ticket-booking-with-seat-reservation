@@ -37,8 +37,21 @@
             if(subtotal) {
                 subtotal = subtotal.toFixed(2);
             }
-            $this.parent().siblings('.mage-seat-price').find('.price-figure').text(subtotal);
+            $this.parent().siblings('.mage-seat-price').find('.price-figure').text(wbtm_woo_price_format(subtotal));
             $this.parent().siblings('.mage-seat-price').attr('data-price', (subtotal));
+
+            // Any date return
+            if (type) {
+                if (qty > 0) {
+                    $('.wbtm_anydate_return_wrap').show();
+                    $('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
+                    jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+                    jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+                } else {
+                    $('.wbtm_anydate_return_wrap').hide();
+                }
+            }
+            // Any date return End
 
             let p = 0.00;
             $this.parents('.mage-seat-table').find('tbody tr').each(function() {
@@ -48,7 +61,7 @@
 
             });
 
-            $this.parents('.mage-seat-table').find('.mage-price-total .price-figure').text(p);
+            $this.parents('.mage-seat-table').find('.mage-price-total .price-figure').text(wbtm_woo_price_format(p)); // Subtotal Price
 
             // Enable Booking Button
             if (type == 'adult') {
@@ -139,24 +152,24 @@
 
         });
 
-        $('.mage-seat-qty input').on('input', function() {
-            let $this = $(this);
-            let type = $this.attr('data-seat-type');
-            let qty = $this.val();
-            qty = qty > 0 ? qty : 0;
+        // $('.mage-seat-qty input').on('input', function() {
+        //     let $this = $(this);
+        //     let type = $this.attr('data-seat-type');
+        //     let qty = $this.val();
+        //     qty = qty > 0 ? qty : 0;
 
-            if (type) {
-                if (qty > 0) {
-                    $('.wbtm_anydate_return_wrap').show();
-                    $('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
-                    jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
-                    jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
-                } else {
-                    $('.wbtm_anydate_return_wrap').hide();
-                }
-            }
+        //     if (type) {
+        //         if (qty > 0) {
+        //             $('.wbtm_anydate_return_wrap').show();
+        //             $('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
+        //             jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
+        //             jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
+        //         } else {
+        //             $('.wbtm_anydate_return_wrap').hide();
+        //         }
+        //     }
 
-        });
+        // });
 
         $('.wbtm_anydate_return_switch label').click(function(e) {
             e.stopImmediatePropagation();
@@ -189,7 +202,7 @@
                     }
                     let new_amount = amount * 2;
                     let thisSubtotal = seat_plan_price;
-                    thisSubtotal.html(new_amount.toFixed(2));
+                    thisSubtotal.html(wbtm_woo_price_format(new_amount));
                     $this.parents('form').find('#wbtm_anydate_return_price').val(amount);
                 } else {
                     let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody').children();
@@ -205,7 +218,7 @@
 
                     let new_amount = amount * 2;
                     let thisSubtotal = without_seat_plan_price;
-                    thisSubtotal.html(new_amount.toFixed(2));
+                    thisSubtotal.html(wbtm_woo_price_format(new_amount));
                     $this.parents('form').find('#wbtm_anydate_return_price').val(amount);
 
                 }
@@ -238,7 +251,7 @@
                     }
 
                     let thisSubtotal = without_seat_plan_price;
-                    thisSubtotal.html(amount.toFixed(2));
+                    thisSubtotal.html(wbtm_woo_price_format(amount)); // Subtotal Price
                 }
 
                 $this.parents('form').find('#wbtm_anydate_return_price').val('');
@@ -354,7 +367,7 @@
 
         if (bus_zero_price_allow == 'yes') {
             let grand_total = extra_price + bagPrice;
-            grand_ele.text(php_vars.currency_symbol + grand_total.toFixed(2));
+            grand_ele.text(wbtm_woo_price_format(grand_total));
             parent.find('button[name="add-to-cart"]').removeAttr('disabled');
             parent.find('.mage_bus_sub_total_price.mage-price-total .price-figure').text(grand_total.toFixed(2));
         } else {
@@ -362,10 +375,10 @@
             let grand_total = seat_price + extra_price + bagPrice;
 
             if (grand_total) {
-                grand_ele.text(php_vars.currency_symbol + grand_total.toFixed(2));
+                grand_ele.text(wbtm_woo_price_format(grand_total));
                 parent.find('button[name="add-to-cart"]').prop('disabled', false);
             } else {
-                grand_ele.text(php_vars.currency_symbol + "0.00");
+                grand_ele.text("0.00");
                 (bus_type == 'general') ? parent.find('button[name="add-to-cart"]').prop('disabled', true): null;
             }
         }
@@ -874,15 +887,21 @@
 
     // currency format according to WooCommerce setting
     function wbtm_woo_price_format(price) {
+        if(typeof price === 'string') {
+            price = Number(price);
+        }
+        price = price.toFixed(2);
+        // price = price.toString();
+        // price = price.toFixed(mptbm_num_of_decimal);
         let price_text = '';
         if (mptbm_currency_position === 'right') {
             price_text = price + mptbm_currency_symbol;
         } else if (mptbm_currency_position === 'right_space') {
-            price_text = price + '&nbsp;' + mptbm_currency_symbol;
+            price_text = price + ' ' + mptbm_currency_symbol;
         } else if (mptbm_currency_position === 'left') {
             price_text = mptbm_currency_symbol + price;
         } else {
-            price_text = mptbm_currency_symbol + '&nbsp;' + price;
+            price_text = mptbm_currency_symbol + ' ' + price;
         }
         return price_text;
     }
