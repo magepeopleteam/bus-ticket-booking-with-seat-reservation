@@ -85,7 +85,13 @@ function wbtm_seat_plan_1($b_start, $date) {
 
         <table>
             <tr>
-                <td colspan="10" style="text-align: center;"><?php _e('No Bus Found, Try Another Date.', 'bus-ticket-booking-with-seat-reservation'); ?></td>
+                <td colspan="10" style="text-align: center;">
+                    <?php
+                    _e('No', 'bus-ticket-booking-with-seat-reservation');
+                    echo ' '.mage_bus_setting_value('bus_menu_label', 'Bus').' ';
+                    _e('Found, Try Another Date.', 'bus-ticket-booking-with-seat-reservation');
+                    ?>
+                </td>
             </tr>
         </table>
 

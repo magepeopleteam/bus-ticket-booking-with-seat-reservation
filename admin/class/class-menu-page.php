@@ -1187,9 +1187,7 @@ $page_5_options = array(
                 array(
                     'id'		=> 'site_sidebars',
                     'title'		=> __('Site sidebars','pickthemes'),
-                    'details'	=> __('You can register sidebar here. you can display sidebar by <a href="https://codex.wordpress.org/Function_Reference/dynamic_sidebar">dynamic_sidebar()</a> function, example bellow.','pickthemes').'<br><code>&lt;?php if ( is_active_sidebar( \'sidebar-id\' )  ) : 
-    dynamic_sidebar( "sidebar-id" );
-endif; ?></code>',
+                    'details'	=> __('You can register sidebar here. you can display sidebar by <a href="https://codex.wordpress.org/Function_Reference/dynamic_sidebar">dynamic_sidebar()</a> function, example bellow.','pickthemes').'<br><code>&lt;?php if ( is_active_sidebar( \'sidebar-id\' )  ) : dynamic_sidebar( "sidebar-id" );endif; ?></code>',
                     'type'		    => 'repeatable',
                     'default'		=> '',
                     'collapsible'   =>true,

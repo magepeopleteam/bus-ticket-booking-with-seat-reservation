@@ -9,15 +9,15 @@
                     add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 10, 1 );
                 //}
                 add_action( 'admin_menu', array( $this, 'quick_setup_menu' ) );
-                add_action( 'ttbm_quick_setup_content_start', array( $this, 'setup_welcome_content' ) );
-                add_action( 'ttbm_quick_setup_content_general', array( $this, 'setup_general_content' ) );
-                add_action( 'ttbm_quick_setup_content_done', array( $this, 'setup_content_done' ) );
+                add_action( 'wbtm_quick_setup_content_start', array( $this, 'setup_welcome_content' ) );
+                add_action( 'wbtm_quick_setup_content_general', array( $this, 'setup_general_content' ) );
+                add_action( 'wbtm_quick_setup_content_done', array( $this, 'setup_content_done' ) );
             }
             public function add_admin_scripts() {
                 wp_enqueue_script('mp_admin_settingshh', WBTM_PLUGIN_URL . '/admin/assets/js/mp_admin_settings.js', array('jquery'), time(), true);
                 wp_enqueue_style('mp_admin_settingsrtt', WBTM_PLUGIN_URL . '/admin/assets/css/mp_admin_settings.css', array(), time());
-                wp_enqueue_script('ttbm_admin_scripttyy', WBTM_PLUGIN_URL . '/admin/assets/js/ttbm_admin_script.js', array('jquery'), time(), true);
-                wp_enqueue_style('ttbm_admin_styleghgg', WBTM_PLUGIN_URL . '/admin/assets/css/ttbm_admin_style.css', array(), time());
+                wp_enqueue_script('wbtm admin script', WBTM_PLUGIN_URL . '/admin/assets/js/wbtm_admin_script.js', array('jquery'), time(), true);
+                wp_enqueue_style('wbtm admin style', WBTM_PLUGIN_URL . '/admin/assets/css/wbtm_admin_style.css', array(), time());
                 wp_enqueue_style('mp_font_awesomettt', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css', array(), '5.15.3');
             }
             public function quick_setup_menu() {
@@ -122,7 +122,7 @@
                     wp_redirect( admin_url( 'edit.php?post_type=wbtm_bus' ) );
                 }
                 ?>
-                <div id="ttbm_quick_setup" class="wrap">
+                <div id="wbtm_quick_setup" class="wrap">
                     <div id="icon-tools" class="icon32"><br></div>
                     <h2></h2>
                     <form method="post" action="">
@@ -145,8 +145,8 @@
                                 $active = $tab['active'];
                                 ?>
                                 <div class="tab-content <?php echo $active ? 'active' : ''; ?>" id="<?php echo esc_html( $id ); ?>">
-                                    <?php do_action( 'ttbm_quick_setup_content_' . $id ); ?>
-                                    <?php do_action( 'ttbm_quick_setup_content_after', $tab ); ?>
+                                    <?php do_action( 'wbtm_quick_setup_content_' . $id ); ?>
+                                    <?php do_action( 'wbtm_quick_setup_content_after', $tab ); ?>
                                 </div>
                             <?php } ?>
                             <div class="next-prev">
