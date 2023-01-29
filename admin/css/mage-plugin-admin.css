@@ -1724,3 +1724,33 @@ select.wbtm_pick_boarding {
 #ttbm_add_meta_box .mpStyle .roundSwitch {
 	min-width: 60px;
 }
+.wbtm-table {
+	width: 100%;
+}
+.wbtm-table thead {
+	background: green;
+	color: #fff;
+}
+.wbtm-table thead th,
+.wbtm-table tbody td {
+	text-align: center;
+	padding: 5px;
+}
+.wbtm-table tbody tr:nth-child(even) {
+	background-color: #e2e2e2;
+}
+/* Route summary */
+.wbtm-table--route-summary .wbtm-radio-label {margin-right: 10px;}
+.wbtm-table--route-summary .wbtm-radio-label input {
+	vertical-align: text-bottom;
+}
+.wbtm-route-summary-container .wbtm-route-summary-title {
+	margin-bottom: 20px;
+}
+.wbtm-route-summary-container .wbtm-route-summary-title h3 {
+	margin-bottom: 0;
+}
+.wbtm-route-summary-container .wbtm-route-summary-title span {
+	color: #a3a3a3;
+}
+/* Route summary End */
