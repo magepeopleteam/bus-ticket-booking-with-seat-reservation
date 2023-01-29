@@ -115,8 +115,8 @@ function mage_bus_search_list($return)
 
                     if ($is_on_date) {
 
-                        // echo $j_date.'<br>';
-                        // echo '<pre>';print_r($bus_on_dates);die;
+                        // echo $id.'<br>';
+                        // echo '<pre>';print_r($bus_on_dates);
                         // die;
                         if (in_array($j_date, $bus_on_dates)) {
                             $has_bus = true;
@@ -165,7 +165,7 @@ function mage_bus_search_list($return)
                     }
                 }
             }
-            // var_dump($has_bus);die;
+            // var_dump($has_bus);
 
             // Has Bus
             if ($has_bus === true) {
@@ -251,7 +251,7 @@ function mage_bus_search_item($return, $id)
     $start_time = mage_bus_time($return, false);
     $end_time = mage_bus_time($return, true);
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
-    $get_stops_dates = mage_get_bus_stops_date($bus_id, $date, $start, $end);
+    $get_stops_dates = mage_get_bus_stops_date($bus_id, $date, $start, $end, $return);
     $arrival_date = $get_stops_dates['dropping'];
     $starting_date = $get_stops_dates['boarding'];
 

@@ -449,6 +449,8 @@ class WBTMMetaBox
                 return;
             }
 
+            // echo '<pre>'; print_r($_POST); die;
+
 
             // Seat Type Conf
             $wbtm_seat_type_conf = $_POST['wbtm_seat_type_conf'];
@@ -500,6 +502,10 @@ class WBTMMetaBox
             }
             update_post_meta($pid, 'wbtm_bus_bp_stops', $bus_boarding_points);
             update_post_meta($pid, 'wbtm_bus_next_stops', $bus_dropping_points);
+            update_post_meta($pid, 'wbtm_route_summary', maybe_serialize($_POST['wbtm_route_summary']));
+            if(isset($_POST['return_wbtm_route_summary'])) {
+                update_post_meta($pid, 'return_wbtm_route_summary', maybe_serialize($_POST['return_wbtm_route_summary']));
+            }
             // Routing END
 
             // Return Routing
