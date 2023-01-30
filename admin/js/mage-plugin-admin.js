@@ -14,6 +14,19 @@
     $('input[name="wbtm_general_same_bus_return"]').change(function() {
       wbtmSameBusReturn();
     });
+
+    // Route summary
+    $('.wbtm_route_summary_btn').click(function(e) {
+      e.preventDefault();
+      const target = $(this).siblings('.wbtm-route-summary-inner');
+      if(target.is(':visible')) {
+        target.slideUp();
+        $(this).text('Expand Route summary')
+      } else {
+        target.slideDown();
+        $(this).text('Collapse Route summary')
+      }
+    })
   
     // $("#od_start, #on_start, #on_end, #j_date").datepicker({
     //   dateFormat: "yy-mm-dd",

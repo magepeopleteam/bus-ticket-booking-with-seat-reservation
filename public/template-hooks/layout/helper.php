@@ -1282,11 +1282,11 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping, $return =
     }
 
     // Check date is changed
-    $wbtm_route_summary = maybe_unserialize(get_post_meta($bus_id, $return_text.'wbtm_route_summary', true));
+    $wbtm_route_summary = maybe_unserialize(get_post_meta($bus_id, $return_text . 'wbtm_route_summary', true));
     $get_travel_day = 0;
     if ($wbtm_route_summary) {
         foreach ($wbtm_route_summary as $td) {
-            if(!isset($td['boarding']) && !isset($td['dropping'])) continue;
+            if (!isset($td['boarding']) && !isset($td['dropping'])) continue;
             if ($td['boarding'] === $boarding && $td['dropping'] === $dropping) {
                 $get_travel_day = $td['travel_day'];
                 break;
@@ -1312,7 +1312,9 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping, $return =
         } elseif ($get_travel_day == 4) {
             $data['dropping'] = date('Y-m-d', strtotime('+4 day', strtotime($date)));
         } else {
-            //
+            if (($boarding_hour > $dropping_hour) || ($dropping_hour == 24)) {
+                $data['dropping'] = date('Y-m-d', strtotime('+1 day', strtotime($date)));
+            }
         }
     }
 
@@ -2309,63 +2311,66 @@ function admin_route_summary($post, $wbbm_bus_bp, $wbtm_bus_next_stops, $return 
     $wbtm_route_summary = maybe_unserialize(get_post_meta($post->ID, $return_text . 'wbtm_route_summary', true));
     ?>
     <div class="wbtm-route-summary-container">
-        <div class="wbtm-route-summary-title">
-            <h3><?php _e('Route summary', 'bus-ticket-booking-with-seat-reservation') ?></h3>
-            <span><?php _e('Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, harum.', 'bus-ticket-booking-with-seat-reservation') ?></span>
-        </div>
-        <table class="wbtm-table wbtm-table--route-summary">
-            <thead>
-                <tr>
-                    <th><?php _e('Sl', 'bus-ticket-booking-with-seat-reservation') ?></th>
-                    <th><?php _e('Boarding', 'bus-ticket-booking-with-seat-reservation') ?></th>
-                    <th><?php _e('Dropping', 'bus-ticket-booking-with-seat-reservation') ?></th>
-                    <th><?php _e('Trip day', 'bus-ticket-booking-with-seat-reservation') ?></th>
-                    <th><?php _e('Trip time', 'bus-ticket-booking-with-seat-reservation') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($wbbm_bus_bp) :
-                    $travel_days = array(
-                        '1' => __('Less than 1 day', 'bus-ticket-booking-with-seat-reservation'),
-                        '2' => __('More than 1 day', 'bus-ticket-booking-with-seat-reservation'),
-                        '3' => __('More than 2 days', 'bus-ticket-booking-with-seat-reservation'),
-                        '4' => __('More than 3 days', 'bus-ticket-booking-with-seat-reservation'),
-                    );
-                    $sl = 0;
-                    $i = 0;
-                    foreach ($wbbm_bus_bp as $bp) :
-                        $j = 0;
-                        foreach ($wbtm_bus_next_stops as $dp) :
-                            if ($i <= $j) :
-                                $get_stops_dates = mage_get_bus_stops_date($post->ID, date('Y-m-d'), $bp['wbtm_bus_bp_stops_name'], $dp['wbtm_bus_next_stops_name'], $return);
-                ?>
-                                <tr>
-                                    <td><?php echo $sl + 1; ?></td>
-                                    <td>
-                                        <?php echo $bp['wbtm_bus_bp_stops_name'] ?>
-                                        <input type="hidden" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][boarding]" value="<?php echo $bp['wbtm_bus_bp_stops_name'] ?>">
-                                    </td>
-                                    <td>
-                                        <?php echo $dp['wbtm_bus_next_stops_name'] ?>
-                                        <input type="hidden" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][dropping]" value="<?php echo $dp['wbtm_bus_next_stops_name'] ?>">
-                                    </td>
-                                    <td>
-                                        <!-- Travel days loop -->
-                                        <?php foreach ($travel_days as $key => $td) : ?>
-                                            <label for="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" class="wbtm-radio-label"><input type="radio" id="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" value="<?php echo $key ?>" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][travel_day]" <?php echo ($wbtm_route_summary ? ($wbtm_route_summary[$sl]['travel_day'] == $key ? 'checked' : '') : ($key == 1 ? 'checked' : '')) ?>><?php echo $td; ?></label>
-                                        <?php endforeach ?>
-                                    </td>
-                                    <td><?php echo $get_stops_dates['interval']; ?></td>
-                                </tr>
-                <?php $sl++;
-                            endif;
-                            $j++;
+        <div class="wbtm-route-summary-inner">
+            <div class="wbtm-route-summary-title">
+                <h3><?php _e('Route summary', 'bus-ticket-booking-with-seat-reservation') ?></h3>
+                <span><?php _e('This is the route summary according to the top route section. <br> If some trips need more than 24 hours please explicitly configure it from this summary.', 'bus-ticket-booking-with-seat-reservation') ?></span>
+            </div>
+            <table class="wbtm-table wbtm-table--route-summary">
+                <thead>
+                    <tr>
+                        <th><?php _e('Sl', 'bus-ticket-booking-with-seat-reservation') ?></th>
+                        <th><?php _e('Boarding', 'bus-ticket-booking-with-seat-reservation') ?></th>
+                        <th><?php _e('Dropping', 'bus-ticket-booking-with-seat-reservation') ?></th>
+                        <th><?php _e('Trip day', 'bus-ticket-booking-with-seat-reservation') ?></th>
+                        <th><?php _e('Trip time', 'bus-ticket-booking-with-seat-reservation') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($wbbm_bus_bp) :
+                        $travel_days = array(
+                            '1' => __('Less than 1 day', 'bus-ticket-booking-with-seat-reservation'),
+                            '2' => __('More than 1 day', 'bus-ticket-booking-with-seat-reservation'),
+                            '3' => __('More than 2 days', 'bus-ticket-booking-with-seat-reservation'),
+                            '4' => __('More than 3 days', 'bus-ticket-booking-with-seat-reservation'),
+                        );
+                        $sl = 0;
+                        $i = 0;
+                        foreach ($wbbm_bus_bp as $bp) :
+                            $j = 0;
+                            foreach ($wbtm_bus_next_stops as $dp) :
+                                if ($i <= $j) :
+                                    $get_stops_dates = mage_get_bus_stops_date($post->ID, date('Y-m-d'), $bp['wbtm_bus_bp_stops_name'], $dp['wbtm_bus_next_stops_name'], $return);
+                    ?>
+                                    <tr>
+                                        <td><?php echo $sl + 1; ?></td>
+                                        <td>
+                                            <?php echo $bp['wbtm_bus_bp_stops_name'] ?>
+                                            <input type="hidden" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][boarding]" value="<?php echo $bp['wbtm_bus_bp_stops_name'] ?>">
+                                        </td>
+                                        <td>
+                                            <?php echo $dp['wbtm_bus_next_stops_name'] ?>
+                                            <input type="hidden" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][dropping]" value="<?php echo $dp['wbtm_bus_next_stops_name'] ?>">
+                                        </td>
+                                        <td>
+                                            <!-- Travel days loop -->
+                                            <?php foreach ($travel_days as $key => $td) : ?>
+                                                <label for="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" class="wbtm-radio-label"><input type="radio" id="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" value="<?php echo $key ?>" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][travel_day]" <?php echo ($wbtm_route_summary ? ($wbtm_route_summary[$sl]['travel_day'] == $key ? 'checked' : '') : ($key == 1 ? 'checked' : '')) ?>><?php echo $td; ?></label>
+                                            <?php endforeach ?>
+                                        </td>
+                                        <td><?php echo $get_stops_dates['interval']; ?></td>
+                                    </tr>
+                    <?php $sl++;
+                                endif;
+                                $j++;
+                            endforeach;
+                            $i++;
                         endforeach;
-                        $i++;
-                    endforeach;
-                endif; ?>
-            </tbody>
-        </table>
+                    endif; ?>
+                </tbody>
+            </table>
+        </div>
+        <button class="wbtm_route_summary_btn"><?php _e('Expand Route Summary', 'bus-ticket-booking-with-seat-reservation') ?></button>
     </div>
 <?php
 }
