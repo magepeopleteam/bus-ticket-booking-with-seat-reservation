@@ -1752,5 +1752,17 @@ select.wbtm_pick_boarding {
 }
 .wbtm-route-summary-container .wbtm-route-summary-title span {
 	color: #a3a3a3;
+	line-height: .9rem;
+	display: inline-block;
 }
+.wbtm-route-summary-container .wbtm_route_summary_btn {
+	margin-top: 20px;
+	background: #b56bf1;
+	border: 1px solid #ababab;
+	padding: 10px 15px;
+	color: #fff;
+	cursor: pointer;
+	min-width: 180px;
+}
+.wbtm-route-summary-inner {display: none;}
 /* Route summary End */
