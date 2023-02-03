@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4689e063-2542-408f-b1f3-4b496169ceee" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/admin/assets/js/wbtm_admin_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/assets/js/wbtm_admin_script.js" afterDir="false" />
+    <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/class/class-setting-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-setting-page.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/class-functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-functions.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,53 +21,29 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectId" id="2IWSxhl4B6tJVES7Klm9n2g6t6u" />
+  <component name="ProjectId" id="2LDRSALtv6jmEiTIeGEGvhvfV5G" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="23890b8c-6e3d-4ba0-99aa-b0ed75bf982f" name="Changes" comment="" />
-      <created>1670296094169</created>
+      <changelist id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="" />
+      <created>1675403663668</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1670296094169</updated>
-      <workItem from="1670296095430" duration="162000" />
-      <workItem from="1670297372952" duration="325000" />
-      <workItem from="1670297843748" duration="3247000" />
-      <workItem from="1670306854618" duration="258000" />
-      <workItem from="1670378209433" duration="8487000" />
-      <workItem from="1670462761560" duration="1408000" />
-      <workItem from="1670464424350" duration="51000" />
-      <workItem from="1670464485408" duration="12000" />
-      <workItem from="1670467391829" duration="14636000" />
-      <workItem from="1670548550144" duration="3646000" />
-      <workItem from="1670552967419" duration="16000" />
-      <workItem from="1670553069671" duration="7883000" />
-      <workItem from="1670894608721" duration="6438000" />
-      <workItem from="1670916215342" duration="1191000" />
-      <workItem from="1670979944896" duration="7897000" />
-      <workItem from="1670990995000" duration="6618000" />
-      <workItem from="1671066821092" duration="19907000" />
-      <workItem from="1671412838107" duration="11954000" />
-      <workItem from="1671498884265" duration="7017000" />
-      <workItem from="1674710492614" duration="7991000" />
-      <workItem from="1674782207080" duration="9278000" />
+      <updated>1675403663668</updated>
+      <workItem from="1675403665514" duration="746000" />
     </task>
     <servers />
   </component>

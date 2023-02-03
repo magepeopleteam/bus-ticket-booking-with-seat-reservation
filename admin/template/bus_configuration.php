@@ -1,5 +1,5 @@
 <div class="wbtm-item-row">
-    <label class="item-label"><?php _e('Coach No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+    <label class="item-label"><?php echo mage_bus_setting_value('bus_menu_label', 'Bus').' ';_e('No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
     <input type="text" name="wbtm_bus_no" value="<?php echo $coach_no; ?>">
 </div>
 <div class="wbtm-item-row">
