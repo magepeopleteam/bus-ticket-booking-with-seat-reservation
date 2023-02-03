@@ -2708,6 +2708,9 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
 add_action('manage_wbtm_bus_posts_columns', 'wbtm_posts_column_callback', 5, 2);
 function wbtm_posts_column_callback($column)
 {
+    global $wbtmmain;
+    $name = $wbtmmain->get_name();
+
     $date = $column['date'];
     $bus_cat = $column['taxonomy-wbtm_bus_cat'];
     // Remove
@@ -2718,7 +2721,7 @@ function wbtm_posts_column_callback($column)
     unset($column['taxonomy-wbtm_bus_cat']);
 
     $column['wbtm_coach_no'] = __('Coach no', 'bus-ticket-booking-with-seat-reservation');
-    $column['wbtm_bus_type'] = __('Bus Type', 'bus-ticket-booking-with-seat-reservation');
+    $column['wbtm_bus_type'] = $name.' '.__('Type', 'bus-ticket-booking-with-seat-reservation');
     $column['taxonomy-wbtm_bus_cat'] = __('Category', 'bus-ticket-booking-with-seat-reservation');
     $column['date'] = $date;
     return $column;

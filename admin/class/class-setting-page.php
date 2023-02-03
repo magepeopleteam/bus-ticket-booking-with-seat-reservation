@@ -17,6 +17,8 @@ class WBTMSettingPage
     public function settings_page()
     {
         // Get user roles
+        global $wbtmmain;
+        $name = $wbtmmain->get_name();
         $roleArr = array();
         $rolesObj = new WP_Roles;
         if($rolesObj->roles) {
@@ -41,7 +43,7 @@ class WBTMSettingPage
                     'options' => array(
                         array(
                             'id' => 'bus_menu_label',
-                            'title' => __('Bus Label', 'bus-ticket-booking-with-seat-reservation'),
+                            'title' => $name.' '.__('Label', 'bus-ticket-booking-with-seat-reservation'),
                             'details' => __('If you want to change the bus label in the dashboard menu you can change here', 'bus-ticket-booking-with-seat-reservation'),
                             'type' => 'text',
                             'default' => 'Bus',
@@ -49,7 +51,7 @@ class WBTMSettingPage
                         ),
                         array(
                             'id' => 'bus_menu_slug',
-                            'title' => __('Bus Slug', 'bus-ticket-booking-with-seat-reservation'),
+                            'title' => $name.' '.__('Slug', 'bus-ticket-booking-with-seat-reservation'),
                             'details' => __('Please enter the slug name you want. Remember after change this slug you need to flush permalink, Just go to Settings->Permalink hit the Save Settings button', 'bus-ticket-booking-with-seat-reservation'),
                             'type' => 'text',
                             'default' => 'bus',
