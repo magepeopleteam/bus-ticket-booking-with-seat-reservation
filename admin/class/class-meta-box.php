@@ -255,8 +255,12 @@ class WBTMMetaBox
 
         $mtpa_car_type = array_key_exists('mtpa_car_type', $values) ? $values['mtpa_car_type'][0] : '';
 
+       // echo mage_bus_setting_value('bus_menu_label', 'Bus');exit;
+
         $settings = get_option('wbtm_bus_settings');
+       // echo '<pre>';print_r($settings); echo '<pre>';die;
         $same_bus_return_val = isset($settings['same_bus_return_setting']) ? $settings['same_bus_return_setting'] : 'disable';
+
         $zero_price_allow = array_key_exists('zero_price_allow', $values) ? $values['zero_price_allow'][0] : 'no';
 
         require_once WBTM_PLUGIN_DIR . 'admin/template/bus_configuration.php';
@@ -515,6 +519,8 @@ class WBTMMetaBox
             $boarding_time_return = isset($_POST['wbtm_bus_bp_start_time_return']) ? $_POST['wbtm_bus_bp_start_time_return'] : '';
             $dropping_points_return = isset($_POST['wbtm_bus_next_stops_name_return']) ? $_POST['wbtm_bus_next_stops_name_return'] : '';
             $dropping_time_return = isset($_POST['wbtm_bus_next_end_time_return']) ? $_POST['wbtm_bus_next_end_time_return'] : '';
+
+
 
             if (!empty($boarding_points_return)) {
                 $i = 0;

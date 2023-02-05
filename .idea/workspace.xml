@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/class/class-setting-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-setting-page.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/class/class-meta-box.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-meta-box.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/js/mage-plugin-admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/js/mage-plugin-admin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/template/bus_configuration.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/bus_configuration.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/includes/class-functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-functions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/bus_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/bus_script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-form.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-form.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,15 +29,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -44,6 +47,7 @@
       <option name="presentableId" value="Default" />
       <updated>1675403663668</updated>
       <workItem from="1675403665514" duration="746000" />
+      <workItem from="1675562078891" duration="10952000" />
     </task>
     <servers />
   </component>

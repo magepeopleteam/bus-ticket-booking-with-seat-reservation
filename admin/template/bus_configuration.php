@@ -37,7 +37,7 @@
     </select>
 </div>
 
-<?php if ($same_bus_return_val == 'enable') : ?>
+<?php if (mage_bus_setting_value('same_bus_return_setting', 'disable') == 'enable') : ?>
     <div id="wbtm_same_bus_return" class="wbtm-item-row">
         <label class="item-label"><?php echo __("Return same", "bus-ticket-booking-with-seat-reservation") . ' ' . mage_bus_setting_value('bus_menu_label'); ?></label>
         <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" <?php echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?> value="no"> <label for="wbtm_same_bus_return_no"> <?php _e('No', 'bus-ticket-booking-with-seat-reservation') ?></label>

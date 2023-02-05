@@ -5,9 +5,7 @@
         $("#ja_date").datepicker({
             dateFormat: "yy-mm-dd"
         });
-        $('#r_date').datepicker({
-            dateFormat: "yy-mm-dd",
-        });
+
         $('#j_date_exchange').datepicker({
             dateFormat: "yy-mm-dd",
             minDate: 0
