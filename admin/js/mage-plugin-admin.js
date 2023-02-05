@@ -205,7 +205,6 @@
   // Same Bus Return condition
   function wbtmSameBusReturn() {
     let currentVal = $('input[name="wbtm_general_same_bus_return"]:checked').val();
-
     if(currentVal === 'yes') {
         $('.wbtm-only-for-return-enable').removeClass('this_disabled').show();
         $('.wbtm-only-for-return-enable').find('input[type="text"], input[type="hidden"], select').prop('disabled', false)

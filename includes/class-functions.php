@@ -1882,7 +1882,8 @@ function wbtm_journey_date_js()
                     }
                     $on_particular_date = implode(',', $onday);
                     echo 'var enableDates = [' . $on_particular_date . '];';
-            ?>
+
+                    ?>
 
                     function enableAllTheseDays(date) {
                         var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
@@ -1894,7 +1895,9 @@ function wbtm_journey_date_js()
                         return [false];
                     }
 
-                    jQuery('#j_date').datepicker({
+
+
+                    jQuery('#j_date, #r_date').datepicker({
                         dateFormat: '<?php echo wbtm_convert_datepicker_dateformat(); ?>',
                         minDate: 0,
                         beforeShowDay: enableAllTheseDays
@@ -1944,7 +1947,7 @@ function wbtm_journey_date_js()
                         return [true];
                     }
 
-                    jQuery("#j_date").datepicker({
+                    jQuery("#j_date, #r_date").datepicker({
                         dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
                         minDate: 0,
                         beforeShowDay: off_particular
@@ -1959,7 +1962,8 @@ function wbtm_journey_date_js()
                     $weekly_offday = implode(', ', $weekly_offday);
 
                     echo 'var weekly_offday = [' . $weekly_offday . '];';
-                ?>
+
+                    ?>
 
                     function weekly_offday_d(date) {
                         if (weekly_offday.length > 0) {
@@ -1971,7 +1975,7 @@ function wbtm_journey_date_js()
 
                     }
 
-                    jQuery("#j_date").datepicker({
+                    jQuery("#j_date, #r_date").datepicker({
                         dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
                         minDate: 0,
                         beforeShowDay: weekly_offday_d
@@ -2025,6 +2029,8 @@ function wbtm_journey_date_js()
                     }
                     return [true];
                 }
+
+                alert(22);
 
                 jQuery("#j_date").datepicker({
                     dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
