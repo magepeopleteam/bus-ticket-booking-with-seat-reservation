@@ -2030,8 +2030,6 @@ function wbtm_journey_date_js()
                     return [true];
                 }
 
-                alert(22);
-
                 jQuery("#j_date").datepicker({
                     dateFormat: "<?php echo wbtm_convert_datepicker_dateformat(); ?>",
                     minDate: 0,
