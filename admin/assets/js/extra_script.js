@@ -184,6 +184,7 @@
 	$(document).on('click','.wbtm_pickuppoint_tab',function (e){
 		e.preventDefault();
 		$('.wbtm_pick_boarding').html("<option value=''>Select Boarding Point</option>");
+		$('.wbtm_pick_boarding_return').html("<option value=''>Select Boarding Point</option>");
 		let options = '';
 		$( ".boarding-point tr" ).each(function( index ) {
 			console.log( index + ": " + $(this).find(":selected").val() );
@@ -200,6 +201,24 @@
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
 				$('.wbtm_pick_boarding').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
+			}
+		});
+
+		$( ".boarding-point-return tr" ).each(function( index ) {
+			console.log( index + ": " + $(this).find(":selected").val() );
+
+			options = options+$(this).find(":selected").val();
+
+			if(options){
+				$('.boarding_points').show();
+				$('.open-routing-tab').hide();
+			}else{
+				$('.open-routing-tab').show();
+				$('.boarding_points').hide();
+			}
+			let term_id = $(this).find(':selected').data('term_id');
+			if(term_id){
+				$('.wbtm_pick_boarding_return').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
 

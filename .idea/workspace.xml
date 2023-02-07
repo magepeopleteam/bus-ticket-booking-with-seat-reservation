@@ -3,12 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/class/class-meta-box.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-meta-box.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/js/mage-plugin-admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/js/mage-plugin-admin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/template/bus_configuration.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/bus_configuration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/class-functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-functions.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/bus_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/bus_script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-form.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/template-hooks/layout/bus-search-form.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +42,9 @@
       <option name="presentableId" value="Default" />
       <updated>1675403663668</updated>
       <workItem from="1675403665514" duration="746000" />
-      <workItem from="1675562078891" duration="10952000" />
+      <workItem from="1675562078891" duration="14352000" />
+      <workItem from="1675649864577" duration="17530000" />
+      <workItem from="1675732730082" duration="2837000" />
     </task>
     <servers />
   </component>
@@ -64,5 +61,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/includes/class-functions.php</url>
+          <line>1861</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
