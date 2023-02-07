@@ -3,12 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/assets/css/extra_style.css" beforeDir="false" afterPath="$PROJECT_DIR$/admin/assets/css/extra_style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/assets/js/extra_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/assets/js/extra_script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/css/mage-plugin-admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/admin/css/mage-plugin-admin.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/template/pickup_point.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/pickup_point.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/template/routing.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/routing.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/class-functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-functions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/bus_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/bus_script.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +44,7 @@
       <workItem from="1675403665514" duration="746000" />
       <workItem from="1675562078891" duration="14352000" />
       <workItem from="1675649864577" duration="17530000" />
-      <workItem from="1675732730082" duration="1367000" />
+      <workItem from="1675732730082" duration="2837000" />
     </task>
     <servers />
   </component>
