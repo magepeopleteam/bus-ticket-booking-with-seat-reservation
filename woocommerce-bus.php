@@ -42,6 +42,7 @@ class Wbtm_Woocommerce_bus
             add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
 
             require WBTM_PLUGIN_DIR . 'includes/class-plugin.php';
+            require WBTM_PLUGIN_DIR . 'includes/BusTicketBookingWithSeatReservationClass.php';
             $this->run_wbtm_plugin();
             require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
             add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);

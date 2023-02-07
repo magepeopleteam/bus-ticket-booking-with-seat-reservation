@@ -1920,9 +1920,9 @@ function wbtm_journey_date_js()
                 }
                 ?>
 
+            console.log('test_date',disableDays);
 
-
-                function disableAllTheseDays(date) {
+            function disableAllTheseDays(date) {
                     var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
                     if (disableDates.length > 0) {
                         if (jQuery.inArray(sdate, disableDates) != -1) {
