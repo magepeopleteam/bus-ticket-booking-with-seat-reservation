@@ -428,7 +428,7 @@
             console.log('data_test',input);
             $(this).parents('.mage_input_select').find('.mage_input_select_list').find('li').filter(function() {
                 // $(this).toggle($(this).attr('data-route').toLowerCase().indexOf(input) > -1);
-                $('#wbtm_dropping_point_list').slideUp(100);
+                // $('#wbtm_dropping_point_list').slideUp(100);
                 let input_length = input.length;
                 let target_str = $(this).attr('data-route').toLowerCase().substring(0, input_length);
                 $(this).toggle($(this).attr('data-route').toLowerCase().substring(0, input_length) === input);
@@ -446,6 +446,7 @@
         click: function() {
             let route = $(this).attr('data-route');
             $(this).parents('.mage_input_select_list').slideUp(200).parents('.mage_input_select').find('input').val(route);
+            $('.mage_bus_dropping_point input').focus();
             mage_bus_dropping_point($(this));
         }
     }, '.mage_input_select_list li');
