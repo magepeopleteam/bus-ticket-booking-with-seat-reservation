@@ -72,19 +72,19 @@
 	float: left;
 	padding-right: 20px;
 }
+.bus-stops-left-col, .bus-stops-right-col{
+	width: 50%;
+}
 
 .bus-stops-left-col table, .bus-stops-right-col table{
-	min-width: 373px;
+	width: 100%;
 }
-.bus-stops-left-col table tr th:nth-child(1), .bus-stops-right-col table th:nth-child(1){
-	min-width: 153px;
+.bus-stops-left-col table, .bus-stops-left-col table th, .bus-stops-left-col table td, .bus-stops-right-col table, .bus-stops-right-col table th, .bus-stops-right-col table td{
+	text-align: center;
+	border: 1px solid #dcdcde;
+	border-collapse: collapse;
 }
-.bus-stops-left-col table tr th:nth-child(2), .bus-stops-right-col table th:nth-child(2){
-	min-width: 108px;
-}
-.bus-stops-left-col table tr th:nth-child(3), .bus-stops-right-col table th:nth-child(3){
-	min-width: 102px;
-}
+
 p.ra-stopage-desc{
 	padding-top: 10px !important;
 }

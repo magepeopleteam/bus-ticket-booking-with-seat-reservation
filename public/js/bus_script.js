@@ -425,6 +425,7 @@
     $(document).on({
         keyup: function() {
             let input = $(this).val().toLowerCase();
+            console.log('data_test',input);
             $(this).parents('.mage_input_select').find('.mage_input_select_list').find('li').filter(function() {
                 // $(this).toggle($(this).attr('data-route').toLowerCase().indexOf(input) > -1);
                 // $('#wbtm_dropping_point_list').slideUp(100);
@@ -432,6 +433,8 @@
                 let target_str = $(this).attr('data-route').toLowerCase().substring(0, input_length);
                 $(this).toggle($(this).attr('data-route').toLowerCase().substring(0, input_length) === input);
             });
+            $('#wbtm_dropping_point_list').slideUp(100);
+            $(this).parents('.mage_input_select').find('.mage_input_select_list').slideDown(200);
         },
         click: function() {
             $('#wbtm_dropping_point_list').slideUp(100);
