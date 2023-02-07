@@ -141,15 +141,17 @@ function mage_bus_search_list($return)
 
                         $offday_current_bus = false;
                         if (!empty($bus_offday_schedules)) {
-                            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date . ' ' . $start_time));
+                            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date));
 
                             foreach ($bus_offday_schedules as $item) {
 
                                 $c_iterate_date_from = $item['from_date'];
-                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+//                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from));
 
                                 $c_iterate_date_to = $item['to_date'];
-                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+//                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to));
 
                                 if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
                                     $offday_current_bus = true;
