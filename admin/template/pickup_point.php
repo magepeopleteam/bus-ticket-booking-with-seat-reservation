@@ -121,7 +121,7 @@
         <div class="wbtm_left_col">
             <div class="wbtm_field_group">
                 <?php if ($boarding_points_array) : ?>
-                    <select name="wbtm_pick_boarding" class="wbtm_pick_boarding">
+                    <select name="wbtm_pick_boarding" class="wbtm_pick_boarding_return">
                         <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php foreach ($boarding_points_array as $stop) : ?>
                             <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>

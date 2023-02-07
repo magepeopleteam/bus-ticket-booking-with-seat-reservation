@@ -993,9 +993,10 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	border: 1px solid #d3d3d3;
 }
 
-.bus-stops-wrapper table tbody tr {
+/*.bus-stops-wrapper table tbody tr {
 	position: relative;
-}
+	z-index: 1;
+}*/
 
 .bus-stops-wrapper .bus-stops-left-col table tbody tr:after {
 	content: '\f30b';
@@ -1004,8 +1005,8 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	font-weight: 900;
 	font-size: 16px;
 	color: #19aa9c;
-	left: 101%;
-	top: 16px;
+	left: 49.5%;
+
 }
 
 .bus-tops-sec-title {

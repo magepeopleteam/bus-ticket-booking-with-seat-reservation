@@ -227,7 +227,7 @@
             <!-- ADD Return BOARDING POINT-->
             <div class="bus-stops-left-col">
                 <h3 class="bus-tops-sec-title"><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-                <table class="repeatable-fieldset">
+                <table class="repeatable-fieldset" border="1px">
                     <thead>
                         <tr>
                             <th><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
@@ -238,7 +238,7 @@
                             <?php endif; ?>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="boarding-point-return">
                         <?php
                         if ($wbbm_bus_bp_return) :
                             $count = 0;
@@ -251,7 +251,7 @@
                                             <?php
                                             foreach ($terms as $term) {
                                             ?>
-                                                <option value="<?php echo $term->name; ?>" <?php if ($term->name == $field['wbtm_bus_bp_stops_name']) {
+                                                <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php if ($term->name == $field['wbtm_bus_bp_stops_name']) {
                                                                                                 echo "Selected";
                                                                                             } ?>><?php echo $term->name; ?></option>
                                             <?php
