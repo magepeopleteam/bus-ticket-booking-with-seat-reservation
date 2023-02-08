@@ -27,11 +27,8 @@ class ActiveDataShowClass extends CommonClass
                 $on_particular_date = implode(',', $onday);
                 $enableDates = '[' . $on_particular_date . ']';
             }else{
-                $enableDates = '[' . ']';
+                $enableDates = '0';
             }
-
-
-
 
 
 
@@ -48,8 +45,7 @@ class ActiveDataShowClass extends CommonClass
             $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) ? get_post_meta($post_id, 'weekly_offday', true) : [];
             $weekly_offday = implode(',', $weekly_offday);
             $weekly_offday = '[' . $weekly_offday . ']';
-
-
+            
 
             echo "<input id=".'all_date_picker_info'." data-single_bus=".$singleBus."  data-enableDates=".$enableDates." data-off_particular_date=".$off_particular_date." data-weekly_offday=".$weekly_offday." data-enable_onday=".$show_operational_on_day." data-enable_offday=".$show_off_day." data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
 
