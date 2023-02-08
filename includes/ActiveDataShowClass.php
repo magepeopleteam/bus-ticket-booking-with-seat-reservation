@@ -18,13 +18,19 @@ class ActiveDataShowClass extends CommonClass
             $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : '';
             $show_off_day = get_post_meta($post_id, 'show_off_day', true) ? get_post_meta($post_id, 'show_off_day', true) : '';
 
-            $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
-            $onday = array();
-            foreach ($wbtm_bus_on_dates_arr as $ondate) {
-                $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
+            if($wbtm_bus_on_dates){
+                $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
+                $onday = array();
+                foreach ($wbtm_bus_on_dates_arr as $ondate) {
+                    $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
+                }
+                $on_particular_date = implode(',', $onday);
+                $enableDates = '[' . $on_particular_date . ']';
+            }else{
+                $enableDates = '[' . ']';
             }
-            $on_particular_date = implode(',', $onday);
-            $enableDates = '[' . $on_particular_date . ']';
+
+
 
 
 
@@ -45,7 +51,7 @@ class ActiveDataShowClass extends CommonClass
 
 
 
-            echo "<input id=".'all_date_picker_info'." data-enableDates=".$enableDates." data-off_particular_date=".$off_particular_date." data-weekly_offday=".$weekly_offday." data-enable_onday=".$show_operational_on_day." data-enable_offday=".$show_off_day." data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
+            echo "<input id=".'all_date_picker_info'." data-single_bus=".$singleBus."  data-enableDates=".$enableDates." data-off_particular_date=".$off_particular_date." data-weekly_offday=".$weekly_offday." data-enable_onday=".$show_operational_on_day." data-enable_offday=".$show_off_day." data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
 
         }else{
 
@@ -76,7 +82,7 @@ class ActiveDataShowClass extends CommonClass
 
 
 
-            echo "<input id=".'all_date_picker_info'." data-disableDates=".$disableDates." data-disableDays=".$disableDays."  data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
+            echo "<input id=".'all_date_picker_info'." data-single_bus=".'0'."  data-disableDates=".$disableDates." data-disableDays=".$disableDays."  data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
 
         }
 
