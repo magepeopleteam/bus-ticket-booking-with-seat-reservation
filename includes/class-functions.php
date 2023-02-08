@@ -1993,14 +1993,24 @@ function wbtm_journey_date_js()
 
  function wbtm_bus_on_dates($wbtm_bus_on_dates){
 
-    $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
-    $onday = array();
-    foreach ($wbtm_bus_on_dates_arr as $ondate) {
-        $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
+
+     if($wbtm_bus_on_dates){
+
+         $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
+         $onday = array();
+        foreach ($wbtm_bus_on_dates_arr as $ondate) {
+            $onday[] = '"' . date('d-m-Y', strtotime($ondate)) . '"';
+        }
+
+        $on_particular_date = implode(',', $onday);
+
+    }else{
+        $on_particular_date = '2023-02-06';
     }
 
-    $on_particular_date = implode(',', $onday);
-    echo 'var enableDates = [' . $on_particular_date . '];';
+     echo 'var enableDates = [' . $on_particular_date . '];';
+
+
 
     ?>
 
