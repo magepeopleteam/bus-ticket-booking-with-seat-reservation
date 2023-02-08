@@ -17,11 +17,19 @@
 
             if(enable_onday || enable_offday){
                 if(enable_onday == 'yes') {
-                    jQuery('#j_date, #r_date').datepicker({
-                        dateFormat: date_format,
-                        minDate: 0,
-                        beforeShowDay: enableAllTheseDays
-                    });
+                    if(enableDates){
+                        jQuery('#j_date, #r_date').datepicker({
+                            dateFormat: date_format,
+                            minDate: 0,
+                            beforeShowDay: enableAllTheseDays
+                        });
+                    }else{
+                        jQuery("#j_date, #r_date").datepicker({
+                            dateFormat: date_format,
+                            minDate: 0,
+                        });
+                    }
+
                 } else if(enable_offday=='yes'){
                     jQuery("#j_date, #r_date").datepicker({
                         dateFormat: date_format,
