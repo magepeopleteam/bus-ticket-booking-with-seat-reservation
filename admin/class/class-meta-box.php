@@ -1021,7 +1021,7 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
             update_post_meta($pid, 'show_extra_service', $show_extra_service);
 
-             $show_operational_on_day = ($ondates)?$show_operational_on_day:'no';
+             $show_operational_on_day = ($ondates)?'yes':'no';
 
              update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
 
