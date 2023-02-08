@@ -494,6 +494,7 @@ class WBTMMetaBox
                 }
             }
 
+
             if (!empty($dropping_points)) {
                 $i = 0;
                 foreach ($dropping_points as $point) {
@@ -855,6 +856,7 @@ class WBTMMetaBox
 
             // Ondates & offdates
             $ondates = $_POST['wbtm_bus_on_dates'];
+
             update_post_meta($pid, 'wbtm_bus_on_dates', $ondates);
             // Offday schedule
             $offday_schedule_array = array();
@@ -1018,7 +1020,12 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_upper_desk', $show_upper_desk);
             update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
             update_post_meta($pid, 'show_extra_service', $show_extra_service);
-            update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
+
+             $show_operational_on_day = ($ondates)?$show_operational_on_day:'no';
+
+             update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
+
+
             update_post_meta($pid, 'show_off_day', $show_off_day);
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
