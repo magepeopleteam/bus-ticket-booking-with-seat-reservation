@@ -1856,7 +1856,7 @@ function displayDates($date1, $date2, $format = 'd-m-Y')
 /**
  * This Function will modify the journey date input box if there is any settings for particular on date, Then only particular on date will be enable in the datepicker calendar.
  * */
-add_action('wp_footer', 'wbtm_journey_date_js', 100);
+//add_action('wp_footer', 'wbtm_journey_date_js', 100);
 // add_action('wbtm_search_form_end','wbtm_journey_date_js');
 function wbtm_journey_date_js()
 {
@@ -1920,9 +1920,9 @@ function wbtm_journey_date_js()
                 }
                 ?>
 
+            console.log('test_date',disableDays);
 
-
-                function disableAllTheseDays(date) {
+            function disableAllTheseDays(date) {
                     var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
                     if (disableDates.length > 0) {
                         if (jQuery.inArray(sdate, disableDates) != -1) {
