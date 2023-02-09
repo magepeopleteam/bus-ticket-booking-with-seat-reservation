@@ -89,10 +89,10 @@ class ActiveDataShowClass extends CommonClass
     {
 
         if($singleBus){
-            $wbtm_bus_on_dates = get_post_meta($post_id, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post_id, 'wbtm_bus_on_dates', true)) : [];
-            $wbtm_offday_schedules = get_post_meta($post_id, 'wbtm_offday_schedule', true) ? get_post_meta($post_id, 'wbtm_offday_schedule', true) : [];
-            $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : '';
-            $show_off_day = get_post_meta($post_id, 'show_off_day', true) ? get_post_meta($post_id, 'show_off_day', true) : '';
+            $wbtm_bus_on_dates = get_post_meta($post_id, 'wbtm_bus_on_dates_return', true) ? maybe_unserialize(get_post_meta($post_id, 'wbtm_bus_on_dates_return', true)) : [];
+            $wbtm_offday_schedules = get_post_meta($post_id, 'wbtm_offday_schedule_return', true) ? get_post_meta($post_id, 'wbtm_offday_schedule_return', true) : [];
+            $show_operational_on_day = get_post_meta($post_id, 'return_show_operational_on_day', true) ? get_post_meta($post_id, 'return_show_operational_on_day', true) : '';
+            $show_off_day = get_post_meta($post_id, 'return_show_off_day', true) ? get_post_meta($post_id, 'return_show_off_day', true) : '';
 
             if($wbtm_bus_on_dates){
                 $wbtm_bus_on_dates_arr = explode(',', $wbtm_bus_on_dates);
@@ -118,48 +118,14 @@ class ActiveDataShowClass extends CommonClass
             }
             $off_particular_date = implode(',', $offday);
             $off_particular_date = '[' . $off_particular_date . ']';
-            $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) ? get_post_meta($post_id, 'weekly_offday', true) : [];
+            $weekly_offday = get_post_meta($post_id, 'weekly_offday_return', true) ? get_post_meta($post_id, 'weekly_offday_return', true) : [];
             $weekly_offday = implode(',', $weekly_offday);
             $weekly_offday = '[' . $weekly_offday . ']';
 
 
             echo "<input id=".'return_all_date_picker_info'." data-return_single_bus=".$singleBus."  data-enableDates=".$enableDates." data-off_particular_date=".$off_particular_date." data-weekly_offday=".$weekly_offday." data-enable_onday=".$show_operational_on_day." data-enable_offday=".$show_off_day." data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
 
-        }else{
-
-            $settings = get_option('wbtm_bus_settings');
-            $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
-            $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
-
-            if ($global_offdates) {
-                $global_offdates_arr = explode(', ', $global_offdates);
-                $pday = array();
-                foreach ($global_offdates_arr as $offdate) {
-                    $pday[] = '"' . date('d-m-Y', strtotime($offdate)) . '"';
-                }
-                $particular_date = implode(',', $pday);
-
-                $disableDates = '[' . $particular_date . ']';
-            } else {
-                $disableDates = '['.']';
-            }
-
-            if ($global_offdays) {
-                $particular_offdays = implode(',', $global_offdays);
-
-                $disableDays = '[' . $particular_offdays . ']';
-            } else {
-                $disableDays = '['.']';
-            }
-
-
-
-            echo "<input id=".'return_all_date_picker_info'." data-return_single_bus=".'0'."  data-disableDates=".$disableDates." data-disableDays=".$disableDays."  data-date_format=".$this->convert_datepicker_dateformat()." type=".'hidden'.">";
-
         }
-
     }
-
-
 }
 

@@ -58,6 +58,17 @@
                     });
                 }
             }
+
+        }else{
+            var off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
+            var weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
+
+            jQuery("#j_date, #r_date").datepicker({
+                dateFormat: date_format,
+                minDate: 0,
+                beforeShowDay: off_particular
+            });
+
         }
 
 
@@ -73,7 +84,7 @@
             if(enable_onday || enable_offday){
                 if(enable_onday == 'yes') {
                     if(enableDates){
-                        jQuery('##r_date').datepicker({
+                        jQuery('#r_date').datepicker({
                             dateFormat: date_format,
                             minDate: 0,
                             beforeShowDay: enableAllTheseDays
@@ -86,13 +97,13 @@
                     }
 
                 } else if(enable_offday=='yes'){
-                    jQuery("##r_date").datepicker({
+                    jQuery("#r_date").datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                         beforeShowDay: off_particular
                     });
                 }else{
-                    jQuery("##r_date").datepicker({
+                    jQuery("#r_date").datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                     });
@@ -112,6 +123,7 @@
                     });
                 }
             }
+
         }
 
 
