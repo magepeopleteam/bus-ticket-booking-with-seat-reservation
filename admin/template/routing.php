@@ -59,12 +59,10 @@
 
         </div>
     </div>
+
     <hr />
-
-
     <!-- ADD ROUTING-->
     <div class="bus-stops-wrapper">
-
         <!-- ADD BOARDING POINT-->
         <div class="bus-stops-left-col">
             <h3 class="bus-tops-sec-title"><?php _e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -214,12 +212,9 @@
             </a>
         </div>
     </div>
-
     <!-- Bus route summary -->
     <?php admin_route_summary($post, $wbbm_bus_bp, $wbtm_bus_next_stops); ?>
     <!-- Bus route summary end -->
-
-
     <!-- ADD Return ROUTING-->
     <div class="wbtm-only-for-return-enable">
         <h3 class="wbtm-single-return-header"><?php _e('Return Route', 'bus-ticket-booking-with-seat-reservation') ?>:</h3>
@@ -383,19 +378,11 @@
                 <a class="button wbtom-tb-repeat-btn" href="#"><i class="fas fa-plus"></i><?php _e('Add More', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </a>
             </div>
-
         </div>
-
         <!-- Bus route summary -->
         <?php admin_route_summary($post, $wbbm_bus_bp_return, $wbtm_bus_next_stops_return, true); ?>
         <!-- Bus route summary end -->
     </div>
-
-
-
-    <!-- <div>
-        <button class="tab-pickup-point ra-button-style">Tab for Pickup point</button>
-    </div>-->
 
 
 </div>

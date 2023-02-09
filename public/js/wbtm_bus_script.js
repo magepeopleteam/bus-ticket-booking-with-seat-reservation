@@ -4,6 +4,7 @@
     $(document).ready(function($) {
 
         var single_bus = $( "#all_date_picker_info" ).data( "single_bus" ) || '';
+        var return_single_bus = $( "#return_all_date_picker_info" ).data( "return_single_bus" ) || '';
         var date_format = $( "#all_date_picker_info" ).data( "date_format" );
 
         if(single_bus){
@@ -18,56 +19,99 @@
             if(enable_onday || enable_offday){
                 if(enable_onday == 'yes') {
                     if(enableDates){
-                        jQuery('#j_date, #r_date').datepicker({
+                        jQuery('#j_date').datepicker({
                             dateFormat: date_format,
                             minDate: 0,
                             beforeShowDay: enableAllTheseDays
                         });
                     }else{
-                        jQuery("#j_date, #r_date").datepicker({
+                        jQuery("#j_date").datepicker({
                             dateFormat: date_format,
                             minDate: 0,
                         });
                     }
 
                 } else if(enable_offday=='yes'){
-                    jQuery("#j_date, #r_date").datepicker({
+                    jQuery("#j_date").datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                         beforeShowDay: off_particular
                     });
                 }else{
-                    jQuery("#j_date, #r_date").datepicker({
+                    jQuery("#j_date").datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                     });
                 }
             }else{
                 if(enableDates){
-                    jQuery('#j_date, #r_date').datepicker({
+                    jQuery('#j_date').datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                         beforeShowDay: enableAllTheseDays
                     });
                 }else{
-                    jQuery("#j_date, #r_date").datepicker({
+                    jQuery("#j_date").datepicker({
                         dateFormat: date_format,
                         minDate: 0,
                         beforeShowDay: off_particular
                     });
                 }
             }
+        }
 
-        }else{
-            var off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
-            var weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
 
-            jQuery("#j_date, #r_date").datepicker({
-                dateFormat: date_format,
-                minDate: 0,
-                beforeShowDay: off_particular
-            });
+        if(return_single_bus){
 
+            var enableDates = $( "#return_all_date_picker_info" ).data( "enabledates" );
+            var off_particular_date = $( "#return_all_date_picker_info" ).data( "off_particular_date" );
+            var weekly_offday = $( "#return_all_date_picker_info" ).data( "weekly_offday" );
+            var enable_onday = $( "#return_all_date_picker_info" ).data( "enable_onday" );
+            var enable_offday = $( "#return_all_date_picker_info" ).data( "enable_offday" );
+
+
+            if(enable_onday || enable_offday){
+                if(enable_onday == 'yes') {
+                    if(enableDates){
+                        jQuery('##r_date').datepicker({
+                            dateFormat: date_format,
+                            minDate: 0,
+                            beforeShowDay: enableAllTheseDays
+                        });
+                    }else{
+                        jQuery("#r_date").datepicker({
+                            dateFormat: date_format,
+                            minDate: 0,
+                        });
+                    }
+
+                } else if(enable_offday=='yes'){
+                    jQuery("##r_date").datepicker({
+                        dateFormat: date_format,
+                        minDate: 0,
+                        beforeShowDay: off_particular
+                    });
+                }else{
+                    jQuery("##r_date").datepicker({
+                        dateFormat: date_format,
+                        minDate: 0,
+                    });
+                }
+            }else{
+                if(enableDates){
+                    jQuery('#r_date').datepicker({
+                        dateFormat: date_format,
+                        minDate: 0,
+                        beforeShowDay: enableAllTheseDays
+                    });
+                }else{
+                    jQuery("#r_date").datepicker({
+                        dateFormat: date_format,
+                        minDate: 0,
+                        beforeShowDay: off_particular
+                    });
+                }
+            }
         }
 
 

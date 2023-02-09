@@ -413,21 +413,25 @@ class WBTMMetaBox
 
         $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
         $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
-
-
+        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
+        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
+        $weekly_offday = array_key_exists('weekly_offday', $values) ? maybe_unserialize($values['weekly_offday'][0]) : '';
+        if(!is_array($weekly_offday)){
+            $weekly_offday = array();
+        }
 
         // Return
         $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);
         $wbtm_offday_schedule_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule_return', true));
 
-        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
-        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
-
+        $return_show_operational_on_day = array_key_exists('return_show_operational_on_day', $values) ? $values['return_show_operational_on_day'][0] : '';
+        $return_show_off_day = array_key_exists('return_show_off_day', $values) ? $values['return_show_off_day'][0] : '';
         $weekly_offday = array_key_exists('weekly_offday', $values) ? maybe_unserialize($values['weekly_offday'][0]) : '';
-
         if(!is_array($weekly_offday)){
             $weekly_offday = array();
         }
+
+
 
 
 
@@ -465,8 +469,10 @@ class WBTMMetaBox
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
             $show_boarding_time = isset($_POST['show_boarding_time']) ? $_POST['show_boarding_time'] : 'yes';
             $show_upper_desk = isset($_POST['show_upper_desk']) ? $_POST['show_upper_desk'] : 'no';
-            $show_operational_on_day = isset($_POST['show_operational_on_day']) ? $_POST['show_operational_on_day'] : 'no';
+
             $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
+            $return_show_off_day = isset($_POST['return_show_off_day']) ? $_POST['return_show_off_day'] : 'no';
+
             $show_pickup_point = isset($_POST['show_pickup_point']) ? $_POST['show_pickup_point'] : 'no';
             $show_extra_service = isset($_POST['show_extra_service']) ? $_POST['show_extra_service'] : 'no';
             $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
@@ -1021,12 +1027,14 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
             update_post_meta($pid, 'show_extra_service', $show_extra_service);
 
-             $show_operational_on_day = ($ondates)?'yes':'no';
-
-             update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
-
-
+            $show_operational_on_day = ($ondates)?'yes':'no';
+            update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
             update_post_meta($pid, 'show_off_day', $show_off_day);
+
+            $return_show_operational_on_day = ($ondates_return)?'yes':'no';
+            update_post_meta($pid, 'return_show_operational_on_day', $return_show_operational_on_day);
+            update_post_meta($pid, 'return_show_off_day', $return_show_off_day);
+
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
 
