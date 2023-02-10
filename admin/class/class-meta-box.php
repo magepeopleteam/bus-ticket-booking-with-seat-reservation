@@ -275,6 +275,10 @@ class WBTMMetaBox
     {
         global $post;
         $wbbm_bus_bp = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+
+
+
+       // echo '<pre>';print_r($wbbm_bus_bp);echo '<pre>';die;
         $wbtm_bus_next_stops = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
 
         $wbbm_bus_bp_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops_return', true));
@@ -528,14 +532,16 @@ class WBTMMetaBox
 
 
 
+
             if (!empty($boarding_points_return)) {
                 $i = 0;
                 foreach ($boarding_points_return as $point) {
                     if ($point != '') {
                         $bus_boarding_points_return[$i]['wbtm_bus_bp_stops_name'] = $point;
                         $bus_boarding_points_return[$i]['wbtm_bus_bp_start_time'] = $boarding_time_return[$i];
+
                         if (isset($_POST['wbtm_bus_bp_start_disable'])) {
-                            $bus_boarding_points[$i]['wbtm_bus_bp_start_disable'] = array_key_exists($point, $_POST['wbtm_bus_bp_start_disable']) ? 'yes' : 'no';
+                            $bus_boarding_points_return[$i]['wbtm_bus_bp_start_disable'] = array_key_exists($point, $_POST['wbtm_bus_bp_start_disable']) ? 'yes' : 'no';
                         }
                     }
                     $i++;
