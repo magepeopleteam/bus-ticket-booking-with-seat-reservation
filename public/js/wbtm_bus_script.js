@@ -69,42 +69,20 @@
             }
 
         }else{
-            var off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
-            var weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
+            var global_off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
+            var global_weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
 
             jQuery("#j_date, #r_date").datepicker({
                 dateFormat: date_format,
                 minDate: 0,
-                beforeShowDay: off_particular
+                beforeShowDay: function (date){
+                    return off_particular(date, global_off_particular_date,global_weekly_offday );
+                }
             });
 
         }
 
-        function enableAllTheseDays(date) {
-            var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-            if (enableDates.length > 0) {
-                if (jQuery.inArray(sdate, enableDates) != -1) {
-                    return [true];
-                }
-            }
-            return [false];
-        }
 
-
-        function off_particular(date) {
-            var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-            if (off_particular_date.length > 0) {
-                if (jQuery.inArray(sdate, off_particular_date) != -1) {
-                    return [false];
-                }
-            }
-            if (weekly_offday.length > 0) {
-                if (weekly_offday.includes(date.getDay())) {
-                    return [false];
-                }
-            }
-            return [true];
-        }
 
 
         if(return_single_bus){
