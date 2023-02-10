@@ -100,7 +100,7 @@
                                 <?php if ($route_disable_switch === 'on') : ?>
                                     <td class="route_disable_container">
                                         <label class="switch route-disable-switch">
-                                            <input type="checkbox" name="wbtm_bus_bp_start_disable[<?php echo $field['wbtm_bus_bp_stops_name'] ?>]" <?php echo $field['wbtm_bus_bp_start_disable'] === 'yes' ? "checked" : '' ?>>
+                                            <input type="checkbox" name="wbtm_bus_bp_start_disable[<?php echo $field['wbtm_bus_bp_stops_name'] ?>]"  <?php echo (isset($field['wbtm_bus_bp_start_disable']) && $field['wbtm_bus_bp_start_disable'] === 'yes') ? "checked" : '' ?>>
                                             <span class="slider round"></span>
                                         </label>
                                     </td>
@@ -266,7 +266,7 @@
                                     <?php if ($route_disable_switch === 'on') : ?>
                                         <td class="route_disable_container">
                                             <label class="switch route-disable-switch">
-                                                <input type="checkbox" name="wbtm_bus_bp_start_disable[<?php echo $field['wbtm_bus_bp_stops_name'] ?>]" <?php echo $field['wbtm_bus_bp_start_disable'] === 'yes' ? "checked" : '' ?>>
+                                                <input type="checkbox" name="wbtm_bus_bp_start_disable[<?php echo $field['wbtm_bus_bp_stops_name'] ?>]" <?php echo (isset($field['wbtm_bus_bp_start_disable']) && $field['wbtm_bus_bp_start_disable'] === 'yes') ? "checked" : '' ?>>
                                                 <span class="slider round"></span>
                                             </label>
                                         </td>
