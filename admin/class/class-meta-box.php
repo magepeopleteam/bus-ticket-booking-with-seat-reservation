@@ -961,14 +961,17 @@ class WBTMMetaBox
                     }
                 }
             }
-            update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);
+
             $od = isset($_POST['weekly_offday']) ? $_POST['weekly_offday'] : '';
-            update_post_meta($pid, 'weekly_offday', $od);
+
 
             $ondates = $_POST['wbtm_bus_on_dates'];
             $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
             $show_operational_on_day = ($ondates)?'yes':'no';
+
             update_post_meta($pid, 'wbtm_bus_on_dates', $ondates);
+            update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);
+            update_post_meta($pid, 'weekly_offday', $od);
             update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
             update_post_meta($pid, 'show_off_day', $show_off_day);
 

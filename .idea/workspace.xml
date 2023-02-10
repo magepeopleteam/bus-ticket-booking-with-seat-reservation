@@ -4,9 +4,6 @@
     <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/class/class-meta-box.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-meta-box.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/template/bus_onday_offday.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/bus_onday_offday.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/ActiveDataShowClass.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/ActiveDataShowClass.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/class-functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/class-functions.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/wbtm_bus_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/wbtm_bus_script.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
