@@ -20,6 +20,7 @@ class BusTicketBookingWithSeatReservationClass
     private function define_all_hooks() {
         $ActiveDataShowClass = new ActiveDataShowClass;
         add_action('active_date', array($ActiveDataShowClass,'active_date_picker'), 99, 3);
+        add_action('active_date', array($ActiveDataShowClass,'return_active_date_picker'), 99, 3);
     }
 
     private function define_all_filters() {
