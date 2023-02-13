@@ -961,9 +961,7 @@ class WBTMMetaBox
                 for ($i = 0; $i < count($offday_date_from); $i++) {
                     if ($offday_date_from[$i] != '') {
                         $offday_schedule_array[$i]['from_date'] = $offday_date_from[$i];
-                        $offday_schedule_array[$i]['from_time'] = $offday_time_from[$i];
                         $offday_schedule_array[$i]['to_date'] = $offday_date_to[$i];
-                        $offday_schedule_array[$i]['to_time'] = $offday_time_to[$i];
                     }
                 }
             }
@@ -986,19 +984,17 @@ class WBTMMetaBox
             $offday_schedule_return_array = array();
             $offday_date_from_return = $_POST['wbtm_od_offdate_from_return'];
             $offday_date_to_return = $_POST['wbtm_od_offdate_to_return'];
-            $offday_time_from_return = $_POST['wbtm_od_offtime_from_return'];
-            $offday_time_to_return = $_POST['wbtm_od_offtime_to_return'];
+
             if (is_array($offday_date_from_return) && !empty($offday_date_from_return)) {
                 $i = 0;
                 for ($i = 0; $i < count($offday_date_from_return); $i++) {
-                    if ($offday_date_from[$i] != '') {
+                    if ($offday_date_from_return[$i] != '') {
                         $offday_schedule_return_array[$i]['from_date'] = $offday_date_from_return[$i];
-                        $offday_schedule_return_array[$i]['from_time'] = $offday_time_from_return[$i];
                         $offday_schedule_return_array[$i]['to_date'] = $offday_date_to_return[$i];
-                        $offday_schedule_return_array[$i]['to_time'] = $offday_time_to_return[$i];
                     }
                 }
             }
+
             $od_return = isset($_POST['weekly_offday_return']) ? $_POST['weekly_offday_return'] : '';
             $return_show_off_day = isset($_POST['return_show_off_day']) ? $_POST['return_show_off_day'] : 'no';
             $return_show_operational_on_day = ($ondates_return)?'yes':'no';
