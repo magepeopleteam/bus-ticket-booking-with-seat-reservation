@@ -5,6 +5,11 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/class/class-meta-box.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/class/class-meta-box.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/template/bus_onday_offday.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/template/bus_onday_offday.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/BusTicketBookingWithSeatReservationClass.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/BusTicketBookingWithSeatReservationClass.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/bus-search-page_no_need.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/class-plugin-public.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/class-plugin-public.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/shortcode/shortcode.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/shortcode/shortcode.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/template-hooks/layout/helper.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/template-hooks/layout/helper.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +79,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/admin/template/bus_onday_offday.php</url>
-          <line>278</line>
+          <line>277</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
