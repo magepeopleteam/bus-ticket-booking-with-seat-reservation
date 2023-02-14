@@ -275,6 +275,10 @@ class WBTMMetaBox
     {
         global $post;
         $wbbm_bus_bp = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops', true));
+
+
+
+       // echo '<pre>';print_r($wbbm_bus_bp);echo '<pre>';die;
         $wbtm_bus_next_stops = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_next_stops', true));
 
         $wbbm_bus_bp_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_bus_bp_stops_return', true));
@@ -413,21 +417,25 @@ class WBTMMetaBox
 
         $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
         $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
-
-
+        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
+        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
+        $weekly_offday = array_key_exists('weekly_offday', $values) ? maybe_unserialize($values['weekly_offday'][0]) : '';
+        if(!is_array($weekly_offday)){
+            $weekly_offday = array();
+        }
 
         // Return
         $ondates_return = get_post_meta($post->ID, 'wbtm_bus_on_dates_return', true);
         $wbtm_offday_schedule_return = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule_return', true));
 
-        $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
-        $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
-
-        $weekly_offday = array_key_exists('weekly_offday', $values) ? maybe_unserialize($values['weekly_offday'][0]) : '';
-
-        if(!is_array($weekly_offday)){
-            $weekly_offday = array();
+        $return_show_operational_on_day = array_key_exists('return_show_operational_on_day', $values) ? $values['return_show_operational_on_day'][0] : '';
+        $return_show_off_day = array_key_exists('return_show_off_day', $values) ? $values['return_show_off_day'][0] : '';
+        $weekly_offday_return = array_key_exists('weekly_offday_return', $values) ? maybe_unserialize($values['weekly_offday_return'][0]) : '';
+        if(!is_array($weekly_offday_return)){
+            $weekly_offday_return = array();
         }
+
+
 
 
 
@@ -465,8 +473,9 @@ class WBTMMetaBox
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
             $show_boarding_time = isset($_POST['show_boarding_time']) ? $_POST['show_boarding_time'] : 'yes';
             $show_upper_desk = isset($_POST['show_upper_desk']) ? $_POST['show_upper_desk'] : 'no';
-            $show_operational_on_day = isset($_POST['show_operational_on_day']) ? $_POST['show_operational_on_day'] : 'no';
-            $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
+
+
+
             $show_pickup_point = isset($_POST['show_pickup_point']) ? $_POST['show_pickup_point'] : 'no';
             $show_extra_service = isset($_POST['show_extra_service']) ? $_POST['show_extra_service'] : 'no';
             $zero_price_allow = isset($_POST['zero_price_allow']) ? $_POST['zero_price_allow'] : 'no';
@@ -493,6 +502,7 @@ class WBTMMetaBox
                     $i++;
                 }
             }
+
 
             if (!empty($dropping_points)) {
                 $i = 0;
@@ -522,14 +532,16 @@ class WBTMMetaBox
 
 
 
+
             if (!empty($boarding_points_return)) {
                 $i = 0;
                 foreach ($boarding_points_return as $point) {
                     if ($point != '') {
                         $bus_boarding_points_return[$i]['wbtm_bus_bp_stops_name'] = $point;
                         $bus_boarding_points_return[$i]['wbtm_bus_bp_start_time'] = $boarding_time_return[$i];
+
                         if (isset($_POST['wbtm_bus_bp_start_disable'])) {
-                            $bus_boarding_points[$i]['wbtm_bus_bp_start_disable'] = array_key_exists($point, $_POST['wbtm_bus_bp_start_disable']) ? 'yes' : 'no';
+                            $bus_boarding_points_return[$i]['wbtm_bus_bp_start_disable'] = array_key_exists($point, $_POST['wbtm_bus_bp_start_disable']) ? 'yes' : 'no';
                         }
                     }
                     $i++;
@@ -849,98 +861,17 @@ class WBTMMetaBox
 
             $wbtm_car_type = isset($_POST['mtpa_car_type']) ? $_POST['mtpa_car_type'] : null;
             update_post_meta($pid, 'mtpa_car_type', $wbtm_car_type);
-            // Car Type
 
-            // Car Type END
-
-            // Ondates & offdates
-            $ondates = $_POST['wbtm_bus_on_dates'];
-            update_post_meta($pid, 'wbtm_bus_on_dates', $ondates);
-            // Offday schedule
-            $offday_schedule_array = array();
-            $offday_date_from = $_POST['wbtm_od_offdate_from'];
-            $offday_date_to = $_POST['wbtm_od_offdate_to'];
-            $offday_time_from = $_POST['wbtm_od_offtime_from'];
-            $offday_time_to = $_POST['wbtm_od_offtime_to'];
-
-            if (is_array($offday_date_from) && !empty($offday_date_from)) {
-                $i = 0;
-                for ($i = 0; $i < count($offday_date_from); $i++) {
-                    if ($offday_date_from[$i] != '') {
-                        $offday_schedule_array[$i]['from_date'] = $offday_date_from[$i];
-                        $offday_schedule_array[$i]['from_time'] = $offday_time_from[$i];
-                        $offday_schedule_array[$i]['to_date'] = $offday_date_to[$i];
-                        $offday_schedule_array[$i]['to_time'] = $offday_time_to[$i];
-                    }
-                }
-            }
-
-            update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);
-
-            $od = isset($_POST['weekly_offday']) ? $_POST['weekly_offday'] : '';
-
-
-            update_post_meta($pid, 'weekly_offday', $od);
-
-            // Offday schedule END
-            // Ondates & offdates END
-
-            // Ondates & offdates Return
-            $ondates_return = isset($_POST['wbtm_bus_on_dates_return']) ? $_POST['wbtm_bus_on_dates_return'] : '';
-
-            // Offday schedule
-            $offday_schedule_array = array();
-            $offday_date_from = isset($_POST['wbtm_od_offdate_from_return']) ? $_POST['wbtm_od_offdate_from_return'] : '';
-            $offday_date_to = isset($_POST['wbtm_od_offdate_to_return']) ? $_POST['wbtm_od_offdate_to_return'] : '';
-            $offday_time_from = isset($_POST['wbtm_od_offtime_from_return']) ? $_POST['wbtm_od_offtime_from_return'] : '';
-            $offday_time_to = isset($_POST['wbtm_od_offtime_to_return']) ? $_POST['wbtm_od_offtime_to_return'] : '';
-
-            if (is_array($offday_date_from) && !empty($offday_date_from)) {
-                $i = 0;
-                for ($i = 0; $i < count($offday_date_from); $i++) {
-                    if ($offday_date_from[$i] != '') {
-                        $offday_schedule_array[$i]['from_date'] = $offday_date_from[$i];
-                        $offday_schedule_array[$i]['from_time'] = $offday_time_from[$i];
-                        $offday_schedule_array[$i]['to_date'] = $offday_date_to[$i];
-                        $offday_schedule_array[$i]['to_time'] = $offday_time_to[$i];
-                    }
-                }
-            }
-
-
-            $od_sun = isset($_POST['offday_sun_return']) ? strip_tags($_POST['offday_sun_return']) : '';
-            $od_mon = isset($_POST['offday_mon_return']) ? strip_tags($_POST['offday_mon_return']) : '';
-            $od_tue = isset($_POST['offday_tue_return']) ? strip_tags($_POST['offday_tue_return']) : '';
-            $od_wed = isset($_POST['offday_wed_return']) ? strip_tags($_POST['offday_wed_return']) : '';
-            $od_thu = isset($_POST['offday_thu_return']) ? strip_tags($_POST['offday_thu_return']) : '';
-            $od_fri = isset($_POST['offday_fri_return']) ? strip_tags($_POST['offday_fri_return']) : '';
-            $od_sat = isset($_POST['offday_sat_return']) ? strip_tags($_POST['offday_sat_return']) : '';
 
             if ($wbtm_general_same_bus_return === 'yes') { // All return data
                 // Route
                 update_post_meta($pid, 'wbtm_bus_bp_stops_return', $bus_boarding_points_return);
                 update_post_meta($pid, 'wbtm_bus_next_stops_return', $bus_dropping_points_return);
-
                 // Seat Price
                 update_post_meta($pid, 'wbtm_bus_prices_return', $seat_prices_return);
 
-                // On dates
-                update_post_meta($pid, 'wbtm_bus_on_dates_return', $ondates_return);
-
-                // Off dates
-                update_post_meta($pid, 'wbtm_offday_schedule_return', $offday_schedule_array);
-
-                // Day Off
-                update_post_meta($pid, 'offday_sun_return', $od_sun);
-                update_post_meta($pid, 'offday_mon_return', $od_mon);
-                update_post_meta($pid, 'offday_tue_return', $od_tue);
-                update_post_meta($pid, 'offday_wed_return', $od_wed);
-                update_post_meta($pid, 'offday_thu_return', $od_thu);
-                update_post_meta($pid, 'offday_fri_return', $od_fri);
-                update_post_meta($pid, 'offday_sat_return', $od_sat);
             }
-            // Offday schedule Return END
-            // Ondates & offdates Return END
+
 
 
             if (isset($_POST['seat_col']) && isset($_POST['seat_rows']) && isset($_POST['bus_seat_panels'])) {
@@ -1018,8 +949,68 @@ class WBTMMetaBox
             update_post_meta($pid, 'show_upper_desk', $show_upper_desk);
             update_post_meta($pid, 'show_pickup_point', $show_pickup_point);
             update_post_meta($pid, 'show_extra_service', $show_extra_service);
+
+            //offday onday
+            $offday_schedule_array = array();
+            $offday_date_from = $_POST['wbtm_od_offdate_from'];
+            $offday_date_to = $_POST['wbtm_od_offdate_to'];
+            $offday_time_from = $_POST['wbtm_od_offtime_from'];
+            $offday_time_to = $_POST['wbtm_od_offtime_to'];
+            if (is_array($offday_date_from) && !empty($offday_date_from)) {
+                $i = 0;
+                for ($i = 0; $i < count($offday_date_from); $i++) {
+                    if ($offday_date_from[$i] != '') {
+                        $offday_schedule_array[$i]['from_date'] = $offday_date_from[$i];
+                        $offday_schedule_array[$i]['from_time'] = $offday_time_from[$i];
+                        $offday_schedule_array[$i]['to_date'] = $offday_date_to[$i];
+                        $offday_schedule_array[$i]['to_time'] = $offday_time_to[$i];
+                    }
+                }
+            }
+
+            $od = isset($_POST['weekly_offday']) ? $_POST['weekly_offday'] : '';
+
+
+            $ondates = $_POST['wbtm_bus_on_dates'];
+            $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
+            $show_operational_on_day = ($ondates)?'yes':'no';
+
+            update_post_meta($pid, 'wbtm_bus_on_dates', $ondates);
+            update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);
+            update_post_meta($pid, 'weekly_offday', $od);
             update_post_meta($pid, 'show_operational_on_day', $show_operational_on_day);
             update_post_meta($pid, 'show_off_day', $show_off_day);
+
+            //offday onday return
+            $ondates_return = isset($_POST['wbtm_bus_on_dates_return']) ? $_POST['wbtm_bus_on_dates_return'] : '';
+            $offday_schedule_return_array = array();
+            $offday_date_from_return = $_POST['wbtm_od_offdate_from_return'];
+            $offday_date_to_return = $_POST['wbtm_od_offdate_to_return'];
+            $offday_time_from_return = $_POST['wbtm_od_offtime_from_return'];
+            $offday_time_to_return = $_POST['wbtm_od_offtime_to_return'];
+            if (is_array($offday_date_from_return) && !empty($offday_date_from_return)) {
+                $i = 0;
+                for ($i = 0; $i < count($offday_date_from_return); $i++) {
+                    if ($offday_date_from[$i] != '') {
+                        $offday_schedule_return_array[$i]['from_date'] = $offday_date_from_return[$i];
+                        $offday_schedule_return_array[$i]['from_time'] = $offday_time_from_return[$i];
+                        $offday_schedule_return_array[$i]['to_date'] = $offday_date_to_return[$i];
+                        $offday_schedule_return_array[$i]['to_time'] = $offday_time_to_return[$i];
+                    }
+                }
+            }
+            $od_return = isset($_POST['weekly_offday_return']) ? $_POST['weekly_offday_return'] : '';
+            $return_show_off_day = isset($_POST['return_show_off_day']) ? $_POST['return_show_off_day'] : 'no';
+            $return_show_operational_on_day = ($ondates_return)?'yes':'no';
+
+            update_post_meta($pid, 'wbtm_bus_on_dates_return', $ondates_return);
+            update_post_meta($pid, 'wbtm_offday_schedule_return', $offday_schedule_return_array);
+            update_post_meta($pid, 'weekly_offday_return', $od_return);
+            update_post_meta($pid, 'return_show_operational_on_day', $return_show_operational_on_day);
+            update_post_meta($pid, 'return_show_off_day', $return_show_off_day);
+            //end offday onday
+
+
             update_post_meta($pid, 'wbtm_bus_prices', $seat_prices);
             update_post_meta($pid, 'zero_price_allow', $zero_price_allow);
 

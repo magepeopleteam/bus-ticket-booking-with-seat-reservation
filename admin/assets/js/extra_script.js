@@ -149,6 +149,17 @@
 	$("#off-day-control").click(function(){
 		$(".off-day").slideToggle("slow");
 	});
+
+	$("#return-operational-on-day-control").click(function(){
+		$(".return-operational-on-day").slideToggle("slow");
+	});
+
+	$("#return-off-day-control").click(function(){
+		$(".return-off-day").slideToggle("slow");
+	});
+
+
+
 	$("#extra-service-control").click(function(){
 		$(".extra-service").slideToggle("slow");
 	});

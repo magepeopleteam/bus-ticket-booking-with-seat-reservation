@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
 			$('.next').slideUp('fast');
 		}
 	})
+
 	$(document).on('click', '.welcome-tabs .next-prev .next', function () {
 		welcomeTabs = $('.welcome-tabs .tab-nav');
 		welcomeTabsContent = $('.welcome-tabs .tab-content ');
@@ -46,6 +47,7 @@ jQuery(document).ready(function ($) {
 			$('.next').slideUp('fast');
 		}
 	})
+
 	$(document).on('click', '.welcome-tabs .next-prev .prev', function () { 
 		welcomeTabs = $('.welcome-tabs .tab-nav');
 		welcomeTabsContent = $('.welcome-tabs .tab-content ');
