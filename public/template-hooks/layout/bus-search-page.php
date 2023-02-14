@@ -377,7 +377,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
             $i = 0;
             foreach ($seatPrices as $price) {
                 if (strtolower($price['wbtm_bus_bp_price_stop']) == strtolower($start) && strtolower($price['wbtm_bus_dp_price_stop']) == strtolower($end)) {
-                    if ((float)$price['wbtm_bus_price'] > 0) {
+                    if ((float)$price['wbtm_bus_price'] > 0 || $bus_zero_price_allow === 'yes') {
                         $available_seat_type[$i]['type'] = 'Adult';
                         $available_seat_type[$i]['price'] = $price['wbtm_bus_price'];
                         $i++;
@@ -493,7 +493,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                 </thead>
                                 <tbody>
                                     <?php foreach ($available_seat_type as $type) :
-                                        if ($type['price'] >= 0 && $type['price'] != '') : ?>
+                                        if (($type['price'] >= 0 && $type['price'] != '') || $bus_zero_price_allow === 'yes') : ?>
                                             <tr>
                                                 <td><?php echo wbtm_get_seat_type_label(strtolower($type['type']), $type['type']) ?></td>
                                                 <td class="mage-seat-qty">

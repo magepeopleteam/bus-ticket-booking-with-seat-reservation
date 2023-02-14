@@ -370,7 +370,7 @@
         });
 
         if (bus_zero_price_allow == 'yes') {
-            let grand_total = extra_price + bagPrice;
+            let grand_total = seat_price + extra_price + bagPrice;
             grand_ele.text(wbtm_woo_price_format(grand_total));
             parent.find('button[name="add-to-cart"]').removeAttr('disabled');
             parent.find('.mage_bus_sub_total_price.mage-price-total .price-figure').text(grand_total.toFixed(2));
