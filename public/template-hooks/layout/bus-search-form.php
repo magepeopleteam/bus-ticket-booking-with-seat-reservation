@@ -13,6 +13,7 @@ function mage_bus_search_form_only($single_bus, $target)
     </h4>
 
     <form action="<?php echo $single_bus ? '' : get_permalink(get_page_by_path($target)); ?>" method="get" class="mage_form">
+        <?php do_action('active_date',$single_bus,get_the_ID()) ?>
         <div class="mage_form_list">
             <div class="mage_input_select mage_bus_boarding_point">
                 <label>
@@ -22,6 +23,7 @@ function mage_bus_search_form_only($single_bus, $target)
                 <?php mage_route_list($single_bus, true, true); ?>
             </div>
         </div>
+
         <div class="mage_form_list">
             <div class="mage_input_select mage_bus_dropping_point">
                 <label>

@@ -432,7 +432,6 @@
     $(document).on({
         keyup: function () {
             let input = $(this).val().toLowerCase();
-            //console.log('data_test',input);
             $(this).parents('.mage_input_select').find('.mage_input_select_list').find('li').filter(function () {
                 // $(this).toggle($(this).attr('data-route').toLowerCase().indexOf(input) > -1);
                 // $('#wbtm_dropping_point_list').slideUp(100);
