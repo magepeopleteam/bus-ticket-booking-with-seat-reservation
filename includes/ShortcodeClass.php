@@ -2,11 +2,9 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
-class WBTM_Shortcode {
+class ShortcodeClass {
     public function __construct() {
-        //add_shortcode('wbtm-bus-list', array($this, 'wbtm_bus_list'));
-       // add_shortcode('wbtm-bus-search-form', array($this, 'wbtm_bus_search_form'));
-        //add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
+
     }
 
     // Shortcode for Showing Bus List....
@@ -119,4 +117,3 @@ class WBTM_Shortcode {
     }
 }
 
-new WBTM_Shortcode();

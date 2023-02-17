@@ -15,7 +15,7 @@ class WBTM_Plugin_Public {
 		$this->load_public_dependencies();
 		add_action( 'wp_enqueue_scripts', array($this,'enqueue_styles'));
 		add_action( 'wp_enqueue_scripts', array($this,'enqueue_scripts'));
-		add_filter('single_template', array($this,'WBTM_register_custom_single_template'), 10);
+		//add_filter('single_template', array($this,'WBTM_register_custom_single_template'), 10);
 		add_filter('template_include', array($this,'WBTM_register_custom_tax_template'));
 	}
 
