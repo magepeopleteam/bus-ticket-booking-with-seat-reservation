@@ -120,9 +120,11 @@
                             </select>
                         </td>
                         <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value="" class="text" placeholder="15:00"></td>
-                        <td align="center"><a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
+                        <td align="center">
+                            <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
                                 <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </a></td>
+                            </a>
+                        </td>
                         <?php if ($route_disable_switch === 'on') : ?>
                             <td class="route_disable_container">
                                 <label class="switch route-disable-switch">
@@ -160,7 +162,9 @@
                                         <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                         <?php
                                         foreach ($terms as $term) { ?>
-                                            <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_next_stops_name']) ? 'Selected' : '' ?>><?php echo $term->name; ?></option>
+                                            <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_next_stops_name']) ? 'Selected' : '' ?>>
+                                                <?php echo $term->name; ?>
+                                            </option>
                                         <?php } ?>
                                     </select>
                                 </td>
@@ -187,7 +191,8 @@
                                 <?php
                                 foreach ($terms as $term) {
                                 ?>
-                                    <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>"><?php echo $term->name; ?>
+                                    <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>">
+                                        <?php echo $term->name; ?>
                                     </option>
                                 <?php
                                 }
@@ -233,7 +238,7 @@
                             <?php endif; ?>
                         </tr>
                     </thead>
-                    <tbody class="boarding-point-return">
+                    <tbody class="bd-point-return boarding-point-return">
                         <?php
                         if ($wbbm_bus_bp_return) :
                             $count = 0;
@@ -246,9 +251,9 @@
                                             <?php
                                             foreach ($terms as $term) {
                                             ?>
-                                                <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php if ($term->name == $field['wbtm_bus_bp_stops_name']) {
-                                                                                                echo "Selected";
-                                                                                            } ?>><?php echo $term->name; ?></option>
+                                                <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>" <?php echo ($term->name == $field['wbtm_bus_bp_stops_name']) ? 'Selected' : '' ?>>
+                                                    <?php echo $term->name; ?>
+                                                </option>
                                             <?php
                                             }
                                             ?>
@@ -276,14 +281,16 @@
                         ?>
 
                         <!-- empty hidden one for jQuery -->
-                        <tr class="mtsa-empty-row-t">
+                        <tr style="display: none" class="more-bd-point">
                             <td align="center">
                                 <select name="wbtm_bus_bp_stops_name_return[]" class='seat_type wbtm_boarding_point bus_stop_add_option'>
                                     <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php
                                     foreach ($terms as $term) {
                                     ?>
-                                        <option value="<?php echo $term->name; ?>"><?php echo $term->name; ?></option>
+                                        <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>">
+                                            <?php echo $term->name; ?>
+                                        </option>
                                     <?php
                                     }
                                     ?>
@@ -306,7 +313,8 @@
 
                     </tbody>
                 </table>
-                <a class="button wbtom-tb-repeat-btn" href="#"><i class="fas fa-plus"></i><?php _e('Add More', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <a class="button wbtom-tb-repeat-btn add-more-bd-point" href="#">
+                    <i class="fas fa-plus"></i><?php _e('Add More', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </a>
             </div>
 
@@ -319,7 +327,7 @@
                         <th><?php _e('Time', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                         <th><?php _e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                     </tr>
-                    <tbody>
+                    <tbody class="bd-point-return boarding-point-return">
                         <?php
                         if ($wbtm_bus_next_stops_return) :
                             $count = 0;
@@ -354,28 +362,32 @@
                         ?>
 
                         <!-- empty hidden one for jQuery -->
-                        <tr class="mtsa-empty-row-t">
+                        <tr style="display: none" class="more-bd-point">
                             <td align="center">
                                 <select name="wbtm_bus_next_stops_name_return[]" class='seat_type'>
                                     <option value=""><?php _e('Please Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php
                                     foreach ($terms as $term) {
                                     ?>
-                                        <option value="<?php echo $term->name; ?>"><?php echo $term->name; ?>
+                                        <option data-term_id="<?php echo $term->term_id; ?>" value="<?php echo $term->name; ?>">
+                                            <?php echo $term->name; ?>
                                         </option>
                                     <?php
                                     }
                                     ?>
                                 </select>
                             </td>
-                            <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="" class="text" placeholder="15:00"></td>
-                            <td align="center"><a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
+                            <td align="center">
+                                <input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="" class="text" placeholder="15:00">
+                            </td>
+                            <td align="center">
+                                <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
                                     <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
                                 </a></td>
                         </tr>
                     </tbody>
                 </table>
-                <a class="button wbtom-tb-repeat-btn" href="#"><i class="fas fa-plus"></i><?php _e('Add More', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <a class="button wbtom-tb-repeat-btn add-more-bd-point" href="#"><i class="fas fa-plus"></i><?php _e('Add More', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </a>
             </div>
         </div>
