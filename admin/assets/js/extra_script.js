@@ -167,7 +167,7 @@
 
 	$(".add-more-bd-point").click(function(e){
 		e.preventDefault();
-		$(this).siblings().children('.bd-point').append('<tr>'+$(this).siblings().children().children(".more-bd-point").html()+'</tr>');
+		$(this).siblings().children('.bd-point, .bd-point-return').append('<tr>'+$(this).siblings().children().children(".more-bd-point").html()+'</tr>');
 		$(this).parent().find('input.text').timepicker({
 			timeFormat: 'H:mm',
 			interval: 15,
@@ -178,6 +178,8 @@
 			scrollbar: true
 		});
 	});
+
+
 
 	$(document).on('click','.remove-bp-row',function (e){
 		e.preventDefault();
