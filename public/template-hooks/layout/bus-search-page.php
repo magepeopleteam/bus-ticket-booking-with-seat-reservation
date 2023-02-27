@@ -401,7 +401,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
 ?>
     <form class="mage_form wbtm_bus_booking" action="" method="post">
         <div class="mage_bus_seat_details">
-            <input type="hidden" name='journey_date' value='<?php echo mage_wp_date($date, 'Y-m-d'); ?>' />
+            <input type="hidden"  name='journey_date' value='<?php echo mage_wp_date('02-25-2013', 'Y-m-d'); ?>' />
             <input type="hidden" name='return_date' value='<?php echo mage_wp_date($return_date, 'Y-m-d'); ?>' />
             <input type="hidden" name='start_stops' value="<?php echo $start; ?>" />
             <input type='hidden' name='end_stops' value='<?php echo $end; ?>' />

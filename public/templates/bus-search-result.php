@@ -94,7 +94,7 @@ $price_arr          = maybe_unserialize(get_post_meta(get_the_id(),'wbtm_bus_pri
             <form action="" method='post'>
                 <div class="top-search-section">                    
                     <div class="leaving-list">
-                        <input type="hidden"  name='journey_date' class="text" value='<?php echo $date; ?>'/>
+                        <input type="hidden"   name='journey_date' class="text" value='<?php echo $date; ?>'/>
                         <input type="hidden" name='start_stops' value="<?php echo $start; ?>" class="hidden"/>
                         <input type='hidden' value='<?php echo $end; ?>' name='end_stops'/>
                         <h6>

@@ -1971,6 +1971,7 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
 
             $offday_current_bus = false;
             if (!empty($bus_offday_schedules)) {
+
                 $s_datetime = new DateTime($j_date . ' ' . $start_time);
 
                 foreach ($bus_offday_schedules as $item) {
