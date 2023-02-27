@@ -1,5 +1,6 @@
 <div class="wbtm-item-row">
-    <label class="item-label"><?php echo mage_bus_setting_value('bus_menu_label', 'Bus').' ';_e('No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+    <label class="item-label"><?php echo mage_bus_setting_value('bus_menu_label', 'Bus') . ' ';
+                                _e('No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
     <input type="text" name="wbtm_bus_no" value="<?php echo $coach_no; ?>">
 </div>
 <div class="wbtm-item-row">
@@ -70,27 +71,27 @@
                 <strong><?php _e('Driver Seat Position', 'bus-ticket-booking-with-seat-reservation'); ?>
                     :</strong>
                 <span>
-                            <?php
-                            if (array_key_exists('driver_seat_position', $values)) {
-                                $position = $values['driver_seat_position'][0];
-                            } else {
-                                $position = 'left';
-                            }
-                            $wbtmmain->wbtm_get_driver_position($position);
-                            ?>
-                        </span>
+                    <?php
+                    if (array_key_exists('driver_seat_position', $values)) {
+                        $position = $values['driver_seat_position'][0];
+                    } else {
+                        $position = 'left';
+                    }
+                    $wbtmmain->wbtm_get_driver_position($position);
+                    ?>
+                </span>
             </p>
             <p class="wbtm-control-row">
                 <strong><?php _e('Total Seat Columns', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong>
                 <input type="number" value='<?php if (array_key_exists('wbtm_seat_cols', $values)) {
-                    echo $values['wbtm_seat_cols'][0];
-                } ?>' name="seat_col" id='seat_col' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
+                                                echo $values['wbtm_seat_cols'][0];
+                                            } ?>' name="seat_col" id='seat_col' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
             </p>
             <p class="wbtm-control-row">
                 <strong><?php _e('Total Seat Rows', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong>
                 <input type="number" value='<?php if (array_key_exists('wbtm_seat_rows', $values)) {
-                    echo $values['wbtm_seat_rows'][0];
-                } ?>' name="seat_rows" id='seat_rows' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
+                                                echo $values['wbtm_seat_rows'][0];
+                                            } ?>' name="seat_rows" id='seat_rows' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
             </p>
             <p class="wbtm-control-row">
                 <button id="create_seat_plan" class="create_seat_plan"><span class="dashicons dashicons-plus"></span><?php _e('Create Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -108,7 +109,7 @@
                     $seatrows = $values['wbtm_seat_rows'][0];
                     $seatcols = $values['wbtm_seat_cols'][0];
                     $seats = unserialize($old);
-                    ?>
+                ?>
                     <!--suppress JSJQueryEfficiency -->
                     <script type="text/javascript">
                         jQuery(document).ready(function($) {
@@ -131,44 +132,44 @@
 
                     <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one">
                         <tbody>
-                        <?php
-
-                        foreach ($seats as $_seats) {
-                            ?>
-                            <tr>
-                                <?php
-                                for ($x = 1; $x <= $seatcols; $x++) {
-                                    $text_field_name = "seat" . $x;
-                                    $seat_type_name = "seat_types" . $x;
-                                    ?>
-                                    <td align="center">
-                                        <input type="text" value="<?php echo $_seats[$text_field_name]; ?>" name="<?php echo $text_field_name; ?>[]" class="text">
-                                        <?php wbtm_get_seat_type_list($seat_type_name, $post->ID); ?>
-
-                                    </td>
-                                    <?php
-                                }
-                                ?>
-                                <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                    </a>
-                                    <input type="hidden" name="bus_seat_panels[]">
-                                </td>
-                            </tr>
-                        <?php } ?>
-                        <!-- empty hidden one for jQuery -->
-                        <tr class="empty-row-seat screen-reader-text">
                             <?php
-                            for ($row = 1; $row <= $seatcols; $row++) {
-                                $seat_type_name = "seat_types" . $row;
-                                ?>
-                                <td align="center">
-                                    <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
-                                    <?php wbtm_get_seat_type_list($seat_type_name); ?>
-                                </td>
+
+                            foreach ($seats as $_seats) {
+                            ?>
+                                <tr>
+                                    <?php
+                                    for ($x = 1; $x <= $seatcols; $x++) {
+                                        $text_field_name = "seat" . $x;
+                                        $seat_type_name = "seat_types" . $x;
+                                    ?>
+                                        <td align="center">
+                                            <input type="text" value="<?php echo $_seats[$text_field_name]; ?>" name="<?php echo $text_field_name; ?>[]" class="text">
+                                            <?php wbtm_get_seat_type_list($seat_type_name, $post->ID); ?>
+
+                                        </td>
+                                    <?php
+                                    }
+                                    ?>
+                                    <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                        </a>
+                                        <input type="hidden" name="bus_seat_panels[]">
+                                    </td>
+                                </tr>
                             <?php } ?>
-                            <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </a><input type="hidden" name="bus_seat_panels[]"></td>
-                        </tr>
+                            <!-- empty hidden one for jQuery -->
+                            <tr class="empty-row-seat screen-reader-text">
+                                <?php
+                                for ($row = 1; $row <= $seatcols; $row++) {
+                                    $seat_type_name = "seat_types" . $row;
+                                ?>
+                                    <td align="center">
+                                        <input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
+                                        <?php wbtm_get_seat_type_list($seat_type_name); ?>
+                                    </td>
+                                <?php } ?>
+                                <td align="center"><a class="button remove-seat-row" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    </a><input type="hidden" name="bus_seat_panels[]"></td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -234,20 +235,20 @@
                 <p class="wbtm-control-row">
                     <strong><?php _e('Total Seat Columns', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong>
                     <input type="number" value='<?php if (array_key_exists('wbtm_seat_cols_dd', $values)) {
-                        echo $values['wbtm_seat_cols_dd'][0];
-                    } ?>' name="seat_col_dd" id='seat_col_dd' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
+                                                    echo $values['wbtm_seat_cols_dd'][0];
+                                                } ?>' name="seat_col_dd" id='seat_col_dd' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
                 </p>
                 <p class="wbtm-control-row">
                     <strong><?php _e('Total Seat Rows', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong>
                     <input type="number" value='<?php if (array_key_exists('wbtm_seat_rows_dd', $values)) {
-                        echo $values['wbtm_seat_rows_dd'][0];
-                    } ?>' name="seat_rows_dd" id='seat_rows_dd' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
+                                                    echo $values['wbtm_seat_rows_dd'][0];
+                                                } ?>' name="seat_rows_dd" id='seat_rows_dd' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max="">
                 </p>
                 <p class="wbtm-control-row" style="position: relative">
                     <strong><?php _e('Price Increase', 'bus-ticket-booking-with-seat-reservation'); ?>:</strong>
                     <input type="number" value='<?php if (array_key_exists('wbtm_seat_dd_price_parcent', $values)) {
-                        echo $values['wbtm_seat_dd_price_parcent'][0];
-                    } ?>' name="wbtm_seat_dd_price_parcent" id='wbtm_seat_dd_price_parcent' style="width: 70px;" pattern="[1-9]*" inputmode="numeric" min="0" max=""><span style="position: absolute;right: 0px;top: 15px;color: #555;font-weight:bold">%</span>
+                                                    echo $values['wbtm_seat_dd_price_parcent'][0];
+                                                } ?>' name="wbtm_seat_dd_price_parcent" id='wbtm_seat_dd_price_parcent' style="width: 70px;"><span style="position: absolute;right: 0px;top: 15px;color: #555;font-weight:bold">%</span>
                 </p>
                 <p class="wbtm-control-row">
                     <button id="create_seat_plan_dd" class="create_seat_plan"><span class="dashicons dashicons-plus"></span><?php _e('Create Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -264,7 +265,7 @@
                         $seatrows = $values['wbtm_seat_rows_dd'][0];
                         $seatcols = $values['wbtm_seat_cols_dd'][0];
                         $seats = unserialize($old);
-                        ?>
+                    ?>
                         <script type="text/javascript">
                             jQuery(document).ready(function($) {
                                 $('#add-seat-row-dd').on('click', function() {
@@ -285,35 +286,35 @@
                         </script>
                         <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one-dd" width="100%">
                             <tbody>
-                            <?php
-                            if (is_array($seats) && sizeof($seats) > 0) {
-                                foreach ($seats as $_seats) {
-                                    ?>
-                                    <tr>
-                                        <?php
-                                        for ($x = 1; $x <= $seatcols; $x++) {
-                                            $text_field_name = "dd_seat" . $x;
-                                            ?>
-                                            <td align="center"><input type="text" value="<?php echo $_seats[$text_field_name]; ?>" name="<?php echo $text_field_name; ?>[]" class="text">
-                                            </td>
-                                            <?php
-                                        }
-                                        ?>
-                                        <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-                                            <input type="hidden" name="bus_seat_panels_dd[]">
-                                        </td>
-                                    </tr>
-                                <?php }
-                            } ?>
-                            <!-- empty hidden one for jQuery -->
-                            <tr class="empty-row-seat-dd screen-reader-text">
                                 <?php
-                                for ($row = 1; $row <= $seatcols; $row++) {
+                                if (is_array($seats) && sizeof($seats) > 0) {
+                                    foreach ($seats as $_seats) {
+                                ?>
+                                        <tr>
+                                            <?php
+                                            for ($x = 1; $x <= $seatcols; $x++) {
+                                                $text_field_name = "dd_seat" . $x;
+                                            ?>
+                                                <td align="center"><input type="text" value="<?php echo $_seats[$text_field_name]; ?>" name="<?php echo $text_field_name; ?>[]" class="text">
+                                                </td>
+                                            <?php
+                                            }
+                                            ?>
+                                            <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                                <input type="hidden" name="bus_seat_panels_dd[]">
+                                            </td>
+                                        </tr>
+                                <?php }
+                                } ?>
+                                <!-- empty hidden one for jQuery -->
+                                <tr class="empty-row-seat-dd screen-reader-text">
+                                    <?php
+                                    for ($row = 1; $row <= $seatcols; $row++) {
                                     ?>
-                                    <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text"></td>
-                                <?php } ?>
-                                <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels_dd[]"></td>
-                            </tr>
+                                        <td align="center"><input type="text" value="" name="dd_seat<?php echo $row; ?>[]" class="text"></td>
+                                    <?php } ?>
+                                    <td align="center"><a class="button remove-seat-row-dd" href="#"><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></a><input type="hidden" name="bus_seat_panels_dd[]"></td>
+                                </tr>
                             </tbody>
                         </table>
                         <div id="add-seat-row-dd" class="add-seat-row-btn"><i class="fas fa-plus"></i> <?php _e('Add Seat Row', 'bus-ticket-booking-with-seat-reservation'); ?></div>
