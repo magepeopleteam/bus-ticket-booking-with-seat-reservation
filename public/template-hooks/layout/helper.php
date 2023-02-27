@@ -60,12 +60,11 @@ function mage_check_search_day_off_new($id, $j_date, $return = false)
     if ($j_date) {
         $same_bus_return_setting_global = mage_bus_setting_value('same_bus_return_setting', 'disable');
         if ($same_bus_return_setting_global === 'enable' && $return) {
-            $is_same_bus_return_allow = get_post_meta($id, 'wbtm_general_same_bus_return', true);
-            $return_text = $is_same_bus_return_allow === 'yes' ? '_return' : '';
-
-            $j_date_day = strtolower(date('D', strtotime($j_date)));
-            $get_day = get_post_meta($id, $db_day_prefix . $j_date_day . $return_text, true);
-            $get_day = ($get_day != null) ? strtolower($get_day) : null;
+            $weekly_offday = get_post_meta($id, 'weekly_offday_return', true) ?: array();
+            $j_date_day = strtolower(date('N', strtotime($j_date)));
+            if (in_array($j_date_day, $weekly_offday)) {
+                $get_day = 'yes';
+            }
         } else {
             $j_date_day = strtolower(date('N', strtotime($j_date)));
             if (in_array($j_date_day, $weekly_offday)) {
