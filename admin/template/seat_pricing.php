@@ -10,6 +10,8 @@
     </div>
     <hr />
 
+    <input type="hidden" id="price_bus_record" value="<?php echo ($prices=='')?$prices:count($prices) ?>">
+    <input type="hidden" id="return_class" value="<?php echo $return_class ?>">
 
     <div id="wbtm_general_price" class="wbtm_content_wrapper">
         <div class="wbtm_content_inner">
@@ -24,50 +26,47 @@
                     <th><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                 </tr>
                 </thead>
-                <tbody>
-                <?php
-                if (!empty($prices)) :
-                foreach ($prices as $price) : ?>
-                    <tr>
-                        <td class="wbtm-wid-25">
-                            <select name="wbtm_bus_bp_price_stop[]" style="width: 100%">
-                                <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                <?php foreach ($routes as $route) : ?>
-                                    <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_bp_price_stop'] ? 'selected' : '') ?>>
-                                        <?php echo $route->name; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                        <td class="wbtm-wid-25">
-                            <select name="wbtm_bus_dp_price_stop[]" style="width: 100%">
-                                <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                <?php foreach ($routes as $route) : ?>
-                                    <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_dp_price_stop'] ? 'selected' : '') ?>>
-                                        <?php echo $route->name; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                        <td class="wbtm-wid-15">
-                            <input type="text" class="widefat" name="wbtm_bus_price[]" placeholder="<?php _e('1500', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo $price['wbtm_bus_price']; ?>" />
-                            <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_price_return[]" placeholder="<?php _e('Adult Return Price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_price_return']) ? $price['wbtm_bus_price_return'] : ''; ?>" />
-                        </td>
-                        <td class="wbtm-wid-15">
-                            <input type="text" class="widefat" name="wbtm_bus_child_price[]" placeholder="<?php _e('1200', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo $price['wbtm_bus_child_price']; ?>" />
-                            <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_child_price_return[]" placeholder="<?php _e('Child return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_child_price_return']) ? $price['wbtm_bus_child_price_return'] : ''; ?>" />
-                        </td>
-                        <td class="wbtm-wid-15">
-                            <input type="text" class="widefat" name="wbtm_bus_infant_price[]" placeholder="<?php _e('1000', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_infant_price']) ? $price['wbtm_bus_infant_price'] : ''; ?>" />
-                            <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_infant_price_return[]" placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_infant_price_return']) ? $price['wbtm_bus_infant_price_return'] : ''; ?>" />
-                        </td>
-                        <td class="wbtm-wid-5">
-                            <button class="button wbtm-remove-row-t"><span class="dashicons dashicons-trash"></span></button>
-                        </td>
-                    </tr>
-                <?php
-                endforeach;
-            endif ?>
+                <tbody class="auto-generated">
+                <?php if (!empty($prices)) :
+                    foreach ($prices as $price) : ?>
+                        <tr>
+                            <td class="wbtm-wid-25">
+                                <select name="wbtm_bus_bp_price_stop[]" style="width: 100%">
+                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <?php foreach ($routes as $route) : ?>
+                                        <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_bp_price_stop'] ? 'selected' : '') ?>>
+                                            <?php echo $route->name; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                            <td class="wbtm-wid-25">
+                                <select name="wbtm_bus_dp_price_stop[]" style="width: 100%">
+                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <?php foreach ($routes as $route) : ?>
+                                        <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_dp_price_stop'] ? 'selected' : '') ?>>
+                                            <?php echo $route->name; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                            <td class="wbtm-wid-15">
+                                <input type="text" class="widefat" name="wbtm_bus_price[]" placeholder="<?php _e('1500', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo $price['wbtm_bus_price']; ?>" />
+                                <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_price_return[]" placeholder="<?php _e('Adult Return Price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_price_return']) ? $price['wbtm_bus_price_return'] : ''; ?>" />
+                            </td>
+                            <td class="wbtm-wid-15">
+                                <input type="text" class="widefat" name="wbtm_bus_child_price[]" placeholder="<?php _e('1200', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo $price['wbtm_bus_child_price']; ?>" />
+                                <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_child_price_return[]" placeholder="<?php _e('Child return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_child_price_return']) ? $price['wbtm_bus_child_price_return'] : ''; ?>" />
+                            </td>
+                            <td class="wbtm-wid-15">
+                                <input type="text" class="widefat" name="wbtm_bus_infant_price[]" placeholder="<?php _e('1000', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_infant_price']) ? $price['wbtm_bus_infant_price'] : ''; ?>" />
+                                <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_infant_price_return[]" placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo isset($price['wbtm_bus_infant_price_return']) ? $price['wbtm_bus_infant_price_return'] : ''; ?>" />
+                            </td>
+                            <td class="wbtm-wid-5">
+                                <button class="button remove-price-row"><span class="dashicons dashicons-trash"></span></button>
+                            </td>
+                        </tr>
+                    <?php endforeach; endif ?>
 
             <!-- empty hidden one for jQuery -->
             <tr class="mtsa-empty-row-t">
@@ -102,12 +101,14 @@
                     <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_infant_price_return[]" placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="" />
                 </td>
                 <td>
-                    <button class="button wbtm-remove-row-t"><span class="dashicons dashicons-trash"></span></button>
+                    <button class="button remove-price-row"><span class="dashicons dashicons-trash"></span></button>
                 </td>
             </tr>
             </tbody>
         </table>
-        <button class="button wbtom-tb-repeat-btn" style="background:green; color:white;"><span class="dashicons dashicons-plus-alt" style="margin-top: 3px;color: white;"></span><?php _e('Add more', 'bus-ticket-booking-with-seat-reservation'); ?>
+        <button class="button wbtm-tb-repeat-btn" style="background:green; color:white;">
+            <span class="dashicons dashicons-plus-alt" style="margin:0px 3px;color: white;"></span>
+            <?php _e('Add more', 'bus-ticket-booking-with-seat-reservation'); ?>
         </button>
     </div>
 
@@ -126,7 +127,7 @@
                     <th><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="auto-generated-return">
 
                 <?php
                 if (!empty($prices_return)) :
@@ -163,7 +164,7 @@
                                 <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_infant_price_return_discount[]" placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="<?php echo $price['wbtm_bus_infant_price_return']; ?>" />
                             </td>
                             <td class="wbtm-wid-5">
-                                <button class="button wbtm-remove-row-t"><span class="dashicons dashicons-trash"></span></button>
+                                <button class="button remove-price-row"><span class="dashicons dashicons-trash"></span></button>
                             </td>
                         </tr>
                     <?php
@@ -203,12 +204,14 @@
                         <input type="text" class="widefat <?php echo $return_class; ?>" name="wbtm_bus_infant_price_return_discount[]" placeholder="<?php _e('Infant return price', 'bus-ticket-booking-with-seat-reservation') ?>" value="" />
                     </td>
                     <td>
-                        <button class="button wbtm-remove-row-t"><span class="dashicons dashicons-trash"></span></button>
+                        <button class="button remove-price-row"><span class="dashicons dashicons-trash"></span></button>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <button class="button wbtom-tb-repeat-btn" style="background:green; color:white;"><span class="dashicons dashicons-plus-alt" style="margin-top: 3px;color: white;"></span><?php _e('Add more', 'bus-ticket-booking-with-seat-reservation'); ?>
+            <button class="button wbtm-tb-repeat-btn" style="background:green; color:white;">
+                <span class="dashicons dashicons-plus-alt" style="margin: 0px 3px;color: white;">
+                </span><?php _e('Add more', 'bus-ticket-booking-with-seat-reservation'); ?>
             </button>
         </div>
     </div>
@@ -225,6 +228,7 @@
             echo do_action('wbtm_private_price');
         }
         ?>
+
 
 
     <h5 class="dFlex mpStyle">
@@ -311,16 +315,17 @@
                 <tr class="empty-row screen-reader-text">
                     <td><input type="text" class="mp_formControl" name="option_name[]" placeholder="Ex: Cap" /></td>
                     <td><input type="number" class="mp_formControl" step="0.001" name="option_price[]" placeholder="Ex: 10" value="" /></td>
-                    <td><input type="number" class="mp_formControl" name="option_qty[]" placeholder="Ex: 100" value="" />
-                    </td>
-
-                    <td><select name="option_qty_type[]" class='mp_formControl'>
+                    <td><input type="number" class="mp_formControl" name="option_qty[]" placeholder="Ex: 100" value="" /></td>
+                    <td>
+                        <select name="option_qty_type[]" class='mp_formControl'>
                             <option value=""><?php _e('Please Select Type', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                             <option value="inputbox"><?php _e('Input Box', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                             <option value="dropdown"><?php _e('Dropdown List', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                        </select></td>
+                        </select>
+                    </td>
                     <td>
-                        <button class="button remove-row"><span class="dashicons dashicons-trash" style="margin-top: 3px;color: red;"></span><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        <button class="button remove-row">
+                            <span class="dashicons dashicons-trash" style="margin-top: 3px;color: red;"></span><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </button>
                     </td>
                 </tr>
@@ -328,10 +333,15 @@
             </table>
         </div>
         <p>
-            <button id="add-row" class="button" style="background:green; color:white;"><span class="dashicons dashicons-plus-alt" style="margin-top: 3px;color: white;"></span><?php _e('Add Extra Price', 'bus-ticket-booking-with-seat-reservation'); ?>
+            <button id="add-row" class="button" style="background:green; color:white;">
+                <span class="dashicons dashicons-plus-alt" style="margin: 0px 3px;;color: white;">
+                </span><?php _e('Add Extra Price', 'bus-ticket-booking-with-seat-reservation'); ?>
             </button>
         </p>
     </div>
 
 
 </div>
+
+
+
