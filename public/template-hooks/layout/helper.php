@@ -2373,3 +2373,25 @@ function admin_route_summary($post, $wbbm_bus_bp, $wbtm_bus_next_stops, $return 
     </div>
 <?php
 }
+
+
+function wbtm_get_user_role($user_ID)
+{
+    global $wp_roles;
+
+    $user_data = get_userdata($user_ID);
+    $user_role_slug = $user_data->roles;
+    $user_role_nr = 0;
+    $user_role_list = '';
+    foreach($user_role_slug as $user_role){
+        //count user role nrs
+        $user_role_nr++;
+        //add comma separation of there is more then one role 
+        if($user_role_nr > 1) { $user_role_list .= ", "; }
+        //add role name 
+        $user_role_list .= translate_user_role($wp_roles->roles[$user_role]['name']);
+    }
+
+    //return user role list
+    return $user_role_list;
+}
