@@ -19,6 +19,11 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 			}else{
 				add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 12 );
 			}
+			if(is_plugin_active( 'bus-marketplace-addon/bus-marketplace.php' )) {
+				add_action( 'mbma_custom_form_field_tab_item', array( $this, 'mbma_portal_tab_item_callback' ) );
+				add_action( 'mbma_custom_form_field_content', array( $this, 'meta_box_callback' ), 10, 1 );
+				add_action( 'mbma_custom_field_save', array( $this, 'save_post' ), 12 );
+			}
 			add_action( 'save_post', array( $this, 'save_post' ), 12 );
 		}
 
@@ -45,17 +50,19 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 			if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 				return;
 			}
+
 		
-			if (!current_user_can('edit_post', $post_id)) {
-				return;
-			}
+			// if (!current_user_can('edit_post', $post_id)) {
+			// 	return;
+			// }
 		
 		
 			if (get_post_type($post_id) == 'wbtm_bus') {
 
-
 			$get_option_name = $this->get_option_name();
-			$post_id         = $this->get_post_id();
+			if(!$post_id) {
+				$post_id         = $this->get_post_id();
+			}
 
 			if ( ! empty( $get_option_name ) ):
 				$option_value = serialize( stripslashes_deep($_POST[ $get_option_name ]) );
@@ -92,6 +99,12 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
             <li  data-target-tabs="#<?php echo $this->get_meta_box_id(); ?>">
                 <span class="dashicons dashicons-admin-users"></span> <?php echo $this->get_meta_box_title(); ?>
             </li>
+			<?php
+		}
+
+		public function mbma_portal_tab_item_callback() {
+			?>
+			<li><a href="#custom-form-field"><i class="fas fa-user"></i> <?php esc_html_e('Custom Form Field', 'bus-marketplace-addon') ?></a></li>
 			<?php
 		}
 
@@ -254,7 +267,7 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
                                                     <td>
 														<?php
 
-														$option_value = get_post_meta( $this->get_post_id(), $option['id'], true );
+														$option_value = get_post_meta( $post_id, $option['id'], true );
 
 														if ( is_serialized( $option_value ) ) {
 															$option_value = unserialize( $option_value );
@@ -265,7 +278,7 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 														$option['value'] = $option_value;
 
 
-														$this->field_generator( $option )
+														$this->field_generator( $option, $post_id )
 														?>
 
                                                     </td>
@@ -319,13 +332,13 @@ if ( ! class_exists( 'AddMetaBox' ) ) {
 		}
 
 
-		public function field_generator( $option ) {
+		public function field_generator( $option, $post_id = null ) {
 
 			$id      = isset( $option['id'] ) ? $option['id'] : "";
 			$type    = isset( $option['type'] ) ? $option['type'] : "";
 			$details = isset( $option['details'] ) ? $option['details'] : "";
 
-			$post_id = $this->get_post_id();
+			$post_id = $post_id ?: $this->get_post_id();
 
 			if ( empty( $id ) ) {
 				return;

@@ -9,7 +9,7 @@ function load_sortable_datepicker(parent, item) {
 			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
 			dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
 			dayNamesMin: ["S", "M", "T", "W", "T", "F", "S", "S"],
-			dateFormat: ttbm_date_format
+			dateFormat: "yy-mm-dd"
 		});
 	});
 	return true;
@@ -23,7 +23,7 @@ function load_sortable_datepicker(parent, item) {
 			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
 			dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
 			dayNamesMin: ["S", "M", "T", "W", "T", "F", "S", "S"],
-			dateFormat: ttbm_date_format
+			dateFormat: "yy-mm-dd"
 		});
 		$('.ttbm_select2').select2({});
 		$('.field-select2-wrapper select').select2({});

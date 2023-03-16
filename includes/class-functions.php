@@ -2112,12 +2112,12 @@ function wbtm_on_post_publish($post_id, $post, $update)
         );
         //SAVE THE POST
         $pid = wp_insert_post($new_post);
-        $product_type = mep_get_option('mep_event_product_type', 'general_setting_sec', 'yes');
+        // $product_type = mep_get_option('mep_event_product_type', 'general_setting_sec', 'yes');
         update_post_meta($post_id, 'link_wc_product', $pid);
         update_post_meta($pid, 'link_wbtm_bus', $post_id);
         update_post_meta($pid, '_price', 0.01);
         update_post_meta($pid, '_sold_individually', 'yes');
-        update_post_meta($pid, '_virtual', $product_type);
+        update_post_meta($pid, '_virtual', 'yes');
         $terms = array('exclude-from-catalog', 'exclude-from-search');
         wp_set_object_terms($pid, $terms, 'product_visibility');
         update_post_meta($post_id, 'check_if_run_once', true);
@@ -2499,6 +2499,9 @@ function wbtm_posts_column_callback($column)
     $column['wbtm_coach_no'] = __('Coach no', 'bus-ticket-booking-with-seat-reservation');
     $column['wbtm_bus_type'] = $name.' '.__('Type', 'bus-ticket-booking-with-seat-reservation');
     $column['taxonomy-wbtm_bus_cat'] = __('Category', 'bus-ticket-booking-with-seat-reservation');
+    if(is_plugin_active( 'bus-marketplace-addon/bus-marketplace.php' )) {
+        $column['wbtm_added_by'] = __('Added by', 'bus-ticket-booking-with-seat-reservation');
+    }
     $column['date'] = $date;
     return $column;
 }
@@ -2512,6 +2515,10 @@ function wbtm_posts_custom_column_callback($column, $post_id)
             break;
         case 'wbtm_bus_type':
             echo "<span class=''>" . wbtm_bus_type($post_id) . "</span>";
+            break;
+        case 'wbtm_added_by':
+            $user_id = get_post_field('post_author', $post_id);
+            echo "<span class=''>".get_the_author_meta('display_name', $user_id).' ['.wbtm_get_user_role($user_id)."]</span>";
             break;
     }
 }
