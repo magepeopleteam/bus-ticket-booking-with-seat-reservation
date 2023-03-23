@@ -776,7 +776,14 @@ class WBTMSettingPage
                             'details' => __('Enter the text which you want to display as any date return description.', 'bus-ticket-booking-with-seat-reservation'),
                             'type' => 'text',
                             'default' => 'Same ticket will be valid for return up to next 15 days'
-                        )                      
+                        ),
+                        array(
+                            'id' => 'wbtm_menu_translate_purchase_ticket',
+                            'title' => __('Translate Purchase Ticket', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Translate purchase ticket menu text', 'bus-ticket-booking-with-seat-reservation'),
+                            'type' => 'text',
+                            'default' => 'Purchase Ticket'
+                        ),                 
                     )
                 ),
             ),
