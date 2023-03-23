@@ -1094,9 +1094,9 @@ button[name="add-to-cart"]:disabled {
 
 /* My Account */
 
-.wbtm_myaccount_wrapper table {
+/* .wbtm_myaccount_wrapper table {
     table-layout: fixed;
-}
+} */
 
 .wbtm_myaccount_wrapper table thead {
     background: #dfd7ff;
@@ -1735,6 +1735,20 @@ span.wbtm-details-page-list-label {
 .wbtm-loading-animation img {
     width: 100px;
 }
+
+/* Bus ticket panel frontend */
+.wbtm_myaccount_wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+.wbtm_myaccount_wrapper table {
+    width: 100%;
+}
+.wbtm_myaccount_wrapper table th,
+.wbtm_myaccount_wrapper table td {
+    padding: 5px 10px;
+}
+/* Bus ticket panel frontend END */
 
 @media only screen and (max-width: 1199px) {
     .fields-li .search-radio-sec label {
