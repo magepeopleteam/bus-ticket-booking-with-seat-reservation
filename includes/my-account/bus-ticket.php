@@ -183,8 +183,10 @@ function wbtm_bus_panel_endpoint_content()
 
                 <?php if ($is_show_ticket) : ?>
                     <td>
-                        <a class="wbtm-btn order-table-btn"
+                        <?php if($order) : ?>
+                            <a class="wbtm-btn order-table-btn"
                            href="<?php echo $order->get_view_order_url(); ?>"><?php _e('Show Order', 'bus-ticket-booking-with-seat-reservation') ?></a>
+                        <?php endif ?>
                         <a class="wbtm-btn order-table-btn"
                            href="<?php echo $download_url; ?>"><?php _e('Download Ticket', 'bus-ticket-booking-with-seat-reservation') ?></a>
                         <?php do_action('wbtm_bus_panel_action', $order_id) ?>
