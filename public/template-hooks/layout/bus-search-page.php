@@ -352,6 +352,8 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
         $pickpoints = maybe_unserialize($pickpoints);
     }
 
+    print_r($pickpoints);
+
     // $partial_seat_booked = mage_partial_seat_booked_count($return);
     $seat_available = mage_bus_total_seat_new() - $partial_seat_booked;
 
@@ -543,6 +545,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
 
                                 </div>
                             <?php endif; ?>
+
                             <?php if ($pickpoints) : ?>
                                 <div class="wbtm-pickpoint-wrap">
                                     <label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?>
