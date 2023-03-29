@@ -11,7 +11,7 @@
             <div style="display: <?php echo ($show_operational_on_day == "yes" ? "block" : "none"); ?>" class="wbtm-ondates-wrapper operational-on-day">
                 <label for=""><?php _e('Operational Onday', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                 <div class="wbtm-ondates-inner">
-                    <input type="text" name="wbtm_bus_on_dates" value="<?php echo $ondates; ?>">
+                    <input type="text" name="wbtm_bus_on_dates" value="<?php echo $ondates; ?>" readonly>
                 </div>
             </div>
         </div>
@@ -159,7 +159,7 @@
                 <div style="display: <?php echo ($return_show_operational_on_day == "yes" ? "block" : "none"); ?>" class="wbtm-ondates-wrapper return-operational-on-day">
                     <label for=""><?php _e('Operational Onday', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                     <div class="wbtm-ondates-inner">
-                        <input type="text" name="wbtm_bus_on_dates_return" value="<?php echo $ondates_return; ?>">
+                        <input type="text" name="wbtm_bus_on_dates_return" value="<?php echo $ondates_return; ?>" readonly>
                     </div>
                 </div>
             </div>

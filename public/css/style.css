@@ -754,6 +754,14 @@ table.bus-search-list tr td a.button {
 }
 
 .ticket-check-box {
+
+    border: 1px solid #ddd;
+    width: 400px;
+    margin: 0 auto 30px;
+}
+
+
+
     border: 1px solid #ddd;
     width: 400px;
     margin: 0 auto 30px;

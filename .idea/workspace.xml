@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="">
+    <list default="true" id="0d0404c1-cf0f-416b-aa72-cd1e6f6c1770" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+
       <change beforePath="$PROJECT_DIR$/includes/BusTicketBookingWithSeatReservationClass.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/BusTicketBookingWithSeatReservationClass.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/classes/class-theme-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/lib/classes/class-theme-page.php" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +22,7 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectId" id="2LDRSALtv6jmEiTIeGEGvhvfV5G" />
+  <component name="ProjectId" id="2NRk9dFzSXBuHvttFgXxFR3ksv0" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -37,10 +39,11 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="be785f13-4a9b-49e6-861c-b69dd40cfa4e" name="Changes" comment="" />
-      <created>1675403663668</created>
+      <changelist id="0d0404c1-cf0f-416b-aa72-cd1e6f6c1770" name="Changes" comment="" />
+      <created>1679634131997</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+
       <updated>1675403663668</updated>
       <workItem from="1675403665514" duration="746000" />
       <workItem from="1675562078891" duration="14352000" />
@@ -64,6 +67,7 @@
       <workItem from="1678939544078" duration="181000" />
       <workItem from="1678946409172" duration="2574000" />
       <workItem from="1679275650829" duration="1380000" />
+
     </task>
     <servers />
   </component>
@@ -80,16 +84,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/admin/template/bus_onday_offday.php</url>
-          <line>270</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
