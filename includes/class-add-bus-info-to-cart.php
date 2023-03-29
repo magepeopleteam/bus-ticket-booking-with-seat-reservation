@@ -404,30 +404,33 @@ class WbtmAddToCart
 
     public function wbtm_display_custom_fields_text_cart($item_data, $cart_item)
     {
-        global $wbtmmain;
-        if (get_post_type($cart_item['bus_id']) === 'wbtm_bus') {
-            $wbtm_seats = $cart_item['wbtm_seats'];
-            $extra_bag_quantity = isset($cart_item['extra_bag_quantity']) ? $cart_item['extra_bag_quantity'] : 0;
-            $passenger_info = $cart_item['wbtm_passenger_info'];
-            $passenger_info_additional = $cart_item['wbtm_passenger_info_additional'];
-            $basic_passenger_info = $cart_item['wbtm_basic_passenger_info'];
-            $date_format = get_option('date_format');
-            $time_format = get_option('time_format');
-            $datetimeformat = $date_format . '  ' . $time_format;
+        if(!is_admin()){
 
-            $wbtm_anydate_return        = $cart_item['wbtm_anydate_return'];
-            $wbtm_anydate_return_price  = $cart_item['wbtm_anydate_return_price'];
-           // echo '<pre>';  print_r($cart_item);  echo '<pre>'; exit;
-            // echo '<pre>'; print_r($passenger_info); die;
 
-            // $billing_type_items = mtsa_get_billing_type_items();
-            // if ($billing_type_items) {
-            //     $billing_cycles = $billing_type_items;
-            // } else {
-            //     $billing_cycles = array();
-            // }
+            global $wbtmmain;
+            if (get_post_type($cart_item['bus_id']) === 'wbtm_bus') {
+                $wbtm_seats = $cart_item['wbtm_seats'];
+                $extra_bag_quantity = isset($cart_item['extra_bag_quantity']) ? $cart_item['extra_bag_quantity'] : 0;
+                $passenger_info = $cart_item['wbtm_passenger_info'];
+                $passenger_info_additional = $cart_item['wbtm_passenger_info_additional'];
+                $basic_passenger_info = $cart_item['wbtm_basic_passenger_info'];
+                $date_format = get_option('date_format');
+                $time_format = get_option('time_format');
+                $datetimeformat = $date_format . '  ' . $time_format;
 
-            // if ($wbtm_seats) {
+                $wbtm_anydate_return        = $cart_item['wbtm_anydate_return'];
+                $wbtm_anydate_return_price  = $cart_item['wbtm_anydate_return_price'];
+                // echo '<pre>';  print_r($cart_item);  echo '<pre>'; exit;
+                // echo '<pre>'; print_r($passenger_info); die;
+
+                // $billing_type_items = mtsa_get_billing_type_items();
+                // if ($billing_type_items) {
+                //     $billing_cycles = $billing_type_items;
+                // } else {
+                //     $billing_cycles = array();
+                // }
+
+                // if ($wbtm_seats) {
                 $extra_bag_price = get_post_meta($cart_item['bus_id'], 'wbtm_extra_bag_price', true);
                 // echo '<pre>'; print_r($passenger_info); die;
                 if (is_array($passenger_info) && sizeof($passenger_info) > 0) { // With Form builder
@@ -493,11 +496,11 @@ class WbtmAddToCart
                             ?>
 
                             <?php if(isset($wbtm_seats[$i]['wbtm_seat_name'])) : ?>
-                            <li>
-                                <strong><?php mage_bus_label('wbtm_seat_no_text', __('Seat No', 'bus-ticket-booking-with-seat-reservation')); ?>
-                                    :</strong>
-                                <?php echo $wbtm_seats[$i]['wbtm_seat_name']; ?>
-                            </li>
+                                <li>
+                                    <strong><?php mage_bus_label('wbtm_seat_no_text', __('Seat No', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        :</strong>
+                                    <?php echo $wbtm_seats[$i]['wbtm_seat_name']; ?>
+                                </li>
                             <?php endif; ?>
                             <?php if (isset($basic_passenger_info[$i]['wbtm_passenger_type'])) { ?>
                                 <?php if ($basic_passenger_info[$i]['wbtm_passenger_type'] != '') { ?>
@@ -579,11 +582,11 @@ class WbtmAddToCart
                                 </li>
                             <?php endif; ?>
                             <?php if(isset($basic_passenger_info[$i]['wbtm_seat_fare'])) : ?>
-                            <li>
-                                <strong><?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>
-                                    :</strong>
-                                <?php echo wc_price($basic_passenger_info[$i]['wbtm_seat_fare']); ?>
-                            </li>
+                                <li>
+                                    <strong><?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                        :</strong>
+                                    <?php echo wc_price($basic_passenger_info[$i]['wbtm_seat_fare']); ?>
+                                </li>
                             <?php endif; ?>
                             <?php
                             if (isset($_passenger['wbtm_extra_bag_qty'])) {
@@ -627,13 +630,13 @@ class WbtmAddToCart
 
 
                         if($wbtm_seats) : ?>
-                        <li>
-                            <?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
-                            $seat_lists = array_column($wbtm_seats, 'wbtm_seat_name');
-                            echo implode(', ', $seat_lists);
-                            ?>
-                        </li>
-                        <?php 
+                            <li>
+                                <?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
+                                $seat_lists = array_column($wbtm_seats, 'wbtm_seat_name');
+                                echo implode(', ', $seat_lists);
+                                ?>
+                            </li>
+                        <?php
                         endif;
 
                         if ($cart_item['wbtm_billing_type'] != '') :
@@ -694,27 +697,29 @@ class WbtmAddToCart
                         echo '<p style="color:#af7a2d;font-size: 14px;line-height: 1em;"><strong>' . __('Congratulation!', 'bus-ticket-booking-with-seat-reservation') . '</strong> <span> ' . __('For a round trip, you got', 'bus-ticket-booking-with-seat-reservation') . ' <span style="font-weight:600">' . number_format($percent, 2) . '%</span> ' . __('discount on this trip', 'bus-ticket-booking-with-seat-reservation') . '</span></p>';
                     }
                 }
-            // }
+                // }
 
-            ?>
-            <?php
-            if($cart_item['extra_services']) : ?>
-                <p style="margin:0"><strong><?php _e('Extra Services', 'bus-ticket-booking-with-seat-reservation') ?></strong></p>
-                <ul style="margin:0">
-                    <?php foreach($cart_item['extra_services'] as $service) : ?>
-                    <li><?php echo __($service['name'], 'bus-ticket-booking-with-seat-reservation').' - '.wc_price($service["price"]).' x '.$service['qty'].' = '. wc_price($service["price"] * $service['qty']); ; ?>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php 
-            endif;
+                ?>
+                <?php
+                if($cart_item['extra_services']) : ?>
+                    <p style="margin:0"><strong><?php _e('Extra Services', 'bus-ticket-booking-with-seat-reservation') ?></strong></p>
+                    <ul style="margin:0">
+                        <?php foreach($cart_item['extra_services'] as $service) : ?>
+                            <li><?php echo __($service['name'], 'bus-ticket-booking-with-seat-reservation').' - '.wc_price($service["price"]).' x '.$service['qty'].' = '. wc_price($service["price"] * $service['qty']); ; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php
+                endif;
 
-            if($wbtm_anydate_return == 'on'){ ?>
-                <p style="margin:0"><strong><?php _e('Any Date Return:', 'bus-ticket-booking-with-seat-reservation') ?></strong> <?php echo wc_price($wbtm_anydate_return_price); ?></p>
-            <?php
+                if($wbtm_anydate_return == 'on'){ ?>
+                    <p style="margin:0"><strong><?php _e('Any Date Return:', 'bus-ticket-booking-with-seat-reservation') ?></strong> <?php echo wc_price($wbtm_anydate_return_price); ?></p>
+                    <?php
+                }
             }
+            return $item_data;
+
         }
-        return $item_data;
     }
 
     public function rei_after_checkout_validation($posted)

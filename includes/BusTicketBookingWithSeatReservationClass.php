@@ -23,6 +23,7 @@ class BusTicketBookingWithSeatReservationClass
         $ActiveDataShowClass = new ActiveDataShowClass;
         $ShortcodeClass = new ShortcodeClass;
         add_action('active_date', array($ActiveDataShowClass,'active_date_picker'), 99, 3);
+
         add_action('active_date', array($ActiveDataShowClass,'return_active_date_picker'), 99, 3);
 
         add_shortcode('wbtm-bus-list', array($ShortcodeClass, 'wbtm_bus_list'));

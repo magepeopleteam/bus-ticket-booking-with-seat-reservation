@@ -38,11 +38,7 @@ class WBTM_Plugin_Activator{
                 'post_content' => '[wbtm-bus-search-form]',
                 'post_status' => 'publish',
             );
-
             wp_insert_post($bus_global_search_page);
         }
-
-
-      
     }
 }
