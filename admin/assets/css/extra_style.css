@@ -103,3 +103,27 @@ background-color: #444;
 .color_danger{
 	color: red !important;
 }
+.button.wbtm-tb-repeat-btn {
+	width: max-content;
+	height: auto;
+	background-color: #22D02D !important;
+	border-radius: 5px;
+	border: 2px solid #22D02D;
+	padding: 10px;
+	line-height: inherit;
+	color: #fff;
+	display: block;
+	text-align: center;
+	margin: auto;
+	margin-top: 15px;
+}
+.button.remove-seat-row, .button.remove-seat-row-dd, .button.wbtm-remove-row-t, .button.remove-bp-row {
+	border-color: #EA2330;
+	background: #EA2330;
+	color: #fff;
+}
+.wp-core-ui button.remove-price-row {
+	border-color: #EA2330;
+	background: #EA2330;
+	color: #fff;
+}

@@ -754,7 +754,14 @@ table.bus-search-list tr td a.button {
 }
 
 .ticket-check-box {
-    text-align: center;
+
+    border: 1px solid #ddd;
+    width: 400px;
+    margin: 0 auto 30px;
+}
+
+
+
     border: 1px solid #ddd;
     width: 400px;
     margin: 0 auto 30px;
@@ -768,8 +775,10 @@ table.bus-search-list tr td a.button {
 
 .ticket-check-box ul li {
     font-size: 17px;
-    font-weight: bold;
     margin: 10px;
+}
+.ticket-check-box ul li strong{
+    font-weight: bold;
 }
 
 span.wbtm-ticket-hold {
@@ -1886,5 +1895,7 @@ div[class^="mage"] .wbtm_anydate_return_col {
 }
 
 .wbtm_default_search_listing_page{max-width:1270px; margin: 0 auto; }
+
+
 
 
