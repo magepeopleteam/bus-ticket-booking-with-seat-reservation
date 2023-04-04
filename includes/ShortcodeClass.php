@@ -18,7 +18,7 @@ class ShortcodeClass {
         $cat = $params['cat'];
         $show = $params['show'];
         ob_start();
-        $paged = get_query_var("paged") ? get_query_var("paged") : 1;
+        $paged = get_query_var("page") ? get_query_var("page") : 1;
         if ($cat > 0) {
             $args_search_qqq = array(
                 'post_type' => array('wbtm_bus'),
