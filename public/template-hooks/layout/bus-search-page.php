@@ -577,10 +577,15 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                     </div>
                     <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
                         do_action('wbtm_before_add_cart_btn', $bus_id, false);
-                    ?>
-                        <button class="mage_button no-seat-submit-btn" disabled type="submit" name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>" class="single_add_to_cart_button">
+
+                        if(apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
+                            do_action('csad_booking_button'); ?>
+                        <?php else : ?>
+                            <button class="mage_button no-seat-submit-btn" disabled type="submit" name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>" class="single_add_to_cart_button">
                             <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
-                        </button>
+                            </button>
+                        <?php endif;
+                    ?>
                     <?php endif; ?>
                 </div>
                 <!-- No Seat Plan END -->
@@ -725,11 +730,15 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                             <div>
                                 <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
                                     do_action('wbtm_before_add_cart_btn', $bus_id, false);
-                                ?>
-                                    <button class="mage_button" type="submit" disabled name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); //echo esc_attr(get_the_id());
-                                                                                                                    ?>" style="max-width:100%">
+
+                                    if(apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
+                                        do_action('csad_booking_button'); ?>
+                                    <?php else : ?>
+                                        <button class="mage_button" type="submit" disabled name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true);?>" style="max-width:100%">
                                         <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
                                     </button>
+                                    <?php endif;
+                                ?>
                                 <?php endif; ?>
                             </div>
                         </div>

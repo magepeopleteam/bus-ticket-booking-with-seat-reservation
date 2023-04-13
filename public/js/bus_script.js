@@ -377,14 +377,15 @@
         } else {
             // Sum all items
             let grand_total = seat_price + extra_price + bagPrice;
-            console.log(grand_total);
 
             if (grand_total) {
                 grand_ele.text(wbtm_woo_price_format(grand_total));
                 parent.find('button[name="add-to-cart"]').prop('disabled', false);
+                parent.find('input[name="csad_book_now"]').prop('disabled', false);
             } else {
                 grand_ele.text("0.00");
                 (bus_type == 'general') ? parent.find('button[name="add-to-cart"]').prop('disabled', true) : null;
+                parent.find('input[name="csad_book_now"]').prop('disabled', true);
             }
         }
 
