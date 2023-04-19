@@ -351,7 +351,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
     if ($pickpoints != '') {
         $pickpoints = maybe_unserialize($pickpoints);
     }
-    
+
 
     // $partial_seat_booked = mage_partial_seat_booked_count($return);
     $seat_available = mage_bus_total_seat_new() - $partial_seat_booked;
