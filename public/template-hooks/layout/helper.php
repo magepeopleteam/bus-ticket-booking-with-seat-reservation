@@ -1926,9 +1926,9 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
     $o_1 = mage_bus_end_has_prev($start, $end, $bus_bp_array);
     $o_2 = mage_bus_start_has_next($start, $end, $bus_next_stops_array);
 
-    // if ($o_1 && $o_2) {
-    //     return;
-    // }
+    if ($o_1 && $o_2) {
+        return;
+    }
     // Intermidiate Route END
 
     // Buffer Time Calculation
