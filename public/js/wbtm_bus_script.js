@@ -21,7 +21,6 @@
                     if(enableDates){
                         jQuery('#j_date').datepicker({
                             dateFormat: date_format,
-                            minDate: 0,
                             beforeShowDay: function (date){
                                 return enableAllTheseDays(date, enableDates );
                             }
@@ -148,48 +147,44 @@
 
         }
 
-
-        function enableAllTheseDays(date,enableDates) {
-            var sdate = jQuery.datepicker.formatDate('yy-mm-dd', date)
-            const p = enableDates.split(',');
-            if (p.length > 0) {
-                if (jQuery.inArray(sdate, p) != -1) {
-                    return [true];
-                }
-            }
-            return [false];
-        }
-
-
-        function off_particular(date,off_particular_date,weekly_offday) {
-            var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
-            const p = off_particular_date.split(',')
-            if (p.length > 0) {
-                if (jQuery.inArray(sdate, p) != -1) {
-                    return [false];
-                }
-            }
-            let d;
-            weekly_offday = weekly_offday.toString();
-            if (weekly_offday.indexOf(',') != -1) {
-                d = weekly_offday.split(',')
-                
-            } else {
-                d = [weekly_offday]
-            }
-            if (d.length > 0) {
-                if (d.includes(date.getDay().toString())) {
-                    return [false];
-                }
-            }
-            return [true];
-        }
-
     });
 
 
+    function enableAllTheseDays(date,enableDates) {
+        var sdate = jQuery.datepicker.formatDate('yy-mm-dd', date)
+        const p = enableDates.split(', ');
+        if (p.length > 0) {
+            if (jQuery.inArray(sdate, p) != -1) {
+                return [true];
+            }
+        }
+        return [false];
+    }
 
 
+    function off_particular(date,off_particular_date,weekly_offday) {
+        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+        const p = off_particular_date.split(',')
+        if (p.length > 0) {
+            if (jQuery.inArray(sdate, p) != -1) {
+                return [false];
+            }
+        }
+        let d;
+        weekly_offday = weekly_offday.toString();
+        if (weekly_offday.indexOf(',') != -1) {
+            d = weekly_offday.split(',')
+            
+        } else {
+            d = [weekly_offday]
+        }
+        if (d.length > 0) {
+            if (d.includes(date.getDay().toString())) {
+                return [false];
+            }
+        }
+        return [true];
+    }
 
 
 })(jQuery);
