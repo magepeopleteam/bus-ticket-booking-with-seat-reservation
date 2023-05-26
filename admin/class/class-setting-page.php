@@ -61,7 +61,7 @@ class WBTMSettingPage
                         array(
                             'id' => 'bus_buffer_time',
                             'title' => __('Buffer Time', 'bus-ticket-booking-with-seat-reservation'),
-                            'details' => __('Please enter here car buffer time in Hours. By default is 0', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Please enter here car buffer time in minute. By default is 0', 'bus-ticket-booking-with-seat-reservation'),
                             'type' => 'text',
                             'default' => 0,
                             'placeholder' => __('', 'bus-ticket-booking-with-seat-reservation'),

@@ -970,7 +970,7 @@ class WBTMMetaBox
 
             $ondates = $_POST['wbtm_bus_on_dates'];
             $show_off_day = isset($_POST['show_off_day']) ? $_POST['show_off_day'] : 'no';
-            $show_operational_on_day = ($ondates)?'yes':'no';
+            $show_operational_on_day = isset($_POST['show_operational_on_day'])?$_POST['show_operational_on_day']:'';
 
             update_post_meta($pid, 'wbtm_bus_on_dates', $ondates);
             update_post_meta($pid, 'wbtm_offday_schedule', $offday_schedule_array);

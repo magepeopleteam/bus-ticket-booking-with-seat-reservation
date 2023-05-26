@@ -456,10 +456,12 @@ function mage_bus_time($return, $dropping)
     $array_key = $dropping ? 'wbtm_bus_next_stops_name' : 'wbtm_bus_bp_stops_name';
     $array_value = $dropping ? 'wbtm_bus_next_end_time' : 'wbtm_bus_bp_start_time';
     $array = maybe_unserialize(get_post_meta(get_the_id(), $meta_key, true));
-    foreach ($array as $key => $val) {
-        if ($val[$array_key] == $start) {
-            $return = $val[$array_value];
-            break;
+    if($array) {
+        foreach ($array as $key => $val) {
+            if ($val[$array_key] == $start) {
+                $return = $val[$array_value];
+                break;
+            }
         }
     }
     return $return;
@@ -1926,9 +1928,9 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
     $o_1 = mage_bus_end_has_prev($start, $end, $bus_bp_array);
     $o_2 = mage_bus_start_has_next($start, $end, $bus_next_stops_array);
 
-    // if ($o_1 && $o_2) {
-    //     return;
-    // }
+    if ($o_1 && $o_2) {
+        return;
+    }
     // Intermidiate Route END
 
     // Buffer Time Calculation
