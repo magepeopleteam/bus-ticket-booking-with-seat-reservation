@@ -39,11 +39,8 @@ class WbtmAddToCart
     {
         global $wbtmmain;
         // echo '<pre>';print_r($_POST);die;
-
         $bus_id = isset($_POST['bus_id']) ? sanitize_text_field($_POST['bus_id']) : $product_id;
-
         if (get_post_type($bus_id) === 'wbtm_bus') {
-
             $custom_reg_yes_user = array();
             $custom_reg_additional = array();
             $basic_info_user = array();
@@ -53,9 +50,7 @@ class WbtmAddToCart
             $total_fare = 0;
             $original_fare = 0;
             $return_fare = 0;
-
             $city_zone = isset($_POST['city_zone']) ? $_POST['city_zone'] : '';
-
             $start_stops = '';
             $end_stops = '';
             if ($city_zone == '') { // Except Susbscription City zone
@@ -63,14 +58,10 @@ class WbtmAddToCart
                 $start_stops = sanitize_text_field($_POST['start_stops']);
                 $end_stops = sanitize_text_field($_POST['end_stops']);
             }
-
             $product_id = get_post_meta($product_id, 'link_wbtm_bus', true) ? get_post_meta($product_id, 'link_wbtm_bus', true) : $product_id;
-
             $bus_start_time = sanitize_text_field($_POST['bus_start_time']);
-
             $total_seat = sanitize_text_field($_POST['total_seat']);
             $journey_date = sanitize_text_field($_POST['journey_date']);
-
             $seat_names = isset($_POST['seat_name']) ? $_POST['seat_name'] : null;
             $seat_qty = isset($_POST['seat_qty']) ? $_POST['seat_qty'] : null;
             $passenger_type = isset($_POST['passenger_type']) ? $_POST['passenger_type'] : '';
@@ -79,32 +70,22 @@ class WbtmAddToCart
             $wbtm_order_seat_plan = sanitize_text_field($_POST['wbtm_order_seat_plan']);
             $bus_type = $_POST['wbtm_bus_type'];
             $mtsa_billing_type = isset($_POST['mtsa_billing_type']) ? $_POST['mtsa_billing_type'] : '';
-
             // Pickup Point
             $wbtm_pickpoint = isset($_POST['wbtm_pickpoint']) ? $_POST['wbtm_pickpoint'] : '';
-
             $wbtm_bus_no = isset($_POST['wbtm_bus_no']) ? $_POST['wbtm_bus_no'] : '';
-
             $wbtm_bus_name = isset($_POST['wbtm_bus_name']) ? $_POST['wbtm_bus_name'] : '';
-
             $bus_start_stops = get_post_meta($bus_id, 'wbtm_bus_bp_stops', true);
-            if($start_stops && $end_stops) {
+            if ($start_stops && $end_stops) {
                 $determine_route = mage_determine_route($bus_id, false, $start_stops, $end_stops);
-                if($determine_route != 'wbtm_bus_bp_stops') {
+                if ($determine_route != 'wbtm_bus_bp_stops') {
                     $bus_start_stops = get_post_meta($bus_id, 'wbtm_bus_bp_stops_return', true);
                 }
             }
-            
             $bus_start_stops = maybe_unserialize($bus_start_stops);
-
             $extra_per_bag_price = get_post_meta($bus_id, 'wbtm_extra_bag_price', true);
             $extra_per_bag_price = $extra_per_bag_price ? $extra_per_bag_price : 0;
-
             $wbtm_anydate_return = isset($_POST['wbtm_anydate_return']) ? $_POST['wbtm_anydate_return'] : '';
             $wbtm_anydate_return_price = $_POST['wbtm_anydate_return_price'];
-            
-            
-
             // Get Bus Start Time
             if ($bus_start_stops) {
                 foreach ($bus_start_stops as $stop) {
@@ -114,18 +95,16 @@ class WbtmAddToCart
                     }
                 }
             }
-
             $passenger_type_num = array(
                 'Adult' => 0,
                 'Child' => 1,
                 'Infant' => 2,
             );
-
             // Init Values
-            $original_fare  = 0;
-            $return_fare    = 0;
-            $is_return      = false;
-            $total_fare     = 0;
+            $original_fare = 0;
+            $return_fare = 0;
+            $is_return = false;
+            $total_fare = 0;
             $extra_services = array();
             $total_extra_price = 0;
             $total_fare = $total_fare + (float)$wbtm_anydate_return_price;
@@ -134,21 +113,17 @@ class WbtmAddToCart
                 if ($return_discount == 1 && count($passenger_type) == 1) {
                     $return_discount = 2;
                 }
-
                 if (!empty($seat_names)) {
                     $j = 0;
                     foreach ($seat_names as $seat) {
                         $bag_price = 0;
                         $seat_name[$j]['wbtm_seat_name'] = $seat;
-
                         if ($return_discount == 2) {
                             $is_return = true;
                         } else {
                             $is_return = false;
                         }
-
                         $d = ($dd[$j] == 'yes' ? true : false);
-
                         // Price
                         $per_seat_price = mage_bus_seat_price($bus_id, $start_stops, $end_stops, $d, $passenger_type[$j]);
                         $per_seat_price_original = mage_bus_seat_price($bus_id, $start_stops, $end_stops, $d, $passenger_type[$j]);
@@ -160,10 +135,8 @@ class WbtmAddToCart
                             $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
                             $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
                             $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
-
                             $bag_price = ($bag_qty * $extra_per_bag_price);
                             $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
-
                             // Additional reg builder field
                             $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
                             if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
@@ -175,73 +148,58 @@ class WbtmAddToCart
                                 }
                             }
                         }
-
                         // Price
                         if ($per_seat_price) {
                             $total_fare = (float)$per_seat_price + $total_fare + $bag_price;
                             $original_fare = (float)$per_seat_price_original + $original_fare + $bag_price;
                             $return_fare = (float)$per_seat_price_return + $return_fare + $bag_price;
                         }
-                        
-
                         // Basic Info
                         $basic_info_user[$j]['wbtm_seat_fare'] = $per_seat_price;
                         $basic_info_user[$j]['wbtm_passenger_type'] = array_search($passenger_type[$j], $passenger_type_num);
-
                         $j++;
                     }
                 }
-
             } elseif ($wbtm_order_seat_plan === 'no') {
                 // Without Seat Plan
                 if ($return_discount == 1 && array_sum($seat_qty) == 1) {
                     $return_discount = 2;
                 }
-
                 if ($seat_qty) {
                     $total_seats = array_sum($seat_qty);
                     $j = 0;
-
                     foreach ($seat_qty as $key => $qty) {
                         if ($qty > 0) {
-
                             for ($i = 0; $i < (int)$qty; $i++) {
                                 $bag_price = 0;
                                 // Seat
-                                if($passenger_type) {
-                                    $seat_name[$j]['wbtm_seat_name'] = $passenger_type[$key]. '(1)';
+                                if ($passenger_type) {
+                                    $seat_name[$j]['wbtm_seat_name'] = $passenger_type[$key] . '(1)';
                                 } else {
                                     $seat_name[$j]['wbtm_seat_name'] = 'Private';
                                 }
-
                                 if ($bus_type === 'sub') { // Subscription Bus
                                     // Price
                                     $per_seat_price = mtsa_bus_price_get($bus_id, $start_stops, $end_stops, $mtsa_billing_type, $passenger_type[$key], $city_zone);
                                     $per_seat_price_original = $per_seat_price;
                                     $per_seat_price_return = $per_seat_price_original;
                                     // Price END
-
                                     $is_return = false;
-                                } elseif($bus_type === 'private') { // Private Bus
+                                } elseif ($bus_type === 'private') { // Private Bus
                                     $per_seat_price = mtpa_bus_price_get($bus_id, $start_stops, $end_stops);
                                     $per_seat_price_original = $per_seat_price;
                                     $per_seat_price_return = $per_seat_price_original;
-
                                     $is_return = false;
                                 } else { // General Bus But Not seat plan
-
                                     if ($return_discount == 2) {
                                         $is_return = true;
                                     } else {
                                         $is_return = false;
                                     }
-
                                     $per_seat_price = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]]);
                                     $per_seat_price_original = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]]);
                                     $per_seat_price_return = mage_bus_seat_price($bus_id, $start_stops, $end_stops, false, $passenger_type_num[$passenger_type[$key]], true);
-
                                 }
-
                                 // Custom reg user yes
                                 if ($_POST['custom_reg_user'] == 'yes') {
                                     $custom_reg_yes_user[$j]['wbtm_user_name'] = (isset($_POST['wbtm_user_name'][$j]) ? $_POST['wbtm_user_name'][$j] : '');
@@ -249,10 +207,8 @@ class WbtmAddToCart
                                     $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
                                     $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
                                     $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
-
                                     $bag_price = ($bag_qty * $extra_per_bag_price);
                                     $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
-
                                     // Additional reg builder field
                                     $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
                                     if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
@@ -264,7 +220,6 @@ class WbtmAddToCart
                                         }
                                     }
                                 }
-
                                 // Price
                                 if ($per_seat_price) {
                                     $total_fare = (float)$per_seat_price + $total_fare + $bag_price;
@@ -272,41 +227,33 @@ class WbtmAddToCart
                                     $return_fare = (float)$per_seat_price_return + $return_fare + $bag_price;
                                 }
                                 // Price END
-
                                 // Basic Info
                                 $basic_info_user[$j]['wbtm_seat_fare'] = $per_seat_price;
                                 $basic_info_user[$j]['wbtm_passenger_type'] = is_array($passenger_type) ? $passenger_type[$key] : 'Private';
-
                                 $j++;
                             }
                         }
                     }
                 }
             }
-
-            // Extra Service 
+            // Extra Service
             $extra_service_qty = isset($_POST['extra_service_qty']) ? $_POST['extra_service_qty'] : array();
             $extra_service_name = isset($_POST['extra_service_name']) ? $_POST['extra_service_name'] : array();
             $extra_service_price = isset($_POST['extra_service_price']) ? $_POST['extra_service_price'] : array();
-
             $total_extra_service_qty = array_sum($extra_service_qty);
-
-            if($total_extra_service_qty > 0) {
+            if ($total_extra_service_qty > 0) {
                 $extra_service_i = 0;
-                foreach($extra_service_qty as $extra_item) {
-                    if($extra_item > 0) {
+                foreach ($extra_service_qty as $extra_item) {
+                    if ($extra_item > 0) {
                         $extra_services[] = array(
                             'name' => isset($extra_service_name[$extra_service_i]) ? $extra_service_name[$extra_service_i] : '',
                             'qty' => $extra_item,
                             'price' => isset($extra_service_price[$extra_service_i]) ? $extra_service_price[$extra_service_i] : 0,
                         );
-
                         $total_extra_price += $extra_services[$extra_service_i]['qty'] * $extra_services[$extra_service_i]['price'];
                     }
-
                     $extra_service_i++;
                 }
-
                 // Custom reg user yes
                 $j = 0;
                 if ($_POST['custom_reg_user'] == 'yes' && empty($custom_reg_yes_user)) {
@@ -315,10 +262,8 @@ class WbtmAddToCart
                     $custom_reg_yes_user[$j]['wbtm_user_phone'] = (isset($_POST['wbtm_user_phone'][$j]) ? $_POST['wbtm_user_phone'][$j] : '');
                     $custom_reg_yes_user[$j]['wbtm_user_gender'] = (isset($_POST['wbtm_user_gender'][$j]) ? $_POST['wbtm_user_gender'][$j] : '');
                     $custom_reg_yes_user[$j]['wbtm_extra_bag_qty'] = $bag_qty = (isset($_POST['extra_bag_quantity'][$j]) ? $_POST['extra_bag_quantity'][$j] : 0);
-
                     $bag_price = ($bag_qty * $extra_per_bag_price);
                     $custom_reg_yes_user[$j]['wbtm_extra_bag_price'] = $bag_price;
-
                     // Additional reg builder field
                     $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
                     if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
@@ -330,20 +275,16 @@ class WbtmAddToCart
                         }
                     }
                 }
-
                 // Basic Info
-                if(empty($basic_info_user)) {
+                if (empty($basic_info_user)) {
                     $basic_info_user[$j]['wbtm_seat_fare'] = $total_extra_price;
                 }
-                if($total_fare == 0) {
+                if ($total_fare == 0) {
                     $total_fare += $bag_price;
                 }
             }
-            
             $total_fare = $total_fare + $total_extra_price;
-            
             // Extra Service END
-
             // Add to Cart
             $cart_item_data['wbtm_seats'] = $seat_name;
             $cart_item_data['wbtm_start_stops'] = $start_stops;
@@ -351,38 +292,29 @@ class WbtmAddToCart
             $cart_item_data['wbtm_journey_date'] = $journey_date;
             $cart_item_data['wbtm_journey_time'] = $bus_start_time;
             $cart_item_data['wbtm_bus_time'] = $bus_start_time;
-            
             $cart_item_data['wbtm_total_seats'] = $total_seat;
-
             $cart_item_data['wbtm_seat_original_fare'] = $original_fare;
             $cart_item_data['wbtm_seat_return_fare'] = $return_fare;
             $cart_item_data['is_return'] = $is_return;
-
             $cart_item_data['wbtm_billing_type'] = $mtsa_billing_type;
             $cart_item_data['wbtm_city_zone'] = $city_zone;
-
             $cart_item_data['wbtm_pickpoint'] = $wbtm_pickpoint;
-
             $cart_item_data['wbtm_bus_no'] = $wbtm_bus_no;
-
             $cart_item_data['wbtm_bus_name'] = $wbtm_bus_name;
-
             $cart_item_data['extra_services'] = $extra_services;
-
             $cart_item_data['wbtm_anydate_return'] = $wbtm_anydate_return;
             $cart_item_data['wbtm_anydate_return_price'] = $wbtm_anydate_return_price;
-
             $cart_item_data['wbtm_passenger_info'] = $custom_reg_yes_user;
             $cart_item_data['wbtm_passenger_info_additional'] = $custom_reg_additional;
             $cart_item_data['wbtm_single_passenger_info'] = $custom_reg_yes_user;
             $cart_item_data['wbtm_basic_passenger_info'] = $basic_info_user;
             $cart_item_data['wbtm_tp'] = $total_fare;
-            $cart_item_data['wbtm_bus_id'] = $bus_id;            
+            $cart_item_data['wbtm_bus_id'] = $bus_id;
             $cart_item_data['line_total'] = $total_fare;
             $cart_item_data['line_subtotal'] = $total_fare;
         }
         $cart_item_data['bus_id'] = $product_id;
-         //echo '<pre>'; print_r($cart_item_data); die();
+        //echo '<pre>'; print_r($cart_item_data); die();
         return $cart_item_data;
     }
 

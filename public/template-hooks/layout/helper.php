@@ -456,10 +456,12 @@ function mage_bus_time($return, $dropping)
     $array_key = $dropping ? 'wbtm_bus_next_stops_name' : 'wbtm_bus_bp_stops_name';
     $array_value = $dropping ? 'wbtm_bus_next_end_time' : 'wbtm_bus_bp_start_time';
     $array = maybe_unserialize(get_post_meta(get_the_id(), $meta_key, true));
-    foreach ($array as $key => $val) {
-        if ($val[$array_key] == $start) {
-            $return = $val[$array_value];
-            break;
+    if($array) {
+        foreach ($array as $key => $val) {
+            if ($val[$array_key] == $start) {
+                $return = $val[$array_value];
+                break;
+            }
         }
     }
     return $return;
