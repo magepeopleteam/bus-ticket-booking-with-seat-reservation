@@ -250,9 +250,11 @@ function mage_search_bus_query($return, $start = false, $end = false)
 
     );
 
-    if(apply_filters('wbtm_specific_bus_in_search_query', '')) {
-        $args['post__in'] = apply_filters('wbtm_specific_bus_in_search_query', '');
+    if(apply_filters('wbtm_specific_bus_in_search_query', array())) {
+        $args['post__in'] = apply_filters('wbtm_specific_bus_in_search_query', array());
     }
+
+    // echo '<pre>'; print_r($args); die;
 
     return $args;
 }

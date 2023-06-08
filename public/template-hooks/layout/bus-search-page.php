@@ -44,7 +44,7 @@ function mage_bus_search_list($return)
 
     // Check is old date
     $j_date_ = date('Y-m-d', strtotime($j_date));
-    if($j_date_ < date('Y-m-d')) {
+    if ($j_date_ < date('Y-m-d')) {
         $is_old_date = true;
     }
 
@@ -65,7 +65,7 @@ function mage_bus_search_list($return)
 
     $has_bus_data = array();
     $bus_index = 0;
-    if(!$is_old_date) {
+    if (!$is_old_date) {
         while ($bus_list_loop->have_posts()) {
             $has_bus = false;
             $is_buffer = null;
@@ -146,11 +146,11 @@ function mage_bus_search_list($return)
                             foreach ($bus_offday_schedules as $item) {
 
                                 $c_iterate_date_from = $item['from_date'];
-//                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                //                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
                                 $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from));
 
                                 $c_iterate_date_to = $item['to_date'];
-//                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                //                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
                                 $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to));
 
                                 if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
@@ -185,7 +185,7 @@ function mage_bus_search_list($return)
     } else {
         echo '<p class="no-bus-found">';
 
-        mage_bus_label('wbtm_no_bus_found_text', __('No', 'bus-ticket-booking-with-seat-reservation').' '.mage_bus_setting_value('bus_menu_label', 'Bus').' '.__('Found!', 'bus-ticket-booking-with-seat-reservation'));
+        mage_bus_label('wbtm_no_bus_found_text', __('No', 'bus-ticket-booking-with-seat-reservation') . ' ' . mage_bus_setting_value('bus_menu_label', 'Bus') . ' ' . __('Found!', 'bus-ticket-booking-with-seat-reservation'));
 
         echo '</p>';
     }
@@ -351,7 +351,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
     if ($pickpoints != '') {
         $pickpoints = maybe_unserialize($pickpoints);
     }
-    
+
 
     // $partial_seat_booked = mage_partial_seat_booked_count($return);
     $seat_available = mage_bus_total_seat_new() - $partial_seat_booked;
@@ -577,15 +577,13 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                     </div>
                     <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
                         do_action('wbtm_before_add_cart_btn', $bus_id, false);
-
-                        if(apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
+                        if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                             do_action('csad_booking_button'); ?>
                         <?php else : ?>
                             <button class="mage_button no-seat-submit-btn" disabled type="submit" name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>" class="single_add_to_cart_button">
-                            <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
+                                <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
                             </button>
-                        <?php endif;
-                    ?>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 <!-- No Seat Plan END -->
@@ -730,15 +728,11 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                             <div>
                                 <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
                                     do_action('wbtm_before_add_cart_btn', $bus_id, false);
-
-                                    if(apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
+                                    if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                                         do_action('csad_booking_button'); ?>
                                     <?php else : ?>
-                                        <button class="mage_button" type="submit" disabled name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true);?>" style="max-width:100%">
-                                        <?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?>
-                                    </button>
-                                    <?php endif;
-                                ?>
+                                        <button class="mage_button" type="submit" disabled name="add-to-cart" value="<?php echo get_post_meta($bus_id, 'link_wc_product', true); ?>" style="max-width:100%"><?php mage_bus_label('wbtm_book_now_text', __('Book Now', 'bus-ticket-booking-with-seat-reservation')); ?></button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -1008,10 +1002,10 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
 
     $wbtm_bus_on_dates = get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true)) : [];
 
-    $wbtm_offday_schedules = get_post_meta(get_the_id(), 'wbtm_offday_schedule', true)?get_post_meta(get_the_id(), 'wbtm_offday_schedule', true):[];
-    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true):[];
+    $wbtm_offday_schedules = get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) ? get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) : [];
+    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
 
-   // echo '<pre>'; echo print_r($wbtm_offday_schedules); echo '<pre>';
+    // echo '<pre>'; echo print_r($wbtm_offday_schedules); echo '<pre>';
 
 
     if ($wbtm_bus_on_dates) {
@@ -1039,8 +1033,8 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
             </ul>
         </div>
 
-        <?php
-    }elseif ($wbtm_offday_schedules || $weekly_offday){
+    <?php
+    } elseif ($wbtm_offday_schedules || $weekly_offday) {
 
 
         $alloffdays = array();
@@ -1080,10 +1074,9 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
             </ul>
         </div>
 
-        <?php
-    }else{
+    <?php
+    } else {
         mage_next_date_suggestion(false, true, $target);
-
     }
 }
 
@@ -1127,6 +1120,6 @@ function wbtm_booking_return_scroll()
                 behavior: 'smooth'
             });
         </script>
-    <?php
+<?php
     }
 }
