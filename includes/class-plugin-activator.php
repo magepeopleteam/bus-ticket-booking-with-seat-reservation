@@ -6,15 +6,17 @@ class WBTM_Plugin_Activator{
 
     // Function to get page slug
     public function wbtm_get_page_by_slug($slug) {
+      $res = false;
       if ($pages = get_pages()){
         foreach ($pages as $page){
           if ($slug === $page->post_name){
-            return $page;
-          } else {
-            return false;
+            $res = $page->post_name;
+            break;
           }
         }       
-      }    
+      }
+
+      return $res;
     }
 
     public static function activate(){
