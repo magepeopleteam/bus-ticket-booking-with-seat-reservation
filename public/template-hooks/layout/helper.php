@@ -194,7 +194,7 @@ function mage_search_bus_query($return, $start = false, $end = false)
     if (!$end) {
         $end = $return ? mage_bus_isset('bus_start_route') : mage_bus_isset('bus_end_route');
     }
-    return array(
+    $args = array(
         'post_type' => array('wbtm_bus'),
         // 'p' => 2622, // TEST
         'posts_per_page' => -1,
@@ -249,6 +249,14 @@ function mage_search_bus_query($return, $start = false, $end = false)
         )
 
     );
+
+    if(apply_filters('wbtm_specific_bus_in_search_query', array())) {
+        $args['post__in'] = apply_filters('wbtm_specific_bus_in_search_query', array());
+    }
+
+    // echo '<pre>'; print_r($args); die;
+
+    return $args;
 }
 
 /* 

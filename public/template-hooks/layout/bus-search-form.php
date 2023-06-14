@@ -1,18 +1,25 @@
 <?php
 add_action('wbtm_search_form', 'mage_bus_search_form_only');
-function mage_bus_search_form_only($single_bus, $target)
+function mage_bus_search_form_only($single_bus, $target, $custom_url='')
 {
     $has_return_route = false;
     $bus_return_show = mage_bus_setting_value('bus_return_show', 'enable');
     if ($single_bus) {
         $has_return_route = get_post_meta(get_the_ID(), 'wbtm_general_same_bus_return', true);
     }
+    if($custom_url) {
+        $form_url = $custom_url;
+    } elseif($single_bus) {
+        $form_url = $single_bus;
+    } else {
+        $form_url = get_permalink(get_page_by_path($target));
+    }
 ?>
     <h4>
         <?php mage_bus_label('wbtm_buy_ticket_text', __('BUY TICKET:', 'bus-ticket-booking-with-seat-reservation')); ?>
     </h4>
 
-    <form action="<?php echo $single_bus ? '' : get_permalink(get_page_by_path($target)); ?>" method="get" class="mage_form">
+    <form action="<?php echo $form_url; ?>" method="get" class="mage_form">
         <?php do_action('active_date',$single_bus,get_the_ID()) ?>
         <div class="mage_form_list">
             <div class="mage_input_select mage_bus_boarding_point">
@@ -73,12 +80,12 @@ function mage_bus_search_form_only($single_bus, $target)
     do_action('wbtm_search_form_end');
 }
 
-function mage_bus_search_form($target)
+function mage_bus_search_form($target, $custom_url='')
 {
     do_action('wbtm_before_search_form');
 ?>
     <div class="mage_default mage_form_inline">
-        <?php mage_bus_search_form_only(false, $target); ?>
+        <?php mage_bus_search_form_only(false, $target, $custom_url); ?>
     </div>
 <?php
     do_action('wbtm_after_search_form');
