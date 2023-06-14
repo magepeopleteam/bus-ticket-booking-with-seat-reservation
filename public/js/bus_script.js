@@ -250,7 +250,7 @@
                     }
 
                     let thisSubtotal = seat_plan_price;
-                    thisSubtotal.html(amount.toFixed(2));
+                    thisSubtotal.html(wbtm_woo_price_format(amount));
                     thisSubtotal.attr('data-price-subtotal', amount); // Subtotal Price
                 } else {
                     let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody').children();
