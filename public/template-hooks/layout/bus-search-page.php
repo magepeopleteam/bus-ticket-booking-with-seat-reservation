@@ -500,7 +500,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                                 <td class="mage-seat-qty">
                                                     <button class="wbtm-qty-change wbtm-qty-dec" data-qty-change="dec">-
                                                     </button>
-                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" name="seat_qty[]" />
+                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" data-max-qty="<?php echo $seat_available; ?>" name="seat_qty[]" />
                                                     <button class="wbtm-qty-change wbtm-qty-inc" data-qty-change="inc">+
                                                     </button>
                                                     <input type="hidden" name="passenger_type[]" value="<?php echo $type['type'] ?>">
