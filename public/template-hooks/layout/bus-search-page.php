@@ -217,11 +217,7 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
     }
 
     // Sorting By $sort
-    if ($sort == 'DESC') {
-        arsort($target_bus_start_time);
-    } else {
-        asort($target_bus_start_time);
-    }
+    uasort($target_bus_start_time, "wbtm_bus_sort_by_time");
 
 
     $final_sorted_ids = array();
@@ -240,6 +236,11 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
         $sorted_bus_list->the_post();
         mage_bus_search_item($return, get_the_ID());
     }
+}
+
+function wbtm_bus_sort_by_time($a, $b) {
+    if (strtotime($a) == strtotime($b)) return 0;
+    return (strtotime($a) < strtotime($b)) ? -1 : 1;
 }
 
 function mage_bus_search_item($return, $id)
