@@ -1040,7 +1040,7 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
 
         $alloffdays = array();
         foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-            $alloffdays =  array_unique(array_merge($alloffdays, displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+            $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
         }
 
         $offday = array();

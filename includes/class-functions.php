@@ -1840,7 +1840,7 @@ function wbtm_convert_date_to_php($date)
     return date('Y-m-d', strtotime($date));
 }
 
-function displayDates($date1, $date2, $format = 'd-m-Y')
+function wbtm_displayDates($date1, $date2, $format = 'd-m-Y')
 {
     $dates = array();
     $current = strtotime($date1);
