@@ -2416,64 +2416,66 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
     $line_price = (float) $price * $qty;
     $return_price = $line_price;
 
-    if ($product->is_taxable()) {
+    if($product) {
+        if ($product->is_taxable()) {
 
 
-        if (!wc_prices_include_tax()) {
-            // echo get_option( 'woocommerce_prices_include_tax' );
-            $tax_rates = WC_Tax::get_rates($product->get_tax_class());
-            $taxes = WC_Tax::calc_tax($line_price, $tax_rates, false);
+            if (!wc_prices_include_tax()) {
+                // echo get_option( 'woocommerce_prices_include_tax' );
+                $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+                $taxes = WC_Tax::calc_tax($line_price, $tax_rates, false);
 
-            // print_r($tax_rates);
-
-            if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-
-                $taxes_total = array_sum($taxes);
-            } else {
-
-                $taxes_total = array_sum(array_map('wc_round_tax_total', $taxes));
-            }
-
-            $return_price = $tax_with_price == 'excl' ? round($line_price, wc_get_price_decimals()) : round($line_price + $taxes_total, wc_get_price_decimals());
-        } else {
-
-
-            $tax_rates = WC_Tax::get_rates($product->get_tax_class());
-            $base_tax_rates = WC_Tax::get_base_tax_rates($product->get_tax_class('unfiltered'));
-
-            /**
-             * If the customer is excempt from VAT, remove the taxes here.
-             * Either remove the base or the user taxes depending on woocommerce_adjust_non_base_location_prices setting.
-             */
-            if (!empty(WC()->customer) && WC()->customer->get_is_vat_exempt()) { // @codingStandardsIgnoreLine.
-                $remove_taxes = apply_filters('woocommerce_adjust_non_base_location_prices', true) ? WC_Tax::calc_tax($line_price, $base_tax_rates, true) : WC_Tax::calc_tax($line_price, $tax_rates, true);
+                // print_r($tax_rates);
 
                 if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-                    $remove_taxes_total = array_sum($remove_taxes);
+
+                    $taxes_total = array_sum($taxes);
                 } else {
-                    $remove_taxes_total = array_sum(array_map('wc_round_tax_total', $remove_taxes));
+
+                    $taxes_total = array_sum(array_map('wc_round_tax_total', $taxes));
                 }
 
-                // $return_price = round( $line_price, wc_get_price_decimals() );
-                $return_price = round($line_price - $remove_taxes_total, wc_get_price_decimals());
+                $return_price = $tax_with_price == 'excl' ? round($line_price, wc_get_price_decimals()) : round($line_price + $taxes_total, wc_get_price_decimals());
+            } else {
+
+
+                $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+                $base_tax_rates = WC_Tax::get_base_tax_rates($product->get_tax_class('unfiltered'));
+
                 /**
-                 * The woocommerce_adjust_non_base_location_prices filter can stop base taxes being taken off when dealing with out of base locations.
-                 * e.g. If a product costs 10 including tax, all users will pay 10 regardless of location and taxes.
-                 * This feature is experimental @since 2.4.7 and may change in the future. Use at your risk.
+                 * If the customer is excempt from VAT, remove the taxes here.
+                 * Either remove the base or the user taxes depending on woocommerce_adjust_non_base_location_prices setting.
                  */
-            } else {
-                $base_taxes = WC_Tax::calc_tax($line_price, $base_tax_rates, true);
-                $modded_taxes = WC_Tax::calc_tax($line_price - array_sum($base_taxes), $tax_rates, false);
+                if (!empty(WC()->customer) && WC()->customer->get_is_vat_exempt()) { // @codingStandardsIgnoreLine.
+                    $remove_taxes = apply_filters('woocommerce_adjust_non_base_location_prices', true) ? WC_Tax::calc_tax($line_price, $base_tax_rates, true) : WC_Tax::calc_tax($line_price, $tax_rates, true);
 
-                if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-                    $base_taxes_total = array_sum($base_taxes);
-                    $modded_taxes_total = array_sum($modded_taxes);
+                    if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
+                        $remove_taxes_total = array_sum($remove_taxes);
+                    } else {
+                        $remove_taxes_total = array_sum(array_map('wc_round_tax_total', $remove_taxes));
+                    }
+
+                    // $return_price = round( $line_price, wc_get_price_decimals() );
+                    $return_price = round($line_price - $remove_taxes_total, wc_get_price_decimals());
+                    /**
+                     * The woocommerce_adjust_non_base_location_prices filter can stop base taxes being taken off when dealing with out of base locations.
+                     * e.g. If a product costs 10 including tax, all users will pay 10 regardless of location and taxes.
+                     * This feature is experimental @since 2.4.7 and may change in the future. Use at your risk.
+                     */
                 } else {
-                    $base_taxes_total = array_sum(array_map('wc_round_tax_total', $base_taxes));
-                    $modded_taxes_total = array_sum(array_map('wc_round_tax_total', $modded_taxes));
-                }
+                    $base_taxes = WC_Tax::calc_tax($line_price, $base_tax_rates, true);
+                    $modded_taxes = WC_Tax::calc_tax($line_price - array_sum($base_taxes), $tax_rates, false);
 
-                $return_price = $tax_with_price == 'excl' ? round($line_price - $base_taxes_total, wc_get_price_decimals()) : round($line_price - $base_taxes_total + $modded_taxes_total, wc_get_price_decimals());
+                    if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
+                        $base_taxes_total = array_sum($base_taxes);
+                        $modded_taxes_total = array_sum($modded_taxes);
+                    } else {
+                        $base_taxes_total = array_sum(array_map('wc_round_tax_total', $base_taxes));
+                        $modded_taxes_total = array_sum(array_map('wc_round_tax_total', $modded_taxes));
+                    }
+
+                    $return_price = $tax_with_price == 'excl' ? round($line_price - $base_taxes_total, wc_get_price_decimals()) : round($line_price - $base_taxes_total + $modded_taxes_total, wc_get_price_decimals());
+                }
             }
         }
     }
