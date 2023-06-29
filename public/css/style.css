@@ -1774,6 +1774,17 @@ span.wbtm-details-page-list-label {
     .bus-thumb {
         height: 158px
     }
+    .wbtm_myaccount_wrapper table tr th {
+        font-size: 13px;
+        line-height: 1.2;
+    }
+    .wbtm_myaccount_wrapper table tr td {
+        font-size: 12px;
+        line-height: 1.2;
+    }
+    .wbtm_myaccount_wrapper table tr td .wbtm-btn.order-table-btn {
+        font-size: 12px;
+    }
 }
 
 @media only screen and (max-width: 991px) {
