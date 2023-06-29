@@ -69,6 +69,7 @@ function mage_bus_search_list($return)
         while ($bus_list_loop->have_posts()) {
             $has_bus = false;
             $is_buffer = null;
+            $p_j_date = $j_date;
 
             $bus_list_loop->the_post();
             $id = get_the_id();
@@ -92,13 +93,13 @@ function mage_bus_search_list($return)
 
                 // Buffer Time Calculation
                 $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
-                $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($j_date)));
+                $is_buffer = $wbtmmain->wbtm_buffer_time_check($bp_time, date('Y-m-d', strtotime($p_j_date)));
                 // Buffer Time Calculation END
 
                 // Midnight Calculation
                 $is_midnight = mage_bus_is_midnight_trip($bus_bp_array, $start);
                 if ($is_midnight) {
-                    $j_date = date('Y-m-d', strtotime('-1 day', strtotime($j_date)));
+                    $p_j_date = date('Y-m-d', strtotime('-1 day', strtotime($p_j_date)));
                 }
                 // Midnight Calculation END
 
@@ -118,7 +119,7 @@ function mage_bus_search_list($return)
                         // echo $id.'<br>';
                         // echo '<pre>';print_r($bus_on_dates);
                         // die;
-                        if (in_array($j_date, $bus_on_dates)) {
+                        if (in_array($p_j_date, $bus_on_dates)) {
                             $has_bus = true;
                         }
                     } else {
@@ -141,7 +142,7 @@ function mage_bus_search_list($return)
 
                         $offday_current_bus = false;
                         if (!empty($bus_offday_schedules)) {
-                            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date));
+                            $s_datetime = date('Y-m-d H:i:s', strtotime($p_j_date));
 
                             foreach ($bus_offday_schedules as $item) {
 
@@ -161,7 +162,7 @@ function mage_bus_search_list($return)
                         }
 
                         // Check Offday and date
-                        if (!$offday_current_bus && !mage_check_search_day_off_new($id, $j_date, $return)) {
+                        if (!$offday_current_bus && !mage_check_search_day_off_new($id, $p_j_date, $return)) {
                             $has_bus = true;
                         }
                     }
