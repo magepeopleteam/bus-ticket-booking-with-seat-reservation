@@ -887,12 +887,16 @@ class WBTM_Plugin_Functions
 
     public function wbtm_buffer_time_check($bp_time, $date)
     {
+        $bus_start_time = date('H:i:s', strtotime($bp_time));
+        if(!$bp_time) {
+            return 'yes';
+        }
         // Get the buffer time set by user
         $bus_buffer_time = $this->bus_get_option('bus_buffer_time', 'general_setting_sec', 0);
         if ($bus_buffer_time > 0) {
             // Convert bus start time into date format
             // $bus_buffer_time = $bus_buffer_time * 60;
-            $bus_start_time = date('H:i:s', strtotime($bp_time));
+            
             // Make bus search date & bus start time as date format
             $start_bus = $date . ' ' . $bus_start_time;
 
@@ -908,7 +912,6 @@ class WBTM_Plugin_Functions
                 return 'no';
             }
         } else {
-            $bus_start_time = date('H:i:s', strtotime($bp_time));
             $start_bus = $date . ' ' . $bus_start_time;
             $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60, 1); // In Minute
             if (abs($diff) != $diff) {
