@@ -26,6 +26,7 @@ class WBTM_Plugin_Functions
     {
         add_action('init', array($this, 'direct_ticket_download'));
         add_action('wp_head', array($this, 'wbtm_js_constant'), 5);
+        add_action('admin_head', array($this, 'wbtm_js_constant'), 5);
 
         add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
         add_action('wp_ajax_wbtm_seat_plan', array($this, 'wbtm_seat_plan'));
@@ -38,7 +39,7 @@ class WBTM_Plugin_Functions
 
     public function wbtm_js_constant()
     {
-    ?>
+?>
         <script type="text/javascript">
             let mptbm_currency_symbol = "<?php echo html_entity_decode(get_woocommerce_currency_symbol()); ?>";
             let mptbm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
@@ -380,7 +381,7 @@ class WBTM_Plugin_Functions
                         seat<?php echo $id; ?>_name +
                         "</td><td align=center>Adult</td><td align=center><input class='seat_fare' type='hidden' name='seat_fare[]' value=" +
                         fare + "><input type='hidden' name='bus_fare<?php echo $id; ?>' value=" + fare +
-                        "><?php echo get_woocommerce_currency_symbol(); ?>" + fare +
+                        ">" + wbtm_woo_price_format(fare) +
                         "</td><td align=center><a class='button remove-seat-row<?php echo $id; ?>' data-seat='" +
                         seat<?php echo $id; ?>_name + "'>X</a></td></tr>";
 
@@ -399,7 +400,8 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    // jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html(wbtm_woo_price_format(totalFare));
                     jQuery('#tfi<?php echo $id; ?>').val("<?php echo get_woocommerce_currency_symbol(); ?>" +
                         totalFare);
                     if (totalFare > 0) {
@@ -442,7 +444,7 @@ class WBTM_Plugin_Functions
                         seat<?php echo $id; ?>_name + "</td><td align=center>" + label +
                         "</td><td align=center><input class='seat_fare' type='hidden' name='seat_fare[]' value=" +
                         fare + "><input type='hidden' name='bus_fare<?php echo $id; ?>' value=" + fare +
-                        "><?php echo get_woocommerce_currency_symbol(); ?>" + fare +
+                        ">" + wbtm_woo_price_format(fare) +
                         "</td><td align=center><a class='button remove-seat-row<?php echo $id; ?>' data-seat='" +
                         seat<?php echo $id; ?>_name + "'>X</a></td></tr>";
 
@@ -461,7 +463,7 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html(wbtm_woo_price_format(totalFare));
                     jQuery('#tfi<?php echo $id; ?>').val("<?php echo get_woocommerce_currency_symbol(); ?>" +
                         totalFare.toFixed(2));
                     if (totalFare > 0) {
@@ -475,6 +477,29 @@ class WBTM_Plugin_Functions
 
 
                 });
+
+                // currency format according to WooCommerce setting
+                function wbtm_woo_price_format(price) {
+                    if (typeof price === 'string') {
+                        price = Number(price);
+                    }
+                    price = price.toFixed(2);
+                    // price = price.toString();
+                    // price = price.toFixed(mptbm_num_of_decimal);
+                    let price_text = '';
+                    if (mptbm_currency_position === 'right') {
+                        price_text = price + mptbm_currency_symbol;
+                    } else if (mptbm_currency_position === 'right_space') {
+                        price_text = price + ' ' + mptbm_currency_symbol;
+                    } else if (mptbm_currency_position === 'left') {
+                        price_text = mptbm_currency_symbol + price;
+                    } else {
+                        price_text = mptbm_currency_symbol + ' ' + price;
+                    }
+                    return price_text;
+                }
+
+
                 // ******Admin Ticket Purchase (Dropdown)********
 
                 // Show Grand Price
@@ -482,7 +507,7 @@ class WBTM_Plugin_Functions
                     let grand_ele = parent.find('.mage-grand-total .mage-price-figure');
 
                     // price items
-                    let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').text()); // 1
+                    let seat_price = parseFloat(parent.find('.mage-price-total span').attr('data-subtotal-price')); // 1
 
                     let extra_price = 0;
                     parent.find('.wbtm_extra_service_table tbody tr').each(function() { // 2
@@ -517,7 +542,7 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
                     jQuery('#tfi<?php echo $id; ?>').val(totalFare.toFixed(2));
                     // if (totalFare == 0) {
                     //     jQuery('#bus-booking-btn<?php echo $id; ?>').hide();
@@ -888,7 +913,7 @@ class WBTM_Plugin_Functions
     public function wbtm_buffer_time_check($bp_time, $date)
     {
         $bus_start_time = date('H:i:s', strtotime($bp_time));
-        if(!$bp_time) {
+        if (!$bp_time) {
             return 'yes';
         }
         // Get the buffer time set by user
@@ -896,7 +921,7 @@ class WBTM_Plugin_Functions
         if ($bus_buffer_time > 0) {
             // Convert bus start time into date format
             // $bus_buffer_time = $bus_buffer_time * 60;
-            
+
             // Make bus search date & bus start time as date format
             $start_bus = $date . ' ' . $bus_start_time;
 
@@ -2419,7 +2444,7 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
     $line_price = (float) $price * $qty;
     $return_price = $line_price;
 
-    if($product) {
+    if ($product) {
         if ($product->is_taxable()) {
 
 
@@ -2502,9 +2527,9 @@ function wbtm_posts_column_callback($column)
     unset($column['taxonomy-wbtm_bus_cat']);
 
     $column['wbtm_coach_no'] = __('Coach no', 'bus-ticket-booking-with-seat-reservation');
-    $column['wbtm_bus_type'] = $name.' '.__('Type', 'bus-ticket-booking-with-seat-reservation');
+    $column['wbtm_bus_type'] = $name . ' ' . __('Type', 'bus-ticket-booking-with-seat-reservation');
     $column['taxonomy-wbtm_bus_cat'] = __('Category', 'bus-ticket-booking-with-seat-reservation');
-    if(is_plugin_active( 'bus-marketplace-addon/bus-marketplace.php' )) {
+    if (is_plugin_active('bus-marketplace-addon/bus-marketplace.php')) {
         $column['wbtm_added_by'] = __('Added by', 'bus-ticket-booking-with-seat-reservation');
     }
     $column['date'] = $date;
@@ -2523,7 +2548,7 @@ function wbtm_posts_custom_column_callback($column, $post_id)
             break;
         case 'wbtm_added_by':
             $user_id = get_post_field('post_author', $post_id);
-            echo "<span class=''>".get_the_author_meta('display_name', $user_id).' ['.wbtm_get_user_role($user_id)."]</span>";
+            echo "<span class=''>" . get_the_author_meta('display_name', $user_id) . ' [' . wbtm_get_user_role($user_id) . "]</span>";
             break;
     }
 }

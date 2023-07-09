@@ -44,6 +44,7 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
 
     <?php
 
+    $price_arr = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_prices' . ($return ? "_return" : ""), true));
     if ($type && $type == 'dd') {
 
         $seats = get_post_meta(get_the_id(), 'wbtm_bus_seats_info_dd', true);
@@ -62,6 +63,12 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
         $bus_dp_array = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_next_stops', true));
         $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
         $dp_time = $wbtmmain->wbtm_get_bus_end_time($end, $bus_dp_array);
+
+        $upper_price_percent = (int)get_post_meta(get_the_ID(), 'wbtm_seat_dd_price_parcent', true);
+        $fare = $wbtmmain->wbtm_get_bus_price($start, $end, $price_arr);
+        if($fare) {
+            $fare = $fare + ($upper_price_percent != 0 ? (($fare * $upper_price_percent) / 100) : 0);
+        }
         if (is_array($seats) && sizeof($seats) > 0) {
             ?>
 
@@ -128,6 +135,8 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
         $bus_dp_array = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_next_stops', true));
         $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
         $dp_time = $wbtmmain->wbtm_get_bus_end_time($end, $bus_dp_array);
+        
+        $fare = $wbtmmain->wbtm_get_bus_price($start, $end, $price_arr);
         ?>
 
         <div class="bus-seat-panel-ss">
@@ -194,7 +203,7 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
                                     <?php } elseif ( in_array($seat_status, $seat_booked_status) && $partial_route_condition === true ) { ?><span
                                             class="confirmed-seat"><?php echo $seat_name; ?></span>
                                     <?php } else { ?>
-                                        <a data-seat='<?php echo $_seats[$text_field_name]; ?>' data-seat-pos="lower"
+                                        <a data-seat='<?php echo $_seats[$text_field_name]; ?>' data-seat-pos="lower" data-seat-fare="<?php echo $fare ?>" data-seat-uid='<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
                                            id='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
                                            data-sclass='Economic'
                                            class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
@@ -212,6 +221,11 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
             <?php
 
             $seat_col_dd = get_post_meta(get_the_id(), 'wbtm_seat_cols_dd', true);
+            $upper_price_percent = (int)get_post_meta(get_the_ID(), 'wbtm_seat_dd_price_parcent', true);
+            $fare = $wbtmmain->wbtm_get_bus_price($start, $end, $price_arr);
+            if ($fare) {
+                $fare = $fare + ($upper_price_percent != 0 ? (($fare * $upper_price_percent) / 100) : 0);
+            }
 
             if (is_array($seats_dd) && sizeof($seats_dd) > 0) :
                 if (!empty($seats_dd)) {
@@ -249,6 +263,8 @@ function wbtm_seat_global($b_start, $date, $type = '', $return = false)
                                         <?php } else { ?>
                                             <a data-seat='<?php echo $_seats[$text_field_name]; ?>'
                                                data-seat-pos="upper"
+                                               data-seat-fare="<?php echo $fare ?>"
+                                               data-seat-uid='<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
                                                id='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_<?php echo $_seats[$text_field_name]; ?>'
                                                data-sclass='Economic'
                                                class='seat<?php echo get_the_id() . $wbtmmain->wbtm_make_id($date); ?>_blank blank_seat'>
