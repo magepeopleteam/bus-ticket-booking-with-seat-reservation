@@ -1295,11 +1295,13 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping, $return =
     $get_travel_day = 0;
     if ($wbtm_route_summary) {
         foreach ($wbtm_route_summary as $td) {
-            if (!isset($td['boarding']) && !isset($td['dropping']) && !isset($td['travel_day'])) continue;
-            if ($td['boarding'] === $boarding && $td['dropping'] === $dropping) {
-                $get_travel_day = $td['travel_day'];
-                break;
+            if (isset($td['boarding']) && isset($td['dropping']) && isset($td['travel_day'])) {
+                if ($td['boarding'] === $boarding && $td['dropping'] === $dropping) {
+                    $get_travel_day = $td['travel_day'];
+                    break;
+                }
             }
+            
         }
     }
 
@@ -2363,11 +2365,16 @@ function admin_route_summary($post, $wbbm_bus_bp, $wbtm_bus_next_stops, $return 
                                         </td>
                                         <td>
                                             <!-- Travel days loop -->
-                                            <?php foreach ($travel_days as $key => $td) : ?>
-                                                <label for="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" class="wbtm-radio-label"><input type="radio" id="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" value="<?php echo $key ?>" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][travel_day]" <?php echo ($wbtm_route_summary ? ($wbtm_route_summary[$sl]['travel_day'] == $key ? 'checked' : '') : ($key == 1 ? 'checked' : '')) ?>><?php echo $td; ?></label>
+                                            <?php foreach ($travel_days as $key => $td) :
+                                                $wbtm_route_day_check = '';
+                                                if($wbtm_route_summary) {
+                                                    $wbtm_route_day_check = (isset($wbtm_route_summary[$sl]['travel_day']) ? ($wbtm_route_summary[$sl]['travel_day'] == $key ? 'checked' : '') : ($key == 1 ? 'checked' : ''));
+                                                }
+                                                ?>
+                                                <label for="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" class="wbtm-radio-label"><input type="radio" id="<?php echo $return_text ?>wbtm_route_days_<?php echo $sl . $key; ?>" value="<?php echo $key ?>" name="<?php echo $return_text ?>wbtm_route_summary[<?php echo $sl; ?>][travel_day]" <?php echo $wbtm_route_day_check ?>><?php echo $td; ?></label>
                                             <?php endforeach ?>
                                         </td>
-                                        <td><?php echo $get_stops_dates['interval']; ?></td>
+                                        <td><?php echo ($wbtm_route_summary ? $get_stops_dates['interval'] : ''); ?></td>
                                     </tr>
                     <?php $sl++;
                                 endif;
