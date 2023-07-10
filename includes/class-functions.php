@@ -26,6 +26,7 @@ class WBTM_Plugin_Functions
     {
         add_action('init', array($this, 'direct_ticket_download'));
         add_action('wp_head', array($this, 'wbtm_js_constant'), 5);
+        add_action('admin_head', array($this, 'wbtm_js_constant'), 5);
 
         add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
         add_action('wp_ajax_wbtm_seat_plan', array($this, 'wbtm_seat_plan'));
@@ -38,7 +39,7 @@ class WBTM_Plugin_Functions
 
     public function wbtm_js_constant()
     {
-    ?>
+?>
         <script type="text/javascript">
             let mptbm_currency_symbol = "<?php echo html_entity_decode(get_woocommerce_currency_symbol()); ?>";
             let mptbm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
@@ -380,7 +381,7 @@ class WBTM_Plugin_Functions
                         seat<?php echo $id; ?>_name +
                         "</td><td align=center>Adult</td><td align=center><input class='seat_fare' type='hidden' name='seat_fare[]' value=" +
                         fare + "><input type='hidden' name='bus_fare<?php echo $id; ?>' value=" + fare +
-                        "><?php echo get_woocommerce_currency_symbol(); ?>" + fare +
+                        ">" + wbtm_woo_price_format(fare) +
                         "</td><td align=center><a class='button remove-seat-row<?php echo $id; ?>' data-seat='" +
                         seat<?php echo $id; ?>_name + "'>X</a></td></tr>";
 
@@ -399,7 +400,8 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    // jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html(wbtm_woo_price_format(totalFare));
                     jQuery('#tfi<?php echo $id; ?>').val("<?php echo get_woocommerce_currency_symbol(); ?>" +
                         totalFare);
                     if (totalFare > 0) {
@@ -442,7 +444,7 @@ class WBTM_Plugin_Functions
                         seat<?php echo $id; ?>_name + "</td><td align=center>" + label +
                         "</td><td align=center><input class='seat_fare' type='hidden' name='seat_fare[]' value=" +
                         fare + "><input type='hidden' name='bus_fare<?php echo $id; ?>' value=" + fare +
-                        "><?php echo get_woocommerce_currency_symbol(); ?>" + fare +
+                        ">" + wbtm_woo_price_format(fare) +
                         "</td><td align=center><a class='button remove-seat-row<?php echo $id; ?>' data-seat='" +
                         seat<?php echo $id; ?>_name + "'>X</a></td></tr>";
 
@@ -461,7 +463,7 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html(wbtm_woo_price_format(totalFare));
                     jQuery('#tfi<?php echo $id; ?>').val("<?php echo get_woocommerce_currency_symbol(); ?>" +
                         totalFare.toFixed(2));
                     if (totalFare > 0) {
@@ -475,6 +477,29 @@ class WBTM_Plugin_Functions
 
 
                 });
+
+                // currency format according to WooCommerce setting
+                function wbtm_woo_price_format(price) {
+                    if (typeof price === 'string') {
+                        price = Number(price);
+                    }
+                    price = price.toFixed(2);
+                    // price = price.toString();
+                    // price = price.toFixed(mptbm_num_of_decimal);
+                    let price_text = '';
+                    if (mptbm_currency_position === 'right') {
+                        price_text = price + mptbm_currency_symbol;
+                    } else if (mptbm_currency_position === 'right_space') {
+                        price_text = price + ' ' + mptbm_currency_symbol;
+                    } else if (mptbm_currency_position === 'left') {
+                        price_text = mptbm_currency_symbol + price;
+                    } else {
+                        price_text = mptbm_currency_symbol + ' ' + price;
+                    }
+                    return price_text;
+                }
+
+
                 // ******Admin Ticket Purchase (Dropdown)********
 
                 // Show Grand Price
@@ -482,7 +507,7 @@ class WBTM_Plugin_Functions
                     let grand_ele = parent.find('.mage-grand-total .mage-price-figure');
 
                     // price items
-                    let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').text()); // 1
+                    let seat_price = parseFloat(parent.find('.mage-price-total span').attr('data-subtotal-price')); // 1
 
                     let extra_price = 0;
                     parent.find('.wbtm_extra_service_table tbody tr').each(function() { // 2
@@ -517,7 +542,7 @@ class WBTM_Plugin_Functions
 
                     jQuery('#total_seat<?php echo $id; ?>_booked').html(rowCount);
                     jQuery('#tq<?php echo $id; ?>').val(rowCount);
-                    jQuery('#totalFare<?php echo $id; ?>').html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
+                    jQuery('#totalFare<?php echo $id; ?>').attr('data-subtotal-price', totalFare).html("<?php echo get_woocommerce_currency_symbol(); ?> <span class='price-figure'>" + totalFare.toFixed(2) + "</span>");
                     jQuery('#tfi<?php echo $id; ?>').val(totalFare.toFixed(2));
                     // if (totalFare == 0) {
                     //     jQuery('#bus-booking-btn<?php echo $id; ?>').hide();
@@ -887,12 +912,16 @@ class WBTM_Plugin_Functions
 
     public function wbtm_buffer_time_check($bp_time, $date)
     {
+        $bus_start_time = date('H:i:s', strtotime($bp_time));
+        if (!$bp_time) {
+            return 'yes';
+        }
         // Get the buffer time set by user
         $bus_buffer_time = $this->bus_get_option('bus_buffer_time', 'general_setting_sec', 0);
         if ($bus_buffer_time > 0) {
             // Convert bus start time into date format
             // $bus_buffer_time = $bus_buffer_time * 60;
-            $bus_start_time = date('H:i:s', strtotime($bp_time));
+
             // Make bus search date & bus start time as date format
             $start_bus = $date . ' ' . $bus_start_time;
 
@@ -908,7 +937,6 @@ class WBTM_Plugin_Functions
                 return 'no';
             }
         } else {
-            $bus_start_time = date('H:i:s', strtotime($bp_time));
             $start_bus = $date . ' ' . $bus_start_time;
             $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60, 1); // In Minute
             if (abs($diff) != $diff) {
@@ -1840,7 +1868,7 @@ function wbtm_convert_date_to_php($date)
     return date('Y-m-d', strtotime($date));
 }
 
-function displayDates($date1, $date2, $format = 'd-m-Y')
+function wbtm_displayDates($date1, $date2, $format = 'd-m-Y')
 {
     $dates = array();
     $current = strtotime($date1);
@@ -2416,64 +2444,66 @@ function wbtm_get_price_including_tax($bus, $price, $args = array())
     $line_price = (float) $price * $qty;
     $return_price = $line_price;
 
-    if ($product->is_taxable()) {
+    if ($product) {
+        if ($product->is_taxable()) {
 
 
-        if (!wc_prices_include_tax()) {
-            // echo get_option( 'woocommerce_prices_include_tax' );
-            $tax_rates = WC_Tax::get_rates($product->get_tax_class());
-            $taxes = WC_Tax::calc_tax($line_price, $tax_rates, false);
+            if (!wc_prices_include_tax()) {
+                // echo get_option( 'woocommerce_prices_include_tax' );
+                $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+                $taxes = WC_Tax::calc_tax($line_price, $tax_rates, false);
 
-            // print_r($tax_rates);
-
-            if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-
-                $taxes_total = array_sum($taxes);
-            } else {
-
-                $taxes_total = array_sum(array_map('wc_round_tax_total', $taxes));
-            }
-
-            $return_price = $tax_with_price == 'excl' ? round($line_price, wc_get_price_decimals()) : round($line_price + $taxes_total, wc_get_price_decimals());
-        } else {
-
-
-            $tax_rates = WC_Tax::get_rates($product->get_tax_class());
-            $base_tax_rates = WC_Tax::get_base_tax_rates($product->get_tax_class('unfiltered'));
-
-            /**
-             * If the customer is excempt from VAT, remove the taxes here.
-             * Either remove the base or the user taxes depending on woocommerce_adjust_non_base_location_prices setting.
-             */
-            if (!empty(WC()->customer) && WC()->customer->get_is_vat_exempt()) { // @codingStandardsIgnoreLine.
-                $remove_taxes = apply_filters('woocommerce_adjust_non_base_location_prices', true) ? WC_Tax::calc_tax($line_price, $base_tax_rates, true) : WC_Tax::calc_tax($line_price, $tax_rates, true);
+                // print_r($tax_rates);
 
                 if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-                    $remove_taxes_total = array_sum($remove_taxes);
+
+                    $taxes_total = array_sum($taxes);
                 } else {
-                    $remove_taxes_total = array_sum(array_map('wc_round_tax_total', $remove_taxes));
+
+                    $taxes_total = array_sum(array_map('wc_round_tax_total', $taxes));
                 }
 
-                // $return_price = round( $line_price, wc_get_price_decimals() );
-                $return_price = round($line_price - $remove_taxes_total, wc_get_price_decimals());
+                $return_price = $tax_with_price == 'excl' ? round($line_price, wc_get_price_decimals()) : round($line_price + $taxes_total, wc_get_price_decimals());
+            } else {
+
+
+                $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+                $base_tax_rates = WC_Tax::get_base_tax_rates($product->get_tax_class('unfiltered'));
+
                 /**
-                 * The woocommerce_adjust_non_base_location_prices filter can stop base taxes being taken off when dealing with out of base locations.
-                 * e.g. If a product costs 10 including tax, all users will pay 10 regardless of location and taxes.
-                 * This feature is experimental @since 2.4.7 and may change in the future. Use at your risk.
+                 * If the customer is excempt from VAT, remove the taxes here.
+                 * Either remove the base or the user taxes depending on woocommerce_adjust_non_base_location_prices setting.
                  */
-            } else {
-                $base_taxes = WC_Tax::calc_tax($line_price, $base_tax_rates, true);
-                $modded_taxes = WC_Tax::calc_tax($line_price - array_sum($base_taxes), $tax_rates, false);
+                if (!empty(WC()->customer) && WC()->customer->get_is_vat_exempt()) { // @codingStandardsIgnoreLine.
+                    $remove_taxes = apply_filters('woocommerce_adjust_non_base_location_prices', true) ? WC_Tax::calc_tax($line_price, $base_tax_rates, true) : WC_Tax::calc_tax($line_price, $tax_rates, true);
 
-                if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
-                    $base_taxes_total = array_sum($base_taxes);
-                    $modded_taxes_total = array_sum($modded_taxes);
+                    if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
+                        $remove_taxes_total = array_sum($remove_taxes);
+                    } else {
+                        $remove_taxes_total = array_sum(array_map('wc_round_tax_total', $remove_taxes));
+                    }
+
+                    // $return_price = round( $line_price, wc_get_price_decimals() );
+                    $return_price = round($line_price - $remove_taxes_total, wc_get_price_decimals());
+                    /**
+                     * The woocommerce_adjust_non_base_location_prices filter can stop base taxes being taken off when dealing with out of base locations.
+                     * e.g. If a product costs 10 including tax, all users will pay 10 regardless of location and taxes.
+                     * This feature is experimental @since 2.4.7 and may change in the future. Use at your risk.
+                     */
                 } else {
-                    $base_taxes_total = array_sum(array_map('wc_round_tax_total', $base_taxes));
-                    $modded_taxes_total = array_sum(array_map('wc_round_tax_total', $modded_taxes));
-                }
+                    $base_taxes = WC_Tax::calc_tax($line_price, $base_tax_rates, true);
+                    $modded_taxes = WC_Tax::calc_tax($line_price - array_sum($base_taxes), $tax_rates, false);
 
-                $return_price = $tax_with_price == 'excl' ? round($line_price - $base_taxes_total, wc_get_price_decimals()) : round($line_price - $base_taxes_total + $modded_taxes_total, wc_get_price_decimals());
+                    if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
+                        $base_taxes_total = array_sum($base_taxes);
+                        $modded_taxes_total = array_sum($modded_taxes);
+                    } else {
+                        $base_taxes_total = array_sum(array_map('wc_round_tax_total', $base_taxes));
+                        $modded_taxes_total = array_sum(array_map('wc_round_tax_total', $modded_taxes));
+                    }
+
+                    $return_price = $tax_with_price == 'excl' ? round($line_price - $base_taxes_total, wc_get_price_decimals()) : round($line_price - $base_taxes_total + $modded_taxes_total, wc_get_price_decimals());
+                }
             }
         }
     }
@@ -2497,9 +2527,9 @@ function wbtm_posts_column_callback($column)
     unset($column['taxonomy-wbtm_bus_cat']);
 
     $column['wbtm_coach_no'] = __('Coach no', 'bus-ticket-booking-with-seat-reservation');
-    $column['wbtm_bus_type'] = $name.' '.__('Type', 'bus-ticket-booking-with-seat-reservation');
+    $column['wbtm_bus_type'] = $name . ' ' . __('Type', 'bus-ticket-booking-with-seat-reservation');
     $column['taxonomy-wbtm_bus_cat'] = __('Category', 'bus-ticket-booking-with-seat-reservation');
-    if(is_plugin_active( 'bus-marketplace-addon/bus-marketplace.php' )) {
+    if (is_plugin_active('bus-marketplace-addon/bus-marketplace.php')) {
         $column['wbtm_added_by'] = __('Added by', 'bus-ticket-booking-with-seat-reservation');
     }
     $column['date'] = $date;
@@ -2518,7 +2548,7 @@ function wbtm_posts_custom_column_callback($column, $post_id)
             break;
         case 'wbtm_added_by':
             $user_id = get_post_field('post_author', $post_id);
-            echo "<span class=''>".get_the_author_meta('display_name', $user_id).' ['.wbtm_get_user_role($user_id)."]</span>";
+            echo "<span class=''>" . get_the_author_meta('display_name', $user_id) . ' [' . wbtm_get_user_role($user_id) . "]</span>";
             break;
     }
 }

@@ -1315,11 +1315,11 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping, $return =
                 $data['dropping'] = date('Y-m-d', strtotime($date));
             }
         } elseif ($get_travel_day == 2) {
-            $data['dropping'] = date('Y-m-d', strtotime('+2 day', strtotime($date)));
+            $data['dropping'] = date('Y-m-d', strtotime('+1 day', strtotime($date)));
         } elseif ($get_travel_day == 3) {
-            $data['dropping'] = date('Y-m-d', strtotime('+3 day', strtotime($date)));
+            $data['dropping'] = date('Y-m-d', strtotime('+2 day', strtotime($date)));
         } elseif ($get_travel_day == 4) {
-            $data['dropping'] = date('Y-m-d', strtotime('+4 day', strtotime($date)));
+            $data['dropping'] = date('Y-m-d', strtotime('+3 day', strtotime($date)));
         } else {
             if (($boarding_hour > $dropping_hour) || ($dropping_hour == 24)) {
                 $data['dropping'] = date('Y-m-d', strtotime('+1 day', strtotime($date)));

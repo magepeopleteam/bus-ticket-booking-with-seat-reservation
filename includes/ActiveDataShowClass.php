@@ -31,7 +31,7 @@ class ActiveDataShowClass extends CommonClass
 
             $alloffdays = array();
             foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-                $alloffdays =  array_unique(array_merge($alloffdays, displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
             }
 
             $all_offdates = array_merge($global_offdates_arr, $alloffdays);
@@ -87,7 +87,7 @@ class ActiveDataShowClass extends CommonClass
 
             $alloffdays = array();
             foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-                $alloffdays =  array_unique(array_merge($alloffdays, displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
             }
             $offday = array();
             foreach ($alloffdays as $alloffday) {
