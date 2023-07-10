@@ -1295,7 +1295,7 @@ function mage_get_bus_stops_date($bus_id, $date, $boarding, $dropping, $return =
     $get_travel_day = 0;
     if ($wbtm_route_summary) {
         foreach ($wbtm_route_summary as $td) {
-            if (!isset($td['boarding']) && !isset($td['dropping'])) continue;
+            if (!isset($td['boarding']) && !isset($td['dropping']) && !isset($td['travel_day'])) continue;
             if ($td['boarding'] === $boarding && $td['dropping'] === $dropping) {
                 $get_travel_day = $td['travel_day'];
                 break;
