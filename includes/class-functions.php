@@ -1126,9 +1126,6 @@ class WBTM_Plugin_Functions
             );
 
             $q = new WP_Query($args);
-            echo '<pre>';
-            print_r($q->post_count);
-            die;
             $total_booking_id = $q->post_count + $total_booking;
         }
 
