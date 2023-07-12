@@ -15,6 +15,9 @@ div.mage_bus_list_title div.mage_bus_img h6 {border: none;}
 div.mage_bus_info h6 span {font-size: 12px !important;}
 /****/
 div[class^="mage"] .mage_bus_seat_details {padding: var(--default-mp) 0 0 0;margin: 10px 0;border-top: 1px solid var(--default-border-color);display: none;}
+.mage_single_bus_search_page .mage_bus_seat_details {
+    display: block;
+}
 .mage_bus_seat_plan {}
 .mage_bus_customer_sec {}
 .mage_bus_seat,

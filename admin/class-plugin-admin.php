@@ -55,7 +55,7 @@ class WBTM_Plugin_Admin {
         wp_enqueue_script( 'wp-color-picker' );
 		wp_enqueue_script('magepeople-options-framework', plugins_url( 'assets/js/pickplugins-options-framework.js' , __FILE__ ) , array( 'jquery' ));
 
-		wp_register_script('multidatepicker-wbtm', 'https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js', array('jquery'), 1, true);
+		wp_register_script('multidatepicker-wbtm', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multidatespicker/1.6.6/jquery-ui.multidatespicker.js', array('jquery'), 1, true);
  		wp_enqueue_script('multidatepicker-wbtm');
 
         wp_localize_script( 'PickpluginsOptionsFramework', 'PickpluginsOptionsFramework_ajax', array( 'PickpluginsOptionsFramework_ajaxurl' => admin_url( 'admin-ajax.php')));
