@@ -39,7 +39,7 @@
 
     $("input[name='wbtm_bus_on_dates']").multiDatesPicker({
       dateFormat: "yy-mm-dd",
-      // minDate:0
+      minDate:0
     });
 
     $("input[name='wbtm_bus_on_dates_return']").multiDatesPicker({
