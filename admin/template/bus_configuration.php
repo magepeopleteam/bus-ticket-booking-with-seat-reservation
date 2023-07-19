@@ -3,7 +3,7 @@
                                 _e('No', 'bus-ticket-booking-with-seat-reservation'); ?></label>
     <input type="text" name="wbtm_bus_no" value="<?php echo $coach_no; ?>">
 </div>
-<div class="wbtm-item-row">
+<div class="wbtm-item-row wbtm-seat-count">
     <label class="item-label"><?php _e('Total Seat', 'bus-ticket-booking-with-seat-reservation'); ?></label>
     <input type="number" name="wbtm_total_seat" value="<?php echo $total_seat; ?>">
 </div>

@@ -178,8 +178,10 @@
     if (value === 'wbtm_seat_plan') {
       $('.wbtm-seat-plan-wrapper').show();
       wbtmPriceType('general');
+      $('.wbtm-seat-count').show();
       $('#wbtm_same_bus_return').show();
     } else {
+      $('.wbtm-seat-count').hide();
       $('.wbtm-seat-plan-wrapper').hide();
 
       if (value === 'wbtm_without_seat_plan') {
