@@ -263,7 +263,6 @@
 						$total_fare += $bag_price;
 					}
 				}
-				echo '<pre>'; print_r($total_fare); die;
 				$total_fare = $total_fare + $total_extra_price;
 				// Extra Service END
 				// Add to Cart
