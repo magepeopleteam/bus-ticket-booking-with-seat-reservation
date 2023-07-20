@@ -46,10 +46,10 @@
 
 <div class="wbtm_bus_pickpint_wrapper" data-isReturn="no">
 
-
+    <?php $selected_city_pickpoints = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city', true); ?>
     <div class="wbtm_left_col">
         <div class="wbtm_field_group boarding_points <?php echo $boarding_points_class ?>">
-            <select  name="wbtm_pick_boarding" class="wbtm_pick_boarding">
+            <select  name="wbtm_pick_boarding" class="wbtm_pick_boarding" data-selected-city-id="<?php echo $selected_city_pickpoints; ?>">
                 <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                 <?php foreach ($boarding_points_array as $stop) : ?>
                     <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
@@ -62,7 +62,7 @@
         <button class="ra-button-style open-routing-tab <?php echo $boarding_points_class ?>"><?php _e('Please configure route plan first, To add root plan click here', 'bus-ticket-booking-with-seat-reservation'); ?></button>
     </div>
 
-    <?php $selected_city_pickpoints = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city', true); ?>
+    
 
 
 
@@ -116,12 +116,13 @@
 
 <!-- Return  -->
 <div class="wbtm-only-for-return-enable">
+<?php $selected_city_pickpoints_return = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city_return', true); ?>
     <h3 class="wbtm-single-return-header"><?php _e('Pickup Point Return', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
     <div class="wbtm_bus_pickpint_wrapper" data-isReturn="yes">
         <div class="wbtm_left_col">
             <div class="wbtm_field_group">
                 <?php if ($boarding_points_array) : ?>
-                    <select name="wbtm_pick_boarding" class="wbtm_pick_boarding_return">
+                    <select name="wbtm_pick_boarding" class="wbtm_pick_boarding_return" data-selected-city-id="<?php echo $selected_city_pickpoints_return; ?>">
                         <option value=""><?php _e('Select Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php foreach ($boarding_points_array as $stop) : ?>
                             <option value="<?php echo $stop->term_id ?>"><?php echo $stop->name ?></option>
@@ -136,7 +137,7 @@
                 endif; ?>
             </div>
         </div>
-        <?php $selected_city_pickpoints_return = get_post_meta($post->ID, 'wbtm_pickpoint_selected_city_return', true); ?>
+
         <div class="wbtm_right_col <?php echo ($selected_city_pickpoints_return == '' ? 'all-center' : ''); ?>">
             <div id="wbtm_pickpoint_selected_city">
 

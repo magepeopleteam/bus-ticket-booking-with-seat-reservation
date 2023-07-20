@@ -498,7 +498,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                                 <td class="mage-seat-qty">
                                                     <button class="wbtm-qty-change wbtm-qty-dec" data-qty-change="dec">-
                                                     </button>
-                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" name="seat_qty[]" />
+                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" data-max-qty="<?php echo $seat_available; ?>" name="seat_qty[]" />
                                                     <button class="wbtm-qty-change wbtm-qty-inc" data-qty-change="inc">+
                                                     </button>
                                                     <input type="hidden" name="passenger_type[]" value="<?php echo $type['type'] ?>">
@@ -612,11 +612,13 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     <span class='wbtm-details-page-list-label'> <span class="fa fa-map-marker"></span><?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                                     <?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?>
                                 </h6>
+                                <?php if(mage_bus_type()) : ?>
                                 <h6 class="mar_t_xs">
                                     <span class='wbtm-details-page-list-label'><i class="fa fa-bus" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_type_text', __('Coach Type:', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                                     <?php echo mage_bus_type(); ?>
                                 </h6>
+                                <?php endif; ?>
                                 <h6 class="mar_t_xs">
                                     <span class='wbtm-details-page-list-label'><i class="fa fa-calendar" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_date_text', __('Date:', 'bus-ticket-booking-with-seat-reservation')); ?></span>
