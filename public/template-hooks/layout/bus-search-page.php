@@ -107,7 +107,7 @@ function mage_bus_search_list($return)
                     // Operational on day
                     $is_on_date = false;
                     $bus_on_dates = array();
-                    //                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+                    //$bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
                     $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
                     if ($bus_on_date != null) {
                         $bus_on_dates = explode(', ', $bus_on_date);
@@ -115,11 +115,7 @@ function mage_bus_search_list($return)
                     }
 
                     if ($is_on_date) {
-
-                        // echo $id.'<br>';
-                        // echo '<pre>';print_r($bus_on_dates);
-                        // die;
-                        if (in_array($p_j_date, $bus_on_dates)) {
+                        if (in_array(date('m-d', strtotime($p_j_date)), $bus_on_dates)) {
                             $has_bus = true;
                         }
                     } else {
@@ -147,12 +143,12 @@ function mage_bus_search_list($return)
                             foreach ($bus_offday_schedules as $item) {
 
                                 $c_iterate_date_from = $item['from_date'];
-                                //                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from));
+                                // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
 
                                 $c_iterate_date_to = $item['to_date'];
-                                //                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to));
+                                // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
 
                                 if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
                                     $offday_current_bus = true;
