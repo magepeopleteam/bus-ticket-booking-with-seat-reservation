@@ -263,6 +263,7 @@
 						$total_fare += $bag_price;
 					}
 				}
+				echo '<pre>'; print_r($total_fare); die;
 				$total_fare = $total_fare + $total_extra_price;
 				// Extra Service END
 				// Add to Cart
@@ -294,7 +295,7 @@
 				$cart_item_data['line_subtotal'] = $total_fare;
 				$cart_item_data['bus_id'] = $product_id;
 			}
-			//echo '<pre>'; print_r($cart_item_data); die();
+			// echo '<pre>'; print_r($cart_item_data); die();
 			return $cart_item_data;
 		}
 		public function wbtm_add_custom_price($cart_object) {
@@ -524,11 +525,18 @@
 						?>
 						<ul class='event-custom-price'>
 							<?php
-								if ($wbtm_seats) : ?>
+								if ($basic_passenger_info) : ?>
 									<li>
 										<?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
-											$seat_lists = array_column($wbtm_seats, 'wbtm_seat_name');
-											echo implode(', ', $seat_lists);
+											$seat_lists = array_column($basic_passenger_info, 'wbtm_passenger_type');
+											if($seat_lists) {
+												$counted_seats_arr = array_count_values($seat_lists);
+												if($counted_seats_arr) {
+													foreach($counted_seats_arr as $seat_name => $count) {
+														printf("%s (%d) ", $seat_name, $count);
+													}
+												}
+											}
 										?>
 									</li>
 								<?php
