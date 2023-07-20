@@ -236,8 +236,14 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
 }
 
 function wbtm_bus_sort_by_time($a, $b) {
+    $orderBy = mage_bus_setting_value('bus_search_list_order') ? mage_bus_setting_value('bus_search_list_order') : 'asc';
+    
     if (strtotime($a) == strtotime($b)) return 0;
-    return (strtotime($a) < strtotime($b)) ? -1 : 1;
+    if($orderBy === 'asc') {
+        return (strtotime($a) < strtotime($b)) ? -1 : 1;
+    } else {
+        return (strtotime($a) < strtotime($b)) ? 1 : -1;
+    }
 }
 
 function mage_bus_search_item($return, $id)
