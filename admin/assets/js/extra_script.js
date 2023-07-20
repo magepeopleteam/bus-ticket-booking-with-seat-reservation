@@ -346,7 +346,7 @@
 
 		}
 
-		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarging Point</option>");
+		$('.ra_bus_bp_price_stop').html("<option value=''>Select boarding point</option>");
 		$( ".boarding-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
@@ -407,7 +407,7 @@
 	$(document).on('click','.ra_seat_price',function (e){
 		e.preventDefault();
 
-		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarging Point</option>");
+		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarding Point</option>");
 		$( ".boarding-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
