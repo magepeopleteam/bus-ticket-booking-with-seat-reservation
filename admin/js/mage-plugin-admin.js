@@ -38,7 +38,7 @@
     // });
 
     $("input[name='wbtm_bus_on_dates']").multiDatesPicker({
-      dateFormat: "yy-mm-dd",
+      dateFormat: "mm-dd",
       minDate:0
     });
 
@@ -51,7 +51,7 @@
   $('.add-offday-row').on('click', function (e) {
       e.preventDefault();
       let datePickerOpt = {
-        dateFormat: "yy-mm-dd",
+        dateFormat: "mm-dd",
         minDate: 0
       };
       let now = Date.now();
@@ -178,10 +178,10 @@
     if (value === 'wbtm_seat_plan') {
       $('.wbtm-seat-plan-wrapper').show();
       wbtmPriceType('general');
-      $('.wbtm-seat-count').show();
+      $('.wbtm-seat-count').hide();
       $('#wbtm_same_bus_return').show();
     } else {
-      $('.wbtm-seat-count').hide();
+      $('.wbtm-seat-count').show();
       $('.wbtm-seat-plan-wrapper').hide();
 
       if (value === 'wbtm_without_seat_plan') {
