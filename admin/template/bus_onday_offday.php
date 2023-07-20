@@ -60,12 +60,15 @@
                                         (function($) {
                                             setTimeout(function() {
                                                 $("#db_offday_from_<?php echo $count ?>").datepicker({
-                                                    dateFormat: "yy-mm-dd",
-                                                    minDate: 0
+                                                    dateFormat: "mm-dd",
+                                                    minDate: 0,
+                                                    onClose: function(selectedDate) {
+                                                        // Set the minDate of 'to' as the selectedDate of 'from'
+                                                        $("#db_offday_to_<?php echo $count ?>").datepicker("option", "minDate", selectedDate);
+                                                    }
                                                 });
                                                 $("#db_offday_to_<?php echo $count ?>").datepicker({
-                                                    dateFormat: "yy-mm-dd",
-                                                    minDate: 0
+                                                    dateFormat: "mm-dd",
                                                 });
                                             }, 400);
                                         })(jQuery)
