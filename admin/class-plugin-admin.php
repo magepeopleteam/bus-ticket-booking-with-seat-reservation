@@ -62,7 +62,7 @@ class WBTM_Plugin_Admin {
         wp_enqueue_script('select2.min', plugins_url( 'assets/js/select2.min.js' , __FILE__ ) , array( 'jquery' ));
         wp_enqueue_script('codemirror', WBTM_PLUGIN_URL.'admin/assets/js/codemirror.min.js', array( 'jquery' ),null, false);
         wp_enqueue_script('form-field-dependency', plugins_url( 'assets/js/form-field-dependency.js' , __FILE__ ) , array( 'jquery' ),null, false);
-		wp_enqueue_script( 'mage-plugin-js', WBTM_PLUGIN_URL . 'admin/js/mage-plugin-admin.js', array( 'jquery','jquery-ui-core','jquery-ui-datepicker' ), time(), true );
+		wp_enqueue_script( 'mage-plugin-js', WBTM_PLUGIN_URL . 'admin/js/mage-plugin-admin.js', array( 'jquery','jquery-ui-core','jquery-ui-datepicker' ), time(), false );
 		wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array( 'jquery' ), 1, true);	
 		wp_enqueue_script('mage-admin-timepicker', WBTM_PLUGIN_URL.'admin/assets/js/mage-admin-timepicker.js', array( 'jquery' ));
 	}
