@@ -293,6 +293,7 @@
 				$cart_item_data['line_total'] = $total_fare;
 				$cart_item_data['line_subtotal'] = $total_fare;
 				$cart_item_data['bus_id'] = $product_id;
+				$cart_item_data['wbtm_bus_seat_type'] = get_post_meta($product_id, 'wbtm_seat_type_conf', true);
 			}
 			// echo '<pre>'; print_r($cart_item_data); die();
 			return $cart_item_data;
@@ -325,6 +326,7 @@
 					$datetimeformat = $date_format . '  ' . $time_format;
 					$wbtm_anydate_return = $cart_item['wbtm_anydate_return'];
 					$wbtm_anydate_return_price = $cart_item['wbtm_anydate_return_price'];
+					$wbtm_bus_seat_type = $cart_item['wbtm_bus_seat_type'];
 					// echo '<pre>';  print_r($cart_item);  echo '<pre>'; exit;
 					// echo '<pre>'; print_r($passenger_info); die;
 					// $billing_type_items = mtsa_get_billing_type_items();
@@ -528,11 +530,23 @@
 									<li>
 										<?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
 											$seat_lists = array_column($basic_passenger_info, 'wbtm_passenger_type');
-											if($seat_lists) {
-												$counted_seats_arr = array_count_values($seat_lists);
-												if($counted_seats_arr) {
-													foreach($counted_seats_arr as $seat_name => $count) {
-														printf("%s (%d) ", $seat_name, $count);
+											if($wbtm_bus_seat_type === 'wbtm_without_seat_plan') {
+												if($seat_lists) {
+													$counted_seats_arr = array_count_values($seat_lists);
+													if($counted_seats_arr) {
+														foreach($counted_seats_arr as $seat_name => $count) {
+															printf("%s (%d) ", $seat_name, $count);
+														}
+													}
+												}
+											} else {
+												if($wbtm_seats) {
+													$seat_plan_loop_index = 0;
+													foreach($wbtm_seats as $seat_plan_seat) {
+														$separator = (count($wbtm_seats) - 1 == $seat_plan_loop_index) ? '' : ', ';
+														printf("%s(%s)%s", $seat_plan_seat['wbtm_seat_name'], $basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'], $separator);
+
+														$seat_plan_loop_index++;
 													}
 												}
 											}
