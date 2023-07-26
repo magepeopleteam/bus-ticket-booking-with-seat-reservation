@@ -959,6 +959,10 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	border-bottom: 7px solid #2271a1;
 }
 
+/* Hide year from datepicker calendar */
+.wbtm-hide-year .ui-datepicker-year {
+	display: none;
+}
 
 /* Gutenbarg bottom space END */
 

@@ -39,12 +39,18 @@
 
     $("input[name='wbtm_bus_on_dates']").multiDatesPicker({
       dateFormat: "mm-dd",
-      minDate:0
+      minDate:0,
+      beforeShow: function( input, inst){
+        $(inst.dpDiv).addClass('wbtm-hide-year');
+      },
     });
 
     $("input[name='wbtm_bus_on_dates_return']").multiDatesPicker({
       dateFormat: "yy-mm-dd",
-      // minDate:0
+      minDate:0,
+      beforeShow: function( input, inst){
+        $(inst.dpDiv).addClass('wbtm-hide-year');
+      },
     });
 
     // Off Dates
