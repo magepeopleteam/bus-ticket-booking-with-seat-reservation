@@ -366,7 +366,7 @@
 
         // price items
         // let seat_price = parent.find('.mage-price-total .price-figure').text(); // 1
-        let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').attr('data-price-subtotal')); // 1
+        let seat_price = parent.find('.mage-price-total .price-figure').attr('data-price-subtotal') ? parseFloat(parent.find('.mage-price-total .price-figure').attr('data-price-subtotal')) : 0; // 1
         let extra_price = 0;
         parent.find('.wbtm_extra_service_table tbody tr').each(function () { // 2
             extra_price += parseFloat($(this).attr('data-total'));
@@ -652,7 +652,7 @@
         } else { // Seat not selected
             target.addClass('mage_selected');
             has_seat = parents.find('.mage_bus_selected_seat_list').children().length;
-            // parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
+            parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
 
             $.ajax({
                 type: 'POST',
