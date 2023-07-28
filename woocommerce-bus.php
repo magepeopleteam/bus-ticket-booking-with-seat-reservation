@@ -57,12 +57,15 @@ class Wbtm_Woocommerce_bus
 
     public function activation_redirect($plugin)
     {
-        if ($plugin == plugin_basename(__FILE__)) {
+        $wbtm_quick_setup_done = get_option('wbtm_quick_setup_done');
+        if ( $plugin == plugin_basename( __FILE__ ) && $wbtm_quick_setup_done != 'yes' ) {
             exit(wp_redirect(admin_url('edit.php?post_type=wbtm_bus&page=wbtm_quick_setup')));
         }
     }
     public function activation_redirect_setup( $plugin ) {
-        if ( $plugin == plugin_basename( __FILE__ ) ) {
+        
+        $wbtm_quick_setup_done = get_option('wbtm_quick_setup_done');
+        if ( $plugin == plugin_basename( __FILE__ ) && $wbtm_quick_setup_done != 'yes' ) {
             exit( wp_redirect( admin_url( 'admin.php?post_type=wbtm_bus&page=wbtm_quick_setup' ) ) );
         }
     }
