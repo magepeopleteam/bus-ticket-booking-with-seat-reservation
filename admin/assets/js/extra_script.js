@@ -200,7 +200,7 @@
 		$('.wbtm_pick_boarding_return').html("<option value=''>Select Boarding Point</option>");
 		let options = '';
 		$( ".boarding-point tr" ).each(function( index ) {
-			console.log( index + ": " + $(this).find(":selected").val() );
+			// console.log( index + ": " + $(this).find(":selected").val() );
 
 			options = options+$(this).find(":selected").val();
 
@@ -213,12 +213,23 @@
 			}
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
+				// remove city that has exit on db
+				let has_city_in_db = false;
+				const selected_city_id = $('.wbtm_pick_boarding').attr('data-selected-city-id');
+				if(selected_city_id) {
+					const selected_city_id_arr = selected_city_id.split(',');
+					has_city_in_db = selected_city_id_arr.includes(String(term_id))
+				}
+				if(has_city_in_db) {
+					return true;
+				}
+				// END
 				$('.wbtm_pick_boarding').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
 
 		$( ".boarding-point-return tr" ).each(function( index ) {
-			console.log( index + ": " + $(this).find(":selected").val() );
+			// console.log( index + ": " + $(this).find(":selected").val() );
 
 			options = options+$(this).find(":selected").val();
 
@@ -231,6 +242,17 @@
 			}
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
+				// remove city that has exit on db
+				let has_city_in_db = false;
+				const selected_city_id = $('.wbtm_pick_boarding_return').attr('data-selected-city-id');
+				if(selected_city_id) {
+					const selected_city_id_arr = selected_city_id.split(',');
+					has_city_in_db = selected_city_id_arr.includes(String(term_id))
+				}
+				if(has_city_in_db) {
+					return true;
+				}
+				// END
 				$('.wbtm_pick_boarding_return').append("<option value="+term_id+">"+$(this).find(":selected").val()+"</option>")
 			}
 		});
@@ -324,7 +346,7 @@
 
 		}
 
-		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarging Point</option>");
+		$('.ra_bus_bp_price_stop').html("<option value=''>Select boarding point</option>");
 		$( ".boarding-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){
@@ -385,7 +407,7 @@
 	$(document).on('click','.ra_seat_price',function (e){
 		e.preventDefault();
 
-		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarging Point</option>");
+		$('.ra_bus_bp_price_stop').html("<option value=''>Select Boarding Point</option>");
 		$( ".boarding-point tr" ).each(function( index ) {
 			let term_id = $(this).find(':selected').data('term_id');
 			if(term_id){

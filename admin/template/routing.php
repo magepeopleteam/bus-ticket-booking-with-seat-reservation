@@ -90,7 +90,7 @@
                                     </select>
                                 </td>
                                 <td align="center" width="30px">
-                                    <input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>" class="text" placeholder="15:00">
+                                    <input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>" class="text" placeholder="15:00" autocomplete="off">
                                 </td>
                                 <td align="center"><a class="button wbtm-remove-row-t" href="#"><i class="fas fa-minus-circle"></i>
                                         <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -120,7 +120,7 @@
                                 <?php } ?>
                             </select>
                         </td>
-                        <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value="" class="text" placeholder="15:00"></td>
+                        <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time[]' value="" class="text" placeholder="15:00" autocomplete="off"></td>
                         <td align="center">
                             <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
                                 <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -169,7 +169,7 @@
                                         <?php } ?>
                                     </select>
                                 </td>
-                                <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>" class="text" placeholder="15:00"></td>
+                                <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>" class="text" placeholder="15:00" autocomplete="off"></td>
                                 <td align="center">
                                     <a class="button wbtm-remove-row-t" href="#">
                                         <i class="fas fa-minus-circle"></i><?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -199,7 +199,7 @@
                             </select>
                         </td>
                         <td align="center">
-                            <input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="" class="text" placeholder="15:00">
+                            <input type="text" data-clocklet name='wbtm_bus_next_end_time[]' value="" class="text" placeholder="15:00" autocomplete="off">
                         </td>
                         <td align="center">
                             <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
@@ -260,7 +260,7 @@
                                             ?>
                                         </select>
                                     </td>
-                                    <td align="center" width="30px"><input type="text" data-clocklet name='wbtm_bus_bp_start_time_return[]' value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>" class="text" placeholder="15:00"></td>
+                                    <td align="center" width="30px"><input type="text" data-clocklet name='wbtm_bus_bp_start_time_return[]' value="<?php if ($field['wbtm_bus_bp_start_time'] != '') echo esc_attr($field['wbtm_bus_bp_start_time']); ?>" class="text" placeholder="15:00" autocomplete="off"></td>
                                     <td align="center"><a class="button wbtm-remove-row-t" href="#"><i class="fas fa-minus-circle"></i>
                                             <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
                                         </a></td>
@@ -297,7 +297,7 @@
                                     ?>
                                 </select>
                             </td>
-                            <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time_return[]' value="" class="text" placeholder="15:00"></td>
+                            <td align="center"><input type="text" data-clocklet name='wbtm_bus_bp_start_time_return[]' value="" class="text" placeholder="15:00" autocomplete="off"></td>
                             <td align="center"><a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>
                                     <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
                                 </a></td>
@@ -349,7 +349,7 @@
                                             ?>
                                         </select>
                                     </td>
-                                    <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>" class="text" placeholder="15:00"></td>
+                                    <td align="center"><input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="<?php if ($field['wbtm_bus_next_end_time'] != '') echo esc_attr($field['wbtm_bus_next_end_time']); ?>" class="text" placeholder="15:00" autocomplete="off"></td>
                                     <td align="center"><a class="button wbtm-remove-row-t" href="#"><i class="fas fa-minus-circle"></i>
                                             <?php _e('Remove', 'bus-ticket-booking-with-seat-reservation'); ?>
                                         </a></td>
@@ -379,7 +379,7 @@
                                 </select>
                             </td>
                             <td align="center">
-                                <input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="" class="text" placeholder="15:00">
+                                <input type="text" data-clocklet name='wbtm_bus_next_end_time_return[]' value="" class="text" placeholder="15:00" autocomplete="off">
                             </td>
                             <td align="center">
                                 <a class="button remove-bp-row" href="#"><i class="fas fa-minus-circle"></i>

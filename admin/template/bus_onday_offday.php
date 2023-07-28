@@ -11,7 +11,7 @@
             <div style="display: <?php echo ($show_operational_on_day == "yes" ? "block" : "none"); ?>" class="wbtm-ondates-wrapper operational-on-day">
                 <label for=""><?php _e('Operational Onday', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                 <div class="wbtm-ondates-inner">
-                    <input type="text" name="wbtm_bus_on_dates" value="<?php echo $ondates; ?>" readonly>
+                    <input type="text" name="wbtm_bus_on_dates" value="<?php echo $ondates; ?>" readonly placeholder="mm-dd">
                 </div>
             </div>
         </div>
@@ -44,9 +44,9 @@
                                 foreach ($wbtm_offday_schedule as $field) {
                             ?>
                                     <tr class="">
-                                        <td align="left"><input type="text" id="<?php echo 'db_offday_from_' . $count; ?>" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="2020-12-31" value="<?php echo $field['from_date'] ?>" /></td>
+                                        <td align="left"><input type="text" id="<?php echo 'db_offday_from_' . $count; ?>" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="mm-dd" value="<?php echo $field['from_date'] ?>" /></td>
 
-                                        <td align="left"><input type="text" id="<?php echo 'db_offday_to_' . $count; ?>" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="2020-12-31" value="<?php echo $field['to_date'] ?>" /></td>
+                                        <td align="left"><input type="text" id="<?php echo 'db_offday_to_' . $count; ?>" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="mm-dd" value="<?php echo $field['to_date'] ?>" /></td>
 
                                         <td align="left">
                                             <a class="button remove-bp-row" href="#">
@@ -60,12 +60,15 @@
                                         (function($) {
                                             setTimeout(function() {
                                                 $("#db_offday_from_<?php echo $count ?>").datepicker({
-                                                    dateFormat: "yy-mm-dd",
-                                                    minDate: 0
+                                                    dateFormat: "mm-dd",
+                                                    minDate: 0,
+                                                    onClose: function(selectedDate) {
+                                                        // Set the minDate of 'to' as the selectedDate of 'from'
+                                                        $("#db_offday_to_<?php echo $count ?>").datepicker("option", "minDate", selectedDate);
+                                                    }
                                                 });
                                                 $("#db_offday_to_<?php echo $count ?>").datepicker({
-                                                    dateFormat: "yy-mm-dd",
-                                                    minDate: 0
+                                                    dateFormat: "mm-dd",
                                                 });
                                             }, 400);
                                         })(jQuery)
@@ -81,10 +84,10 @@
 
                             <!-- empty hidden one for jQuery -->
                             <tr class="empty-row-offday screen-reader-text">
-                                <td align="left"><input type="text" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="2020-12-31" />
+                                <td align="left"><input type="text" class="repeatable-offday-from-field" name='wbtm_od_offdate_from[]' placeholder="mm-dd" />
                                 </td>
 
-                                <td align="left"><input type="text" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="2020-12-31" /></td>
+                                <td align="left"><input type="text" class="repeatable-offday-to-field" name='wbtm_od_offdate_to[]' placeholder="mm-dd" /></td>
 
                                 <td align="left">
                                     <a class="button remove-bp-row" href="#">
@@ -159,7 +162,7 @@
                 <div style="display: <?php echo ($return_show_operational_on_day == "yes" ? "block" : "none"); ?>" class="wbtm-ondates-wrapper return-operational-on-day">
                     <label for=""><?php _e('Operational Onday', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                     <div class="wbtm-ondates-inner">
-                        <input type="text" name="wbtm_bus_on_dates_return" value="<?php echo $ondates_return; ?>" readonly>
+                        <input type="text" name="wbtm_bus_on_dates_return" value="<?php echo $ondates_return; ?>" readonly placeholder="mm-dd">
                     </div>
                 </div>
             </div>
@@ -192,8 +195,8 @@
                                         foreach ($wbtm_offday_schedule_return as $field) {
                                     ?>
                                             <tr class="">
-                                                <td align="left"><input type="text" id="<?php echo 'db_offday_from_' . $count . '_r'; ?>" class="repeatable-offday-from-field" name='wbtm_od_offdate_from_return[]' placeholder="2020-12-31" value="<?php echo $field['from_date'] ?>" /></td>
-                                                <td align="left"><input type="text" id="<?php echo 'db_offday_to_' . $count . '_r'; ?>" class="repeatable-offday-to-field" name='wbtm_od_offdate_to_return[]' placeholder="2020-12-31" value="<?php echo $field['to_date'] ?>" /></td>
+                                                <td align="left"><input type="text" id="<?php echo 'db_offday_from_' . $count . '_r'; ?>" class="repeatable-offday-from-field" name='wbtm_od_offdate_from_return[]' placeholder="mm-dd" value="<?php echo $field['from_date'] ?>" /></td>
+                                                <td align="left"><input type="text" id="<?php echo 'db_offday_to_' . $count . '_r'; ?>" class="repeatable-offday-to-field" name='wbtm_od_offdate_to_return[]' placeholder="mm-dd" value="<?php echo $field['to_date'] ?>" /></td>
                                                 <td align="left">
                                                     <a class="button remove-bp-row" href="#">
                                                         <i class="fas fa-minus-circle"></i>

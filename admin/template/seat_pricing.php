@@ -32,7 +32,7 @@
                         <tr>
                             <td class="wbtm-wid-25">
                                 <select name="wbtm_bus_bp_price_stop[]" style="width: 100%">
-                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value=""><?php _e('Select boarding point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php foreach ($routes as $route) : ?>
                                         <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_bp_price_stop'] ? 'selected' : '') ?>>
                                             <?php echo $route->name; ?>
@@ -42,7 +42,7 @@
                             </td>
                             <td class="wbtm-wid-25">
                                 <select name="wbtm_bus_dp_price_stop[]" style="width: 100%">
-                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value=""><?php _e('Select dropping point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php foreach ($routes as $route) : ?>
                                         <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_dp_price_stop'] ? 'selected' : '') ?>>
                                             <?php echo $route->name; ?>
@@ -72,7 +72,7 @@
             <tr class="mtsa-empty-row-t">
                 <td>
                     <select name="wbtm_bus_bp_price_stop[]" class="ra_bus_bp_price_stop" style="width: 100%">
-                        <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        <option value=""><?php _e('Select boarding point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php if ($routes) : foreach ($routes as $route) : ?>
                             <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>
                         <?php endforeach;
@@ -81,7 +81,7 @@
                 </td>
                 <td>
                     <select name="wbtm_bus_dp_price_stop[]" class="ra_bus_dp_price_stop" style="width: 100%">
-                        <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                        <option value=""><?php _e('Select dropping point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                         <?php if ($routes) : foreach ($routes as $route) : ?>
                             <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>
                         <?php endforeach;
@@ -135,7 +135,7 @@
                         <tr>
                             <td class="wbtm-wid-25">
                                 <select name="wbtm_bus_bp_price_stop_return[]" style="width: 100%">
-                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value=""><?php _e('Select boarding point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php foreach ($routes as $route) : ?>
                                         <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_bp_price_stop'] ? 'selected' : '') ?>>
                                             <?php echo $route->name; ?></option>
@@ -144,7 +144,7 @@
                             </td>
                             <td class="wbtm-wid-25">
                                 <select name="wbtm_bus_dp_price_stop_return[]" style="width: 100%">
-                                    <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value=""><?php _e('Select dropping point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                     <?php foreach ($routes as $route) : ?>
                                         <option value="<?php echo $route->name; ?>" <?php echo ($route->name == $price['wbtm_bus_dp_price_stop'] ? 'selected' : '') ?>>
                                             <?php echo $route->name; ?></option>
@@ -175,7 +175,7 @@
                 <tr class="mtsa-empty-row-t">
                     <td>
                         <select name="wbtm_bus_bp_price_stop_return[]" style="width: 100%">
-                            <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                            <option value=""><?php _e('Select boarding point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                             <?php if ($routes) : foreach ($routes as $route) : ?>
                                 <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>
                             <?php endforeach;
@@ -184,7 +184,7 @@
                     </td>
                     <td>
                         <select name="wbtm_bus_dp_price_stop_return[]" style="width: 100%">
-                            <option value=""><?php _e('Select', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                            <option value=""><?php _e('Select dropping point', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                             <?php if ($routes) : foreach ($routes as $route) : ?>
                                 <option value="<?php echo $route->name; ?>"><?php echo $route->name; ?></option>
                             <?php endforeach;

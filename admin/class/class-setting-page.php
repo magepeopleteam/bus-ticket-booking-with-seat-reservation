@@ -57,7 +57,19 @@ class WBTMSettingPage
                             'default' => 'bus',
                             'placeholder' => __('bus', 'bus-ticket-booking-with-seat-reservation'),
                         ),
-
+                        array(
+                            'id' => 'bus_search_list_order',
+                            'title' => $name .' '. __('Search list order', 'bus-ticket-booking-with-seat-reservation'),
+                            'details' => __('Search list order by time.', 'bus-ticket-booking-with-seat-reservation'),
+                            'default' => 'asc',
+                            'value' => 'asc',
+                            'multiple' => false,
+                            'type' => 'select',
+                            'args' => array(
+                                'asc' => __('Lower to higher', 'bus-ticket-booking-with-seat-reservation'),
+                                'desc' => __('Higher to lower', 'bus-ticket-booking-with-seat-reservation'),
+                            ),
+                        ),
                         array(
                             'id' => 'bus_buffer_time',
                             'title' => __('Buffer Time', 'bus-ticket-booking-with-seat-reservation'),

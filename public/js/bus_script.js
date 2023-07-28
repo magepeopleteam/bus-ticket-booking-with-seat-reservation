@@ -31,6 +31,12 @@
             let type = $this.attr('data-seat-type');
             let qty = $this.val();
             qty = qty > 0 ? qty : 0;
+            // Check max qty validation
+            const is_pass = wbtm_max_qty_validation($this, qty);
+            if(!is_pass) {
+                qty = 5;
+                $this.val(qty)
+            }
             let subtotal = price * qty;
             if (subtotal) {
                 subtotal = subtotal.toFixed(2);
@@ -101,8 +107,12 @@
                 qtyUpdated = (qty > 0 ? qty - 1 : 0);
             }
 
-            targetEle.val(qtyUpdated); // Update qty
-            targetEle.trigger('input');
+            // Check max qty
+            const is_pass = wbtm_max_qty_validation(targetEle, qtyUpdated);
+            if(is_pass) {
+                targetEle.val(qtyUpdated); // Update qty
+                targetEle.trigger('input');
+            }
         });
 
         // No seat book now validation
@@ -240,7 +250,7 @@
                     }
 
                     let thisSubtotal = seat_plan_price;
-                    thisSubtotal.html(amount.toFixed(2));
+                    thisSubtotal.html(wbtm_woo_price_format(amount));
                     thisSubtotal.attr('data-price-subtotal', amount); // Subtotal Price
                 } else {
                     let seat_list = $this.parents('.wbtm_anydate_return_wrap').siblings('.mage-seat-table').find('tbody').children();
@@ -913,6 +923,18 @@
             price_text = mptbm_currency_symbol + ' ' + price;
         }
         return price_text;
+    }
+
+    // Max qty validation
+    function wbtm_max_qty_validation(targetEle, qty) {
+        if(qty) {
+            if(qty > parseInt(targetEle.attr('data-max-qty'))) {
+                // max qty exceed
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
 })(jQuery);

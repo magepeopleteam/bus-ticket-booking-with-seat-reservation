@@ -107,7 +107,7 @@ function mage_bus_search_list($return)
                     // Operational on day
                     $is_on_date = false;
                     $bus_on_dates = array();
-                    //                $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
+                    //$bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
                     $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
                     if ($bus_on_date != null) {
                         $bus_on_dates = explode(', ', $bus_on_date);
@@ -115,11 +115,7 @@ function mage_bus_search_list($return)
                     }
 
                     if ($is_on_date) {
-
-                        // echo $id.'<br>';
-                        // echo '<pre>';print_r($bus_on_dates);
-                        // die;
-                        if (in_array($p_j_date, $bus_on_dates)) {
+                        if (in_array(date('m-d', strtotime($p_j_date)), $bus_on_dates)) {
                             $has_bus = true;
                         }
                     } else {
@@ -147,12 +143,12 @@ function mage_bus_search_list($return)
                             foreach ($bus_offday_schedules as $item) {
 
                                 $c_iterate_date_from = $item['from_date'];
-                                //                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from));
+                                // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
 
                                 $c_iterate_date_to = $item['to_date'];
-                                //                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to));
+                                // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
 
                                 if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
                                     $offday_current_bus = true;
@@ -240,8 +236,14 @@ function mage_bus_list_sorting($has_bus_data, $start_route, $return, $sort = 'AS
 }
 
 function wbtm_bus_sort_by_time($a, $b) {
+    $orderBy = mage_bus_setting_value('bus_search_list_order') ? mage_bus_setting_value('bus_search_list_order') : 'asc';
+    
     if (strtotime($a) == strtotime($b)) return 0;
-    return (strtotime($a) < strtotime($b)) ? -1 : 1;
+    if($orderBy === 'asc') {
+        return (strtotime($a) < strtotime($b)) ? -1 : 1;
+    } else {
+        return (strtotime($a) < strtotime($b)) ? 1 : -1;
+    }
 }
 
 function mage_bus_search_item($return, $id)
@@ -502,7 +504,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                                 <td class="mage-seat-qty">
                                                     <button class="wbtm-qty-change wbtm-qty-dec" data-qty-change="dec">-
                                                     </button>
-                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" name="seat_qty[]" />
+                                                    <input class="qty-input" type="text" data-seat-type="<?php echo strtolower($type['type']); ?>" data-price="<?php echo $type['price']; ?>" data-max-qty="<?php echo $seat_available; ?>" name="seat_qty[]" />
                                                     <button class="wbtm-qty-change wbtm-qty-inc" data-qty-change="inc">+
                                                     </button>
                                                     <input type="hidden" name="passenger_type[]" value="<?php echo $type['type'] ?>">
@@ -616,11 +618,13 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     <span class='wbtm-details-page-list-label'> <span class="fa fa-map-marker"></span><?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                                     <?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?>
                                 </h6>
+                                <?php if(mage_bus_type()) : ?>
                                 <h6 class="mar_t_xs">
                                     <span class='wbtm-details-page-list-label'><i class="fa fa-bus" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_type_text', __('Coach Type:', 'bus-ticket-booking-with-seat-reservation')); ?></span>
                                     <?php echo mage_bus_type(); ?>
                                 </h6>
+                                <?php endif; ?>
                                 <h6 class="mar_t_xs">
                                     <span class='wbtm-details-page-list-label'><i class="fa fa-calendar" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_date_text', __('Date:', 'bus-ticket-booking-with-seat-reservation')); ?></span>
