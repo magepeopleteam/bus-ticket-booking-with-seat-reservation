@@ -462,11 +462,13 @@
 											<?php //echo get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'); ?>
 											<?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?>
 										</li>
-										<li>
-											<strong><?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')); ?>
-												:</strong>
-											<?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?>
-										</li>
+										<?php if($cart_item['wbtm_journey_time']) : ?>
+											<li>
+												<strong><?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')); ?>
+													:</strong>
+												<?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?>
+											</li>
+										<?php endif; ?>
 										<li>
 											<strong><?php mage_bus_label('wbtm_boarding_points_text', __('Boarding Point', 'bus-ticket-booking-with-seat-reservation')); ?>
 												:</strong>
@@ -576,8 +578,10 @@
 								<?php else : ?>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_select_journey_date_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_select_journey_date_text', 'label_setting_sec') . ': ' : __('Journey Date:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?></li>
-									<li><?php echo $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') . ': ' : __('Journey Time:', 'bus-ticket-booking-with-seat-reservation');
+									<?php if($cart_item['wbtm_journey_time']) : ?>
+										<li><?php echo $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') . ': ' : __('Journey Time:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?></li>
+									<?php endif; ?>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_boarding_points_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_boarding_points_text', 'label_setting_sec') . ': ' : __('Boarding Point:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo $cart_item['wbtm_start_stops']; ?></li>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_dropping_points_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_dropping_points_text', 'label_setting_sec') . ': ' : __('Dropping Point:', 'bus-ticket-booking-with-seat-reservation'); ?><?php echo $cart_item['wbtm_end_stops']; ?>
