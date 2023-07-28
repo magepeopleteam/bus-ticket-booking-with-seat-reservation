@@ -793,6 +793,7 @@ div#webmenu_msdd {
 	margin-top: 20px;
 	line-height: inherit;
 	color: #fff;
+	text-decoration: none;
 }
 
 .add-seat-row-btn i {
