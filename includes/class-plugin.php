@@ -35,7 +35,8 @@ class Wbtm_Plugin {
 		require_once WBTM_PLUGIN_DIR . 'admin/class-plugin-admin.php';
 		require_once WBTM_PLUGIN_DIR . 'public/template-hooks/templating.php';
 		require_once WBTM_PLUGIN_DIR . 'public/class-plugin-public.php';
-		require_once WBTM_PLUGIN_DIR . 'includes/my-account/bus-ticket.php';	
+		require_once WBTM_PLUGIN_DIR . 'includes/my-account/bus-ticket.php';
+		require_once WBTM_PLUGIN_DIR . 'admin/WBTM_Dummy_Import.php';	
 		$this->loader = new Wbtm_Plugin_Loader();
 		// WBTM_UPGRADE::run_upgrade();
 	}
