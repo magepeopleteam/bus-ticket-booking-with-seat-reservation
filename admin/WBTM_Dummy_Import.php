@@ -183,6 +183,7 @@ if (!class_exists('WBTM_Dummy_Import')) {
                     }
                 }
 				//$this->craete_pages();
+                flush_rewrite_rules();
                 update_option('wbtm_bus_seat_plan_data_input_done', 'yes');
             }
         }
@@ -440,13 +441,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Hamburg',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_next_start_time' => '18:00',
+                                        'wbtm_bus_next_end_time' => '18:20',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
@@ -664,13 +665,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Hamburg',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_next_start_time' => '18:20',
+                                        'wbtm_bus_next_end_time' => '18:20',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
@@ -924,13 +925,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Hamburg',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_next_start_time' => '18:20',
+                                        'wbtm_bus_next_end_time' => '18:20',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
@@ -1135,13 +1136,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
-                                        'wbtm_bus_next_start_time' => '18:10',
+                                        'wbtm_bus_next_end_time' => '18:10',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
@@ -1395,13 +1396,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
-                                        'wbtm_bus_next_start_time' => '18:10',
+                                        'wbtm_bus_next_end_time' => '18:10',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
@@ -1619,13 +1620,13 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                     ),
                                     2 => array(
                                         'wbtm_bus_bp_stops_name' => 'Frankfurt',
-                                        'wbtm_bus_bp_end_time' => '11:00',
+                                        'wbtm_bus_bp_start_time' => '11:00',
                                     ),
                                 ),
                                 'wbtm_bus_next_stops' => array(
                                     0 => array(
                                         'wbtm_bus_next_stops_name' => 'Hamburg',
-                                        'wbtm_bus_next_start_time' => '18:10',
+                                        'wbtm_bus_next_end_time' => '18:10',
                                     ),
                                     1 => array(
                                         'wbtm_bus_next_stops_name' => 'Frankfurt',
