@@ -646,59 +646,10 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'seat4' => 'H4',
                                     ),
                                 ),
-                                'show_upper_desk' => 'yes',
-                                'wbtm_seat_cols_dd' => '4',
-                                'wbtm_seat_rows_dd' => '8',
-                                'wbtm_bus_seats_info_dd' => array(
-                                    0 => array(
-                                        'dd_seat1' => 'S1',
-                                        'dd_seat2' => 'S2',
-                                        'dd_seat3' => 'S3',
-                                        'dd_seat4' => 'S4',
-                                    ),
-                                    1 => array(
-                                        'dd_seat1' => 'T1',
-                                        'dd_seat2' => 'T2',
-                                        'dd_seat3' => 'T3',
-                                        'dd_seat4' => 'T4',
-                                    ),
-                                    2 => array(
-                                        'dd_seat1' => 'U1',
-                                        'dd_seat2' => 'U2',
-                                        'dd_seat3' => 'U3',
-                                        'dd_seat4' => 'U4',
-                                    ),
-                                    3 => array(
-                                        'dd_seat1' => 'V1',
-                                        'dd_seat2' => 'V2',
-                                        'dd_seat3' => 'V3',
-                                        'dd_seat4' => 'V4',
-                                    ),
-                                    4 => array(
-                                        'dd_seat1' => 'W1',
-                                        'dd_seat2' => 'W2',
-                                        'dd_seat3' => 'W3',
-                                        'dd_seat4' => 'W4',
-                                    ),
-                                    5 => array(
-                                        'dd_seat1' => 'X1',
-                                        'dd_seat2' => 'X2',
-                                        'dd_seat3' => 'X3',
-                                        'dd_seat4' => 'X4',
-                                    ),
-                                    6 => array(
-                                        'dd_seat1' => 'Y1',
-                                        'dd_seat2' => 'Y2',
-                                        'dd_seat3' => 'Y3',
-                                        'dd_seat4' => 'Y4',
-                                    ),
-                                    7 => array(
-                                        'dd_seat1' => 'Z1',
-                                        'dd_seat2' => 'Z2',
-                                        'dd_seat3' => 'Z3',
-                                        'dd_seat4' => 'Z4',
-                                    ),
-                                ),
+                                'show_upper_desk' => 'no',
+                                'wbtm_seat_cols_dd' => '',
+                                'wbtm_seat_rows_dd' => '',
+                                'wbtm_bus_seats_info_dd' => '',
                                 'wbtm_seat_dd_price_parcent' => '',
 
                                 //Routing
@@ -795,21 +746,8 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'wbtm_bus_infant_price_return' => '',
                                     ),
                                 ),
-                                'show_extra_service' => 'yes',
-                                'mep_events_extra_prices' => array(
-                                    0 => array(
-                                        'option_name' => 'Welcome Drink',
-                                        'option_price' => '50',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                    1 => array(
-                                        'option_name' => 'Cap',
-                                        'option_price' => '70',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                ),
+                                'show_extra_service' => 'no',
+                                'mep_events_extra_prices' => '',
                                 // Pickup Points
                                 'show_pickup_point' => 'no',
                                 // Onday & Offday
@@ -1068,21 +1006,8 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'wbtm_bus_infant_price_return' => '',
                                     ),
                                 ),
-                                'show_extra_service' => 'yes',
-                                'mep_events_extra_prices' => array(
-                                    0 => array(
-                                        'option_name' => 'Welcome Drink',
-                                        'option_price' => '50',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                    1 => array(
-                                        'option_name' => 'Cap',
-                                        'option_price' => '70',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                ),
+                                'show_extra_service' => 'no',
+                                'mep_events_extra_prices' => '',
                                 // Pickup Points
                                 'show_pickup_point' => 'no',
                                 // Onday & Offday
@@ -1192,59 +1117,10 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'seat4' => 'H4',
                                     ),
                                 ),
-                                'show_upper_desk' => 'yes',
-                                'wbtm_seat_cols_dd' => '4',
-                                'wbtm_seat_rows_dd' => '8',
-                                'wbtm_bus_seats_info_dd' => array(
-                                    0 => array(
-                                        'dd_seat1' => 'S1',
-                                        'dd_seat2' => 'S2',
-                                        'dd_seat3' => 'S3',
-                                        'dd_seat4' => 'S4',
-                                    ),
-                                    1 => array(
-                                        'dd_seat1' => 'T1',
-                                        'dd_seat2' => 'T2',
-                                        'dd_seat3' => 'T3',
-                                        'dd_seat4' => 'T4',
-                                    ),
-                                    2 => array(
-                                        'dd_seat1' => 'U1',
-                                        'dd_seat2' => 'U2',
-                                        'dd_seat3' => 'U3',
-                                        'dd_seat4' => 'U4',
-                                    ),
-                                    3 => array(
-                                        'dd_seat1' => 'V1',
-                                        'dd_seat2' => 'V2',
-                                        'dd_seat3' => 'V3',
-                                        'dd_seat4' => 'V4',
-                                    ),
-                                    4 => array(
-                                        'dd_seat1' => 'W1',
-                                        'dd_seat2' => 'W2',
-                                        'dd_seat3' => 'W3',
-                                        'dd_seat4' => 'W4',
-                                    ),
-                                    5 => array(
-                                        'dd_seat1' => 'X1',
-                                        'dd_seat2' => 'X2',
-                                        'dd_seat3' => 'X3',
-                                        'dd_seat4' => 'X4',
-                                    ),
-                                    6 => array(
-                                        'dd_seat1' => 'Y1',
-                                        'dd_seat2' => 'Y2',
-                                        'dd_seat3' => 'Y3',
-                                        'dd_seat4' => 'Y4',
-                                    ),
-                                    7 => array(
-                                        'dd_seat1' => 'Z1',
-                                        'dd_seat2' => 'Z2',
-                                        'dd_seat3' => 'Z3',
-                                        'dd_seat4' => 'Z4',
-                                    ),
-                                ),
+                                'show_upper_desk' => 'no',
+                                'wbtm_seat_cols_dd' => '',
+                                'wbtm_seat_rows_dd' => '',
+                                'wbtm_bus_seats_info_dd' => '',
                                 'wbtm_seat_dd_price_parcent' => '',
 
                                 //Routing
@@ -1341,21 +1217,8 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'wbtm_bus_infant_price_return' => '',
                                     ),
                                 ),
-                                'show_extra_service' => 'yes',
-                                'mep_events_extra_prices' => array(
-                                    0 => array(
-                                        'option_name' => 'Welcome Drink',
-                                        'option_price' => '50',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                    1 => array(
-                                        'option_name' => 'Cap',
-                                        'option_price' => '70',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                ),
+                                'show_extra_service' => 'no',
+                                'mep_events_extra_prices' => '',
                                 // Pickup Points
                                 'show_pickup_point' => 'no',
                                 // Onday & Offday
@@ -1738,59 +1601,10 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'seat4' => 'H4',
                                     ),
                                 ),
-                                'show_upper_desk' => 'yes',
-                                'wbtm_seat_cols_dd' => '4',
-                                'wbtm_seat_rows_dd' => '8',
-                                'wbtm_bus_seats_info_dd' => array(
-                                    0 => array(
-                                        'dd_seat1' => 'S1',
-                                        'dd_seat2' => 'S2',
-                                        'dd_seat3' => 'S3',
-                                        'dd_seat4' => 'S4',
-                                    ),
-                                    1 => array(
-                                        'dd_seat1' => 'T1',
-                                        'dd_seat2' => 'T2',
-                                        'dd_seat3' => 'T3',
-                                        'dd_seat4' => 'T4',
-                                    ),
-                                    2 => array(
-                                        'dd_seat1' => 'U1',
-                                        'dd_seat2' => 'U2',
-                                        'dd_seat3' => 'U3',
-                                        'dd_seat4' => 'U4',
-                                    ),
-                                    3 => array(
-                                        'dd_seat1' => 'V1',
-                                        'dd_seat2' => 'V2',
-                                        'dd_seat3' => 'V3',
-                                        'dd_seat4' => 'V4',
-                                    ),
-                                    4 => array(
-                                        'dd_seat1' => 'W1',
-                                        'dd_seat2' => 'W2',
-                                        'dd_seat3' => 'W3',
-                                        'dd_seat4' => 'W4',
-                                    ),
-                                    5 => array(
-                                        'dd_seat1' => 'X1',
-                                        'dd_seat2' => 'X2',
-                                        'dd_seat3' => 'X3',
-                                        'dd_seat4' => 'X4',
-                                    ),
-                                    6 => array(
-                                        'dd_seat1' => 'Y1',
-                                        'dd_seat2' => 'Y2',
-                                        'dd_seat3' => 'Y3',
-                                        'dd_seat4' => 'Y4',
-                                    ),
-                                    7 => array(
-                                        'dd_seat1' => 'Z1',
-                                        'dd_seat2' => 'Z2',
-                                        'dd_seat3' => 'Z3',
-                                        'dd_seat4' => 'Z4',
-                                    ),
-                                ),
+                                'show_upper_desk' => 'no',
+                                'wbtm_seat_cols_dd' => '',
+                                'wbtm_seat_rows_dd' => '',
+                                'wbtm_bus_seats_info_dd' => '',
                                 'wbtm_seat_dd_price_parcent' => '',
 
                                 //Routing
@@ -1887,21 +1701,8 @@ if (!class_exists('WBTM_Dummy_Import')) {
                                         'wbtm_bus_infant_price_return' => '',
                                     ),
                                 ),
-                                'show_extra_service' => 'yes',
-                                'mep_events_extra_prices' => array(
-                                    0 => array(
-                                        'option_name' => 'Welcome Drink',
-                                        'option_price' => '50',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                    1 => array(
-                                        'option_name' => 'Cap',
-                                        'option_price' => '70',
-                                        'option_qty' => '500',
-                                        'option_qty_type' => 'inputbox',
-                                    ),
-                                ),
+                                'show_extra_service' => 'no',
+                                'mep_events_extra_prices' => '',
                                 // Pickup Points
                                 'show_pickup_point' => 'no',
                                 // Onday & Offday
