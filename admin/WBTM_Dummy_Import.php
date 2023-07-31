@@ -183,6 +183,7 @@ if (!class_exists('WBTM_Dummy_Import')) {
                     }
                 }
 				//$this->craete_pages();
+                flush_rewrite_rules();
                 update_option('wbtm_bus_seat_plan_data_input_done', 'yes');
             }
         }
