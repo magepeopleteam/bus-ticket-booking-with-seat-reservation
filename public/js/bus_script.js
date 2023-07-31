@@ -334,12 +334,13 @@
         let qty = target.val();
         let max = target.attr('max');
 
-        if (qty <= parseInt(max)) {
+        if (qty < parseInt(max)) {
             qty = parseInt(qty) + 1
             target.val(qty);
+            
+            target.trigger('input');
+            mage_form_builder_conditional_show($(this));
         }
-        target.trigger('input');
-        mage_form_builder_conditional_show($(this));
     });
     // qty inc and dec END
 
