@@ -162,7 +162,7 @@ class WBTM_Plugin_Functions
                     </tr>
                 </tbody>
             </table>
-            <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
+            <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i> Add Seat Row</a></p>
         </div>
     <?php
         die();
