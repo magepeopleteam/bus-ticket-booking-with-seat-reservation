@@ -123,7 +123,7 @@ class WBTM_Plugin_Functions
                     });
                 });
             </script>
-            <table id="repeatable-fieldset-seat-one" width="100%">
+            <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one" width="100%">
                 <tbody>
                     <?php
                     for ($x = 1; $x <= $seat_row; $x++) {
@@ -193,7 +193,7 @@ class WBTM_Plugin_Functions
                     });
                 });
             </script>
-            <table id="repeatable-fieldset-seat-one-dd" width="100%">
+            <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one-dd" width="100%">
                 <tbody>
                     <?php
                     for ($x = 1; $x <= $seat_row; $x++) {
