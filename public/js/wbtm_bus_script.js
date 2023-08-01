@@ -17,7 +17,7 @@
 
 
             if(enable_onday || enable_offday){
-                if(enable_onday == 'yes') {
+                if(enable_onday == 'yes' && enableDates) {
                     if(enableDates){
                         jQuery('#j_date').datepicker({
                             dateFormat: date_format,
