@@ -58,7 +58,10 @@
       e.preventDefault();
       let datePickerOpt = {
         dateFormat: "mm-dd",
-        minDate: 0
+        minDate: 0,
+        onClose: function(selectedDate) {
+            $("#offday_to"+now).datepicker("option", "minDate", selectedDate);
+        }
       };
       let now = Date.now();
       let parent = $(this).parents('.wbtm-offdates-wrapper');
@@ -69,7 +72,15 @@
       row.find(".repeatable-offday-to-field").attr('id', 'offday_to'+ now);
 
       $("#offday_from"+now).datepicker(datePickerOpt);
-      $("#offday_to"+now).datepicker(datePickerOpt);
+      $("#offday_to"+now).datepicker({
+        dateFormat: "mm-dd",
+        minDate: 0,
+        beforeShow: function( input, inst){
+          const from_date = $("#offday_from"+now).val();
+          console.log(from_date);
+          $(inst.dpDiv).addClass('wbtm-hide-year');
+        },
+      });
 
   });
 
