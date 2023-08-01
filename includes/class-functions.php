@@ -1868,8 +1868,9 @@ function wbtm_convert_date_to_php($date)
 function wbtm_displayDates($date1, $date2, $format = 'd-m-Y')
 {
     $dates = array();
-    $current = strtotime($date1);
-    $date2 = strtotime($date2);
+    $current_year = date('Y');
+    $current = strtotime($current_year.'-'.$date1);
+    $date2 = strtotime($current_year.'-'.$date2);
     $stepVal = '+1 day';
     while ($current <= $date2) {
         $dates[] = date($format, $current);
