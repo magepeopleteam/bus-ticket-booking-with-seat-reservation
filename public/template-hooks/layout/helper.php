@@ -1981,22 +1981,27 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
             $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
 
             $offday_current_bus = false;
-            if (!empty($bus_offday_schedules)) {
-                $s_datetime = new DateTime($j_date . ' ' . $start_time);
-                $s_datetime = date('Y-m-d H:i:s', strtotime($j_date));
+            // $s_datetime = new DateTime($j_date . ' ' . $start_time);
+            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date));
+            if(wbtm_off_by_global_offdates($j_date)) { // Global off dates and days check
+                $offday_current_bus = true; // Bus is off
+            } else { // Local offdates check
+                if (!empty($bus_offday_schedules)) {
 
-                foreach ($bus_offday_schedules as $item) {
-                    $c_iterate_date_from = $item['from_date'];
-                    // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-                    $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_from));
+                    foreach ($bus_offday_schedules as $item) {
 
-                    $c_iterate_date_to = $item['to_date'];
-                    // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-                    $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_to));
+                        $c_iterate_date_from = $item['from_date'];
+                        // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                        $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_from));
 
-                    if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
-                        $offday_current_bus = true;
-                        break;
+                        $c_iterate_date_to = $item['to_date'];
+                        // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                        $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_to));
+
+                        if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
+                            $offday_current_bus = true; // Bus is off
+                            break;
+                        }
                     }
                 }
             }
@@ -2413,4 +2418,33 @@ function wbtm_get_user_role($user_ID)
 
     //return user role list
     return $user_role_list;
+}
+
+// Global offdates process
+function wbtm_off_by_global_offdates($j_date) {
+    $is_off = false;
+    $current_date = date('d-m-Y', strtotime($j_date));
+    $settings = get_option('wbtm_bus_settings');
+    $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+    if($global_offdates) {
+        $global_offdays_arr = explode(', ', $global_offdates);
+        foreach($global_offdays_arr as $goffdate) {
+            if($current_date == date('d-m-Y', strtotime($goffdate))) {
+                $is_off = true;
+                break;
+            }
+        }
+    }
+
+    if(!$is_off) {
+        $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
+        if($global_offdays) {
+            $j_date_day = strtolower(date('N', strtotime($j_date)));
+            if (in_array($j_date_day, $global_offdays)) {
+                $is_off = true;
+            }
+        }
+    }
+
+    return $is_off;
 }

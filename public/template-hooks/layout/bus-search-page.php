@@ -109,7 +109,8 @@ function mage_bus_search_list($return)
                     $bus_on_dates = array();
                     //$bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
                     $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
-                    if ($bus_on_date != null) {
+                    $show_operational_on_day = get_post_meta($id, 'show_operational_on_day', true);
+                    if ($bus_on_date != null && $show_operational_on_day == 'yes') {
                         $bus_on_dates = explode(', ', $bus_on_date);
                         $is_on_date = true;
                     }
@@ -136,23 +137,29 @@ function mage_bus_search_list($return)
 
                         $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
 
-                        $offday_current_bus = false;
-                        if (!empty($bus_offday_schedules)) {
-                            $s_datetime = date('Y-m-d H:i:s', strtotime($p_j_date));
+                        $offday_current_bus = false; // Bus is running
 
-                            foreach ($bus_offday_schedules as $item) {
+                        $s_datetime = date('Y-m-d H:i:s', strtotime($p_j_date));
 
-                                $c_iterate_date_from = $item['from_date'];
-                                // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
+                        if(wbtm_off_by_global_offdates($p_j_date)) { // Global off dates and days check
+                            $offday_current_bus = true; // Bus is off
+                        } else { // Local offdates check
+                            if (!empty($bus_offday_schedules)) {
 
-                                $c_iterate_date_to = $item['to_date'];
-                                // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
-
-                                if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
-                                    $offday_current_bus = true;
-                                    break;
+                                foreach ($bus_offday_schedules as $item) {
+    
+                                    $c_iterate_date_from = $item['from_date'];
+                                    // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                    $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
+    
+                                    $c_iterate_date_to = $item['to_date'];
+                                    // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                    $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
+    
+                                    if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
+                                        $offday_current_bus = true; // Bus is off
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -438,15 +445,16 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <?php mage_bus_label('wbtm_boarding_points_text', __('Boarding', 'bus-ticket-booking-with-seat-reservation')); ?>
                                         :
                                     </th>
-                                    <td><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' ? sprintf('(%s)',  mage_wp_time($start_time)) : null); ?></td>
+                                    <td><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' && $start_time ? sprintf('(%s)',  mage_wp_time($start_time)) : null); ?></td>
                                 </tr>
                                 <tr>
                                     <th><i class="fas fa-map-marker"></i>
                                         <?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')) ?>
                                         :
                                     </th>
-                                    <td><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?></td>
+                                    <td><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' && $end_time ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?></td>
                                 </tr>
+                                <?php if(mage_bus_type()) : ?>
                                 <tr>
                                     <th><i class="fa fa-bus" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_type_text', __('Coach Type', 'bus-ticket-booking-with-seat-reservation')); ?>
@@ -454,6 +462,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     </th>
                                     <td><?php echo mage_bus_type(); ?></td>
                                 </tr>
+                                <?php endif; ?>
                                 <tr>
                                     <th><i class="fa fa-calendar" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_date_text', __('Date', 'bus-ticket-booking-with-seat-reservation')); ?>
@@ -461,7 +470,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     </th>
                                     <td><?php echo mage_wp_date($date); ?></td>
                                 </tr>
-                                <?php if ($show_boarding_time == 'yes') { ?>
+                                <?php if ($show_boarding_time == 'yes' && $start_time) { ?>
                                     <tr>
                                         <th><i class="fa fa-clock-o" aria-hidden="true"></i>
                                             <?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')) ?>
