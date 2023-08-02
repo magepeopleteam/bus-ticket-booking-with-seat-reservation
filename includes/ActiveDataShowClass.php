@@ -26,7 +26,7 @@ class ActiveDataShowClass extends CommonClass
         if($singleBus){
             $wbtm_bus_on_dates = get_post_meta($post_id, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post_id, 'wbtm_bus_on_dates', true)) : '';
             $wbtm_offday_schedules = get_post_meta($post_id, 'wbtm_offday_schedule', true) ? get_post_meta($post_id, 'wbtm_offday_schedule', true) : [];
-            $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : '';
+            $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : 'no';
             $show_off_day = get_post_meta($post_id, 'show_off_day', true) ? get_post_meta($post_id, 'show_off_day', true) : '';
 
             $alloffdays = array();
@@ -38,7 +38,7 @@ class ActiveDataShowClass extends CommonClass
             $off_particular_date = implode(',', $all_offdates);
             
             $all_off_days = '';
-            $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) ? get_post_meta($post_id, 'weekly_offday', true) : [];
+            $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) && $show_off_day == 'yes' ? get_post_meta($post_id, 'weekly_offday', true) : [];
             $merged_global_local_off_days = array_merge($global_offdays, $weekly_offday);
             if ($merged_global_local_off_days) {
                 $all_off_days = implode(',', $merged_global_local_off_days);

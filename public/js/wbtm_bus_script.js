@@ -16,7 +16,7 @@
             var enable_offday = $( "#all_date_picker_info" ).data( "enable_offday" );
 
 
-            if(enable_onday || enable_offday){
+            if(enable_onday == 'yes' || enable_offday == 'yes'){
                 if(enable_onday == 'yes' && enableDates) {
                     if(enableDates){
                         jQuery('#j_date').datepicker({
@@ -47,7 +47,7 @@
                         minDate: 0,
                     });
                 }
-            }else{
+            }else{ // Only global offdate and offday
                 if(enableDates){
                     jQuery('#j_date').datepicker({
                         dateFormat: date_format,
