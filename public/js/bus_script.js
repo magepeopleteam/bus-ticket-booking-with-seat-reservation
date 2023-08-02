@@ -29,12 +29,16 @@
             let parent = $this.parents('.mage_bus_seat_details');
             let price = $this.attr('data-price');
             let type = $this.attr('data-seat-type');
-            let qty = $this.val();
+            let qty = parseInt($this.val());
+            if(isNaN(qty)) {
+                $this.val(0)
+            }
+            let max = $this.attr('data-max-qty');
             qty = qty > 0 ? qty : 0;
             // Check max qty validation
             const is_pass = qty > 0 ? wbtm_max_qty_validation($this, qty) : true;
             if(!is_pass) {
-                qty = 5;
+                qty = max;
                 $this.val(qty)
             }
             let subtotal = price * qty;
