@@ -842,17 +842,18 @@ class WBTM_Plugin_Functions
         $global_plan = get_post_meta(get_the_id(), 'wbtm_bus_seats_info', true);
         if (!empty($global_plan)) {
             wbtm_seat_global($start, $date, '', $return);
-        } else {
-            if ($current_plan == 'seat_plan_1') {
-                wbtm_seat_plan_1($start, $date);
-            }
-            if ($current_plan == 'seat_plan_2') {
-                wbtm_seat_plan_2($start, $date);
-            }
-            if ($current_plan == 'seat_plan_3') {
-                wbtm_seat_plan_3($start, $date);
-            }
-        }
+        } 
+        // else {
+        //     if ($current_plan == 'seat_plan_1') {
+        //         wbtm_seat_plan_1($start, $date);
+        //     }
+        //     if ($current_plan == 'seat_plan_2') {
+        //         wbtm_seat_plan_2($start, $date);
+        //     }
+        //     if ($current_plan == 'seat_plan_3') {
+        //         wbtm_seat_plan_3($start, $date);
+        //     }
+        // }
     }
 
     public function wbtm_get_this_bus_seat_plan()
