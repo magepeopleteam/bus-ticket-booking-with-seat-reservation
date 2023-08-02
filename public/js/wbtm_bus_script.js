@@ -151,7 +151,7 @@
 
 
     function enableAllTheseDays(date,enableDates) {
-        var sdate = jQuery.datepicker.formatDate('yy-mm-dd', date)
+        var sdate = jQuery.datepicker.formatDate('mm-dd', date)
         const p = enableDates.split(', ');
         if (p.length > 0) {
             if (jQuery.inArray(sdate, p) != -1) {
