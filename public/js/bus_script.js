@@ -32,7 +32,7 @@
             let qty = $this.val();
             qty = qty > 0 ? qty : 0;
             // Check max qty validation
-            const is_pass = wbtm_max_qty_validation($this, qty);
+            const is_pass = qty > 0 ? wbtm_max_qty_validation($this, qty) : true;
             if(!is_pass) {
                 qty = 5;
                 $this.val(qty)
@@ -108,7 +108,7 @@
             }
 
             // Check max qty
-            const is_pass = wbtm_max_qty_validation(targetEle, qtyUpdated);
+            const is_pass = qtyUpdated > 0 ? wbtm_max_qty_validation(targetEle, qtyUpdated) : true;
             if(is_pass) {
                 targetEle.val(qtyUpdated); // Update qty
                 targetEle.trigger('input');
