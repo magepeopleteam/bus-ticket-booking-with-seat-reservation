@@ -91,7 +91,7 @@ function mp_alert($this, attr = 'alert') {
 (function ($) {
 	"use strict";
 	$(document).ready(function () {
-		mp_load_date_picker();
+		// mp_load_date_picker();
 		//$('.mp_select2').select2({});
 	});
 }(jQuery));
