@@ -951,7 +951,11 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	margin-right: 5px;
 	border-radius: 5px;
 }
-
+/* Marked date */
+.ui-datepicker-calendar .ui-state-highlight .ui-state-default {
+    background: red!important;
+    color: #fff!important;
+}
 
 /* Gutenbarg bottom space */
 
