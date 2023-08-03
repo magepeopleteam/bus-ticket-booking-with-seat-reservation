@@ -657,7 +657,7 @@
         } else { // Seat not selected
             target.addClass('mage_selected');
             has_seat = parents.find('.mage_bus_selected_seat_list').children().length;
-            parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
+            // parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
 
             $.ajax({
                 type: 'POST',
@@ -753,10 +753,11 @@
 
     //customer form
     function mageCustomerInfoFormBus(parent, seatName, passengerType, busDd) {
-
+        if(passengerType === '') {
+            return false;
+        }
         let formTitle = parent.find('input[name="mage_bus_title"]').val() + seatName;
         let currentTarget = parent.find('.mage_hidden_customer_info_form');
-        console.log('lksjdfkl')
         if (currentTarget.length > 0) {
             currentTarget.append('<input type="hidden" name="custom_reg_user" value="no" />');
             currentTarget.find('input[name="seat_name[]"]').val(seatName);
@@ -823,13 +824,13 @@
             url: wbtm_ajaxurl,
             type: 'POST',
             async: true,
+            dataType: 'html',
             data: { busID: bus_id, seatType: seatType, passengerType: passengerType, seats: qty, onlyES: onlyES, dd: busDd, action: 'wbtm_form_builder' },
             beforeSend: function () {
                 parent.find('#wbtm-form-builder .wbtm-loading').show();
             },
             success: function (data) {
-
-                if (data !== '') {
+                if (data.length > 2) {
                     if (parent.find(".mage_customer_info_area").children().length == 0) {
                         parent.find(".mage_customer_info_area").html(data);
                     } else {
@@ -842,7 +843,6 @@
 
                 } else {
                     // parent.find(".mage_customer_info_area").empty();
-
                     parent.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parent, seat_name, passengerType, busDd)).find('[data-seat-name="' + seat_name + '"]').slideDown(200);
                 }
                 // Loading hide

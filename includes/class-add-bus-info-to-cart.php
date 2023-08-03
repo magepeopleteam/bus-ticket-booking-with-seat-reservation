@@ -545,9 +545,10 @@
 												if($wbtm_seats) {
 													$seat_plan_loop_index = 0;
 													foreach($wbtm_seats as $seat_plan_seat) {
-														$separator = (count($wbtm_seats) - 1 == $seat_plan_loop_index) ? '' : ', ';
-														printf("%s(%s)%s", $seat_plan_seat['wbtm_seat_name'], $basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'], $separator);
-
+														if($basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'] != '') {
+															$separator = (count($wbtm_seats) - 1 == $seat_plan_loop_index) ? '' : ', ';
+															printf("%s(%s)%s", $seat_plan_seat['wbtm_seat_name'], $basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'], $separator);
+														}
 														$seat_plan_loop_index++;
 													}
 												}
@@ -595,7 +596,23 @@
 							<?php if ($cart_item['wbtm_pickpoint']) : ?>
 								<li><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation'); ?>: <?php echo $cart_item['wbtm_pickpoint']; ?></li>
 							<?php endif; ?>
-
+							<?php if ($basic_passenger_info) : ?>
+								<li>
+									<?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>
+									:
+									<?php 
+										$bpi_index = 0;
+										$bpi_total_price = 0;
+										foreach($basic_passenger_info as $bpi) {
+											if(isset($bpi['wbtm_seat_fare'])) {
+												$bpi_total_price += $bpi['wbtm_seat_fare'];
+											}
+											$bpi_index++;
+										}
+										echo wc_price($bpi_total_price);
+									?>
+								</li>
+							<?php endif; ?>
 
 
 
