@@ -629,7 +629,7 @@
                     });
                 });
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').text(php_vars.currency_symbol + totalPP);
-                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(php_vars.currency_symbol + '<span class="price-figure">' + Number(totalPP).toFixed(2) + '</span>');
+                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(wbtm_woo_price_format(totalPP));
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').attr('data-price-subtotal', Number(totalPP).toFixed(2));
                 mageGrandPrice(detail);
                 // parents.find('.mage_bus_total_price').text(php_vars.currency_symbol + totalPP);
