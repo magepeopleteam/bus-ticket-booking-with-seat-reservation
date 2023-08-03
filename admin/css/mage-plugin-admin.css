@@ -844,7 +844,8 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 
 /* .wbtm-seat-type-conf label {font-size: 16px;color: #555;} */
 
-.wbtm-item-row select {
+.wbtm-item-row select,
+.wbtm-item-row input[type="text"] {
 	min-width: 223px;
 	border-radius: 5px;
 }
@@ -893,6 +894,7 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 
 .wbtm-ondates-wrapper input {
 	width: 100%;
+	height: 45px;
 }
 
 .repeatable-fieldset-offday th {
