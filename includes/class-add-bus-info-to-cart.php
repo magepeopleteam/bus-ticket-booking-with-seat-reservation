@@ -233,7 +233,7 @@
 					foreach ($extra_service_qty as $extra_item) {
 						if ($extra_item > 0) {
 							$extra_services[] = array('name' => isset($extra_service_name[$extra_service_i]) ? $extra_service_name[$extra_service_i] : '', 'qty' => $extra_item, 'price' => isset($extra_service_price[$extra_service_i]) ? $extra_service_price[$extra_service_i] : 0,);
-							$total_extra_price += $extra_services[$extra_service_i]['qty'] * $extra_services[$extra_service_i]['price'];
+							$total_extra_price += $extra_item * (isset($extra_service_price[$extra_service_i]) ? $extra_service_price[$extra_service_i] : 0);
 						}
 						$extra_service_i++;
 					}
