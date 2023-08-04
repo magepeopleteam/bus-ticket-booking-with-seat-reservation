@@ -538,9 +538,9 @@ function mage_bus_total_seat()
     }
 }
 
-function mage_bus_total_seat_new()
+function mage_bus_total_seat_new($bus_id = '')
 {
-    $id = get_the_ID();
+    $id = $bus_id ? $bus_id : get_the_ID();
     $seat_type_conf = get_post_meta($id, 'wbtm_seat_type_conf', true);
     $total_seat = 0;
 
@@ -1123,6 +1123,11 @@ function mage_partial_without_seat_booked_count($return = false, $bus_id = null,
                 array(
                     'relation' => 'AND',
                     $where,
+                    array(
+                        'key' => 'wbtm_seat',
+                        'value' => '',
+                        'compare' => '!='
+                    ),
                     array(
                         'key' => 'wbtm_journey_date',
                         'value' => $j_dates,
@@ -1737,6 +1742,11 @@ function extra_service_qty_check($bus_id, $start, $end, $j_date, $service_type)
                     'value' => $bus_id,
                 ),
                 array(
+                    'key' => 'wbtm_journey_date',
+                    'compare' => '=',
+                    'value' => $j_date,
+                ),
+                array(
                     'key' => 'wbtm_status',
                     'compare' => 'IN',
                     'value' => array(1, 2),
@@ -1789,8 +1799,8 @@ function wbtm_extra_services_section($bus_id)
                     foreach ($extra_services as $field) {
                         $total_extra_service = (int)$field['option_qty'];
                         $qty_type = $field['option_qty_type'];
-                        // $total_sold = extra_service_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
-                        $total_sold = 0;
+                        $total_sold = extra_service_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
+                        // $total_sold = 0;
 
                         $ext_left = ($total_extra_service - $total_sold);
                         // echo '<pre>';print_r($field);
