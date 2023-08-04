@@ -2434,12 +2434,13 @@ function wbtm_get_user_role($user_ID)
 function wbtm_off_by_global_offdates($j_date) {
     $is_off = false;
     $current_date = date('d-m-Y', strtotime($j_date));
+    $current_year = date('Y', strtotime($j_date));
     $settings = get_option('wbtm_bus_settings');
     $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
     if($global_offdates) {
         $global_offdays_arr = explode(', ', $global_offdates);
         foreach($global_offdays_arr as $goffdate) {
-            if($current_date == date('d-m-Y', strtotime($goffdate))) {
+            if($current_date == date('d-m-Y', strtotime($goffdate.'-'.$current_year))) {
                 $is_off = true;
                 break;
             }
