@@ -355,6 +355,7 @@
         let total = qty > 0 ? qty * price : 0;
 
         $(this).parents('tr').attr('data-total', total);
+        mage_form_builder_conditional_show($(this));
 
         mageGrandPrice(parent);
     });
