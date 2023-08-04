@@ -589,7 +589,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                         <div id="wbtm-form-builder-infant" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                         <div id="wbtm-form-builder-es" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                     </div>
-                    <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
+                    <?php if (mage_bus_total_seat_new($bus_id) > $partial_seat_booked) :
                         do_action('wbtm_before_add_cart_btn', $bus_id, false);
                         if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                             do_action('csad_booking_button'); ?>
@@ -743,7 +743,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                 <strong class="mage_bus_total_price mage-grand-total"> <span class="mage-price-figure">0.00</span></strong>
                             </h4>
                             <div>
-                                <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
+                                <?php if (mage_bus_total_seat_new($bus_id) > $partial_seat_booked) :
                                     do_action('wbtm_before_add_cart_btn', $bus_id, false);
                                     if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                                         do_action('csad_booking_button'); ?>
