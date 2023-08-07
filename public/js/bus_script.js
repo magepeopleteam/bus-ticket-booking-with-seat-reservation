@@ -391,6 +391,8 @@
             parent.find('button[name="add-to-cart"]').removeAttr('disabled');
             parent.find('.mage_bus_sub_total_price.mage-price-total .price-figure').text(grand_total.toFixed(2));
         } else {
+            console.log('total', seat_price);
+
             // Sum all items
             let grand_total = seat_price + extra_price + bagPrice;
 
@@ -630,7 +632,7 @@
                     });
                 });
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').text(php_vars.currency_symbol + totalPP);
-                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(wbtm_woo_price_format(totalPP));
+                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html('<span class="price-figure" data-price-subtotal="' + totalPP.toFixed(2) + '">' + wbtm_woo_price_format(totalPP) + '</span>');
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').attr('data-price-subtotal', Number(totalPP).toFixed(2));
                 mageGrandPrice(detail);
                 // parents.find('.mage_bus_total_price').text(php_vars.currency_symbol + totalPP);
@@ -905,7 +907,7 @@
             es_qty += tp > 0 ? parseInt(tp) : 0;
         });
 
-        if (es_qty > 0) {
+        if (es_qty > 0 && seat_name == '') {
             wbtm_seat_plan_form_builder_new($this, 'ES', '', '', true);
         }
     }
