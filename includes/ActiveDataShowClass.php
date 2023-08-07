@@ -21,7 +21,7 @@ class ActiveDataShowClass extends CommonClass
             $global_offdates_store = explode(',', $global_offdates);
             if($global_offdates_store) {
                 foreach($global_offdates_store as $global_offdate) {
-                    $global_offdates_arr[] = $global_offdate.'-'.$j_date_year;
+                    $global_offdates_arr[] = $global_offdate;
                 }
             }
         }

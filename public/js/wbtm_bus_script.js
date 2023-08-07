@@ -163,7 +163,7 @@
 
 
     function off_particular(date,off_particular_date,weekly_offday) {
-        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+        var sdate = jQuery.datepicker.formatDate('dd-mm', date)
         const p = off_particular_date.split(',')
         if (p.length > 0) {
             if (jQuery.inArray(sdate, p) != -1) {
