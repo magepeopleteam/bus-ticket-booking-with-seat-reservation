@@ -970,6 +970,9 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 .wbtm-hide-year .ui-datepicker-year {
 	display: none;
 }
+.wbtm_bus_page_wbtm-bus-manager-settings .ui-datepicker-year {
+	display: none;
+}
 
 /* Gutenbarg bottom space END */
 

@@ -11,12 +11,19 @@ class ActiveDataShowClass extends CommonClass
     //next 6  date suggestion
    public function active_date_picker($singleBus, $post_id)
     {
+        $j_date_year = isset($_GET['j_date']) ? date('Y', strtotime($_GET['j_date'])) : date('Y');
         $settings = get_option('wbtm_bus_settings');
         $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
         $global_offdates_arr = array();
+        $global_offdates_store = array();
         if($global_offdates) {
             $global_offdates = str_replace(' ', '', $global_offdates); // all white space
-            $global_offdates_arr = explode(',', $global_offdates);
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = $global_offdate.'-'.$j_date_year;
+                }
+            }
         }
 
         $global_search_page_offdates = $global_offdates_arr ? implode(',', $global_offdates_arr) : ''; // Global search page
