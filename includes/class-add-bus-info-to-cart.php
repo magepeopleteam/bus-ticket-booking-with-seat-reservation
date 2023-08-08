@@ -528,7 +528,7 @@
 						?>
 						<ul class='event-custom-price'>
 							<?php
-								if ($basic_passenger_info) : ?>
+								if ($basic_passenger_info && $wbtm_seats) : ?>
 									<li>
 										<?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
 											$seat_lists = array_column($basic_passenger_info, 'wbtm_passenger_type');
@@ -541,7 +541,7 @@
 														}
 													}
 												}
-											} else {
+											} else { // Seat plan
 												if($wbtm_seats) {
 													$seat_plan_loop_index = 0;
 													foreach($wbtm_seats as $seat_plan_seat) {
