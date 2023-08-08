@@ -391,7 +391,6 @@
             parent.find('button[name="add-to-cart"]').removeAttr('disabled');
             parent.find('.mage_bus_sub_total_price.mage-price-total .price-figure').text(grand_total.toFixed(2));
         } else {
-            console.log('total', seat_price);
 
             // Sum all items
             let grand_total = seat_price + extra_price + bagPrice;
@@ -722,7 +721,7 @@
         // mage_bus_price_convert(subTotal, parents.find('.mage_bus_sub_total_price'),false);
         parents.find('.mage_customer_info_area input[name="extra_bag_quantity[]"]').each(function (index) {
             bagPerPrice = parseFloat($(this).attr('data-price'));
-            bagQty += parseInt($(this).val());
+            bagQty += $(this).val() ? parseInt($(this).val()) : 0;
             bagPrice += parseFloat($(this).val()) * bagPerPrice;
         });
         if (qty > 0) {
