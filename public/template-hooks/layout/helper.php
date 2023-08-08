@@ -55,6 +55,9 @@ function mage_check_search_day_off($id, $j_date, $return = false)
 function mage_check_search_day_off_new($id, $j_date, $return = false)
 {
     $get_day = null;
+    if(get_post_meta($id, 'show_off_day', true) !== 'yes') {
+        return false;
+    }
     $db_day_prefix = 'offday_';
     $weekly_offday = get_post_meta($id, 'weekly_offday', true) ?: array();
     if ($j_date) {
@@ -1964,13 +1967,13 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
         $bus_on_dates = array();
         // $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
         $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
-        if ($bus_on_date != null) {
+        if ($bus_on_date != null && get_post_meta($id, 'show_operational_on_day', true) === 'yes') {
             $bus_on_dates = explode(', ', $bus_on_date);
             $is_on_date = true;
         }
 
         if ($is_on_date) {
-            if (in_array($j_date, $bus_on_dates)) {
+            if (in_array(date('m-d', strtotime($j_date)), $bus_on_dates)) {
                 $has_bus = true;
             }
         } else {
@@ -1996,7 +1999,7 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
             if(wbtm_off_by_global_offdates($j_date)) { // Global off dates and days check
                 $offday_current_bus = true; // Bus is off
             } else { // Local offdates check
-                if (!empty($bus_offday_schedules)) {
+                if (!empty($bus_offday_schedules) && get_post_meta($id, 'show_off_day', true) === 'yes') {
 
                     foreach ($bus_offday_schedules as $item) {
 
@@ -2450,7 +2453,7 @@ function wbtm_off_by_global_offdates($j_date) {
     if(!$is_off) {
         $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
         if($global_offdays) {
-            $j_date_day = strtolower(date('N', strtotime($j_date)));
+            $j_date_day = strtolower(date('w', strtotime($j_date)));
             if (in_array($j_date_day, $global_offdays)) {
                 $is_off = true;
             }

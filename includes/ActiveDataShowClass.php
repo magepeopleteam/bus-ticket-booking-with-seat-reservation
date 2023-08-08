@@ -37,8 +37,10 @@ class ActiveDataShowClass extends CommonClass
             $show_off_day = get_post_meta($post_id, 'show_off_day', true) ? get_post_meta($post_id, 'show_off_day', true) : '';
 
             $alloffdays = array();
-            foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+            if($show_off_day == 'yes') {
+                foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
+                    $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'], 'd-m')));
+                }
             }
 
             $all_offdates = array_merge($global_offdates_arr, $alloffdays);

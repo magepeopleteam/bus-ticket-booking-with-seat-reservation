@@ -123,7 +123,7 @@ function mage_bus_search_list($return)
 
                         // Offday schedule check
                         // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
-                        //                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
+                        // $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
                         $bus_offday_schedules = mage_determine_offdate($id, $return, $start, $end);
 
                         // Get Bus Start Time
@@ -144,7 +144,7 @@ function mage_bus_search_list($return)
                         if(wbtm_off_by_global_offdates($p_j_date)) { // Global off dates and days check
                             $offday_current_bus = true; // Bus is off
                         } else { // Local offdates check
-                            if (!empty($bus_offday_schedules)) {
+                            if (!empty($bus_offday_schedules) && get_post_meta($id, 'show_off_day', true) === 'yes') {
 
                                 foreach ($bus_offday_schedules as $item) {
     
@@ -165,6 +165,7 @@ function mage_bus_search_list($return)
                         }
 
                         // Check Offday and date
+                        // if $offday_current_bus = false && mage_check_search_day_off_new = false
                         if (!$offday_current_bus && !mage_check_search_day_off_new($id, $p_j_date, $return)) {
                             $has_bus = true;
                         }
@@ -983,21 +984,43 @@ function mage_next_date_suggestion($return, $single_bus, $target)
         $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
         $next_date = $return ? $tab_date_r : $tab_date;
 
+        // Global offdates
+        $settings = get_option('wbtm_bus_settings');
+        $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+        $global_offdates_arr = array();
+        $global_offdates_store = array();
+        if($global_offdates) {
+            $global_offdates = str_replace(' ', '', $global_offdates); // all white space
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = date('Y-m-d', strtotime($global_offdate .'-'. date('Y', strtotime($date))));
+                }
+            }
+        }
+
+        // Global offdays
+        $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
+
         $next_date_text = $next_date;
         ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
                 <?php
-                for ($i = 0; $i < 6; $i++) {
+                $i = 0;
+                while($i < 6) {
+                    if(!in_array($next_date, $global_offdates_arr) && !in_array(date('w', strtotime($next_date)), $global_offdays)) :
                 ?>
-                    <li class="<?php echo $date == $next_date ? 'mage_active' : ''; ?>">
-                        <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $next_date_text; ?>&r_date=<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>&tab_date=<?php echo $tab_date; ?>&tab_date_r=<?php echo $tab_date_r; ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
-                            <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
-                            <?php //echo mage_wp_date($next_date);
-                            ?>
-                        </a>
-                    </li>
+                        <li class="<?php echo $date == $next_date ? 'mage_active' : ''; ?>">
+                            <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $next_date_text; ?>&r_date=<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>&tab_date=<?php echo $tab_date; ?>&tab_date_r=<?php echo $tab_date_r; ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
+                                <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
+                                <?php //echo mage_wp_date($next_date);
+                                ?>
+                            </a>
+                        </li>
                 <?php
+                    $i++;
+                    endif;
                     $next_date = date('Y-m-d', strtotime($next_date . ' +1 day'));
                     // $next_date_text = get_wbtm_datetime($next_date, 'date-text');
                     $next_date_text = $next_date;
@@ -1020,12 +1043,17 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
     $wbtm_bus_on_dates = get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true)) : [];
 
     $wbtm_offday_schedules = get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) ? get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) : [];
-    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
+    $show_off_day = get_post_meta(get_the_id(), 'show_off_day', true) ? get_post_meta(get_the_id(), 'show_off_day', true) : 'no';
+    $weekly_offday = ($show_off_day === 'yes' && get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : []);
+
+    $settings = get_option('wbtm_bus_settings');
+    $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+    $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
 
     // echo '<pre>'; echo print_r($wbtm_offday_schedules); echo '<pre>';
 
 
-    if ($wbtm_bus_on_dates) {
+    if ($wbtm_bus_on_dates && get_post_meta(get_the_ID(), 'show_operational_on_day', true) === 'yes') {
     ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
@@ -1051,29 +1079,55 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
         </div>
 
     <?php
-    } elseif ($wbtm_offday_schedules || $weekly_offday) {
-
+    } elseif ($wbtm_offday_schedules || $weekly_offday || $global_offdates || $global_offdays) {
 
         $alloffdays = array();
-        foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-            $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+        $local_offdates = array();
+        if($show_off_day == 'yes') { // if local offdates switch enabled
+            foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
+                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date']))); // merge all offdates schedules
+            }
+
+            foreach ($alloffdays as $alloffday) {
+                $local_offdates[] =  date('Y-m-d', strtotime($alloffday)); // date formating
+            }
         }
 
-        $offday = array();
-        foreach ($alloffdays as $alloffday) {
-            $offday[] =  date('Y-m-d', strtotime($alloffday));
+        // Global offdates
+        $global_offdates_arr = array();
+        $global_offdates_store = array();
+        if($global_offdates) {
+            $global_offdates = str_replace(' ', '', $global_offdates); // all white space
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = date('Y-m-d', strtotime($global_offdate .'-'. date('Y', strtotime($j_date))));
+                }
+            }
         }
+
+        if($local_offdates || $global_offdates_arr) {
+            $local_offdates = array_merge($local_offdates, $global_offdates_arr); // Merge local and global offdates
+            $local_offdates = array_unique($local_offdates);
+        }
+
+        // date ends
+
+        // Global offdays
+        if ($global_offdays || $weekly_offday) {
+            $weekly_offday = array_merge($global_offdays, $weekly_offday); // Merge local and global offdays
+        }
+
         $next_date = $j_date;
-
-        $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
 
     ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
                 <?php
                 $i = 0;
+                $next_date_text = '';
                 for ($m = 1; $m < 6; $i++) {
-                    if (!in_array($next_date, $offday) and !in_array(date('w', strtotime($next_date)), $weekly_offday) and $m < 6) {
+                    if (!in_array($next_date, $local_offdates) and !in_array(date('w', strtotime($next_date)), $weekly_offday) and $m < 6) {
                         $m++;
                 ?>
                         <li class="<?php echo $j_date == $next_date ? 'mage_active' : ''; ?>">
