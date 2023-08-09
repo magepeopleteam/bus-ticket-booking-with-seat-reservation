@@ -1829,9 +1829,9 @@ function wbtm_extra_services_section($bus_id)
                                 if ($ext_left > 0) {
                                     if ($qty_type == 'dropdown') { ?>
                                         <select name="extra_service_qty[]" id="eventpxtp_<?php echo $count_extra;
-                                                                                            ?>" class='extra-qty-box' data-price='<?php echo $data_price; ?>'>
+                                                                                            ?>" style="min-width:93px;background:#fff;color:#000;border-radius:5px" class='extra-qty-box' data-price='<?php echo $data_price; ?>'>
                                             <?php for ($i = 0; $i <= $ext_left; $i++) { ?>
-                                                <option value="<?php echo $i; ?>"><?php echo $i; ?><?php echo $field['option_name']; ?></option>
+                                                <option value="<?php echo $i; ?>"><?php echo $i; ?> <?php echo $field['option_name']; ?></option>
                                             <?php } ?>
                                         </select>
                                     <?php } else { ?>
