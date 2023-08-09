@@ -94,9 +94,20 @@
             var global_off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
             var global_weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
 
-            jQuery("#j_date, #r_date").datepicker({
+            jQuery("#j_date").datepicker({
                 dateFormat: date_format,
                 minDate: 0,
+                beforeShowDay: function (date){
+                    return off_particular(date, global_off_particular_date,global_weekly_offday );
+                },
+                onClose: function(selectedDate) {
+                    $("#r_date").datepicker("option", "minDate", selectedDate);
+                }
+            });
+
+            jQuery("#r_date").datepicker({
+                dateFormat: date_format,
+                minDate: jQuery("#j_date").val(),
                 beforeShowDay: function (date){
                     return off_particular(date, global_off_particular_date,global_weekly_offday );
                 }
