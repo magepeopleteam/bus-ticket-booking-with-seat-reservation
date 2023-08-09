@@ -351,7 +351,12 @@
     $('.wbtm_extra_service_table .extra-qty-box').on('input', function () {
         let parent = $(this).parents('.mage_bus_seat_details');
         let price = $(this).attr('data-price');
-        let qty = $(this).val();
+        let max = $(this).attr('max');
+        let qty = $(this).val() > 0 ? parseInt($(this).val()) : 0;
+        if(max < qty) {
+            qty = max;
+            $(this).val(qty)
+        }
         let total = qty > 0 ? qty * price : 0;
 
         $(this).parents('tr').attr('data-total', total);
