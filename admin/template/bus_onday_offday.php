@@ -63,13 +63,17 @@
                                                     dateFormat: "mm-dd",
                                                     minDate: 0,
                                                     onClose: function(selectedDate) {
-                                                        // Set the minDate of 'to' as the selectedDate of 'from'
                                                         $("#db_offday_to_<?php echo $count ?>").datepicker("option", "minDate", selectedDate);
                                                     }
                                                 });
                                                 $("#db_offday_to_<?php echo $count ?>").datepicker({
                                                     dateFormat: "mm-dd",
-                                                });
+                                                    minDate: 0,
+                                                    beforeShow: function( input, inst){
+                                                        const from_date = $("#db_offday_from_<?php echo $count ?>").val();
+                                                        $("#db_offday_to_<?php echo $count ?>").datepicker("option", "minDate", from_date);
+                                                    },
+                                                });                                                
                                             }, 400);
                                         })(jQuery)
                                     </script>

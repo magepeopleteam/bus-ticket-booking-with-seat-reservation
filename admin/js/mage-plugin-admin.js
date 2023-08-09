@@ -39,12 +39,18 @@
 
     $("input[name='wbtm_bus_on_dates']").multiDatesPicker({
       dateFormat: "mm-dd",
-      minDate:0
+      minDate:0,
+      beforeShow: function( input, inst){
+        $(inst.dpDiv).addClass('wbtm-hide-year');
+      },
     });
 
     $("input[name='wbtm_bus_on_dates_return']").multiDatesPicker({
       dateFormat: "yy-mm-dd",
-      // minDate:0
+      minDate:0,
+      beforeShow: function( input, inst){
+        $(inst.dpDiv).addClass('wbtm-hide-year');
+      },
     });
 
     // Off Dates
@@ -52,7 +58,10 @@
       e.preventDefault();
       let datePickerOpt = {
         dateFormat: "mm-dd",
-        minDate: 0
+        minDate: 0,
+        onClose: function(selectedDate) {
+            $("#offday_to"+now).datepicker("option", "minDate", selectedDate);
+        }
       };
       let now = Date.now();
       let parent = $(this).parents('.wbtm-offdates-wrapper');
@@ -63,7 +72,15 @@
       row.find(".repeatable-offday-to-field").attr('id', 'offday_to'+ now);
 
       $("#offday_from"+now).datepicker(datePickerOpt);
-      $("#offday_to"+now).datepicker(datePickerOpt);
+      $("#offday_to"+now).datepicker({
+        dateFormat: "mm-dd",
+        minDate: 0,
+        beforeShow: function( input, inst){
+          const from_date = $("#offday_from"+now).val();
+          console.log(from_date);
+          $(inst.dpDiv).addClass('wbtm-hide-year');
+        },
+      });
 
   });
 
@@ -206,7 +223,8 @@
 
   // Same Bus Return condition
   function wbtmSameBusReturn() {
-    let currentVal = $('input[name="wbtm_general_same_bus_return"]:checked').val();
+    // let currentVal = $('input[name="wbtm_general_same_bus_return"]:checked').val(); // disabled this setting
+    let currentVal = 'no';
     if(currentVal === 'yes') {
         $('.wbtm-only-for-return-enable').removeClass('this_disabled').show();
         $('.wbtm-only-for-return-enable').find('input[type="text"], input[type="hidden"], select').prop('disabled', false)

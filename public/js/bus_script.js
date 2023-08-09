@@ -29,12 +29,16 @@
             let parent = $this.parents('.mage_bus_seat_details');
             let price = $this.attr('data-price');
             let type = $this.attr('data-seat-type');
-            let qty = $this.val();
+            let qty = parseInt($this.val());
+            if(isNaN(qty)) {
+                $this.val(0)
+            }
+            let max = $this.attr('data-max-qty');
             qty = qty > 0 ? qty : 0;
             // Check max qty validation
-            const is_pass = wbtm_max_qty_validation($this, qty);
+            const is_pass = qty > 0 ? wbtm_max_qty_validation($this, qty) : true;
             if(!is_pass) {
-                qty = 5;
+                qty = max;
                 $this.val(qty)
             }
             let subtotal = price * qty;
@@ -108,7 +112,7 @@
             }
 
             // Check max qty
-            const is_pass = wbtm_max_qty_validation(targetEle, qtyUpdated);
+            const is_pass = qtyUpdated > 0 ? wbtm_max_qty_validation(targetEle, qtyUpdated) : true;
             if(is_pass) {
                 targetEle.val(qtyUpdated); // Update qty
                 targetEle.trigger('input');
@@ -334,22 +338,30 @@
         let qty = target.val();
         let max = target.attr('max');
 
-        if (qty <= parseInt(max)) {
+        if (qty < parseInt(max)) {
             qty = parseInt(qty) + 1
             target.val(qty);
+            
+            target.trigger('input');
+            mage_form_builder_conditional_show($(this));
         }
-        target.trigger('input');
-        mage_form_builder_conditional_show($(this));
     });
     // qty inc and dec END
 
     $('.wbtm_extra_service_table .extra-qty-box').on('input', function () {
         let parent = $(this).parents('.mage_bus_seat_details');
         let price = $(this).attr('data-price');
-        let qty = $(this).val();
+        let max = $(this).attr('max');
+        let qty = $(this).val() > 0 ? parseInt($(this).val()) : 0;
+        if(max < qty) {
+            qty = max;
+            $(this).val(qty)
+        }
         let total = qty > 0 ? qty * price : 0;
 
         $(this).parents('tr').attr('data-total', total);
+        mage_form_builder_conditional_show($(this));
+        mage_bus_price_qty_calculation(parent)
 
         mageGrandPrice(parent);
     });
@@ -366,7 +378,7 @@
 
         // price items
         // let seat_price = parent.find('.mage-price-total .price-figure').text(); // 1
-        let seat_price = parseFloat(parent.find('.mage-price-total .price-figure').attr('data-price-subtotal')); // 1
+        let seat_price = parent.find('.mage-price-total .price-figure').attr('data-price-subtotal') ? parseFloat(parent.find('.mage-price-total .price-figure').attr('data-price-subtotal')) : 0; // 1
         let extra_price = 0;
         parent.find('.wbtm_extra_service_table tbody tr').each(function () { // 2
             extra_price += parseFloat($(this).attr('data-total'));
@@ -375,7 +387,7 @@
         // Extra bag price
         parent.find('.mage_customer_info_area input[name="extra_bag_quantity[]"]').each(function (index) {
             bagPerPrice = parseFloat($(this).attr('data-price'));
-            bagQty += parseInt($(this).val());
+            bagQty += $(this).val() ? parseInt($(this).val()) : 0;
             bagPrice += parseFloat($(this).val()) * bagPerPrice;
         });
 
@@ -385,6 +397,7 @@
             parent.find('button[name="add-to-cart"]').removeAttr('disabled');
             parent.find('.mage_bus_sub_total_price.mage-price-total .price-figure').text(grand_total.toFixed(2));
         } else {
+
             // Sum all items
             let grand_total = seat_price + extra_price + bagPrice;
 
@@ -496,21 +509,7 @@
 
     //bus price convert
     function mage_bus_price_convert(price, target, loader) {
-        $.ajax({
-            type: 'POST',
-            // url: wbtm_ajax.wbtm_ajaxurl,
-            url: wbtm_ajaxurl,
-            data: { "action": "mage_bus_price_convert", "price": price },
-            success: function (data) {
-                target.html(data);
-                if (loader) {
-                    defaultLoaderFixedRemove();
-                }
-            },
-            error: function (response) {
-                console.log(response);
-            }
-        });
+        target.html(wbtm_woo_price_format(price));
 
     }
 
@@ -624,7 +623,7 @@
                     });
                 });
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').text(php_vars.currency_symbol + totalPP);
-                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html(php_vars.currency_symbol + '<span class="price-figure">' + Number(totalPP).toFixed(2) + '</span>');
+                parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').html('<span class="price-figure" data-price-subtotal="' + totalPP.toFixed(2) + '">' + wbtm_woo_price_format(totalPP) + '</span>');
                 // parents.find('.mage_bus_sub_total .mage_bus_sub_total_price').attr('data-price-subtotal', Number(totalPP).toFixed(2));
                 mageGrandPrice(detail);
                 // parents.find('.mage_bus_total_price').text(php_vars.currency_symbol + totalPP);
@@ -662,7 +661,6 @@
                 success: function (data) {
                     defaultLoaderFixedRemove();
                     parents.find('.mage_bus_selected_seat_list').append(data).slideDown(200);
-                    mage_bus_price_qty_calculation(parents);
 
                     // Remove Discount price
                     has_seat = parents.find('.mage_bus_selected_seat_list').children().length;
@@ -699,7 +697,7 @@
 
     }
 
-    //price qty calculation function
+    // Extra price calculation
     function mage_bus_price_qty_calculation(parents) {
         let qty = 0;
         let subTotal = 0;
@@ -710,11 +708,11 @@
             subTotal += parseFloat($(this).attr('data-price'));
             qty++;
         });
-        parents.find('.mage_bus_total_qty').html(qty);
+        parents.find('.mage_bus_total_qty').html(qty); // Seat quantity
         // mage_bus_price_convert(subTotal, parents.find('.mage_bus_sub_total_price'),false);
         parents.find('.mage_customer_info_area input[name="extra_bag_quantity[]"]').each(function (index) {
             bagPerPrice = parseFloat($(this).attr('data-price'));
-            bagQty += parseInt($(this).val());
+            bagQty += $(this).val() ? parseInt($(this).val()) : 0;
             bagPrice += parseFloat($(this).val()) * bagPerPrice;
         });
         if (qty > 0) {
@@ -730,8 +728,7 @@
         } else {
             parents.find('.mage_extra_bag').slideUp(200);
         }
-        let totalPrice = subTotal + (bagPrice > 0 ? parseFloat(bagPrice) : 0);
-        // mage_bus_price_convert(totalPrice, parents.find('.mage_bus_total_price'),true);
+        // let totalPrice = subTotal + (bagPrice > 0 ? parseFloat(bagPrice) : 0);
 
         mageGrandPrice(parents);
     }
@@ -748,10 +745,11 @@
 
     //customer form
     function mageCustomerInfoFormBus(parent, seatName, passengerType, busDd) {
-
+        if(passengerType === '') {
+            return false;
+        }
         let formTitle = parent.find('input[name="mage_bus_title"]').val() + seatName;
         let currentTarget = parent.find('.mage_hidden_customer_info_form');
-        console.log('lksjdfkl')
         if (currentTarget.length > 0) {
             currentTarget.append('<input type="hidden" name="custom_reg_user" value="no" />');
             currentTarget.find('input[name="seat_name[]"]').val(seatName);
@@ -802,6 +800,7 @@
                 } else {
                     $this.parents('.mage_bus_item').find("#wbtm-form-builder-" + s).empty();
                 }
+                mage_bus_price_qty_calculation($this.parents('.mage_bus_seat_details'))
                 $this.parents('.mage_bus_item').find('#wbtm-form-builder .wbtm-loading').hide();
             }
         });
@@ -818,13 +817,13 @@
             url: wbtm_ajaxurl,
             type: 'POST',
             async: true,
+            dataType: 'html',
             data: { busID: bus_id, seatType: seatType, passengerType: passengerType, seats: qty, onlyES: onlyES, dd: busDd, action: 'wbtm_form_builder' },
             beforeSend: function () {
                 parent.find('#wbtm-form-builder .wbtm-loading').show();
             },
             success: function (data) {
-
-                if (data !== '') {
+                if (data.length > 2) {
                     if (parent.find(".mage_customer_info_area").children().length == 0) {
                         parent.find(".mage_customer_info_area").html(data);
                     } else {
@@ -837,9 +836,9 @@
 
                 } else {
                     // parent.find(".mage_customer_info_area").empty();
-
                     parent.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parent, seat_name, passengerType, busDd)).find('[data-seat-name="' + seat_name + '"]').slideDown(200);
                 }
+                mage_bus_price_qty_calculation(parent);
                 // Loading hide
                 parent.find('.wbtm-form-builder .wbtm-loading').hide();
             }

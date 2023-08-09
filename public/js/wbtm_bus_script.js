@@ -15,65 +15,99 @@
             var enable_onday = $( "#all_date_picker_info" ).data( "enable_onday" );
             var enable_offday = $( "#all_date_picker_info" ).data( "enable_offday" );
 
-
-            if(enable_onday || enable_offday){
-                if(enable_onday == 'yes') {
-                    if(enableDates){
-                        jQuery('#j_date').datepicker({
-                            dateFormat: date_format,
-                            beforeShowDay: function (date){
-                                return enableAllTheseDays(date, enableDates );
-                            }
-
-                        });
-                    }else{
-                        jQuery("#j_date").datepicker({
-                            dateFormat: date_format,
-                            minDate: 0,
-                        });
+            if(enable_onday == 'yes' && enableDates) { // Onday enabled & has value
+                jQuery('#j_date').datepicker({
+                    dateFormat: date_format,
+                    beforeShowDay: function (date){
+                        return enableAllTheseDays(date, enableDates );
                     }
 
-                } else if(enable_offday=='yes'){
-                    jQuery("#j_date").datepicker({
-                        dateFormat: date_format,
-                        minDate: 0,
-                        beforeShowDay: function (date){
-                            return off_particular(date, off_particular_date,weekly_offday );
-                        }
-                    });
-                }else{
-                    jQuery("#j_date").datepicker({
-                        dateFormat: date_format,
-                        minDate: 0,
-                    });
-                }
-            }else{
-                if(enableDates){
-                    jQuery('#j_date').datepicker({
-                        dateFormat: date_format,
-                        minDate: 0,
-                        beforeShowDay: function (date){
-                            return enableAllTheseDays(date, enableDates );
-                        }
-                    });
-                }else{
-                    jQuery("#j_date").datepicker({
-                        dateFormat: date_format,
-                        minDate: 0,
-                        beforeShowDay: function (date){
-                            return off_particular(date, off_particular_date,weekly_offday );
-                        }
-                    });
-                }
+                });
+            } else if(off_particular_date || weekly_offday) { // offdates enabled & has value or global offdates has value
+                jQuery("#j_date").datepicker({
+                    dateFormat: date_format,
+                    minDate: 0,
+                    beforeShowDay: function (date){
+                        return off_particular(date, off_particular_date,weekly_offday );
+                    }
+                });
+            } else {
+                jQuery("#j_date").datepicker({
+                    dateFormat: date_format,
+                    minDate: 0,
+                });
             }
 
-        }else{
+
+            // if(enable_onday == 'yes' || enable_offday == 'yes'){
+            //     if(enable_onday == 'yes' && enableDates) {
+            //         if(enableDates){
+            //             jQuery('#j_date').datepicker({
+            //                 dateFormat: date_format,
+            //                 beforeShowDay: function (date){
+            //                     return enableAllTheseDays(date, enableDates );
+            //                 }
+
+            //             });
+            //         }else{
+            //             jQuery("#j_date").datepicker({
+            //                 dateFormat: date_format,
+            //                 minDate: 0,
+            //             });
+            //         }
+
+            //     } else if(enable_offday=='yes'){
+            //         jQuery("#j_date").datepicker({
+            //             dateFormat: date_format,
+            //             minDate: 0,
+            //             beforeShowDay: function (date){
+            //                 return off_particular(date, off_particular_date,weekly_offday );
+            //             }
+            //         });
+            //     }else{
+            //         jQuery("#j_date").datepicker({
+            //             dateFormat: date_format,
+            //             minDate: 0,
+            //         });
+            //     }
+            // }else{ // Only global offdate and offday
+            //     if(enableDates){
+            //         jQuery('#j_date').datepicker({
+            //             dateFormat: date_format,
+            //             minDate: 0,
+            //             beforeShowDay: function (date){
+            //                 return enableAllTheseDays(date, enableDates );
+            //             }
+            //         });
+            //     }else{
+            //         jQuery("#j_date").datepicker({
+            //             dateFormat: date_format,
+            //             minDate: 0,
+            //             beforeShowDay: function (date){
+            //                 return off_particular(date, off_particular_date,weekly_offday );
+            //             }
+            //         });
+            //     }
+            // }
+
+        }else{ // Global search
             var global_off_particular_date = $( "#all_date_picker_info" ).data( "disabledates" );
             var global_weekly_offday = $( "#all_date_picker_info" ).data( "disabledays" );
 
-            jQuery("#j_date, #r_date").datepicker({
+            jQuery("#j_date").datepicker({
                 dateFormat: date_format,
                 minDate: 0,
+                beforeShowDay: function (date){
+                    return off_particular(date, global_off_particular_date,global_weekly_offday );
+                },
+                onClose: function(selectedDate) {
+                    $("#r_date").datepicker("option", "minDate", selectedDate);
+                }
+            });
+
+            jQuery("#r_date").datepicker({
+                dateFormat: date_format,
+                minDate: jQuery("#j_date").val(),
                 beforeShowDay: function (date){
                     return off_particular(date, global_off_particular_date,global_weekly_offday );
                 }
@@ -151,7 +185,7 @@
 
 
     function enableAllTheseDays(date,enableDates) {
-        var sdate = jQuery.datepicker.formatDate('yy-mm-dd', date)
+        var sdate = jQuery.datepicker.formatDate('mm-dd', date)
         const p = enableDates.split(', ');
         if (p.length > 0) {
             if (jQuery.inArray(sdate, p) != -1) {
@@ -163,8 +197,9 @@
 
 
     function off_particular(date,off_particular_date,weekly_offday) {
-        var sdate = jQuery.datepicker.formatDate('dd-mm-yy', date)
+        var sdate = jQuery.datepicker.formatDate('dd-mm', date)
         const p = off_particular_date.split(',')
+        console.log(p, sdate);
         if (p.length > 0) {
             if (jQuery.inArray(sdate, p) != -1) {
                 return [false];

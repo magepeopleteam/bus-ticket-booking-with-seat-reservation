@@ -11,12 +11,19 @@ class ActiveDataShowClass extends CommonClass
     //next 6  date suggestion
    public function active_date_picker($singleBus, $post_id)
     {
+        $j_date_year = isset($_GET['j_date']) ? date('Y', strtotime($_GET['j_date'])) : date('Y');
         $settings = get_option('wbtm_bus_settings');
         $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
         $global_offdates_arr = array();
+        $global_offdates_store = array();
         if($global_offdates) {
             $global_offdates = str_replace(' ', '', $global_offdates); // all white space
-            $global_offdates_arr = explode(',', $global_offdates);
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = $global_offdate;
+                }
+            }
         }
 
         $global_search_page_offdates = $global_offdates_arr ? implode(',', $global_offdates_arr) : ''; // Global search page
@@ -26,19 +33,21 @@ class ActiveDataShowClass extends CommonClass
         if($singleBus){
             $wbtm_bus_on_dates = get_post_meta($post_id, 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta($post_id, 'wbtm_bus_on_dates', true)) : '';
             $wbtm_offday_schedules = get_post_meta($post_id, 'wbtm_offday_schedule', true) ? get_post_meta($post_id, 'wbtm_offday_schedule', true) : [];
-            $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : '';
+            $show_operational_on_day = get_post_meta($post_id, 'show_operational_on_day', true) ? get_post_meta($post_id, 'show_operational_on_day', true) : 'no';
             $show_off_day = get_post_meta($post_id, 'show_off_day', true) ? get_post_meta($post_id, 'show_off_day', true) : '';
 
             $alloffdays = array();
-            foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+            if($show_off_day == 'yes') {
+                foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
+                    $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'], 'd-m')));
+                }
             }
 
             $all_offdates = array_merge($global_offdates_arr, $alloffdays);
             $off_particular_date = implode(',', $all_offdates);
             
             $all_off_days = '';
-            $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) ? get_post_meta($post_id, 'weekly_offday', true) : [];
+            $weekly_offday = get_post_meta($post_id, 'weekly_offday', true) && $show_off_day == 'yes' ? get_post_meta($post_id, 'weekly_offday', true) : [];
             $merged_global_local_off_days = array_merge($global_offdays, $weekly_offday);
             if ($merged_global_local_off_days) {
                 $all_off_days = implode(',', $merged_global_local_off_days);

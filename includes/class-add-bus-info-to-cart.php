@@ -233,7 +233,7 @@
 					foreach ($extra_service_qty as $extra_item) {
 						if ($extra_item > 0) {
 							$extra_services[] = array('name' => isset($extra_service_name[$extra_service_i]) ? $extra_service_name[$extra_service_i] : '', 'qty' => $extra_item, 'price' => isset($extra_service_price[$extra_service_i]) ? $extra_service_price[$extra_service_i] : 0,);
-							$total_extra_price += $extra_services[$extra_service_i]['qty'] * $extra_services[$extra_service_i]['price'];
+							$total_extra_price += $extra_item * (isset($extra_service_price[$extra_service_i]) ? $extra_service_price[$extra_service_i] : 0);
 						}
 						$extra_service_i++;
 					}
@@ -293,6 +293,7 @@
 				$cart_item_data['line_total'] = $total_fare;
 				$cart_item_data['line_subtotal'] = $total_fare;
 				$cart_item_data['bus_id'] = $product_id;
+				$cart_item_data['wbtm_bus_seat_type'] = get_post_meta($product_id, 'wbtm_seat_type_conf', true);
 			}
 			// echo '<pre>'; print_r($cart_item_data); die();
 			return $cart_item_data;
@@ -325,6 +326,7 @@
 					$datetimeformat = $date_format . '  ' . $time_format;
 					$wbtm_anydate_return = $cart_item['wbtm_anydate_return'];
 					$wbtm_anydate_return_price = $cart_item['wbtm_anydate_return_price'];
+					$wbtm_bus_seat_type = $cart_item['wbtm_bus_seat_type'];
 					// echo '<pre>';  print_r($cart_item);  echo '<pre>'; exit;
 					// echo '<pre>'; print_r($passenger_info); die;
 					// $billing_type_items = mtsa_get_billing_type_items();
@@ -460,11 +462,13 @@
 											<?php //echo get_wbtm_datetime($cart_item['wbtm_journey_date'], 'date-text'); ?>
 											<?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?>
 										</li>
-										<li>
-											<strong><?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')); ?>
-												:</strong>
-											<?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?>
-										</li>
+										<?php if($cart_item['wbtm_journey_time']) : ?>
+											<li>
+												<strong><?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')); ?>
+													:</strong>
+												<?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?>
+											</li>
+										<?php endif; ?>
 										<li>
 											<strong><?php mage_bus_label('wbtm_boarding_points_text', __('Boarding Point', 'bus-ticket-booking-with-seat-reservation')); ?>
 												:</strong>
@@ -524,15 +528,28 @@
 						?>
 						<ul class='event-custom-price'>
 							<?php
-								if ($basic_passenger_info) : ?>
+								if ($basic_passenger_info && $wbtm_seats) : ?>
 									<li>
 										<?php echo $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_seat_list_text', 'label_setting_sec') . ': ' : __('Seat List:', 'bus-ticket-booking-with-seat-reservation');
 											$seat_lists = array_column($basic_passenger_info, 'wbtm_passenger_type');
-											if($seat_lists) {
-												$counted_seats_arr = array_count_values($seat_lists);
-												if($counted_seats_arr) {
-													foreach($counted_seats_arr as $seat_name => $count) {
-														printf("%s (%d) ", $seat_name, $count);
+											if($wbtm_bus_seat_type === 'wbtm_without_seat_plan') {
+												if($seat_lists) {
+													$counted_seats_arr = array_count_values($seat_lists);
+													if($counted_seats_arr) {
+														foreach($counted_seats_arr as $seat_name => $count) {
+															printf("%s (%d) ", $seat_name, $count);
+														}
+													}
+												}
+											} else { // Seat plan
+												if($wbtm_seats) {
+													$seat_plan_loop_index = 0;
+													foreach($wbtm_seats as $seat_plan_seat) {
+														if($basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'] != '') {
+															$separator = (count($wbtm_seats) - 1 == $seat_plan_loop_index) ? '' : ', ';
+															printf("%s(%s)%s", $seat_plan_seat['wbtm_seat_name'], $basic_passenger_info[$seat_plan_loop_index]['wbtm_passenger_type'], $separator);
+														}
+														$seat_plan_loop_index++;
 													}
 												}
 											}
@@ -562,8 +579,10 @@
 								<?php else : ?>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_select_journey_date_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_select_journey_date_text', 'label_setting_sec') . ': ' : __('Journey Date:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo mage_wp_date($cart_item['wbtm_journey_date']); ?></li>
-									<li><?php echo $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') . ': ' : __('Journey Time:', 'bus-ticket-booking-with-seat-reservation');
+									<?php if($cart_item['wbtm_journey_time']) : ?>
+										<li><?php echo $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_starting_text', 'label_setting_sec') . ': ' : __('Journey Time:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo mage_wp_time($cart_item['wbtm_journey_time']); ?></li>
+									<?php endif; ?>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_boarding_points_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_boarding_points_text', 'label_setting_sec') . ': ' : __('Boarding Point:', 'bus-ticket-booking-with-seat-reservation');
 										?><?php echo $cart_item['wbtm_start_stops']; ?></li>
 									<li><?php echo $wbtmmain->bus_get_option('wbtm_dropping_points_text', 'label_setting_sec') ? $wbtmmain->bus_get_option('wbtm_dropping_points_text', 'label_setting_sec') . ': ' : __('Dropping Point:', 'bus-ticket-booking-with-seat-reservation'); ?><?php echo $cart_item['wbtm_end_stops']; ?>
@@ -577,7 +596,23 @@
 							<?php if ($cart_item['wbtm_pickpoint']) : ?>
 								<li><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation'); ?>: <?php echo $cart_item['wbtm_pickpoint']; ?></li>
 							<?php endif; ?>
-
+							<?php if ($basic_passenger_info) : ?>
+								<li>
+									<?php mage_bus_label('wbtm_fare_text', __('Fare', 'bus-ticket-booking-with-seat-reservation')); ?>
+									:
+									<?php 
+										$bpi_index = 0;
+										$bpi_total_price = 0;
+										foreach($basic_passenger_info as $bpi) {
+											if(isset($bpi['wbtm_seat_fare'])) {
+												$bpi_total_price += $bpi['wbtm_seat_fare'];
+											}
+											$bpi_index++;
+										}
+										echo wc_price($bpi_total_price);
+									?>
+								</li>
+							<?php endif; ?>
 
 
 

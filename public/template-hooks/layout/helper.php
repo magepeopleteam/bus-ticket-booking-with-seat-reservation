@@ -55,6 +55,9 @@ function mage_check_search_day_off($id, $j_date, $return = false)
 function mage_check_search_day_off_new($id, $j_date, $return = false)
 {
     $get_day = null;
+    if(get_post_meta($id, 'show_off_day', true) !== 'yes') {
+        return false;
+    }
     $db_day_prefix = 'offday_';
     $weekly_offday = get_post_meta($id, 'weekly_offday', true) ?: array();
     if ($j_date) {
@@ -538,9 +541,9 @@ function mage_bus_total_seat()
     }
 }
 
-function mage_bus_total_seat_new()
+function mage_bus_total_seat_new($bus_id = '')
 {
-    $id = get_the_ID();
+    $id = $bus_id ? $bus_id : get_the_ID();
     $seat_type_conf = get_post_meta($id, 'wbtm_seat_type_conf', true);
     $total_seat = 0;
 
@@ -1123,6 +1126,11 @@ function mage_partial_without_seat_booked_count($return = false, $bus_id = null,
                 array(
                     'relation' => 'AND',
                     $where,
+                    array(
+                        'key' => 'wbtm_seat',
+                        'value' => '',
+                        'compare' => '!='
+                    ),
                     array(
                         'key' => 'wbtm_journey_date',
                         'value' => $j_dates,
@@ -1737,6 +1745,11 @@ function extra_service_qty_check($bus_id, $start, $end, $j_date, $service_type)
                     'value' => $bus_id,
                 ),
                 array(
+                    'key' => 'wbtm_journey_date',
+                    'compare' => '=',
+                    'value' => $j_date,
+                ),
+                array(
                     'key' => 'wbtm_status',
                     'compare' => 'IN',
                     'value' => array(1, 2),
@@ -1789,8 +1802,8 @@ function wbtm_extra_services_section($bus_id)
                     foreach ($extra_services as $field) {
                         $total_extra_service = (int)$field['option_qty'];
                         $qty_type = $field['option_qty_type'];
-                        // $total_sold = extra_service_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
-                        $total_sold = 0;
+                        $total_sold = extra_service_qty_check($bus_id, $start, $end, $j_date, $field['option_name']);
+                        // $total_sold = 0;
 
                         $ext_left = ($total_extra_service - $total_sold);
                         // echo '<pre>';print_r($field);
@@ -1816,9 +1829,9 @@ function wbtm_extra_services_section($bus_id)
                                 if ($ext_left > 0) {
                                     if ($qty_type == 'dropdown') { ?>
                                         <select name="extra_service_qty[]" id="eventpxtp_<?php echo $count_extra;
-                                                                                            ?>" class='extra-qty-box' data-price='<?php echo $data_price; ?>'>
+                                                                                            ?>" style="min-width:93px;background:#fff;color:#000;border-radius:5px" class='extra-qty-box' data-price='<?php echo $data_price; ?>'>
                                             <?php for ($i = 0; $i <= $ext_left; $i++) { ?>
-                                                <option value="<?php echo $i; ?>"><?php echo $i; ?><?php echo $field['option_name']; ?></option>
+                                                <option value="<?php echo $i; ?>"><?php echo $i; ?> <?php echo $field['option_name']; ?></option>
                                             <?php } ?>
                                         </select>
                                     <?php } else { ?>
@@ -1954,13 +1967,13 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
         $bus_on_dates = array();
         // $bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
         $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
-        if ($bus_on_date != null) {
+        if ($bus_on_date != null && get_post_meta($id, 'show_operational_on_day', true) === 'yes') {
             $bus_on_dates = explode(', ', $bus_on_date);
             $is_on_date = true;
         }
 
         if ($is_on_date) {
-            if (in_array($j_date, $bus_on_dates)) {
+            if (in_array(date('m-d', strtotime($j_date)), $bus_on_dates)) {
                 $has_bus = true;
             }
         } else {
@@ -1981,20 +1994,27 @@ function mage_single_bus_show($id, $start, $end, $j_date, $bus_bp_array, $return
             $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
 
             $offday_current_bus = false;
-            if (!empty($bus_offday_schedules)) {
-                $s_datetime = new DateTime($j_date . ' ' . $start_time);
+            // $s_datetime = new DateTime($j_date . ' ' . $start_time);
+            $s_datetime = date('Y-m-d H:i:s', strtotime($j_date));
+            if(wbtm_off_by_global_offdates($j_date)) { // Global off dates and days check
+                $offday_current_bus = true; // Bus is off
+            } else { // Local offdates check
+                if (!empty($bus_offday_schedules) && get_post_meta($id, 'show_off_day', true) === 'yes') {
 
-                foreach ($bus_offday_schedules as $item) {
+                    foreach ($bus_offday_schedules as $item) {
 
-                    $c_iterate_date_from = $item['from_date'];
-                    $c_iterate_datetime_from = new DateTime($c_iterate_date_from . ' ' . (isset($item['from_time'])?$item['from_time']:''));
+                        $c_iterate_date_from = $item['from_date'];
+                        // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                        $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_from));
 
-                    $c_iterate_date_to = $item['to_date'];
-                    $c_iterate_datetime_to = new DateTime($c_iterate_date_to . ' ' . (isset($item['to_time'])?$item['to_time']:''));
+                        $c_iterate_date_to = $item['to_date'];
+                        // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                        $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($j_date)).'-'.$c_iterate_date_to));
 
-                    if ($s_datetime >= $c_iterate_datetime_from && $s_datetime <= $c_iterate_datetime_to) {
-                        $offday_current_bus = true;
-                        break;
+                        if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
+                            $offday_current_bus = true; // Bus is off
+                            break;
+                        }
                     }
                 }
             }
@@ -2411,4 +2431,34 @@ function wbtm_get_user_role($user_ID)
 
     //return user role list
     return $user_role_list;
+}
+
+// Global offdates process
+function wbtm_off_by_global_offdates($j_date) {
+    $is_off = false;
+    $current_date = date('d-m-Y', strtotime($j_date));
+    $current_year = date('Y', strtotime($j_date));
+    $settings = get_option('wbtm_bus_settings');
+    $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+    if($global_offdates) {
+        $global_offdays_arr = explode(', ', $global_offdates);
+        foreach($global_offdays_arr as $goffdate) {
+            if($current_date == date('d-m-Y', strtotime($goffdate.'-'.$current_year))) {
+                $is_off = true;
+                break;
+            }
+        }
+    }
+
+    if(!$is_off) {
+        $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
+        if($global_offdays) {
+            $j_date_day = strtolower(date('w', strtotime($j_date)));
+            if (in_array($j_date_day, $global_offdays)) {
+                $is_off = true;
+            }
+        }
+    }
+
+    return $is_off;
 }

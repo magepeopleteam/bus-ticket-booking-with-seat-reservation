@@ -793,6 +793,7 @@ div#webmenu_msdd {
 	margin-top: 20px;
 	line-height: inherit;
 	color: #fff;
+	text-decoration: none;
 }
 
 .add-seat-row-btn i {
@@ -843,7 +844,8 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 
 /* .wbtm-seat-type-conf label {font-size: 16px;color: #555;} */
 
-.wbtm-item-row select {
+.wbtm-item-row select,
+.wbtm-item-row input[type="text"] {
 	min-width: 223px;
 	border-radius: 5px;
 }
@@ -892,6 +894,7 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 
 .wbtm-ondates-wrapper input {
 	width: 100%;
+	height: 45px;
 }
 
 .repeatable-fieldset-offday th {
@@ -950,7 +953,11 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	margin-right: 5px;
 	border-radius: 5px;
 }
-
+/* Marked date */
+.ui-datepicker-calendar .ui-state-highlight .ui-state-default {
+    background: red!important;
+    color: #fff!important;
+}
 
 /* Gutenbarg bottom space */
 
@@ -959,6 +966,13 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	border-bottom: 7px solid #2271a1;
 }
 
+/* Hide year from datepicker calendar */
+.wbtm-hide-year .ui-datepicker-year {
+	display: none;
+}
+.wbtm_bus_page_wbtm-bus-manager-settings .ui-datepicker-year {
+	display: none;
+}
 
 /* Gutenbarg bottom space END */
 

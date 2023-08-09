@@ -123,7 +123,7 @@ class WBTM_Plugin_Functions
                     });
                 });
             </script>
-            <table id="repeatable-fieldset-seat-one" width="100%">
+            <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one" width="100%">
                 <tbody>
                     <?php
                     for ($x = 1; $x <= $seat_row; $x++) {
@@ -162,7 +162,7 @@ class WBTM_Plugin_Functions
                     </tr>
                 </tbody>
             </table>
-            <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
+            <p><a id="add-seat-row" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i> Add Seat Row</a></p>
         </div>
     <?php
         die();
@@ -193,7 +193,7 @@ class WBTM_Plugin_Functions
                     });
                 });
             </script>
-            <table id="repeatable-fieldset-seat-one-dd" width="100%">
+            <table class="wbtm-seat-table" id="repeatable-fieldset-seat-one-dd" width="100%">
                 <tbody>
                     <?php
                     for ($x = 1; $x <= $seat_row; $x++) {
@@ -223,7 +223,7 @@ class WBTM_Plugin_Functions
                     </tr>
                 </tbody>
             </table>
-            <p><a id="add-seat-row-dd" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i></a></p>
+            <p><a id="add-seat-row-dd" class="add-seat-row-btn" href="#"><i class="fas fa-plus"></i> Add Seat Row</a></p>
         </div>
     <?php
         die();
@@ -842,17 +842,18 @@ class WBTM_Plugin_Functions
         $global_plan = get_post_meta(get_the_id(), 'wbtm_bus_seats_info', true);
         if (!empty($global_plan)) {
             wbtm_seat_global($start, $date, '', $return);
-        } else {
-            if ($current_plan == 'seat_plan_1') {
-                wbtm_seat_plan_1($start, $date);
-            }
-            if ($current_plan == 'seat_plan_2') {
-                wbtm_seat_plan_2($start, $date);
-            }
-            if ($current_plan == 'seat_plan_3') {
-                wbtm_seat_plan_3($start, $date);
-            }
-        }
+        } 
+        // else {
+        //     if ($current_plan == 'seat_plan_1') {
+        //         wbtm_seat_plan_1($start, $date);
+        //     }
+        //     if ($current_plan == 'seat_plan_2') {
+        //         wbtm_seat_plan_2($start, $date);
+        //     }
+        //     if ($current_plan == 'seat_plan_3') {
+        //         wbtm_seat_plan_3($start, $date);
+        //     }
+        // }
     }
 
     public function wbtm_get_this_bus_seat_plan()
@@ -1868,8 +1869,9 @@ function wbtm_convert_date_to_php($date)
 function wbtm_displayDates($date1, $date2, $format = 'd-m-Y')
 {
     $dates = array();
-    $current = strtotime($date1);
-    $date2 = strtotime($date2);
+    $current_year = date('Y');
+    $current = strtotime($current_year.'-'.$date1);
+    $date2 = strtotime($current_year.'-'.$date2);
     $stepVal = '+1 day';
     while ($current <= $date2) {
         $dates[] = date($format, $current);

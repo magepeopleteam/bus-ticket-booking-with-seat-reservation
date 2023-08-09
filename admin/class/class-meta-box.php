@@ -469,7 +469,8 @@ class WBTMMetaBox
             $wbtm_bus_no = $_POST['wbtm_bus_no'];
             $wbtm_total_seat = $_POST['wbtm_total_seat'];
             $as_driver = isset($_POST['as_driver']) ? $_POST['as_driver'] : null;
-            $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no';
+            // $wbtm_general_same_bus_return = isset($_POST['wbtm_general_same_bus_return']) ? $_POST['wbtm_general_same_bus_return'] : 'no'; // Disabled this setting
+            $wbtm_general_same_bus_return = 'no';
             $show_dropping_time = isset($_POST['show_dropping_time']) ? $_POST['show_dropping_time'] : 'yes';
             $show_boarding_time = isset($_POST['show_boarding_time']) ? $_POST['show_boarding_time'] : 'yes';
             $show_upper_desk = isset($_POST['show_upper_desk']) ? $_POST['show_upper_desk'] : 'no';

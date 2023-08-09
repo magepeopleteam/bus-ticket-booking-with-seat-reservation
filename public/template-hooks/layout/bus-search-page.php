@@ -109,7 +109,8 @@ function mage_bus_search_list($return)
                     $bus_on_dates = array();
                     //$bus_on_date = get_post_meta($id, 'wbtm_bus_on_dates', true);
                     $bus_on_date = mage_determine_ondate($id, $return, $start, $end);
-                    if ($bus_on_date != null) {
+                    $show_operational_on_day = get_post_meta($id, 'show_operational_on_day', true);
+                    if ($bus_on_date != null && $show_operational_on_day == 'yes') {
                         $bus_on_dates = explode(', ', $bus_on_date);
                         $is_on_date = true;
                     }
@@ -122,7 +123,7 @@ function mage_bus_search_list($return)
 
                         // Offday schedule check
                         // $bus_stops_times = get_post_meta($id, 'wbtm_bus_bp_stops', true);
-                        //                    $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
+                        // $bus_offday_schedules = get_post_meta($id, 'wbtm_offday_schedule', true);
                         $bus_offday_schedules = mage_determine_offdate($id, $return, $start, $end);
 
                         // Get Bus Start Time
@@ -136,28 +137,35 @@ function mage_bus_search_list($return)
 
                         $start_time = mage_time_24_to_12($start_time); // Time convert 24 to 12
 
-                        $offday_current_bus = false;
-                        if (!empty($bus_offday_schedules)) {
-                            $s_datetime = date('Y-m-d H:i:s', strtotime($p_j_date));
+                        $offday_current_bus = false; // Bus is running
 
-                            foreach ($bus_offday_schedules as $item) {
+                        $s_datetime = date('Y-m-d H:i:s', strtotime($p_j_date));
 
-                                $c_iterate_date_from = $item['from_date'];
-                                // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
-                                $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
+                        if(wbtm_off_by_global_offdates($p_j_date)) { // Global off dates and days check
+                            $offday_current_bus = true; // Bus is off
+                        } else { // Local offdates check
+                            if (!empty($bus_offday_schedules) && get_post_meta($id, 'show_off_day', true) === 'yes') {
 
-                                $c_iterate_date_to = $item['to_date'];
-                                // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
-                                $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
-
-                                if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
-                                    $offday_current_bus = true;
-                                    break;
+                                foreach ($bus_offday_schedules as $item) {
+    
+                                    $c_iterate_date_from = $item['from_date'];
+                                    // $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime($c_iterate_date_from . ' ' . $item['from_time']));
+                                    $c_iterate_datetime_from = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_from));
+    
+                                    $c_iterate_date_to = $item['to_date'];
+                                    // $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime($c_iterate_date_to . ' ' . $item['to_time']));
+                                    $c_iterate_datetime_to = date('Y-m-d H:i:s', strtotime(date('Y', strtotime($p_j_date)).'-'.$c_iterate_date_to));
+    
+                                    if (($s_datetime >= $c_iterate_datetime_from) && ($s_datetime <= $c_iterate_datetime_to)) {
+                                        $offday_current_bus = true; // Bus is off
+                                        break;
+                                    }
                                 }
                             }
                         }
 
                         // Check Offday and date
+                        // if $offday_current_bus = false && mage_check_search_day_off_new = false
                         if (!$offday_current_bus && !mage_check_search_day_off_new($id, $p_j_date, $return)) {
                             $has_bus = true;
                         }
@@ -438,15 +446,16 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <?php mage_bus_label('wbtm_boarding_points_text', __('Boarding', 'bus-ticket-booking-with-seat-reservation')); ?>
                                         :
                                     </th>
-                                    <td><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' ? sprintf('(%s)',  mage_wp_time($start_time)) : null); ?></td>
+                                    <td><?php echo $start; ?> <?php echo ($show_boarding_time == 'yes' && $start_time ? sprintf('(%s)',  mage_wp_time($start_time)) : null); ?></td>
                                 </tr>
                                 <tr>
                                     <th><i class="fas fa-map-marker"></i>
                                         <?php mage_bus_label('wbtm_dropping_points_text', __('Dropping', 'bus-ticket-booking-with-seat-reservation')) ?>
                                         :
                                     </th>
-                                    <td><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?></td>
+                                    <td><?php echo $end; ?> <?php echo ($show_dropping_time == 'yes' && $end_time ? sprintf('(%s)',  mage_wp_time($end_time)) : null); ?></td>
                                 </tr>
+                                <?php if(mage_bus_type()) : ?>
                                 <tr>
                                     <th><i class="fa fa-bus" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_type_text', __('Coach Type', 'bus-ticket-booking-with-seat-reservation')); ?>
@@ -454,6 +463,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     </th>
                                     <td><?php echo mage_bus_type(); ?></td>
                                 </tr>
+                                <?php endif; ?>
                                 <tr>
                                     <th><i class="fa fa-calendar" aria-hidden="true"></i>
                                         <?php mage_bus_label('wbtm_date_text', __('Date', 'bus-ticket-booking-with-seat-reservation')); ?>
@@ -461,7 +471,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     </th>
                                     <td><?php echo mage_wp_date($date); ?></td>
                                 </tr>
-                                <?php if ($show_boarding_time == 'yes') { ?>
+                                <?php if ($show_boarding_time == 'yes' && $start_time) { ?>
                                     <tr>
                                         <th><i class="fa fa-clock-o" aria-hidden="true"></i>
                                             <?php mage_bus_label('wbtm_start_time_text', __('Start Time', 'bus-ticket-booking-with-seat-reservation')) ?>
@@ -556,7 +566,8 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                     <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
                                         <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
                                         <?php foreach ($pickpoints as $point) :
-                                            $d = ucfirst($point['pickpoint']) . ' [' . $point['time'] . ']';
+                                            $pickupTime = $point['time'] ? ' [' . $point['time'] . ']' : '';
+                                            $d = ucfirst($point['pickpoint']) . $pickupTime;
                                         ?>
                                             <option value="<?php echo $d; ?>"><?php echo $d; ?></option>
                                         <?php endforeach; ?>
@@ -579,7 +590,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                         <div id="wbtm-form-builder-infant" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                         <div id="wbtm-form-builder-es" class="wbtm-form-builder-type-wrapper mage_customer_info_area"></div>
                     </div>
-                    <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
+                    <?php if (mage_bus_total_seat_new($bus_id) > $partial_seat_booked) :
                         do_action('wbtm_before_add_cart_btn', $bus_id, false);
                         if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                             do_action('csad_booking_button'); ?>
@@ -676,7 +687,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <span class="mage_bus_total_qty">0</span>
                                     </h5>
                                     <h5>
-                                        <strong><?php mage_bus_label('wbtm_sub_total_text', __('Sub Total :', 'bus-ticket-booking-with-seat-reservation')); ?></strong><strong class="mage_bus_sub_total_price mage-price-total"> <span class="price-figure">0.00</span></strong>
+                                        <strong><?php mage_bus_label('wbtm_sub_total_text', __('Seat Price :', 'bus-ticket-booking-with-seat-reservation')); ?></strong><strong class="mage_bus_sub_total_price mage-price-total"> <span class="price-figure">0.00</span></strong>
                                     </h5>
                                     <div class="mage_extra_bag">
                                         <h5>
@@ -708,7 +719,8 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <select name="wbtm_pickpoint" id="wbtm-pickpoint-no-seat" required>
                                             <option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
                                             <?php foreach ($pickpoints as $point) :
-                                                $d = ucfirst($point['pickpoint']) . (($point['time']) ? ' [' . $point['time'] . ']' : '');
+                                                $pickupTime = $point['time'] ? ' [' . $point['time'] . ']' : '';
+                                                $d = ucfirst($point['pickpoint']) . $pickupTime;
                                             ?>
                                                 <option value="<?php echo $d; ?>"><?php echo $d ?></option>
                                             <?php endforeach; ?>
@@ -732,7 +744,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                 <strong class="mage_bus_total_price mage-grand-total"> <span class="mage-price-figure">0.00</span></strong>
                             </h4>
                             <div>
-                                <?php if (mage_bus_total_seat_new() > $partial_seat_booked) :
+                                <?php if (mage_bus_total_seat_new($bus_id) > $partial_seat_booked) :
                                     do_action('wbtm_before_add_cart_btn', $bus_id, false);
                                     if (apply_filters('mage_bus_current_user_type', 'passenger') === 'counter_agent') :
                                         do_action('csad_booking_button'); ?>
@@ -972,21 +984,43 @@ function mage_next_date_suggestion($return, $single_bus, $target)
         $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
         $next_date = $return ? $tab_date_r : $tab_date;
 
+        // Global offdates
+        $settings = get_option('wbtm_bus_settings');
+        $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+        $global_offdates_arr = array();
+        $global_offdates_store = array();
+        if($global_offdates) {
+            $global_offdates = str_replace(' ', '', $global_offdates); // all white space
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = date('Y-m-d', strtotime($global_offdate .'-'. date('Y', strtotime($date))));
+                }
+            }
+        }
+
+        // Global offdays
+        $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
+
         $next_date_text = $next_date;
         ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
                 <?php
-                for ($i = 0; $i < 6; $i++) {
+                $i = 0;
+                while($i < 6) {
+                    if(!in_array($next_date, $global_offdates_arr) && !in_array(date('w', strtotime($next_date)), $global_offdays)) :
                 ?>
-                    <li class="<?php echo $date == $next_date ? 'mage_active' : ''; ?>">
-                        <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $next_date_text; ?>&r_date=<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>&tab_date=<?php echo $tab_date; ?>&tab_date_r=<?php echo $tab_date_r; ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
-                            <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
-                            <?php //echo mage_wp_date($next_date);
-                            ?>
-                        </a>
-                    </li>
+                        <li class="<?php echo $date == $next_date ? 'mage_active' : ''; ?>">
+                            <a href="<?php echo $single_bus ? '' : get_site_url() . '/' . $target; ?>?bus_start_route=<?php echo strip_tags($_GET['bus_start_route']); ?>&bus_end_route=<?php echo strip_tags($_GET['bus_end_route']); ?>&j_date=<?php echo $return ? strip_tags($_GET['j_date']) : $next_date_text; ?>&r_date=<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>&bus-r=<?php echo (isset($_GET['bus-r']) ? strip_tags($_GET['bus-r']) : ''); ?>&tab_date=<?php echo $tab_date; ?>&tab_date_r=<?php echo $tab_date_r; ?>" data-sroute='<?php echo strip_tags($_GET['bus_start_route']); ?>' data-eroute='<?php echo strip_tags($_GET['bus_end_route']); ?>' data-jdate='<?php echo $return ? strip_tags($_GET['j_date']) : $next_date; ?>' data-rdate='<?php echo $return ? $next_date : (isset($_GET['r_date']) ? strip_tags($_GET['r_date']) : ''); ?>' class='wbtm_next_day_search'>
+                                <?php echo get_wbtm_datetime($next_date, 'date-text') ?>
+                                <?php //echo mage_wp_date($next_date);
+                                ?>
+                            </a>
+                        </li>
                 <?php
+                    $i++;
+                    endif;
                     $next_date = date('Y-m-d', strtotime($next_date . ' +1 day'));
                     // $next_date_text = get_wbtm_datetime($next_date, 'date-text');
                     $next_date_text = $next_date;
@@ -1009,12 +1043,17 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
     $wbtm_bus_on_dates = get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true) ? maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true)) : [];
 
     $wbtm_offday_schedules = get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) ? get_post_meta(get_the_id(), 'wbtm_offday_schedule', true) : [];
-    $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
+    $show_off_day = get_post_meta(get_the_id(), 'show_off_day', true) ? get_post_meta(get_the_id(), 'show_off_day', true) : 'no';
+    $weekly_offday = ($show_off_day === 'yes' && get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : []);
+
+    $settings = get_option('wbtm_bus_settings');
+    $global_offdates = isset($settings['wbtm_bus_global_offdates']) ? $settings['wbtm_bus_global_offdates'] : [];
+    $global_offdays = isset($settings['wbtm_bus_global_offdays']) ? $settings['wbtm_bus_global_offdays'] : [];
 
     // echo '<pre>'; echo print_r($wbtm_offday_schedules); echo '<pre>';
 
 
-    if ($wbtm_bus_on_dates) {
+    if ($wbtm_bus_on_dates && get_post_meta(get_the_ID(), 'show_operational_on_day', true) === 'yes') {
     ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
@@ -1040,29 +1079,55 @@ function mage_next_date_suggestion_single($return, $single_bus, $target)
         </div>
 
     <?php
-    } elseif ($wbtm_offday_schedules || $weekly_offday) {
-
+    } elseif ($wbtm_offday_schedules || $weekly_offday || $global_offdates || $global_offdays) {
 
         $alloffdays = array();
-        foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
-            $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date'])));;
+        $local_offdates = array();
+        if($show_off_day == 'yes') { // if local offdates switch enabled
+            foreach ($wbtm_offday_schedules as $wbtm_offday_schedule) {
+                $alloffdays =  array_unique(array_merge($alloffdays, wbtm_displayDates($wbtm_offday_schedule['from_date'], $wbtm_offday_schedule['to_date']))); // merge all offdates schedules
+            }
+
+            foreach ($alloffdays as $alloffday) {
+                $local_offdates[] =  date('Y-m-d', strtotime($alloffday)); // date formating
+            }
         }
 
-        $offday = array();
-        foreach ($alloffdays as $alloffday) {
-            $offday[] =  date('Y-m-d', strtotime($alloffday));
+        // Global offdates
+        $global_offdates_arr = array();
+        $global_offdates_store = array();
+        if($global_offdates) {
+            $global_offdates = str_replace(' ', '', $global_offdates); // all white space
+            $global_offdates_store = explode(',', $global_offdates);
+            if($global_offdates_store) {
+                foreach($global_offdates_store as $global_offdate) {
+                    $global_offdates_arr[] = date('Y-m-d', strtotime($global_offdate .'-'. date('Y', strtotime($j_date))));
+                }
+            }
         }
+
+        if($local_offdates || $global_offdates_arr) {
+            $local_offdates = array_merge($local_offdates, $global_offdates_arr); // Merge local and global offdates
+            $local_offdates = array_unique($local_offdates);
+        }
+
+        // date ends
+
+        // Global offdays
+        if ($global_offdays || $weekly_offday) {
+            $weekly_offday = array_merge($global_offdays, $weekly_offday); // Merge local and global offdays
+        }
+
         $next_date = $j_date;
-
-        $weekly_offday = get_post_meta(get_the_id(), 'weekly_offday', true) ? get_post_meta(get_the_id(), 'weekly_offday', true) : [];
 
     ?>
         <div class="mage_default_xs">
             <ul class="mage_list_inline flexEqual mage_next_date">
                 <?php
                 $i = 0;
+                $next_date_text = '';
                 for ($m = 1; $m < 6; $i++) {
-                    if (!in_array($next_date, $offday) and !in_array(date('w', strtotime($next_date)), $weekly_offday) and $m < 6) {
+                    if (!in_array($next_date, $local_offdates) and !in_array(date('w', strtotime($next_date)), $weekly_offday) and $m < 6) {
                         $m++;
                 ?>
                         <li class="<?php echo $j_date == $next_date ? 'mage_active' : ''; ?>">
