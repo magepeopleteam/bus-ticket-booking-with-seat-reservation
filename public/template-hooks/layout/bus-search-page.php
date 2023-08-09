@@ -687,7 +687,7 @@ function mage_bus_item_seat_details($return, $partial_seat_booked = 0)
                                         <span class="mage_bus_total_qty">0</span>
                                     </h5>
                                     <h5>
-                                        <strong><?php mage_bus_label('wbtm_sub_total_text', __('Sub Total :', 'bus-ticket-booking-with-seat-reservation')); ?></strong><strong class="mage_bus_sub_total_price mage-price-total"> <span class="price-figure">0.00</span></strong>
+                                        <strong><?php mage_bus_label('wbtm_sub_total_text', __('Seat Price :', 'bus-ticket-booking-with-seat-reservation')); ?></strong><strong class="mage_bus_sub_total_price mage-price-total"> <span class="price-figure">0.00</span></strong>
                                     </h5>
                                     <div class="mage_extra_bag">
                                         <h5>
