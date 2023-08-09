@@ -980,9 +980,9 @@ function mage_next_date_suggestion($return, $single_bus, $target)
     $date = $return ? mage_bus_isset('r_date') : mage_bus_isset('j_date');
     $date = wbtm_convert_date_to_php($date);
     if ($date) {
-        $tab_date = isset($_GET['tab_date']) ? $_GET['tab_date'] : mage_wp_date(mage_bus_isset('j_date'), 'Y-m-d');
-        $tab_date_r = isset($_GET['tab_date_r']) ? $_GET['tab_date_r'] : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
-        $next_date = $return ? $tab_date_r : $tab_date;
+         $tab_date   = isset($_GET['tab_date']) && is_numeric($_GET['tab_date']) ? sanitize_text_field($_GET['tab_date']) : mage_wp_date(mage_bus_isset('j_date'), 'Y-m-d');
+         $tab_date_r = isset($_GET['tab_date_r']) && is_numeric($_GET['tab_date_r']) ? sanitize_text_field($_GET['tab_date_r']) : mage_wp_date(mage_bus_isset('r_date'), 'Y-m-d');
+         $next_date = $return ? $tab_date_r : $tab_date;
 
         // Global offdates
         $settings = get_option('wbtm_bus_settings');
