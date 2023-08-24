@@ -13,7 +13,7 @@
                 if ($post->post_type == "wbtm_bus"){
                     $template_name = 'single-bus.php';
                     $template_path = 'bus-ticket-booking-with-seat-reservation/';
-                    $default_path = WBTM_PLUGIN_DIR. 'public/templates/';
+                    $default_path = WBTM_PLUGIN_DIR. '/public/templates/';
 
                     $bus_type = get_post_meta($post->ID, 'wbtm_seat_type_conf', true);
                     if($bus_type === 'wbtm_seat_subscription') {

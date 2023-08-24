@@ -72,7 +72,6 @@ do_action('wbtm_before_single_bus_search_page');
             mage_bus_search_form_only(true, $target); ?>
         </div>
         <?php
-        //  if (mage_bus_run_on_date(false) && isset($_GET['bus_start_route']) && ($_GET['bus_end_route']) && ($_GET['j_date'])) { 
          if (isset($_GET['bus_start_route']) && ($_GET['bus_end_route']) && ($_GET['j_date'])) {
             
             $start = $_GET['bus_start_route'];

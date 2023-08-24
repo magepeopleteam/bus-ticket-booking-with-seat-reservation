@@ -116,7 +116,7 @@
                 if (strtotime(current_time('Y-m-d H:i')) < strtotime(date('Y-m-d H:i', strtotime($date)))) {
                     echo get_mep_datetime($date, 'date-time-text');
                 } else {
-                    esc_html_e('Expired', 'mage-eventpress');
+                    esc_html_e('Expired', 'bus-ticket-booking-with-seat-reservation');
                 }
             }
         }

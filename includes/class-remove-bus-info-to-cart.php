@@ -70,21 +70,7 @@ function wbtm_cart_item_have_two_way_route() {
                         }
                     }
                     
-                } 
-                // elseif( $value['is_return'] == 2 && $item_count > 1 ) { // If cart item is more than 1 and has return route (Cart item delete happend)
-
-                //     $start = $value['wbtm_start_stops'];
-                //     $stop = $value['wbtm_end_stops'];
-                //     $j_date = $value['wbtm_journey_date'];
-
-                //     $has_one_way = wbtm_check_has_one_way($start, $stop, $j_date);
-                //     if(!$has_one_way) {
-                //         wbtm_update_cart_return_price($key, true); // Update Return Price to original
-                //     } else {
-                //         wbtm_update_cart_return_price($key, false); // Update Return Price to return
-                //     }
-                    
-                // } 
+                }
                 else {
                     // Nothing to do!
                 }
@@ -102,11 +88,6 @@ function wbtm_check_has_one_way($start, $stop, $j_date) {
     $items = $woocommerce->cart->get_cart();
     $return = null;
     foreach($items as $key => $value) {
-
-        // if($value['wbtm_journey_date']) {
-        //     $cart_j_date = new DateTime($value['wbtm_journey_date']);
-        // }
-
         if( ($start == $value['wbtm_end_stops']) && ($stop == $value['wbtm_start_stops']) ) {
             $return = 1;
             break;

@@ -144,7 +144,7 @@ class WBTMMetaBox
 
 
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/meta_box_tab_content.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/meta_box_tab_content.php';
     }
 
     // END*****************
@@ -263,7 +263,7 @@ class WBTMMetaBox
 
         $zero_price_allow = array_key_exists('zero_price_allow', $values) ? $values['zero_price_allow'][0] : 'no';
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/bus_configuration.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/bus_configuration.php';
 
 
     }
@@ -307,7 +307,7 @@ class WBTMMetaBox
 
 
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/routing.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/routing.php';
 
 
     }
@@ -354,7 +354,7 @@ class WBTMMetaBox
         $show_extra_service = array_key_exists('show_extra_service', $values) ? $values['show_extra_service'][0] : '';
 
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/seat_pricing.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/seat_pricing.php';
 
 
 
@@ -405,7 +405,7 @@ class WBTMMetaBox
             }
         }
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/pickup_point.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/pickup_point.php';
 
 
     }
@@ -416,6 +416,7 @@ class WBTMMetaBox
         $values = get_post_custom($post->ID);
 
         $ondates = get_post_meta($post->ID, 'wbtm_bus_on_dates', true);
+		echo '<pre>';print_r($ondates);echo '</pre>';
         $wbtm_offday_schedule = maybe_unserialize(get_post_meta($post->ID, 'wbtm_offday_schedule', true));
         $show_operational_on_day = array_key_exists('show_operational_on_day', $values) ? $values['show_operational_on_day'][0] : '';
         $show_off_day = array_key_exists('show_off_day', $values) ? $values['show_off_day'][0] : '';
@@ -439,7 +440,7 @@ class WBTMMetaBox
 
 
 
-        require_once WBTM_PLUGIN_DIR . 'admin/template/bus_onday_offday.php';
+        require_once WBTM_PLUGIN_DIR . '/admin/template/bus_onday_offday.php';
 
         ?>
 
