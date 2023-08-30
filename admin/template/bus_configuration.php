@@ -38,14 +38,6 @@
     </select>
 </div>
 
-<?php //if (mage_bus_setting_value('same_bus_return_setting', 'disable') == 'enable') : ?>
-<!--    <div id="wbtm_same_bus_return" class="wbtm-item-row">-->
-<!--        <label class="item-label">--><?php //echo __("Return same", "bus-ticket-booking-with-seat-reservation") . ' ' . mage_bus_setting_value('bus_menu_label'); ?><!--</label>-->
-<!--        <input type="radio" id="wbtm_same_bus_return_no" name="wbtm_general_same_bus_return" --><?php //echo (($wbtm_general_same_bus_return == "no" || $wbtm_general_same_bus_return == '') ? " checked" : ""); ?><!-- value="no"> <label for="wbtm_same_bus_return_no"> --><?php //_e('No', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
-<!--        <input type="radio" id="wbtm_same_bus_return_yes" name="wbtm_general_same_bus_return" --><?php //echo ($wbtm_general_same_bus_return == "yes" ? " checked" : ""); ?><!-- value="yes" style="margin-left: 20px"> <label for="wbtm_same_bus_return_yes"> --><?php //_e('Yes', 'bus-ticket-booking-with-seat-reservation') ?><!--</label>-->
-<!--    </div>-->
-<?php //endif; ?>
-
 <div id="mtsa_city_zone" class="wbtm-item-row">
     <?php do_action('wbtm_subscription_route_type', $subscription_type); ?>
 </div>
@@ -192,8 +184,7 @@
                 seat_row = jQuery("#seat_rows").val().trim();
                 jQuery.ajax({
                     type: 'POST',
-                    // url:wbtm_ajax.wbtm_ajaxurl,
-                    url: wbtm_ajaxurl,
+                    url: mp_ajax_url,
                     data: {
                         "action": "wbtm_seat_plan",
                         "seat_col": seat_col,
@@ -332,8 +323,7 @@
                 seat_row = jQuery("#seat_rows_dd").val().trim();
                 jQuery.ajax({
                     type: 'POST',
-                    // url:wbtm_ajax.wbtm_ajaxurl,
-                    url: wbtm_ajaxurl,
+                    url: mp_ajax_url,
                     data: {
                         "action": "wbtm_seat_plan_dd",
                         "seat_col": seat_col,

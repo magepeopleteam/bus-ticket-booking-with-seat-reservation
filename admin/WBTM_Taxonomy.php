@@ -3,104 +3,141 @@
    * @Author 		engr.sumonazma@gmail.com
    * Copyright: 	mage-people.com
    */
-	if ( ! defined( 'ABSPATH' ) ) {
+	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if ( ! class_exists( 'WBTM_Taxonomy' ) ) {
+	if (!class_exists('WBTM_Taxonomy')) {
 		class WBTM_Taxonomy {
 			public function __construct() {
-				add_action( 'init', [ $this, 'taxonomy' ] );
+				add_action('init', [$this, 'taxonomy']);
+				add_action('admin_init', [$this, 'taxonomy_edit']);
 			}
-			public function taxonomy(){
-				$name   = WBTM_Functions::get_name();
+			public function taxonomy() {
+				$name = WBTM_Functions::get_name();
 				$labels = array(
-					'name'                       => $name . ' ' . esc_html__( ' Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'singular_name'              => _x( $name . ' Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'menu_name'                  => _x( $name . ' Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'all_items'                  => esc_html__( 'All', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . esc_html__( 'Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'parent_item'                => esc_html__( 'Parent', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . esc_html__( 'Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'parent_item_colon'          => esc_html__( 'Parent', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . esc_html__( 'Type:', 'bus-ticket-booking-with-seat-reservation' ),
-					'new_item_name'              => _x( 'New  ' . $name . '  Type Name', 'bus-ticket-booking-with-seat-reservation' ),
-					'add_new_item'               => esc_html__( 'Add New', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . _x( 'Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'edit_item'                  => _x( 'Edit  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'update_item'                => _x( 'Update  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'view_item'                  => _x( 'View  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'separate_items_with_commas' => _x( 'Separate Category with commas', 'bus-ticket-booking-with-seat-reservation' ),
-					'add_or_remove_items'        => _x( 'Add or remove  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'choose_from_most_used'      => _x( 'Choose from the most used', 'bus-ticket-booking-with-seat-reservation' ),
-					'popular_items'              => _x( 'Popular  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'search_items'               => _x( 'Search  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'not_found'                  => _x( 'Not Found', 'bus-ticket-booking-with-seat-reservation' ),
-					'no_terms'                   => _x( 'No  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation' ),
-					'items_list'                 => _x( $name . ' Type list', 'bus-ticket-booking-with-seat-reservation' ),
-					'items_list_navigation'      => _x( $name . ' Type list navigation', 'bus-ticket-booking-with-seat-reservation' ),
+					'name' => $name . ' ' . esc_html__(' Type', 'bus-ticket-booking-with-seat-reservation'),
+					'singular_name' => _x($name . ' Type', 'bus-ticket-booking-with-seat-reservation'),
+					'menu_name' => _x($name . ' Type', 'bus-ticket-booking-with-seat-reservation'),
+					'all_items' => esc_html__('All', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Type', 'bus-ticket-booking-with-seat-reservation'),
+					'parent_item' => esc_html__('Parent', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Type', 'bus-ticket-booking-with-seat-reservation'),
+					'parent_item_colon' => esc_html__('Parent', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Type:', 'bus-ticket-booking-with-seat-reservation'),
+					'new_item_name' => _x('New  ' . $name . '  Type Name', 'bus-ticket-booking-with-seat-reservation'),
+					'add_new_item' => esc_html__('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . _x('Type', 'bus-ticket-booking-with-seat-reservation'),
+					'edit_item' => _x('Edit  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'update_item' => _x('Update  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'view_item' => _x('View  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'separate_items_with_commas' => _x('Separate Category with commas', 'bus-ticket-booking-with-seat-reservation'),
+					'add_or_remove_items' => _x('Add or remove  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'choose_from_most_used' => _x('Choose from the most used', 'bus-ticket-booking-with-seat-reservation'),
+					'popular_items' => _x('Popular  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'search_items' => _x('Search  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'not_found' => _x('Not Found', 'bus-ticket-booking-with-seat-reservation'),
+					'no_terms' => _x('No  ' . $name . '  Type', 'bus-ticket-booking-with-seat-reservation'),
+					'items_list' => _x($name . ' Type list', 'bus-ticket-booking-with-seat-reservation'),
+					'items_list_navigation' => _x($name . ' Type list navigation', 'bus-ticket-booking-with-seat-reservation'),
 				);
 				$args = array(
-					'hierarchical'          => true,
-					"public"                => true,
-					'labels'                => $labels,
-					'show_ui'               => true,
-					'show_admin_column'     => true,
+					'hierarchical' => true,
+					"public" => true,
+					'labels' => $labels,
+					'show_ui' => true,
+					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
-					'query_var'             => true,
-					'rewrite'               => array( 'slug' => 'bus-category' ),
-					'show_in_rest'          => true,
-					'rest_base'             => 'bus_cat',
+					'query_var' => true,
+					'rewrite' => array('slug' => 'bus-category'),
+					'show_in_rest' => true,
+					'rest_base' => 'bus_cat',
 				);
-				register_taxonomy( 'wbtm_bus_cat', 'wbtm_bus', $args );
+				register_taxonomy('wbtm_bus_cat', 'wbtm_bus', $args);
 				$bus_stops_labels = array(
-					'singular_name' => _x( $name . ' Stops', 'bus-ticket-booking-with-seat-reservation' ),
-					'name'          => _x( $name . ' Stops', 'bus-ticket-booking-with-seat-reservation' ),
+					'singular_name' => _x($name . ' Stops', 'bus-ticket-booking-with-seat-reservation'),
+					'name' => _x($name . ' Stops', 'bus-ticket-booking-with-seat-reservation'),
 				);
 				$bus_stops_args = array(
-					'hierarchical'          => true,
-					"public"                => true,
-					'labels'                => $bus_stops_labels,
-					'show_ui'               => true,
-					'show_admin_column'     => true,
+					'hierarchical' => true,
+					"public" => true,
+					'labels' => $bus_stops_labels,
+					'show_ui' => true,
+					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
-					'query_var'             => true,
-					'rewrite'               => array( 'slug' => 'bus-stops' ),
-					'show_in_rest'          => true,
-					'rest_base'             => 'bus_stops',
+					'query_var' => true,
+					'rewrite' => array('slug' => 'bus-stops'),
+					'show_in_rest' => true,
+					'rest_base' => 'bus_stops',
 				);
-				register_taxonomy( 'wbtm_bus_stops', 'wbtm_bus', $bus_stops_args );
+				register_taxonomy('wbtm_bus_stops', 'wbtm_bus', $bus_stops_args);
 				$labels = array(
-					'name'                       => $name . ' ' . esc_html__( 'Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'singular_name'              => esc_html__( $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'menu_name'                  => esc_html__( $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'all_items'                  => esc_html__( 'Allx ' . $name . ' Bus Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'parent_item'                => esc_html__( 'Parent', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . esc_html__( 'Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'parent_item_colon'          => _x( 'Parent ' . $name . ' Pickup Point:', 'bus-ticket-booking-with-seat-reservation' ),
-					'new_item_name'              => _x( 'New ' . $name . ' Pickup Point Name', 'bus-ticket-booking-with-seat-reservation' ),
-					'add_new_item'               => esc_html__( 'Add New', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $name . ' ' . esc_html__( 'Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'edit_item'                  => _x( 'Edit ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'update_item'                => _x( 'Update ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'view_item'                  => _x( 'View ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'separate_items_with_commas' => _x( 'Separate Category with commas', 'bus-ticket-booking-with-seat-reservation' ),
-					'add_or_remove_items'        => _x( 'Add or remove ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'choose_from_most_used'      => _x( 'Choose from the most used', 'bus-ticket-booking-with-seat-reservation' ),
-					'popular_items'              => _x( 'Popular' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'search_items'               => _x( 'Search' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'not_found'                  => _x( 'Not Found', 'bus-ticket-booking-with-seat-reservation' ),
-					'no_terms'                   => _x( 'No' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation' ),
-					'items_list'                 => _x( $name . ' Pickup Point list', 'bus-ticket-booking-with-seat-reservation' ),
-					'items_list_navigation'      => _x( $name . ' Pickup Point list navigation', 'bus-ticket-booking-with-seat-reservation' ),
+					'name' => $name . ' ' . esc_html__('Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'singular_name' => esc_html__($name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'menu_name' => esc_html__($name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'all_items' => esc_html__('Allx ' . $name . ' Bus Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'parent_item' => esc_html__('Parent', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'parent_item_colon' => _x('Parent ' . $name . ' Pickup Point:', 'bus-ticket-booking-with-seat-reservation'),
+					'new_item_name' => _x('New ' . $name . ' Pickup Point Name', 'bus-ticket-booking-with-seat-reservation'),
+					'add_new_item' => esc_html__('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'edit_item' => _x('Edit ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'update_item' => _x('Update ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'view_item' => _x('View ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'separate_items_with_commas' => _x('Separate Category with commas', 'bus-ticket-booking-with-seat-reservation'),
+					'add_or_remove_items' => _x('Add or remove ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'choose_from_most_used' => _x('Choose from the most used', 'bus-ticket-booking-with-seat-reservation'),
+					'popular_items' => _x('Popular' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'search_items' => _x('Search' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'not_found' => _x('Not Found', 'bus-ticket-booking-with-seat-reservation'),
+					'no_terms' => _x('No' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+					'items_list' => _x($name . ' Pickup Point list', 'bus-ticket-booking-with-seat-reservation'),
+					'items_list_navigation' => _x($name . ' Pickup Point list navigation', 'bus-ticket-booking-with-seat-reservation'),
 				);
 				$args = array(
-					'hierarchical'          => true,
-					"public"                => true,
-					'labels'                => $labels,
-					'show_ui'               => true,
-					'show_admin_column'     => true,
+					'hierarchical' => true,
+					"public" => true,
+					'labels' => $labels,
+					'show_ui' => true,
+					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
-					'query_var'             => true,
-					'rewrite'               => array( 'slug' => 'bus-pickuppoint' ),
-					'show_in_rest'          => false,
-					'rest_base'             => 'bus_pickpoint',
-					'meta_box_cb'           => false,
+					'query_var' => true,
+					'rewrite' => array('slug' => 'bus-pickuppoint'),
+					'show_in_rest' => false,
+					'rest_base' => 'bus_pickpoint',
+					'meta_box_cb' => false,
 				);
-				register_taxonomy( 'wbtm_bus_pickpoint', 'wbtm_bus', $args );
+				register_taxonomy('wbtm_bus_pickpoint', 'wbtm_bus', $args);
+			}
+			public function taxonomy_edit() {
+				$bus_stops_option = array(
+					array(
+						'id' => 'wbtm_is_hide_global_boarding',
+						'title' => __('Hide on global boarding point', 'bus-ticket-booking-with-seat-reservation'),
+						'details' => __('Hide on global boarding point', 'bus-ticket-booking-with-seat-reservation'),
+						'type' => 'checkbox',
+						'args' => array(
+							'yes' => ''
+						)
+					),
+					array(
+						'id' => 'wbtm_bus_routes_name_list',
+						'title' => __('Route Point', 'bus-ticket-booking-with-seat-reservation'),
+						'details' => __('Please Select Route Point ', 'bus-ticket-booking-with-seat-reservation'),
+						'collapsible' => true,
+						'type' => 'repeatable',
+						'btn_text' => 'Add New Route Point',
+						'title_field' => 'wbtm_bus_routes_name',
+						'fields' => array(
+							array(
+								'type' => 'select',
+								'default' => 'option_1',
+								'item_id' => 'wbtm_bus_routes_name',
+								'name' => 'Stops Name',
+								'args' => 'TAXN_%wbtm_bus_stops%'
+							)
+						),
+					),
+				);
+				$args = array(
+					'taxonomy' => 'wbtm_bus_stops',
+					'options' => $bus_stops_option,
+				);
+				new TaxonomyEdit($args);
 			}
 		}
 		new WBTM_Taxonomy();

@@ -1,12 +1,9 @@
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-
 }
-
 /**
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
@@ -213,28 +210,6 @@ select2 param css
 	width: 100%;
 	margin: 0;
 }
-/*
-.postbox table.form-table tr td{
-    padding: 0;
-    margin: 0;
-    line-height: 0;
-}
-
-.postbox table.form-table tr td pre {
-    display: none;
-    margin-top: 0;
-}
-.ppof-metabox .form-wrapper.full-width {
-    /* margin-top: -30px; *
-}
-.postbox table.form-table {
-    margin-bottom: 0;
-    /* margin-top: -40px; *
-}
-#postbox-container-2 .description {
-    padding-left: 0;
-    padding-top: 5px;
-} */
 /* Tab Style */
 #wp-mep_event_cc_email_text-media-buttons button {
 	width: auto !important;
@@ -1089,7 +1064,6 @@ table#repeatable-fieldset-seat-one-dd tr td input {
 	position: absolute;
 	right: 0;
 	top: 0;
-	line-height: 1em;
 	text-align: center;
 	color: #FFF;
 	font-weight: 700;
@@ -1370,7 +1344,6 @@ button.wbtm_add_pickpoint_this_city,
 	color: #FFF;
 	display: block;
 	text-align: center;
-	margin-top: auto;
 	margin-top: 15px;
 	margin-left: 0;
 	margin-right: 0;
@@ -1478,18 +1451,17 @@ select.wbtm_pick_boarding {
 .wbtm-route-summary-inner {display: none;}
 /* Route summary End */
 /************************************/
-.name_required{
-	color:red;
-	padding-left: 158px  !important;
+.name_required {
+	color: red;
+	padding-left: 158px !important;
 	padding-top: 10px !important;
 	font-size: 17px !important;
 	display: none;
 }
-.success_text, .duplicate_text{
+.success_text, .duplicate_text {
 	text-align: center;
 	padding-bottom: 10px !important;
 }
-
 .mpStyle .roundSwitchLabel input:checked + .roundSwitch {
 	background-color: var(--success-color);
 }
@@ -1507,7 +1479,6 @@ select.wbtm_pick_boarding {
 	-webkit-flex-wrap: nowrap;
 	flex-wrap: nowrap;
 }
-
 /*check box*/
 .mpStyle .roundSwitchLabel input[type='checkbox'] {
 	display: none;
@@ -1536,51 +1507,49 @@ select.wbtm_pick_boarding {
 	-webkit-transition: .4s;
 	transition: .4s;
 }
-.pb-10{
+.pb-10 {
 	padding-bottom: 10px;
 }
-.ra-button-style{
-	padding: 10px 0;text-align: center;background: #d23838;color: #fff;border: 5px solid #ff2d2d;padding: 5px;font-size: 16px;display: block;margin: 20px;
+.ra-button-style {
+	text-align: center;background: #D23838;color: #FFF;border: 5px solid #FF2D2D;padding: 5px;font-size: 16px;display: block;margin: 20px;
 }
-.boarding_points.ra-display-button{
+.boarding_points.ra-display-button {
 	display: none;
 }
-.open-routing-tab.ra-display-boarding-point{
+.open-routing-tab.ra-display-boarding-point {
 	display: none;
 }
-.ra-enable-button{
+.ra-enable-button {
 	float: left;
 	padding-right: 20px;
 }
-.bus-stops-left-col, .bus-stops-right-col{
+.bus-stops-left-col, .bus-stops-right-col {
 	width: 50%;
 }
-
-.bus-stops-left-col table, .bus-stops-right-col table{
+.bus-stops-left-col table, .bus-stops-right-col table {
 	width: 100%;
 }
-.bus-stops-left-col table, .bus-stops-left-col table th, .bus-stops-left-col table td, .bus-stops-right-col table, .bus-stops-right-col table th, .bus-stops-right-col table td{
+.bus-stops-left-col table, .bus-stops-left-col table th, .bus-stops-left-col table td, .bus-stops-right-col table, .bus-stops-right-col table th, .bus-stops-right-col table td {
 	text-align: center;
-	border: 1px solid #dcdcde;
+	border: 1px solid #DCDCDE;
 	border-collapse: collapse;
 }
-
-p.ra-stopage-desc{
+p.ra-stopage-desc {
 	padding-top: 10px !important;
 }
-#wbtm_add_meta_box .postbox-header{
+#wbtm_add_meta_box .postbox-header {
 	background-color: #444;
 }
-#wbtm_add_meta_box .postbox-header h2{
-	color: #c6d4db;
+#wbtm_add_meta_box .postbox-header h2 {
+	color: #C6D4DB;
 }
-.mpStyle button.ra-picup-point-button{
+.mpStyle button.ra-picup-point-button {
 	display: inline !important;
 }
-.ra-text-center{
+.ra-text-center {
 	text-align: center;
 }
-.color_danger{
+.color_danger {
 	color: red !important;
 }
 .button.wbtm-tb-repeat-btn {
@@ -1591,7 +1560,7 @@ p.ra-stopage-desc{
 	border: 2px solid #22D02D;
 	padding: 10px;
 	line-height: inherit;
-	color: #fff;
+	color: #FFF;
 	display: block;
 	text-align: center;
 	margin: auto;
@@ -1600,11 +1569,186 @@ p.ra-stopage-desc{
 .button.remove-seat-row, .button.remove-seat-row-dd, .button.wbtm-remove-row-t, .button.remove-bp-row {
 	border-color: #EA2330;
 	background: #EA2330;
-	color: #fff;
+	color: #FFF;
 }
 .wp-core-ui button.remove-price-row {
 	border-color: #EA2330;
 	background: #EA2330;
-	color: #fff;
+	color: #FFF;
 	line-height: initial;
 }
+/***************welcome page*****************/
+.wbtm_welcome_wrap h1 {
+	margin-bottom: 20px;
+}
+.wbtm_welcome_wrap #tab-1 h1 {
+	display: block !important;
+}
+.wbtm_welcome_wrap ul.tabs {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.wbtm_welcome_wrap ul.tabs li {
+	background: #DBDBDB;
+	color: #222;
+	display: inline-block;
+	padding: 10px 15px;
+	cursor: pointer;
+}
+.wbtm_welcome_wrap ul.tabs li.current {
+	background: #fff;
+	color: #222;
+}
+.wbtm_welcome_wrap .tab-content {
+	display: none;
+	background: #fff;
+	padding: 15px;
+	position: relative;
+}
+.wbtm_welcome_wrap .tab-content.current {
+	display: inherit;
+}
+.wbtm_welcome_wrap .wbtm-d-btn {
+	color: #fff;
+	background-color: #337ab7;
+	border-radius: 3px;
+	font-family: inherit;
+	font-size: .875rem;
+	font-weight: 500;
+	cursor: pointer;
+	display: inline-block;
+	line-height: 1.125rem;
+	padding: .5rem 1rem;
+	margin: 0;
+	height: auto;
+	border: 1px solid transparent;
+	vertical-align: middle;
+	-webkit-appearance: none;
+	text-decoration: none;
+	margin-right: 10px;
+}
+.wbtm_welcome_wrap .wbtm-top-pro-btn {
+	color: #fff;
+	background: #f95656;
+	border-radius: 3px;
+	font-family: inherit;
+	font-size: .875rem;
+	font-weight: 500;
+	cursor: pointer;
+	display: inline-block;
+	line-height: 1.125rem;
+	padding: .5rem 1rem;
+	margin: 0;
+	height: auto;
+	border: 1px solid transparent;
+	vertical-align: middle;
+	-webkit-appearance: none;
+	text-decoration: none;
+}
+@media only screen and (min-width: 768px) {
+	.wbtm_welcome_wrap .wbtm-top-pro-btn {
+		position: absolute;
+		right: 20px;
+		top: 20px;
+	}
+}
+.wbtm_welcome_wrap .wbtm-d-btn:hover, .wbtm_welcome_wrap .wbtm-top-pro-btn:hover {
+	color: #fff;
+}
+.wbtm_welcome_wrap ul.accordion {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.wbtm_welcome_wrap ul.accordion .inner {
+	overflow: hidden;
+	display: none;
+	background: #fbfbfb;
+	border: 1px solid #d3d3d3;
+	padding: 20px;
+}
+.wbtm_welcome_wrap ul.accordion a.toggle {
+	width: 100%;
+	display: block;
+	background: rgba(0, 0, 0, 0.78);
+	color: #fefefe;
+	padding: .75em;
+	border-radius: 0.15em;
+	transition: .3s ease;
+	max-width: -moz-available;
+	max-width: -webkit-fill-available;
+}
+.wbtm_welcome_wrap ul.accordion li {
+	margin: .5em 0;
+}
+.wbtm_welcome_wrap ul.accordion li:hover {
+	background: rgba(0, 0, 0, 0.9);
+}
+.wbtm_welcome_wrap ul.accordion a {
+	text-decoration: none;
+}
+.wbtm_welcome_wrap ul.accordion .toggle:after {
+	content: "\f132";
+	font-size: 16px;
+	color: #fff;
+	float: right;
+	margin-left: 5px;
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	display: inline-block;
+}
+.wbtm_welcome_wrap ul.accordion .toggle.active:after {
+	content: "\f460";
+}
+.wbtm_welcome_wrap ul.accordion a.toggle.active {
+	background-color: #438243;
+}
+.wbtm_welcome_wrap p {
+	margin-top: 0;
+}
+.wbtm_welcome_wrap .badge {
+	background: #f95656;
+	padding: 0px 5px 0px 5px;
+	border-radius: 5px;
+	margin-left: 5px;
+}
+.wbtm_welcome_wrap table {
+	border-collapse: collapse;
+	width: 100%;
+}
+.wbtm_welcome_wrap td, .wbtm_welcome_wrap th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+.wbtm_welcome_wrap th {
+	background-color: #dddddd;
+}
+.wbtm_welcome_wrap tr td:nth-child(1) {
+	width: 25%;
+}
+.wbtm_welcome_wrap code {
+	background: #efff004a;
+	font-weight: bold;
+	border: 1px solid #b7b787;
+	display: inline-block;
+}
+.wbtm_welcome_wrap .mt-10 {
+	margin-top: 10px;
+}
+.wbtm_import_process tr:nth-child(odd) {
+	background-color: #f5f5f5;
+}
+.wbtm_import_process tr:nth-child(even) {
+	background-color: #f0f8ff;
+}
+.wbtm_import_process tr td:nth-child(1) {
+	width: 10%;
+	text-align: center;
+}
+.wbtm_import_process {
+	margin-bottom: 20px;
+}
+/*************************/

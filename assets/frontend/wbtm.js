@@ -1,3 +1,51 @@
+//==================================================Search area==================//
+(function ($) {
+	"use strict";
+	$(document).on("change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
+		let current = $(this);
+		let start_route=current.val();
+		let parent=current.closest('.wbtm_search_area');
+		let target=parent.find('.wbtm_dropping_point');
+		parent.find('.wbtm_dropping_point .mp_input_select_list').remove();
+		target.find('input.formControl').val('');
+		dLoader_xs(parent);
+		let exit_route=0;
+		parent.find('.wbtm_start_point .mp_input_select_list li').each(function (){
+			let current_route=$(this).data('value');
+			if(current_route===start_route){
+				exit_route=1;
+			}
+		}).promise().done(function (){
+			if(exit_route>0){
+				let post_id=parent.find('[name="wbtm_post_id"]').val();
+				$.ajax({
+					type: 'POST',
+					url: mp_ajax_url,
+					data: {
+						"action": "get_wbtm_dropping_point",
+						"start_route": start_route,
+						"post_id": post_id,
+					},
+					success: function (data) {
+						target.append(data).promise().done(function () {
+							dLoaderRemove(parent);
+							target.find('input.formControl').trigger('click');
+						});
+					},
+					error: function (response) {
+						console.log(response);
+					}
+				});
+			}else{
+				dLoaderRemove(parent);
+				mp_alert(target);
+				current.val('').trigger('click');
+			}
+		});
+		//alert(start_route);
+	});
+}(jQuery));
+//====================================================================//
 (function ($) {
 	"use strict";
 
@@ -8,14 +56,9 @@
 		$("#ja_date").datepicker({
 			dateFormat: "yy-mm-dd"
 		});
-		$('#j_date_exchange').datepicker({
-			dateFormat: "yy-mm-dd",
-			minDate: 0
-		});
 		$(".the_select select").select2();
 		$("#boarding_point, #drp_point").select2();
 		//==============//
-		$('.mage_default.mage_form_inline').closest('.fusion-text').css('transform', 'inherit');
 		$('.mage-seat-qty input').on('input', function () {
 			let $this = $(this);
 			let parent = $this.parents('.mage_bus_seat_details');
@@ -214,17 +257,6 @@
 		});
 		// Any date return END
 	});
-	//one way return
-	$(document).on({
-		click: function () {
-			$('.mage_return_date').slideUp(300).removeClass('mage_hidden').find('input').val('');
-		}
-	}, '#one_way');
-	$(document).on({
-		click: function () {
-			$('.mage_return_date').slideDown(300).removeClass('mage_hidden');
-		}
-	}, '#return');
 	//qty inc dec
 	$(document).on({
 		click: function () {
@@ -350,83 +382,6 @@
 			mage_bus_price_qty_calculation(target.parents('.mage_bus_item'));
 		}
 	}
-	// input use drop down selector
-	$(document).on('click', function (event) {
-		let selectUl = $('.mage_input_select_list');
-		if (!$(event.target).parents().hasClass('mage_input_select') && selectUl.is(':visible')) {
-			let target = $('.mage_input_select input');
-			target.each(function (index) {
-				let input = $(this).val().toLowerCase();
-				let flag = 0;
-				$(this).parents('.mage_input_select').find('li').filter(function () {
-					if ($(this).attr('data-route').toLowerCase() === input) {
-						flag = 1;
-						mage_bus_dropping_point(selectUl);
-					}
-				});
-				if (flag < 1) {
-					$(this).val('');
-				}
-			});
-			selectUl.slideUp(200);
-		}
-	});
-	$(document).on({
-		keyup: function () {
-			let input = $(this).val().toLowerCase();
-			$(this).parents('.mage_input_select').find('.mage_input_select_list').find('li').filter(function () {
-				// $(this).toggle($(this).attr('data-route').toLowerCase().indexOf(input) > -1);
-				// $('#wbtm_dropping_point_list').slideUp(100);
-				let input_length = input.length;
-				let target_str = $(this).attr('data-route').toLowerCase().substring(0, input_length);
-				$(this).toggle($(this).attr('data-route').toLowerCase().substring(0, input_length) === input);
-			});
-			$('#wbtm_dropping_point_list').slideUp(100);
-			$(this).parents('.mage_input_select').find('.mage_input_select_list').slideDown(200);
-		},
-		click: function () {
-			$('#wbtm_dropping_point_list').slideUp(100);
-			$(this).parents('.mage_input_select').find('.mage_input_select_list').slideDown(200);
-		},
-		blur: function () { }
-	}, '.mage_input_select input');
-	$(document).on({
-		click: function () {
-			let route = $(this).attr('data-route');
-			$(this).parents('.mage_input_select_list').slideUp(200).parents('.mage_input_select').find('input').val(route);
-			$('.mage_bus_dropping_point input').focus();
-			mage_bus_dropping_point($(this));
-		}
-	}, '.mage_input_select_list li');
-	function mage_bus_dropping_point(target) {
-		let bus_id = target.parents('.mage_single_bus_search_page').attr('data-busId');
-		if (target.parents().hasClass('mage_bus_boarding_point')) {
-			var boarding_point = target.attr('data-route');
-			if (boarding_point !== undefined) {
-				$.ajax({
-					type: 'POST',
-					// url: wbtm_ajax.wbtm_ajaxurl,
-					url: wbtm_ajaxurl,
-					data: {"action": "wbtm_load_dropping_point", "boarding_point": boarding_point, bus_id: bus_id},
-					beforeSend: function () {
-						$('#wbtm_dropping_point_inupt').val('');
-						$('#wbtm_dropping_point_list').slideUp(200);
-						$('#wbtm_show_msg').html('<span>Loading..</span>').show();
-					},
-					success: function (data) {
-						$('#wbtm_show_msg').hide();
-						$('#wbtm_dropping_point_inupt').val('');
-						$('.mage_bus_dropping_point ul.mage_input_select_list').html(data).slideDown(250);
-					}
-				});
-				return false;
-			}
-		}
-	}
-	//bus price convert
-	function mage_bus_price_convert(price, target, loader) {
-		target.html(mp_price_format(price));
-	}
 	//bus details toggle
 	$(document).on({
 		click: function () {
@@ -445,17 +400,6 @@
 			let target = $(this);
 			defaultLoaderFixed();
 			mage_seat_selection(target, f);
-			let seatType = parseInt($(this).attr('data-passenger-type'));
-			if (seatType === 0) {
-				seatType = 'Adult';
-			}
-			if (seatType === 1) {
-				seatType = 'Child';
-			}
-			if (seatType === 2) {
-				seatType = 'Infant';
-			}
-			//mageCustomRegField($(this), seatType, 1);
 		}
 	}, '.mage_bus_seat_item');
 	$(document).on({
@@ -552,8 +496,7 @@
 			// parents.find('.mage_customer_info_area').append(mageCustomerInfoFormBus(parents, seatName, passengerType, busDd)).find('[data-seat-name="' + seatName + '"]').slideDown(200);
 			$.ajax({
 				type: 'POST',
-				// url: wbtm_ajax.wbtm_ajaxurl,
-				url: wbtm_ajaxurl,
+				url: mp_ajax_url,
 				data: {"action": "mage_bus_selected_seat_item", "price": price, "seat_name": seatName, "passenger_type": passengerType, "start": start, "end": end, "j_date": j_date, "dd": busDd, "id": bus_id, "has_seat": has_seat, "is_return": is_return, "r_date": r_date},
 				success: function (data) {
 					defaultLoaderFixedRemove();
@@ -598,7 +541,6 @@
 			qty++;
 		});
 		parents.find('.mage_bus_total_qty').html(qty); // Seat quantity
-		// mage_bus_price_convert(subTotal, parents.find('.mage_bus_sub_total_price'),false);
 		parents.find('.mage_customer_info_area input[name="extra_bag_quantity[]"]').each(function (index) {
 			bagPerPrice = parseFloat($(this).attr('data-price'));
 			bagQty += $(this).val() ? parseInt($(this).val()) : 0;
@@ -611,8 +553,8 @@
 		}
 		if (bagQty > 0) {
 			parents.find('.mage_bus_extra_bag_qty').html(bagQty);
-			mage_bus_price_convert(bagPerPrice, parents.find('.mage_extra_bag_price'), false);
-			mage_bus_price_convert(bagPrice, parents.find('.mage_bus_extra_bag_total_price'), false);
+			parents.find('.mage_extra_bag_price').html(mp_price_format(bagPerPrice));
+			parents.find('.mage_bus_extra_bag_total_price').html(mp_price_format(bagPrice));
 			parents.find('.mage_extra_bag').slideDown(200);
 		} else {
 			parents.find('.mage_extra_bag').slideUp(200);
@@ -649,7 +591,7 @@
 	function mageCustomRegField($this, seatType, qty, onlyES = false) {
 		let bus_id = $this.parents('.mage_bus_item').attr('data-bus-id');
 		$.ajax({
-			url: wbtm_ajaxurl,
+			url: mp_ajax_url,
 			type: 'POST',
 			async: true,
 			data: {busID: bus_id, seatType: seatType, seats: qty, onlyES: onlyES, action: 'wbtm_form_builder'},
@@ -683,7 +625,7 @@
 		let qty = 1;
 		let seatType = seat_name;
 		$.ajax({
-			url: wbtm_ajaxurl,
+			url: mp_ajax_url,
 			type: 'POST',
 			async: true,
 			dataType: 'html',
@@ -773,150 +715,5 @@
 				return true;
 			}
 		}
-	}
-})(jQuery);
-(function ($) {
-	'use strict';
-	$(document).ready(function ($) {
-		var single_bus = $("#all_date_picker_info").data("single_bus") || '';
-		var return_single_bus = $("#return_all_date_picker_info").data("return_single_bus") || '';
-		var date_format = $("#all_date_picker_info").data("date_format");
-		if (single_bus) {
-			var enableDates = $("#all_date_picker_info").data("enabledates");
-			var off_particular_date = $("#all_date_picker_info").attr("data-off_particular_date");
-			var weekly_offday = $("#all_date_picker_info").data("weekly_offday");
-			var enable_onday = $("#all_date_picker_info").data("enable_onday");
-			var enable_offday = $("#all_date_picker_info").data("enable_offday");
-			if (enable_onday == 'yes' && enableDates) { // Onday enabled & has value
-				jQuery('#j_date').datepicker({
-					dateFormat: date_format,
-					beforeShowDay: function (date) {
-						return enableAllTheseDays(date, enableDates);
-					}
-				});
-			} else if (off_particular_date || weekly_offday) { // offdates enabled & has value or global offdates has value
-				jQuery("#j_date").datepicker({
-					dateFormat: date_format,
-					minDate: 0,
-					beforeShowDay: function (date) {
-						return off_particular(date, off_particular_date, weekly_offday);
-					}
-				});
-			} else {
-				jQuery("#j_date").datepicker({
-					dateFormat: date_format,
-					minDate: 0,
-				});
-			}
-		} else { // Global search
-			var global_off_particular_date = $("#all_date_picker_info").data("disabledates");
-			var global_weekly_offday = $("#all_date_picker_info").data("disabledays");
-			jQuery("#j_date").datepicker({
-				dateFormat: date_format,
-				minDate: 0,
-				beforeShowDay: function (date) {
-					return off_particular(date, global_off_particular_date, global_weekly_offday);
-				},
-				onClose: function (selectedDate) {
-					$("#r_date").datepicker("option", "minDate", selectedDate);
-				}
-			});
-			jQuery("#r_date").datepicker({
-				dateFormat: date_format,
-				minDate: jQuery("#j_date").val(),
-				beforeShowDay: function (date) {
-					return off_particular(date, global_off_particular_date, global_weekly_offday);
-				}
-			});
-		}
-		if (return_single_bus) {
-			var return_enableDates = $("#return_all_date_picker_info").attr("data-enabledates");
-			var return_off_particular_date = $("#return_all_date_picker_info").attr("data-off_particular_date");
-			var return_weekly_offday = $("#return_all_date_picker_info").attr("data-weekly_offday");
-			var return_enable_onday = $("#return_all_date_picker_info").attr("data-enable_onday");
-			var return_enable_offday = $("#return_all_date_picker_info").attr("data-enable_offday");
-			if (return_enable_onday || return_enable_offday) {
-				if (return_enable_onday == 'yes') {
-					if (return_enableDates) {
-						jQuery('#r_date').datepicker({
-							dateFormat: date_format,
-							minDate: 0,
-							beforeShowDay: function (date) {
-								return enableAllTheseDays(date, return_enableDates);
-							}
-						});
-					} else {
-						jQuery("#r_date").datepicker({
-							dateFormat: date_format,
-							minDate: 0,
-						});
-					}
-				} else if (return_enable_offday == 'yes') {
-					jQuery("#r_date").datepicker({
-						dateFormat: date_format,
-						minDate: 0,
-						beforeShowDay: function (date) {
-							return off_particular(date, return_off_particular_date, return_weekly_offday);
-						}
-					});
-				} else {
-					jQuery("#r_date").datepicker({
-						dateFormat: date_format,
-						minDate: 0,
-					});
-				}
-			} else {
-				if (return_enableDates) {
-					jQuery('#r_date').datepicker({
-						dateFormat: date_format,
-						minDate: 0,
-						beforeShowDay: function (date) {
-							return enableAllTheseDays(date, return_enableDates);
-						}
-					});
-				} else {
-					jQuery("#r_date").datepicker({
-						dateFormat: date_format,
-						minDate: 0,
-						beforeShowDay: function (date) {
-							return off_particular(date, return_off_particular_date, return_weekly_offday);
-						}
-					});
-				}
-			}
-		}
-	});
-	function enableAllTheseDays(date, enableDates) {
-		var sdate = jQuery.datepicker.formatDate('mm-dd', date)
-		const p = enableDates.split(', ');
-		if (p.length > 0) {
-			if (jQuery.inArray(sdate, p) != -1) {
-				return [true];
-			}
-		}
-		return [false];
-	}
-	function off_particular(date, off_particular_date, weekly_offday) {
-		var sdate = jQuery.datepicker.formatDate('dd-mm', date)
-		const p = off_particular_date.split(',')
-		console.log(p, sdate);
-		if (p.length > 0) {
-			if (jQuery.inArray(sdate, p) != -1) {
-				return [false];
-			}
-		}
-		let d;
-		weekly_offday = weekly_offday.toString();
-		if (weekly_offday.indexOf(',') != -1) {
-			d = weekly_offday.split(',')
-		} else {
-			d = [weekly_offday]
-		}
-		if (d.length > 0) {
-			if (d.includes(date.getDay().toString())) {
-				return [false];
-			}
-		}
-		return [true];
 	}
 })(jQuery);

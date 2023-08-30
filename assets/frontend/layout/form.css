@@ -34,14 +34,7 @@ div[class^="mage"] ul.mage_input_select_list {
 }
 ul.mage_input_select_list li {padding: 10px;cursor: pointer;margin: 0;list-style-type: none;display:block;border-bottom: 1px solid var(--default-border-color);}
 ul.mage_input_select_list li:hover {color: var(--default-active-color);}
-/*****Form horizontal*******/
-.mage_form_horizontal {max-width: 500px;margin: 0 auto;}
-/*****Form inline*******/
-.mage_form_inline {padding: 15px;margin: 15px 0 0 0;}
-.mage_form_inline .mage_form_list {width: 100%;margin: 0 5px;min-width: 150px;position: relative;}
-.mage_form_inline .mage_form_list label span {font-family: inherit;font-size: 13px}
-/********Form Horizontal**************/
-.mage_form_horizontal {max-width: 500px;width: 100%;margin: 0 auto;padding: var(--default-mp);}
+
 /*****Form Qty inc dec*******/
 div.mage_form_qty {max-width: 140px;border: 1px solid var(--default-border-color);margin: 0;background-color: var(--default-content-bg);text-align: center;}
 div.mage_form_qty .mage_form_control {width: 50%;border-top: none !important;border-bottom: none !important;text-align: center;}
@@ -58,22 +51,4 @@ input[type="text"].mage_form_control::-moz-placeholder {
 }
 input[type="text"].mage_form_control::-ms-input-placeholder {
     color: #bdd1ff;
-}
-
-
-
-
-
-/**********Responsive*********/
-/* @media only screen and (max-width: 1250px) {
-    .mage_form_inline .mage_form_list {max-width: calc(25% - 10px);}
-}
-@media only screen and (max-width: 1050px) {
-    .mage_form_inline .mage_form_list {max-width: calc(33.33% - 10px);}
-}
-@media only screen and (max-width: 850px) {
-    .mage_form_inline .mage_form_list {max-width: calc(50% - 10px);}
-} */
-@media only screen and (max-width: 600px) {
-    .mage_form_inline .mage_form_list {max-width: 100%;min-width: 100%;}
 }

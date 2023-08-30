@@ -12,14 +12,9 @@
 	$(document).ready(function () {
 		// Init
 		wbtmSeatTypeConf();
-		wbtmSameBusReturn();
 		// Seat Type Selection
 		$('select[name="wbtm_seat_type_conf"]').change(function () {
 			wbtmSeatTypeConf();
-		});
-		// Single bus return Config
-		$('input[name="wbtm_general_same_bus_return"]').change(function () {
-			wbtmSameBusReturn();
 		});
 		// Route summary
 		$('.wbtm_route_summary_btn').click(function (e) {
@@ -184,17 +179,6 @@
 		}
 	}
 	// Same Bus Return condition
-	function wbtmSameBusReturn() {
-		// let currentVal = $('input[name="wbtm_general_same_bus_return"]:checked').val(); // disabled this setting
-		let currentVal = 'no';
-		if (currentVal === 'yes') {
-			$('.wbtm-only-for-return-enable').removeClass('this_disabled').show();
-			$('.wbtm-only-for-return-enable').find('input[type="text"], input[type="hidden"], select').prop('disabled', false)
-		} else {
-			$('.wbtm-only-for-return-enable').addClass('this_disabled').hide();
-			$('.wbtm-only-for-return-enable').find('input[type="text"], input[type="hidden"], select').prop('disabled', true)
-		}
-	}
 	function wbtmPriceType(priceType) {
 		let routeTab = $('.mp_event_tab_area').find('li[data-target-tabs="#wbtm_routing"]');
 		let pickuppointTab = $('.mp_event_tab_area').find('li[data-target-tabs="#wbtm_pickuppoint"]');
@@ -217,19 +201,6 @@
 			routeTab.show();
 			pickuppointTab.show();
 			//extraService.show();
-		}
-	}
-	function wbtmToggleRouteTime(state) {
-		let routeTab = $('.mp_tab_item[data-tab-item="#wbtm_routing"]');
-		let routeTable = routeTab.find('.repeatable-fieldset');
-		if (state == 'hide') {
-			routeTable.find('input[name="wbtm_bus_next_end_time[]"]').parent().hide();
-			routeTable.find('input[name="wbtm_bus_bp_start_time[]"]').parent().hide();
-			routeTable.find('tbody tr th').eq('1').hide();
-		} else {
-			routeTable.find('input[name="wbtm_bus_next_end_time[]"]').parent().show();
-			routeTable.find('input[name="wbtm_bus_bp_start_time[]"]').parent().show();
-			routeTable.find('tbody tr th').eq('1').show();
 		}
 	}
 	function wbtmSubscriptionRouteType() {
@@ -270,7 +241,32 @@ jQuery(document).ready(function(){
 		scrollbar: true
 	});
 });
-//====================================//
+//============Welcome========================//
+jQuery(document).ready(function () {
+	jQuery('.wbtm_welcome_wrap ul.tabs li').click(function () {
+		var tab_id = jQuery(this).attr('data-tab');
+		jQuery('.wbtm_welcome_wrap ul.tabs li').removeClass('current');
+		jQuery('.wbtm_welcome_wrap .tab-content').removeClass('current');
+		jQuery(this).addClass('current');
+		jQuery("#" + tab_id).addClass('current');
+	});
+	jQuery('.wbtm_welcome_wrap ul.accordion .toggle').click(function (e) {
+		e.preventDefault();
+		var $this = jQuery(this);
+		if ($this.next().hasClass('show')) {
+			$this.next().removeClass('show');
+			$this.removeClass('active');
+			$this.next().slideUp(350);
+		} else {
+			$this.parent().parent().find('li .inner').removeClass('show');
+			$this.parent().parent().find('li a').removeClass('active');
+			$this.parent().parent().find('li .inner').slideUp(350);
+			$this.next().toggleClass('show');
+			$this.toggleClass('active');
+			$this.next().slideToggle(350);
+		}
+	});
+});
 //==========Modal / Popup==========//
 (function ($) {
 	"use strict";
@@ -287,8 +283,7 @@ jQuery(document).ready(function(){
 			let description = $("#bus_stop_description").val().trim();
 			$.ajax({
 				type: 'POST',
-				// url:wbtm_ajax.wbtm_ajaxurl,
-				url: wbtm_ajaxurl,
+				url: mp_ajax_url,
 				dataType: 'JSON',
 				data: {
 					"action": "wbtm_add_bus_stope",
@@ -343,8 +338,7 @@ jQuery(document).ready(function(){
 			let description = $("#pickup_description").val().trim();
 			$.ajax({
 				type: 'POST',
-				// url:wbtm_ajax.wbtm_ajaxurl,
-				url: wbtm_ajaxurl,
+				url: mp_ajax_url,
 				dataType: 'JSON',
 				data: {
 					"action": "wbtm_add_pickup",

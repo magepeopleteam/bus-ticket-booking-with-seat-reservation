@@ -90,7 +90,7 @@ function mp_load_date_picker(parent = jQuery('.mpStyle')) {
 			changeMonth: true,
 			changeYear: true,
 			onSelect: function (dateString, data) {
-				let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + data.selectedDay;
+				let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay) ).slice(-2) ;
 				jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
 			}
 		});
@@ -295,18 +295,40 @@ function mp_all_content_change($this) {
 //==============================================================================Input use as select================//
 (function ($) {
 	"use strict";
-	$(document).on("click", "div.mpStyle .mp_input_select input.formControl", function () {
-		$(this).closest('.mp_input_select').find('.mp_input_select_list').slideDown(250);
-	});
 	$(document).on("click", "div.mpStyle .mp_input_select .mp_input_select_list li", function () {
 		let current = $(this);
 		let parent = $(this).closest('.mp_input_select');
 		let value = current.data('value');
 		let text = current.html();
-		parent.find('input.formControl').val(text);
 		parent.find('.mp_input_select_list').slideUp(250);
-		parent.find('input[type="hidden"]').val(value).trigger('change')
+		if(parent.find('input[type="hidden"]').length>0){
+			parent.find('input.formControl').val(text);
+			parent.find('input[type="hidden"]').val(value).trigger('change');
+		}else {
+			parent.find('input.formControl').val(value).trigger('change');
+		}
 	});
+	$(document).on({
+		keyup: function () {
+			let input = $(this).val().toLowerCase();
+			$(this).closest('.mp_input_select').find('.mp_input_select_list li').each(function () {
+				let input_length = input.length;
+				$(this).toggle($(this).attr('data-value').toLowerCase().substring(0, input_length) === input);
+			});
+			$(this).closest('.mp_input_select').find('.mp_input_select_list').slideDown(200);
+		},
+		click: function () {
+			$('body').find('.mp_input_select .mp_input_select_list').slideUp(250);
+			let input = $(this).val().toLowerCase();
+			$(this).closest('.mp_input_select').find('.mp_input_select_list li').each(function () {
+				let data = $(this).attr('data-value').toLowerCase();
+				if (!input || input === data) {
+					$(this).slideDown('fast');
+				}
+			});
+			$(this).closest('.mp_input_select').find('.mp_input_select_list').slideDown(250);
+		}
+	}, 'div.mpStyle .mp_input_select input.formControl');
 }(jQuery));
 //============================================================================Sticky================//
 function mp_sticky_management() {
@@ -380,7 +402,6 @@ function mp_sticky_management() {
 					mp_sticky_management();
 					dLoaderRemove(parent);
 				});
-
 			});
 		});
 	}

@@ -328,8 +328,8 @@ if (!class_exists("AddThemePage")) {
                 <?php
                 do_action("nav_header_top");
                 echo '<div class="wbtm_settings_panel_header">';
-                echo wbtm_get_plugin_data("Name");
-                echo "<small>" . wbtm_get_plugin_data("Version") . "</small>";
+                echo MP_Global_Function::get_plugin_data("Name");
+                echo "<small>" . MP_Global_Function::get_plugin_data("Version") . "</small>";
                 echo "</div>";
                 do_action("nav_header_bottom");
                 ?>
