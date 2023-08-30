@@ -10,7 +10,7 @@ function mage_bus_search_form_only($single_bus, $target, $custom_url='')
     if($custom_url) {
         $form_url = $custom_url;
     } elseif($single_bus) {
-        $form_url = $single_bus;
+        $form_url = '';
     } else {
         $form_url = get_permalink(get_page_by_path($target));
     }
