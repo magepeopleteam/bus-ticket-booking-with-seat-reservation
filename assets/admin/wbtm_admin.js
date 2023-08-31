@@ -1,7 +1,6 @@
 //==========Price settings=================//
 (function ($) {
 	"use strict";
-
 }(jQuery));
 //==========Date time settings=================//
 (function ($) {
@@ -30,13 +29,6 @@
 		})
 		$("input[name='wbtm_bus_on_dates']").multiDatesPicker({
 			dateFormat: "mm-dd",
-			minDate: 0,
-			beforeShow: function (input, inst) {
-				$(inst.dpDiv).addClass('wbtm-hide-year');
-			},
-		});
-		$("input[name='wbtm_bus_on_dates_return']").multiDatesPicker({
-			dateFormat: "yy-mm-dd",
 			minDate: 0,
 			beforeShow: function (input, inst) {
 				$(inst.dpDiv).addClass('wbtm-hide-year');
@@ -220,7 +212,7 @@
 		}
 	}
 })(jQuery);
-jQuery(document).ready(function(){
+jQuery(document).ready(function () {
 	jQuery('.bus-stops-wrapper input.text').timepicker({
 		timeFormat: 'H:mm',
 		interval: 15,
@@ -230,7 +222,6 @@ jQuery(document).ready(function(){
 		dropdown: true,
 		scrollbar: true
 	});
-
 	jQuery('.pickpoint-adding input[type="text"]').timepicker({
 		timeFormat: 'H:mm',
 		interval: 15,
@@ -391,12 +382,6 @@ jQuery(document).ready(function () {
 	});
 	$("#off-day-control").click(function () {
 		$(".off-day").slideToggle("slow");
-	});
-	$("#return-operational-on-day-control").click(function () {
-		$(".return-operational-on-day").slideToggle("slow");
-	});
-	$("#return-off-day-control").click(function () {
-		$(".return-off-day").slideToggle("slow");
 	});
 	$("#extra-service-control").click(function () {
 		$(".extra-service").slideToggle("slow");

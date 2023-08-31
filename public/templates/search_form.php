@@ -17,25 +17,23 @@
 		
 		<?php if ($start_route && $end_route && $j_date) { ?>
 			<div class="_dLayout_dShadow_3">
-				<?php
-					WBTM_Layout::next_date_suggestion($all_dates);
-					WBTM_Layout::route_title();
-					echo '<div class="wbtm_search_part _mT_xs">';
-					mage_bus_search_list(false);
-					echo '</div>'; ?>
+				<?php WBTM_Layout::next_date_suggestion($all_dates); ?>
+				<?php WBTM_Layout::route_title(); ?>
+				<div class="wbtm_search_part _mT_xs">
+					<?php mage_bus_search_list(false); ?>
+				</div>
 			</div>
 		<?php } ?>
 		
 		<?php if ($start_route && $end_route && $r_date) { ?>
+			<h4 class="textCenter"><?php esc_html_e('Return Trip', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
+			<div class="divider"></div>
 			<div class="_dLayout_dShadow_3">
-				<?php
-					$return_trip_text = mage_bus_label('wbtm_return_trip_text_heading', __('Return Trip', 'bus-ticket-booking-with-seat-reservation'), true) . ':';
-					echo '<p style="margin:40px 0 7px;color: #587275;text-decoration: underline;font-family: sans-serif;text-align:center;font-size: 1.8em!important;">' . $return_trip_text . '</p>';
-					WBTM_Layout::next_date_suggestion($all_dates, true);
-					WBTM_Layout::route_title(true);
-					echo '<div class="wbtm_search_part _mT_xs" id="wbtm_return_container">';
-					mage_bus_search_list(true);
-					echo '</div>'; ?>
+				<?php WBTM_Layout::next_date_suggestion($all_dates, true); ?>
+				<?php WBTM_Layout::route_title(true); ?>
+				<div class="wbtm_search_part _mT_xs" id="wbtm_return_container">
+					<?php mage_bus_search_list(true); ?>
+				</div>
 			</div>
 		<?php } ?>
 	</div>

@@ -47,10 +47,10 @@
 					$form_url=$post_id>0?'':get_site_url().'/'.$target_page;
 					if ($start_route && $end_route && $j_date) {
 					?>
-					<div class="buttonGroup _mT_xs_equalChild_fullWidth">
+					<div class="buttonGroup _equalChild_fullWidth">
 						<?php
 							foreach ($all_dates as $date) {
-								if ($count <= 6 && strtotime($date) >= strtotime($active_date)) {
+								if ($count <= 6 && (strtotime($date) >= strtotime($active_date) || sizeof($all_dates)<6)) {
 									$btn_class = strtotime($date) == strtotime($active_date) ? '_themeButton_textWhite' : '_mpBtn_bgLight_textTheme';
 									$url_j_date=$return?$j_date:$date;
 									$url_r_date=$return?$date:$r_date;

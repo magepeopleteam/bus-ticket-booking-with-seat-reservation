@@ -64,8 +64,12 @@
 				}
 				return $all_routes;
 			}
+			public static function get_bus_type($post_id) {
+				$term = get_the_terms($post_id, 'wbtm_bus_cat');
+				return $term ? $term[0]->name : '';
+			}
 			//==========================//
-			public static function get_date($post_id) {
+			public static function get_date($post_id,$start_route='') {
 				$now = current_time('Y-m-d');
 				$year = current_time('Y');
 				$all_dates = [];
@@ -142,6 +146,122 @@
 				$all_dates = array_unique($all_dates);
 				usort($all_dates, "MP_Global_Function::sort_date");
 				return $all_dates;
+			}
+			public static function check_buffer_time($post_id,$date,$start_route){
+			
+			}
+			//==========================//
+			public static function get_total_seat($post_id) {
+				$seat_type = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+				$total_seat = 0;
+				if ($seat_type == 'wbtm_seat_plan') {
+					$seats_rows = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info');
+					$seat_col = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols');
+					if ($seats_rows && $seat_col) {
+						foreach ($seats_rows as $seat) {
+							for ($i = 1; $i <= (int)$seat_col; $i++) {
+								$seat_name = strtolower($seat["seat" . $i]);
+								if ($seat_name != 'door' && $seat_name != 'wc' && $seat_name != '') {
+									$total_seat++;
+								}
+							}
+						}
+						$seats_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd');
+						$seat_col_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols_dd');
+						if (is_array($seats_dd) && sizeof($seats_dd) > 0) {
+							foreach ($seats_dd as $seat) {
+								for ($i = 1; $i <= $seat_col_dd; $i++) {
+									$seat_name = $seat["dd_seat" . $i] ?? '';
+									if ($seat_name != 'door' && $seat_name != 'wc' && $seat_name != '') {
+										$total_seat++;
+									}
+								}
+							}
+						}
+					}
+				}
+				else {
+					$total_seat = MP_Global_Function::get_post_info($post_id, 'wbtm_total_seat');
+				}
+				return $total_seat;
+			}
+			//==========================//
+			public static function get_seat_price($post_id, $start_route, $end_route, $dd = false, $seat_type = null, $return_price = false) {
+				if ($post_id && $start_route && $end_route) {
+					$start_route = strtolower($start_route);
+					$end_route = strtolower($end_route);
+					$flag = false;
+					$price_arr = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_prices');
+					if (!empty($price_arr) && is_array($price_arr)) {
+						foreach ($price_arr as $value) {
+							if (strtolower($value['wbtm_bus_bp_price_stop']) == $start_route && strtolower($value['wbtm_bus_dp_price_stop']) == $end_route) {
+								$flag = true;
+								break;
+							}
+						}
+					}
+					if (!$flag) {
+						$price_arr = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_prices_return');
+						if (!empty($price_arr) && is_array($price_arr)) {
+							foreach ($price_arr as $value) {
+								if (strtolower($value['wbtm_bus_bp_price_stop']) == $start_route && strtolower($value['wbtm_bus_dp_price_stop']) == $end_route) {
+									$flag = true;
+									break;
+								}
+							}
+						}
+						if (!$flag) {
+							return false;
+						}
+					}
+					$return_price_data = false;
+					if ($flag) {
+						$seat_dd_increase = (int)MP_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent');
+						$dd_price_increase = ($dd && $seat_dd_increase) ? $seat_dd_increase : 0;
+						foreach ($price_arr as $val) {
+							$p_start = strtolower($val['wbtm_bus_bp_price_stop']);
+							$p_end = strtolower($val['wbtm_bus_dp_price_stop']);
+							if ($p_start === $start_route && $p_end === $end_route && !$return_price) { // Not return
+								if (1 == $seat_type) {
+									$price = $val['wbtm_bus_child_price'] + ($val['wbtm_bus_child_price'] * $dd_price_increase / 100);
+								}
+								elseif (2 == $seat_type) {
+									$price = $val['wbtm_bus_infant_price'] + ($val['wbtm_bus_infant_price'] * $dd_price_increase / 100);
+								}
+								elseif (3 == $seat_type) {
+									$price = $val['wbtm_bus_special_price'] + ($val['wbtm_bus_special_price'] * $dd_price_increase / 100);
+								}
+								else {
+									$price = $val['wbtm_bus_price'] + ($val['wbtm_bus_price'] * $dd_price_increase / 100);
+								}
+								$return_price_data = $price;
+								break;
+							}
+							if ($p_start === $start_route && $p_end === $end_route && $return_price) { // Return
+								if (1 == $seat_type) {
+									$p = (($val['wbtm_bus_child_price_return']) ?: $val['wbtm_bus_child_price']);
+									$price = $p + ($p * $dd_price_increase / 100);
+								}
+								elseif (2 == $seat_type) {
+									$p = (($val['wbtm_bus_infant_price_return']) ?: $val['wbtm_bus_infant_price']);
+									$price = $p + ($p * $dd_price_increase / 100);
+								}
+								elseif (3 == $seat_type) {
+									$p = (($val['wbtm_bus_special_price']) ?: 0);
+									$price = $p + ($p * $dd_price_increase / 100);
+								}
+								else {
+									$p = (($val['wbtm_bus_price_return']) ?: $val['wbtm_bus_price']);
+									$price = $p + ($p * $dd_price_increase / 100);
+								}
+								$return_price_data = $price;
+								break;
+							}
+						}
+						return $return_price_data;
+					}
+				}
+				return false;
 			}
 			//==========================//
 			public static function get_name() {

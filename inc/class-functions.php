@@ -79,7 +79,6 @@
 										?>
 										<td>
 											<input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
-											<?php wbtm_get_seat_type_list($seat_type_name); ?>
 										</td>
 									<?php } ?>
 								<td>
@@ -98,7 +97,6 @@
 								?>
 								<td align="center">
 									<input type="text" value="" name="seat<?php echo $row; ?>[]" class="text">
-									<?php wbtm_get_seat_type_list($seat_type_name); ?>
 								</td>
 							<?php } ?>
 						<td align="center">
@@ -274,9 +272,6 @@
 					$(document).on('click', '.remove-seat-row<?php echo $id; ?>', function () {
 						let parents = $(this).parents('.admin-bus-details');
 						$(document.body).trigger('remove_selection<?php echo $id; ?>', [$(this).data("seat"), parents]);
-						parents.find('.wbtm_anydate_return_switch label:first-child').trigger('click');
-						parents.find('.wbtm_anydate_return_switch label:first-child').addClass('active');
-						parents.find('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
 					});
 					jQuery('#start_stops<?php echo $id; ?>').on('change', function () {
 						var start_time = jQuery(this).find(':selected').data('start');
@@ -529,106 +524,12 @@
 						let $this = jQuery(this);
 						let parent = $this.parents('form');
 						let seat_list = parent.find('.selected-seat-table tbody').children('.seat_selected_price');
-						setTimeout(
-							function () {
-								if (seat_list.length > 0) {
-									jQuery('.wbtm_anydate_return_wrap').show();
-									jQuery('.wbtm_anydate_return_switch label:first-child').trigger('click');
-									jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
-									jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
-								} else {
-									jQuery('.wbtm_anydate_return_wrap').hide();
-								}
-							},
-							1000);
 					});
 					jQuery('.mage-seat-qty input').on('input', function () {
 						let $this = $(this);
 						let type = $this.attr('data-seat-type');
 						let qty = $this.val();
 						qty = qty > 0 ? qty : 0;
-						if (type) {
-							if (qty > 0) {
-								jQuery('.wbtm_anydate_return_wrap').show();
-								jQuery('.wbtm_anydate_return_switch label:nth-child(1)').trigger('click');
-								jQuery('.wbtm_anydate_return_switch label:first-child').addClass('active');
-								jQuery('.wbtm_anydate_return_switch label:first-child .wbtm_anydate_return').prop('checked', true);
-							} else {
-								jQuery('.wbtm_anydate_return_wrap').hide();
-							}
-						}
-					});
-					jQuery('.wbtm_anydate_return_switch label').click(function (e) {
-						e.stopImmediatePropagation();
-						e.preventDefault();
-						let $this = jQuery(this);
-						let parent = $this.parents('form');
-						let target = jQuery('.wbtm_anydate_return_switch label');
-						target.removeClass('active');
-						$this.addClass('active');
-						target.find('.wbtm_anydate_return').prop('checked', false);
-						$this.find('.wbtm_anydate_return').prop('checked', true);
-						let value = $this.find('.wbtm_anydate_return').val();
-						let seat_plan_price = parent.find('.selected-seat-table tbody .mage-price-total .price-figure');
-						let without_seat_plan_price = parent.find('.mage-price-total .price-figure');
-						let curr_symbol = php_vars.currency_symbol;
-						if (value == 'on') {
-							if (seat_plan_price.length > 0) {
-								let seat_list = parent.find('.selected-seat-table tbody').children();
-								let amount = 0;
-								for (let i = 1; i <= seat_list.length; i++) {
-									let current_price = parent.find('.selected-seat-table tbody tr:nth-child(' + i + ') input.seat_fare').val();
-									if (typeof current_price !== "undefined") {
-										amount += parseFloat(current_price);
-									}
-								}
-								let new_amount = amount * 2;
-								let thisSubtotal = seat_plan_price;
-								thisSubtotal.html(new_amount);
-								parent.find('#wbtm_anydate_return_price').val(amount);
-							} else {
-								let seat_list = parent.find('.mage-seat-table tbody').children();
-								let amount = 0;
-								for (let i = 1; i <= seat_list.length; i++) {
-									let current_price = parent.find('.mage-seat-table tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
-									if (typeof current_price !== "undefined") {
-										amount += parseFloat(current_price);
-									}
-								}
-								let new_amount = amount * 2;
-								let thisSubtotal = without_seat_plan_price;
-								thisSubtotal.html(new_amount);
-								$this.parents('form').find('#wbtm_anydate_return_price').val(amount);
-							}
-						}
-						if (value == 'off') {
-							if (seat_plan_price.length > 0) {
-								let seat_list = parent.find('.selected-seat-table tbody').children();
-								let amount = 0;
-								for (let i = 1; i <= seat_list.length; i++) {
-									let current_price = parent.find('.selected-seat-table tbody tr:nth-child(' + i + ') input.seat_fare').val();
-									if (typeof current_price !== "undefined") {
-										amount += parseFloat(current_price);
-									}
-								}
-								let thisSubtotal = seat_plan_price;
-								thisSubtotal.html(amount);
-								parent.find('#wbtm_anydate_return_price').val('');
-							} else {
-								let seat_list = parent.find('.mage-seat-table tbody').children();
-								let amount = 0;
-								for (let i = 1; i <= seat_list.length; i++) {
-									let current_price = parent.find('.mage-seat-table tbody tr:nth-child(' + i + ') .mage-seat-price').attr('data-price');
-									if (typeof current_price !== "undefined") {
-										amount += parseFloat(current_price);
-									}
-								}
-								let thisSubtotal = without_seat_plan_price;
-								thisSubtotal.html(amount);
-								$this.parents('form').find('#wbtm_anydate_return_price').val('');
-							}
-						}
-						mageGrandPrice(parent);
 					});
 					// Any date return END
 				});
@@ -864,7 +765,7 @@
 				update_post_meta($bus->ID, 'wbtm_status', $status);
 			}
 		}
-		public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare = null, $j_date = null, $add_datetime = null, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status = null, $order_meta = null, $wbtm_billing_type = null, $city_zone = null, $wbtm_pickpoint = null, $extra_services = array(), $user_additional = null, $wbtm_is_return = 0, $wbtm_anydate_return = null, $wbtm_anydate_return_price = null, $calculated_fare = null) {
+		public function create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats = null, $fare = null, $j_date = null, $add_datetime = null, $user_name = null, $user_email = null, $passenger_type = null, $passenger_type_num = null, $user_phone = null, $user_gender = null, $user_address = null, $wbtm_extra_bag_qty = null, $extra_bag_price = null, $usr_inf = null, $counter = null, $status = null, $order_meta = null, $wbtm_billing_type = null, $city_zone = null, $wbtm_pickpoint = null, $extra_services = array(), $user_additional = null,  $calculated_fare = null) {
 			$add_datetime = current_time("Y-m-d") . ' class-functions.php' . mage_wp_time(current_time("H:i"));
 			$name = '#' . $order_id . get_the_title($bus_id);
 			$new_post = array(
@@ -904,9 +805,6 @@
 			update_post_meta($pid, 'wbtm_city_zone', $city_zone);
 			update_post_meta($pid, 'wbtm_pickpoint', $wbtm_pickpoint);
 			update_post_meta($pid, 'wbtm_user_additional', $user_additional);
-			update_post_meta($pid, 'wbtm_is_return', $wbtm_is_return);
-			update_post_meta($pid, '_wbtm_anydate_return', $wbtm_anydate_return);
-			update_post_meta($pid, '_wbtm_anydate_return_price', $wbtm_anydate_return_price);
 			update_post_meta($pid, '_wbtm_tp', $calculated_fare);
 			if ($wbtm_billing_type && $j_date && function_exists('mtsa_calculate_valid_date')) {
 				$sub_end_date = mtsa_calculate_valid_date($j_date, $wbtm_billing_type);
@@ -936,14 +834,6 @@
 					}
 				}
 			}
-			// if($_seats) {
-			//     $reg_form_arr = unserialize(get_post_meta($bus_id, 'attendee_reg_form', true));
-			//     if (is_array($reg_form_arr) && sizeof($reg_form_arr) > 0) {
-			//         foreach ($reg_form_arr as $builder) {
-			//             update_post_meta($pid, $builder['field_id'], $usr_inf[$counter][$builder['field_id']]);
-			//         }
-			//     }
-			// }
 		}
 		public function bus_order_processed($order_id) {
 			$order = wc_get_order($order_id);
@@ -969,9 +859,6 @@
 						$j_time = MP_Global_Function::get_order_item_meta($item_id, 'Time');
 						$bus_id = MP_Global_Function::get_order_item_meta($item_id, '_bus_id');
 						$b_time = MP_Global_Function::get_order_item_meta($item_id, '_btime');
-						$wbtm_is_return = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_is_return');
-						$wbtm_anydate_return = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_anydate_return');
-						$wbtm_anydate_return_price = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_anydate_return_price');
 						$calculated_fare = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
 						$seats = ($seat) ? explode(",", $seat) : null;
 						$usr_inf = unserialize($user_info_arr);
@@ -1061,7 +948,7 @@
 									//         $fare += $service['price'] * $service['qty'];
 									//     }
 									// }
-									$this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional, $wbtm_is_return, $wbtm_anydate_return, $wbtm_anydate_return_price, $calculated_fare);
+									$this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, $_seats, $fare, $j_date, $add_datetime, $user_name, $user_email, $passenger_type, $passenger_type_num, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $user_additional,$calculated_fare);
 								}
 								$counter++;
 							}
@@ -1138,7 +1025,7 @@
 								$wbtm_extra_bag_qty = 0;
 								$extra_bag_price = 0;
 							}
-							$this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $wbtm_is_return, $wbtm_anydate_return, $wbtm_anydate_return_price, $calculated_fare);
+							$this->create_bus_passenger($order_id, $bus_id, $user_id, $start, $next_stops, $end, $b_time, $j_time, null, $fare, $j_date, $add_datetime, $user_name, $user_email, null, null, $user_phone, $user_gender, $user_address, $wbtm_extra_bag_qty, $extra_bag_price, $usr_inf, $counter, 3, $order_meta, $wbtm_billing_type, $wbtm_city_zone, $wbtm_pickpoint, $extra_services_arr, $calculated_fare);
 						}
 					}
 				}
@@ -1267,22 +1154,6 @@
 	}
 	global $wbtmmain;
 	$wbtmmain = new WBTM_Plugin_Functions();
-	function wbtm_get_seat_type_list($name, $bus_id = '') {
-		ob_start();
-		?>
-		<!-- <div class='field-select2-wrapper'>
-<select name="<?php echo $name; ?>[]" id="" class="select2" multiple>
-    <option value="adult"><?php echo wbtm_get_seat_type_label('adult', 'Adult'); ?></option>
-    <option value="child"><?php echo wbtm_get_seat_type_label('child', 'Child'); ?></option>
-    <option value="infant"><?php echo wbtm_get_seat_type_label('infant', 'Infant'); ?></option>
-    <option value="special"><?php echo wbtm_get_seat_type_label('special', 'Special'); ?></option>
-    <?php do_action('wbtm_seat_type_list_init'); ?>
-</select>
-</div> -->
-		<?php
-		//echo ob_get_clean();
-		echo '';
-	}
 	function wbtm_get_seat_type_label($key, $default) {
 		global $wbtmmain;
 		$metakey = "wbtm_seat_type_" . $key . "_label";
@@ -1862,15 +1733,15 @@
 		return true; // Not ok
 	}
 	function mage_bus_title() {
+		$label=WBTM_Functions::get_name();
 		?>
-		<div class="mage_flex_mediumRadiusTop mage_bus_list_title ">
+		<div class="dFlex mage_flex_mediumRadiusTop mage_bus_list_title ">
 			<div class="mage_bus_img flexCenter">
-				<h6><?php mage_bus_label('wbtm_image_text', __('Image', 'bus-ticket-booking-with-seat-reservation'));
-					?></h6>
+				<h6><?php esc_html_e('Image', 'bus-ticket-booking-with-seat-reservation'); ?></h6>
 			</div>
 			<div class="mage_bus_info flexEqual flexCenter">
 				<div class="flexEqual">
-					<h6><?php echo mage_bus_setting_value('bus_menu_label', 'Bus') . ' class-functions.php' . __('Name', 'bus-ticket-booking-with-seat-reservation'); ?></h6>
+					<h6><?php echo esc_html($label) .' '. esc_html__('Name', 'bus-ticket-booking-with-seat-reservation'); ?></h6>
 					<h6 class="mage_hidden_xxs"><?php mage_bus_label('wbtm_schedule_text', __('Schedule', 'bus-ticket-booking-with-seat-reservation')); ?></h6>
 				</div>
 				<div class="flexEqual flexCenter textCenter">
@@ -2020,7 +1891,7 @@
 				if (is_array($seats_dd) && sizeof($seats_dd) > 0) {
 					foreach ($seats_dd as $seat) {
 						for ($i = 1; $i <= $seat_col_dd; $i++) {
-							$seat_name = isset($seat["dd_seat" . $i]) ? $seat["dd_seat" . $i] : '';
+							$seat_name = $seat["dd_seat" . $i] ?? '';
 							if ($seat_name != 'door' && $seat_name != 'wc' && $seat_name != '') {
 								$total_seat++;
 							}
@@ -2092,19 +1963,19 @@
 				}
 				if ($p_start === $start && $p_end === $end && $return_price) { // Return
 					if (1 == $seat_type) {
-						$p = (($val['wbtm_bus_child_price_return']) ? $val['wbtm_bus_child_price_return'] : $val['wbtm_bus_child_price']);
+						$p = (($val['wbtm_bus_child_price_return']) ?: $val['wbtm_bus_child_price']);
 						$price = $p + ($p * $dd_price_increase / 100);
 					}
 					elseif (2 == $seat_type) {
-						$p = (($val['wbtm_bus_infant_price_return']) ? $val['wbtm_bus_infant_price_return'] : $val['wbtm_bus_infant_price']);
+						$p = (($val['wbtm_bus_infant_price_return']) ?: $val['wbtm_bus_infant_price']);
 						$price = $p + ($p * $dd_price_increase / 100);
 					}
 					elseif (3 == $seat_type) {
-						$p = (($val['wbtm_bus_special_price']) ? $val['wbtm_bus_special_price'] : 0);
+						$p = (($val['wbtm_bus_special_price']) ?: 0);
 						$price = $p + ($p * $dd_price_increase / 100);
 					}
 					else {
-						$p = (($val['wbtm_bus_price_return']) ? $val['wbtm_bus_price_return'] : $val['wbtm_bus_price']);
+						$p = (($val['wbtm_bus_price_return']) ?: $val['wbtm_bus_price']);
 						$price = $p + ($p * $dd_price_increase / 100);
 					}
 					$return_price_data = $price;
@@ -2214,7 +2085,7 @@
 		else {
 			$rdate = date('Y-m-d');
 		}
-		$uid = -functions . phpget_the_id() . $wbtmmain->wbtm_make_id($rdate);
+		$uid = get_the_id() . $wbtmmain->wbtm_make_id($rdate);
 		foreach ($price_arr as $key => $val) {
 			if ($val['wbtm_bus_bp_price_stop'] === $start && $val['wbtm_bus_dp_price_stop'] === $end) {
 				if (mage_bus_multiple_passenger_type_check($id, $start, $end, $return)) {
@@ -3868,7 +3739,6 @@
 		$child_label = $seat_panel_settings['wbtm_seat_type_child_label'];
 		$infant_label = $seat_panel_settings['wbtm_seat_type_infant_label'];
 		$special_label = $seat_panel_settings['wbtm_seat_type_special_label'];
-		$any_date_return_switch = !empty($seat_panel_settings['any_day_return']) ? $seat_panel_settings['any_day_return'] : 'off';
 		// Bus Zero Price
 		$bus_zero_price_allow = get_post_meta($bus_id, 'zero_price_allow') ? get_post_meta($bus_id, 'zero_price_allow')[0] : '';
 		if ($bus_seat_type_conf === 'wbtm_without_seat_plan') {
@@ -3914,7 +3784,6 @@
 				<input type="hidden" name='total_seat' value="0"/>
 				<input type="hidden" name="wbtm_bus_type" value="general"/>
 				<input type="hidden" name="wbtm_bus_zero_price_allow" value="<?php echo $bus_zero_price_allow; ?>"/>
-				<input type="hidden" name="wbtm_anydate_return_price" id="wbtm_anydate_return_price" value=""/>
 				<input type="hidden" name="wbtm_bus_no" value="<?php echo get_post_meta($bus_id, 'wbtm_bus_no', true) ?>">
 				<input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title() ?>">
 				<?php
@@ -4044,27 +3913,6 @@
 										</tr>
 										</tfoot>
 									</table>
-									<?php if ($any_date_return_switch == 'on') : ?>
-										<div class="wbtm_anydate_return_wrap">
-											<div class="wbtm_anydate_return_col">
-												<?php _e('Any Date Return:', 'bus-ticket-booking-with-seat-reservation') ?>
-												<br>
-												<small><?php mage_bus_label('wbtm_anydate_return_desc_text', __('Same ticket will be valid for return up to next 15 days', 'bus-ticket-booking-with-seat-reservation')); ?></small>
-											</div>
-											<div class="wbtm_anydate_return_col">
-												<div class="wbtm_anydate_return_switch">
-													<label for="wbtm_anydate_return_off">
-														<input type="radio" name="wbtm_anydate_return" class="wbtm_anydate_return" value="off" id="wbtm_anydate_return_off">
-														<span>off</span>
-													</label>
-													<label for="wbtm_anydate_return_on">
-														<input type="radio" name="wbtm_anydate_return" class="wbtm_anydate_return" value="on" id="wbtm_anydate_return_on">
-														<span>on</span>
-													</label>
-												</div>
-											</div>
-										</div>
-									<?php endif; ?>
 									
 									<?php if ($pickpoints) : ?>
 										<div class="wbtm-pickpoint-wrap">
@@ -4075,7 +3923,7 @@
 												<option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
 												<?php foreach ($pickpoints as $point) :
 													$pickupTime = $point['time'] ? ' [' . $point['time'] . ']' : '';
-													$d = bus - search - form . phpucfirst($point['pickpoint']) . $pickupTime;
+													$d = ucfirst($point['pickpoint']) . $pickupTime;
 													?>
 													<option value="<?php echo $d; ?>"><?php echo $d; ?></option>
 												<?php endforeach; ?>
@@ -4211,27 +4059,6 @@
 												</h5>
 											</div>
 										</div>
-										<?php if ($any_date_return_switch == 'on') : ?>
-											<div class="wbtm_anydate_return_wrap">
-												<div class="wbtm_anydate_return_col">
-													<?php _e('Any Date Return:', 'bus-ticket-booking-with-seat-reservation') ?>
-													<br>
-													<small><?php mage_bus_label('wbtm_anydate_return_desc_text', __('Same ticket will be valid for return up to next 15 days', 'bus-ticket-booking-with-seat-reservation')); ?></small>
-												</div>
-												<div class="wbtm_anydate_return_col">
-													<div class="wbtm_anydate_return_switch">
-														<label for="wbtm_anydate_return_off">
-															<input type="radio" name="wbtm_anydate_return" class="wbtm_anydate_return" value="off" id="wbtm_anydate_return_off">
-															<span>off</span>
-														</label>
-														<label for="wbtm_anydate_return_on">
-															<input type="radio" name="wbtm_anydate_return" class="wbtm_anydate_return" value="on" id="wbtm_anydate_return_on">
-															<span>on</span>
-														</label>
-													</div>
-												</div>
-											</div>
-										<?php endif; ?>
 										<?php if ($pickpoints) : ?>
 											<div class="wbtm-pickpoint-wrap" style="margin-top:20px">
 												<label for="wbtm-pickpoint-no-seat"><?php _e('Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?>
@@ -4241,7 +4068,7 @@
 													<option value=""><?php _e('Select Pickup Point', 'bus-ticket-booking-with-seat-reservation') ?></option>
 													<?php foreach ($pickpoints as $point) :
 														$pickupTime = $point['time'] ? ' [' . $point['time'] . ']' : '';
-														$d = bus - search - form . phpucfirst($point['pickpoint']) . $pickupTime;
+														$d = ucfirst($point['pickpoint']) . $pickupTime;
 														?>
 														<option value="<?php echo $d; ?>"><?php echo $d ?></option>
 													<?php endforeach; ?>

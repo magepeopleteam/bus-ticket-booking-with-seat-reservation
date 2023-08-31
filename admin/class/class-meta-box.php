@@ -205,7 +205,7 @@
 			// echo mage_bus_setting_value('bus_menu_label', 'Bus');exit;
 			$settings = get_option('wbtm_bus_settings');
 			// echo '<pre>';print_r($settings); echo '<pre>';die;
-			$same_bus_return_val = isset($settings['same_bus_return_setting']) ? $settings['same_bus_return_setting'] : 'disable';
+			//$same_bus_return_val = isset($settings['same_bus_return_setting']) ? $settings['same_bus_return_setting'] : 'disable';
 			$zero_price_allow = array_key_exists('zero_price_allow', $values) ? $values['zero_price_allow'][0] : 'no';
 			require_once WBTM_PLUGIN_DIR . '/admin/template/bus_configuration.php';
 		}

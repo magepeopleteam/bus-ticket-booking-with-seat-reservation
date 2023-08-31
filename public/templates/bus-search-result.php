@@ -13,17 +13,13 @@ $available_seat     = ($total_seat - $sold_seat);
 $price_arr          = maybe_unserialize(get_post_meta(get_the_id(),'wbtm_bus_prices',true));  
 $bus_bp_array       = maybe_unserialize(get_post_meta(get_the_id(),'wbtm_bus_bp_stops',true));
 $bus_dp_array       = maybe_unserialize(get_post_meta(get_the_id(),'wbtm_bus_next_stops',true)); 
-
-$bp_time            = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
-$dp_time            = $wbtmmain->wbtm_get_bus_end_time($end, $bus_dp_array);
-
 $bp_time = $wbtmmain->wbtm_get_bus_start_time($start, $bus_bp_array);
 $dp_time = $wbtmmain->wbtm_get_bus_end_time($end, $bus_dp_array);
 
 $od_start_date      = get_post_meta(get_the_id(),'wbtm_od_start',true);  
 $od_end_date        = get_post_meta(get_the_id(),'wbtm_od_end',true);
 $od_range           = $wbtmmain->wbtm_check_od_in_range($od_start_date, $od_end_date, $date);
-$oday               = get_post_meta(get_the_id(),$od_name,true);  
+$oday               = get_post_meta(get_the_id(),$od_name,true);
 $wbtm_bus_on        = array();
 $wbtm_bus_on_dates  = get_post_meta(get_the_id(),'wbtm_bus_on_dates',true); 
     $date_format        = get_option( 'date_format' );

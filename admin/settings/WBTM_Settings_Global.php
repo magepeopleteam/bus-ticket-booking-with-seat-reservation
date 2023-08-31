@@ -145,19 +145,6 @@
 									'placeholder' => __('', 'bus-ticket-booking-with-seat-reservation'),
 								),
 								array(
-									'id' => 'same_bus_return_setting',
-									'title' => __('Same bus return setting', 'bus-ticket-booking-with-seat-reservation'),
-									'details' => __('Enable if you want to see the same bus should return option in the bus edit page. By default Disable', 'bus-ticket-booking-with-seat-reservation'),
-									'default' => 'disable',
-									'value' => 'disable',
-									'multiple' => false,
-									'type' => 'select',
-									'args' => array(
-										'disable' => __('Disable', 'bus-ticket-booking-with-seat-reservation'),
-										'enable' => __('Enable', 'bus-ticket-booking-with-seat-reservation'),
-									),
-								),
-								array(
 									'id' => 'bus_return_show',
 									'title' => __('Show return field', 'bus-ticket-booking-with-seat-reservation'),
 									'details' => __('Disable if you don\'t want to show return field in search. By default Enable', 'bus-ticket-booking-with-seat-reservation'),
@@ -168,45 +155,6 @@
 									'args' => array(
 										'disable' => __('Disable', 'bus-ticket-booking-with-seat-reservation'),
 										'enable' => __('Enable', 'bus-ticket-booking-with-seat-reservation'),
-									),
-								),
-								array(
-									'id' => 'bus_return_discount',
-									'title' => __('Return Discount Enable', 'bus-ticket-booking-with-seat-reservation'),
-									'details' => __('Enable if you want round trip price discont. By default is No', 'bus-ticket-booking-with-seat-reservation'),
-									'default' => 'no',
-									'value' => 'no',
-									'multiple' => false,
-									'type' => 'select',
-									'args' => array(
-										'yes' => __('Yes', 'bus-ticket-booking-with-seat-reservation'),
-										'no' => __('No', 'bus-ticket-booking-with-seat-reservation')
-									),
-								),
-								array(
-									'id' => 'any_day_return',
-									'title' => __('On/Off any date return switch', 'bus-ticket-booking-with-seat-reservation'),
-									'details' => __('By default: Off', 'bus-ticket-booking-with-seat-reservation'),
-									'default' => 'off',
-									'value' => 'off',
-									'multiple' => false,
-									'type' => 'select',
-									'args' => array(
-										'off' => __('Off', 'bus-ticket-booking-with-seat-reservation'),
-										'on' => __('On', 'bus-ticket-booking-with-seat-reservation'),
-									),
-								),
-								array(
-									'id' => 'route_disable_switch',
-									'title' => __('Show route disable switch', 'bus-ticket-booking-with-seat-reservation'),
-									'details' => __('By default: Off', 'bus-ticket-booking-with-seat-reservation'),
-									'default' => 'off',
-									'value' => 'off',
-									'multiple' => false,
-									'type' => 'select',
-									'args' => array(
-										'off' => __('Off', 'bus-ticket-booking-with-seat-reservation'),
-										'on' => __('On', 'bus-ticket-booking-with-seat-reservation'),
 									),
 								),
 								array(

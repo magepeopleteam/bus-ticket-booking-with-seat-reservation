@@ -5,6 +5,7 @@
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
+	img.driver_img{max-width: 45px !important;}
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
@@ -1551,51 +1552,7 @@ span.wbtm-details-page-list-label {
 		height: 145px
 	}
 }
-div[class^="mage"] .wbtm_anydate_return_wrap {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
-	margin-bottom: 20px;
-	border-bottom: 1px solid #D3D3D3;
-	background: #F5F5F5;
-	padding: 10px;
-	align-items: center;
-}
-div[class^="mage"] .wbtm_anydate_return_col {
-	width: 50%;
-	text-align: left;
-}
-[class^="mage"] .wbtm_anydate_return_switch label {
-	display: inline-block !important;
-	padding: 5px;
-	margin: 0;
-	cursor: pointer;
-}
-[class^="mage"] .wbtm_anydate_return_switch label:first-child {
-	border-right: 2px solid #EAEAEA;
-}
-[class^="mage"] .wbtm_anydate_return_switch {
-	background: #D3D3D3;
-	width: max-content;
-	border-radius: 5px;
-	overflow: hidden;
-}
-[class^="mage"] .wbtm_anydate_return_switch label.active {
-	background: #D9762E;
-	color: #FFF;
-}
-[class^="mage"] .wbtm_anydate_return_switch label input[type="radio"] {
-	visibility: hidden;
-	width: 0;
-	height: 0;
-	position: absolute;
-}
-[class^="mage"] .wbtm_anydate_return_switch label span {
-	font-weight: 500;
-	margin-right: 0 !important;
-	padding: 5px;
-}
+
 [class^="mage"] .mage_input_group {
 	display: -webkit-box;
 	display: -webkit-flex;

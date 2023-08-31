@@ -50,8 +50,7 @@
 				wp_enqueue_script('mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_script.js', array('jquery'), time(), true);
 				do_action('add_wbtm_common_script');
 			}
-			public function admin_enqueue($hook) {
-				global $post;
+			public function admin_enqueue() {
 				$this->global_enqueue();
 				wp_enqueue_editor();
 				//admin script
@@ -71,8 +70,10 @@
 				wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
 				wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array('jquery'), 1, true);
 				// multi date picker
-				wp_register_script('multidatepicker-wbtm', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multidatespicker/1.6.6/jquery-ui.multidatespicker.js', array('jquery'), 1, true);
-				wp_enqueue_script('multidatepicker-wbtm');
+				//wp_enqueue_script('jquery-ui.multidatespicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multidatespicker/1.6.6/jquery-ui.multidatespicker.js', array('jquery'), 1, true);
+				//wp_enqueue_script('multidatepicker-wbtm');
+				wp_register_script('multi_date_picker', WBTM_PLUGIN_URL . '/assets/helper/multi_date_picker.js', array('jquery'), '1.6.6', true);
+				wp_enqueue_script('multi_date_picker');
 				// admin setting global
 				wp_enqueue_script('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
 				wp_enqueue_style('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
