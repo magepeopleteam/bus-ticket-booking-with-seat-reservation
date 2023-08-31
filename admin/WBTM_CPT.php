@@ -14,6 +14,7 @@
 			public function add_cpt(): void {
 				$name   = WBTM_Functions::get_name();
 				$slug   = WBTM_Functions::get_slug();
+				$icon = WBTM_Functions::get_icon();
 				$labels = array(
 					'name'                  => _x( $name, 'bus-ticket-booking-with-seat-reservation' ),
 					'singular_name'         => _x( $name, 'bus-ticket-booking-with-seat-reservation' ),
@@ -46,7 +47,7 @@
 				$args = array(
 					'public'          => true,
 					'labels'          => $labels,
-					'menu_icon'       => 'dashicons-slides',
+					'menu_icon'       =>  $icon,
 					'supports'        => array( 'title', 'editor', 'thumbnail' ),
 					'rewrite'         => array( 'slug' => $slug ),
 					'show_in_rest'    => true,

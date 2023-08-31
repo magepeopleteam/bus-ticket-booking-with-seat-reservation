@@ -602,11 +602,7 @@
 			// Get the buffer time set by user
 			$bus_buffer_time = $this->bus_get_option('bus_buffer_time', 'general_setting_sec', 0);
 			if ($bus_buffer_time > 0) {
-				// Convert bus start time into date format
-				// $bus_buffer_time = $bus_buffer_time * 60;
-				// Make bus search date & bus start time as date format
 				$start_bus = $date . ' ' . $bus_start_time;
-				// $diff = round((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 3600, 1); // In Hour
 				$diff = round(((strtotime($start_bus) - strtotime(current_time('Y-m-d H:i:s'))) / 60), 1); // In Minute
 				if (abs($diff) != $diff) {
 					return 'no';
@@ -1531,16 +1527,8 @@
 	function mage_check_search_day_off($id, $j_date, $return = false) {
 		$db_day_prefix = 'offday_';
 		if ($j_date) {
-			$same_bus_return_setting_global = mage_bus_setting_value('same_bus_return_setting', 'disable');
-			if ($same_bus_return_setting_global === 'enable') {
-				$is_same_bus_return_allow = get_post_meta($id, 'wbtm_general_same_bus_return', true);
-				$return_text = $return && $is_same_bus_return_allow === 'yes' ? '_return' : '';
-			}
-			else {
-				$return_text = '';
-			}
 			$j_date_day = strtolower(date('D', strtotime($j_date)));
-			$get_day = get_post_meta($id, $db_day_prefix . $j_date_day . $return_text, true);
+			$get_day = get_post_meta($id, $db_day_prefix . $j_date_day, true);
 			$get_day = ($get_day != null) ? strtolower($get_day) : null;
 			if ($get_day == 'yes') {
 				return true;
@@ -1559,22 +1547,11 @@
 		if (get_post_meta($id, 'show_off_day', true) !== 'yes') {
 			return false;
 		}
-		$db_day_prefix = 'offday_';
 		$weekly_offday = get_post_meta($id, 'weekly_offday', true) ?: array();
 		if ($j_date) {
-			$same_bus_return_setting_global = mage_bus_setting_value('same_bus_return_setting', 'disable');
-			if ($same_bus_return_setting_global === 'enable' && $return) {
-				$weekly_offday = get_post_meta($id, 'weekly_offday_return', true) ?: array();
-				$j_date_day = strtolower(date('N', strtotime($j_date)));
-				if (in_array($j_date_day, $weekly_offday)) {
-					$get_day = 'yes';
-				}
-			}
-			else {
-				$j_date_day = strtolower(date('N', strtotime($j_date)));
-				if (in_array($j_date_day, $weekly_offday)) {
-					$get_day = 'yes';
-				}
+			$j_date_day = strtolower(date('N', strtotime($j_date)));
+			if (in_array($j_date_day, $weekly_offday)) {
+				$get_day = 'yes';
 			}
 			if ($get_day == 'yes') {
 				return true;

@@ -69,7 +69,7 @@
 				return $term ? $term[0]->name : '';
 			}
 			//==========================//
-			public static function get_date($post_id,$start_route='') {
+			public static function get_date($post_id, $start_route = '') {
 				$now = current_time('Y-m-d');
 				$year = current_time('Y');
 				$all_dates = [];
@@ -147,8 +147,10 @@
 				usort($all_dates, "MP_Global_Function::sort_date");
 				return $all_dates;
 			}
-			public static function check_buffer_time($post_id,$date,$start_route){
-			
+			public static function check_buffer_time($post_id, $date, $start_route) {
+				if ($post_id > 0 && $date && $start_route) {
+				}
+				return false;
 			}
 			//==========================//
 			public static function get_total_seat($post_id) {
@@ -269,6 +271,9 @@
 			}
 			public static function get_slug() {
 				return MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_slug', 'bus');
+			}
+			public static function get_icon() {
+				return MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_icon', 'dashicons-car');
 			}
 		}
 	}

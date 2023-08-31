@@ -3,7 +3,7 @@
 * @Author 		engr.sumonazma@gmail.com
 * Copyright: 	mage-people.com
 */
-	if ( ! defined( 'ABSPATH' ) ) {
+	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Dependencies')) {
@@ -70,10 +70,7 @@
 				wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
 				wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array('jquery'), 1, true);
 				// multi date picker
-				//wp_enqueue_script('jquery-ui.multidatespicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multidatespicker/1.6.6/jquery-ui.multidatespicker.js', array('jquery'), 1, true);
-				//wp_enqueue_script('multidatepicker-wbtm');
-				wp_register_script('multi_date_picker', WBTM_PLUGIN_URL . '/assets/helper/multi_date_picker.js', array('jquery'), '1.6.6', true);
-				wp_enqueue_script('multi_date_picker');
+				wp_enqueue_script('multi_date_picker', WBTM_PLUGIN_URL . '/assets/helper/multi_date_picker.js', array('jquery'), '1.6.6', true);
 				// admin setting global
 				wp_enqueue_script('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
 				wp_enqueue_style('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
@@ -106,7 +103,7 @@
 					let mp_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
 					let mp_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
 					let mp_empty_image_url = "<?php echo esc_attr(WBTM_PLUGIN_URL . '/assets/helper/images/no_image.png'); ?>";
-					let mp_date_format = "<?php echo esc_attr( MP_Global_Function::get_settings( 'wbtm_bus_settings','date_format', 'D d M , yy' ) ); ?>";
+					let mp_date_format = "<?php echo esc_attr(MP_Global_Function::get_settings('wbtm_bus_settings', 'date_format', 'D d M , yy')); ?>";
 					let wbtm_ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 				</script>
 				<?php

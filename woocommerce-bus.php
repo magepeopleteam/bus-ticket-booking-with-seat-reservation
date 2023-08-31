@@ -38,12 +38,12 @@
 		private function load_plugin() {
 			if (MP_Global_Function::check_woocommerce() == 1) {
 				$this->appsero_init_tracker();
-				self::on_activation_page_create();
+				$this->setBusPermission();
 				add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
 				add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
+				self::on_activation_page_create();
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
-				$this->run_wbtm_plugin();
-				add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
+				add_action('activated_plugin', array($this, 'activation_redirect'), 90);
 			}
 			else {
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
@@ -94,13 +94,8 @@
 			}
 			return $links_array;
 		}
-		function run_wbtm_plugin() {
-			//$plugin = new Wbtm_Plugin();
-			//$plugin->run();
-			$this->setBusPermission();
-		}
 		// Give bus all permission to admin
-		function setBusPermission() {
+		public function setBusPermission() {
 			if (is_admin()) {
 				$role = get_role('administrator');
 				(!$role->has_cap('publish_wbtm_buses')) ? $role->add_cap('publish_wbtm_buses') : null;
@@ -124,6 +119,7 @@
 					'post_status' => 'publish',
 				);
 				wp_insert_post($bus_search_page);
+				flush_rewrite_rules();
 			}
 			if (!MP_Global_Function::get_page_by_slug('bus-global-search')) {
 				$bus_global_search_page = array(
@@ -134,6 +130,7 @@
 					'post_status' => 'publish',
 				);
 				wp_insert_post($bus_global_search_page);
+				flush_rewrite_rules();
 			}
 		}
 	}
