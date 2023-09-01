@@ -127,7 +127,7 @@
 	div.mpStyle h1 { font-size: var(--fs_h1); font-weight: var(--fw-bold); }
 	div.mpStyle h2 { font-size: var(--fs_h2); font-weight: var(--fw-bold); }
 	div.mpStyle h3 { font-size: var(--fs_h3); font-weight: var(--fw-medium); }
-	div.mpStyle h4 { font-size: var(--fs_h4); font-weight: var(--fw-medium); }
+	div.mpStyle h4 ,div.mpStyle [class*="_h4"]{ font-size: var(--fs_h4); font-weight: var(--fw-medium); }
 	div.mpStyle h5 { font-size: var(--fs_h5); font-weight: var(--fw-medium); }
 	div.mpStyle h6 { font-size: var(--fs_h6); font-weight: var(--fw-normal); }
 	div.mpStyle label { font-size: var(--fs_label); font-weight: var(--fw-medium); }

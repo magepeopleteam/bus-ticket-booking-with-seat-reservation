@@ -71,7 +71,9 @@
 			//==========================//
 			public static function get_date($post_id, $start_route = '') {
 				$now = current_time('Y-m-d');
+				$now_full = current_time('Y-m-d H:i');
 				$year = current_time('Y');
+				$start_stops = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
 				$all_dates = [];
 				if ($post_id > 0) {
 					$show_on_dates = MP_Global_Function::get_post_info($post_id, 'show_operational_on_day', 'no');
@@ -83,13 +85,16 @@
 							if (strtotime($date_item) < strtotime($now)) {
 								$date_item = date('Y-m-d', strtotime($year + 1 . '-' . $on_date));
 							}
-							$all_dates[] = $date_item;
+							$date_full = self::reduce_buffer_time($post_id, $date_item, $start_stops, $start_route);
+							if (strtotime($date_full)>strtotime($now_full)) {
+								$all_dates[] = $date_item;
+							}
 						}
 					}
 					else {
-						$sale_end_date = MP_Global_Function::get_settings('wbtm_bus_settings', 'wbtm_ticket_sale_close_date', '');
+						$sale_end_date = self::get_settings('wbtm_ticket_sale_close_date', '');
 						$sale_end_date = $sale_end_date ? date('Y-m-d', strtotime($sale_end_date)) : '';
-						$active_days = MP_Global_Function::get_settings('wbtm_bus_settings', 'wbtm_ticket_sale_max_date', 30);
+						$active_days = self::get_settings('wbtm_ticket_sale_max_date', 30);
 						$start_date = $now;
 						$end_date = date('Y-m-d', strtotime($start_date . ' +' . $active_days . ' day'));
 						if ($sale_end_date && strtotime($sale_end_date) < strtotime($end_date)) {
@@ -114,14 +119,17 @@
 							$dates = MP_Global_Function::date_separate_period($start_date, $end_date);
 							foreach ($dates as $date) {
 								$date = $date->format('Y-m-d');
-								$day = strtolower(date('w', strtotime($date)));
-								if ($show_off_day = 'yes') {
-									if (!in_array($date, $off_dates) && !in_array($day, $off_days)) {
+								$date_full = self::reduce_buffer_time($post_id, $date, $start_stops, $start_route);
+								if (strtotime($date_full)>strtotime($now_full)) {
+									$day = strtolower(date('w', strtotime($date)));
+									if ($show_off_day = 'yes') {
+										if (!in_array($date, $off_dates) && !in_array($day, $off_days)) {
+											$all_dates[] = $date;
+										}
+									}
+									else {
 										$all_dates[] = $date;
 									}
-								}
-								else {
-									$all_dates[] = $date;
 								}
 							}
 						}
@@ -129,10 +137,10 @@
 				}
 				return $all_dates;
 			}
-			public static function get_all_dates($post_id = 0) {
+			public static function get_all_dates($post_id = 0,$start_route='') {
 				$all_dates = [];
 				if ($post_id > 0) {
-					$all_dates = self::get_date($post_id);
+					$all_dates = self::get_date($post_id,$start_route);
 				}
 				else {
 					$all_post_ids = MP_Global_Function::get_all_post_id('wbtm_bus');
@@ -147,10 +155,30 @@
 				usort($all_dates, "MP_Global_Function::sort_date");
 				return $all_dates;
 			}
-			public static function check_buffer_time($post_id, $date, $start_route) {
-				if ($post_id > 0 && $date && $start_route) {
+			public static function reduce_buffer_time($post_id, $date, $start_stops, $start_route = '') {
+				$full_date = $date;
+				if ($post_id > 0 && $date) {
+					$start_stops = $start_stops ?: MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
+					if ($start_stops && sizeof($start_stops) > 0) {
+						if ($start_route) {
+							foreach ($start_stops as $start_stop) {
+								if ($start_stop['wbtm_bus_bp_stops_name'] == $start_route) {
+									$full_date = $date . ' ' . $start_stop['wbtm_bus_bp_start_time'];
+								}
+							}
+						}
+						else {
+							$full_date = $date . ' ' . end($start_stops)['wbtm_bus_bp_start_time'];
+						}
+					}
+					$buffer_time = self::get_settings('bus_buffer_time', 0) * 60;
+					if ($buffer_time > 0) {
+						$full_date=date('Y-m-d H:i',strtotime($full_date)-$buffer_time);
+					}else{
+						$full_date=date('Y-m-d H:i',strtotime($full_date));
+					}
 				}
-				return false;
+				return $full_date;
 			}
 			//==========================//
 			public static function get_total_seat($post_id) {
@@ -266,14 +294,20 @@
 				return false;
 			}
 			//==========================//
+			public static function get_settings($key, $default = '') {
+				if (isset($GLOBALS['wbtm_bus_settings'][$key]) && $GLOBALS['wbtm_bus_settings'][$key]) {
+					$default = $GLOBALS['wbtm_bus_settings'][$key];
+				}
+				return $default;
+			}
 			public static function get_name() {
-				return MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_label', esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
+				return self::get_settings('bus_menu_label', esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
 			}
 			public static function get_slug() {
-				return MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_slug', 'bus');
+				return self::get_settings('bus_menu_slug', 'bus');
 			}
 			public static function get_icon() {
-				return MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_icon', 'dashicons-car');
+				return self::get_settings('bus_menu_icon', 'dashicons-car');
 			}
 		}
 	}

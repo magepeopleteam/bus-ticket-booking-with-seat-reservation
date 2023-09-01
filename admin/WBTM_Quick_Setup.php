@@ -15,10 +15,10 @@
 				add_action('admin_menu', array($this, 'quick_setup_menu'));
 			}
 			public function add_admin_scripts() {
-				wp_enqueue_style( 'mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_style.css', array(), time() );
-				wp_enqueue_script( 'mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_script.js', array( 'jquery' ), time(), true );
-				wp_enqueue_style( 'mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time() );
-				wp_enqueue_script( 'mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array( 'jquery' ), time(), true );
+				wp_enqueue_style('mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_style.css', array(), time());
+				wp_enqueue_script('mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_script.js', array('jquery'), time(), true);
+				wp_enqueue_style('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
+				wp_enqueue_script('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
 				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
 			}
 			public function quick_setup_menu() {
@@ -33,6 +33,7 @@
 				}
 			}
 			public function quick_setup() {
+				$status = MP_Global_Function::check_woocommerce();
 				if (isset($_POST['active_woo_btn'])) {
 					?>
 					<script>
@@ -80,9 +81,9 @@
 							'donate_link' => false,
 						),
 					));
-					$title='title';
-					$url='url';
-					$nonce='nonce';
+					$title = 'title';
+					$url = 'url';
+					$nonce = 'nonce';
 					$woocommerce_plugin = new Plugin_Upgrader(new Plugin_Installer_Skin(compact('title', 'url', 'nonce', 'plugin', 'api')));
 					$woocommerce_plugin->install($api->download_link);
 					activate_plugin('woocommerce/woocommerce.php');
@@ -150,15 +151,17 @@
 										$this->setup_content_done();
 									?>
 								</div>
-								<div class="justifyBetween">
-									<button type="button" class="_mpBtn_dBR nextTab_prev">
-										<span>&longleftarrow;<?php esc_html_e('Previous', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									</button>
-									<div></div>
-									<button type="button" class="_themeButton_dBR nextTab_next">
-										<span><?php esc_html_e('Next', 'bus-ticket-booking-with-seat-reservation'); ?>&longrightarrow;</span>
-									</button>
-								</div>
+								<?php if ($status == 1) { ?>
+									<div class="justifyBetween">
+										<button type="button" class="_mpBtn_dBR nextTab_prev">
+											<span>&longleftarrow;<?php esc_html_e('Previous', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+										</button>
+										<div></div>
+										<button type="button" class="_themeButton_dBR nextTab_next">
+											<span><?php esc_html_e('Next', 'bus-ticket-booking-with-seat-reservation'); ?>&longrightarrow;</span>
+										</button>
+									</div>
+								<?php } ?>
 							</div>
 						</form>
 					</div>

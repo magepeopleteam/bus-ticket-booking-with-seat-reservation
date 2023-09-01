@@ -16,7 +16,7 @@
 		<?php require WBTM_Functions::template_path('search_form_only.php'); ?>
 		
 		<?php if ($start_route && $end_route && $j_date) { ?>
-			<div class="_dLayout_dShadow_3">
+			<div class="_dLayout_dShadow_1">
 				<?php WBTM_Layout::next_date_suggestion($all_dates); ?>
 				<?php WBTM_Layout::route_title(); ?>
 				<div class="wbtm_search_part _mT_xs">
@@ -28,7 +28,7 @@
 		<?php if ($start_route && $end_route && $r_date) { ?>
 			<h4 class="textCenter"><?php esc_html_e('Return Trip', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
 			<div class="divider"></div>
-			<div class="_dLayout_dShadow_3">
+			<div class="_dLayout_dShadow_1">
 				<?php WBTM_Layout::next_date_suggestion($all_dates, true); ?>
 				<?php WBTM_Layout::route_title(true); ?>
 				<div class="wbtm_search_part _mT_xs" id="wbtm_return_container">

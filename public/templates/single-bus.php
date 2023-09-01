@@ -2,12 +2,13 @@
 	get_header();
 	the_post();
 	$post_id = get_the_id();
-	$all_dates = $all_dates ?? WBTM_Functions::get_all_dates($post_id);
+	
 	$values = get_post_custom($post_id);
 	$bus_id = $values['wbtm_bus_no'][0];
 	$label = WBTM_Functions::get_name();
 	$start_route = isset($_GET['bus_start_route']) ? MP_Global_Function::data_sanitize($_GET['bus_start_route']) : '';
 	$end_route = isset($_GET['bus_end_route']) ? MP_Global_Function::data_sanitize($_GET['bus_end_route']) : '';
+	$all_dates = $all_dates ?? WBTM_Functions::get_all_dates($post_id,$start_route);
 	$j_date = $_GET['j_date'] ?? '';
 	$j_date = $j_date ? date('Y-m-d', strtotime($j_date)) : '';
 	$seat_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);
@@ -15,9 +16,13 @@
 	$end_stops = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
 	do_action('wbtm_before_single_bus_search_page');
 	do_action('woocommerce_before_single_product');
+	//echo '<pre>';print_r(WBTM_Functions::reduce_buffer_time($post_id, '2023-09-01', $start_stops, $start_route));echo '</pre>';
+	//echo '<pre>';print_r(current_time('Y-m-d H:i'));echo '</pre>';
+	//echo '<pre>';print_r($all_dates);echo '</pre>';
+	//echo '<pre>';print_r(end($start_stops)['wbtm_bus_bp_start_time']);echo '</pre>';
 ?>
 	<div class="mpStyle">
-		<div class="_dLayout_dShadow_3">
+		<div class="_dLayout_dShadow_1">
 			<div class="flexWrap">
 				<div class="col_6 col_12_700">
 					<?php MP_Custom_Layout::bg_image($post_id); ?>
@@ -84,10 +89,10 @@
 		</div>
 		<?php require WBTM_Functions::template_path('search_form_only.php'); ?>
 		<?php if ($start_route && $end_route && $j_date) { ?>
-			<div class="_dLayout_dShadow_3">
+			<div class="_dLayout_dShadow_1">
 				<?php WBTM_Layout::next_date_suggestion($all_dates, false, $post_id); ?>
 			</div>
-			<div class="_dLayout_dShadow_3">
+			<div class="_dLayout_dShadow_1">
 				<?php if ($seat_price) { ?>
 					<?php mage_bus_search_item(false, $post_id); ?>
 				<?php } else { ?>

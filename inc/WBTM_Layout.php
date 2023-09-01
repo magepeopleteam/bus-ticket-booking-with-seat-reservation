@@ -80,14 +80,14 @@
 				if($date){
 				?>
 				<div class="buttonGroup _mT_xs_equalChild_fullWidth">
-					<h4 class="_bgBlack_textWhite_allCenter_padding">
+					<button type="button" class="_mpBtn_h4">
 						<?php echo esc_html($start); ?>
 							<span class="fas fa-long-arrow-alt-right _mLR_xs"></span>
 						<?php echo esc_html($end); ?>
-					</h4>
-					<h4 class="_bgBlack_textWhite_allCenter_padding">
+					</button>
+					<button type="button" class="_mpBtn_h4">
 						<?php echo MP_Global_Function::date_format($date); ?>
-					</h4>
+					</button>
 				</div>
 				<?php
 				}

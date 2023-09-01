@@ -48,7 +48,7 @@
 	//echo '<pre>'; print_r(WBTM_Functions::get_all_dates()); echo '</pre>';
 	$form_style_class=$form_style=='horizontal'?'inputHorizontal':'inputInline';
 ?>
-	<div class="_dLayout_dShadow_3 wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
+	<div class="_dLayout_dShadow_1 wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
 		<?php if ($buy_ticket_text) { ?>
 			<h4><?php echo esc_html($buy_ticket_text); ?></h4>
 		<?php } ?>

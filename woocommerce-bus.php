@@ -27,8 +27,10 @@
 			if (!defined('WBTM_PLUGIN_URL')) {
 				define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 			}
+			;
 		}
 		public function load_global_file() {
+			$GLOBALS['wbtm_bus_settings'] = get_option('wbtm_bus_settings');
 			require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Global_Function.php';
 			require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Global_Style.php';
 			require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Custom_Layout.php';
