@@ -1763,18 +1763,7 @@
 			return $current_seat_plan;
 		}
 	}
-//bus off date check
-	function mage_bus_off_date_check($return) {
-		$start_date = strtotime(get_post_meta(get_the_id(), 'wbtm_od_start', true));
-		$end_date = strtotime(get_post_meta(get_the_id(), 'wbtm_od_end', true));
-		$date = wbtm_convert_date_to_php(mage_bus_isset($return ? 'r_date' : 'j_date'));
-		return (($start_date <= $date) && ($end_date >= $date)) ? false : true;
-	}
-//bus off date check
-	function mage_bus_off_day_check($return) {
-		$current_day = 'offday_' . strtolower(date('D', strtotime($return ? wbtm_convert_date_to_php(mage_bus_isset('r_date')) : wbtm_convert_date_to_php(mage_bus_isset('j_date')))));
-		return get_post_meta(get_the_id(), $current_day, true) == 'yes' ? false : true;
-	}
+
 //bus setting on date
 	function mage_bus_on_date_setting_check($return) {
 		$mage_bus_on_dates = maybe_unserialize(get_post_meta(get_the_id(), 'wbtm_bus_on_dates', true));
@@ -1833,13 +1822,6 @@
 		$settings = get_option('wbtm_bus_settings');
 		$val = isset($settings[$key]) ? $settings[$key] : null;
 		return $val ? $val : $default;
-	}
-//return check bus on off
-	function mage_bus_run_on_date($return) {
-		if (((mage_bus_off_date_check($return) && mage_bus_off_day_check($return)) || mage_bus_on_date_setting_check($return)) && mage_buffer_time_check($return)) {
-			return true;
-		}
-		return false;
 	}
 //bus type return (ac/non ac)
 	function mage_bus_type($id = null) {
@@ -4096,6 +4078,8 @@
 //bus seat plan
 	function mage_bus_seat_plan($seat_plan_type, $bus_width, $price, $return) {
 		global $mage_bus_total_seats_availabel;
+		$mage_bus_total_seats_availabel = mage_bus_total_seat_new();
+		if($mage_bus_total_seats_availabel>0){
 		$bus_id = get_the_id();
 		$current_driver_position = get_post_meta($bus_id, 'driver_seat_position', true);
 		$seat_panel_settings = get_option('wbtm_bus_settings');
@@ -4130,7 +4114,7 @@
 					</div>
 				</div>
 				<?php
-					$mage_bus_total_seats_availabel = mage_bus_total_seat_new();
+					
 					if ($seat_plan_type > 0) {
 						$seats_rows = get_post_meta($bus_id, 'wbtm_bus_seats_info', true) ? get_post_meta($bus_id, 'wbtm_bus_seats_info', true) : [];
 						$seat_col = get_post_meta($bus_id, 'wbtm_seat_cols', true);
@@ -4190,6 +4174,9 @@
 			?>
 		</div>
 		<?php
+		}else {
+			esc_html_e("No seat Plan available !", 'bus-ticket-booking-with-seat-reservation');
+		}
 	}
 //bus seat place
 	function mage_bus_seat($seat_plan_type, $seat_name, $price, $dd, $return, $seat_col) {

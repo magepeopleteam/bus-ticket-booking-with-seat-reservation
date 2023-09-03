@@ -16,10 +16,7 @@
 	$end_stops = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
 	do_action('wbtm_before_single_bus_search_page');
 	do_action('woocommerce_before_single_product');
-	//echo '<pre>';print_r(WBTM_Functions::reduce_buffer_time($post_id, '2023-09-01', $start_stops, $start_route));echo '</pre>';
-	//echo '<pre>';print_r(current_time('Y-m-d H:i'));echo '</pre>';
 	//echo '<pre>';print_r($all_dates);echo '</pre>';
-	//echo '<pre>';print_r(end($start_stops)['wbtm_bus_bp_start_time']);echo '</pre>';
 ?>
 	<div class="mpStyle">
 		<div class="_dLayout_dShadow_1">
