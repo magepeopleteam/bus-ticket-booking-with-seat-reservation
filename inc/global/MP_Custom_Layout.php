@@ -36,7 +36,7 @@
 							if ($params['pagination-style'] == 'load_more') {
 								?>
 								<button type="button" class="_mpBtn_xs_min_200 pagination_load_more" data-load-more="0">
-									<?php esc_html_e('Load More', 'mage-eventpress'); ?>
+									<?php esc_html_e('Load More', 'bus-ticket-booking-with-seat-reservation'); ?>
 								</button>
 								<?php
 							}
@@ -46,7 +46,7 @@
 								?>
 								<div class="buttonGroup">
 									<?php if ($total_page > 2) { ?>
-										<button class="_mpBtn_xs page_prev" type="button" title="<?php esc_html_e('GoTO Previous Page', 'mage-eventpress'); ?>" disabled>
+										<button class="_mpBtn_xs page_prev" type="button" title="<?php esc_html_e('GoTO Previous Page', 'bus-ticket-booking-with-seat-reservation'); ?>" disabled>
 											<span class="fas fa-chevron-left mp_zero"></span>
 										</button>
 									<?php } ?>
@@ -68,7 +68,7 @@
 									<?php } ?>
 									
 									<?php if ($total_page > 2) { ?>
-										<button class="_mpBtn_xs page_next" type="button" title="<?php esc_html_e('GoTO Next Page', 'mage-eventpress'); ?>">
+										<button class="_mpBtn_xs page_next" type="button" title="<?php esc_html_e('GoTO Next Page', 'bus-ticket-booking-with-seat-reservation'); ?>">
 											<span class="fas fa-chevron-right mp_zero"></span>
 										</button>
 									<?php } ?>
@@ -140,10 +140,11 @@
 				<?php
 			}
 			/*****************************/
-			public static function bg_image($post_id) {
-				$thumbnail = MP_Global_Function::get_image_url($post_id);
+			public static function bg_image($post_id='',$url='') {
+				$thumbnail = $post_id>0?MP_Global_Function::get_image_url($post_id):$url;
+				$post_url=$post_id>0?get_the_permalink($post_id):'';
 				?>
-				<div class="bg_image_area" data-href="<?php echo get_the_permalink($post_id); ?>" data-placeholder>
+				<div class="bg_image_area" data-href="<?php echo esc_attr($post_url); ?>" data-placeholder>
 					<div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
 				</div>
 				<?php
@@ -156,8 +157,8 @@
 					<div class="mp_load_more_text_area">
 						<span data-read-close><?php echo esc_html(substr($text, 0, $length)); ?> ....</span>
 						<span data-read-open class="dNone"><?php echo esc_html($text); ?></span>
-						<div data-read data-open-text="<?php esc_attr_e('Load More', 'mage-eventpress'); ?>" data-close-text="<?php esc_attr_e('Less More', 'mage-eventpress'); ?>">
-							<span data-text><?php esc_html_e('Load More', 'mage-eventpress'); ?></span>
+						<div data-read data-open-text="<?php esc_attr_e('Load More', 'bus-ticket-booking-with-seat-reservation'); ?>" data-close-text="<?php esc_attr_e('Less More', 'bus-ticket-booking-with-seat-reservation'); ?>">
+							<span data-text><?php esc_html_e('Load More', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 						</div>
 					</div>
 					<?php
@@ -169,29 +170,47 @@
 				}
 			}
 			/*****************************/
-			public static function qty_input($input_name, $price, $available_seat = 1, $default_qty = 0, $min_qty = 0, $max_qty = '') {
+			public static function qty_input($input_name, $price, $available_seat = 1, $default_qty = 0, $min_qty = 0, $max_qty = '', $input_type = '',$text='') {
 				$min_qty = max($default_qty, $min_qty);
 				if ($available_seat > $min_qty) {
-					?>
-					<div class="groupContent qtyIncDec">
-						<div class="decQty addonGroupContent">
-							<span class="fas fa-minus"></span>
+					if ($input_type != 'dropdown') {
+						?>
+						<div class="groupContent qtyIncDec">
+							<div class="decQty addonGroupContent">
+								<span class="fas fa-minus"></span>
+							</div>
+							<label>
+								<input type="text"
+									class="formControl inputIncDec mp_number_validation"
+									data-price="<?php echo esc_attr($price); ?>"
+									name="<?php echo esc_attr($input_name); ?>"
+									value="<?php echo esc_attr(max(0, $default_qty)); ?>"
+									min="<?php echo esc_attr($min_qty); ?>"
+									max="<?php echo esc_attr($max_qty > 0 ? $max_qty : $available_seat); ?>"
+								/>
+							</label>
+							<div class="incQty addonGroupContent">
+								<span class="fas fa-plus"></span>
+							</div>
 						</div>
+						<?php
+					}
+					else {
+						?>
 						<label>
-							<input type="text"
-								class="formControl inputIncDec mp_number_validation"
-								data-price="<?php echo esc_attr($price); ?>"
-								name="<?php echo esc_attr($input_name); ?>"
-								value="<?php echo esc_attr(max(0, $default_qty)); ?>"
-								min="<?php echo esc_attr($min_qty); ?>"
-								max="<?php echo esc_attr($max_qty > 0 ? $max_qty : $available_seat); ?>"
-							/>
+							<select name="<?php echo esc_attr($input_name); ?>" data-price="<?php echo esc_attr($price); ?>" class="formControl">
+								<option selected value="0"><?php echo esc_html__('Please select', 'bus-ticket-booking-with-seat-reservation').' '.$text; ?></option>
+								<?php
+									$max_total = $max_qty > 0 ? $max_qty : $available_seat;
+									$min_value=max(1,$min_qty);
+									for ($i = $min_value; $i <= $max_total; $i++) {
+										?>
+										<option value="<?php echo esc_html($i); ?>"> <?php echo esc_html($i).' '.$text; ; ?> </option>
+									<?php } ?>
+							</select>
 						</label>
-						<div class="incQty addonGroupContent">
-							<span class="fas fa-plus"></span>
-						</div>
-					</div>
-					<?php
+						<?php
+					}
 				}
 			}
 		}

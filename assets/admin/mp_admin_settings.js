@@ -1,20 +1,21 @@
 function load_sortable_datepicker(parent, item) {
-	parent.find('.mp_item_insert').first().append(item).promise().done(function () {
-		parent.find('.mp_sortable_area').sortable({
-			handle: jQuery(this).find('.mp_sortable_button')
+	if(parent.find('.mp_item_insert_before').length>0){
+		jQuery(item).insertBefore(parent.find('.mp_item_insert_before').first()).promise().done(function () {
+			parent.find('.mp_sortable_area').sortable({
+				handle: jQuery(this).find('.mp_sortable_button')
+			});
+			mp_load_date_picker(parent);
 		});
-		parent.find(".date_type").removeClass('hasDatepicker').attr('id', '').removeData('datepicker').unbind().datepicker({
-			dateFormat: mp_date_format,
-			autoSize: true,
-			onSelect: function (dateString, data) {
-				let date = data.selectedYear + '-' + (parseInt(data.selectedMonth) + 1) + '-' + data.selectedDay;
-				jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
-			}
+	}else {
+		parent.find('.mp_item_insert').first().append(item).promise().done(function () {
+			parent.find('.mp_sortable_area').sortable({
+				handle: jQuery(this).find('.mp_sortable_button')
+			});
+			mp_load_date_picker(parent);
 		});
-	});
+	}
 	return true;
 }
-
 (function ($) {
 	"use strict";
 	$(document).ready(function () {
@@ -75,14 +76,14 @@ function load_sortable_datepicker(parent, item) {
 		return false;
 	});
 	//=========Remove Setting Item ==============//
-	$(document).on('click', '.mp_item_remove', function () {
+	$(document).on('click', '.mp_item_remove', function (e) {
+		e.preventDefault();
 		if (confirm('Are You Sure , Remove this row ? \n\n 1. Ok : To Remove . \n 2. Cancel : To Cancel .')) {
-			$(this).closest('.mp_remove_area').slideUp(250, function () {
-				$(this).remove();
-			});
+			$(this).closest('.mp_remove_area').slideUp(250).remove();
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	});
 	//=========Add Setting Item==============//
 	$(document).on('click', '.mp_add_item', function () {

@@ -20,24 +20,44 @@
 				);
 				return new WP_Query($args);
 			}
-			public static function get_all_post_id($post_type, $show = -1, $page = 1): array {
-				return get_posts(array(
-					'fields' => 'ids',
+			public static function get_all_post_id($post_type, $show = -1, $page = 1,$status='publish'): array {
+				$all_data= get_posts(array(
+					'fields' =>'ids',
 					'post_type' => $post_type,
 					'posts_per_page' => $show,
 					'paged' => $page,
-					'post_status' => 'publish'
+					'post_status' => $status
 				));
-			}
-			public static function get_taxonomy($name) {
-				return get_terms(array('taxonomy' => $name, 'hide_empty' => false));
+				return array_unique($all_data);
 			}
 			public static function get_post_info($post_id, $key, $default = '') {
 				$data = get_post_meta($post_id, $key, true) ?: $default;
 				return self::data_sanitize($data);
 			}
+			//***********************************//
+			public static function get_taxonomy($name) {
+				return get_terms(array('taxonomy' => $name, 'hide_empty' => false));
+			}
+			public static function get_term_meta($meta_id, $meta_key, $default = '') {
+				$data = get_term_meta($meta_id, $meta_key, true) ?: $default;
+				return self::data_sanitize($data);
+			}
+			public static function get_all_term_data($term_name, $value = 'name') {
+				$all_data = [];
+				$taxonomies = self::get_taxonomy($term_name);
+				if ($taxonomies && sizeof($taxonomies) > 0) {
+					foreach ($taxonomies as $taxonomy) {
+						$all_data[] = $taxonomy->$value;
+					}
+				}
+				return $all_data;
+			}
+			//***********************************//
 			public static function get_submit_info($key, $default = '') {
 				return self::data_sanitize($_POST[$key] ?? $default);
+			}
+			public static function get_submit_info_get_method($key, $default = '') {
+				return self::data_sanitize($_GET[$key] ?? $default);
 			}
 			public static function data_sanitize($data) {
 				$data = maybe_unserialize($data);
@@ -63,6 +83,21 @@
 				return $data;
 			}
 			//**************Date related*********************//
+			public static function date_picker_format_without_year($option, $key = 'date_format'): string {
+				$format = MP_Global_Function::get_settings($option, $key, 'D d M , yy');
+				$date_format = 'm-d';
+				$date_format = $format == 'yy/mm/dd' ? 'm/d' : $date_format;
+				$date_format = $format == 'yy-dd-mm' ? 'd-m' : $date_format;
+				$date_format = $format == 'yy/dd/mm' ? 'd/m' : $date_format;
+				$date_format = $format == 'dd-mm-yy' ? 'd-m' : $date_format;
+				$date_format = $format == 'dd/mm/yy' ? 'd/m' : $date_format;
+				$date_format = $format == 'mm-dd-yy' ? 'm-d' : $date_format;
+				$date_format = $format == 'mm/dd/yy' ? 'm/d' : $date_format;
+				$date_format = $format == 'd M , yy' ? 'j M' : $date_format;
+				$date_format = $format == 'D d M , yy' ? 'D j M' : $date_format;
+				$date_format = $format == 'M d , yy' ? 'M  j' : $date_format;
+				return $format == 'D M d , yy' ? 'D M  j' : $date_format;
+			}
 			public static function date_picker_format($option, $key = 'date_format'): string {
 				$format = MP_Global_Function::get_settings($option, $key, 'D d M , yy');
 				$date_format = 'Y-m-d';
@@ -103,7 +138,7 @@
 							changeYear: true,
 							beforeShowDay: WorkingDates,
 							onSelect: function (dateString, data) {
-								let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay) ).slice(-2) ;
+								let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
 								jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
 							}
 						});
@@ -166,6 +201,19 @@
 			}
 			public static function sort_date($a, $b) {
 				return strtotime($a) - strtotime($b);
+			}
+			public static function sort_date_array($a, $b) {
+				$dateA = strtotime($a['time']);
+				$dateB = strtotime($b['time']);
+				if ($dateA == $dateB) {
+					return 0;
+				}
+				elseif ($dateA > $dateB) {
+					return 1;
+				}
+				else {
+					return -1;
+				}
 			}
 			//***********************************//
 			public static function get_settings($section, $key, $default = '') {
@@ -255,6 +303,10 @@
 				$display_suffix = get_option('woocommerce_price_display_suffix') ? get_option('woocommerce_price_display_suffix') : '';
 				return wc_price($return_price) . ' ' . $display_suffix;
 			}
+			public static function get_wc_raw_price($post_id, $price, $args = array()){
+				$price=self::wc_price($post_id, $price, $args = array());
+				return self::price_convert_raw($price);
+			}
 			//***********************************//
 			public static function get_image_url($post_id = '', $image_id = '', $size = 'full') {
 				if ($post_id) {
@@ -327,13 +379,13 @@
 			}
 			public static function week_day(): array {
 				return [
-					'monday' => esc_html__('Monday', 'mage-eventpress'),
-					'tuesday' => esc_html__('Tuesday', 'mage-eventpress'),
-					'wednesday' => esc_html__('Wednesday', 'mage-eventpress'),
-					'thursday' => esc_html__('Thursday', 'mage-eventpress'),
-					'friday' => esc_html__('Friday', 'mage-eventpress'),
-					'saturday' => esc_html__('Saturday', 'mage-eventpress'),
-					'sunday' => esc_html__('Sunday', 'mage-eventpress'),
+					'monday' => esc_html__('Monday', 'bus-ticket-booking-with-seat-reservation'),
+					'tuesday' => esc_html__('Tuesday', 'bus-ticket-booking-with-seat-reservation'),
+					'wednesday' => esc_html__('Wednesday', 'bus-ticket-booking-with-seat-reservation'),
+					'thursday' => esc_html__('Thursday', 'bus-ticket-booking-with-seat-reservation'),
+					'friday' => esc_html__('Friday', 'bus-ticket-booking-with-seat-reservation'),
+					'saturday' => esc_html__('Saturday', 'bus-ticket-booking-with-seat-reservation'),
+					'sunday' => esc_html__('Sunday', 'bus-ticket-booking-with-seat-reservation'),
 				];
 			}
 			public static function get_plugin_data($data) {
@@ -473,6 +525,255 @@
 				return wp_kses($string, $allow_attr);
 			}
 			//***********************************//
+			public static function get_country_list() {
+				return array(
+					'AF' => 'Afghanistan',
+					'AX' => 'Aland Islands',
+					'AL' => 'Albania',
+					'DZ' => 'Algeria',
+					'AS' => 'American Samoa',
+					'AD' => 'Andorra',
+					'AO' => 'Angola',
+					'AI' => 'Anguilla',
+					'AQ' => 'Antarctica',
+					'AG' => 'Antigua And Barbuda',
+					'AR' => 'Argentina',
+					'AM' => 'Armenia',
+					'AW' => 'Aruba',
+					'AU' => 'Australia',
+					'AT' => 'Austria',
+					'AZ' => 'Azerbaijan',
+					'BS' => 'Bahamas',
+					'BH' => 'Bahrain',
+					'BD' => 'Bangladesh',
+					'BB' => 'Barbados',
+					'BY' => 'Belarus',
+					'BE' => 'Belgium',
+					'BZ' => 'Belize',
+					'BJ' => 'Benin',
+					'BM' => 'Bermuda',
+					'BT' => 'Bhutan',
+					'BO' => 'Bolivia',
+					'BA' => 'Bosnia And Herzegovina',
+					'BW' => 'Botswana',
+					'BV' => 'Bouvet Island',
+					'BR' => 'Brazil',
+					'IO' => 'British Indian Ocean Territory',
+					'BN' => 'Brunei Darussalam',
+					'BG' => 'Bulgaria',
+					'BF' => 'Burkina Faso',
+					'BI' => 'Burundi',
+					'KH' => 'Cambodia',
+					'CM' => 'Cameroon',
+					'CA' => 'Canada',
+					'CV' => 'Cape Verde',
+					'KY' => 'Cayman Islands',
+					'CF' => 'Central African Republic',
+					'TD' => 'Chad',
+					'CL' => 'Chile',
+					'CN' => 'China',
+					'CX' => 'Christmas Island',
+					'CC' => 'Cocos (Keeling) Islands',
+					'CO' => 'Colombia',
+					'KM' => 'Comoros',
+					'CG' => 'Congo',
+					'CD' => 'Congo, Democratic Republic',
+					'CK' => 'Cook Islands',
+					'CR' => 'Costa Rica',
+					'CI' => 'Cote D\'Ivoire',
+					'HR' => 'Croatia',
+					'CU' => 'Cuba',
+					'CY' => 'Cyprus',
+					'CZ' => 'Czech Republic',
+					'DK' => 'Denmark',
+					'DJ' => 'Djibouti',
+					'DM' => 'Dominica',
+					'DO' => 'Dominican Republic',
+					'EC' => 'Ecuador',
+					'EG' => 'Egypt',
+					'SV' => 'El Salvador',
+					'GQ' => 'Equatorial Guinea',
+					'ER' => 'Eritrea',
+					'EE' => 'Estonia',
+					'ET' => 'Ethiopia',
+					'FK' => 'Falkland Islands (Malvinas)',
+					'FO' => 'Faroe Islands',
+					'FJ' => 'Fiji',
+					'FI' => 'Finland',
+					'FR' => 'France',
+					'GF' => 'French Guiana',
+					'PF' => 'French Polynesia',
+					'TF' => 'French Southern Territories',
+					'GA' => 'Gabon',
+					'GM' => 'Gambia',
+					'GE' => 'Georgia',
+					'DE' => 'Germany',
+					'GH' => 'Ghana',
+					'GI' => 'Gibraltar',
+					'GR' => 'Greece',
+					'GL' => 'Greenland',
+					'GD' => 'Grenada',
+					'GP' => 'Guadeloupe',
+					'GU' => 'Guam',
+					'GT' => 'Guatemala',
+					'GG' => 'Guernsey',
+					'GN' => 'Guinea',
+					'GW' => 'Guinea-Bissau',
+					'GY' => 'Guyana',
+					'HT' => 'Haiti',
+					'HM' => 'Heard Island & Mcdonald Islands',
+					'VA' => 'Holy See (Vatican City State)',
+					'HN' => 'Honduras',
+					'HK' => 'Hong Kong',
+					'HU' => 'Hungary',
+					'IS' => 'Iceland',
+					'IN' => 'India',
+					'ID' => 'Indonesia',
+					'IR' => 'Iran, Islamic Republic Of',
+					'IQ' => 'Iraq',
+					'IE' => 'Ireland',
+					'IM' => 'Isle Of Man',
+					'IL' => 'Israel',
+					'IT' => 'Italy',
+					'JM' => 'Jamaica',
+					'JP' => 'Japan',
+					'JE' => 'Jersey',
+					'JO' => 'Jordan',
+					'KZ' => 'Kazakhstan',
+					'KE' => 'Kenya',
+					'KI' => 'Kiribati',
+					'KR' => 'Korea',
+					'KW' => 'Kuwait',
+					'KG' => 'Kyrgyzstan',
+					'LA' => 'Lao People\'s Democratic Republic',
+					'LV' => 'Latvia',
+					'LB' => 'Lebanon',
+					'LS' => 'Lesotho',
+					'LR' => 'Liberia',
+					'LY' => 'Libyan Arab Jamahiriya',
+					'LI' => 'Liechtenstein',
+					'LT' => 'Lithuania',
+					'LU' => 'Luxembourg',
+					'MO' => 'Macao',
+					'MK' => 'Macedonia',
+					'MG' => 'Madagascar',
+					'MW' => 'Malawi',
+					'MY' => 'Malaysia',
+					'MV' => 'Maldives',
+					'ML' => 'Mali',
+					'MT' => 'Malta',
+					'MH' => 'Marshall Islands',
+					'MQ' => 'Martinique',
+					'MR' => 'Mauritania',
+					'MU' => 'Mauritius',
+					'YT' => 'Mayotte',
+					'MX' => 'Mexico',
+					'FM' => 'Micronesia, Federated States Of',
+					'MD' => 'Moldova',
+					'MC' => 'Monaco',
+					'MN' => 'Mongolia',
+					'ME' => 'Montenegro',
+					'MS' => 'Montserrat',
+					'MA' => 'Morocco',
+					'MZ' => 'Mozambique',
+					'MM' => 'Myanmar',
+					'NA' => 'Namibia',
+					'NR' => 'Nauru',
+					'NP' => 'Nepal',
+					'NL' => 'Netherlands',
+					'AN' => 'Netherlands Antilles',
+					'NC' => 'New Caledonia',
+					'NZ' => 'New Zealand',
+					'NI' => 'Nicaragua',
+					'NE' => 'Niger',
+					'NG' => 'Nigeria',
+					'NU' => 'Niue',
+					'NF' => 'Norfolk Island',
+					'MP' => 'Northern Mariana Islands',
+					'NO' => 'Norway',
+					'OM' => 'Oman',
+					'PK' => 'Pakistan',
+					'PW' => 'Palau',
+					'PS' => 'Palestinian Territory, Occupied',
+					'PA' => 'Panama',
+					'PG' => 'Papua New Guinea',
+					'PY' => 'Paraguay',
+					'PE' => 'Peru',
+					'PH' => 'Philippines',
+					'PN' => 'Pitcairn',
+					'PL' => 'Poland',
+					'PT' => 'Portugal',
+					'PR' => 'Puerto Rico',
+					'QA' => 'Qatar',
+					'RE' => 'Reunion',
+					'RO' => 'Romania',
+					'RU' => 'Russian Federation',
+					'RW' => 'Rwanda',
+					'BL' => 'Saint Barthelemy',
+					'SH' => 'Saint Helena',
+					'KN' => 'Saint Kitts And Nevis',
+					'LC' => 'Saint Lucia',
+					'MF' => 'Saint Martin',
+					'PM' => 'Saint Pierre And Miquelon',
+					'VC' => 'Saint Vincent And Grenadines',
+					'WS' => 'Samoa',
+					'SM' => 'San Marino',
+					'ST' => 'Sao Tome And Principe',
+					'SA' => 'Saudi Arabia',
+					'SN' => 'Senegal',
+					'RS' => 'Serbia',
+					'SC' => 'Seychelles',
+					'SL' => 'Sierra Leone',
+					'SG' => 'Singapore',
+					'SK' => 'Slovakia',
+					'SI' => 'Slovenia',
+					'SB' => 'Solomon Islands',
+					'SO' => 'Somalia',
+					'ZA' => 'South Africa',
+					'GS' => 'South Georgia And Sandwich Isl.',
+					'ES' => 'Spain',
+					'LK' => 'Sri Lanka',
+					'SD' => 'Sudan',
+					'SR' => 'Suriname',
+					'SJ' => 'Svalbard And Jan Mayen',
+					'SZ' => 'Swaziland',
+					'SE' => 'Sweden',
+					'CH' => 'Switzerland',
+					'SY' => 'Syrian Arab Republic',
+					'TW' => 'Taiwan',
+					'TJ' => 'Tajikistan',
+					'TZ' => 'Tanzania',
+					'TH' => 'Thailand',
+					'TL' => 'Timor-Leste',
+					'TG' => 'Togo',
+					'TK' => 'Tokelau',
+					'TO' => 'Tonga',
+					'TT' => 'Trinidad And Tobago',
+					'TN' => 'Tunisia',
+					'TR' => 'Turkey',
+					'TM' => 'Turkmenistan',
+					'TC' => 'Turks And Caicos Islands',
+					'TV' => 'Tuvalu',
+					'UG' => 'Uganda',
+					'UA' => 'Ukraine',
+					'AE' => 'United Arab Emirates',
+					'GB' => 'United Kingdom',
+					'US' => 'United States',
+					'UM' => 'United States Outlying Islands',
+					'UY' => 'Uruguay',
+					'UZ' => 'Uzbekistan',
+					'VU' => 'Vanuatu',
+					'VE' => 'Venezuela',
+					'VN' => 'Viet Nam',
+					'VG' => 'Virgin Islands, British',
+					'VI' => 'Virgin Islands, U.S.',
+					'WF' => 'Wallis And Futuna',
+					'EH' => 'Western Sahara',
+					'YE' => 'Yemen',
+					'ZM' => 'Zambia',
+					'ZW' => 'Zimbabwe',
+				);
+			}
 		}
 		new MP_Global_Function();
 	}

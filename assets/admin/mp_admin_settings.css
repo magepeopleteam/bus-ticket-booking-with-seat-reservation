@@ -7,7 +7,7 @@
 	div.mp_settings_panel tr.set_book_status fieldset label ,
 	div.mp_settings_panel tr.payment_system fieldset label {min-width: 150px;margin: 0 var(--dMP_xs) var(--dMP_xs) 0;}
 	/*******************/
-	.mp_settings_panel_header { background: #161B37;padding: 30px 20px 30px 20px;color: #FFF;font-size: 20px;margin-top: 30px;}
+	.mp_settings_panel_header { background: #161B37;padding: 30px 20px 30px 20px;color: #FFF;font-size: var(--fs_h2);margin-top: 30px;}
 	.mp_settings_panel_header small {margin-left: 10px;font-size: 13px;}
 	.mp_settings_panel .nav-tab-wrapper {
 		width: 300px;padding: 0;margin: 0;overflow: hidden;
@@ -61,7 +61,7 @@
 	#mp_meta_box_panel table tr:nth-child(odd) {background-color: #FFF;}
 	#mp_meta_box_panel table th,
 	#mp_meta_box_panel table td {border: 0;vertical-align: top;padding: 5px;}
-	#mp_meta_box_panel table th {text-align: center;font-size: var(--font-size-label);font-weight: 600;}
+	#mp_meta_box_panel table th {text-align: center;font-size: var(--fs_label);font-weight: 600;}
 	#mp_meta_box_panel table tbody th {text-align: left;}
 	#mp_meta_box_panel table tbody thead th {text-align: center;}
 	/************************************/
