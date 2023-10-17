@@ -20,9 +20,9 @@
 				);
 				return new WP_Query($args);
 			}
-			public static function get_all_post_id($post_type, $show = -1, $page = 1,$status='publish'): array {
-				$all_data= get_posts(array(
-					'fields' =>'ids',
+			public static function get_all_post_id($post_type, $show = -1, $page = 1, $status = 'publish'): array {
+				$all_data = get_posts(array(
+					'fields' => 'ids',
 					'post_type' => $post_type,
 					'posts_per_page' => $show,
 					'paged' => $page,
@@ -83,8 +83,8 @@
 				return $data;
 			}
 			//**************Date related*********************//
-			public static function date_picker_format_without_year($option, $key = 'date_format'): string {
-				$format = MP_Global_Function::get_settings($option, $key, 'D d M , yy');
+			public static function date_picker_format_without_year($key = 'date_format'): string {
+				$format = MP_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
 				$date_format = 'm-d';
 				$date_format = $format == 'yy/mm/dd' ? 'm/d' : $date_format;
 				$date_format = $format == 'yy-dd-mm' ? 'd-m' : $date_format;
@@ -98,8 +98,8 @@
 				$date_format = $format == 'M d , yy' ? 'M  j' : $date_format;
 				return $format == 'D M d , yy' ? 'D M  j' : $date_format;
 			}
-			public static function date_picker_format($option, $key = 'date_format'): string {
-				$format = MP_Global_Function::get_settings($option, $key, 'D d M , yy');
+			public static function date_picker_format($key = 'date_format'): string {
+				$format = MP_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
 				$date_format = 'Y-m-d';
 				$date_format = $format == 'yy/mm/dd' ? 'Y/m/d' : $date_format;
 				$date_format = $format == 'yy-dd-mm' ? 'Y-d-m' : $date_format;
@@ -303,8 +303,8 @@
 				$display_suffix = get_option('woocommerce_price_display_suffix') ? get_option('woocommerce_price_display_suffix') : '';
 				return wc_price($return_price) . ' ' . $display_suffix;
 			}
-			public static function get_wc_raw_price($post_id, $price, $args = array()){
-				$price=self::wc_price($post_id, $price, $args = array());
+			public static function get_wc_raw_price($post_id, $price, $args = array()) {
+				$price = self::wc_price($post_id, $price, $args = array());
 				return self::price_convert_raw($price);
 			}
 			//***********************************//

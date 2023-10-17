@@ -32,7 +32,7 @@
 						<tr>
 							<th colspan="<?php echo esc_attr($seat_column); ?>">
 								<div class="mp_driver_image <?php echo esc_attr($seat_position == 'driver_left' ? '' : 'fRight'); ?>">
-									<?php MP_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/helper/images/driver-default.png'); ?>
+									<?php MP_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/images/driver-default.png'); ?>
 								</div>
 							</th>
 						</tr>

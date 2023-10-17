@@ -38,19 +38,19 @@
 				wp_reset_query();
 				return $bus_ids;
 			}
-			public static function query_total_booked($post_id, $start, $end, $date,$ticket_name='',$seat_name='') {
+			public static function query_total_booked($post_id, $start, $end, $date, $ticket_name = '', $seat_name = '') {
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings','set_book_status',array( 'processing', 'completed' ));
+					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
-						$seat_query= !empty($seat_name) ? array(
+						$seat_query = !empty($seat_name) ? array(
 							'key' => 'wbtm_seat',
 							'value' => $seat_name,
 							'compare' => '='
 						) : '';
-						$ticket_query= !empty($ticket_name) ? array(
+						$ticket_query = !empty($ticket_name) ? array(
 							'key' => 'wbtm_ticket',
 							'value' => $ticket_name,
 							'compare' => '='
@@ -103,6 +103,8 @@
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {
+					$date = date('Y-m-d', strtotime($date));
+					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
 					$args = array(
 						'post_type' => 'wbtm_service_booking',
 						'posts_per_page' => -1,
@@ -116,18 +118,19 @@
 								),
 								array(
 									'key' => 'wbtm_boarding_time',
-									'compare' => '=',
+									'compare' => 'LIKE',
 									'value' => $date,
 								),
 								array(
 									'key' => 'wbtm_order_status',
-									'compare' => 'IN',
-									'value' => array(1, 2),
+									'value' => $seat_booked_status,
+									'compare' => 'IN'
 								),
 							),
 						)
 					);
 					$query = new WP_Query($args);
+					//return $query->post_count;
 					if ($query->found_posts > 0) {
 						while ($query->have_posts()) {
 							$query->the_post();

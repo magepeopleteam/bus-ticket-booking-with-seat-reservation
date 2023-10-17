@@ -17,25 +17,19 @@
 		class Wbtm_Woocommerce_bus {
 			public function __construct() {
 				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-				$this->define_constants();
-				$this->load_global_file();
+				$this->define();
 				$this->load_plugin();
 			}
-			public function define_constants() {
+			public function define() {
 				if (!defined('WBTM_PLUGIN_DIR')) {
 					define('WBTM_PLUGIN_DIR', dirname(__FILE__));
 				}
 				if (!defined('WBTM_PLUGIN_URL')) {
 					define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 				}
+				require_once WBTM_PLUGIN_DIR . '/mp_global/MP_Global_File_Load.php';
 			}
-			public function load_global_file() {
-				require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Global_Function.php';
-				require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Global_Style.php';
-				require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Custom_Layout.php';
-				//require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Custom_Slider.php';
-				require_once WBTM_PLUGIN_DIR . '/inc/global/MP_Select_Icon_image.php';
-			}
+			
 			private function load_plugin() {
 				if (MP_Global_Function::check_woocommerce() == 1) {
 					$this->appsero_init_tracker();

@@ -338,6 +338,30 @@
 					$user_id = $user->ID;
 					update_post_meta($user_id, 'wbtm_order_status', $order_status);
 				}
+				$ex_args = array(
+					'post_type' => 'wbtm_service_booking',
+					'posts_per_page' => -1,
+					'meta_query' => array(
+						'relation' => 'AND',
+						array(
+							array(
+								'key' => 'wbtm_bus_id',
+								'value' => $post_id,
+								'compare' => '='
+							),
+							array(
+								'key' => 'wbtm_order_id',
+								'value' => $order_id,
+								'compare' => '='
+							)
+						)
+					)
+				);
+				$ex_loop = new WP_Query($ex_args);
+				foreach ($ex_loop->posts as $user) {
+					$user_id = $user->ID;
+					update_post_meta($user_id, 'wbtm_order_status', $order_status);
+				}
 			}
 			/*********************/
 			public static function get_cart_seat_price($ticket_infos = []) {

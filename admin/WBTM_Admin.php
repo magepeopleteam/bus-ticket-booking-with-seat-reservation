@@ -12,7 +12,6 @@
 				$this->load_file();
 				add_action('admin_init', array($this, 'wbtm_upgrade'));
 				add_action('init', [$this, 'add_dummy_data']);
-				//add_action('init', array($this, 'add_endpoint'), 10);
 				add_filter('use_block_editor_for_post_type', [$this, 'disable_gutenberg'], 10, 2);
 				add_action('upgrader_process_complete', [$this, 'flush_rewrite'], 0);
 			}
@@ -24,17 +23,15 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Taxonomy.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Hidden_Product.php';
 				//========Global settings==========//
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/global/MAGE_Setting_API.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/global/WBTM_Global_settings.php';
-				//*************Bus Settings*****************//
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Settings.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Settings_General.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Seat_Configuration.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Date_Settings.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Pricing_Routing.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Extra_Service.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Settings_Pickup_Point.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/wbtm/WBTM_Tax_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Global_settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_General.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Seat_Configuration.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Date_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Pricing_Routing.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Extra_Service.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_Pickup_Point.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Tax_Settings.php';
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
@@ -44,9 +41,6 @@
 			}
 			public function add_dummy_data() {
 				new WBTM_Dummy_Import();
-			}
-			public function add_endpoint() {
-				add_rewrite_endpoint('bus-panel', EP_ROOT | EP_PAGES);
 			}
 			//************************************//
 			public function wbtm_upgrade() {
@@ -244,7 +238,7 @@
 								];
 							}
 						}
-						usort($full_route_infos, "MP_Global_Function::sort_date_array");
+						usort($full_route_infos, "MP_Global_Function");
 						foreach ($full_route_infos as $key => $route) {
 							$full_route_infos[$key]['time'] = date('H:i', strtotime($route['time']));
 						}
@@ -317,7 +311,7 @@
 			}
 			//************Disable Gutenberg************************//
 			public function disable_gutenberg($current_status, $post_type) {
-				$user_status = MP_Global_Function::get_settings('wbtm_general_settings', 'disable_block_editor', 'yes');
+				$user_status = MP_Global_Function::get_settings('mp_global_settings', 'disable_block_editor', 'yes');
 				if ($post_type === WBTM_Functions::get_cpt() && $user_status == 'yes') {
 					return false;
 				}

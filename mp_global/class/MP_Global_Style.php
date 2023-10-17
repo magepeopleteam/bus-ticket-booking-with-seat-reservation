@@ -6,7 +6,7 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
-	if ( ! class_exists( 'MP_Global_Style' ) ) {
+	if ( ! class_exists('MP_Global_Style') ) {
 		class MP_Global_Style {
 			public function __construct() {
 				add_action( 'wp_head', array( $this, 'add_global_style' ), 100 );

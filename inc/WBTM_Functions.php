@@ -194,7 +194,7 @@
 					}
 				}
 				$all_dates = array_unique($all_dates);
-				usort($all_dates, "MP_Global_Function::sort_date");
+				usort($all_dates, "MP_Global_Function");
 				return $all_dates;
 			}
 			public static function get_post_date($post_id) {

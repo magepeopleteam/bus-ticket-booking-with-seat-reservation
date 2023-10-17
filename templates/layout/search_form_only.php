@@ -16,7 +16,7 @@
 		/**************/
 		$end_route = isset($_POST['bus_end_route']) ? MP_Global_Function::data_sanitize($_POST['bus_end_route']) : '';
 		//================//
-		$date_format = MP_Global_Function::date_picker_format('wbtm_general_settings');
+		$date_format = MP_Global_Function::date_picker_format();
 		$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 		//================//
 		$j_date = $_POST['j_date'] ?? '';
