@@ -9,17 +9,7 @@
 	if (!class_exists('WBTM_Quick_Setup')) {
 		class WBTM_Quick_Setup {
 			public function __construct() {
-				if (!class_exists('MPTBM_Dependencies')) {
-					add_action('admin_enqueue_scripts', array($this, 'add_admin_scripts'));
-				}
 				add_action('admin_menu', array($this, 'quick_setup_menu'));
-			}
-			public function add_admin_scripts() {
-				wp_enqueue_style('mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_style.css', array(), time());
-				wp_enqueue_script('mp_plugin_global', WBTM_PLUGIN_URL . '/assets/helper/mp_style/mp_script.js', array('jquery'), time(), true);
-				wp_enqueue_style('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
-				wp_enqueue_script('mp_admin_settings', WBTM_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
-				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
 			}
 			public function quick_setup_menu() {
 				$status = MP_Global_Function::check_woocommerce();
@@ -107,13 +97,13 @@
 				if (isset($_POST['finish_quick_setup'])) {
 					$label = isset($_POST['bus_menu_label']) ? sanitize_text_field($_POST['bus_menu_label']) : 'Bus';
 					$slug = isset($_POST['bus_menu_slug']) ? sanitize_text_field($_POST['bus_menu_slug']) : 'bus';
-					$general_settings_data = get_option('wbtm_bus_settings');
+					$general_settings_data = get_option('wbtm_general_settings');
 					$update_general_settings_arr = [
-						'bus_menu_label' => $label,
-						'bus_menu_slug' => $slug
+						'label' => $label,
+						'slug' => $slug
 					];
 					$new_general_settings_data = is_array($general_settings_data) ? array_replace($general_settings_data, $update_general_settings_arr) : $update_general_settings_arr;
-					update_option('wbtm_bus_settings', $new_general_settings_data);
+					update_option('wbtm_general_settings', $new_general_settings_data);
 					wp_redirect(admin_url('edit.php?post_type=wbtm_bus'));
 				}
 				?>
@@ -200,8 +190,8 @@
 				<?php
 			}
 			public function setup_general_content() {
-				$label = MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_label', 'Bus');
-				$slug = MP_Global_Function::get_settings('wbtm_bus_settings', 'bus_menu_slug', 'bus');
+				$label = MP_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
+				$slug = MP_Global_Function::get_settings('wbtm_general_settings','slug','bus');
 				?>
 				<div data-tabs-next="#wbtm_qs_general">
 					<div class="section">

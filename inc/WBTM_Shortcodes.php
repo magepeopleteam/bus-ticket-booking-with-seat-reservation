@@ -14,7 +14,6 @@
 				add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
 			}
 			public function wbtm_bus_list($atts, $content = null) {
-				global $wbtmmain;
 				$defaults = array(
 					"cat" => "0",
 					"show" => "20",
@@ -77,9 +76,7 @@
 				$search_path = $params['search-page'];
 				ob_start();
 				do_action('woocommerce_before_single_product');
-				require WBTM_Functions::template_path('search_form.php');
-				//echo WBTM_Functions::template_path('search_form');
-				//mage_bus_search_page();
+				require WBTM_Functions::template_path('layout/search_form.php');
 				do_action('wbtm_after_search_result_section', $params);
 				return ob_get_clean();
 			}

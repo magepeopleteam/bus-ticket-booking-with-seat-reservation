@@ -10,7 +10,6 @@
 		class WBTM_Taxonomy {
 			public function __construct() {
 				add_action('init', [$this, 'taxonomy']);
-				add_action('admin_init', [$this, 'taxonomy_edit']);
 			}
 			public function taxonomy() {
 				$name = WBTM_Functions::get_name();
@@ -36,7 +35,7 @@
 					'items_list' => _x($name . ' Type list', 'bus-ticket-booking-with-seat-reservation'),
 					'items_list_navigation' => _x($name . ' Type list navigation', 'bus-ticket-booking-with-seat-reservation'),
 				);
-				$args = array(
+				$args = [
 					'hierarchical' => true,
 					"public" => true,
 					'labels' => $labels,
@@ -44,16 +43,17 @@
 					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
 					'query_var' => true,
-					'rewrite' => array('slug' => 'bus-category'),
+					'rewrite' => ['slug' => 'bus-category'],
 					'show_in_rest' => true,
 					'rest_base' => 'bus_cat',
-				);
+					'meta_box_cb' => false,
+				];
 				register_taxonomy('wbtm_bus_cat', 'wbtm_bus', $args);
 				$bus_stops_labels = array(
 					'singular_name' => _x($name . ' Stops', 'bus-ticket-booking-with-seat-reservation'),
 					'name' => _x($name . ' Stops', 'bus-ticket-booking-with-seat-reservation'),
 				);
-				$bus_stops_args = array(
+				$bus_stops_args = [
 					'hierarchical' => true,
 					"public" => true,
 					'labels' => $bus_stops_labels,
@@ -61,10 +61,11 @@
 					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
 					'query_var' => true,
-					'rewrite' => array('slug' => 'bus-stops'),
+					'rewrite' => ['slug' => 'bus-stops'],
 					'show_in_rest' => true,
 					'rest_base' => 'bus_stops',
-				);
+					'meta_box_cb' => false,
+				];
 				register_taxonomy('wbtm_bus_stops', 'wbtm_bus', $bus_stops_args);
 				$labels = array(
 					'name' => $name . ' ' . esc_html__('Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
@@ -102,42 +103,6 @@
 					'meta_box_cb' => false,
 				);
 				register_taxonomy('wbtm_bus_pickpoint', 'wbtm_bus', $args);
-			}
-			public function taxonomy_edit() {
-				$bus_stops_option = array(
-					array(
-						'id' => 'wbtm_is_hide_global_boarding',
-						'title' => __('Hide on global boarding point', 'bus-ticket-booking-with-seat-reservation'),
-						'details' => __('Hide on global boarding point', 'bus-ticket-booking-with-seat-reservation'),
-						'type' => 'checkbox',
-						'args' => array(
-							'yes' => ''
-						)
-					),
-					array(
-						'id' => 'wbtm_bus_routes_name_list',
-						'title' => __('Route Point', 'bus-ticket-booking-with-seat-reservation'),
-						'details' => __('Please Select Route Point ', 'bus-ticket-booking-with-seat-reservation'),
-						'collapsible' => true,
-						'type' => 'repeatable',
-						'btn_text' => 'Add New Route Point',
-						'title_field' => 'wbtm_bus_routes_name',
-						'fields' => array(
-							array(
-								'type' => 'select',
-								'default' => 'option_1',
-								'item_id' => 'wbtm_bus_routes_name',
-								'name' => 'Stops Name',
-								'args' => 'TAXN_%wbtm_bus_stops%'
-							)
-						),
-					),
-				);
-				$args = array(
-					'taxonomy' => 'wbtm_bus_stops',
-					'options' => $bus_stops_option,
-				);
-				new TaxonomyEdit($args);
 			}
 		}
 		new WBTM_Taxonomy();
