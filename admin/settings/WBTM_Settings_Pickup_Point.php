@@ -170,9 +170,7 @@
 					update_post_meta($post_id, 'wbtm_pickup_point', $pickup_infos);
 					$display_pickup = MP_Global_Function::get_submit_info('show_pickup_point') ? 'yes' : 'no';
 					update_post_meta($post_id, 'show_pickup_point', $display_pickup);
-					//echo '<pre>'; print_r($hidden_ids); echo '</pre>';
-					//echo '<pre>'; print_r($display_pickup); echo '</pre>';
-					//echo '<pre>'; print_r($pickup_infos); echo '</pre>';die();
+
 				}
 			}
 		}

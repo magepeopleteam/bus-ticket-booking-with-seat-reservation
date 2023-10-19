@@ -217,7 +217,6 @@
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
-					update_post_meta($post_id, 'wbtm_bus_seats_info', $columns);
 					$lower_deck_info = [];
 					$total_seat=0;
 					if ($rows > 0 && $columns > 0) {

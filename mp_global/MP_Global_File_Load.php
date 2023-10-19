@@ -37,13 +37,13 @@
 				wp_enqueue_script('jquery');
 				wp_enqueue_script('jquery-ui-core');
 				wp_enqueue_script('jquery-ui-datepicker');
-				wp_enqueue_style('mp_jquery_ui', MP_GLOBAL_PLUGIN_URL.'/assets/jquery-ui.min.css', array(), '1.13.2');
+				wp_enqueue_style('mp_jquery_ui', MP_GLOBAL_PLUGIN_URL . '/assets/jquery-ui.min.css', array(), '1.13.2');
 				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
-				wp_enqueue_style('mp_select_2', MP_GLOBAL_PLUGIN_URL.'/assets/select_2/select2.min.css', array(), '4.0.13');
-				wp_enqueue_script('mp_select_2', MP_GLOBAL_PLUGIN_URL.'/assets/select_2/select2.min.js', array(), '4.0.13');
+				wp_enqueue_style('mp_select_2', MP_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.css', array(), '4.0.13');
+				wp_enqueue_script('mp_select_2', MP_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.js', array(), '4.0.13');
 				wp_enqueue_style('mp_owl_carousel', MP_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
 				wp_enqueue_script('mp_owl_carousel', MP_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
-				wp_enqueue_style('mp_plugin_global', MP_GLOBAL_PLUGIN_URL.'/assets/mp_style/mp_style.css', array(), time());
+				wp_enqueue_style('mp_plugin_global', MP_GLOBAL_PLUGIN_URL . '/assets/mp_style/mp_style.css', array(), time());
 				wp_enqueue_script('mp_plugin_global', MP_GLOBAL_PLUGIN_URL . '/assets/mp_style/mp_script.js', array('jquery'), time(), true);
 			}
 			public function admin_enqueue() {
@@ -60,10 +60,10 @@
 				wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
 				wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array('jquery'), 1, true);
 				//=====================//
-				wp_enqueue_script('form-field-dependency', MP_GLOBAL_PLUGIN_URL.'/assets/admin/form-field-dependency.js', array('jquery'), null, false);
+				wp_enqueue_script('form-field-dependency', MP_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);
 				// admin setting global
-				wp_enqueue_script('mp_admin_settings', MP_GLOBAL_PLUGIN_URL.'/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
-				wp_enqueue_style('mp_admin_settings', MP_GLOBAL_PLUGIN_URL.'/assets/admin/mp_admin_settings.css', array(), time());
+				wp_enqueue_script('mp_admin_settings', MP_GLOBAL_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
+				wp_enqueue_style('mp_admin_settings', MP_GLOBAL_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
 			}
 			public function frontend_enqueue() {
 				$this->global_enqueue();
@@ -76,19 +76,35 @@
 				$this->custom_css();
 			}
 			public function js_constant() {
-				?>
-				<script type="text/javascript">
-					let mp_ajax_url = "<?php echo admin_url('admin-ajax.php'); ?>";
-					let mp_currency_symbol = "<?php echo get_woocommerce_currency_symbol(); ?>";
-					let mp_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
-					let mp_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
-					let mp_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
-					let mp_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
-					let mp_empty_image_url = "<?php echo esc_attr(MP_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
-					let mp_date_format = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')); ?>";
-					let mp_date_format_without_year = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')); ?>";
-				</script>
-				<?php
+				if (MP_Global_Function::check_woocommerce() == 1) {
+					?>
+					<script type="text/javascript">
+						let mp_ajax_url = "<?php echo admin_url('admin-ajax.php'); ?>";
+						let mp_currency_symbol = "<?php echo get_woocommerce_currency_symbol(); ?>";
+						let mp_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
+						let mp_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
+						let mp_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
+						let mp_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
+						let mp_empty_image_url = "<?php echo esc_attr(MP_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
+						let mp_date_format = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')); ?>";
+						let mp_date_format_without_year = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')); ?>";
+					</script>
+					<?php
+				}else{
+					?>
+					<script type="text/javascript">
+						let mp_ajax_url = "<?php echo admin_url('admin-ajax.php'); ?>";
+						let mp_currency_symbol = "";
+						let mp_currency_position = "";
+						let mp_currency_decimal = "";
+						let mp_currency_thousands_separator = "";
+						let mp_num_of_decimal = "";
+						let mp_empty_image_url = "<?php echo esc_attr(MP_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
+						let mp_date_format = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')); ?>";
+						let mp_date_format_without_year = "<?php echo esc_attr(MP_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')); ?>";
+					</script>
+					<?php
+				}
 			}
 			public function custom_css() {
 				$custom_css = MP_Global_Function::get_settings('mp_add_custom_css', 'custom_css');

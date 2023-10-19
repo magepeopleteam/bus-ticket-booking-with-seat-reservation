@@ -238,7 +238,7 @@
 								];
 							}
 						}
-						usort($full_route_infos, "MP_Global_Function");
+						usort($full_route_infos, "MP_Global_Function::sort_date_array");
 						foreach ($full_route_infos as $key => $route) {
 							$full_route_infos[$key]['time'] = date('H:i', strtotime($route['time']));
 						}

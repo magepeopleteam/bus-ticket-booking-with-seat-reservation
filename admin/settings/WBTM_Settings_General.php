@@ -40,20 +40,20 @@
 							</label>
 							<?php WBTM_Settings::info_text('wbtm_bus_category'); ?>
 						</div>
-						<div class="_bgColor_2_padding_xs">
-							<div class="_max_700_dFlex">
-								<span class="_max_300_fs_label"><?php esc_html_e('Show Boarding time', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-								<?php MP_Custom_Layout::switch_button('show_boarding_time', $checked_bp_time); ?>
-							</div>
-							<?php WBTM_Settings::info_text('show_boarding_time'); ?>
-						</div>
-						<div class="_padding_xs">
-							<div class="_max_700_dFlex ">
-								<span class="_max_300_fs_label"><?php esc_html_e('Show Dropping time', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-								<?php MP_Custom_Layout::switch_button('show_dropping_time', $checked_dp_time); ?>
-							</div>
-							<?php WBTM_Settings::info_text('show_dropping_time'); ?>
-						</div>
+<!--						<div class="_bgColor_2_padding_xs">-->
+<!--							<div class="_max_700_dFlex">-->
+<!--								<span class="_max_300_fs_label">--><?php //esc_html_e('Show Boarding time', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
+<!--								--><?php //MP_Custom_Layout::switch_button('show_boarding_time', $checked_bp_time); ?>
+<!--							</div>-->
+<!--							--><?php //WBTM_Settings::info_text('show_boarding_time'); ?>
+<!--						</div>-->
+<!--						<div class="_padding_xs">-->
+<!--							<div class="_max_700_dFlex ">-->
+<!--								<span class="_max_300_fs_label">--><?php //esc_html_e('Show Dropping time', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
+<!--								--><?php //MP_Custom_Layout::switch_button('show_dropping_time', $checked_dp_time); ?>
+<!--							</div>-->
+<!--							--><?php //WBTM_Settings::info_text('show_dropping_time'); ?>
+<!--						</div>-->
 					</div>
 				</div>
 				<?php
@@ -66,10 +66,10 @@
 					$bus_category = MP_Global_Function::get_submit_info('wbtm_bus_category');
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
 					
-					$display_bp_time = MP_Global_Function::get_submit_info('show_boarding_time') ? 'yes' : 'no';
-					update_post_meta($post_id, 'show_boarding_time', $display_bp_time);
-					$display_dp_time = MP_Global_Function::get_submit_info('show_dropping_time') ? 'yes' : 'no';
-					update_post_meta($post_id, 'show_dropping_time', $display_dp_time);
+//					$display_bp_time = MP_Global_Function::get_submit_info('show_boarding_time') ? 'yes' : 'no';
+//					update_post_meta($post_id, 'show_boarding_time', $display_bp_time);
+//					$display_dp_time = MP_Global_Function::get_submit_info('show_dropping_time') ? 'yes' : 'no';
+//					update_post_meta($post_id, 'show_dropping_time', $display_dp_time);
 				}
 			}
 		}

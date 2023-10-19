@@ -63,7 +63,7 @@
 				$palace = array_key_exists('place', $full_route_info) ? $full_route_info['place'] : '';
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
-				$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
+				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				?>
 				<div class="mp_remove_area col_3 alignCenter _mB_xs wbtm_stop_item">
 					<div class="mpPanel_xs">
@@ -94,10 +94,10 @@
 									<option value="both" <?php echo esc_attr($type == 'both' ? 'selected' : ''); ?>><?php esc_html_e('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								</select>
 							</label>
-							<label>
-								<span class="_w_75"><?php esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="<?php echo esc_attr($interval); ?>"/>
-							</label>
+<!--							<label>-->
+<!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
+<!--								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
+<!--							</label>-->
 						</div>
 					</div>
 					<h3 class="col_2 allCenter">
@@ -204,7 +204,7 @@
 					$stops = MP_Global_Function::get_submit_info('wbtm_route_place', array());
 					$times = MP_Global_Function::get_submit_info('wbtm_route_time', array());
 					$types = MP_Global_Function::get_submit_info('wbtm_route_type', array());
-					$intervals = MP_Global_Function::get_submit_info('wbtm_route_interval', array());
+					//$intervals = MP_Global_Function::get_submit_info('wbtm_route_interval', array());
 					if (sizeof($stops) > 0) {
 						foreach ($stops as $key => $stop) {
 							if ($stop && $times[$key] && $types[$key]) {
@@ -212,7 +212,7 @@
 									'place' => $stop,
 									'time' => $times[$key],
 									'type' => $types[$key],
-									'interval' => max(0, $intervals[$key]),
+									//'interval' => max(0, $intervals[$key]),
 								];
 								
 							}
@@ -221,9 +221,9 @@
 					$count = sizeof($route_infos);
 					if ($count > 0) {
 						$route_infos[0]['type'] = 'bp';
-						$route_infos[0]['interval'] = 0;
+						//$route_infos[0]['interval'] = 0;
 						$route_infos[$count - 1]['type'] = 'dp';
-						$route_infos[$count - 1]['interval'] = 0;
+						//$route_infos[$count - 1]['interval'] = 0;
 						foreach ($route_infos as $route_info){
 							if($route_info['type']=='bp'){
 								$bp[]=$route_info['place'];
