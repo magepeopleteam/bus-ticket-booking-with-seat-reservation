@@ -54,9 +54,9 @@
 					if (sizeof($price_infos) > 0) {
 						foreach ($price_infos as $price_info) {
 							if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($start_route) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($end_route)) {
-								$adult_price = $price_info['wbtm_bus_price'];
-								$child_price = $price_info['wbtm_bus_child_price'];
-								$infant_price = $price_info['wbtm_bus_infant_price'];
+								$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] ? (float)$price_info['wbtm_bus_price'] : '';
+								$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] ? (float)$price_info['wbtm_bus_child_price'] : '';
+								$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] ? (float)$price_info['wbtm_bus_infant_price'] : '';
 								if ($adult_price && (float)$adult_price >= 0) {
 									$ticket_infos[] = [
 										'name' => WBTM_Translations::text_adult(),
@@ -194,7 +194,7 @@
 					}
 				}
 				$all_dates = array_unique($all_dates);
-				usort($all_dates, "MP_Global_Function");
+				usort($all_dates, "MP_Global_Function::sort_date");
 				return $all_dates;
 			}
 			public static function get_post_date($post_id) {

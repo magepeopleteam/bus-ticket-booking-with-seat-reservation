@@ -8,13 +8,8 @@
 	if (!class_exists('WBTM_Dummy_Import')) {
 		class WBTM_Dummy_Import {
 			public function __construct() {
-				//update_option('wbtm_bus_data_update_01', 'completed');
-				add_action('deactivate_plugin', array($this, 'update_option'), 98);
 				add_action('activated_plugin', array($this, 'update_option'), 98);
 				add_action('admin_init', array($this, 'dummy_import'), 98);
-			}
-			function update_option() {
-				update_option('wbtm_bus_seat_plan_data_input_done', 'no');
 			}
 			public static function check_plugin($plugin_dir_name, $plugin_file): int {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -52,7 +47,6 @@
 								}
 							}
 						}
-						//echo "<pre>";print_r($dummy_taxonomies);exit;
 					}
 					$dummy_cpt = $this->dummy_cpt();
 					if (array_key_exists('custom_post', $dummy_cpt)) {
@@ -66,14 +60,15 @@
 							$post = new WP_Query($args);
 							if ($post->post_count == 0) {
 								foreach ($dummy_post as $dummy_data) {
-									$title = $dummy_data['name'];
-									$content = $dummy_data['content'];
-									$post_id = wp_insert_post([
-										'post_title' => $title,
-										'post_content' => $content,
-										'post_status' => 'publish',
-										'post_type' => $custom_post,
-									]);
+									if (isset($dummy_data['name'])) {
+										$args['post_title'] = $dummy_data['name'];
+									}
+									if (isset($dummy_data['content'])) {
+										$args['post_content'] = $dummy_data['content'];
+									}
+									$args['post_status'] = 'publish';
+									$args['post_type'] = $custom_post;
+									$post_id = wp_insert_post($args);
 									if (array_key_exists('taxonomy_terms', $dummy_data) && count($dummy_data['taxonomy_terms'])) {
 										foreach ($dummy_data['taxonomy_terms'] as $taxonomy_term) {
 											wp_set_object_terms($post_id, $taxonomy_term['terms'], $taxonomy_term['taxonomy_name'], true);
@@ -96,7 +91,6 @@
 							}
 						}
 					}
-					//$this->craete_pages();
 					flush_rewrite_rules();
 					update_option('wbtm_bus_seat_plan_data_input_done', 'yes');
 				}
@@ -189,1409 +183,131 @@
 						'wbtm_bus' => [
 							0 => [
 								'name' => 'Flix Bus Service',
-								'taxonomy_terms' => [
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
 								'post_data' => [
-									//configuration
 									'feature_image' => 'https://img.freepik.com/free-photo/young-man-taking-city-bus_23-2148958086.jpg',
+									//general
 									'wbtm_bus_no' => 'Flixbus-01',
 									'wbtm_bus_category' => 'Non AC',
-									'wbtm_total_seat' => '16',
+									//lower seat
 									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
 									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
 									'wbtm_seat_rows' => '8',
+									'wbtm_seat_cols' => '5',
+									'wbtm_get_total_seat' => '64',
 									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
+										0 => $this->seat(['A1', 'A2', '', 'A3', 'A4']),
+										1 => $this->seat(['B1', 'B2', '', 'B3', 'B4']),
+										2 => $this->seat(['C1', 'C2', '', 'C3', 'C4']),
+										3 => $this->seat(['D1', 'D2', '', 'D3', 'D4']),
+										4 => $this->seat(['E1', 'E2', '', 'E3', 'E4']),
+										5 => $this->seat(['F1', 'F2', '', 'F3', 'F4']),
+										6 => $this->seat(['G1', 'G2', '', 'G3', 'G4']),
+										7 => $this->seat(['H1', 'H2', '', 'H3', 'H4']),
 									),
+									//upper desk
 									'show_upper_desk' => 'yes',
-									'wbtm_seat_cols_dd' => '4',
 									'wbtm_seat_rows_dd' => '8',
+									'wbtm_seat_cols_dd' => '5',
+									'wbtm_seat_dd_price_parcent' => '10',
 									'wbtm_bus_seats_info_dd' => array(
-										0 => array(
-											'dd_seat1' => 'S1',
-											'dd_seat2' => 'S2',
-											'dd_seat3' => 'S3',
-											'dd_seat4' => 'S4',
-										),
-										1 => array(
-											'dd_seat1' => 'T1',
-											'dd_seat2' => 'T2',
-											'dd_seat3' => 'T3',
-											'dd_seat4' => 'T4',
-										),
-										2 => array(
-											'dd_seat1' => 'U1',
-											'dd_seat2' => 'U2',
-											'dd_seat3' => 'U3',
-											'dd_seat4' => 'U4',
-										),
-										3 => array(
-											'dd_seat1' => 'V1',
-											'dd_seat2' => 'V2',
-											'dd_seat3' => 'V3',
-											'dd_seat4' => 'V4',
-										),
-										4 => array(
-											'dd_seat1' => 'W1',
-											'dd_seat2' => 'W2',
-											'dd_seat3' => 'W3',
-											'dd_seat4' => 'W4',
-										),
-										5 => array(
-											'dd_seat1' => 'X1',
-											'dd_seat2' => 'X2',
-											'dd_seat3' => 'X3',
-											'dd_seat4' => 'X4',
-										),
-										6 => array(
-											'dd_seat1' => 'Y1',
-											'dd_seat2' => 'Y2',
-											'dd_seat3' => 'Y3',
-											'dd_seat4' => 'Y4',
-										),
-										7 => array(
-											'dd_seat1' => 'Z1',
-											'dd_seat2' => 'Z2',
-											'dd_seat3' => 'Z3',
-											'dd_seat4' => 'Z4',
-										),
+										0 => $this->dd_seat(['S1', 'S2', '', 'S3', 'S4']),
+										1 => $this->dd_seat(['T1', 'T2', '', 'T3', 'T4']),
+										2 => $this->dd_seat(['U1', 'U2', '', 'U3', 'U4']),
+										3 => $this->dd_seat(['V1', 'V2', '', 'V3', 'V4']),
+										4 => $this->dd_seat(['W1', 'W2', '', 'W3', 'W4']),
+										5 => $this->dd_seat(['X1', 'X2', '', 'X3', 'X4']),
+										6 => $this->dd_seat(['Y1', 'Y2', '', 'Y3', 'Y4']),
+										7 => $this->dd_seat(['Z1', 'Z2', '', 'Z3', 'Z4']),
 									),
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Paris',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '18:20',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Berlin',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
+									//price & Routing
+									'wbtm_route_direction' => ['Paris', 'Frankfurt', 'Hamburg', 'Berlin'],
+									'wbtm_bus_bp_stops' => ['Paris', 'Frankfurt', 'Hamburg'],
+									'wbtm_bus_next_stops' => ['Frankfurt', 'Hamburg', 'Berlin'],
+									'wbtm_route_info' => [
+										0 => ['place' => 'Paris', 'type' => 'bp', 'time' => '08:00'],
+										1 => ['place' => 'Frankfurt', 'type' => 'both', 'time' => '09:30'],
+										2 => ['place' => 'Hamburg', 'type' => 'both', 'time' => '11:00'],
+										3 => ['place' => 'Berlin', 'type' => 'dp', 'time' => '22:30'],
+									],
 									// Seat Price
 									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
+										0 => $this->price(['Paris', 'Frankfurt', 10, '', '']),
+										1 => $this->price(['Paris', 'Hamburg', 15, '', '']),
+										2 => $this->price(['Paris', 'Berlin', 20, '', '']),
+										3 => $this->price(['Frankfurt', 'Hamburg', 7, '', '']),
+										4 => $this->price(['Frankfurt', 'Berlin', 12, '', '']),
+										5 => $this->price(['Hamburg', 'Berlin', 8, '', ''])
 									),
+									//Extra service
 									'show_extra_service' => 'yes',
-									'wbtm_extra_services' => array(
-										0 => array(
-											'option_name' => 'Welcome Drink',
-											'option_price' => '50',
-											'option_qty' => '500',
-											'option_qty_type' => 'inputbox',
-										),
-										1 => array(
-											'option_name' => 'Cap',
-											'option_price' => '70',
-											'option_qty' => '500',
-											'option_qty_type' => 'inputbox',
-										),
-									),
+									'wbtm_extra_services' => [
+										0 => ['option_name' => 'Welcome Drink', 'option_price' => '50', 'option_qty' => '500', 'option_qty_type' => 'inputbox',],
+										1 => ['option_name' => 'Cap', 'option_price' => '70', 'option_qty' => '500', 'option_qty_type' => 'inputbox',],
+									],
 									// Pickup Points
 									'show_pickup_point' => 'no',
-									// Onday & Offday
+									'wbtm_pickup_point' => [],
+									// date settings
 									'show_operational_on_day' => 'no',
-									'show_off_day' => 'yes',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => ''
-								],
-							],
-							1 => [
-								'name' => 'Mega Bus Express',
-								'content' => '
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-                            ',
-								'taxonomy_terms' => [
-									0 => array(
-										'taxonomy_name' => 'wbtm_bus_cat',
-										'terms' => array(
-											0 => 'AC',
-										)
-									),
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
-								'post_data' => [
-									//configuration
-									'feature_image' => 'https://img.freepik.com/free-photo/central-hong-kong-jan-10-2016-traffic-scene-tram-hong-kong_1137-317.jpg',
-									'wbtm_bus_no' => 'Megabus-01',
-									'wbtm_total_seat' => '16',
-									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
-									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
-									'wbtm_seat_rows' => '8',
-									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
-									),
-									'show_upper_desk' => 'no',
-									'wbtm_seat_cols_dd' => '',
-									'wbtm_seat_rows_dd' => '',
-									'wbtm_bus_seats_info_dd' => '',
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Paris',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '18:20',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Berlin',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
-									// Seat Price
-									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-									),
-									'show_extra_service' => 'no',
-									'wbtm_extra_services' => '',
-									// Pickup Points
-									'show_pickup_point' => 'no',
-									// Onday & Offday
-									'show_operational_on_day' => 'no',
-									'show_off_day' => 'yes',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => '',
-									'show_off_day' => 'no',
-								],
-							],
-							2 => [
-								'name' => 'BYD Express',
-								'content' => '
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-                            ',
-								'taxonomy_terms' => [
-									0 => array(
-										'taxonomy_name' => 'wbtm_bus_cat',
-										'terms' => array(
-											0 => 'Non AC',
-										)
-									),
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
-								'post_data' => [
-									//configuration
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-modern-park-city_100800-5400.jpg',
-									'wbtm_bus_no' => 'Bydbus-01',
-									'wbtm_total_seat' => '16',
-									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
-									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
-									'wbtm_seat_rows' => '8',
-									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
-									),
-									'show_upper_desk' => 'yes',
-									'wbtm_seat_cols_dd' => '4',
-									'wbtm_seat_rows_dd' => '8',
-									'wbtm_bus_seats_info_dd' => array(
-										0 => array(
-											'dd_seat1' => 'S1',
-											'dd_seat2' => 'S2',
-											'dd_seat3' => 'S3',
-											'dd_seat4' => 'S4',
-										),
-										1 => array(
-											'dd_seat1' => 'T1',
-											'dd_seat2' => 'T2',
-											'dd_seat3' => 'T3',
-											'dd_seat4' => 'T4',
-										),
-										2 => array(
-											'dd_seat1' => 'U1',
-											'dd_seat2' => 'U2',
-											'dd_seat3' => 'U3',
-											'dd_seat4' => 'U4',
-										),
-										3 => array(
-											'dd_seat1' => 'V1',
-											'dd_seat2' => 'V2',
-											'dd_seat3' => 'V3',
-											'dd_seat4' => 'V4',
-										),
-										4 => array(
-											'dd_seat1' => 'W1',
-											'dd_seat2' => 'W2',
-											'dd_seat3' => 'W3',
-											'dd_seat4' => 'W4',
-										),
-										5 => array(
-											'dd_seat1' => 'X1',
-											'dd_seat2' => 'X2',
-											'dd_seat3' => 'X3',
-											'dd_seat4' => 'X4',
-										),
-										6 => array(
-											'dd_seat1' => 'Y1',
-											'dd_seat2' => 'Y2',
-											'dd_seat3' => 'Y3',
-											'dd_seat4' => 'Y4',
-										),
-										7 => array(
-											'dd_seat1' => 'Z1',
-											'dd_seat2' => 'Z2',
-											'dd_seat3' => 'Z3',
-											'dd_seat4' => 'Z4',
-										),
-									),
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Paris',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '18:20',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Berlin',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
-									// Seat Price
-									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Paris',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Berlin',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-									),
-									'show_extra_service' => 'no',
-									'wbtm_extra_services' => '',
-									// Pickup Points
-									'show_pickup_point' => 'no',
-									// Onday & Offday
-									'show_operational_on_day' => 'no',
-									'show_off_day' => 'yes',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => '',
-									'show_off_day' => 'no',
-								],
-							],
-							3 => [
-								'name' => 'RED Coach',
-								'content' => '
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-                            ',
-								'taxonomy_terms' => [
-									0 => array(
-										'taxonomy_name' => 'wbtm_bus_cat',
-										'terms' => array(
-											0 => 'AC',
-										)
-									),
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
-								'post_data' => [
-									//configuration
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-moving-fast-road-modern-city-with-light-effect_207634-3202.jpg',
-									'wbtm_bus_no' => 'Redbus-01',
-									'wbtm_total_seat' => '16',
-									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
-									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
-									'wbtm_seat_rows' => '8',
-									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
-									),
-									'show_upper_desk' => 'no',
-									'wbtm_seat_cols_dd' => '',
-									'wbtm_seat_rows_dd' => '',
-									'wbtm_bus_seats_info_dd' => '',
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Berlin',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '18:10',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Paris',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
-									// Seat Price
-									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-									),
-									'show_extra_service' => 'no',
-									'wbtm_extra_services' => '',
-									// Pickup Points
-									'show_pickup_point' => 'no',
-									// Onday & Offday
-									'show_operational_on_day' => 'no',
-									'show_off_day' => 'yes',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => '',
-									'show_off_day' => 'no',
-								],
-							],
-							4 => [
-								'name' => 'Bonanza Bus',
-								'content' => '
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-                            ',
-								'taxonomy_terms' => [
-									0 => array(
-										'taxonomy_name' => 'wbtm_bus_cat',
-										'terms' => array(
-											0 => 'Non AC',
-										)
-									),
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
-								'post_data' => [
-									//configuration
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
-									'wbtm_bus_no' => 'Bonanzabus-01',
-									'wbtm_total_seat' => '16',
-									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
-									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
-									'wbtm_seat_rows' => '8',
-									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
-									),
-									'show_upper_desk' => 'yes',
-									'wbtm_seat_cols_dd' => '4',
-									'wbtm_seat_rows_dd' => '8',
-									'wbtm_bus_seats_info_dd' => array(
-										0 => array(
-											'dd_seat1' => 'S1',
-											'dd_seat2' => 'S2',
-											'dd_seat3' => 'S3',
-											'dd_seat4' => 'S4',
-										),
-										1 => array(
-											'dd_seat1' => 'T1',
-											'dd_seat2' => 'T2',
-											'dd_seat3' => 'T3',
-											'dd_seat4' => 'T4',
-										),
-										2 => array(
-											'dd_seat1' => 'U1',
-											'dd_seat2' => 'U2',
-											'dd_seat3' => 'U3',
-											'dd_seat4' => 'U4',
-										),
-										3 => array(
-											'dd_seat1' => 'V1',
-											'dd_seat2' => 'V2',
-											'dd_seat3' => 'V3',
-											'dd_seat4' => 'V4',
-										),
-										4 => array(
-											'dd_seat1' => 'W1',
-											'dd_seat2' => 'W2',
-											'dd_seat3' => 'W3',
-											'dd_seat4' => 'W4',
-										),
-										5 => array(
-											'dd_seat1' => 'X1',
-											'dd_seat2' => 'X2',
-											'dd_seat3' => 'X3',
-											'dd_seat4' => 'X4',
-										),
-										6 => array(
-											'dd_seat1' => 'Y1',
-											'dd_seat2' => 'Y2',
-											'dd_seat3' => 'Y3',
-											'dd_seat4' => 'Y4',
-										),
-										7 => array(
-											'dd_seat1' => 'Z1',
-											'dd_seat2' => 'Z2',
-											'dd_seat3' => 'Z3',
-											'dd_seat4' => 'Z4',
-										),
-									),
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Berlin',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '18:10',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Paris',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
-									// Seat Price
-									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-									),
-									'show_extra_service' => 'yes',
-									'wbtm_extra_services' => array(
-										0 => array(
-											'option_name' => 'Welcome Drink',
-											'option_price' => '50',
-											'option_qty' => '500',
-											'option_qty_type' => 'inputbox',
-										),
-										1 => array(
-											'option_name' => 'Cap',
-											'option_price' => '70',
-											'option_qty' => '500',
-											'option_qty_type' => 'inputbox',
-										),
-									),
-									// Pickup Points
-									'show_pickup_point' => 'no',
-									// Onday & Offday
-									'show_operational_on_day' => 'no',
-									'show_off_day' => 'yes',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => '',
-									'show_off_day' => 'no',
-								],
-							],
-							5 => [
-								'name' => 'Berlin Linien Bus',
-								'content' => '
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-                            ',
-								'taxonomy_terms' => [
-									0 => array(
-										'taxonomy_name' => 'wbtm_bus_cat',
-										'terms' => array(
-											0 => 'Non AC',
-										)
-									),
-									1 => array(
-										'taxonomy_name' => 'wbtm_bus_stops',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-											2 => 'Hamburg',
-											3 => 'Paris',
-										)
-									),
-									2 => array(
-										'taxonomy_name' => 'wbtm_bus_pickpoint',
-										'terms' => array(
-											0 => 'Berlin',
-											1 => 'Frankfurt',
-										)
-									),
-								],
-								'post_data' => [
-									//configuration
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
-									'wbtm_bus_no' => 'BerlinLinien-Bus-01',
-									'wbtm_total_seat' => '16',
-									'wbtm_seat_type_conf' => 'wbtm_seat_plan',
-									'show_boarding_time' => 'yes',
-									'show_dropping_time' => 'yes',
-									'driver_seat_position' => 'driver_left',
-									'wbtm_seat_cols' => '4',
-									'wbtm_seat_rows' => '8',
-									'wbtm_bus_seats_info' => array(
-										0 => array(
-											'seat1' => 'A1',
-											'seat2' => 'A2',
-											'seat3' => 'A3',
-											'seat4' => 'A4',
-										),
-										1 => array(
-											'seat1' => 'B1',
-											'seat2' => 'B2',
-											'seat3' => 'B3',
-											'seat4' => 'B4',
-										),
-										2 => array(
-											'seat1' => 'C1',
-											'seat2' => 'C2',
-											'seat3' => 'C3',
-											'seat4' => 'C4',
-										),
-										3 => array(
-											'seat1' => 'D1',
-											'seat2' => 'D2',
-											'seat3' => 'D3',
-											'seat4' => 'D4',
-										),
-										4 => array(
-											'seat1' => 'E1',
-											'seat2' => 'E2',
-											'seat3' => 'E3',
-											'seat4' => 'E4',
-										),
-										5 => array(
-											'seat1' => 'F1',
-											'seat2' => 'F2',
-											'seat3' => 'F3',
-											'seat4' => 'F4',
-										),
-										6 => array(
-											'seat1' => 'G1',
-											'seat2' => 'G2',
-											'seat3' => 'G3',
-											'seat4' => 'G4',
-										),
-										7 => array(
-											'seat1' => 'H1',
-											'seat2' => 'H2',
-											'seat3' => 'H3',
-											'seat4' => 'H4',
-										),
-									),
-									'show_upper_desk' => 'no',
-									'wbtm_seat_cols_dd' => '',
-									'wbtm_seat_rows_dd' => '',
-									'wbtm_bus_seats_info_dd' => '',
-									'wbtm_seat_dd_price_parcent' => '',
-									//Routing
-									'wbtm_bus_bp_stops' => array(
-										0 => array(
-											'wbtm_bus_bp_stops_name' => 'Berlin',
-											'wbtm_bus_bp_start_time' => '08:00',
-										),
-										1 => array(
-											'wbtm_bus_bp_stops_name' => 'Hamburg',
-											'wbtm_bus_bp_start_time' => '09:30',
-										),
-										2 => array(
-											'wbtm_bus_bp_stops_name' => 'Frankfurt',
-											'wbtm_bus_bp_start_time' => '11:00',
-										),
-									),
-									'wbtm_bus_next_stops' => array(
-										0 => array(
-											'wbtm_bus_next_stops_name' => 'Hamburg',
-											'wbtm_bus_next_end_time' => '18:10',
-										),
-										1 => array(
-											'wbtm_bus_next_stops_name' => 'Frankfurt',
-											'wbtm_bus_next_end_time' => '19:10',
-										),
-										2 => array(
-											'wbtm_bus_next_stops_name' => 'Paris',
-											'wbtm_bus_next_end_time' => '22:30',
-										),
-									),
-									'wbtm_route_summary' => array(),
-									'mtsa_subscription_route_type' => array(),
-									// Seat Price
-									'wbtm_bus_prices' => array(
-										0 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Hamburg',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										1 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										2 => array(
-											'wbtm_bus_bp_price_stop' => 'Berlin',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '20',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										3 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Frankfurt',
-											'wbtm_bus_price' => '25',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										4 => array(
-											'wbtm_bus_bp_price_stop' => 'Hamburg',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '15',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-										5 => array(
-											'wbtm_bus_bp_price_stop' => 'Frankfurt',
-											'wbtm_bus_dp_price_stop' => 'Paris',
-											'wbtm_bus_price' => '10',
-											'wbtm_bus_price_return' => '',
-											'wbtm_bus_child_price' => '',
-											'wbtm_bus_child_price_return' => '0',
-											'wbtm_bus_infant_price' => '0',
-											'wbtm_bus_infant_price_return' => '',
-										),
-									),
-									'show_extra_service' => 'no',
-									'wbtm_extra_services' => '',
-									// Pickup Points
-									'show_pickup_point' => 'no',
-									// Onday & Offday
-									'show_operational_on_day' => 'no',
-									'wbtm_off_days' => '',
-									'wbtm_od_start' => '',
-									'wbtm_od_end' => '',
-									'wbtm_bus_on_date' => '',
-									'show_boarding_points' => '',
-									'show_off_day' => 'no',
+									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
+									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +5 day')),
+									'wbtm_repeated_end_date' => date('Y-m-d', strtotime(' +100 day')),
+									'wbtm_repeated_after' => '1',
+									'wbtm_active_days' => '12',
+									'wbtm_off_days' => 'saturday,sunday',
+									'wbtm_off_dates' => [
+										date('m-d', strtotime(' +15 day')),
+										date('m-d', strtotime(' +25 day')),
+										date('m-d', strtotime(' +45 day')),
+										date('m-d', strtotime(' +55 day')),
+										date('m-d', strtotime(' +75 day')),
+										date('m-d', strtotime(' +90 day')),
+									],
+									'wbtm_offday_schedule' => [
+										0=>['from_date'=>'01-25','to_date'=>'01-28'],
+										1=>['from_date'=>'02-20','to_date'=>'02-25'],
+										2=>['from_date'=>'04-10','to_date'=>'04-12'],
+										3=>['from_date'=>'08-10','to_date'=>'08-12'],
+										4=>['from_date'=>'11-11','to_date'=>'12-12'],
+									]
 								],
 							],
 						],
 					],
 				];
+			}
+			public function seat($args = []): array {
+				$seat = [];
+				if (sizeof($args) > 0) {
+					$count = 1;
+					foreach ($args as $arg) {
+						$seat['seat' . $count] = $arg;
+						$count++;
+					}
+				}
+				return $seat;
+			}
+			public function dd_seat($args = []): array {
+				$seat = [];
+				if (sizeof($args) > 0) {
+					$count = 1;
+					foreach ($args as $arg) {
+						$seat['dd_seat' . $count] = $arg;
+						$count++;
+					}
+				}
+				return $seat;
+			}
+			public function price($args = []): array {
+				$price_info = [];
+				if (sizeof($args) > 0) {
+					$price_info['wbtm_bus_bp_price_stop'] = $args[0];
+					$price_info['wbtm_bus_dp_price_stop'] = $args[1];
+					$price_info['wbtm_bus_price'] = $args[2];
+					$price_info['wbtm_bus_child_price'] = $args[3];
+					$price_info['wbtm_bus_infant_price'] = $args[4];
+				}
+				return $price_info;
 			}
 		}
 	}
