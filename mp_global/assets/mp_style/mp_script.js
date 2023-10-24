@@ -653,7 +653,7 @@ function mp_check_required(input) {
 	});
 	$(document).on('keyup change', '.mpStyle .mp_id_validation', function () {
 		let n = $(this).val();
-		$(this).val(n.replace(/[^\d_a-z]/g, ''));
+		$(this).val(n.replace(/[^\d_a-zA-Z]/g, ''));
 		return true;
 	});
 	$(document).on('keyup change', '.mpStyle .mp_name_validation', function () {
