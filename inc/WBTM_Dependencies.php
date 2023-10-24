@@ -11,8 +11,8 @@
 			public function __construct() {
 				add_action('init', array($this, 'language_load'));
 				$this->load_file();
-				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
-				add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 80);
+				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 90);
+				add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 90);
 				add_filter('single_template', array($this, 'load_single_template'), 10);
 				add_filter('template_include', array($this, 'load_template'));
 			}

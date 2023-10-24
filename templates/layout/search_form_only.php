@@ -19,11 +19,11 @@
 		$date_format = MP_Global_Function::date_picker_format();
 		$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 		//================//
-		$j_date = $_POST['j_date'] ?? '';
+		$j_date = isset($_POST['j_date']) ? MP_Global_Function::data_sanitize($_POST['j_date']) : '';
 		$hidden_j_date = $j_date ? date('Y-m-d', strtotime($j_date)) : '';
 		$visible_j_date = $j_date ? date_i18n($date_format, strtotime($j_date)) : '';
 		//================//
-		$r_date = $_POST['r_date'] ?? '';
+		$r_date = isset($_POST['r_date']) ? MP_Global_Function::data_sanitize($_POST['r_date']) : '';
 		$return_date_show = MP_Global_Function::get_settings('wbtm_general_settings', 'bus_return_show', 'enable');
 		$hidden_r_date = $r_date ? date('Y-m-d', strtotime($r_date)) : '';
 		$visible_r_date = $r_date ? date_i18n($date_format, strtotime($r_date)) : '';
@@ -71,7 +71,7 @@
 				<div class="inputList">
 					<div class="fdColumn justifyBetween fullHeight">
 						<span>&nbsp;</span>
-						<button type="submit" class="_themeButton_radius wbtm_get_bus_list">
+						<button type="button" class="_themeButton_radius wbtm_get_bus_list">
 							<span class="fas fa-search mR_xs"></span><?php echo WBTM_Translations::text_search(); ?>
 						</button>
 					</div>

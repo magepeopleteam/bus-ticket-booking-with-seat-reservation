@@ -48,10 +48,10 @@
 											<th>
 												<div class="mp_seat_item">
 													<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
-													<?php if ($seat_available>0) { ?>
-														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold(). ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
-													<?php } elseif(WBTM_Functions::check_seat_in_cart($post_id,$start_route,$end_route,$date,$seat_name)) { ?>
-													<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart(). ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
+													<?php if ($seat_available > 0) { ?>
+														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
+													<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
+														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
 													<?php } else { ?>
 														<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
 															data-seat_name="<?php echo esc_attr($seat_name); ?>"
@@ -114,34 +114,41 @@
 											<?php } else { ?>
 												<th>
 													<div class="mp_seat_item">
-														<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . ' : ' . $info; ?>"
-															data-seat_name="<?php echo esc_attr($info); ?>"
-															data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
-															data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
-															data-seat_price="<?php echo esc_attr($adult_price_dd); ?>"
-														>
-															<?php echo esc_html($info); ?>
-														</div>
-														<?php if (sizeof($ticket_infos) > 1) { ?>
-															<div class="wbtm_seat_item_list">
-																<ul class="mp_list">
-																	<?php foreach ($ticket_infos as $key => $ticket_info) { ?>
-																		<?php
-																		$ticket_price = $key > 0 ? MP_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
-																		$ticket_price = $ticket_price + ($ticket_price * $seat_dd_increase / 100);
-																		?>
-																		<li class="justifyBetween"
-																			data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
-																			data-seat_type="<?php echo esc_attr($ticket_info['type']); ?>"
-																			data-seat_price="<?php echo esc_attr($ticket_price); ?>"
-																		>
-																			<span><?php echo esc_html($ticket_info['name']); ?></span>
-																			-
-																			<span><?php echo wc_price($ticket_price); ?></span>
-																		</li>
-																	<?php } ?>
-																</ul>
+														<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $info); ?>
+														<?php if ($seat_available > 0) { ?>
+															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>"><?php echo esc_html($info); ?></div>
+														<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $info)) { ?>
+															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info); ?>"><?php echo esc_html($info); ?></div>
+														<?php } else { ?>
+															<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($info); ?>"
+																data-seat_name="<?php echo esc_attr($info); ?>"
+																data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
+																data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
+																data-seat_price="<?php echo esc_attr($adult_price_dd); ?>"
+															>
+																<?php echo esc_html($info); ?>
 															</div>
+															<?php if (sizeof($ticket_infos) > 1) { ?>
+																<div class="wbtm_seat_item_list">
+																	<ul class="mp_list">
+																		<?php foreach ($ticket_infos as $key => $ticket_info) { ?>
+																			<?php
+																			$ticket_price = $key > 0 ? MP_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
+																			$ticket_price = $ticket_price + ($ticket_price * $seat_dd_increase / 100);
+																			?>
+																			<li class="justifyBetween"
+																				data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
+																				data-seat_type="<?php echo esc_attr($ticket_info['type']); ?>"
+																				data-seat_price="<?php echo esc_attr($ticket_price); ?>"
+																			>
+																				<span><?php echo esc_html($ticket_info['name']); ?></span>
+																				-
+																				<span><?php echo wc_price($ticket_price); ?></span>
+																			</li>
+																		<?php } ?>
+																	</ul>
+																</div>
+															<?php } ?>
 														<?php } ?>
 													</div>
 												</th>

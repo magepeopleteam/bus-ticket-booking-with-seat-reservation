@@ -318,7 +318,8 @@ function mp_all_content_change($this) {
 //==============================================================================Input use as select================//
 (function ($) {
 	"use strict";
-	$(document).on("click", "div.mpStyle .mp_input_select .mp_input_select_list li", function () {
+	$(document).on("click", "div.mpStyle .mp_input_select .mp_input_select_list li", function (e) {
+		e.preventDefault();
 		let current = $(this);
 		let parent = $(this).closest('.mp_input_select');
 		let value = current.data('value');
@@ -326,9 +327,9 @@ function mp_all_content_change($this) {
 		parent.find('.mp_input_select_list').slideUp(250);
 		if (parent.find('input[type="hidden"]').length > 0) {
 			parent.find('input.formControl').val(text);
-			parent.find('input[type="hidden"]').val(value).trigger('change');
+			parent.find('input[type="hidden"]').val(value).trigger('mp_change');
 		} else {
-			parent.find('input.formControl').val(value).trigger('change');
+			parent.find('input.formControl').val(value).trigger('mp_change');
 		}
 	});
 	$(document).on({
@@ -514,7 +515,7 @@ function mp_sticky_management() {
 					let target = $('[data-collapse="' + target_id + '"]');
 					target.slideUp(350).removeClass('mActive');
 				});
-			}else {
+			} else {
 				let target_id = $(this).data('option-target');
 				let target = $('[data-collapse="' + target_id + '"]');
 				target.slideUp('fast').removeClass('mActive');
@@ -629,6 +630,15 @@ function mp_sticky_management() {
 	});
 }(jQuery));
 //=======================================================validation ==============//
+function mp_check_required(input) {
+	if (input.val() !== '') {
+		input.removeClass('mpRequired');
+		return true;
+	} else {
+		input.addClass('mpRequired');
+		return false;
+	}
+}
 (function ($) {
 	"use strict";
 	$(document).on('keyup change', '.mpStyle .mp_number_validation', function () {
@@ -652,12 +662,7 @@ function mp_sticky_management() {
 		return true;
 	});
 	$(document).on('keyup change', '.mpStyle [required]', function () {
-		if ($(this).val() !== '') {
-			$(this).removeClass('mpRequired');
-		} else {
-			$(this).addClass('mpRequired');
-		}
-		return true;
+		mp_check_required($(this));
 	});
 }(jQuery));
 //==========================================================pagination==========//
