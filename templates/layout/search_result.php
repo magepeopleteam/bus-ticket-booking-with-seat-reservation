@@ -64,11 +64,11 @@
 									<div class="_fdColumn">
 										<h6>
 											<span class="fa fa-angle-double-right"></span>
-											<?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? ' (' . MP_Global_Function::date_format($all_info['bp_time'], 'full') . ' )' : ''); ?>
+											<?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? ' (' . MP_Global_Function::date_format($all_info['bp_time'], 'time') . ' )' : ''); ?>
 										</h6>
 										<h6>
 											<span class="fa fa-stop"></span>
-											<?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? ' (' . MP_Global_Function::date_format($all_info['dp_time'], 'full') . ' )' : ''); ?>
+											<?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? ' (' . MP_Global_Function::date_format($all_info['dp_time'], 'time') . ' )' : ''); ?>
 										</h6
 									</div>
 								</div>

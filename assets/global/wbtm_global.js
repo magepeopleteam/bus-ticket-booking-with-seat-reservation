@@ -1,6 +1,27 @@
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
+	$(document).on("click", "#wbtm_area button.wbtm_get_bus_list", function (e) {
+		e.preventDefault();
+		let parent = $(this).closest('#wbtm_area');
+		let start = parent.find('input[name="bus_start_route"]');
+		let end = parent.find('input[name="bus_end_route"]');
+		let date = parent.find('input[name="j_date"]');
+		if (!mp_check_required(start)) {
+			start.trigger('click');
+			return false;
+		}
+		if (!mp_check_required(end)) {
+			end.trigger('click');
+			return false;
+		}
+		if (!mp_check_required(date)) {
+			date.siblings('input').focus();
+			return false;
+		} else {
+			parent.find('form').submit();
+		}
+	});
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
@@ -9,7 +30,7 @@
 			parent.find('.wbtm_get_bus_list').trigger('click');
 		});
 	});
-	$(document).on("change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
+	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
 		let current = $(this);
 		let start_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
@@ -107,7 +128,7 @@
 	"use strict";
 	function wbtm_price_calculation(parent) {
 		let total_qty = wbtm_seat_qty(parent);
-		wbtm_seat_calculation(parent,total_qty);
+		wbtm_seat_calculation(parent, total_qty);
 		wbtm_attendee_management(parent, total_qty);
 		let target_summary = parent.find('.wbtm_total');
 		let target_sub_total = parent.find('.wbtm_sub_total');
@@ -215,7 +236,7 @@
 			}
 		});
 	});
-	function wbtm_seat_calculation(parent,total_qty) {
+	function wbtm_seat_calculation(parent, total_qty) {
 		if (parent.find('.wbtm_seat_plan_area').length > 0) {
 			let upper_area = parent.find('.wbtm_seat_plan_lower');
 			if (upper_area.length > 0) {
@@ -245,13 +266,13 @@
 					lower_target_type.val(seats_dd_type);
 				});
 			}
-			wbtm_selected_seat_details(parent,total_qty)
+			wbtm_selected_seat_details(parent, total_qty)
 		}
 	}
-	function wbtm_selected_seat_details(parent,total_qty) {
+	function wbtm_selected_seat_details(parent, total_qty) {
 		if (parent.find('.wbtm_seat_plan_area').length > 0) {
 			let target = parent.find('.wbtm_selected_seat_details .wbtm_item_insert');
-			if(total_qty>0) {
+			if (total_qty > 0) {
 				let item_length = target.find('.wbtm_remove_area').length;
 				if (item_length !== total_qty) {
 					let hidden_target_tr = parent.find('.wbtm_item_hidden .wbtm_remove_area');
@@ -281,7 +302,7 @@
 						}
 					});
 				}
-			}else{
+			} else {
 				target.html('');
 			}
 		}
