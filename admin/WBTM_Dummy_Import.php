@@ -8,7 +8,6 @@
 	if (!class_exists('WBTM_Dummy_Import')) {
 		class WBTM_Dummy_Import {
 			public function __construct() {
-				add_action('activated_plugin', array($this, 'update_option'), 98);
 				add_action('admin_init', array($this, 'dummy_import'), 98);
 			}
 			public function dummy_import() {
