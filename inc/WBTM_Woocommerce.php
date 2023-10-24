@@ -102,7 +102,7 @@
 								if (sizeof($cart_seat_infos) > 0) {
 									foreach ($cart_seat_infos as $seat_info) {
 										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
-										if (WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name)>0) {
+										if (WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 											WC()->cart->empty_cart();
 											wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'woocommerce'), 'error');
 										}
@@ -205,98 +205,105 @@
 					$order = wc_get_order($order_id);
 					$order_status = $order->get_status();
 					if ($order_status != 'failed') {
-						$order_meta = get_post_meta($order_id);
-						$payment_method = $order_meta['_payment_method_title'][0] ?? '';
-						$user_id = $order_meta['_customer_user'][0] ?? '';
-						$billing_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
-						$billing_email = $order_meta['_billing_email'][0];
-						$billing_phone = $order_meta['_billing_phone'][0];
-						$billing_address = $order_meta['_billing_address_1'][0] . ' ' . $order_meta['_billing_address_2'][0];
-						$now_full = current_time('Y-m-d H:i');
 						//$item_id = current( array_keys( $order->get_items() ) );
 						foreach ($order->get_items() as $item_id => $item) {
-							$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
-							if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-								$bp = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp');
-								$bp = $bp ? MP_Global_Function::data_sanitize($bp) : '';
-								$bp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp_time');
-								$bp_time = $bp_time ? MP_Global_Function::data_sanitize($bp_time) : '';
-								/*******************/
-								$dp = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp');
-								$dp = $dp ? MP_Global_Function::data_sanitize($dp) : '';
-								$dp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp_time');
-								$dp_time = $dp_time ? MP_Global_Function::data_sanitize($dp_time) : '';
-								/*******************/
-								$start_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_point');
-								$start_point = $start_point ? MP_Global_Function::data_sanitize($start_point) : '';
-								$start_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_time');
-								$start_time = $start_time ? MP_Global_Function::data_sanitize($start_time) : '';
-								/*******************/
-								$pickup_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_pickup_point');
-								$pickup_point = $pickup_point ? MP_Global_Function::data_sanitize($pickup_point) : '';
-								/*******************/
-								$order_total = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
-								$order_total = $order_total ? MP_Global_Function::data_sanitize($order_total) : '';
-								/*******************/
-								$service_info = MP_Global_Function::get_order_item_meta($item_id, '_extra_services');
-								$service_info = $service_info ? MP_Global_Function::data_sanitize($service_info) : [];
-								/*******************/
-								$attendee_info = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_passenger_info');
-								$attendee_info = $attendee_info ? MP_Global_Function::data_sanitize($attendee_info) : [];
-								/*******************/
-								$ticket_infos = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_ticket_info');
-								$ticket_infos = $ticket_infos ? MP_Global_Function::data_sanitize($ticket_infos) : [];
-								/*************************/
-								if (sizeof($ticket_infos) > 0) {
-									$count = 0;
-									foreach ($ticket_infos as $ticket_info) {
-										$qty = $ticket_info['ticket_qty'];
-										for ($key = 0; $key < $qty; $key++) {
-											$data['wbtm_order_id'] = $order_id;
-											$data['wbtm_bus_id'] = $post_id;
-											$data['wbtm_user_id'] = $user_id;
-											$data['wbtm_item_id'] = $item_id;
-											$data['wbtm_tp'] = $order_total;
-											$data['wbtm_boarding_point'] = $bp;
-											$data['wbtm_boarding_time'] = $bp_time;
-											$data['wbtm_dropping_point'] = $dp;
-											$data['wbtm_dropping_time'] = $dp_time;
-											$data['wbtm_bus_start_point'] = $start_point;
-											$data['wbtm_start_time'] = $start_time;
-											$data['wbtm_booking_date'] = $now_full;
-											$data['wbtm_pickup_point'] = $pickup_point;
-											$data['wbtm_ticket'] = $ticket_info['ticket_name'];
-											$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
-											$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
-											$data['wbtm_ticket_status'] = 1;
-											$data['wbtm_order_status'] = $order_status;
-											$data['wbtm_attendee_info'] = array_key_exists($count, $attendee_info) ? $attendee_info[$count] : [];
-											$data['wbtm_billing_type'] = $payment_method;
-											$data['wbtm_extra_services'] = $service_info;
-											$data['wbtm_user_name'] = $billing_name;
-											$data['wbtm_user_email'] = $billing_email;
-											$data['wbtm_user_phone'] = $billing_phone;
-											$data['wbtm_user_address'] = $billing_address;
-											$booking_data = apply_filters('add_wbtm_booking_data', $data, $post_id, $count);
-											self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
-											$count++;
-										}
-									}
-								}
-								/*******************/
-								if (sizeof($service_info) > 0) {
-									$ex_data['wbtm_bus_id'] = $post_id;
-									$ex_data['wbtm_item_id'] = $item_id;
-									$ex_data['wbtm_boarding_time'] = $bp_time;
-									$ex_data['wbtm_start_time'] = $start_time;
-									$ex_data['wbtm_order_id'] = $order_id;
-									$ex_data['wbtm_order_status'] = $order_status;
-									$ex_data['wbtm_user_id'] = $user_id;
-									$ex_data['wbtm_extra_services'] = $service_info;
-									self::add_cpt_data('wbtm_service_booking', $billing_name, $ex_data);
-								}
+							self::add_billing_data($item_id, $order_id);
+						}
+					}
+				}
+			}
+			/*********************/
+			public static function add_billing_data($item_id, $order_id) {
+				$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					$order = wc_get_order($order_id);
+					$order_meta = get_post_meta($order_id);
+					$order_status = $order->get_status();
+					$payment_method = $order_meta['_payment_method_title'][0] ?? '';
+					$user_id = $order_meta['_customer_user'][0] ?? '';
+					$billing_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
+					$billing_email = $order_meta['_billing_email'][0];
+					$billing_phone = $order_meta['_billing_phone'][0];
+					$billing_address = $order_meta['_billing_address_1'][0] . ' ' . $order_meta['_billing_address_2'][0];
+					$now_full = current_time('Y-m-d H:i');
+					/********************************/
+					$bp = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp');
+					$bp = $bp ? MP_Global_Function::data_sanitize($bp) : '';
+					$bp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp_time');
+					$bp_time = $bp_time ? MP_Global_Function::data_sanitize($bp_time) : '';
+					/*******************/
+					$dp = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp');
+					$dp = $dp ? MP_Global_Function::data_sanitize($dp) : '';
+					$dp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp_time');
+					$dp_time = $dp_time ? MP_Global_Function::data_sanitize($dp_time) : '';
+					/*******************/
+					$start_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_point');
+					$start_point = $start_point ? MP_Global_Function::data_sanitize($start_point) : '';
+					$start_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_time');
+					$start_time = $start_time ? MP_Global_Function::data_sanitize($start_time) : '';
+					/*******************/
+					$pickup_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_pickup_point');
+					$pickup_point = $pickup_point ? MP_Global_Function::data_sanitize($pickup_point) : '';
+					/*******************/
+					$order_total = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
+					$order_total = $order_total ? MP_Global_Function::data_sanitize($order_total) : '';
+					/*******************/
+					$service_info = MP_Global_Function::get_order_item_meta($item_id, '_extra_services');
+					$service_info = $service_info ? MP_Global_Function::data_sanitize($service_info) : [];
+					/*******************/
+					$attendee_info = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_passenger_info');
+					$attendee_info = $attendee_info ? MP_Global_Function::data_sanitize($attendee_info) : [];
+					/*******************/
+					$ticket_infos = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_ticket_info');
+					$ticket_infos = $ticket_infos ? MP_Global_Function::data_sanitize($ticket_infos) : [];
+					/*************************/
+					if (sizeof($ticket_infos) > 0) {
+						$count = 0;
+						foreach ($ticket_infos as $ticket_info) {
+							$qty = $ticket_info['ticket_qty'];
+							for ($key = 0; $key < $qty; $key++) {
+								$data['wbtm_order_id'] = $order_id;
+								$data['wbtm_bus_id'] = $post_id;
+								$data['wbtm_user_id'] = $user_id;
+								$data['wbtm_item_id'] = $item_id;
+								$data['wbtm_tp'] = $order_total;
+								$data['wbtm_boarding_point'] = $bp;
+								$data['wbtm_boarding_time'] = $bp_time;
+								$data['wbtm_dropping_point'] = $dp;
+								$data['wbtm_dropping_time'] = $dp_time;
+								$data['wbtm_bus_start_point'] = $start_point;
+								$data['wbtm_start_time'] = $start_time;
+								$data['wbtm_booking_date'] = $now_full;
+								$data['wbtm_pickup_point'] = $pickup_point;
+								$data['wbtm_ticket'] = $ticket_info['ticket_name'];
+								$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
+								$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
+								$data['wbtm_ticket_status'] = 1;
+								$data['wbtm_order_status'] = $order_status;
+								$data['wbtm_attendee_info'] = array_key_exists($count, $attendee_info) ? $attendee_info[$count] : [];
+								$data['wbtm_billing_type'] = $payment_method;
+								$data['wbtm_extra_services'] = $service_info;
+								$data['wbtm_user_name'] = $billing_name;
+								$data['wbtm_user_email'] = $billing_email;
+								$data['wbtm_user_phone'] = $billing_phone;
+								$data['wbtm_user_address'] = $billing_address;
+								$booking_data = apply_filters('add_wbtm_booking_data', $data, $post_id, $count);
+								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
+								$count++;
 							}
 						}
+					}
+					/*******************/
+					if (sizeof($service_info) > 0) {
+						$ex_data['wbtm_bus_id'] = $post_id;
+						$ex_data['wbtm_item_id'] = $item_id;
+						$ex_data['wbtm_boarding_time'] = $bp_time;
+						$ex_data['wbtm_start_time'] = $start_time;
+						$ex_data['wbtm_order_id'] = $order_id;
+						$ex_data['wbtm_order_status'] = $order_status;
+						$ex_data['wbtm_user_id'] = $user_id;
+						$ex_data['wbtm_extra_services'] = $service_info;
+						self::add_cpt_data('wbtm_service_booking', $billing_name, $ex_data);
 					}
 				}
 			}
@@ -449,7 +456,7 @@
 						for ($i = 0; $i < count($passenger_type); $i++) {
 							if ($qty[$i] > 0) {
 								$type = $passenger_type[$i] ?? '';
-								$ticket_name=WBTM_Functions::get_ticket_name($type);
+								$ticket_name = WBTM_Functions::get_ticket_name($type);
 								$ticket_info[$i]['ticket_name'] = $ticket_name;
 								$ticket_info[$i]['seat_name'] = $ticket_name;
 								$ticket_info[$i]['ticket_type'] = $type;

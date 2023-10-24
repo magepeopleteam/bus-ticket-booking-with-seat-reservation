@@ -24,7 +24,7 @@
 						<label class="justifyBetween">
 							<span class="_mR_xs"><?php echo WBTM_Translations::text_pickup_point(); ?></span>
 							<select class="formControl" name="wbtm_pickup_point">
-								<option selected><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point(); ?></option>
+								<option selected value=" "><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point(); ?></option>
 								<?php foreach ($pickup_infos as $pickup_info) { ?>
 									<?php $pickup_time = date('Y-m-d H:i', strtotime($date . ' ' . $pickup_info['time'])); ?>
 									<?php $pickup_time = MP_Global_Function::date_format($pickup_time, 'time'); ?>

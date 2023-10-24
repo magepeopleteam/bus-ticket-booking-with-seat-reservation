@@ -13,6 +13,10 @@
 				add_action( 'save_post', array( $this, 'run_link_product_on_save' ), 99, 1 );
 				add_action( 'parse_query', array( $this, 'hide_wc_hidden_product_from_product_list' ) );
 				add_action( 'wp', array( $this, 'hide_hidden_wc_product_from_frontend' ) );
+				//******************//
+				add_action('wp_head', [$this, 'url_exclude_search_engine']);
+				add_action('init', [$this, 'get_all_hidden_product_id']);
+				add_filter('wpseo_exclude_from_sitemap_by_post_ids', [$this, 'get_all_hidden_product_id']);
 			}
 			public function create_hidden_wc_product_on_publish( $post_id, $post ) {
 				if ( $post->post_type == WBTM_Functions::get_cpt() && $post->post_status == 'publish' && empty( MP_Global_Function::get_post_info( $post_id, 'check_if_run_once' ) ) ) {
@@ -142,6 +146,31 @@
 				);
 				$loop = new WP_Query( $args );
 				return $loop->post_count;
+			}
+			//**************Google search url hidden*********************//
+			public function url_exclude_search_engine() {
+				global $post;
+				if (is_single() && is_product()) {
+					$post_id = $post->ID;
+					$visibility = get_the_terms($post_id, 'product_visibility') ? get_the_terms($post_id, 'product_visibility') : [0];
+					if (is_object($visibility[0]) && $visibility[0]->name == 'exclude-from-catalog') {
+						$check_hidden = MP_Global_Function::get_post_info($post_id, 'link_wbtm_bus', 0);
+						if ($check_hidden > 0) {
+							?>
+							<meta name="robots" content="noindex, nofollow">
+							<?php
+						}
+					}
+				}
+			}
+			public function get_all_hidden_product_id() {
+				$product_id = [];
+				$query = MP_Global_Function::query_post_type(WBTM_Functions::get_cpt());
+				foreach ($query->posts as $result) {
+					$post_id = $result->ID;
+					$product_id[] = MP_Global_Function::get_post_info($post_id, 'link_wc_product');
+				}
+				return array_filter($product_id);
 			}
 		}
 		new WBTM_Hidden_Product();
