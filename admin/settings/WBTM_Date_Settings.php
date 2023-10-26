@@ -222,7 +222,7 @@
 							}
 						}
 					}
-					update_post_meta($post_id, 'wbtm_particular_dates', $particular);
+					update_post_meta($post_id, 'wbtm_particular_dates', array_unique($particular));
 					//*************************//
 					$repeated_start_date = MP_Global_Function::get_submit_info('wbtm_repeated_start_date');
 					$repeated_start_date = $repeated_start_date ? date('Y-m-d', strtotime($repeated_start_date)) : '';

@@ -20,25 +20,7 @@
 			}
 			public function create_hidden_wc_product_on_publish( $post_id, $post ) {
 				if ( $post->post_type == WBTM_Functions::get_cpt() && $post->post_status == 'publish' && empty( MP_Global_Function::get_post_info( $post_id, 'check_if_run_once' ) ) ) {
-					$new_post     = array(
-						'post_title'    => $post->post_title,
-						'post_content'  => '',
-						'post_name'     => uniqid(),
-						'post_category' => array(),  // Usable for custom taxonomies too
-						'tags_input'    => array(),
-						'post_status'   => 'publish', // Choose: publish, preview, future, draft, etc.
-						'post_type'     => 'product'  //'post',page' or use a custom post type if you want to
-					);
-					$pid          = wp_insert_post( $new_post );
-					$product_type = 'yes';
-					update_post_meta( $post_id, 'link_wc_product', $pid );
-					update_post_meta( $pid, 'link_wbtm_bus', $post_id );
-					update_post_meta( $pid, '_price', 0.01 );
-					update_post_meta( $pid, '_sold_individually', 'yes' );
-					update_post_meta( $pid, '_virtual', $product_type );
-					$terms = array( 'exclude-from-catalog', 'exclude-from-search' );
-					wp_set_object_terms( $pid, $terms, 'product_visibility' );
-					update_post_meta( $post_id, 'check_if_run_once', true );
+					$this->create_hidden_wc_product( $post_id);
 				}
 			}
 			public function run_link_product_on_save( $post_id ) {
@@ -52,9 +34,8 @@
 					if ( ! current_user_can( 'edit_post', $post_id ) ) {
 						return;
 					}
-					$title = get_the_title( $post_id );
-					if ( $this->count_hidden_wc_product( $post_id ) == 0 || empty( MP_Global_Function::get_post_info( $post_id, 'link_wc_product' ) ) ) {
-						$this->create_hidden_wc_product( $post_id, $title );
+					if ( !is_product() || ($this->count_hidden_wc_product( $post_id ) == 0 || empty( MP_Global_Function::get_post_info( $post_id, 'link_wc_product' ) ) )) {
+						$this->create_hidden_wc_product( $post_id);
 					}
 					$product_id = MP_Global_Function::get_post_info( $post_id, 'link_wc_product', $post_id );
 					set_post_thumbnail( $product_id, get_post_thumbnail_id( $post_id ) );
@@ -70,7 +51,7 @@
 					update_post_meta( $product_id, '_sold_individually', 'yes' );
 					$my_post = array(
 						'ID'         => $product_id,
-						'post_title' => $title,
+						'post_title' => get_the_title( $post_id ),
 						'post_name'  => uniqid()
 					);
 					remove_action( 'save_post', 'run_link_product_on_save' );
@@ -112,9 +93,9 @@
 				}
 			}
 			/**********************/
-			public function create_hidden_wc_product( $post_id, $title ) {
+			public function create_hidden_wc_product( $post_id) {
 				$new_post = array(
-					'post_title'    => $title,
+					'post_title'    => get_the_title( $post_id ),
 					'post_content'  => '',
 					'post_name'     => uniqid(),
 					'post_category' => array(),

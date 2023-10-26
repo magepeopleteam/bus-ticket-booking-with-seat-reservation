@@ -258,7 +258,7 @@
 				}
 				$line_price = (float)$price * (int)$qty;
 				$return_price = $line_price;
-				if ($product->is_taxable()) {
+				if ($product && $product->is_taxable()) {
 					if (!wc_prices_include_tax()) {
 						$tax_rates = WC_Tax::get_rates($product->get_tax_class());
 						$taxes = WC_Tax::calc_tax($line_price, $tax_rates);
