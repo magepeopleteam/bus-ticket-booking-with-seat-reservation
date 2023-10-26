@@ -151,9 +151,9 @@
 					$wbtm_pickup_time = MP_Global_Function::get_submit_info('wbtm_pickup_time', array());
 					if (sizeof($hidden_ids) > 0) {
 						foreach ($hidden_ids as $hidden_id) {
-							$pickups = $wbtm_pickup[$hidden_id];
-							$pickup_times = $wbtm_pickup_time[$hidden_id];
-							if ($wbtm_pickup_bp[$hidden_id] && sizeof($pickups) > 0 && sizeof($pickup_times) > 0) {
+							$pickups = array_key_exists($hidden_id,$wbtm_pickup)?$wbtm_pickup[$hidden_id]:[];
+							$pickup_times =array_key_exists($hidden_id,$wbtm_pickup_time)? $wbtm_pickup_time[$hidden_id]:'';
+							if (array_key_exists($hidden_id,$wbtm_pickup_bp) && $wbtm_pickup_bp[$hidden_id] && sizeof($pickups) > 0 && sizeof($pickup_times) > 0) {
 								foreach ($pickups as $key => $pickup) {
 									if ($pickup && $pickup_times[$key]) {
 										$pickup_infos[$count]['bp_point'] = $wbtm_pickup_bp[$hidden_id];
