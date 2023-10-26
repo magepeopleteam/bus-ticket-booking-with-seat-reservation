@@ -76,13 +76,13 @@
 				return $thumbnail;
 			}
 			public function get_item_data($item_data, $cart_item) {
-				ob_start();
 				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					ob_start();
 					$this->show_cart_item($cart_item, $post_id);
 					do_action('wbtm_show_cart_item', $cart_item, $post_id);
+					$item_data[] = array('key' => esc_html__('Booking Details ', 'bus-ticket-booking-with-seat-reservation'), 'value' => ob_get_clean());
 				}
-				$item_data[] = array('key' => esc_html__('Booking Details ', 'bus-ticket-booking-with-seat-reservation'), 'value' => ob_get_clean());
 				return $item_data;
 			}
 			/*********************/

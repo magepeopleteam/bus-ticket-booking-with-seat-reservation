@@ -281,7 +281,7 @@
 						}
 					}
 				}
-				return $all_dates;
+				return array_unique($all_dates);
 			}
 			public static function slice_buffer_time($date) {
 				$buffer_time = MP_Global_Function::get_settings('wbtm_general_settings', 'bus_buffer_time', 0) * 60;
