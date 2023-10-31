@@ -392,16 +392,18 @@
 			//==========================//
 			public static function wbtm_get_user_role($user_ID) {
 				global $wp_roles;
+				$user_role_list = '';
 				$user_data = get_userdata($user_ID);
 				$user_role_slug = $user_data->roles;
-				$user_role_nr = 0;
-				$user_role_list = '';
-				foreach ($user_role_slug as $user_role) {
-					$user_role_nr++;
-					if ($user_role_nr > 1) {
-						$user_role_list .= ", ";
+				if (sizeof($user_role_slug) > 0) {
+					$user_role_nr = 0;
+					foreach ($user_role_slug as $user_role) {
+						$user_role_nr++;
+						if ($user_role_nr > 1) {
+							$user_role_list .= ", ";
+						}
+						$user_role_list .= translate_user_role($wp_roles->roles[$user_role]['name']);
 					}
-					$user_role_list .= translate_user_role($wp_roles->roles[$user_role]['name']);
 				}
 				return $user_role_list;
 			}
