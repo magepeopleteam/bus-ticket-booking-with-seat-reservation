@@ -395,7 +395,7 @@
 				$user_role_list = '';
 				$user_data = get_userdata($user_ID);
 				$user_role_slug = $user_data->roles;
-				if (sizeof($user_role_slug) > 0) {
+				if (is_array($user_role_slug) && sizeof($user_role_slug) > 0) {
 					$user_role_nr = 0;
 					foreach ($user_role_slug as $user_role) {
 						$user_role_nr++;
