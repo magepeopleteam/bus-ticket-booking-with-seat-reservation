@@ -217,14 +217,14 @@
 				$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$order = wc_get_order($order_id);
-					$order_meta = get_post_meta($order_id);
+					//$order_meta = get_post_meta($order_id);
 					$order_status = $order->get_status();
-					$payment_method = $order_meta['_payment_method_title'][0] ?? '';
-					$user_id = $order_meta['_customer_user'][0] ?? '';
-					$billing_name = $order_meta['_billing_first_name'][0] . ' ' . $order_meta['_billing_last_name'][0];
-					$billing_email = $order_meta['_billing_email'][0];
-					$billing_phone = $order_meta['_billing_phone'][0];
-					$billing_address = $order_meta['_billing_address_1'][0] . ' ' . $order_meta['_billing_address_2'][0];
+					$payment_method = $order->get_payment_method();
+					$user_id = $order->get_user();
+					$billing_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+					$billing_email = $order->get_billing_email();
+					$billing_phone = $order->get_billing_phone();
+					$billing_address = $order->get_billing_address_1(). ' ' . $order->get_billing_address_2();
 					$now_full = current_time('Y-m-d H:i');
 					/********************************/
 					$bp = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp');
