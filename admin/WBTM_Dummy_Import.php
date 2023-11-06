@@ -2,9 +2,6 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	require_once ABSPATH . 'wp-admin/includes/media.php';
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-	require_once ABSPATH . 'wp-admin/includes/image.php';
 	if (!class_exists('WBTM_Dummy_Import')) {
 		class WBTM_Dummy_Import {
 			public function __construct() {
@@ -170,7 +167,6 @@
 							0 => [
 								'name' => 'Flix Bus Service',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/free-photo/young-man-taking-city-bus_23-2148958086.jpg',
 									//general
 									'wbtm_bus_no' => 'Flixbus-01',
 									'wbtm_bus_category' => 'Non AC',
@@ -233,7 +229,6 @@
 							1 => [
 								'name' => 'Mega Bus Express',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/free-photo/central-hong-kong-jan-10-2016-traffic-scene-tram-hong-kong_1137-317.jpg',
 									//general
 									'wbtm_bus_no' => 'Megabus-01',
 									'wbtm_bus_category' => 'AC',
@@ -279,20 +274,12 @@
 										date('m-d', strtotime(' +40 day')),
 										date('m-d', strtotime(' +45 day')),
 										date('m-d', strtotime(' +110 day')),
-									],
-									'wbtm_offday_schedule' => [
-										0=>['from_date'=>'01-25','to_date'=>'01-28'],
-										1=>['from_date'=>'02-20','to_date'=>'02-25'],
-										2=>['from_date'=>'04-10','to_date'=>'04-12'],
-										3=>['from_date'=>'08-10','to_date'=>'08-12'],
-										4=>['from_date'=>'11-11','to_date'=>'12-12'],
 									]
 								],
 							],
 							2 => [
 								'name' => 'BYD Express',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-modern-park-city_100800-5400.jpg',
 									//general
 									'wbtm_bus_no' => 'Bydbus-01',
 									'wbtm_bus_category' => 'Non AC',
@@ -340,19 +327,12 @@
 										date('m-d', strtotime(' +7 day')),
 										date('m-d', strtotime(' +30 day')),
 										date('m-d', strtotime(' +45 day')),
-									],
-									'wbtm_offday_schedule' => [
-										0=>['from_date'=>'01-20','to_date'=>'01-21'],
-										1=>['from_date'=>'02-02','to_date'=>'02-10'],
-										2=>['from_date'=>'04-10','to_date'=>'04-12'],
-										3=>['from_date'=>'08-10','to_date'=>'08-12'],
 									]
 								],
 							],
 							3 => [
 								'name' => 'RED Coach',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-moving-fast-road-modern-city-with-light-effect_207634-3202.jpg',
 									//general
 									'wbtm_bus_no' => 'Redbus-01',
 									'wbtm_bus_category' => 'AC',
@@ -391,13 +371,11 @@
 									'show_operational_on_day' => 'yes',
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
-									'wbtm_off_days' => '',
 								],
 							],
 							4 => [
 								'name' => 'Bonanza Bus',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
 									//general
 									'wbtm_bus_no' => 'Bonanzabus-01',
 									'wbtm_bus_category' => 'Non AC',
@@ -439,7 +417,6 @@
 							5 => [
 								'name' => 'Berlin Linien Bus',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
 									//general
 									'wbtm_bus_no' => 'BerlinLinien-Bus-01',
 									'wbtm_bus_category' => 'AC',
@@ -494,7 +471,6 @@
 							6 => [
 								'name' => 'Royal Bus',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
 									//general
 									'wbtm_bus_no' => 'royal_706',
 									'wbtm_bus_category' => 'AC',
@@ -536,7 +512,6 @@
 							7 => [
 								'name' => 'Bold Bus',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
 									//general
 									'wbtm_bus_no' => 'bold_706',
 									'wbtm_bus_category' => 'AC',
@@ -582,7 +557,6 @@
 							8 => [
 								'name' => 'Eco Move',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/premium-photo/white-bus-waits-patiently-passengers-its-engine-humming-softly-as-it-prepares-whisk-them-away-their-adventure-generative-ai_653286-796.jpg',
 									//general
 									'wbtm_bus_no' => 'eco_706',
 									'wbtm_bus_category' => 'Non AC',
@@ -624,7 +598,6 @@
 							9 => [
 								'name' => 'Badger Bus Service',
 								'post_data' => [
-									'feature_image' => 'https://img.freepik.com/free-photo/young-man-taking-city-bus_23-2148958086.jpg',
 									//general
 									'wbtm_bus_no' => 'badger-01',
 									'wbtm_bus_category' => 'AC',
@@ -670,13 +643,6 @@
 										date('m-d', strtotime(' +75 day')),
 										date('m-d', strtotime(' +90 day')),
 									],
-									'wbtm_offday_schedule' => [
-										0=>['from_date'=>'01-25','to_date'=>'01-28'],
-										1=>['from_date'=>'02-20','to_date'=>'02-25'],
-										2=>['from_date'=>'04-10','to_date'=>'04-12'],
-										3=>['from_date'=>'08-10','to_date'=>'08-12'],
-										4=>['from_date'=>'11-11','to_date'=>'12-12'],
-									]
 								],
 							],
 						],
