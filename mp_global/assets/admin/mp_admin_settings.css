@@ -1,56 +1,18 @@
 @charset "utf-8";
 /******************************************************************** Global settings ************************************************/
 @media only screen and (min-width: 10px) {
-	div.mp_settings_panel {overflow: hidden;position: relative;display: -webkit-flex;display: flex; line-height: 1.4;}
-	div.mp_settings_panel tr.set_book_status fieldset ,
-	div.mp_settings_panel tr.payment_system fieldset {display: -webkit-flex;display: flex; -webkit-flex-wrap: wrap;flex-wrap: wrap;}
-	div.mp_settings_panel tr.set_book_status fieldset label ,
-	div.mp_settings_panel tr.payment_system fieldset label {min-width: 150px;margin: 0 var(--dMP_xs) var(--dMP_xs) 0;}
-	/*******************/
-	.mp_settings_panel_header { background: #161B37;padding: 30px 20px 30px 20px;color: #FFF;font-size: var(--fs_h2);margin-top: 30px;}
-	.mp_settings_panel_header small {margin-left: 10px;font-size: 13px;}
-	.mp_settings_panel .nav-tab-wrapper {
-		width: 300px;padding: 0;margin: 0;overflow: hidden;
-		display: -webkit-flex;display: flex;
-		-webkit-flex-direction: column;flex-direction: column;
-		background: #161B37;border: 5px solid #C6C6C6;
-	}
-	.mp_settings_panel .nav-tab {
-		margin: 0;width: 100%; font-weight: 600;text-decoration: none;white-space: nowrap; line-height: 1.4;color: #FFF;
-		background-color: transparent;border: none;border-bottom: 1px dotted #FFF;
-		float: initial;padding: 10px 12px;font-size: 14px;transition: 0.2s;
-	}
-	.mp_settings_panel .nav-tab:hover {background: #49AC2F;transition: 0.2s;}
-	.mp_settings_panel .nav-tab.nav-tab-active { background: #49AC2F;color: #FFF;}
-	.mp_settings_panel .metabox-holder {background: #FFF;padding: 10px;margin: 0;width: calc(100% - 300px);border: 5px solid #C6C6C6;}
-	.mp_settings_panel .metabox-holder h2 {border-bottom: 2px solid #0071A1;font-size: 20px; padding: 15px;margin: 0;background: #161B37; color: #FFF !important;}
-	.mp_settings_panel select {min-width: 150px;}
-	.mp_settings_panel table {width: 100%;overflow: hidden; border: 1px solid #DDD;}
-	.mp_settings_panel table,
-	.mp_settings_panel table td,
-	.mp_settings_panel table th {border-collapse: collapse;}
-	.mp_settings_panel table th {width: 300px;padding: 5px 10px;font-size: 14px;text-align: left;font-weight: 600;vertical-align: middle;color: #000;}
-	.mp_settings_panel table td {padding: 5px 10px;font-size: 14px;}
-	.mp_settings_panel table tr:nth-child(even) {background-color: #F2F2F2;}
-	.mp_settings_panel p.submit {text-align: right; margin: 20px 0 0 0; padding: 0;}
-	div.mpStyle .description,
-	.mp_settings_panel .description {display: block;font-weight: normal;font-size: var(--fs_small) !important;color: #666;margin: var(--dMP_xs) 0 0 0;}
-	div.mpStyle .description span,
-	.mp_settings_panel .description span {margin: 0 var(--dMP_xs) 0 0;}
-	.mp_settings_panel .description strong {color: #000;}
-	.mp_settings_panel p.submit input {font-size: 16px;padding: 5px 30px;border-radius: 0;background: #49AC2F;border-color: #49AC2F;transition: 0.2s;}
-	.mp_settings_panel p.submit input:hover {background: #239108;border-color: #239108;transition: 0.2s;}
-	.mp_settings_panel #setting-error-tgmpa {order: 0;width: 100%}
-	.mp_settings_panel .notice {display: none;}
-	div.mp_settings_panel .formControl {max-width: 320px;}
-	.mp_settings_panel table thead th {background-color: var(--color_light);}
-	.mp_settings_panel .select2-container {max-width: 320px;}
-	.mp_settings_panel .selection {width: 100%;}
-	.mp_settings_panel .metabox-holder table { border-collapse: collapse;}
-	.mp_settings_panel .metabox-holder table td,
-	.mp_settings_panel .metabox-holder table th { padding: 12px;}
-	.mp_settings_panel .metabox-holder table tr:nth-child(even) { background-color: #0CB32612;}
-	.mp_settings_panel .metabox-holder table tr:nth-child(odd) { background-color: #FFF;}
+	div.mp_global_settings {max-width: 1700px; margin: 30px 30px 30px 15px; width: calc(100% - 30px);}
+	div.mp_global_settings .button-primary {min-width: 200px;font-size: var(--fs_h5);font-weight: var(--fw-medium);padding: var(--dMP_xs); }
+	div.mp_global_settings .mpPanelHeader {background: #161B37; color: #FFF;padding: var(--dMP);font-size: var(--fs_h2);text-align: center;}
+	div.mp_global_settings .tabLists {border-right: 1px solid var(--color_border);}
+	div.mp_global_settings form > h2 {display: none;}
+	div.mp_global_settings table {table-layout: fixed;margin: 0;}
+	div.mp_global_settings table tr:nth-child(even) { background-color: #0CB32612;}
+	div.mp_global_settings table tr:nth-child(odd) { background-color: #FFF;}
+	div.mp_global_settings table th {width: 40%;min-width: 300px;}
+	div.mp_global_settings th label {-webkit-flex-wrap: wrap;flex-wrap: wrap;}
+	div.mp_global_settings label .info_text {width: 100%;margin: 5px 0 0 0;font-size: 11px;}
+	div.mp_basic_license_settings table th{width:inherit;min-width:inherit; }
 }
 /******************************************************************** Meta tab settings ************************************************/
 @media only screen and (min-width: 10px) {
@@ -157,11 +119,11 @@
 /******************************************************************** ************************************************/
 @media only screen and (min-width: 10px) {
 	div.mpStyle .adminLayout,
-	div.mpStyle [class*="_adminLayout"]{padding: 50px;max-width: 1000px;margin: 100px auto;background-color: #FFF;border: 1px solid var(--color_border);border-radius: var(--dBRL);}
+	div.mpStyle [class*="_adminLayout"] {padding: 50px;max-width: 1000px;margin: 100px auto;background-color: #FFF;border: 1px solid var(--color_border);border-radius: var(--dBRL);}
 	div.mpStyle .adminLayout th,
 	div.mpStyle .adminLayout td,
 	div.mpStyle [class*="_adminLayout"] th,
-	div.mpStyle [class*="_adminLayout"] td{text-align: left;font-size: var(--fs_h5);}
+	div.mpStyle [class*="_adminLayout"] td {text-align: left;font-size: var(--fs_h5);}
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {

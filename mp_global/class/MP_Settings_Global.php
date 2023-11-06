@@ -11,6 +11,8 @@
 			public function __construct() {
 				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 20, 1);
 				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 20, 1);
+				add_action('wsa_form_bottom_mp_basic_license_settings', [$this, 'license_settings'], 5);
+				add_action('mp_basic_license_list', [$this, 'licence_area']);
 			}
 			public function settings_sec_reg($default_sec): array {
 				$sections = array(
@@ -29,6 +31,10 @@
 					array(
 						'id' => 'mp_add_custom_css',
 						'title' => esc_html__('Custom CSS', 'bus-ticket-booking-with-seat-reservation')
+					),
+					array(
+						'id' => 'mp_basic_license_settings',
+						'title' => esc_html__('Mage-People License', 'bus-ticket-booking-with-seat-reservation')
 					)
 				);
 				return array_merge($default_sec, $sections);
@@ -327,6 +333,41 @@
 					))
 				);
 				return array_merge($default_fields, $settings_fields);
+			}
+			public function license_settings() {
+				?>
+				<div class="mp_basic_license_settings">
+					<h3><?php esc_html_e('Mage-People License', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<div class="_dFlex">
+						<span class="fas fa-info-circle _mR_xs"></span>
+						<i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin  free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'bus-ticket-booking-with-seat-reservation'); ?>                    </i>
+					</div>
+					<div class="divider"></div>
+					<div class="dLayout mp_basic_license_area">
+						<?php $this->licence_area(); ?>
+					</div>
+				</div>
+				<?php
+			}
+			public function licence_area(){
+				?>
+				<table>
+					<thead>
+					<tr>
+						<th colspan="4"><?php esc_html_e('Plugin Name', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th><?php esc_html_e('Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th><?php esc_html_e('Order No', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th colspan="2"><?php esc_html_e('Expire on', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th colspan="3"><?php esc_html_e('License Key', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th><?php esc_html_e('Status', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+						<th colspan="2"><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php do_action('mp_license_page_plugin_list'); ?>
+					</tbody>
+				</table>
+				<?php
 			}
 		}
 		new MP_Settings_Global();

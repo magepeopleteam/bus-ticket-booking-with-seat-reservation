@@ -45,6 +45,7 @@
 				wp_enqueue_script('mp_owl_carousel', MP_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
 				wp_enqueue_style('mp_plugin_global', MP_GLOBAL_PLUGIN_URL . '/assets/mp_style/mp_style.css', array(), time());
 				wp_enqueue_script('mp_plugin_global', MP_GLOBAL_PLUGIN_URL . '/assets/mp_style/mp_script.js', array('jquery'), time(), true);
+				do_action('add_mp_global_enqueue');
 			}
 			public function admin_enqueue() {
 				$this->global_enqueue();
@@ -65,9 +66,11 @@
 				// admin setting global
 				wp_enqueue_script('mp_admin_settings', MP_GLOBAL_PLUGIN_URL . '/assets/admin/mp_admin_settings.js', array('jquery'), time(), true);
 				wp_enqueue_style('mp_admin_settings', MP_GLOBAL_PLUGIN_URL . '/assets/admin/mp_admin_settings.css', array(), time());
+				do_action('add_mp_admin_enqueue');
 			}
 			public function frontend_enqueue() {
 				$this->global_enqueue();
+				do_action('add_mp_frontend_enqueue');
 			}
 			public function add_admin_head() {
 				$this->js_constant();

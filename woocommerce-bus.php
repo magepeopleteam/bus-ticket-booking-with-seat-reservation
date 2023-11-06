@@ -27,6 +27,9 @@
 				if (!defined('WBTM_PLUGIN_URL')) {
 					define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 				}
+				if (!defined('WBTM_PLUGIN_DATA')) {
+					define('WBTM_PLUGIN_DATA', get_plugin_data( __FILE__ ));
+				}
 				require_once WBTM_PLUGIN_DIR . '/mp_global/MP_Global_File_Load.php';
 			}
 			
