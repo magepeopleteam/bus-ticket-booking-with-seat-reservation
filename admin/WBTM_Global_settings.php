@@ -24,12 +24,18 @@
 			public function settings_page() {
 				$label = WBTM_Functions::get_name();
 				?>
-				<div class="mp_settings_panel_header">
-					<?php echo esc_html($label . esc_html__(' Global Settings', 'bus-ticket-booking-with-seat-reservation')); ?>
-				</div>
-				<div class="mp_settings_panel">
-					<?php $this->settings_api->show_navigation(); ?>
-					<?php $this->settings_api->show_forms(); ?>
+				<div class="mpStyle mp_global_settings">
+					<div class="_dShadow_6 mpPanel">
+						<div class="mpPanelHeader"><?php echo esc_html($label . esc_html__(' Global Settings', 'ecab-taxi-booking-manager')); ?></div>
+						<div class="mpPanelBody mp_zero">
+							<div class="mpTabs leftTabs">
+								<?php $this->settings_api->show_navigation(); ?>
+								<div class="tabsContent">
+									<?php $this->settings_api->show_forms(); ?>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<?php
 			}

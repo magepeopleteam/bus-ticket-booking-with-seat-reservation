@@ -199,6 +199,20 @@
 				}
 				return false;
 			}
+			public static function check_licensee_date($date) {
+				if ($date) {
+					if ($date == 'lifetime') {
+						return esc_html__('Lifetime', 'bus-ticket-booking-with-seat-reservation');
+					}
+					else if (strtotime(current_time('Y-m-d H:i')) < strtotime(date('Y-m-d H:i', strtotime($date)))) {
+						return MP_Global_Function::date_format($date, 'full');
+					}
+					else {
+						return esc_html__('Expired', 'bus-ticket-booking-with-seat-reservation');
+					}
+				}
+				return $date;
+			}
 			public static function sort_date($a, $b) {
 				return strtotime($a) - strtotime($b);
 			}
@@ -228,6 +242,9 @@
 			}
 			public static function get_slider_settings($key, $default = '') {
 				return self::get_settings('mp_slider_settings', $key, $default);
+			}
+			public static function get_licence_settings($key, $default = '') {
+				return self::get_settings('mp_basic_license_settings', $key, $default);
 			}
 			//***********************************//
 			public static function price_convert_raw($price) {
@@ -536,6 +553,48 @@
 					'strong' => array(),
 				);
 				return wp_kses($string, $allow_attr);
+			}
+			//***********************************//
+			public static function license_error_text($response, $license_data, $plugin_name) {
+				if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
+					$message = (is_wp_error($response) && !empty($response->get_error_message())) ? $response->get_error_message() : esc_html__('An error occurred, please try again.', 'bus-ticket-booking-with-seat-reservation');
+				}
+				else {
+					if (false === $license_data->success) {
+						switch ($license_data->error) {
+							case 'expired':
+								$message = esc_html__('Your license key expired on ') . ' ' . date_i18n(get_option('date_format'), strtotime($license_data->expires, current_time('timestamp')));
+								break;
+							case 'revoked':
+								$message = esc_html__('Your license key has been disabled.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+							case 'missing':
+								$message = esc_html__('Missing license.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+							case 'invalid':
+								$message = esc_html__('Invalid license.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+							case 'site_inactive':
+								$message = esc_html__('Your license is not active for this URL.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+							case 'item_name_mismatch':
+								$message = esc_html__('This appears to be an invalid license key for .', 'bus-ticket-booking-with-seat-reservation') . ' ' . $plugin_name;
+								break;
+							case 'no_activations_left':
+								$message = esc_html__('Your license key has reached its activation limit.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+							default:
+								$message = esc_html__('An error occurred, please try again.', 'bus-ticket-booking-with-seat-reservation');
+								break;
+						}
+					}
+					else {
+						$payment_id = $license_data->payment_id;
+						$expire = $license_data->expires;
+						$message = esc_html__('Success, License Key is valid for the plugin', 'bus-ticket-booking-with-seat-reservation') . ' ' . $plugin_name . ' ' . esc_html__('Your Order id is', 'bus-ticket-booking-with-seat-reservation') . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__('Validity of this licenses is', 'bus-ticket-booking-with-seat-reservation') . ' ' . MP_Global_Function::check_licensee_date($expire);
+					}
+				}
+				return $message;
 			}
 			//***********************************//
 			public static function get_country_list() {

@@ -8,7 +8,7 @@
 	} // Cannot access pages directly.
 	$post_id = $post_id ?? 0;
 	$all_dates = $all_dates ?? WBTM_Functions::get_all_dates($post_id);
-	if (sizeof($all_dates) > 0) {
+	//if (sizeof($all_dates) > 0) {
 		$buy_ticket_text = WBTM_Translations::text_buy_ticket();
 		$placeholder_text = WBTM_Translations::text_please_select();
 		/**************/
@@ -83,7 +83,7 @@
 		<?php
 		do_action('mp_load_date_picker_js', '#wbtm_journey_date', $all_dates);
 		do_action('mp_load_date_picker_js', '#wbtm_return_date', $all_dates);
-	}
-	else {
+	//}
+	if (sizeof($all_dates) ==0) {
 		WBTM_Layout::msg(WBTM_Translations::text_bus_close_msg());
 	}

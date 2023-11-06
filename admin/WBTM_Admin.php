@@ -24,6 +24,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Hidden_Product.php';
 				//========Global settings==========//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Global_settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_License.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_General.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Seat_Configuration.php';
