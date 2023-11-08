@@ -159,8 +159,8 @@
 				$date_format = get_option('date_format');
 				$time_format = get_option('time_format');
 				$wp_settings = $date_format . '  ' . $time_format;
-				$timezone = wp_timezone_string();
-				$timestamp = strtotime($date . ' ' . $timezone);
+				//$timezone = wp_timezone_string();
+				$timestamp = strtotime($date);
 				if ($format == 'date') {
 					$date = date_i18n($date_format, $timestamp);
 				}

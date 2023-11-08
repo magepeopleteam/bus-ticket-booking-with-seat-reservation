@@ -1,6 +1,6 @@
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
-	div#wbtm_area{width:100%;max-width:1300px; margin:var(--dMP) auto;}
+	div.wbtm_container{width:100%;max-width:1300px; margin:var(--dMP) auto;}
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {

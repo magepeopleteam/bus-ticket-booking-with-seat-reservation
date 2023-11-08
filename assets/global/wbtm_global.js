@@ -1,12 +1,12 @@
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
-	$(document).on("click", "#wbtm_area button.wbtm_get_bus_list", function (e) {
+	$(document).on("click", "#wbtm_area button.get_wbtm_bus_list", function (e) {
 		e.preventDefault();
 		let parent = $(this).closest('#wbtm_area');
 		let start = parent.find('input[name="bus_start_route"]');
 		let end = parent.find('input[name="bus_end_route"]');
-		let date = parent.find('input[name="j_date"]');
+		let j_date = parent.find('input[name="j_date"]');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
 			return false;
@@ -15,11 +15,36 @@
 			end.trigger('click');
 			return false;
 		}
-		if (!mp_check_required(date)) {
-			date.siblings('input').focus();
+		if (!mp_check_required(j_date)) {
+			j_date.siblings('input').focus();
 			return false;
 		} else {
-			parent.find('form').submit();
+			let r_date = parent.find('input[name="r_date"]');
+			let post_id = parent.find('[name="wbtm_post_id"]').val();
+			$.ajax({
+				type: 'POST',
+				url: mp_ajax_url,
+				data: {
+					"action": "get_wbtm_bus_list",
+					"start_route": start.val(),
+					"end_route": end.val(),
+					"j_date": j_date.val(),
+					"r_date": r_date.val(),
+					"post_id": post_id,
+				},
+				beforeSend: function () {
+					dLoader(parent);
+				},
+				success: function (data) {
+					parent.find('.wbtm_search_result').html(data).promise().done(function () {
+						dLoaderRemove(parent);
+						loadBgImage();
+					});
+				},
+				error: function (response) {
+					console.log(response);
+				}
+			});
 		}
 	});
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {
@@ -27,7 +52,7 @@
 		let parent = $(this).closest('#wbtm_area');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
-			parent.find('.wbtm_get_bus_list').trigger('click');
+			parent.find('.get_wbtm_bus_list').trigger('click');
 		});
 	});
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
@@ -57,6 +82,8 @@
 					},
 					success: function (data) {
 						target.append(data).promise().done(function () {
+							wbtm_load_journey_date(parent, post_id, start_route);
+						}).promise().done(function () {
 							dLoaderRemove(parent);
 							target.find('input.formControl').trigger('click');
 						});
@@ -73,6 +100,74 @@
 		});
 		//alert(start_route);
 	});
+	$(document).on("mp_change", "div.wbtm_search_area .wbtm_dropping_point input.formControl", function () {
+		let current = $(this);
+		let end_route = current.val();
+		let parent = current.closest('.wbtm_search_area');
+		let exit_route = 0;
+		parent.find('.wbtm_dropping_point .mp_input_select_list li').each(function () {
+			let current_route = $(this).data('value');
+			if (current_route === end_route) {
+				exit_route = 1;
+			}
+		}).promise().done(function () {
+			if (exit_route > 0) {
+				parent.find('input[name="j_date"]').siblings('input').focus();
+			} else {
+				current.val('').trigger('click');
+			}
+		});
+		//alert(start_route);
+	});
+	function wbtm_load_journey_date(parent, post_id, start_route) {
+		let target = parent.find('.wbtm_journey_date');
+		$.ajax({
+			type: 'POST',
+			url: mp_ajax_url,
+			data: {
+				"action": "get_wbtm_journey_date",
+				"start_route": start_route,
+				"post_id": post_id,
+			},
+			success: function (data) {
+				target.html(data);
+			},
+			error: function (response) {
+				console.log(response);
+			}
+		});
+	}
+	$(document).on("change", "#wbtm_area input[name='j_date']", function () {
+		let date = $(this).val();
+		let parent = $(this).closest('#wbtm_area');
+		let target = parent.find('.wbtm_return_date');
+		if(target.length>0 && date){
+			let end_route = parent.find('input[name="bus_end_route"]').val();
+			let post_id = parent.find('[name="wbtm_post_id"]').val();
+			//alert(date);
+			//alert(end_route);
+			$.ajax({
+				type: 'POST',
+				url: mp_ajax_url,
+				data: {
+					"action": "get_wbtm_return_date",
+					"end_route": end_route,
+					"j_date": date,
+					"post_id": post_id,
+				},
+				beforeSend: function () {
+					dLoader_xs(target);
+				},
+				success: function (data) {
+					target.html(data);
+					dLoaderRemove(target);
+				},
+				error: function (response) {
+					console.log(response);
+				}
+			});
+		}
+	});
 }(jQuery));
 //====================================================================//
 (function ($) {
@@ -88,36 +183,32 @@
 			parent.find('#get_wbtm_bus_details.mActive').each(function () {
 				$(this).trigger('click');
 			});
-			if (target.find('>div').length > 0) {
-				target.find('>div').slideDown('fast');
-			} else {
-				let start = parent.find('input[name="wbtm_start_route"]').val();
-				let end = parent.find('input[name="wbtm_end_route"]').val();
-				let date = parent.find('input[name="wbtm_date"]').val();
-				if (start && end && date && post_id) {
-					$.ajax({
-						type: 'POST',
-						url: mp_ajax_url,
-						data: {
-							"action": "get_wbtm_bus_details",
-							"start_route": start,
-							"end_route": end,
-							"post_id": post_id,
-							"date": date,
-						},
-						beforeSend: function () {
-							dLoader(parent);
-						},
-						success: function (data) {
-							target.html(data);
-							dLoaderRemove(parent);
-							loadBgImage();
-						},
-						error: function (response) {
-							console.log(response);
-						}
-					});
-				}
+			let start = parent.find('input[name="wbtm_start_route"]').val();
+			let end = parent.find('input[name="wbtm_end_route"]').val();
+			let date = parent.find('input[name="wbtm_date"]').val();
+			if (start && end && date && post_id) {
+				$.ajax({
+					type: 'POST',
+					url: mp_ajax_url,
+					data: {
+						"action": "get_wbtm_bus_details",
+						"start_route": start,
+						"end_route": end,
+						"post_id": post_id,
+						"date": date,
+					},
+					beforeSend: function () {
+						dLoader(parent);
+					},
+					success: function (data) {
+						target.html(data);
+						dLoaderRemove(parent);
+						loadBgImage();
+					},
+					error: function (response) {
+						console.log(response);
+					}
+				});
 			}
 			mp_all_content_change($(this));
 		}
