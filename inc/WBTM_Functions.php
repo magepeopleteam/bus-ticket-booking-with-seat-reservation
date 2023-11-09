@@ -32,7 +32,13 @@
 						}
 					}
 					else {
-						$all_routes = MP_Global_Function::get_all_term_data('wbtm_bus_stops');
+						$bus_ids = MP_Global_Function::get_all_post_id(WBTM_Functions::get_cpt());
+						if (sizeof($bus_ids) > 0) {
+							foreach ($bus_ids as $bus_id) {
+								$routes = MP_Global_Function::get_post_info($bus_id,'wbtm_bus_bp_stops',[]);
+								$all_routes = array_merge($all_routes, $routes);
+							}
+						}
 					}
 				}
 				return array_unique($all_routes);
@@ -282,19 +288,13 @@
 							$off_dates = array_unique($off_dates);
 							$off_days = MP_Global_Function::get_post_info($post_id, 'wbtm_off_days');
 							$off_day_array = $off_days ? explode(',', $off_days) : [];
-							$show_off_day = MP_Global_Function::get_post_info($post_id, 'show_off_day');
 							$repeat = MP_Global_Function::get_post_info($post_id, 'wbtm_repeated_after', 1);
 							$dates = MP_Global_Function::date_separate_period($start_date, $end_date, $repeat);
 							foreach ($dates as $date) {
 								$date = $date->format('Y-m-d');
 								if (strtotime($date) >= strtotime($now)) {
 									$day = strtolower(date('l', strtotime($date)));
-									if ($show_off_day == 'yes') {
-										if (!in_array($date, $off_dates) && !in_array($day, $off_day_array)) {
-											$all_dates[] = $date;
-										}
-									}
-									else {
+									if (!in_array($date, $off_dates) && !in_array($day, $off_day_array)) {
 										$all_dates[] = $date;
 									}
 								}

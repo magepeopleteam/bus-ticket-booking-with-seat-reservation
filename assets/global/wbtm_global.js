@@ -141,7 +141,7 @@
 		let date = $(this).val();
 		let parent = $(this).closest('#wbtm_area');
 		let target = parent.find('.wbtm_return_date');
-		if(target.length>0 && date){
+		if (target.length > 0 && date) {
 			let end_route = parent.find('input[name="bus_end_route"]').val();
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
 			//alert(date);
@@ -166,6 +166,13 @@
 					console.log(response);
 				}
 			});
+		}
+	});
+	$(document).on("click", "#wbtm_area #wbtm_journey_date", function () {
+		let parent = $(this).closest('#wbtm_area');
+		let start = parent.find('input[name="bus_start_route"]').val();
+		if (!start) {
+			mp_alert($(this));
 		}
 	});
 }(jQuery));

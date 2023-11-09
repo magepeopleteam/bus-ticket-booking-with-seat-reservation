@@ -196,7 +196,7 @@
 				<label class="fdColumn">
 					<span><i class="fas fa-calendar-alt"></i> <?php echo WBTM_Translations::text_journey_date(); ?></span>
 					<input type="hidden" name="j_date" value="" required/>
-					<input id="wbtm_journey_date" type="text" value="" class="formControl " placeholder="<?php echo esc_attr($now); ?>" readonly required/>
+					<input id="wbtm_journey_date" type="text" value="" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
 				</label>
 				<?php
 				if ($start_route) {
