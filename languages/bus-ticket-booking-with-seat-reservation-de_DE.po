@@ -1,23 +1,22 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Bus Ticket Booking with Seat Reservation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-13 03:56+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"PO-Revision-Date: 2023-11-13 06:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: Deutsch\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.3.1; wp-5.3.2"
+"X-Loco-Version: 2.6.6; wp-6.4.1"
 
 #: admin/WBTM_Taxonomy.php:74
 msgid " Bus Pickup Point"
-msgstr ""
+msgstr "Busabholpunkt"
 
 #: admin/WBTM_Settings.php:19
 msgid " Information Settings : "
@@ -41,7 +40,7 @@ msgstr ""
 
 #: admin/WBTM_Taxonomy.php:72 admin/WBTM_Taxonomy.php:73
 msgid " Pickup Point"
-msgstr ""
+msgstr "Abholpunkt"
 
 #: admin/WBTM_Global_settings.php:22
 msgid " Settings"
@@ -49,7 +48,7 @@ msgstr ""
 
 #: admin/WBTM_Taxonomy.php:17
 msgid " Type"
-msgstr ""
+msgstr "Typ"
 
 #: admin/WBTM_Status.php:17
 msgid "<span style=\"color:yellow\">Status</span>"
@@ -62,11 +61,11 @@ msgstr ""
 #: inc/WBTM_Translations.php:66 admin/settings/WBTM_Extra_Service.php:40
 #: mp_global/class/MP_Settings_Global.php:363
 msgid "Action"
-msgstr ""
+msgstr "Aktion"
 
 #: admin/WBTM_License.php:22
 msgid "Active"
-msgstr ""
+msgstr "Aktion"
 
 #: admin/WBTM_Quick_Setup.php:186
 msgid "Active Now"
@@ -179,15 +178,15 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:67
 msgid "Available"
-msgstr ""
+msgstr "Verfügbar"
 
 #: admin/settings/WBTM_Extra_Service.php:38
 msgid "Available Qty"
-msgstr ""
+msgstr "Verfügbare Menge"
 
 #: inc/WBTM_Translations.php:37
 msgid "Available Seat"
-msgstr ""
+msgstr "Verfügbarer Sitzplatz"
 
 #: admin/settings/WBTM_Seat_Configuration.php:198
 msgid "Blank"
@@ -195,32 +194,32 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:24
 msgid "Boarding"
-msgstr ""
+msgstr "Einsteigen"
 
 #: admin/settings/WBTM_Pricing_Routing.php:92
 msgid "Boarding "
-msgstr ""
+msgstr "Einsteigen"
 
 #: admin/settings/WBTM_Pricing_Routing.php:94
 msgid "Boarding & Dropping"
-msgstr ""
+msgstr "Ein- und Aussteigen"
 
 #: admin/settings/WBTM_Settings_Pickup_Point.php:39
 #: admin/settings/WBTM_Pricing_Routing.php:153
 msgid "Boarding Point"
-msgstr ""
+msgstr "Abfahrtsort"
 
 #: inc/WBTM_Translations.php:70
 msgid "Book Now"
-msgstr ""
+msgstr "buchen Sie jetzt"
 
 #: inc/WBTM_Woocommerce.php:84
 msgid "Booking Details "
-msgstr ""
+msgstr "Buchungsdetails"
 
 #: admin/WBTM_Global_settings.php:122
 msgid "Buffer Time"
-msgstr ""
+msgstr "Pufferzeit"
 
 #: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:193
 #: inc/WBTM_Functions.php:436
@@ -243,7 +242,7 @@ msgstr ""
 
 #: admin/settings/WBTM_Settings_General.php:26
 msgid "Bus no"
-msgstr ""
+msgstr "Bus Nr"
 
 #: admin/settings/WBTM_Date_Settings.php:40
 msgid "Bus Operation Date Type"
@@ -279,7 +278,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:18
 msgid "BUY TICKET"
-msgstr ""
+msgstr "TICKET KAUFEN"
 
 #: admin/WBTM_Settings.php:76
 msgid ""
@@ -340,7 +339,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:69
 msgid "Close Seat"
-msgstr ""
+msgstr "Sitzplatz schließen"
 
 #: admin/WBTM_CPT.php:83
 msgid "Coach no"
@@ -348,7 +347,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:43
 msgid "Coach Type"
-msgstr ""
+msgstr "Trainertyp"
 
 #: mp_global/class/MP_Settings_Global.php:70
 msgid "Completed"
@@ -374,7 +373,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:15
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: mp_global/class/MP_Settings_Global.php:75
 msgid "Date Picker Format"
@@ -427,15 +426,15 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:25
 msgid "Dropping"
-msgstr ""
+msgstr "Fallenlassen"
 
 #: admin/settings/WBTM_Pricing_Routing.php:93
 msgid "Dropping "
-msgstr ""
+msgstr "Fallenlassen"
 
 #: admin/settings/WBTM_Pricing_Routing.php:154
 msgid "Dropping Point"
-msgstr ""
+msgstr "Abwurfpunkt"
 
 #: admin/WBTM_CPT.php:34
 msgid "Edit"
@@ -467,15 +466,15 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:60
 msgid "Extra Service Sub total"
-msgstr ""
+msgstr "Zwischensumme für Zusatzleistungen"
 
 #: inc/WBTM_Translations.php:59
 msgid "Extra Services"
-msgstr ""
+msgstr "Zusätzliche Dienstleistungen"
 
 #: inc/WBTM_Translations.php:52
 msgid "Fare"
-msgstr ""
+msgstr "Fahrpreis"
 
 #: admin/WBTM_CPT.php:41
 msgid "Feature Image"
@@ -535,7 +534,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:19
 msgid "From"
-msgstr ""
+msgstr "Aus"
 
 #: admin/WBTM_Quick_Setup.php:127
 msgid "General"
@@ -691,7 +690,7 @@ msgstr ""
 #: mp_global/class/MP_Select_Icon_image.php:132
 #: mp_global/class/MP_Select_Icon_image.php:159
 msgid "Image"
-msgstr ""
+msgstr "Bild"
 
 #: mp_global/class/MP_Settings_Global.php:162
 msgid "image Indicator"
@@ -755,7 +754,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:13
 msgid "Journey Date"
-msgstr ""
+msgstr "Reisedatum"
 
 #: admin/WBTM_Welcome.php:25
 msgid "Knowledge Base"
@@ -822,7 +821,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:47
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: admin/WBTM_Status.php:57
 msgid "Name : "
@@ -971,7 +970,7 @@ msgstr ""
 #: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
 #: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:27
 msgid "Pickup Point"
-msgstr ""
+msgstr "Abholpunkt"
 
 #: admin/settings/WBTM_Settings_Pickup_Point.php:27
 msgid "Pickup Point Settings"
@@ -1152,7 +1151,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:51
 msgid "Price"
-msgstr ""
+msgstr "Preis"
 
 #: admin/settings/WBTM_Seat_Configuration.php:142
 msgid "Price Increase : "
@@ -1180,7 +1179,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:49
 msgid "Quantity"
-msgstr ""
+msgstr "Menge"
 
 #: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
 #: admin/WBTM_Quick_Setup.php:18 admin/WBTM_Quick_Setup.php:22
@@ -1219,7 +1218,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:14
 msgid "Return Date (Optional)"
-msgstr ""
+msgstr "Rückgabedatum"
 
 #: inc/WBTM_Translations.php:28
 msgid "Return Trip"
@@ -1239,7 +1238,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:42
 msgid "Schedule"
-msgstr ""
+msgstr "Zeitplan"
 
 #: admin/WBTM_CPT.php:92
 msgid "Seal Plan"
@@ -1247,11 +1246,11 @@ msgstr ""
 
 #: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:21
 msgid "Search"
-msgstr ""
+msgstr "Suchen"
 
 #: inc/WBTM_Translations.php:45
 msgid "Seat"
-msgstr ""
+msgstr "Sitz"
 
 #: mp_global/class/MP_Settings_Global.php:59
 msgid "Seat Booked Status"
@@ -1268,7 +1267,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:46
 msgid "Seat Name"
-msgstr ""
+msgstr "Sitzname"
 
 #: admin/settings/WBTM_Seat_Configuration.php:36
 msgid "Seat Plan"
@@ -1297,7 +1296,7 @@ msgstr ""
 
 #: admin/settings/WBTM_Seat_Configuration.php:32
 msgid "Seat Type"
-msgstr ""
+msgstr "Sitztyp"
 
 #: mp_global/class/MP_Settings_Global.php:320
 msgid "Section Background color"
@@ -1564,7 +1563,7 @@ msgstr ""
 
 #: inc/class-functions.php:11 inc/class-functions.php:29
 msgid "Ticket"
-msgstr ""
+msgstr "Fahrkarte"
 
 #: inc/WBTM_Woocommerce.php:546
 msgid "Ticket Information"
@@ -1576,11 +1575,11 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:54
 msgid "Ticket Sub total"
-msgstr ""
+msgstr "Ticket-Zwischensumme"
 
 #: inc/WBTM_Translations.php:44
 msgid "Ticket Type"
-msgstr ""
+msgstr "Art des Tickets"
 
 #: admin/settings/WBTM_Seat_Configuration.php:26
 msgid "Ticket/Seat Configuration"
@@ -1588,11 +1587,11 @@ msgstr ""
 
 #: admin/settings/WBTM_Pricing_Routing.php:85
 msgid "Time : "
-msgstr ""
+msgstr "Zeit :"
 
 #: inc/WBTM_Translations.php:20
 msgid "To"
-msgstr ""
+msgstr "Zu"
 
 #: admin/WBTM_Settings.php:85
 msgid ""
@@ -1605,15 +1604,15 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:53
 msgid "Total"
-msgstr ""
+msgstr "Gesamt"
 
 #: inc/WBTM_Translations.php:50
 msgid "Total Quantity"
-msgstr ""
+msgstr "Gesamtmenge"
 
 #: admin/settings/WBTM_Seat_Configuration.php:45
 msgid "Total Seat"
-msgstr ""
+msgstr "Gesamtsitzplatz"
 
 #: mp_global/class/MP_Global_Function.php:413
 msgid "Tuesday"
@@ -1706,7 +1705,7 @@ msgstr ""
 
 #: inc/WBTM_Translations.php:68
 msgid "View Seats"
-msgstr ""
+msgstr "Sitzplätze anzeigen"
 
 #: mp_global/class/MP_Settings_Global.php:313
 msgid "Warning Color"

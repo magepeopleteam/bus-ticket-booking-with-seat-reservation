@@ -316,6 +316,7 @@
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 						if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
 							$this->wc_order_status_change($order_status, $post_id, $order_id);
+							do_action('wbtm_order_status_change', $order_status, $post_id, $order_id);
 						}
 					}
 				}
