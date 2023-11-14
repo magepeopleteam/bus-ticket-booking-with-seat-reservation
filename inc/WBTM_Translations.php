@@ -37,7 +37,7 @@
 			public static function text_available_seat() { return esc_html__('Available Seat', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_already_sold() { return esc_html__('Already Sold', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_select_wrong_route() { return esc_html__('You select Wrong Route !', 'bus-ticket-booking-with-seat-reservation'); }
-			public static function text_serch_no_msg() { return esc_html__("This Bus isn't available on this search criteria, Please try Another", 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_select_route() { return esc_html__('Please select Starting Point !', 'bus-ticket-booking-with-seat-reservation'); }
 			//*************************//
 			public static function text_schedule() { return esc_html__('Schedule', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_coach_type() { return esc_html__('Coach Type', 'bus-ticket-booking-with-seat-reservation'); }

@@ -19,30 +19,49 @@
 			public static function get_bus_route($post_id = 0, $start_route = '') {
 				$all_routes = [];
 				if ($post_id > 0) {
-					$count_next = 0;
-					$full_route_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
-					if (sizeof($full_route_infos) > 0) {
-						foreach ($full_route_infos as $info) {
-							if ($start_route) {
-								if ($count_next > 0 && ($info['type'] == 'dp' || $info['type'] == 'both')) {
-									$all_routes[] = $info['place'];
-								}
-								if (($info['type'] == 'bp' || $info['type'] == 'both') && strtolower($info['place']) == strtolower($start_route)) {
-									$count_next = 1;
-								}
+					$all_routes = self::single_bus_route($post_id, $start_route);
+				}
+				else {
+					if ($start_route) {
+						$bus_ids = WBTM_Query::get_bus_id($start_route);
+						if (sizeof($bus_ids) > 0) {
+							foreach ($bus_ids as $bus_id) {
+								$routes = self::single_bus_route($bus_id, $start_route);
+								$all_routes = array_merge($all_routes, $routes);
 							}
-							else {
-								if ($info['type'] == 'bp' || $info['type'] == 'both') {
-									$all_routes[] = $info['place'];
-								}
+						}
+					}
+					else {
+						$bus_ids = MP_Global_Function::get_all_post_id(WBTM_Functions::get_cpt());
+						if (sizeof($bus_ids) > 0) {
+							foreach ($bus_ids as $bus_id) {
+								$routes = MP_Global_Function::get_post_info($bus_id,'wbtm_bus_bp_stops',[]);
+								$all_routes = array_merge($all_routes, $routes);
 							}
 						}
 					}
 				}
-				else {
-					$all_routes = MP_Global_Function::get_all_term_data('wbtm_bus_stops');
-					if ($start_route) {
-						$all_routes = array_diff($all_routes, [$start_route]);
+				return array_unique($all_routes);
+			}
+			public static function single_bus_route($post_id, $start_route = '') {
+				$all_routes = [];
+				$count_next = 0;
+				$full_route_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
+				if (sizeof($full_route_infos) > 0) {
+					foreach ($full_route_infos as $info) {
+						if ($start_route) {
+							if ($count_next > 0 && ($info['type'] == 'dp' || $info['type'] == 'both')) {
+								$all_routes[] = $info['place'];
+							}
+							if (($info['type'] == 'bp' || $info['type'] == 'both') && strtolower($info['place']) == strtolower($start_route)) {
+								$count_next = 1;
+							}
+						}
+						else {
+							if ($info['type'] == 'bp' || $info['type'] == 'both') {
+								$all_routes[] = $info['place'];
+							}
+						}
 					}
 				}
 				return $all_routes;
@@ -159,7 +178,27 @@
 				return [];
 			}
 			//==========================//
-			public static function get_all_dates($post_id = 0) {
+			public static function get_all_dates($post_id = 0, $start_route = '') {
+				$all_dates = [];
+				if ($post_id > 0) {
+					$all_dates = self::get_route_date($post_id, $start_route);
+				}
+				else {
+					if ($start_route) {
+						$bus_ids = WBTM_Query::get_bus_id($start_route);
+						if (sizeof($bus_ids) > 0) {
+							foreach ($bus_ids as $bus_id) {
+								$dates = self::get_route_date($bus_id, $start_route);
+								$all_dates = array_merge($all_dates, $dates);
+							}
+						}
+					}
+				}
+				$all_dates = array_unique($all_dates);
+				usort($all_dates, "MP_Global_Function::sort_date");
+				return $all_dates;
+			}
+			public static function get_route_date($post_id, $start_route = '') {
 				$all_dates = [];
 				if ($post_id > 0) {
 					$date_infos = self::get_post_date($post_id);
@@ -169,33 +208,21 @@
 							if (sizeof($route_info) > 0) {
 								foreach ($route_info as $info) {
 									if ($info['type'] == 'bp' || $info['type'] == 'both') {
-										$all_dates[] = date('Y-m-d', strtotime($info['time']));
+										if ($start_route) {
+											if ($start_route == $info['place']) {
+												$all_dates[] = date('Y-m-d', strtotime($info['time']));
+											}
+										}
+										else {
+											$all_dates[] = date('Y-m-d', strtotime($info['time']));
+										}
 									}
 								}
 							}
 						}
 					}
 				}
-				else {
-					$sale_end_date = MP_Global_Function::get_settings('wbtm_general_settings', 'ticket_sale_close_date');
-					$sale_end_date = $sale_end_date ? date('Y-m-d', strtotime($sale_end_date)) : '';
-					$active_days = MP_Global_Function::get_settings('wbtm_general_settings', 'ticket_sale_max_date', 30);
-					$start_date = current_time('Y-m-d');
-					$end_date = date('Y-m-d', strtotime($start_date . ' +' . $active_days . ' day'));
-					if ($sale_end_date && strtotime($sale_end_date) < strtotime($end_date)) {
-						$end_date = $sale_end_date;
-					}
-					if (strtotime($start_date) < strtotime($end_date)) {
-						$dates = MP_Global_Function::date_separate_period($start_date, $end_date);
-						foreach ($dates as $date) {
-							$date = $date->format('Y-m-d');
-							$all_dates[] = $date;
-						}
-					}
-				}
-				$all_dates = array_unique($all_dates);
-				usort($all_dates, "MP_Global_Function::sort_date");
-				return $all_dates;
+				return array_unique($all_dates);
 			}
 			public static function get_post_date($post_id) {
 				$all_dates = [];
@@ -261,19 +288,13 @@
 							$off_dates = array_unique($off_dates);
 							$off_days = MP_Global_Function::get_post_info($post_id, 'wbtm_off_days');
 							$off_day_array = $off_days ? explode(',', $off_days) : [];
-							$show_off_day = MP_Global_Function::get_post_info($post_id, 'show_off_day');
 							$repeat = MP_Global_Function::get_post_info($post_id, 'wbtm_repeated_after', 1);
 							$dates = MP_Global_Function::date_separate_period($start_date, $end_date, $repeat);
 							foreach ($dates as $date) {
 								$date = $date->format('Y-m-d');
 								if (strtotime($date) >= strtotime($now)) {
 									$day = strtolower(date('l', strtotime($date)));
-									if ($show_off_day == 'yes') {
-										if (!in_array($date, $off_dates) && !in_array($day, $off_day_array)) {
-											$all_dates[] = $date;
-										}
-									}
-									else {
+									if (!in_array($date, $off_dates) && !in_array($day, $off_day_array)) {
 										$all_dates[] = $date;
 									}
 								}

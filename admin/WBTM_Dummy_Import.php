@@ -207,7 +207,7 @@
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +5 day')),
 									'wbtm_repeated_end_date' => date('Y-m-d', strtotime(' +100 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '12',
+									'wbtm_active_days' => '90',
 									'wbtm_off_days' => 'saturday,sunday',
 									'wbtm_off_dates' => [
 										date('m-d', strtotime(' +15 day')),
@@ -265,7 +265,7 @@
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +2 day')),
 									'wbtm_repeated_end_date' => date('Y-m-d', strtotime(' +150 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '12',
+									'wbtm_active_days' => '90',
 									'wbtm_off_days' => 'saturday,sunday',
 									'wbtm_off_dates' => [
 										date('m-d', strtotime(' +10 day')),
@@ -320,7 +320,7 @@
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
 									'wbtm_repeated_end_date' => date('Y-m-d', strtotime(' +100 day')),
 									'wbtm_repeated_after' => '3',
-									'wbtm_active_days' => '25',
+									'wbtm_active_days' => '90',
 									'wbtm_off_days' => '',
 									'wbtm_off_dates' => [
 										date('m-d', strtotime(' +2 day')),
@@ -411,7 +411,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '12',
+									'wbtm_active_days' => '90',
 								],
 							],
 							5 => [
@@ -456,7 +456,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +2 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '15',
+									'wbtm_active_days' => '90',
 									'wbtm_off_days' => 'saturday,sunday',
 									'wbtm_off_dates' => [
 										date('m-d', strtotime(' +10 day')),
@@ -506,7 +506,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '15',
+									'wbtm_active_days' => '90',
 								],
 							],
 							7 => [
@@ -551,7 +551,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '15',
+									'wbtm_active_days' => '90',
 								],
 							],
 							8 => [
@@ -592,7 +592,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +1 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '15',
+									'wbtm_active_days' => '90',
 								],
 							],
 							9 => [
@@ -633,7 +633,7 @@
 									'wbtm_particular_dates' => ['01-01','02-02','03-03','04-04','05-05','06-06','07-07','08-08','09-09','10-10','11-11','12-12'],
 									'wbtm_repeated_start_date' =>date('Y-m-d', strtotime(' +5 day')),
 									'wbtm_repeated_after' => '1',
-									'wbtm_active_days' => '12',
+									'wbtm_active_days' => '90',
 									'wbtm_off_days' => 'saturday,sunday',
 									'wbtm_off_dates' => [
 										date('m-d', strtotime(' +15 day')),

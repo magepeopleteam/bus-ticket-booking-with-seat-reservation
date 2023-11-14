@@ -6,38 +6,57 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	$start_route = isset($_POST['bus_start_route']) ? MP_Global_Function::data_sanitize($_POST['bus_start_route']) : '';
-	$end_route = isset($_POST['bus_end_route']) ? MP_Global_Function::data_sanitize($_POST['bus_end_route']) : '';
-	$j_date = $j_date = $_POST['j_date'] ?? '';
-	$r_date = $r_date = $_POST['r_date'] ?? '';
-	$all_dates = $all_dates ?? WBTM_Functions::get_all_dates();
+	//================//
+	$post_id = $post_id ?? 0;
+	$return_date_show = MP_Global_Function::get_settings('wbtm_general_settings', 'bus_return_show', 'enable');
+	//================//
+	$form_style = $form_style ?? '';
+	$form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
+	//================//
+	$buy_ticket_text = WBTM_Translations::text_buy_ticket();
+	$placeholder_text = WBTM_Translations::text_please_select();
+	//echo '<pre>'; print_r(WBTM_Functions::get_all_dates()); echo '</pre>';
 ?>
-	<div class="mpStyle" id="wbtm_area">
-		<?php require WBTM_Functions::template_path('layout/search_form_only.php'); ?>
-		
-		<?php if ($start_route && $end_route && $j_date) { ?>
-			<div class="_dLayout_dShadow_1">
-				<?php WBTM_Layout::next_date_suggestion($all_dates); ?>
-				<?php WBTM_Layout::route_title(); ?>
-				<?php do_action('wbtm_search_result',$start_route,$end_route,$j_date); ?>
-				<div class="wbtm_search_part _mT_xs">
-					<?php //mage_bus_search_list(false); ?>
+	<div id="wbtm_area">
+		<div class="_dLayout_dShadow_1 wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
+			<?php if ($buy_ticket_text) { ?>
+				<h4><?php echo esc_html($buy_ticket_text); ?></h4>
+			<?php } ?>
+			<div class="mpForm">
+				<input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
+				<div class="inputList mp_input_select wbtm_start_point">
+					<label class="fdColumn">
+						<span><i class="fas fa-map-marker"></i> <?php echo WBTM_Translations::text_from(); ?> : </span>
+						<input type="text" class="formControl" name="bus_start_route" value="" placeholder="<?php echo esc_attr($placeholder_text); ?>" autocomplete="off" required/>
+					</label>
+					<?php WBTM_Layout::route_list($post_id); ?>
+				</div>
+				<div class="inputList mp_input_select wbtm_dropping_point" data-alert="<?php echo WBTM_Translations::text_select_wrong_route(); ?>">
+					<label class="fdColumn ">
+						<span><i class="fas fa-map-marker"></i> <?php echo esc_html(WBTM_Translations::text_to()); ?> : </span>
+						<input type="text" class="formControl" name="bus_end_route" value="" placeholder="<?php echo esc_attr($placeholder_text); ?>" autocomplete="off" required/>
+					</label>
+					<?php WBTM_Layout::route_list($post_id); ?>
+				</div>
+				<div class="inputList wbtm_journey_date">
+					<?php WBTM_Layout::journey_date_picker(); ?>
+				</div>
+				<?php if ($return_date_show == 'enable' && $post_id == 0) { ?>
+					<div class="inputList wbtm_return_date">
+						<?php WBTM_Layout::return_date_picker(); ?>
+					</div>
+				<?php } ?>
+				<div class="inputList">
+					<div class="fdColumn justifyBetween fullHeight">
+						<span>&nbsp;</span>
+						<button type="button" class="_themeButton_radius get_wbtm_bus_list">
+							<span class="fas fa-search mR_xs"></span><?php echo WBTM_Translations::text_search(); ?>
+						</button>
+					</div>
 				</div>
 			</div>
-		<?php } ?>
-		
-		<?php if ($start_route && $end_route && $r_date) { ?>
-			<div class="_dLayout_dShadow_1" id="wbtm_return_container">
-				<h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
-				<div class="divider"></div>
-				<?php WBTM_Layout::next_date_suggestion($all_dates, true); ?>
-				<?php WBTM_Layout::route_title(true); ?>
-				<?php do_action('wbtm_search_result',$end_route,$start_route,$r_date); ?>
-				<div class="wbtm_search_part _mT_xs">
-					<?php //mage_bus_search_list(true); ?>
-				</div>
-			</div>
-		<?php } ?>
+		</div>
+		<div class="wbtm_search_result"></div>
 	</div>
 <?php
 //do_action('wbtm_after_search_list');

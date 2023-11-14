@@ -69,14 +69,18 @@
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
-				$defaults = array("cat" => "0", "style" => '',"search-page" => '');
+				$defaults = array("cat" => "0", "style" => '', "search-page" => '');
 				$params = shortcode_atts($defaults, $attr);
 				$cat = $params['cat'];
 				$form_style = $params['style'];
 				$search_path = $params['search-page'];
 				ob_start();
 				do_action('woocommerce_before_single_product');
-				require WBTM_Functions::template_path('layout/search_form.php');
+				?>
+				<div class="mpStyle wbtm_container">
+					<?php require WBTM_Functions::template_path('layout/search_form.php'); ?>
+				</div>
+				<?php
 				do_action('wbtm_after_search_result_section', $params);
 				return ob_get_clean();
 			}

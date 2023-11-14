@@ -2,7 +2,7 @@
 	/**
 	 * Plugin Name: Bus Ticket Booking with Seat Reservation
 	 * Plugin URI: http://mage-people.com
-	 * Description: A Complete Bus Ticketig System for WordPress & WooCommerce
+	 * Description: A Complete Bus Ticketing System for WordPress & WooCommerce
 	 * Version: 5.2.6
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
@@ -108,17 +108,6 @@
 				}
 			}
 			public static function on_activation_page_create() {
-				if (!MP_Global_Function::get_page_by_slug('bus-search-list')) {
-					$bus_search_page = array(
-						'post_type' => 'page',
-						'post_name' => 'bus-search-list',
-						'post_title' => 'Bus Search result',
-						'post_content' => '[wbtm-bus-search]',
-						'post_status' => 'publish',
-					);
-					wp_insert_post($bus_search_page);
-					flush_rewrite_rules();
-				}
 				if (!MP_Global_Function::get_page_by_slug('bus-global-search')) {
 					$bus_global_search_page = array(
 						'post_type' => 'page',
@@ -132,5 +121,5 @@
 				}
 			}
 		}
-		$Woocommerce_bus = new Wbtm_Woocommerce_bus();
+	new Wbtm_Woocommerce_bus();
 	}
