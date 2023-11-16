@@ -148,31 +148,27 @@ Upload the Bus Ticket Booking with Seat Reservation to your blog, Activate it, t
 == Frequently Asked Questions ==
 
 = What kind of payment method works =
-Our plugin supports all types of the payment method available for WooCommerce. 
+Our plugin supports all types of payment methods available for WooCommerce. 
 
 
 = Is Bus Ticket Booking with Seat Reservation is Free? =
-Yes! This bus booking plugin is free, But some features are not free those available only on premium version. 
+Yes! This bus booking plugin is free, But some features are not free those are available only on the premium version. 
 
 
 = Search Form not Showing =
-If you must have shortcode the page where you are looking search form, use `[wbtm-bus-search-form]` this shortcode for search form to a page.
+If you must have a shortcode for the page where you are looking search form, use `[wbtm-bus-search-form]` this shortcode for the search form to a page.
 
 
 = Search Result Showing 404 Page =
 You have a page with page slug **/bus-search-list/** and use shortcode 
 `
-[wbtm-bus-search] if still search result not showing then re-save wordpress permalink settings. it should work.
+[wbtm-bus-search] if still search result not showing then re-save the wordpress permalink settings. it should work.
 
-= What is difference now Premium version and Basic Version =
-Attendee information form, passenger booking from dashboard, customized email sent to customer, pdf tickets  only available in premium version. 
+= What is the difference now the Premium version and the Basic Version =
+Attendee information form, passenger booking from the dashboard, customized email sent to the customer, pdf tickets  are only available in the premium version. 
 
 = Do you offer customization =
-Yes We like to hear from our customer, If you want to add any customization or you need any new feature. you can send us email: magepeopleteam@gmail.com. our team will check and get back to you.
-
-
-
-
+Yes, We like to hear from our customers If you want to add any customization or if you need any new features. you can send us email: support@mage-people.com. our team will check and get back to you.
 
 
 
