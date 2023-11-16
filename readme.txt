@@ -3,7 +3,7 @@ Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
 Stable tag: trunk
-Tested up to: 6.3
+Tested up to: 6.4
 Requires PHP: 7.0
 WC requires at least: 3.0
 WC tested up to: 4.9
