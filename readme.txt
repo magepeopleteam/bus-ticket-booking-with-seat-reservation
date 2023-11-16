@@ -1,4 +1,4 @@
-=== Bus Ticket Booking with Seat Reservation ===
+=== Bus Ticket Booking with Seat Reservation – WpBusTicketly | WordPress plugin ===
 Contributors: magepeopleteam, aamahin, shohan777, arifulislamnayem
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress,woocommerce
 seat reservation for wordpress woocommerce
@@ -11,34 +11,71 @@ WC tested up to: 4.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Bus Ticket Booking with Seat Reservation is a Bus booking Plugin for WordPress which is based on WooCommerce.
+Offer the convenience of seat selection and reservation on your WordPress website. A customized solution for efficient bus ticketing.
 
 == Description ==
-This bus booking plugin is one of the best and simplest plugins in the WordPress directory. It uses WooCommerce for making payments, so it's free to use any payment gateway via WooCommerce. This plugin will run with Woocommerce but it will work as an custom post - it will not affect WooCommerce products. So if you want, you can sell your product along with the tickets.
+Make the ticketing process effortless and convenient for travelers with our customized bus ticket booking plugin.
 
-**Features:**
-&#9989;  Support Any Payment Method That support WooCommerce
-&#9989;  Intermediate bus route booking works with different Price
-&#9989;  Return booking also Possible
-&#9989;  Shortcode Powered
-&#9989;  Unlimited Bus
-&#9989;  Unlimited Category
-&#9989;  Unlimited Boarding Point
-&#9989;  Unlimited Dropping Point
-&#9989;  Unlimited Pricing
-&#9989;  Open Source
-&#9989;  Responsive Design
-&#9989;  Developer Friendly
-&#9989;  Based on Woocommerce
-&#9989;  Works with any standards compliant WordPress theme
-&#9989;  Plays well with other Plugins
-&#9989;  100% Customizable
-&#9989;  Easy to modify templates
-&#9989;  Template Override feature.
+WpBusTicketly is a [WordPress ticketing system](https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/) that comes with a reservation system.
+
+Integrated with WooCommerce, enjoy diverse payment gateways for stress-free transactions. Your gateway to hassle-free bus adventures!
+
+Enjoy hassle-free payments, Customize unique routes, set dynamic prices, and personalize booking forms in one place.
+
+## Explore The Demo:
 &#9989;  [Live Demo](https://bus.mage-people.com/)
 &#9989;  [Online Documentation](https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/)
+&#9989;  [Buy PRO Addon](https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/)
 
 
+## All-In-One Ticketing Seat Reservation Solution
+Leveraging years of research Mage Team created customized ticketing solutions for bus seat reservations. Accelerate your ticketing system with WP WpBusTicketly though have a small business or large.
+
+The Mage team has innovated a data-driven solution, simplifying ticket and reservation management for rental systems. Tackling the complexities, our invention ensures an easy and efficient approach to managing reservations, offering a streamlined solution to longstanding challenges.
+
+## Let's Uncover What WpBusTicketly Offers You
+
+
+* **Search and Filter
+Users can search for bus routes based on their origin, destination, and preferred travel dates. Advanced filtering options enhance the experience for a personalized journey.
+
+
+* **User-Friendly Seat Selection
+Select your seats through our interactive map, which provides real-time updates on availability. Users can easily choose their preferred seating arrangement for a straightforward experience.
+
+* **Secure Online Reservation
+After choosing seats, proceed with secure online reservations. Supports direct payments on the website through secure gateways, ensuring a smooth and trustworthy transaction process for users.
+
+* **Convenient Online Reservations
+Once users have selected their desired seats, they can easily proceed with online reservations. Our plugin supports secure payment gateways, enabling direct payments on the website for a hassle-free booking experience.
+
+
+* **Efficient Booking Management
+Experience efficient booking management with our unique plugin. Website owners effortlessly handle bookings in the WordPress admin panel, while users conveniently access and review their booking details through personal accounts.
+
+
+* **Dynamic Intermediate Route Allocation
+Leverage our unique feature for fluid transitions. Seats become instantly available for the next customer upon drop-off or arrival, ensuring an efficient booking process.
+
+
+* **Automated Email Notifications
+Sends a notification to users' email when the seat is successful bookings, offering to book confirmations and e-tickets in the Pro Version. Website owners also receive notifications for new bookings and cancellations, ensuring everyone stays informed seamlessly.
+
+
+
+* **Versatile Payment Integration
+Our plugin seamlessly integrates with WooCommerce, supporting all payment methods compatible with WooCommerce. Website owners enjoy the flexibility to add a variety of payment methods, offering a diverse range of options for a convenient and customizable payment experience.
+
+
+* **Enable Varied Payment Options
+Leverage WooCommerce for versatile payment support. You can easily add multiple payment methods, providing customers with a diverse range of options for seamless transactions.
+
+
+* **Brand Customization
+Personalize your website with our plugin's array of customization options. Users can effortlessly match the design and branding, adjusting colours, fonts, and visual elements for a cohesive and tailored booking experience.
+
+* **Optimize Across Devices
+Experience smooth functionality on multiple devices and screen sizes with our plugin's responsiveness. Quickly make bookings and select seats from desktops, tablets, or mobile devices for an optimized user experience.
 
 
 
@@ -48,57 +85,47 @@ This bus booking plugin is one of the best and simplest plugins in the WordPress
 `
 [wbtm-bus-search-form]
 `
-This shortcode allows you to add a search form to any page but you must have to create another page for search result list showing with page slug **/bus-search-list/** and shortcode
-`
-[wbtm-bus-search]
-`
-if you don't have this page with slug bus-search-list then you may get 404 on search result, normally this page will create automatically during installation. So Please make sure, you have a page bus search list and this page selected to ** settings->General settings ** with option name Search Result Page. 
+This shortcode allows you to add a search form to any page where customers can search for bus tickets and buy ticket
 
-we have some other shortcode that you can use to display bus list
-
-`
-[wbtm-bus-list cat=''show='10']
-`
-here show 10 means it will display 10 bus in list, you can change as needed
-
-**cat:**  
-By default this shortcode will show showing all bus, but if you want to show bus list for  a particular category, you can use this cat attribute, just put the category id with this. example: 
-
-`
-[wbtm-bus-list cat='ID']
-`
-
-We have dummy import option and guideline. if you check welcome link left sidebar of our plugin. you will dummy import guideline.
+We have a dummy import option and guidelines. if you check the welcome link left sidebar of our plugin. you will dummy import guidelines.
 
 
-There is a PRO Addon available for this plugin. Features are available in PRO Addon are below:
 
-&#9989;  Bus Search Form Shortcode.
-&#9989;  Passenger Form, Select passenger form for particuar bus.
-&#9989;  Get Passenger List in Dashboard.
-&#9989;  Purchase Ticket from dashboard
-&#9989;  Filter Passenger List by Bus and Date.
-&#9989;  Create Tickt by Ticket pin in Dashboard.
-&#9989;  Successfully Purchased Ticket List in My Account Section in Frontend
-&#9989;  [Buy PRO Addon](https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/)
-&#9989;  [Live Demo](https://bus.mage-people.com/)
-&#9989;  [Online Documentation](https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/)
+## Unlock Exceptional Ticketing Features with WpBus Ticketly Pro Version
+
+Create something bigger with the pro version of the plugin, leveraging unparalleled features for ultimate system value and user satisfaction. 
+So let’s uncover the features that are hidden in the premium version:
+
+
+* **Enhanced Passenger Registration Form
+Unlock advanced features with the Pro Version, introducing a comprehensive passenger registration form. Website owners can easily gather passenger details such as name, email, and phone. Admins have the flexibility to customize fields as needed for enhanced passenger information collection.
+
+* **Automated Order Confirmation with PDF Ticket
+In the Pro Version, you can configure email notifications. After payment, customers receive an email confirming their order along with an attached PDF ticket, enhancing the booking experience.
+
+* **Comprehensive Passenger List & CSV Export
+In the Pro Version, admins gain access to a detailed passenger list for each bus. Easily filter by journey date to view and manage passenger details efficiently. Admin Can export all passenger details from the admin panel.
+
+* **Advanced Admin Ticket Reservation
+Experience enhanced control with the Pro Version, which enables admins to reserve and issue tickets directly from the admin panel. Perfect for counter bookings or phone orders, this feature enhances flexibility and streamlines the reservation process.
 
 
 
 
-**Available Bus Theme with import feature** 
+**Available Bus Plugin Addon**
+– [Bus Seat Plugin QR Code Addon](https://mage-people.com/product/bus-ticket-booking-with-seat-reservation-pro-addon-qr-code/)
+**Available Bus Theme with import feature**
 - [Bahon -Bus booking Theme](https://mage-people.com/product/bahon-bus-ferry-or-any-transport-booking-wordpress-theme/)
 
 
 
 
 ### Note:
-We do best support for our plugin, we have fully confidence that our plugin working very well for any theme. in case you face any problem with our plugin or any customization needed please email us: magepeopleteam@gmail.com
-our support team will back to you shortly.
+Rest assured, we provide top-notch support for our plugin. With full confidence in its compatibility with any theme, if you encounter any issues or require customization, reach out to us at support@mage-people.com. Our dedicated support team is ready to assist you promptly.
 
 
-**CHECKOUR OUR OTHER PLUGINS** 
+
+**CHECKOUT OUR OTHER PLUGINS** 
 - [Multipurpose Ticket Booking Manager (Bus/Train/Ferry/Boat/Shuttle)
 ](https://wordpress.org/plugins/bus-booking-manager/)
 - [Bus Ticket Booking with Seat Reservation](https://wordpress.org/plugins/bus-ticket-booking-with-seat-reservation/)
@@ -121,7 +148,7 @@ Upload the Bus Ticket Booking with Seat Reservation to your blog, Activate it, t
 == Frequently Asked Questions ==
 
 = What kind of payment method works =
-Our plugin supports all type of the payment method available for WooCommerce. 
+Our plugin supports all types of the payment method available for WooCommerce. 
 
 
 = Is Bus Ticket Booking with Seat Reservation is Free? =
