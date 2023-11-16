@@ -4,7 +4,7 @@ Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress,
 seat reservation for wordpress woocommerce
 Requires at least: 4.5
 Stable tag: trunk
-Tested up to: 6.4
+Tested up to: 6.3
 Requires PHP: 7.0
 WC requires at least: 3.0
 WC tested up to: 4.9
@@ -36,45 +36,45 @@ The Mage team has innovated a data-driven solution, simplifying ticket and reser
 ## Let's Uncover What WpBusTicketly Offers You
 
 
-* **Search and Filter
+* **Search and Filter**
 Users can search for bus routes based on their origin, destination, and preferred travel dates. Advanced filtering options enhance the experience for a personalized journey.
 
 
-* **User-Friendly Seat Selection
+* **User-Friendly Seat Selection**
 Select your seats through our interactive map, which provides real-time updates on availability. Users can easily choose their preferred seating arrangement for a straightforward experience.
 
-* **Secure Online Reservation
+* **Secure Online Reservation**
 After choosing seats, proceed with secure online reservations. Supports direct payments on the website through secure gateways, ensuring a smooth and trustworthy transaction process for users.
 
-* **Convenient Online Reservations
+* **Convenient Online Reservations**
 Once users have selected their desired seats, they can easily proceed with online reservations. Our plugin supports secure payment gateways, enabling direct payments on the website for a hassle-free booking experience.
 
 
-* **Efficient Booking Management
+* **Efficient Booking Management**
 Experience efficient booking management with our unique plugin. Website owners effortlessly handle bookings in the WordPress admin panel, while users conveniently access and review their booking details through personal accounts.
 
 
-* **Dynamic Intermediate Route Allocation
+* **Dynamic Intermediate Route Allocation**
 Leverage our unique feature for fluid transitions. Seats become instantly available for the next customer upon drop-off or arrival, ensuring an efficient booking process.
 
 
-* **Automated Email Notifications
+* **Automated Email Notifications**
 Sends a notification to users' email when the seat is successful bookings, offering to book confirmations and e-tickets in the Pro Version. Website owners also receive notifications for new bookings and cancellations, ensuring everyone stays informed seamlessly.
 
 
 
-* **Versatile Payment Integration
+* **Versatile Payment Integration**
 Our plugin seamlessly integrates with WooCommerce, supporting all payment methods compatible with WooCommerce. Website owners enjoy the flexibility to add a variety of payment methods, offering a diverse range of options for a convenient and customizable payment experience.
 
 
-* **Enable Varied Payment Options
+* **Enable Varied Payment Options**
 Leverage WooCommerce for versatile payment support. You can easily add multiple payment methods, providing customers with a diverse range of options for seamless transactions.
 
 
-* **Brand Customization
+* **Brand Customization**
 Personalize your website with our plugin's array of customization options. Users can effortlessly match the design and branding, adjusting colours, fonts, and visual elements for a cohesive and tailored booking experience.
 
-* **Optimize Across Devices
+* **Optimize Across Devices**
 Experience smooth functionality on multiple devices and screen sizes with our plugin's responsiveness. Quickly make bookings and select seats from desktops, tablets, or mobile devices for an optimized user experience.
 
 
@@ -97,16 +97,16 @@ Create something bigger with the pro version of the plugin, leveraging unparalle
 So let’s uncover the features that are hidden in the premium version:
 
 
-* **Enhanced Passenger Registration Form
+* **Enhanced Passenger Registration Form**
 Unlock advanced features with the Pro Version, introducing a comprehensive passenger registration form. Website owners can easily gather passenger details such as name, email, and phone. Admins have the flexibility to customize fields as needed for enhanced passenger information collection.
 
-* **Automated Order Confirmation with PDF Ticket
+* **Automated Order Confirmation with PDF Ticket**
 In the Pro Version, you can configure email notifications. After payment, customers receive an email confirming their order along with an attached PDF ticket, enhancing the booking experience.
 
-* **Comprehensive Passenger List & CSV Export
+* **Comprehensive Passenger List & CSV Export**
 In the Pro Version, admins gain access to a detailed passenger list for each bus. Easily filter by journey date to view and manage passenger details efficiently. Admin Can export all passenger details from the admin panel.
 
-* **Advanced Admin Ticket Reservation
+* **Advanced Admin Ticket Reservation**
 Experience enhanced control with the Pro Version, which enables admins to reserve and issue tickets directly from the admin panel. Perfect for counter bookings or phone orders, this feature enhances flexibility and streamlines the reservation process.
 
 
@@ -201,7 +201,7 @@ Yes We like to hear from our customer, If you want to add any customization or y
 *Bug and some sorting issue fixed - 10 Oct 2018*
 
 = 1.1.7 =
-*Seat booking of a cancled seat issue fixed - 16 Oct 2018*
+*Seat booking of a canceled seat issue fixed - 16 Oct 2018*
 
 
 = 1.1.8 =
@@ -217,158 +217,109 @@ Yes We like to hear from our customer, If you want to add any customization or y
 
 
 = 1.3.1 =
-* Update List:
-==> Translation Ready.
-==> Bangla Language added
-==> Offday issue fixed in Details Page
-. - 17 Dec 2018*
+*Translation Ready.
+ Bangla Language added
+ Offday issue fixed in Details Page*
 
 
 
 = 1.3.2 =
-* Update List:
-==> Search Table Heading issue fixed
-. - 09 Jan 2019*
+*Search Table Heading issue fixed*
 
 = 1.3.3 =
-* Update List:
-==> Minor issue fixed
-. - 10 Jan 2019*
+*Minor issue fixed*
 
 
 
 = 1.4.0 =
-* Update List:
-==> A Big Update With Seat Panel Template, Now 3 Free Seat Template added in this vesrion
-. - 27 Jan 2019*
+*A Big Update With Seat Panel Template, Now 3 Free Seat Template added in this version*
 
 
 
 = 1.5.0 =
-* Update List:
-==> A Big Update With a Brand New Seat Panel System, Now You can create any type of seat plan.
-. - 19 Feb 2019*
+* Update List: A Big Update With a Brand New Seat Panel System, Now You can create any type of seat plan.*
 
 
 = 1.5.8 =
-* Update List:
-==> Bus Search Page slug issue solved.
-. - 19 Feb 2019*
+* Bus Search Page slug issue solved.*
 
 
 
 = 1.6.0 =
-* Update List:
-==> PHP Warning issue fixed
-==> Operation On Day Feature
-. - 12 May 2019*
+* PHP Warning issue fixed,Operation On Day Feature*
 
 
 
 = 1.6.1 =
-* Update List:
-==> Added seat checking before order place, so if the seat already booked it can't be booked
-==> Fixed bug on return bus list
-==> some minor design issue fixed.
-. - 07 July 2019*
+* Added seat checking before order place, so if the seat is already booked it can't be booked, Fixed bug on return bus list, some minor design issue fixed.*
 
 
 = 1.6.2 =
-* Update List:
-==> Fixed Return Date Search Result issue
-==> Fixed Buffer time issue
-. - 24 July 2019*
+* Fixed Return Date Search Result issue, Fixed Buffer time issue*
 
 
 = 1.6.3 =
-* Update List:
-==> Fixed Search Result issue
-. - 07 Aug 2019*
+*Fixed Search Result issue*
 
 
 = 1.6.4 =
-* Update List:
-==> Fixed Search calculation issue for same bus in round trip
-==> Mobile seat selection feature now availabe in search page
-==> Removed past date from the Operational on day list in the bus details page
-. - 21 Aug 2019*
+* Fixed Search calculation issue for same bus in round trip, Mobile seat selection feature now available in search page, Removed past date from the Operational on day list in the bus details page*
 
 = 2.0 =
-* Update List:
-==> This is a Big update, we suggest you to backup your date before update to this Version
-==> New UI
-==> Ajax search field load
-==> Improved Performance
-==> Double Decker seat plan added
-==> Many bug fixed
-. - 24 Aug 2020*
+* This is a Big update, we suggest you back your date before update to this Version, New UI
+  Ajax search field load
+  Improved Performance
+  Double-decker seat plan added
+  Many bug fixed*
 
 = 2.1 =
-* Update List:
-==> Adult & Child Seat Feature Added
-==> Translation Issue fixed for Translation setting page
-==> Improved Performance
-==> Code Optimize
-. - 08 Sep 2020*
+*Adult & Child Seat Feature Added
+ Translation Issue fixed for Translation setting page
+Improved Performance
+Code Optimize*
 
 = 2.2 =
-* Update List:
-==> Double Booking Issue fixed
-==> Ajax not working mobile issue fixed
-==> Date issue fixed
-==> Code Optimize
-==> Some minor bug fixed
-. - 12 Sep 2020*
+*Double Booking Issue fixed
+Ajax not working mobile issue fixed
+Date issue fixed
+Code Optimize
+Some minor bug fixed*
 
 = 2.3 =
-* Update List:
-==> Code Optimize
-==> Some minor bug fixed
-. - 14 Sep 2020*
+*Code Optimize
+ Some minor bug fixed*
 
 = 2.5 =
-* Update List:
-==> Code Optimize
-==> Some minor bug fixed
-==> Return Discount Price rule added
-==> Infant ticket type added
-==> Design issue fixed
-. - 19 Oct 2020*
+*Code Optimize
+Some minor bug fixed
+Return Discount Price rule added
+Infant ticket type added
+Design issue fixed*
 
 = 2.6 =
-* Update List:
-==> Booked seat not showing issue fixed
-==> Code Optimize
-==> Some minor bug fixed
-==> Return Discount Price issue fixed
-==> Design issue fixed
-. - 03 Nov 2020*
+*Booked seat not showing issue fixed
+Code Optimize
+Some minor bug fixed
+Return Discount Price issue fixed
+Design issue fixed*
 
 = 2.8 =
-* Update List:
-==> New Backend UI
-==> Code Optimize
-==> Some minor bug fixed
-==> Design issue fixed
-. - 02 Feb 2021*
+*New Backend UI
+Code Optimize
+Some minor bug fixed
+Design issue fixed*
 
 = 3.0 =
-* Update List:
-==> Code Optimize
-==> Some minor bug fixed
-==> Design issue fixed
-. - 15 Feb 2021*
+*Code Optimize
+Some minor bug fixed
+Design issue fixed*
 
 = 3.6 =
-* Update List:
-==> Code Optimize
-==> Some minor bug fixed
-==> welcome page adding
-==> global offday settings
-. - 28 dec 2021*
+* Code Optimize
+Some minor bug fixed
+welcome page adding
+global offday settings*
 
 = 3.7 =
-* Update List:
-==> Code Optimize
-==> Some minor bug fixed
-. - 14 March 2022*
+*Code Optimize
+Some minor bug fixed*
