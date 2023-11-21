@@ -103,6 +103,42 @@
 					'meta_box_cb' => false,
 				);
 				register_taxonomy('wbtm_bus_pickpoint', 'wbtm_bus', $args);
+                $labels_drop_off = array(
+                    'name' => $name . ' ' . esc_html__('Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'singular_name' => esc_html__($name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'menu_name' => esc_html__($name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'all_items' => esc_html__('Allx ' . $name . ' Bus Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'parent_item' => esc_html__('Parent', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'parent_item_colon' => _x('Parent ' . $name . ' Drop-Off Point:', 'bus-ticket-booking-with-seat-reservation'),
+                    'new_item_name' => _x('New ' . $name . ' Drop-Off Point Name', 'bus-ticket-booking-with-seat-reservation'),
+                    'add_new_item' => esc_html__('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . esc_html__('Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'edit_item' => _x('Edit ' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'update_item' => _x('Update ' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'view_item' => _x('View ' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'separate_items_with_commas' => _x('Separate Category with commas', 'bus-ticket-booking-with-seat-reservation'),
+                    'add_or_remove_items' => _x('Add or remove ' . $name . ' Pickup Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'choose_from_most_used' => _x('Choose from the most used', 'bus-ticket-booking-with-seat-reservation'),
+                    'popular_items' => _x('Popular' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'search_items' => _x('Search' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'not_found' => _x('Not Found', 'bus-ticket-booking-with-seat-reservation'),
+                    'no_terms' => _x('No' . $name . ' Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'),
+                    'items_list' => _x($name . ' Drop-Off Point list', 'bus-ticket-booking-with-seat-reservation'),
+                    'items_list_navigation' => _x($name . ' Drop-Off Point list navigation', 'bus-ticket-booking-with-seat-reservation'),
+                );
+                $args_drop_off = array(
+                    'hierarchical' => true,
+                    "public" => true,
+                    'labels' => $labels_drop_off,
+                    'show_ui' => true,
+                    'show_admin_column' => true,
+                    'update_count_callback' => '_update_post_term_count',
+                    'query_var' => true,
+                    'rewrite' => array('slug' => 'bus-drop_off'),
+                    'show_in_rest' => false,
+                    'rest_base' => 'bus_drop_off',
+                    'meta_box_cb' => false,
+                );
+                register_taxonomy('wbtm_bus_drop_off', 'wbtm_bus', $args_drop_off);
 			}
 		}
 		new WBTM_Taxonomy();

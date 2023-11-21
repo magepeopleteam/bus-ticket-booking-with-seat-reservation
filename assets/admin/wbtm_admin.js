@@ -174,4 +174,15 @@
 		target_item.find('[name*="wbtm_pickup_name"]').attr('name', 'wbtm_pickup_name[' + unique_id + '][]');
 		target_item.find('[name*="wbtm_pickup_time"]').attr('name', 'wbtm_pickup_time[' + unique_id + '][]');
 	});
+	$(document).on('click', '.wbtm_add_group_drop_off', function () {
+		let parent = $(this).closest('.mp_settings_area');
+		let target_item = $(this).next($('.mp_hidden_content')).find(' .mp_hidden_item');
+		let item = target_item.html();
+		load_sortable_datepicker(parent, item);
+		let unique_id = Math.floor((Math.random() * 9999) + 9999);
+		target_item.find('[name="wbtm_drop_off_unique_id[]"]').val(unique_id);
+		target_item.find('[name*="wbtm_dp_pickup"]').attr('name', 'wbtm_dp_pickup[' + unique_id + ']');
+		target_item.find('[name*="wbtm_drop_off_name"]').attr('name', 'wbtm_drop_off_name[' + unique_id + '][]');
+		target_item.find('[name*="wbtm_drop_off_time"]').attr('name', 'wbtm_drop_off_time[' + unique_id + '][]');
+	});
 }(jQuery));
