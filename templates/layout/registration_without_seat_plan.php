@@ -20,6 +20,7 @@
 				<?php require WBTM_Functions::template_path('layout/regular_ticket.php'); ?>
 				<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
 				<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
+				<?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
 				<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
 			<?php } else { ?>
 				<?php WBTM_Layout::msg(WBTM_Translations::text_no_ticket()); ?>

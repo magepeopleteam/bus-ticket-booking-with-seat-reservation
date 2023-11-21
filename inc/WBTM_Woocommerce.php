@@ -31,7 +31,6 @@
 					$total_price = $seat_price + $ex_service_price;
 					$bp = MP_Global_Function::get_submit_info('wbtm_bp_place');
 					$bp_time = MP_Global_Function::get_submit_info('wbtm_bp_time');
-					$pickup_point = MP_Global_Function::get_submit_info('wbtm_pickup_point');
 					$cart_item_data['wbtm_bus_id'] = $post_id;
 					$cart_item_data['wbtm_start_point'] = MP_Global_Function::get_submit_info('wbtm_start_point');
 					$cart_item_data['wbtm_start_time'] = MP_Global_Function::get_submit_info('wbtm_start_time');
@@ -39,7 +38,8 @@
 					$cart_item_data['wbtm_bp_time'] = $bp_time;
 					$cart_item_data['wbtm_dp_place'] = MP_Global_Function::get_submit_info('wbtm_dp_place');
 					$cart_item_data['wbtm_dp_time'] = MP_Global_Function::get_submit_info('wbtm_dp_time');
-					$cart_item_data['wbtm_pickup_point'] = $pickup_point;
+					$cart_item_data['wbtm_pickup_point'] = MP_Global_Function::get_submit_info('wbtm_pickup_point');
+					$cart_item_data['wbtm_drop_off_point'] = MP_Global_Function::get_submit_info('wbtm_drop_off_point');
 					$cart_item_data['wbtm_seats'] = $ticket_infos;
 					$cart_item_data['wbtm_seats_qty'] = self::get_cart_ticket_qty($ticket_infos);
 					$cart_item_data['wbtm_base_price'] = $seat_price;
@@ -146,6 +146,10 @@
 					if ($pickup_point) {
 						$item->add_meta_data(WBTM_Translations::text_pickup_point(), $pickup_point);
 					}
+                    $drop_off_point = array_key_exists('wbtm_drop_off_point', $values) ? $values['wbtm_drop_off_point'] : '';
+                    if ($drop_off_point) {
+                        $item->add_meta_data(WBTM_Translations::text_drop_off_point(), $drop_off_point);
+                    }
 					//==============//
 					$ticket_infos = array_key_exists('wbtm_seats', $values) ? $values['wbtm_seats'] : [];
 					$ticket_qty = array_key_exists('wbtm_seats_qty', $values) ? $values['wbtm_seats_qty'] : 0;
@@ -193,6 +197,7 @@
 					$item->add_meta_data('_wbtm_start_time', $start_time);
 					$item->add_meta_data('_extra_services', $extra_service);
 					$item->add_meta_data('_wbtm_pickup_point', $pickup_point);
+					$item->add_meta_data('_wbtm_drop_off_point', $drop_off_point);
 					$item->add_meta_data('_wbtm_base_price', $base_price);
 					$item->add_meta_data('_wbtm_qty', $ticket_qty);
 					$item->add_meta_data('_wbtm_passenger_info', $passenger_infos);
@@ -245,6 +250,9 @@
 					$pickup_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_pickup_point');
 					$pickup_point = $pickup_point ? MP_Global_Function::data_sanitize($pickup_point) : '';
 					/*******************/
+					$drop_off_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_drop_off_point');
+                    $drop_off_point = $drop_off_point ? MP_Global_Function::data_sanitize($drop_off_point) : '';
+					/*******************/
 					$order_total = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
 					$order_total = $order_total ? MP_Global_Function::data_sanitize($order_total) : '';
 					/*******************/
@@ -275,6 +283,7 @@
 								$data['wbtm_start_time'] = $start_time;
 								$data['wbtm_booking_date'] = $now_full;
 								$data['wbtm_pickup_point'] = $pickup_point;
+								$data['wbtm_drop_off_point'] = $drop_off_point;
 								$data['wbtm_ticket'] = $ticket_info['ticket_name'];
 								$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
 								$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
@@ -508,6 +517,7 @@
 				$start_point = array_key_exists('wbtm_start_point', $cart_item) ? $cart_item['wbtm_start_point'] : '';
 				$start_time = array_key_exists('wbtm_start_time', $cart_item) ? $cart_item['wbtm_start_time'] : '';
 				$pickup_point = array_key_exists('wbtm_pickup_point', $cart_item) ? $cart_item['wbtm_pickup_point'] : '';
+				$drop_off_point = array_key_exists('wbtm_drop_off_point', $cart_item) ? $cart_item['wbtm_drop_off_point'] : '';
 				?>
 				<div class="dLayout_xs">
 					<ul class="cart_list">
@@ -533,6 +543,13 @@
 								<span class="fas fa-map-marker-alt"></span>
 								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_pickup_point(); ?> :</h6>
 								<span><?php echo esc_html($pickup_point); ?></span>
+							</li>
+						<?php } ?>
+						<?php if ($drop_off_point) { ?>
+							<li>
+								<span class="fas fa-map-marker-alt"></span>
+								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_drop_off_point(); ?> :</h6>
+								<span><?php echo esc_html($drop_off_point); ?></span>
 							</li>
 						<?php } ?>
 					</ul>

@@ -45,7 +45,7 @@
 			public static function get_all_term_data($term_name, $value = 'name') {
 				$all_data = [];
 				$taxonomies = self::get_taxonomy($term_name);
-				if ($taxonomies && sizeof($taxonomies) > 0) {
+				if ($taxonomies && is_array($taxonomies) && sizeof($taxonomies) > 0) {
 					foreach ($taxonomies as $taxonomy) {
 						$all_data[] = $taxonomy->$value;
 					}
