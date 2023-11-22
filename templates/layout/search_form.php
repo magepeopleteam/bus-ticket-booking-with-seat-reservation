@@ -56,7 +56,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="wbtm_search_result"></div>
+		<div class="wbtm_search_result overflow-hidden"></div>
 	</div>
 <?php
 //do_action('wbtm_after_search_list');
