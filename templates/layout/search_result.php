@@ -31,7 +31,7 @@
 				?>
 					<div class="wbtm-bust-list">
 						<div class="wbtm-bus-image">
-							<img src="https://dummyimage.com/100" alt="">
+							<?php MP_Custom_Layout::bg_image($bus_id); ?>
 						</div>
 						<div class="wbtm-bus-name text-start">
 							<h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
