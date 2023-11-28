@@ -40,11 +40,11 @@
 						<div class="wbtm-bus-route text-start">
 							<h6>
 								<span class="fa fa-map-pin"></span>
-								<?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? ' (' . MP_Global_Function::date_format($all_info['bp_time'], 'time') . ' )' : ''); ?>
+								<?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? '(' . MP_Global_Function::date_format($all_info['bp_time'], 'time') . ')' : ''); ?>
 							</h6>
 							<h6>
 								<i class="fas fa-map-marker-alt"></i>
-								<?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? ' (' . MP_Global_Function::date_format($all_info['dp_time'], 'time') . ' )' : ''); ?>
+								<?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? '(' . MP_Global_Function::date_format($all_info['dp_time'], 'time') . ')' : ''); ?>
 							</h6>
 						</div>
 						<div class="wbtm-seat-info text-center">
@@ -70,14 +70,15 @@
 								<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
 							</button>
 						</div>
+						<table>
+							<tbody>
+								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
+									<td colspan="9" class="wbtm_bus_details"></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-					<table>
-						<tbody>
-							<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
-								<td colspan="9" class="wbtm_bus_details"></td>
-							</tr>
-						</tbody>
-					</table>
+					
 				<?php endif; ?>
 			<?php endforeach; ?>
 			<?php if ($bus_count == 0) : ?>
