@@ -18,7 +18,7 @@
 					add_submenu_page('wbtm_bus', esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 				}
 				else {
-					add_menu_page(esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_bus', array($this, 'quick_setup'), 'dashicons-car', 6);
+					add_menu_page(esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_bus', array($this, 'quick_setup'), 'bus-icon.svg', 6);
 					add_submenu_page('wbtm_bus', esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 				}
 			}
