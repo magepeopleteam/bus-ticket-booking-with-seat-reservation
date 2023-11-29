@@ -9,11 +9,6 @@
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
-	div.wbtm_bus_list_area {
-		padding: 5px 0;margin: var(--dMP_xs) 0 0 0;
-		background-color: var(--color_theme);
-		border-radius: var(--dBR);border: 1px solid var(--color_theme);
-	}
 	div.wbtm_bus_list_area table {width: 100%;border: none;border-collapse: collapse;box-shadow: none;margin: 0;}
 	div.wbtm_bus_list_area table th,
 	div.wbtm_bus_list_area table td {border: none;vertical-align: middle;font-size: var(--fs_label);}
