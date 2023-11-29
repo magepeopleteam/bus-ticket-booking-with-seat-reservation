@@ -246,7 +246,7 @@
 							$col_infos = MP_Global_Function::get_submit_info('wbtm_dd_seat' . $j, []);
 							for ($i = 0; $i < $rows_dd; $i++) {
 								$upper_deck_info[$i]['dd_seat' . $j] = $col_infos[$i];
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc') {
+								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes') {
 									$total_seat++;
 								}
 							}
