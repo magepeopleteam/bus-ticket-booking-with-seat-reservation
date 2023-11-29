@@ -43,12 +43,12 @@
 								<?php foreach ($seat_info as $seat_name) { ?>
 									<?php if ($seat_name) { ?>
 										<?php if ($seat_name == 'door' || $seat_name == 'wc') { ?>
-											<td><?php echo esc_html($seat_name) ?></td>
+											<td><?php echo esc_html($seat_name); ?></td>
 										<?php } else { ?>
 											<th>
 												<div class="mp_seat_item">
-													<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
-													<?php if ($seat_available > 0) { ?>
+													<?php $sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
+													<?php if ($sold_seats > 0) { ?>
 														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
 													<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
 														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>

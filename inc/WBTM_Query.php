@@ -97,7 +97,7 @@
 						);
 						$q = new WP_Query($args);
 						$total_booked = $q->found_posts;
-						wp_reset_postdata();
+                        wp_reset_query();
 					}
 				}
 				return $total_booked;
@@ -147,7 +147,7 @@
 							}
 						}
 					}
-					wp_reset_postdata();
+                    wp_reset_query();
 				}
 				return $total_booked;
 			}

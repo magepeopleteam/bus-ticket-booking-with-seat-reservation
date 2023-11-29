@@ -16,7 +16,7 @@
 				/**********************************************/
 				add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 				add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 10, 4);
-				add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'));
+				add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'));
 				/**********************************************/
 				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
 			}
@@ -225,7 +225,7 @@
 					//$order_meta = get_post_meta($order_id);
 					$order_status = $order->get_status();
 					$payment_method = $order->get_payment_method();
-					$user_id = $order->get_user();
+					$user_id = $order->get_user_id();
 					$billing_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
 					$billing_email = $order->get_billing_email();
 					$billing_phone = $order->get_billing_phone();
