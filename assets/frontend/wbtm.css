@@ -65,7 +65,7 @@ text-align: right;
 .wbtm-bust-list{
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   padding: 1em;
@@ -114,6 +114,7 @@ text-align: right;
 @media (min-width:768px){
   .wbtm-bust-list{
     flex-direction: row;
+    flex-wrap: wrap;
   }
   .wbtm-bus-image{
     width: 10%;
