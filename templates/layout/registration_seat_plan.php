@@ -13,20 +13,22 @@
 	if (sizeof($ticket_infos) > 0) {
 		?>
 		<div class="mpRow">
-			<div class="col_4 col_5_1000 col_6_900 col_12_800">
+			<div class="col_4 col_5_1000 col_6_900 col_12_800 padding">
 				<?php require WBTM_Functions::template_path('layout/seat_plan.php'); ?>
 			</div>
 			<div class="col_8 col_7_1000 col_6_900 col_12_800 ">
 				<div class="mpRow">
-					<div class="_dLayout_xs  col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
-						<?php require WBTM_Functions::template_path('layout/bus_info.php'); ?>
+					<div class="padding col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
+						<div class="_dLayout_xs "><?php require WBTM_Functions::template_path('layout/bus_info.php'); ?></div>
 					</div>
-					<div class="_dLayout_xs  col_6 col_12_1000 col_6_800 col_12_700">
-						<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
-                        <?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
+					<div class="padding col_6 col_12_1000 col_6_800 col_12_700">
+						<div class="_dLayout_xs">
+							<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
+							<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
+							<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
+							<?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
+							<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
+						</div>
 					</div>
 					<?php do_action('wbtm_attendee_form', $post_id); ?>
 					<?php require WBTM_Functions::template_path('layout/add_to_cart.php'); ?>
