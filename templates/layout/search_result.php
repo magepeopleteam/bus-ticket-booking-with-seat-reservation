@@ -29,8 +29,8 @@
 						$bus_count++;
 						$price = $all_info['price'];
 				?>
-					<div class="wbtm-bust-list">
-						<div class="wbtm-bus-image">
+					<div class="wbtm-bust-list _dFlex_mT">
+						<div class="wbtm-bus-image ">
 							<?php MP_Custom_Layout::bg_image($bus_id); ?>
 						</div>
 						<div class="wbtm-bus-name text-start">
