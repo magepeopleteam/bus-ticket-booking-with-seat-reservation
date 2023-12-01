@@ -22,7 +22,7 @@
 		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
 		?>
-		<div class="_dLayout_xs_mZero">
+		<div class="_dLayout_xs">
 			<div class="wbtm_seat_plan_area">
 				<div class="wbtm_seat_plan_lower ovAuto">
 					<input type="hidden" name="wbtm_selected_seat" value=""/>
