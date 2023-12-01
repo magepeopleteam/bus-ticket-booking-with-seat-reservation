@@ -70,10 +70,10 @@
 								<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
 							</button>
 						</div>
-						<table>
+						<table class="wbtm_bus_details mT_xs">
 							<tbody>
 								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
-									<td colspan="9" class="wbtm_bus_details"></td>
+									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
 								</tr>
 							</tbody>
 						</table>

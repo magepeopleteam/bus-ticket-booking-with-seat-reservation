@@ -18,10 +18,10 @@
 			</div>
 			<div class="col_8 col_7_1000 col_6_900 col_12_800 ">
 				<div class="mpRow">
-					<div class="_dLayout_xs_mZero col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
+					<div class="_dLayout_xs  col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
 						<?php require WBTM_Functions::template_path('layout/bus_info.php'); ?>
 					</div>
-					<div class="_dLayout_xs_mZero col_6 col_12_1000 col_6_800 col_12_700">
+					<div class="_dLayout_xs  col_6 col_12_1000 col_6_800 col_12_700">
 						<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
