@@ -114,7 +114,7 @@
   }
   .wbtm-bus-name{
 	width:100%;
-	color: #797979;
+	color: var(--d_color);
 	margin: .5rem 0;
   }
   .wbtm-bus-route{
@@ -130,10 +130,16 @@
 	flex-direction: row;
 	justify-content: space-evenly;
 	align-items: center;
-	color: #797979;
+	color: var(--ast-global-color-2);
 	margin: .5rem 0;
 	border:1px solid  #b8b8b8;
 	padding: .5em 0;
+  }
+  .wbtm-seat-info h6{
+	color: var(--ast-global-color-2);
+  }
+  .wbtm-seat-info p{
+	color: #4c4c4c;
   }
   .wbtm-seat-book{
 	width:100%;
