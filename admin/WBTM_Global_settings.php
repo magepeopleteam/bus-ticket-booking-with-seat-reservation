@@ -87,7 +87,7 @@
 							'label' => $label . ' ' . esc_html__('Icon', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'bus-ticket-booking-with-seat-reservation') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'bus-ticket-booking-with-seat-reservation') . '</a>' . esc_html__('and copy your icon code and paste it here.', 'bus-ticket-booking-with-seat-reservation'),
 							'type' => 'text',
-							'default' => 'dashicons-list-view'
+							'default' => ''
 						),
 						array(
 							'name' => 'bus_return_show',
