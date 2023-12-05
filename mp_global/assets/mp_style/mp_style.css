@@ -929,7 +929,7 @@
 		background-color: white; border-radius: 50%;
 		-webkit-transition: .4s; transition: .4s;
 	}
-	.mpStyle .roundSwitchLabel input:checked + .roundSwitch { background-color: var(--color_success); }
+	.mpStyle .roundSwitchLabel input:checked + .roundSwitch { background-color: var(--color_theme); }
 	.mpStyle .roundSwitchLabel input:focus + .roundSwitch { box-shadow: 0 0 1px #2276D2; }
 	.mpStyle .roundSwitchLabel input:checked + .roundSwitch:before { -ms-transform: translateX(35px); transform: translateX(35px); }
 	/*********Group radio check*******/

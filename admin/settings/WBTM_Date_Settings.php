@@ -31,8 +31,8 @@
 				$days = MP_Global_Function::week_day();
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_date">
-					<h5><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-					<div class="divider"></div>
+					<h3 class="pB_xs"><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					
 					<div class="_dLayout_xs_mp_zero">
 						<div class="_bgColor_2_padding_xs">
 							<label class="max_700">

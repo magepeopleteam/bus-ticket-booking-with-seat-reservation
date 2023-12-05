@@ -23,8 +23,8 @@
 				$total_seat = MP_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 				?>
 				<div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
-					<h5><?php esc_html_e('Ticket/Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-					<div class="divider"></div>
+					<h3 class="pB_xs"><?php esc_html_e('Ticket/Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+			
 					<div class="_dLayout_xs_mp_zero">
 						<div class="_bgColor_2_padding_xs">
 							<label class="max_700">
@@ -64,15 +64,15 @@
 				$show_upper_desk = MP_Global_Function::get_post_info($post_id, 'show_upper_desk');
 				$checked_upper_desk = $show_upper_desk == 'yes' ? 'checked' : '';
 				?>
-				<div class="divider"></div>
-				<div class="mpPanel">
+				
+				<div class="mpPanel mT_xs">
 					<div class="mpPanelHeader _bgLight_3">
 						<h3 class="_textWhite_textCenter"><?php esc_html_e('Seat Plan for Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					</div>
 					<div class="mpPanelBody mp_zero _dFlex">
 						<div class="_max_300_bR_bgWhite_padding_xs">
 							<label class="flexEqual">
-								<span><?php esc_html_e('Driver Position : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span class="mR_xs"><?php esc_html_e('Driver Position : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<select class="formControl" name="driver_seat_position">
 									<option disabled selected><?php esc_html_e('Please select ...', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									<option value="driver_left" <?php echo esc_attr($seat_position == 'driver_left' ? 'selected' : ''); ?>><?php esc_html_e('Left', 'bus-ticket-booking-with-seat-reservation'); ?></option>
@@ -81,7 +81,7 @@
 							</label>
 							<div class="divider"></div>
 							<label class="flexEqual">
-								<span><?php esc_html_e('Show Upper Deck : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span class="mR_xs"><?php esc_html_e('Show Upper Deck : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<?php MP_Custom_Layout::switch_button('wbtm_show_upper_desk', $checked_upper_desk); ?>
 							</label>
 							<div class="divider"></div>
@@ -92,7 +92,7 @@
 							</label>
 							<div class="divider"></div>
 							<label class="flexEqual">
-								<span><?php esc_html_e('Seat Columns : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span class="mR_xs"><?php esc_html_e('Seat Columns : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<input type="hidden" name="wbtm_seat_cols_hidden" value="<?php echo esc_attr($seat_column); ?>"/>
 								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_seat_cols" placeholder="Ex: 10" value="<?php echo esc_attr($seat_column); ?>"/>
 							</label>
@@ -201,7 +201,7 @@
 							</label>
 						</th>
 					<?php } ?>
-					<th> <?php MP_Custom_Layout::move_remove_button(); ?></th>
+					<th> <?php MP_Custom_Layout::move_remove_button(); ?> </th>
 				</tr>
 				<?php
 			}
