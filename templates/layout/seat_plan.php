@@ -22,7 +22,7 @@
 		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
 		?>
-		<div class="_dLayout_xs_mZero">
+		<div class="_dLayout_xs">
 			<div class="wbtm_seat_plan_area">
 				<div class="wbtm_seat_plan_lower ovAuto">
 					<input type="hidden" name="wbtm_selected_seat" value=""/>
@@ -32,7 +32,7 @@
 						<tr>
 							<th colspan="<?php echo esc_attr($seat_column); ?>">
 								<div class="mp_driver_image <?php echo esc_attr($seat_position == 'driver_left' ? '' : 'fRight'); ?>">
-									<?php MP_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/images/driver-default.png'); ?>
+									<?php MP_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/images/wbtm-driving-wheel.svg'); ?>
 								</div>
 							</th>
 						</tr>
@@ -43,12 +43,12 @@
 								<?php foreach ($seat_info as $seat_name) { ?>
 									<?php if ($seat_name) { ?>
 										<?php if ($seat_name == 'door' || $seat_name == 'wc') { ?>
-											<td><?php echo esc_html($seat_name) ?></td>
+											<td><?php echo esc_html($seat_name); ?></td>
 										<?php } else { ?>
 											<th>
 												<div class="mp_seat_item">
-													<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
-													<?php if ($seat_available > 0) { ?>
+													<?php $sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
+													<?php if ($sold_seats > 0) { ?>
 														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
 													<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
 														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>

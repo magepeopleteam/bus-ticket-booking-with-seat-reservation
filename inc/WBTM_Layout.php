@@ -92,7 +92,7 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_row = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                     $seat_column = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
                     ?>
-                    <div class="_infoLayout_xs wbtm_registration_area">
+                    <div class="wbtm_registration_area">
                         <form action="" method="post" class="">
                             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
                             <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
@@ -150,7 +150,7 @@ if (!class_exists('WBTM_Layout')) {
                     $start_key = $total_date - 3 <= $key ? max(0, $total_date - 5) : $start_key;
                     $all_dates = array_slice($all_dates, $start_key, 5);
                     ?>
-                    <div class="buttonGroup _equalChild_fullWidth">
+                    <div class="buttonGroup bus-next-date _equalChild_fullWidth">
                         <?php foreach ($all_dates as $date) { ?>
                             <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_themeButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
