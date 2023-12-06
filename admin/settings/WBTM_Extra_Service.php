@@ -20,12 +20,16 @@
 				$checked_ex = $display_ex == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_ex_service">
-					<h5 class="dFlex">
-						<?php MP_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
-						<span class="_mL"><?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-					</h5>
-					<?php WBTM_Settings::info_text('show_extra_service'); ?>
-					<div class="divider"></div>
+					
+					<div class="_bgColor_2_padding dFlex _justifyBetween">
+						<label class="col_6">
+							<?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+							<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_extra_service'); ?></i>
+						</label>
+						<div class="col_6 dFlex _justifyEnd">
+							<?php MP_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
+						</div>
+					</div>
 					<div data-collapse="#show_extra_service" class="<?php echo esc_attr($active_ex); ?>">
 						<div class="_mT_dLayout_xs mp_settings_area">
 							<div class="ovAuto">
