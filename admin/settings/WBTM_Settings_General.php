@@ -24,7 +24,7 @@
 						<div class="_bgColor_2_padding dFlex">
 							<label class="col_6">
 								<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
-								<i class="fas fa-question-circle tool-tips"><span><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></span></i>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></i>
 							</label>
 							<div class="col_6">
 								<input class="formControl mp_name_validation max_300" name="wbtm_bus_no" value="<?php echo esc_attr($bus_no); ?>"/>
@@ -33,7 +33,7 @@
 						<div class="padding dFlex">
 							<label class="col_6">
 								<?php echo WBTM_Translations::text_coach_type(); ?>
-								<?php WBTM_Settings::info_text('wbtm_bus_category'); ?>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_category'); ?></i>
 							</label>
 							<div class="col_6">
 								<select class="formControl max_300" name="wbtm_bus_category" data-collapse-target required>

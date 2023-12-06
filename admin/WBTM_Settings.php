@@ -95,10 +95,9 @@ if (!class_exists('WBTM_Settings')) {
             $data = self::description_array($key);
             if ($data) {
                 ?>
-                <i class="info_text">
-                    <span class="fas fa-info-circle"></span>
+                <span>
                     <?php echo esc_html($data); ?>
-                </i>
+                </span>
                 <?php
             }
         }

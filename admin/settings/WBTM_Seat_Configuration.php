@@ -24,20 +24,21 @@
 				?>
 				<div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
 					<h3 class="pB_xs"><?php esc_html_e('Ticket/Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-			
 					<div class="_dLayout_xs_mp_zero">
-						<div class="_bgColor_2_padding_xs">
-							<label class="max_700">
+						<div class="_bgColor_2_padding dFlex">
+							<label class="col_6">
 								<span class="max_300">
 									<?php esc_html_e('Seat Type', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i>
+									<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_seat_type_conf'); ?></i>
 								</span>
-								<select class="formControl " name="wbtm_seat_type_conf" data-collapse-target required>
+							</label>
+							<div class="col_6">
+								<select class="formControl max_300" name="wbtm_seat_type_conf" data-collapse-target required>
 									<option disabled selected><?php esc_html_e('Please select ...', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									<option value="wbtm_seat_plan" data-option-target="#wbtm_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									<option value="wbtm_without_seat_plan" data-option-target="#wbtm_without_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								</select>
-							</label>
-							<?php WBTM_Settings::info_text('wbtm_seat_type_conf'); ?>
+							</div>
 						</div>
 						<div class="_padding_xs <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'mActive' : ''); ?>" data-collapse="#wbtm_without_seat_plan">
 							<label class="max_700">
@@ -66,8 +67,8 @@
 				?>
 				
 				<div class="mpPanel mT_xs">
-					<div class="mpPanelHeader _bgLight_3">
-						<h3 class="_textWhite_textCenter"><?php esc_html_e('Seat Plan for Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<div class="mpPanelHeader  _bgColor_2">
+						<h3 class="_textBlack_textCenter"><?php esc_html_e('Seat Plan for Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					</div>
 					<div class="mpPanelBody mp_zero _dFlex">
 						<div class="_max_300_bR_bgWhite_padding_xs">
@@ -100,8 +101,8 @@
 							<?php MP_Custom_Layout::add_new_button(esc_html__('Create seat Plan', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan', '_navy_blueButton_fullWidth'); ?>
 						</div>
 						<div class="wbtm_seat_plan_settings">
-							<h5><?php esc_html_e('Seat Plan Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-							<div class="divider"></div>
+							<h5 class="pB_xs"><?php esc_html_e('Seat Plan Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
+							
 							<div class="wbtm_seat_plan_preview">
 								<?php $this->create_seat_plan($post_id, $seat_row, $seat_column); ?>
 							</div>
