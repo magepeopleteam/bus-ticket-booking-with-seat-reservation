@@ -13,15 +13,15 @@
 	if (sizeof($ticket_infos) > 0) {
 		?>
 		<div class="mpRow">
-			<div class="col_4 col_5_1000 col_6_900 col_12_800 padding">
+			<div class="col_4 col_5_1000 col_6_900 col_12_800 padding_xs">
 				<?php require WBTM_Functions::template_path('layout/seat_plan.php'); ?>
 			</div>
 			<div class="col_8 col_7_1000 col_6_900 col_12_800 ">
 				<div class="mpRow">
-					<div class="padding col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
+					<div class="padding_xs col_6 col_12_1000 col_6_800 col_12_700 wbtm_bus_details_area">
 						<div class="_dLayout_xs "><?php require WBTM_Functions::template_path('layout/bus_info.php'); ?></div>
 					</div>
-					<div class="padding col_6 col_12_1000 col_6_800 col_12_700">
+					<div class="padding_xs col_6 col_12_1000 col_6_800 col_12_700">
 						<div class="_dLayout_xs">
 							<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
 							<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>

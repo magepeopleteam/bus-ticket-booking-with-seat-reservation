@@ -42,9 +42,9 @@
 			//*************************//
 			public static function text_schedule() { return esc_html__('Schedule', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_coach_type() { return esc_html__('Coach Type', 'bus-ticket-booking-with-seat-reservation'); }
-			public static function text_ticket_type() { return esc_html__('Ticket Type', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_ticket_type() { return esc_html__('Seat Type', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_seat() { return esc_html__('Seat', 'bus-ticket-booking-with-seat-reservation'); }
-			public static function text_seat_name() { return esc_html__('Seat Name', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_seat_name() { return esc_html__('Seat', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_name() { return esc_html__('Name', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_image() { return esc_html__('Image', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_qty() { return esc_html__('Quantity', 'bus-ticket-booking-with-seat-reservation'); }

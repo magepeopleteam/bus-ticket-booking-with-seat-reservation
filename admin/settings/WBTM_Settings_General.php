@@ -18,27 +18,31 @@
 				$checked_dp_time = $display_dp_time == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_general_info">
-					<h5><?php esc_html_e('General Information Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-					<div class="divider"></div>
+					<h3 class="pB_xs"><?php esc_html_e('General Information Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					
 					<div class="_dLayout_xs_mp_zero">
-						<div class="_bgColor_2_padding_xs">
-							<label class="max_700">
-								<span class="max_300"><?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-								<input class="formControl mp_name_validation" name="wbtm_bus_no" value="<?php echo esc_attr($bus_no); ?>"/>
+						<div class="_bgColor_2_padding dFlex">
+							<label class="col_6">
+								<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></i>
 							</label>
-							<?php WBTM_Settings::info_text('wbtm_bus_no'); ?>
+							<div class="col_6">
+								<input class="formControl mp_name_validation max_300" name="wbtm_bus_no" value="<?php echo esc_attr($bus_no); ?>"/>
+							</div>
 						</div>
-						<div class="_padding_xs">
-							<label class="max_700">
-								<span class="max_300"><?php echo WBTM_Translations::text_coach_type(); ?></span>
-								<select class="formControl" name="wbtm_bus_category" data-collapse-target required>
+						<div class="padding dFlex">
+							<label class="col_6">
+								<?php echo WBTM_Translations::text_coach_type(); ?>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_category'); ?></i>
+							</label>
+							<div class="col_6">
+								<select class="formControl max_300" name="wbtm_bus_category" data-collapse-target required>
 									<option disabled selected><?php echo WBTM_Translations::text_please_select(); ?></option>
 									<?php foreach ($bus_categories as $bus_category) { ?>
 										<option value="<?php echo esc_attr($bus_category); ?>" <?php echo esc_attr($bus_category == $seat_type ? 'selected' : ''); ?>><?php echo esc_html($bus_category); ?></option>
 									<?php } ?>
 								</select>
-							</label>
-							<?php WBTM_Settings::info_text('wbtm_bus_category'); ?>
+							</div>
 						</div>
 <!--						<div class="_bgColor_2_padding_xs">-->
 <!--							<div class="_max_700_dFlex">-->
