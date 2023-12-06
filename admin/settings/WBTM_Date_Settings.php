@@ -49,7 +49,7 @@
 							
 						</div>
 						<div class="_padding <?php echo esc_attr($date_type == 'yes' ? 'mActive' : ''); ?>" data-collapse="#mp_particular">
-							<div class="pB">
+							<div class="">
 								<label class="col_6 pB">
 									<?php esc_html_e('Particular Dates', 'bus-ticket-booking-with-seat-reservation'); ?><i class="fas fa-question-circle tool-tips"></i>
 								</label>
