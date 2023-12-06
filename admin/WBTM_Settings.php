@@ -47,7 +47,7 @@ if (!class_exists('WBTM_Settings')) {
                             <span class="fas fa-calendar-alt"></span><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
                         <li data-tabs-target="#wbtm_settings_tax">
-                            <span class="fas fa-money-bill-wave"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
                         <?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                             <li data-tabs-target="#mp_pp_deposits_type">
