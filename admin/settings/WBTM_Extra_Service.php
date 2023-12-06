@@ -20,10 +20,10 @@
 				$checked_ex = $display_ex == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_ex_service">
-					
+					<h3 class="mB_xs"><?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					<div class="_bgColor_2_padding dFlex _justifyBetween">
 						<label class="col_6">
-							<?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+							<?php esc_html_e('Extra Service', 'bus-ticket-booking-with-seat-reservation'); ?>
 							<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_extra_service'); ?></i>
 						</label>
 						<div class="col_6 dFlex _justifyEnd">

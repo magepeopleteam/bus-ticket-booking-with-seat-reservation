@@ -16,6 +16,8 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             //echo '<pre>'; print_r($pickup_points); echo '</pre>';
             ?>
             <div class="tabsItem" data-tabs="#wbtm_settings_pickup_point">
+                <h3 class="mB_xs"><?php esc_html_e('Pickup And Drop-Off Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+
                 <?php $this->pickup_point($post_id); ?>
                 <?php $this->drop_off_point($post_id); ?>
             </div>
