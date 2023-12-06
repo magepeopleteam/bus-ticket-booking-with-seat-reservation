@@ -30,12 +30,16 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             $pickup_points = MP_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
             $bp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
             ?>
-            <h5 class="dFlex">
-                <?php MP_Custom_Layout::switch_button('show_pickup_point', $checked_pickup_point); ?>
-                <span class="_mL"><?php esc_html_e('Pickup Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-            </h5>
-            <?php WBTM_Settings::info_text('show_pickup_point'); ?>
-            <div class="divider"></div>
+            <div class="_bgColor_2_padding dFlex _justifyBetween mB_xs">
+                <label class="col_6">
+                    <?php esc_html_e('Pickup Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_pickup_point'); ?></i>
+                </label>
+                <div class="col_6 dFlex _justifyEnd">
+                    <?php MP_Custom_Layout::switch_button('show_pickup_point', $checked_pickup_point); ?>
+                </div>
+            </div>
+            
             <div data-collapse="#show_pickup_point" class="<?php echo esc_attr($active_pickup_point); ?>">
                 <?php if (sizeof($bp_points) > 0) { ?>
                     <?php if (sizeof($pickup_points_list) > 0) { ?>
@@ -156,12 +160,16 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             $drop_off_points = MP_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
             $dp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
             ?>
-            <h5 class="dFlex">
-                <?php MP_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
-                <span class="_mL"><?php esc_html_e('Drop-Off Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-            </h5>
-            <?php WBTM_Settings::info_text('show_drop_off_point'); ?>
-            <div class="divider"></div>
+            <div class="_bgColor_2_padding dFlex _justifyBetween mB_xs">
+                <label class="col_6">
+                    <?php esc_html_e('Drop-Off Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    <i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_drop_off_point'); ?></i>
+                </label>
+                <div class="col_6 dFlex _justifyEnd">
+                    <?php MP_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
+                </div>
+            </div>
+            
             <div data-collapse="#show_drop_off_point" class="<?php echo esc_attr($active_drop_off_point); ?>">
                 <?php if (sizeof($dp_points) > 0) { ?>
                     <?php if (sizeof($drop_off_points_list) > 0) { ?>
@@ -223,27 +231,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                             </select>
                         </label>
                     </td>
-                    <td colspan="3">
-                        <div class="mp_settings_area">
-                            <table>
-                                <tbody class="mp_sortable_area mp_item_insert">
-                                <?php if (sizeof($drop_off_infos) > 0) { ?>
-                                    <?php foreach ($drop_off_infos as $drop_off_info) { ?>
-                                        <?php $this->drop_off_point_item($unique_name, $drop_off_points, $drop_off_info); ?>
-                                    <?php } ?>
-                                <?php } ?>
-                                </tbody>
-                            </table>
-                            <?php MP_Custom_Layout::add_new_button(esc_html__('Add Drop-Off Point', 'bus-ticket-booking-with-seat-reservation')); ?>
-                            <div class="mp_hidden_content">
-                                <table>
-                                    <tbody class="mp_hidden_item">
-                                    <?php $this->drop_off_point_item($unique_name, $drop_off_points); ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </td>
+                    
                     <td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
                 </tr>
                 <?php

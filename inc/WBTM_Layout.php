@@ -229,7 +229,7 @@ if (!class_exists('WBTM_Layout')) {
         public static function msg($msg, $class = '_bgWarning') {
             ?>
             <div class="_dLayout_mZero <?php echo esc_attr($class); ?>">
-                <h4 class="_textCenter_textWhite"><?php echo esc_html($msg); ?></h4>
+                <h4 class="_textCenter_textBlack"><?php echo esc_html($msg); ?></h4>
             </div>
             <?php
         }
