@@ -120,10 +120,9 @@
 				$price_increase = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent');
 				?>
 				<div class="<?php echo esc_attr($active); ?>" data-collapse="#wbtm_show_upper_desk">
-					<div class="divider"></div>
-					<div class="mpPanel ">
-						<div class="mpPanelHeader _bgLight_3">
-							<h3 class="_textWhite_textCenter"><?php esc_html_e('Seat Plan for Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<div class="mpPanel mT">
+						<div class="mpPanelHeader _bgColor_2">
+							<h3 class="_textBlack_textCenter"><?php esc_html_e('Seat Plan for Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 						</div>
 						<div class="mpPanelBody mp_zero _dFlex">
 							<div class="_max_300_bR_bgWhite_padding_xs ">
