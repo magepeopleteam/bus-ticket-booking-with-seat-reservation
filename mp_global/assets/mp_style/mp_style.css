@@ -246,8 +246,8 @@
 	.mpStyle .mpBtn, .mpStyle [class*="_mpBtn"],
 	.mpStyle button { position: relative; font-size: var(--button_fs); font-weight: var(--fw-medium); line-height: 1; cursor: pointer; overflow: visible; border: none; -webkit-appearance: button; text-transform: capitalize; }
 	.mpStyle button[disabled] { cursor: not-allowed; opacity: 0.8; background-color: #DDD; }
-	.mpStyle button:hover, .mpStyle button:focus { text-decoration: none; opacity: 0.8; background-color: var(--d_color); color: #FFF; }
-	.mpStyle button:hover span, .mpStyle button:focus span { color: #FFF; }
+	.mpStyle button:hover, .mpStyle button:focus { text-decoration: none; opacity: 0.8; background-color: var(--color_2); color: var(--color_theme); }
+	.mpStyle button:hover span, .mpStyle button:focus span { color: var(--color_theme); }
 	.mpStyle .mpBtn, .mpStyle [class*="_mpBtn"] { padding: var(--dMP_xs) var(--dMP); color: var(--d_color); background-color: transparent; border: 1px solid var(--color_border); }
 	.mpStyle .mpBtn_xs, .mpStyle [class*="_mpBtn_xs"] { padding: 7px var(--dMP_xs); }
 	.mpStyle .mpBtn.mpActive, .mpStyle [class*="_mpBtn"].mpActive { border-color: var(--color_theme); color: var(--color_theme); }
@@ -265,10 +265,10 @@
 	.mpStyle .themeButton:hover, .mpStyle [class*="_themeButton"]:hover { background-color: #000; color: var(--color_theme_alter); border-color: #000; }
 	.mpStyle .themeButton:hover span, .mpStyle [class*="_themeButton"]:hover span { color: var(--color_theme_alter); }
 	/****/
-	.mpStyle .warningButton, .mpStyle [class*="_warningButton"] { background-color:#caf0ffcc; color: var(--color_danger); padding: var(--dMP_xs) var(--dMP); border: 2px solid #caf0ffcc; }
+	.mpStyle .warningButton, .mpStyle [class*="_warningButton"] { background-color:var(--color_2); color: var(--color_danger); padding: var(--dMP_xs) var(--dMP); border: 2px solid var(--color_2); }
 	.mpStyle .warningButton span, .mpStyle [class*="_warningButton"] span { color: var(--color_danger); }
-	.mpStyle .warningButton:hover, .mpStyle [class*="_warningButton"]:hover { background-color: var(--color_light); color: var(--color_warning); }
-	.mpStyle .warningButton:hover span, .mpStyle [class*="_warningButton"]:hover span { color: var(--color_warning); }
+	.mpStyle .warningButton:hover, .mpStyle [class*="_warningButton"]:hover { background-color: var(--color_light); color: var(--color_danger); }
+	.mpStyle .warningButton:hover span, .mpStyle [class*="_warningButton"]:hover span { color: var(--color_danger); }
 	/*********/
 	.mpStyle .successButton, .mpStyle [class*="_successButton"] { background-color: var(--color_success); color: var(--color_theme_alter); padding: var(--dMP_xs) var(--dMP); border: 2px solid var(--color_success); }
 	.mpStyle .successButton span, .mpStyle [class*="_successButton"] span { color: var(--color_theme_alter); }
@@ -1407,7 +1407,7 @@
 	div.mpStyle .bgColor_1, div.mpStyle [class*='_bgColor_1'] { background-color: var(--color_1); }
 	/*****Color_2*********/
 	div.mpStyle .textColor_2, div.mpStyle [class*='_textColor_2'] { color: var(--color_2); }
-	div.mpStyle .bgColor_2, div.mpStyle [class*='_bgColor_2'] { background-color: #caf0ffcc; }
+	div.mpStyle .bgColor_2, div.mpStyle [class*='_bgColor_2'] { background-color: var(--color_2); }
 	/*****Color_3*********/
 	div.mpStyle .textColor_3, div.mpStyle [class*='_textColor_3'] { color: #F2FFC3; }
 	div.mpStyle .bgColor_3, div.mpStyle [class*='_bgColor_3'] { background-color: #F2FFC3; }
