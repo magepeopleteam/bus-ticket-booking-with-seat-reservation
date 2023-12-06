@@ -34,23 +34,25 @@
 					<h3 class="pB_xs"><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					
 					<div class="_dLayout_xs_mp_zero">
-						<div class="_bgColor_2_padding_xs">
-							<label class="max_700">
-								<span class="max_300">
-									<?php esc_html_e('Bus Operation Date Type', 'bus-ticket-booking-with-seat-reservation'); ?>
-									<i class="textRequired">&nbsp;*</i>
-								</span>
-								<select class="formControl" name="show_operational_on_day" data-collapse-target required>
+						<div class="_bgColor_2_padding dFlex">
+							<label class="col_6">
+								<?php esc_html_e('Bus Operation Date Type', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_operational_on_day'); ?></i>
+							</label>
+							<div class="col_6">
+								<select class="formControl max_300" name="show_operational_on_day" data-collapse-target required>
 									<option disabled selected><?php esc_html_e('Please select ...', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									<option value="yes" data-option-target="#mp_particular" <?php echo esc_attr($date_type == 'yes' ? 'selected' : ''); ?>><?php esc_html_e('Particular', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									<option value="no" data-option-target="#mp_repeated" <?php echo esc_attr($date_type == 'no' ? 'selected' : ''); ?>><?php esc_html_e('Repeated', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								</select>
-							</label>
-							<?php WBTM_Settings::info_text('show_operational_on_day'); ?>
+							</div>
+							
 						</div>
-						<div class="_padding_xs <?php echo esc_attr($date_type == 'yes' ? 'mActive' : ''); ?>" data-collapse="#mp_particular">
-							<div class="dFlex">
-								<span class="_max_300_fs_label"><?php esc_html_e('Particular Dates', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						<div class="_padding <?php echo esc_attr($date_type == 'yes' ? 'mActive' : ''); ?>" data-collapse="#mp_particular">
+							<div class="pB">
+								<label class="col_6 pB">
+									<?php esc_html_e('Particular Dates', 'bus-ticket-booking-with-seat-reservation'); ?><i class="fas fa-question-circle tool-tips"></i>
+								</label>
 								<div class="mp_settings_area max_400">
 									<div class="mp_item_insert mp_sortable_area">
 										<?php
