@@ -40,7 +40,7 @@ if (!class_exists('WBTM_Settings')) {
                             <span class="fas fa-list"></span><?php echo WBTM_Translations::text_ex_service(); ?>
                         </li>
                         <li data-tabs-target="#wbtm_settings_pickup_point">
-                            <span class="fas fa-flag"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            <span class="fas fa-route"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
                         <?php do_action('add_wbtm_add_setting_menu', $post_id); ?>
                         <li data-tabs-target="#wbtm_settings_date">
