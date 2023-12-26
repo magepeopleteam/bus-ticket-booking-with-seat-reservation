@@ -55,28 +55,7 @@ if (!class_exists('WBTM_Layout')) {
             $end_route = MP_Global_Function::data_sanitize($_POST['end_route']);
             $j_date = $_POST['j_date'] ?? '';
             $r_date = $_POST['r_date'] ?? '';
-            if ($start_route && $end_route && $j_date) { ?>
-                <div class="_dLayout_dShadow_1_mT">
-                    <?php WBTM_Layout::next_date_suggestion(); ?>
-                    <?php WBTM_Layout::route_title(); ?>
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id); ?>
-                    <div class="wbtm_search_part _mT_xs">
-                        <?php //mage_bus_search_list(false); ?>
-                    </div>
-                </div>
-            <?php }
-            if ($start_route && $end_route && $r_date) { ?>
-                <div class="_dLayout_dShadow_1" id="wbtm_return_container">
-                    <h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
-                    <div class="divider"></div>
-                    <?php WBTM_Layout::next_date_suggestion(true); ?>
-                    <?php WBTM_Layout::route_title(true); ?>
-                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date); ?>
-                    <div class="wbtm_search_part _mT_xs">
-                        <?php //mage_bus_search_list(true); ?>
-                    </div>
-                </div>
-            <?php }
+            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date);
             die();
         }
         public function get_wbtm_bus_details() {
@@ -119,6 +98,30 @@ if (!class_exists('WBTM_Layout')) {
             }
             die();
         }
+        public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date) {
+            if ($start_route && $end_route && $j_date) { ?>
+                <div class="_dLayout_dShadow_1_mT">
+                    <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
+                    <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
+                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id); ?>
+                    <div class="wbtm_search_part _mT_xs">
+                        <?php //mage_bus_search_list(false); ?>
+                    </div>
+                </div>
+            <?php }
+            if ($start_route && $end_route && $r_date) { ?>
+                <div class="_dLayout_dShadow_1" id="wbtm_return_container">
+                    <h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
+                    <div class="divider"></div>
+                    <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
+                    <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
+                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date); ?>
+                    <div class="wbtm_search_part _mT_xs">
+                        <?php //mage_bus_search_list(true); ?>
+                    </div>
+                </div>
+            <?php }
+        }
         public static function route_list($post_id = 0, $start_route = '') {
             $all_routes = WBTM_Functions::get_bus_route($post_id, $start_route);
             if (sizeof($all_routes) > 0) {
@@ -133,16 +136,11 @@ if (!class_exists('WBTM_Layout')) {
                 <?php
             }
         }
-        public static function next_date_suggestion($return = false) {
-            $post_id = MP_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = MP_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = MP_Global_Function::data_sanitize($_POST['end_route']);
+        public static function next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,$return = false) {
             $route = $return ? $end_route : $start_route;
             $all_dates = WBTM_Functions::get_all_dates($post_id, $route);
             $total_date = sizeof($all_dates);
             if ($total_date > 0) {
-                $j_date = $_POST['j_date'] ?? '';
-                $r_date = $_POST['r_date'] ?? '';
                 $active_date = $return ? $r_date : $j_date;
                 if ($start_route && $end_route && $j_date) {
                     $key = array_search($active_date, $all_dates);
@@ -150,7 +148,7 @@ if (!class_exists('WBTM_Layout')) {
                     $start_key = $total_date - 3 <= $key ? max(0, $total_date - 5) : $start_key;
                     $all_dates = array_slice($all_dates, $start_key, 5);
                     ?>
-                    <div class="buttonGroup bus-next-date _equalChild_fullWidth">
+                    <div class="buttonGroup _hidden_xs_equalChild_fullWidth">
                         <?php foreach ($all_dates as $date) { ?>
                             <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_themeButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
@@ -164,13 +162,9 @@ if (!class_exists('WBTM_Layout')) {
                 WBTM_Layout::msg(WBTM_Translations::text_bus_close_msg());
             }
         }
-        public static function route_title($return = false) {
-            $start_route = MP_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = MP_Global_Function::data_sanitize($_POST['end_route']);
+        public static function route_title($start_route,$end_route,$j_date,$r_date,$return = false) {
             $start = $return ? $end_route : $start_route;
             $end = $return ? $start_route : $end_route;
-            $j_date = $_POST['j_date'] ?? '';
-            $r_date = $_POST['r_date'] ?? '';
             $date = $return ? $r_date : $j_date;
             if ($date) {
                 ?>
@@ -187,14 +181,16 @@ if (!class_exists('WBTM_Layout')) {
                 <?php
             }
         }
-        public static function journey_date_picker($post_id = '', $start_route = '') {
+        public static function journey_date_picker($post_id = '', $start_route = '',$date='') {
             $date_format = MP_Global_Function::date_picker_format();
             $now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
+            $hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+            $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
                 <span><i class="fas fa-calendar-alt"></i> <?php echo WBTM_Translations::text_journey_date(); ?></span>
-                <input type="hidden" name="j_date" value="" required/>
-                <input id="wbtm_journey_date" type="text" value="" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
+                <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
+                <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
             </label>
             <?php
             if ($start_route) {
@@ -202,14 +198,16 @@ if (!class_exists('WBTM_Layout')) {
                 do_action('mp_load_date_picker_js', '#wbtm_journey_date', $all_dates);
             }
         }
-        public static function return_date_picker($post_id = '', $end_route = '', $j_date = '') {
+        public static function return_date_picker($post_id = '', $end_route = '', $j_date = '',$date='') {
             $date_format = MP_Global_Function::date_picker_format();
             $now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
+            $hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+            $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
                 <span><i class="fas fa-calendar-alt"></i> <?php echo WBTM_Translations::text_return_date(); ?></span>
-                <input type="hidden" name="r_date" value=""/>
-                <input id="wbtm_return_date" type="text" value="" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
+                <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>
+                <input id="wbtm_return_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
             </label>
             <?php
             if ($end_route && $j_date) {

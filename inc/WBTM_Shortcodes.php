@@ -13,59 +13,61 @@
 				add_shortcode('wbtm-bus-search-form', array($this, 'wbtm_bus_search'));
 				add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
 			}
-			public function wbtm_bus_list($atts, $content = null) {
-				$defaults = array(
-					"cat" => "0",
-					"show" => "20",
-				);
-				$params = shortcode_atts($defaults, $atts);
+			public function wbtm_bus_list($attribute, $content = null) {
+				$defaults = $this->default_attribute();
+				$params = shortcode_atts($defaults, $attribute);
 				$cat = $params['cat'];
 				$show = $params['show'];
+				$start = $params['start'];
+				$end = $params['end'];
+				$column = $params['column'];
+				$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat);
 				ob_start();
-				$paged = get_query_var("page") ? get_query_var("page") : 1;
-				if ($cat > 0) {
-					$args_search_qqq = array(
-						'post_type' => array('wbtm_bus'),
-						'paged' => $paged,
-						'posts_per_page' => $show,
-						'tax_query' => array(
-							array(
-								'taxonomy' => 'wbtm_bus_cat',
-								'field' => 'term_id',
-								'terms' => $cat
-							)
-						)
-					);
-				}
-				else {
-					$args_search_qqq = array(
-						'post_type' => array('wbtm_bus'),
-						'paged' => $paged,
-						'posts_per_page' => $show
-					);
-				}
-				$loop = new WP_Query($args_search_qqq);
-				?>
-				<div class="wbtm-bus-list-sec">
-					<?php
-						while ($loop->have_posts()) {
-							$loop->the_post();
-							WBTM_Functions::template_path('bus-list');
-						}
-						wp_reset_postdata();
+				if (sizeof($bus_ids) > 0) {
+					$count = 0;
 					?>
-				</div>
-				<div class="row">
-					<div class="col-md-12"><?php
-							$pargs = array(
-								"current" => $paged,
-								"total" => $loop->max_num_pages
-							);
-							echo "<div class='pagination-sec'>" . paginate_links($pargs) . "</div>";
-						?>
+					<div class="mpStyle placeholderLoader mp_pagination_main_area">
+						<div class="mpContainer flexWrap">
+							<?php foreach ($bus_ids as $bus_id) { ?>
+								<?php
+								$thumbnail = MP_Global_Function::get_image_url($bus_id);
+								$url = get_the_permalink($bus_id);
+								$category = MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_category');
+								$route = MP_Global_Function::get_post_info($bus_id, 'wbtm_route_direction', []);
+								$d_class = $show > $count ? '' : 'dNone';
+								$grid_class = 'grid_' . $column;
+								$count++;
+								?>
+								<div class="placeholder_area mp_pagination_item _dShadow_9 <?php echo esc_attr($grid_class . ' ' . $d_class); ?>">
+									<?php if ($category) { ?>
+										<div class="ribbon"><?php echo esc_html($category); ?></div>
+									<?php } ?>
+									<div class="bg_image_area" data-href="<?php echo esc_attr($url); ?>" data-placeholder>
+										<div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
+
+									</div>
+									<div class="divider"></div>
+									<a href="<?php echo esc_attr($url); ?>">
+										<h5 class="_textCenter_textTheme"><?php echo esc_html(get_the_title($bus_id)); ?></h5>
+									</a>
+									<div class="divider"></div>
+									<h6 class="_allCenter"><?php echo esc_html(current($route)); ?><small><span class="fas fa-long-arrow-alt-right _mLR_xs"></span></small><?php echo esc_html(end($route)); ?></h6>
+									<div class="divider"></div>
+									<h6 class="_allCenter">
+										<strong><?php echo WBTM_Translations::text_passenger_capacity(); ?> :</strong>
+										<?php echo MP_Global_Function::get_post_info($bus_id, 'wbtm_get_total_seat', 0); ?>
+									</h6>
+									<div class="divider"></div>
+									<div class="mp_wp_editor">
+										<?php //echo get_the_content('', '', $bus_id); ?>
+									</div>
+								</div>
+							<?php } ?>
+						</div>
+						<?php do_action('add_mp_pagination_section', $params, sizeof($bus_ids)); ?>
 					</div>
-				</div>
-				<?php
+					<?php
+				}
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
@@ -83,6 +85,20 @@
 				<?php
 				do_action('wbtm_after_search_result_section', $params);
 				return ob_get_clean();
+			}
+			public function default_attribute(): array {
+				return array(
+					"style" => 'grid',
+					"show" => 9,
+					"pagination" => "yes",
+					'sort' => 'ASC',
+					'sort_by' => '',
+					"pagination-style" => "load_more",
+					"column" => 3,
+					"cat" => "",
+					"start" => "",
+					"end" => "",
+				);
 			}
 		}
 		new WBTM_Shortcode();

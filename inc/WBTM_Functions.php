@@ -348,21 +348,7 @@
 				return false;
 			}
 			//==========================//
-			public static function check_bus_in_cart($bus_id) {
-				if (!is_admin()) {
-					$cart_items = WC()->cart->get_cart();
-					if (sizeof($cart_items) > 0) {
-						foreach ($cart_items as $cart_item) {
-							if (array_key_exists('wbtm_bus_id', $cart_item) && $cart_item['wbtm_bus_id'] == $bus_id) {
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
 			public static function check_seat_in_cart($bus_id, $bp, $dp, $bp_date, $seat_name) {
-				if (!is_admin()) {
 					$cart_items = WC()->cart->get_cart();
 					if (sizeof($cart_items) > 0) {
 						foreach ($cart_items as $cart_item) {
@@ -384,7 +370,6 @@
 							}
 						}
 					}
-				}
 				return false;
 			}
 			//==========================//

@@ -88,7 +88,7 @@
 			}
 			function wbtm_plugin_action_link($links_array, $plugin_file_name) {
 				if (strpos($plugin_file_name, basename(__FILE__))) {
-					array_unshift($links_array, '<a href="' . esc_url(admin_url()) . 'edit.php?post_type=wbtm_bus&page=wbtm-bus-manager-settings">' . __('Settings', 'bus-booking-manager') . '</a>');
+					array_unshift($links_array, '<a href="' . esc_url(admin_url()) . 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page">' . __('Settings', 'bus-booking-manager') . '</a>');
 				}
 				return $links_array;
 			}

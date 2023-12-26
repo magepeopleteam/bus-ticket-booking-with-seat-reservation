@@ -223,6 +223,8 @@
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$order = wc_get_order($order_id);
 					//$order_meta = get_post_meta($order_id);
+					//echo '<pre>';print_r($order_meta);echo '</pre>';
+					//echo '<pre>';print_r($order);echo '</pre>';die();
 					$order_status = $order->get_status();
 					$payment_method = $order->get_payment_method();
 					$user_id = $order->get_user_id();

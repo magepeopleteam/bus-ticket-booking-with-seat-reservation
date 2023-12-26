@@ -9,12 +9,22 @@
 	if (!class_exists('WBTM_Query')) {
 		class WBTM_Query {
 			public function __construct() {}
-			public static function get_bus_id($start, $end='') {
+			public static function get_bus_id($start='', $end='',$cat='') {
 				$bus_ids = [];
+				$start_route_query = !empty($start) ? array(
+					'key' => 'wbtm_bus_bp_stops',
+					'value' => $start,
+					'compare' => 'LIKE',
+				) : '';
 				$end_route_query = !empty($end) ? array(
 					'key' => 'wbtm_bus_next_stops',
 					'value' => $end,
 					'compare' => 'LIKE',
+				) : '';
+				$cat_query = !empty($cat) ? array(
+					'key' => 'wbtm_bus_category',
+					'value' => $cat,
+					'compare' => '=',
 				) : '';
 				$args = array(
 					'post_type' => array('wbtm_bus'),
@@ -24,12 +34,9 @@
 					'post_status' => 'publish',
 					'meta_query' => array(
 						'relation' => 'AND',
-						array(
-							'key' => 'wbtm_bus_bp_stops',
-							'value' => $start,
-							'compare' => 'LIKE',
-						),
-						$end_route_query
+						$start_route_query,
+						$end_route_query,
+						$cat_query
 					)
 				);
 				$bus_query = new WP_Query($args);
