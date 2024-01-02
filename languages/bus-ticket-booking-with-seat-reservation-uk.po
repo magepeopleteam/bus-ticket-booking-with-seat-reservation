@@ -1,0 +1,1700 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Бронювання квитків на автобус з резервацією місць\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-02 13:56+0000\n"
+"PO-Revision-Date: 2024-01-02 15:16+0200\n"
+"Last-Translator: Ray Sorkin <automart@gmail.com>\n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.4.2\n"
+"X-Loco-Version: 2.3.1; wp-5.3.2\n"
+
+#: admin/WBTM_Taxonomy.php:74
+msgid " Bus Pickup Point"
+msgstr " Пункт посадки на автобус"
+
+#: admin/WBTM_Settings.php:19
+msgid " Information Settings : "
+msgstr " Налаштування інформації : "
+
+#: admin/WBTM_CPT.php:29
+msgid " Item:"
+msgstr " Пункт:"
+
+#: admin/WBTM_CPT.php:27 admin/WBTM_CPT.php:28
+msgid " List"
+msgstr " Список"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr " список"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr " навігація списку"
+
+#: admin/WBTM_Taxonomy.php:72 admin/WBTM_Taxonomy.php:73
+msgid " Pickup Point"
+msgstr " Пункт відправлення"
+
+#: admin/WBTM_Global_settings.php:22
+msgid " Settings"
+msgstr " Налаштування"
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr " Тип"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">Статус</span>"
+
+#. Description of the plugin
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr "Повна система бронювання квитків на автобус для WordPress та WooCommerce"
+
+#: inc/WBTM_Translations.php:66 admin/settings/WBTM_Extra_Service.php:40 mp_global/class/MP_Settings_Global.php:363
+msgid "Action"
+msgstr "Дія"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "Активний"
+
+#: admin/WBTM_Quick_Setup.php:186
+msgid "Active Now"
+msgstr "Активувати зараз"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Add Extra New Service"
+msgstr "Додати нову додаткову послугу"
+
+#: mp_global/class/MP_Select_Icon_image.php:23 mp_global/class/MP_Select_Icon_image.php:26
+msgid "Add Icon"
+msgstr "Додати іконку"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:55
+msgid "Add More Point"
+msgstr "Додати більше пунктів"
+
+#: admin/WBTM_Taxonomy.php:24 admin/WBTM_Taxonomy.php:78 admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32
+msgid "Add New"
+msgstr "Додати новий"
+
+#: admin/settings/WBTM_Date_Settings.php:133
+msgid "Add New Off date"
+msgstr "Додати нову вихідну дату"
+
+#: admin/settings/WBTM_Date_Settings.php:158
+msgid "Add New Off date range"
+msgstr "Додати новий діапазон вихідних дат"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+msgid "Add New Particular date"
+msgstr "Додати нову конкретну дату"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176
+msgid "Add New Row"
+msgstr "Додати новий ряд"
+
+#: admin/settings/WBTM_Pricing_Routing.php:37
+msgid "Add New Stops"
+msgstr "Додати нові зупинки"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:104
+msgid "Add Pickup Point"
+msgstr "Додати пункт посадки"
+
+#: admin/WBTM_CPT.php:86
+msgid "Added by"
+msgstr "Додано"
+
+#: inc/WBTM_Translations.php:62
+msgid "Adult"
+msgstr "Дорослий"
+
+#: admin/settings/WBTM_Pricing_Routing.php:155
+msgid "Adult Price"
+msgstr "Ціна для дорослих"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "Після завантаження XML файлу, перейдіть до:"
+
+#: admin/WBTM_Welcome.php:89
+msgid "After install the plugin you can add a new bus. Please watch the video to know how you can do it:"
+msgstr "Після встановлення плагіна ви можете додати новий автобус. Будь ласка, перегляньте відео, щоб дізнатися, як це зробити:"
+
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_CPT.php:30
+msgid "All"
+msgstr "Всі"
+
+#: mp_global/class/MP_Select_Icon_image.php:61
+msgid "All Icon"
+msgstr "Всі іконки"
+
+#: inc/WBTM_Translations.php:31
+msgid "Already Added in cart !"
+msgstr "Вже додано в кошик!"
+
+#: inc/WBTM_Translations.php:38
+msgid "Already Sold"
+msgstr "Вже продано"
+
+#: mp_global/class/MP_Global_Function.php:560 mp_global/class/MP_Global_Function.php:587
+msgid "An error occurred, please try again."
+msgstr "Сталася помилка, спробуйте ще раз."
+
+#: admin/WBTM_Global_settings.php:88
+msgid "and copy your icon code and paste it here."
+msgstr "та скопіюйте код вашої іконки і вставте його тут."
+
+#: mp_global/class/MP_Settings_Global.php:185
+msgid "At Bottom Position"
+msgstr "У нижній позиції"
+
+#: mp_global/class/MP_Settings_Global.php:186
+msgid "At Left Position"
+msgstr "У лівій позиції"
+
+#: mp_global/class/MP_Settings_Global.php:184
+msgid "At Right Position"
+msgstr "У правій позиції"
+
+#: mp_global/class/MP_Settings_Global.php:183
+msgid "At Top Position"
+msgstr "У верхній позиції"
+
+#: inc/WBTM_Translations.php:67
+msgid "Available"
+msgstr "Доступний"
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Available Qty"
+msgstr "Доступна кількість"
+
+#: inc/WBTM_Translations.php:37
+msgid "Available Seat"
+msgstr "Доступне місце"
+
+#: admin/settings/WBTM_Seat_Configuration.php:198
+msgid "Blank"
+msgstr "Пустий"
+
+#: inc/WBTM_Translations.php:24
+msgid "Boarding"
+msgstr "Посадка"
+
+#: admin/settings/WBTM_Pricing_Routing.php:92
+msgid "Boarding "
+msgstr "Посадка "
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Boarding & Dropping"
+msgstr "Посадка і висадка"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:39 admin/settings/WBTM_Pricing_Routing.php:153
+msgid "Boarding Point"
+msgstr "Пункт посадки"
+
+#: inc/WBTM_Translations.php:70
+msgid "Book Now"
+msgstr "Забронювати зараз"
+
+#: inc/WBTM_Woocommerce.php:84
+msgid "Booking Details "
+msgstr "Деталі бронювання "
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Buffer Time"
+msgstr "Буферний час"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:193 inc/WBTM_Functions.php:436
+msgid "Bus"
+msgstr "Автобус"
+
+#: admin/WBTM_Quick_Setup.php:165
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "Бронювання автобусних квитків з резервацією місць для плагіна Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation Plugin for WooCommerce for your site, Please go step by step and choose some options to get started."
+msgstr "Плагін бронювання автобусних квитків з резервацією місць для WooCommerce для вашого сайту, Будь ласка, дотримуйтесь крок за кроком та виберіть деякі параметри для початку роботи."
+
+#: admin/WBTM_Quick_Setup.php:202
+msgid "Bus Label:"
+msgstr "Мітка автобуса:"
+
+#: admin/settings/WBTM_Settings_General.php:26
+msgid "Bus no"
+msgstr "Автобус №"
+
+#: admin/settings/WBTM_Date_Settings.php:40
+msgid "Bus Operation Date Type"
+msgstr "Тип дати експлуатації автобуса"
+
+#: admin/WBTM_Quick_Setup.php:211
+msgid "Bus Slug:"
+msgstr "Слаг автобуса:"
+
+#. Name of the plugin
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "Бронювання квитків на автобус з резервацією місць"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "Бронювання квитків на автобус з резервацією місць PRO"
+
+#: mp_global/class/MP_Settings_Global.php:299
+msgid "Button Background Color"
+msgstr "Колір фону кнопки"
+
+#: mp_global/class/MP_Settings_Global.php:285
+msgid "Button Font Size "
+msgstr "Розмір шрифту кнопки "
+
+#: mp_global/class/MP_Settings_Global.php:292
+msgid "Button Text Color"
+msgstr "Колір тексту кнопки"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "КУПИТИ PRO"
+
+#: inc/WBTM_Translations.php:18
+msgid "BUY TICKET"
+msgstr "КУПИТИ КВИТОК"
+
+#: admin/WBTM_Settings.php:76
+msgid "By default Boarding Time is ON but you can keep it off by switching this option"
+msgstr "За замовчуванням час посадки увімкнено, але ви можете вимкнути його, змінивши цю опцію"
+
+#: admin/WBTM_Settings.php:77
+msgid "By default Dropping Time is ON but you can keep it off by switching this option"
+msgstr "За замовчуванням час висадки увімкнено, але ви можете вимкнути його, змінивши цю опцію"
+
+#: admin/WBTM_Settings.php:83
+msgid "By default Extra services is ON but you can keep it off by switching this option"
+msgstr "За замовчуванням додаткові послуги увімкнено, але ви можете вимкнути їх, змінивши цю опцію"
+
+#: admin/WBTM_Settings.php:84
+msgid "By default Pickup point is ON but you can keep it off by switching this option"
+msgstr "За замовчуванням пункт відправлення увімкнено, але ви можете вимкнути його, змінивши цю опцію"
+
+#: admin/WBTM_Welcome.php:201
+msgid "By default showing 20 bus per page. If you want to change it and set limit input the limit number. example:"
+msgstr "За замовчуванням показується 20 автобусів на сторінку. Якщо ви хочете змінити це та встановити ліміт, введіть номер ліміту. наприклад:"
+
+#: admin/WBTM_Welcome.php:193
+msgid "By default showing all bus, but if you want to show bus list of a particular category you can use this attribute, just put the category id with this. Example:"
+msgstr "За замовчуванням показуються всі автобуси, але якщо ви хочете показати список автобусів певної категорії, ви можете використовувати цей атрибут, просто введіть ідентифікатор категорії з цим. Наприклад:"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "категорія"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "категорія.xml"
+
+#: inc/WBTM_Translations.php:63
+msgid "Child"
+msgstr "Дитина"
+
+#: admin/settings/WBTM_Pricing_Routing.php:158
+msgid "Child Price"
+msgstr "Ціна для дитини"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "Choose some general option."
+msgstr "Виберіть деякі загальні опції."
+
+#: inc/WBTM_Translations.php:69
+msgid "Close Seat"
+msgstr "Закрити місце"
+
+#: admin/WBTM_CPT.php:83
+msgid "Coach no"
+msgstr "Номер автобуса"
+
+#: inc/WBTM_Translations.php:43
+msgid "Coach Type"
+msgstr "Тип автобуса"
+
+#: mp_global/class/MP_Settings_Global.php:70
+msgid "Completed"
+msgstr "Завершено"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "зміст.xml"
+
+#: admin/settings/WBTM_Seat_Configuration.php:100 admin/settings/WBTM_Seat_Configuration.php:146
+msgid "Create seat Plan"
+msgstr "Створити план місць"
+
+#: mp_global/class/MP_Settings_Global.php:33 mp_global/class/MP_Settings_Global.php:329
+msgid "Custom CSS"
+msgstr "Користувацький CSS"
+
+#: admin/WBTM_Global_settings.php:88
+msgid "Dashicons Library."
+msgstr "Бібліотека Dashicons."
+
+#: inc/WBTM_Translations.php:15
+msgid "Date"
+msgstr "Дата"
+
+#: mp_global/class/MP_Settings_Global.php:75
+msgid "Date Picker Format"
+msgstr "Формат вибору дати"
+
+#: admin/WBTM_Settings.php:37 admin/settings/WBTM_Date_Settings.php:34
+msgid "Date Settings"
+msgstr "Налаштування дати"
+
+#: mp_global/class/MP_Settings_Global.php:236
+msgid "Default Font Size"
+msgstr "Розмір шрифту за замовчуванням"
+
+#: mp_global/class/MP_Settings_Global.php:229
+msgid "Default Text Color"
+msgstr "Колір тексту за замовчуванням"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "Опис"
+
+#: admin/WBTM_Global_settings.php:99
+msgid "Disable"
+msgstr "Вимкнути"
+
+#: mp_global/class/MP_Settings_Global.php:48
+msgid "Disable Block/Gutenberg Editor"
+msgstr "Вимкнути редактор Block/Gutenberg"
+
+#: admin/WBTM_Global_settings.php:95
+msgid "Disable if you don't want to show return field in search. By default Enable"
+msgstr "Вимкніть, якщо не хочете показувати поле повернення в пошуку. За замовчуванням увімкнено"
+
+#: admin/WBTM_Quick_Setup.php:134
+msgid "Done"
+msgstr "Виконано"
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "Завантажити ZIP з XML файлами"
+
+#: admin/settings/WBTM_Seat_Configuration.php:75
+msgid "Driver Position : "
+msgstr "Позиція водія : "
+
+#: admin/settings/WBTM_Extra_Service.php:91
+msgid "Dropdown List"
+msgstr "Випадаючий список"
+
+#: inc/WBTM_Translations.php:25
+msgid "Dropping"
+msgstr "Висадка"
+
+#: admin/settings/WBTM_Pricing_Routing.php:93
+msgid "Dropping "
+msgstr "Висадка "
+
+#: admin/settings/WBTM_Pricing_Routing.php:154
+msgid "Dropping Point"
+msgstr "Пункт висадки"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "Редагувати"
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "Адреса електронної пошти : "
+
+#: admin/WBTM_Global_settings.php:100
+msgid "Enable"
+msgstr "Увімкнути"
+
+#: admin/WBTM_Global_settings.php:126
+msgid "Ex:50"
+msgstr "Наприклад:50"
+
+#: mp_global/class/MP_Settings_Global.php:360
+msgid "Expire on"
+msgstr "Закінчується"
+
+#: mp_global/class/MP_Global_Function.php:211
+msgid "Expired"
+msgstr "Термін дії закінчився"
+
+#: admin/settings/WBTM_Extra_Service.php:25
+msgid "Extra Service Settings"
+msgstr "Налаштування додаткових послуг"
+
+#: inc/WBTM_Translations.php:60
+msgid "Extra Service Sub total"
+msgstr "Субтотал додаткових послуг"
+
+#: inc/WBTM_Translations.php:59
+msgid "Extra Services"
+msgstr "Додаткові послуги"
+
+#: inc/WBTM_Translations.php:52
+msgid "Fare"
+msgstr "Вартість проїзду"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "Зображення"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "особливе зображення"
+
+#: admin/WBTM_CPT.php:49
+msgid "Filter"
+msgstr "Фільтр"
+
+#: admin/WBTM_Quick_Setup.php:226
+msgid "Finalize Setup"
+msgstr "Завершити налаштування"
+
+#: admin/WBTM_Quick_Setup.php:229
+msgid "Finish & Save"
+msgstr "Закінчити та зберегти"
+
+#: mp_global/class/MP_Settings_Global.php:243
+msgid "Font Size h1 Title"
+msgstr "Розмір шрифту h1 Заголовок"
+
+#: mp_global/class/MP_Settings_Global.php:250
+msgid "Font Size h2 Title"
+msgstr "Розмір шрифту h2 Заголовок"
+
+#: mp_global/class/MP_Settings_Global.php:257
+msgid "Font Size h3 Title"
+msgstr "Розмір шрифту h3 Заголовок"
+
+#: mp_global/class/MP_Settings_Global.php:264
+msgid "Font Size h4 Title"
+msgstr "Розмір шрифту h4 Заголовок"
+
+#: mp_global/class/MP_Settings_Global.php:271
+msgid "Font Size h5 Title"
+msgstr "Розмір шрифту h5 Заголовок"
+
+#: mp_global/class/MP_Settings_Global.php:278
+msgid "Font Size h6 Title"
+msgstr "Розмір шрифту h6 Заголовок"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Для статусу середовища Woocommerce"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "Безкоштовно"
+
+#: mp_global/class/MP_Global_Function.php:416
+msgid "Friday"
+msgstr "П'ятниця"
+
+#: inc/WBTM_Translations.php:19
+msgid "From"
+msgstr "Від"
+
+#: admin/WBTM_Quick_Setup.php:127
+msgid "General"
+msgstr "Загальний"
+
+#: admin/WBTM_Settings.php:31
+msgid "General Info"
+msgstr "Загальна інформація"
+
+#: admin/settings/WBTM_Settings_General.php:21
+msgid "General Information Settings"
+msgstr "Налаштування загальної інформації"
+
+#: admin/WBTM_Quick_Setup.php:198
+msgid "General settings"
+msgstr "Загальні налаштування"
+
+#: mp_global/class/MP_Settings_Global.php:21
+msgid "Global Settings"
+msgstr "Глобальні налаштування"
+
+#: mp_global/class/MP_Custom_Layout.php:71
+msgid "GoTO Next Page"
+msgstr "Перейти на наступну сторінку"
+
+#: mp_global/class/MP_Custom_Layout.php:49
+msgid "GoTO Previous Page"
+msgstr "Перейти на попередню сторінку"
+
+#: admin/WBTM_Global_settings.php:80
+msgid "hit the Save Settings button."
+msgstr "натисніть кнопку Зберегти налаштування."
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "Як додати новий автобус?"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "Як забронювати квиток на автобус?"
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "Як здійснити бронювання автобуса?"
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "Як купити PRO версію?"
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "Як створити план місць у три колонки?"
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr "Як створити план місць з двома дверима і чотирма колонками?"
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "Як експортувати список пасажирів у формат CSV?"
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "Як отримати квиток з адміністративної панелі?"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "Як імпортувати зразковий вміст"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "Як встановити плагін?"
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "Як встановити буферний час бронювання автобуса?"
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "Як встановити автобус на конкретний день?"
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "Як встановити ціну квитка на автобус?"
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "Як налаштувати електронну пошту?"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "Як налаштувати квиток PDF?"
+
+#. URI of the plugin
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Author URI of the plugin
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/WBTM_Global_settings.php:87 mp_global/class/MP_Select_Icon_image.php:161
+msgid "Icon"
+msgstr "Іконка"
+
+#: mp_global/class/MP_Settings_Global.php:161
+msgid "Icon Indicator"
+msgstr "Індикатор іконки"
+
+#: mp_global/class/MP_Select_Icon_image.php:45
+msgid "Icon/class name...."
+msgstr "Іконка/назва класу...."
+
+#: admin/WBTM_Global_settings.php:72
+msgid "If you like to change the label in the dashboard menu, you can change it here."
+msgstr "Якщо вам хочеться змінити мітку в меню приладової панелі, ви можете змінити її тут."
+
+#: mp_global/class/MP_Settings_Global.php:76
+msgid "If you want to change Date Picker Format, please select format. Default  is D d M , yy."
+msgstr "Якщо ви хочете змінити формат вибору дати, будь ласка, виберіть формат. За замовчуванням є D d M , yy."
+
+#: mp_global/class/MP_Settings_Global.php:97
+msgid "If you want to change Short Date  Format, please select format. Default  is M , Y."
+msgstr "Якщо ви хочете змінити короткий формат дати, будь ласка, виберіть формат. За замовчуванням є M , Y."
+
+#: admin/WBTM_Global_settings.php:88
+msgid "If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to "
+msgstr "Якщо ви хочете змінити іконку в меню приладової панелі, ви можете змінити її тут, і іконка приладової панелі підтримує лише Dashicons, тому будь ласка, перейдіть до "
+
+#: mp_global/class/MP_Settings_Global.php:49
+msgid "If you want to disable WordPress's new Block/Gutenberg editor, please select Yes."
+msgstr "Якщо ви хочете вимкнути новий редактор Block/Gutenberg WordPress, будь ласка, виберіть Так."
+
+#: admin/WBTM_Settings.php:80
+msgid "If you want to run particular date  select Particular or your bus run repeatedly select Repeat"
+msgstr "Якщо ви хочете запустити конкретну дату, виберіть Конкретну або якщо ваш автобус курсує повторно, виберіть Повторити"
+
+#: inc/WBTM_Translations.php:48 mp_global/class/MP_Select_Icon_image.php:106 mp_global/class/MP_Select_Icon_image.php:132 mp_global/class/MP_Select_Icon_image.php:159
+msgid "Image"
+msgstr "Зображення"
+
+#: mp_global/class/MP_Settings_Global.php:162
+msgid "image Indicator"
+msgstr "індикатор зображення"
+
+#: mp_global/class/MP_Custom_Slider.php:60
+msgid "Images"
+msgstr "Зображення"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "Імпорт"
+
+#: admin/WBTM_Welcome.php:58
+msgid "In the bottom of this page there is a WordPress import option. If you have already enabled this, you can see Run Import. If not, click on the Install Now link. After that click on Run Importer and select the XML file you downlaoded earlier."
+msgstr "У нижній частині цієї сторінки є опція імпорту WordPress. Якщо ви вже включили це, ви можете побачити Запустити імпорт. Якщо ні, натисніть на посилання Встановити зараз. Після цього натисніть Запустити імпортер та виберіть XML файл, який ви завантажили раніше."
+
+#: admin/WBTM_Welcome.php:96
+msgid "In this video you can know how easy to place a order to book a bus ticket:"
+msgstr "У цьому відео ви можете дізнатися, як легко зробити замовлення, щоб забронювати квиток на автобус:"
+
+#: inc/WBTM_Translations.php:64
+msgid "Infant"
+msgstr "Немовля"
+
+#: admin/settings/WBTM_Pricing_Routing.php:159
+msgid "Infant Price"
+msgstr "Ціна для немовляти"
+
+#: admin/settings/WBTM_Extra_Service.php:90
+msgid "Input Box"
+msgstr "Поле вводу"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "Вставити в"
+
+#: admin/WBTM_Quick_Setup.php:184
+msgid "Install & Active Now"
+msgstr "Встановити та активувати зараз"
+
+#: mp_global/class/MP_Global_Function.php:575
+msgid "Invalid license."
+msgstr "Недійсна ліцензія."
+
+#: admin/WBTM_Quick_Setup.php:216
+msgid "It will change the Bus slug on the entire plugin. Remember after changing this slug you need to flush permalinks. Just go to Settings->Permalinks hit the Save Settings button"
+msgstr "Це змінить текстовий ідентифікатор 'slug' для автобусів у всьому плагіні. Пам'ятайте, після зміни цього ідентифікатора, вам потрібно буде оновити постійні посилання. Просто перейдіть до Налаштувань->Постійні посилання та натисніть кнопку Зберегти налаштування"
+
+#: inc/WBTM_Translations.php:13
+msgid "Journey Date"
+msgstr "Дата поїздки"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "База знань"
+
+#: admin/WBTM_Global_settings.php:71 admin/WBTM_Global_settings.php:75
+msgid "Label"
+msgstr "Мітка"
+
+#: mp_global/class/MP_Settings_Global.php:306
+msgid "Label Font Size "
+msgstr "Розмір шрифту мітки "
+
+#: admin/settings/WBTM_Seat_Configuration.php:78
+msgid "Left"
+msgstr "Лівий"
+
+#: mp_global/class/MP_Custom_Layout.php:160
+msgid "Less More"
+msgstr "Менше більше"
+
+#: mp_global/class/MP_Settings_Global.php:361
+msgid "License Key"
+msgstr "Ключ ліцензії"
+
+#: mp_global/class/MP_Global_Function.php:205
+msgid "Lifetime"
+msgstr "Довічно"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "список"
+
+#: mp_global/class/MP_Custom_Layout.php:39 mp_global/class/MP_Custom_Layout.php:160 mp_global/class/MP_Custom_Layout.php:161
+msgid "Load More"
+msgstr "Завантажити більше"
+
+#: mp_global/class/MP_Settings_Global.php:37 mp_global/class/MP_Settings_Global.php:340
+msgid "Mage-People License"
+msgstr "Ліцензія Mage-People"
+
+#. Author of the plugin
+msgid "MagePeople Team"
+msgstr "Команда MagePeople"
+
+#: admin/settings/WBTM_Date_Settings.php:99
+msgid "Maximum advanced day booking"
+msgstr "Максимальна кількість днів для бронювання наперед"
+
+#: admin/WBTM_Global_settings.php:114
+msgid "Maximum advanced day Sale"
+msgstr "Максимальний термін продажу наперед"
+
+#: mp_global/class/MP_Global_Function.php:572
+msgid "Missing license."
+msgstr "Ліцензія відсутня."
+
+#: mp_global/class/MP_Global_Function.php:412
+msgid "Monday"
+msgstr "Понеділок"
+
+#: inc/WBTM_Translations.php:47
+msgid "Name"
+msgstr "Ім'я"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "Ім'я : "
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "Новий"
+
+#: admin/WBTM_Quick_Setup.php:151
+msgid "Next"
+msgstr "Далі"
+
+#: admin/WBTM_Status.php:22 mp_global/class/MP_Settings_Global.php:54
+msgid "No"
+msgstr "Ні"
+
+#: inc/WBTM_Translations.php:32
+msgid "No Bus Found !"
+msgstr "Автобусів не знайдено!"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "Не потрібно"
+
+#: inc/WBTM_Translations.php:35
+msgid "No Seat Available !!"
+msgstr "Місць немає!"
+
+#: inc/WBTM_Translations.php:34
+msgid "No Seat Plan Available !"
+msgstr "План місць недоступний!"
+
+#: inc/WBTM_Translations.php:33
+msgid "No Ticket found !"
+msgstr "Квитків не знайдено!"
+
+#: admin/settings/WBTM_Tax_Settings.php:39
+msgid "None"
+msgstr "Немає"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "Не знайдено"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "Не знайдено в кошику"
+
+#: admin/WBTM_Welcome.php:66
+msgid "Now select the user of your website to assign the contents from the dropdown, and tick on the Download Attachemnt tick box & Run the Process. After a few minute you will see the Success message. All Done! Have Fun."
+msgstr "Тепер виберіть користувача вашого сайту, щоб призначити вміст зі спадного меню, поставте галочку у полі 'Завантажити вкладення' і запустіть процес. Через кілька хвилин ви побачите повідомлення про успіх. Все готово! Насолоджуйтесь."
+
+#: mp_global/class/MP_Settings_Global.php:151 mp_global/class/MP_Settings_Global.php:173 mp_global/class/MP_Settings_Global.php:197 mp_global/class/MP_Settings_Global.php:208
+msgid "Off"
+msgstr "Вимк."
+
+#: admin/settings/WBTM_Date_Settings.php:119
+msgid "Off Dates"
+msgstr "Дата відключення"
+
+#: admin/settings/WBTM_Date_Settings.php:144
+msgid "Off Dates in Range"
+msgstr "Дата відключення в діапазоні"
+
+#: admin/settings/WBTM_Date_Settings.php:105
+msgid "Off Day"
+msgstr "Вихідний день"
+
+#: mp_global/class/MP_Settings_Global.php:150 mp_global/class/MP_Settings_Global.php:172 mp_global/class/MP_Settings_Global.php:196 mp_global/class/MP_Settings_Global.php:207
+msgid "ON"
+msgstr "Увімк."
+
+#: mp_global/class/MP_Settings_Global.php:67
+msgid "On Hold"
+msgstr "На утриманні"
+
+#: admin/WBTM_Welcome.php:46
+msgid "Or, you may download the XML files zip and extract it to your computer directory."
+msgstr "Або ви можете завантажити ZIP-архів XML-файлів та розпакувати його у вказану папку на вашому комп'ютері."
+
+#: inc/WBTM_Translations.php:16
+msgid "Order Date"
+msgstr "Дата замовлення"
+
+#: mp_global/class/MP_Settings_Global.php:359
+msgid "Order No"
+msgstr "Номер замовлення"
+
+#: inc/WBTM_Translations.php:55
+msgid "Order Total"
+msgstr "Загальна сума замовлення"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "Параметр"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22 admin/WBTM_Taxonomy.php:75
+msgid "Parent"
+msgstr "Батько"
+
+#: admin/WBTM_Settings.php:54
+msgid "Partial Payment"
+msgstr "Частковий платіж"
+
+#: admin/WBTM_Settings.php:62
+msgid "Partial Payment Settings : "
+msgstr "Налаштування часткового платежу: "
+
+#: admin/settings/WBTM_Date_Settings.php:45
+msgid "Particular"
+msgstr "Особливий"
+
+#: admin/settings/WBTM_Date_Settings.php:53
+msgid "Particular Dates"
+msgstr "Особливі дати"
+
+#: inc/WBTM_Translations.php:56
+msgid "Passenger Capacity"
+msgstr "Пасажиромісткість"
+
+#: inc/WBTM_Translations.php:57
+msgid "Passenger Information"
+msgstr "Інформація про пасажира"
+
+#: mp_global/class/MP_Settings_Global.php:68
+msgid "Pending"
+msgstr "Очікування"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:40
+msgid "Pickup Info"
+msgstr "Інформація про забирання"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:27
+msgid "Pickup Point"
+msgstr "Пункт забирання"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:27
+msgid "Pickup Point Settings"
+msgstr "Налаштування пункту забирання"
+
+#: admin/WBTM_Settings.php:74
+msgid "Please add your unique bus id"
+msgstr "Будь ласка, додайте ваш унікальний ідентифікатор автобуса"
+
+#: admin/WBTM_Settings.php:82
+msgid "Please configure bus route price. Before price setting must be complete route configuration ."
+msgstr "Будь ласка, налаштуйте ціну на маршрут автобуса. Перед налаштуванням ціни потрібно завершити налаштування маршруту."
+
+#: admin/WBTM_Settings.php:81
+msgid "Please configure correctly your bus route"
+msgstr "Будь ласка, правильно налаштуйте маршрут вашого автобуса"
+
+#: admin/settings/WBTM_Pricing_Routing.php:194
+msgid "Please Create Bus route ."
+msgstr "Будь ласка, створіть маршрут автобуса."
+
+#: admin/WBTM_Global_settings.php:123
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr "Будь ласка, введіть тут час буферизації автомобіля у хвилинах. За замовчуванням 0"
+
+#: admin/WBTM_Global_settings.php:80
+msgid "Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to"
+msgstr "Будь ласка, введіть назву текстового ідентифікатора, яку ви хочете. Пам'ятайте, після зміни цього ідентифікатора; вам потрібно оновити постійне посилання; перейдіть до"
+
+#: admin/WBTM_Welcome.php:30
+msgid "Please follow the below process to import dummy event data to your website."
+msgstr "Будь ласка, дотримуйтесь нижчеописаного процесу, щоб імпортувати тестові дані подій на ваш вебсайт."
+
+#: inc/WBTM_Translations.php:22
+msgid "Please Select"
+msgstr "Будь ласка, виберіть"
+
+#: mp_global/class/MP_Custom_Layout.php:202
+msgid "Please select"
+msgstr "Будь ласка, виберіть"
+
+#: admin/settings/WBTM_Seat_Configuration.php:35 admin/settings/WBTM_Seat_Configuration.php:77 admin/settings/WBTM_Date_Settings.php:44
+msgid "Please select ..."
+msgstr "Будь ласка, виберіть ..."
+
+#: admin/WBTM_Global_settings.php:115
+msgid "Please select Maximum advanced day Ticket Sale . if you dont want to off sale then it will be blank"
+msgstr "Будь ласка, виберіть максимальну кількість днів для продажу квитків наперед. Якщо ви не хочете припиняти продаж, залиште поле порожнім"
+
+#: admin/WBTM_Global_settings.php:106
+msgid "Please select Seat sale off after date . if you dont want to off sale then it will be blank"
+msgstr "Будь ласка, виберіть дату припинення продажу місць. Якщо ви не хочете припиняти продаж, залиште поле порожнім"
+
+#: mp_global/class/MP_Settings_Global.php:157
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "Будь ласка, виберіть тип індикатора слайдера за замовчуванням"
+
+#: mp_global/class/MP_Settings_Global.php:146
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr "Будь ласка, виберіть, чи видимий індикатор слайдера? За замовчуванням УВІМК."
+
+#: mp_global/class/MP_Settings_Global.php:203
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr "Будь ласка, виберіть, чи включений індикатор вспливаючого слайдера? За замовчуванням УВІМК."
+
+#: mp_global/class/MP_Settings_Global.php:192
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr "Будь ласка, виберіть, чи включене зображення індикатора вспливаючого слайдера? За замовчуванням УВІМК."
+
+#: mp_global/class/MP_Settings_Global.php:179
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "Будь ласка, виберіть позицію вітрини слайдера за замовчуванням Право"
+
+#: mp_global/class/MP_Settings_Global.php:168
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr "Будь ласка, виберіть, чи видима вітрина слайдера? За замовчуванням УВІМК."
+
+#: mp_global/class/MP_Settings_Global.php:135
+msgid "Please Select Slider Style Default Style One"
+msgstr "Будь ласка, виберіть стиль слайдера за замовчуванням Стиль Один"
+
+#: mp_global/class/MP_Settings_Global.php:124
+msgid "Please Select Slider Type Default Slider"
+msgstr "Будь ласка, виберіть тип слайдера за замовчуванням"
+
+#: inc/WBTM_Translations.php:40
+msgid "Please select Starting Point !"
+msgstr "Будь ласка, виберіть початкову точку!"
+
+#: mp_global/class/MP_Settings_Global.php:60
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr "Будь ласка, виберіть, коли і за яким статусом замовлення місце буде заброньовано/зменшено."
+
+#: admin/WBTM_Settings.php:78
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr "Будь ласка, виберіть тип сидінь у вашому автобусі. За замовчуванням Без плану сидінь"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please Type your bus total seat."
+msgstr "Будь ласка, введіть загальну кількість місць у вашому автобусі."
+
+#: admin/WBTM_Settings.php:87
+msgid "Please upload images for gallery"
+msgstr "Будь ласка, завантажте зображення для галереї"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "Будь ласка, перегляньте відео, щоб дізнатися, як налаштувати електронну пошту."
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "Будь ласка, перегляньте відео, щоб дізнатися, як налаштувати квиток у форматі PDF."
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr "Будь ласка, перегляньте відео, щоб дізнатися, як ви можете встановити плагін."
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як здійснювати бронювання автобуса."
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як створити план сидінь з трьома колонками."
+
+#: admin/WBTM_Welcome.php:153
+msgid "Please watch this video to know how to create two door and four column seat plan."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як створити план сидінь з двома дверима і чотирма колонками."
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як експортувати список пасажирів у формат CSV."
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як отримати квиток з панелі адміністрування."
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як налаштувати бронювання автобуса на буферний час."
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як налаштувати автобус на конкретний день."
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr "Будь ласка, перегляньте це відео, щоб дізнатися, як встановити ціну квитка на автобус."
+
+#: admin/WBTM_Settings.php:75
+msgid "Please your bus category"
+msgstr "Будь ласка, виберіть категорію вашого автобуса"
+
+#: mp_global/class/MP_Settings_Global.php:357
+msgid "Plugin Name"
+msgstr "Назва плагіна"
+
+#: mp_global/class/MP_Settings_Global.php:129
+msgid "Post Thumbnail"
+msgstr "Мініатюра поста"
+
+#: admin/WBTM_Quick_Setup.php:147
+msgid "Previous"
+msgstr "Попередній"
+
+#: inc/WBTM_Translations.php:51
+msgid "Price"
+msgstr "Ціна"
+
+#: admin/settings/WBTM_Seat_Configuration.php:142
+msgid "Price Increase : "
+msgstr "Збільшення ціни : "
+
+#: admin/WBTM_Settings.php:40
+msgid "Pricing & Route"
+msgstr "Ціноутворення та Маршрут"
+
+#: admin/settings/WBTM_Pricing_Routing.php:50
+msgid "Pricing Settings"
+msgstr "Налаштування цін"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "ПРО"
+
+#: mp_global/class/MP_Settings_Global.php:69
+msgid "Processing"
+msgstr "Обробка"
+
+#: admin/settings/WBTM_Extra_Service.php:39
+msgid "Qty Box Type"
+msgstr "Тип поля кількості"
+
+#: inc/WBTM_Translations.php:49
+msgid "Quantity"
+msgstr "Кількість"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18 admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "Швидке налаштування"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "Видалити"
+
+#: mp_global/class/MP_Select_Icon_image.php:30 mp_global/class/MP_Select_Icon_image.php:150
+msgid "Remove Icon"
+msgstr "Видалити іконку"
+
+#: mp_global/class/MP_Select_Icon_image.php:154
+msgid "Remove Image"
+msgstr "Видалити зображення"
+
+#: admin/settings/WBTM_Date_Settings.php:46
+msgid "Repeated"
+msgstr "Повторюваний"
+
+#: admin/settings/WBTM_Date_Settings.php:93
+msgid "Repeated after"
+msgstr "Повторюється після"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Repeated End Date"
+msgstr "Дата закінчення повторення"
+
+#: admin/settings/WBTM_Date_Settings.php:79
+msgid "Repeated Start Date"
+msgstr "Дата початку повторення"
+
+#: inc/WBTM_Translations.php:14
+msgid "Return Date (Optional)"
+msgstr "Дата повернення (Необов'язково)"
+
+#: inc/WBTM_Translations.php:28
+msgid "Return Trip"
+msgstr "Повернення"
+
+#: admin/settings/WBTM_Seat_Configuration.php:79
+msgid "Right"
+msgstr "Правий"
+
+#: admin/settings/WBTM_Pricing_Routing.php:25
+msgid "Routing Settings"
+msgstr "Налаштування маршруту"
+
+#: mp_global/class/MP_Global_Function.php:417
+msgid "Saturday"
+msgstr "Субота"
+
+#: inc/WBTM_Translations.php:42
+msgid "Schedule"
+msgstr "Розклад"
+
+#: admin/WBTM_CPT.php:92
+msgid "Seal Plan"
+msgstr "План печатки"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:21
+msgid "Search"
+msgstr "Пошук"
+
+#: inc/WBTM_Translations.php:45
+msgid "Seat"
+msgstr "Місце"
+
+#: mp_global/class/MP_Settings_Global.php:59
+msgid "Seat Booked Status"
+msgstr "Статус заброньованого місця"
+
+#: admin/settings/WBTM_Seat_Configuration.php:95 admin/settings/WBTM_Seat_Configuration.php:136
+msgid "Seat Columns : "
+msgstr "Колонки місць : "
+
+#: admin/WBTM_Settings.php:34
+msgid "Seat Configure"
+msgstr "Налаштування місць"
+
+#: inc/WBTM_Translations.php:46
+msgid "Seat Name"
+msgstr "Назва місця"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Seat Plan"
+msgstr "План місць"
+
+#: admin/settings/WBTM_Seat_Configuration.php:70
+msgid "Seat Plan for Lower Deck"
+msgstr "План місць для нижньої палуби"
+
+#: admin/settings/WBTM_Seat_Configuration.php:125
+msgid "Seat Plan for Upper Deck"
+msgstr "План місць для верхньої палуби"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103 admin/settings/WBTM_Seat_Configuration.php:149
+msgid "Seat Plan Settings"
+msgstr "Налаштування плану місць"
+
+#: admin/settings/WBTM_Seat_Configuration.php:89
+msgid "Seat Rows  : "
+msgstr "Ряди місць : "
+
+#: admin/settings/WBTM_Seat_Configuration.php:130
+msgid "Seat Rows : "
+msgstr "Ряди місць : "
+
+#: admin/settings/WBTM_Seat_Configuration.php:32
+msgid "Seat Type"
+msgstr "Тип місця"
+
+#: mp_global/class/MP_Settings_Global.php:320
+msgid "Section Background color"
+msgstr "Колір фону секції"
+
+#: mp_global/class/MP_Settings_Global.php:321
+msgid "Select Background  Color."
+msgstr "Виберіть колір фону."
+
+#: admin/settings/WBTM_Pricing_Routing.php:78
+msgid "Select bus stop"
+msgstr "Виберіть автобусну зупинку"
+
+#: mp_global/class/MP_Settings_Global.php:300
+msgid "Select Button Background  Color."
+msgstr "Виберіть колір фону кнопки."
+
+#: mp_global/class/MP_Settings_Global.php:293
+msgid "Select Button Text  Color."
+msgstr "Виберіть колір тексту кнопки."
+
+#: mp_global/class/MP_Settings_Global.php:230
+msgid "Select Default Text  Color."
+msgstr "Виберіть стандартний колір тексту."
+
+#: mp_global/class/MP_Settings_Global.php:223
+msgid "Select Default Theme Alternate  Color that means, if background theme color then it will be text color."
+msgstr "Виберіть альтернативний колір теми за замовчуванням, тобто якщо колір фону теми, то це буде колір тексту."
+
+#: mp_global/class/MP_Settings_Global.php:216
+msgid "Select Default Theme Color"
+msgstr "Виберіть колір теми за замовчуванням"
+
+#: mp_global/class/MP_Select_Icon_image.php:43
+msgid "Select Icon"
+msgstr "Виберіть іконку"
+
+#: admin/settings/WBTM_Pricing_Routing.php:91
+msgid "Select place type"
+msgstr "Виберіть тип місця"
+
+#: mp_global/class/MP_Settings_Global.php:314
+msgid "Select Warning  Color."
+msgstr "Виберіть колір попередження."
+
+#: admin/settings/WBTM_Extra_Service.php:36
+msgid "Service Name"
+msgstr "Назва послуги"
+
+#: admin/settings/WBTM_Extra_Service.php:37
+msgid "Service Price"
+msgstr "Ціна послуги"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "Встановити"
+
+#: admin/WBTM_Global_settings.php:60
+msgid "Settings"
+msgstr "Налаштування"
+
+#: admin/WBTM_Global_settings.php:80
+msgid "Settings-> Permalinks"
+msgstr "Налаштування-> Постійні посилання"
+
+#: admin/settings/WBTM_Tax_Settings.php:36
+msgid "Shipping only"
+msgstr "Лише доставка"
+
+#: mp_global/class/MP_Settings_Global.php:96
+msgid "Short Date  Format"
+msgstr "Формат короткої дати"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "Короткий код"
+
+#: admin/WBTM_Welcome.php:179
+msgid "Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr "Короткі коди, що включені до плагіна бронювання квитків на автобус з резервуванням місць:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "показати"
+
+#: admin/WBTM_Global_settings.php:94
+msgid "Show return Date Search"
+msgstr "Показати пошук за датою повернення"
+
+#: admin/settings/WBTM_Seat_Configuration.php:84
+msgid "Show Upper Deck : "
+msgstr "Показати верхню палубу : "
+
+#: mp_global/class/MP_Settings_Global.php:128
+msgid "Slider"
+msgstr "Слайдер"
+
+#: mp_global/class/MP_Settings_Global.php:156
+msgid "Slider Indicator Type"
+msgstr "Тип індикатора слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:145
+msgid "Slider Indicator Visible?"
+msgstr "Чи видимий індикатор слайдера?"
+
+#: mp_global/class/MP_Settings_Global.php:202
+msgid "Slider Popup Icon Indicator"
+msgstr "Індикатор іконки спливаючого слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:191
+msgid "Slider Popup Image Indicator"
+msgstr "Індикатор зображення спливаючого слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:25
+msgid "Slider Settings"
+msgstr "Налаштування слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:178
+msgid "Slider Showcase Position"
+msgstr "Позиція вітрини слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:167
+msgid "Slider Showcase Visible?"
+msgstr "Чи видима вітрина слайдера?"
+
+#: mp_global/class/MP_Settings_Global.php:134
+msgid "Slider Style"
+msgstr "Стиль слайдера"
+
+#: mp_global/class/MP_Settings_Global.php:123
+msgid "Slider Type"
+msgstr "Тип слайдера"
+
+#: admin/WBTM_Global_settings.php:79 admin/WBTM_Global_settings.php:83
+msgid "Slug"
+msgstr "Слаг"
+
+#: admin/settings/WBTM_Tax_Settings.php:50
+msgid "Standard"
+msgstr "Стандарт"
+
+#: inc/WBTM_Translations.php:26
+msgid "Starting Points"
+msgstr "Початкові точки"
+
+#: admin/WBTM_Status.php:17 mp_global/class/MP_Settings_Global.php:362
+msgid "Status"
+msgstr "Статус"
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "Крок-1:"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "Крок-2:"
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "Крок-3:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:76
+msgid "Stop : "
+msgstr "Зупинка : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:71
+msgid "Stops Settings"
+msgstr "Налаштування зупинок"
+
+#: mp_global/class/MP_Settings_Global.php:139
+msgid "Style One"
+msgstr "Стиль Один"
+
+#: mp_global/class/MP_Settings_Global.php:29
+msgid "Style Settings"
+msgstr "Налаштування стилю"
+
+#: mp_global/class/MP_Settings_Global.php:140
+msgid "Style Two"
+msgstr "Стиль Два"
+
+#: mp_global/class/MP_Settings_Global.php:594
+msgid "Success, License Key is valid for the plugin"
+msgstr "Успіх, ліцензійний ключ дійсний для плагіна"
+
+#: mp_global/class/MP_Settings_Global.php:418
+msgid "Sunday"
+msgstr "Неділя"
+
+#: admin/settings/WBTM_Tax_Settings.php:46
+msgid "Tax class"
+msgstr "Клас податку"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "Конфігурація податків"
+
+#: admin/WBTM_Settings.php:50
+msgid "Tax Configure"
+msgstr "Налаштувати податок"
+
+#: admin/settings/WBTM_Tax_Settings.php:66
+msgid "Tax not Active"
+msgstr "Податок не активний"
+
+#: admin/settings/WBTM_Tax_Settings.php:29
+msgid "Tax status"
+msgstr "Податковий статус"
+
+#: admin/settings/WBTM_Tax_Settings.php:33
+msgid "Taxable"
+msgstr "Оподатковуваний"
+
+#: mp_global/class/MP_Settings_Global.php:343
+msgid "Thanking you for using our Mage-People plugin. Our some plugin  free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below."
+msgstr "Дякуємо вам за використання нашого плагіна Mage-People. Наш плагін безкоштовний і не вимагає ліцензії. У нас є додаткові доповнення для покращення функціональності цього плагіна. Якщо у вас є будь-яке доповнення, вам потрібно ввести дійсну ліцензію на цей плагін нижче."
+
+#: mp_global/class/MP_Settings_Global.php:222
+msgid "Theme Alternate Color"
+msgstr "Альтернативний колір теми"
+
+#: mp_global/class/MP_Settings_Global.php:215
+msgid "Theme Color"
+msgstr "Колір теми"
+
+#: mp_global/class/MP_Global_Function.php:581
+msgid "This appears to be an invalid license key for ."
+msgstr "Це здається недійсним ліцензійним ключем для ."
+
+#: inc/WBTM_Translations.php:36
+msgid "This bus Now Closed."
+msgstr "Цей автобус зараз закритий."
+
+#: admin/WBTM_Welcome.php:224
+msgid "This shortcode will also print a bus search form but it will also show the search result on the same page, below of the search form."
+msgstr "Цей короткий код також надрукує форму пошуку автобуса, але також покаже результати пошуку на тій же сторінці, під формою пошуку."
+
+#: admin/WBTM_Welcome.php:217
+msgid "This shortcode will display the search form like if you want to show a search box into somewhere in the homepage or any page then just put this shortcode there it will print the bus search form."
+msgstr "Цей короткий код відобразить форму пошуку, наприклад, якщо ви хочете показати поле пошуку десь на домашній сторінці або на будь-якій сторінці, то просто вставте цей короткий код, і він надрукує форму пошуку автобуса."
+
+#: admin/WBTM_Welcome.php:210
+msgid "This shortcode will show the Create Ticket form. A user needs to put their ticket pin into the box and hit the enter button then the ticket will appear. Only login users can view this page."
+msgstr "Цей короткий код покаже форму створення квитка. Користувачеві потрібно ввести свій пін-код квитка у поле і натиснути кнопку введення, тоді з'явиться квиток. Цю сторінку можуть переглядати лише користувачі, які увійшли в систему."
+
+#: mp_global/class/MP_Global_Function.php:415
+msgid "Thursday"
+msgstr "Четвер"
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "Квиток"
+
+#: inc/WBTM_Woocommerce.php:546
+msgid "Ticket Information"
+msgstr "Інформація про квиток"
+
+#: admin/WBTM_Global_settings.php:105
+msgid "Ticket sale off after date"
+msgstr "Продаж квитків припиняється після дати"
+
+#: inc/WBTM_Translations.php:54
+msgid "Ticket Sub total"
+msgstr "Підсумок квитка"
+
+#: inc/WBTM_Translations.php:44
+msgid "Ticket Type"
+msgstr "Тип квитка"
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Ticket/Seat Configuration"
+msgstr "Конфігурація квитків/місць"
+
+#: admin/settings/WBTM_Pricing_Routing.php:85
+msgid "Time : "
+msgstr "Час : "
+
+#: inc/WBTM_Translations.php:20
+msgid "To"
+msgstr "До"
+
+#: admin/WBTM_Settings.php:85
+msgid "To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr "Щоб додати будь-який новий клас податку, будь ласка, перейдіть до WooCommerce -> Налаштування -> Податкова зона"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "Інструменти -> Імпорт"
+
+#: inc/WBTM_Translations.php:53
+msgid "Total"
+msgstr "Загалом"
+
+#: inc/WBTM_Translations.php:50
+msgid "Total Quantity"
+msgstr "Загальна кількість"
+
+#: admin/settings/WBTM_Seat_Configuration.php:45
+msgid "Total Seat"
+msgstr "Загальна кількість місць"
+
+#: mp_global/class/MP_Global_Function.php:413
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21 admin/WBTM_CPT.php:84 mp_global/class/MP_Settings_Global.php:358
+msgid "Type"
+msgstr "Тип"
+
+#: admin/settings/WBTM_Pricing_Routing.php:89
+msgid "Type : "
+msgstr "Тип : "
+
+#: mp_global/class/MP_Settings_Global.php:237
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "Введіть стандартний розмір шрифту (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:286
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "Введіть розмір шрифту кнопки (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:251
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "Введіть розмір шрифту заголовка h2 (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:258
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "Введіть розмір шрифту заголовка h3 (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:265
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "Введіть розмір шрифту заголовка h4 (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:272
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "Введіть розмір шрифту заголовка h5 (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:279
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "Введіть розмір шрифту заголовка h6 (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:307
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "Введіть розмір шрифту мітки (в одиницях PX)."
+
+#: mp_global/class/MP_Settings_Global.php:244
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "Введіть розмір шрифту основного заголовка (в одиницях PX)."
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "Тип:"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "Необмежений"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "Оновити"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "Завантажено до цього"
+
+#: inc/WBTM_Translations.php:29
+msgid "Upper Deck"
+msgstr "Верхня палуба"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "Використовувати як"
+
+#: mp_global/class/MP_Global_Function.php:594
+msgid "Validity of this licenses is"
+msgstr "Термін дії цих ліцензій є"
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "Відеоурок"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "Перегляд"
+
+#: mp_global/class/MP_Custom_Slider.php:60
+msgid "View All"
+msgstr "Переглянути все"
+
+#: inc/WBTM_Translations.php:68
+msgid "View Seats"
+msgstr "Переглянути місця"
+
+#: mp_global/class/MP_Settings_Global.php:313
+msgid "Warning Color"
+msgstr "Колір попередження"
+
+#: mp_global/class/MP_Global_Function.php:414
+msgid "Wednesday"
+msgstr "Середа"
+
+#: admin/WBTM_Quick_Setup.php:120 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "Ласкаво просимо"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "Ласкаво просимо до бронювання квитків на автобус з резервуванням місць"
+
+#: admin/WBTM_Welcome.php:76
+msgid "Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr "Ласкаво просимо до документації плагіна бронювання квитків на автобус з резервуванням місць"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "Ласкаво просимо до WBTM"
+
+#: admin/WBTM_CPT.php:92
+msgid "Without Seal Plan"
+msgstr "Без плану печатки"
+
+#: admin/settings/WBTM_Seat_Configuration.php:37
+msgid "Without Seat Plan"
+msgstr "Без плану місць"
+
+#: admin/WBTM_Quick_Setup.php:176
+msgid "Woocommerce already install , please activate it"
+msgstr "Woocommerce вже встановлено, будь ласка, активуйте його"
+
+#: admin/WBTM_Quick_Setup.php:170
+msgid "Woocommerce already installed and activated"
+msgstr "Woocommerce вже встановлено і активовано"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "Woocommerce Встановлено : "
+
+#: admin/WBTM_Quick_Setup.php:173
+msgid "Woocommerce need to install and active"
+msgstr "Потрібно встановити і активувати Woocommerce"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "Версія Woocommerce : "
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "Версія WordPress : "
+
+#: mp_global/class/MP_Settings_Global.php:330
+msgid "Write Your Custom CSS Code Here"
+msgstr "Напишіть тут свій власний код CSS"
+
+#: admin/WBTM_Status.php:22 mp_global/class/MP_Settings_Global.php:53
+msgid "Yes"
+msgstr "Так"
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "You are about to Finish & Save Bus Booking with Seat Reservation For Woocommerce Plugin setup process"
+msgstr "Ви збираєтеся завершити та зберегти процес налаштування плагіна Woocommerce для бронювання місць на автобус"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:68
+msgid "You have no Bus route . Please add Price and Route and save ,then you can edit pickup point."
+msgstr "У вас немає маршруту автобуса. Будь ласка, додайте ціну та маршрут і збережіть, після чого ви зможете редагувати точку посадки."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "You have no Pickup Point . Please add Pickup Point and save ,then you can edit pickup point."
+msgstr "У вас немає точки посадки. Будь ласка, додайте точку посадки та збережіть, після чого ви зможете редагувати точку посадки."
+
+#: inc/WBTM_Translations.php:39
+msgid "You select Wrong Route !"
+msgstr "Ви вибрали неправильний маршрут!"
+
+#: mp_global/class/MP_Global_Function.php:578
+msgid "Your license is not active for this URL."
+msgstr "Ваша ліцензія не активна для цього URL."
+
+#: mp_global/class/MP_Global_Function.php:569
+msgid "Your license key has been disabled."
+msgstr "Ваш ліцензійний ключ було відключено."
+
+#: mp_global/class/MP_Global_Function.php:584
+msgid "Your license key has reached its activation limit."
+msgstr "Ваш ліцензійний ключ досяг свого ліміту активацій."
+
+#: mp_global/class/MP_Global_Function.php:594
+msgid "Your Order id is"
+msgstr "Ваш ідентифікатор замовлення є"
