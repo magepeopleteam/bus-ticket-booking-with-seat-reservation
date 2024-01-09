@@ -7,6 +7,7 @@
 		let start = parent.find('input[name="bus_start_route"]');
 		let end = parent.find('input[name="bus_end_route"]');
 		let j_date = parent.find('input[name="j_date"]');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
 			return false;
@@ -33,11 +34,11 @@
 					"post_id": post_id,
 				},
 				beforeSend: function () {
-					dLoader(parent);
+					dLoader(parent.find('.wbtm_search_area'));
 				},
 				success: function (data) {
 					parent.find('.wbtm_search_result').html(data).promise().done(function () {
-						dLoaderRemove(parent);
+						dLoaderRemove(parent.find('.wbtm_search_area'));
 						loadBgImage();
 					});
 				},
@@ -50,6 +51,7 @@
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
 			parent.find('.get_wbtm_bus_list').trigger('click');
@@ -60,6 +62,7 @@
 		let start_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
 		let target = parent.find('.wbtm_dropping_point');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		parent.find('.wbtm_dropping_point .mp_input_select_list').remove();
 		target.find('input.formControl').val('');
 		dLoader_xs(parent);
@@ -104,6 +107,7 @@
 		let current = $(this);
 		let end_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let exit_route = 0;
 		parent.find('.wbtm_dropping_point .mp_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
@@ -141,6 +145,7 @@
 		let date = $(this).val();
 		let parent = $(this).closest('#wbtm_area');
 		let target = parent.find('.wbtm_return_date');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (target.length > 0 && date) {
 			let end_route = parent.find('input[name="bus_end_route"]').val();
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
@@ -170,6 +175,7 @@
 	});
 	$(document).on("click", "#wbtm_area #wbtm_journey_date", function () {
 		let parent = $(this).closest('#wbtm_area');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let start = parent.find('input[name="bus_start_route"]').val();
 		if (!start) {
 			mp_alert($(this));
@@ -183,6 +189,7 @@
 		let parent = $(this).closest('.wbtm_bus_list_area');
 		let post_id = $(this).attr('data-bus_id');
 		let target = parent.find('tr[data-row_id=' + post_id + ']').find('td.wbtm_bus_details');
+		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if ($(this).hasClass('mActive')) {
 			target.find('>div').slideUp('fast');
 			mp_all_content_change($(this));

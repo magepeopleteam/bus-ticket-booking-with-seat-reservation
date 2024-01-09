@@ -719,6 +719,39 @@ function mp_pagination_page_management(parent, pagination_page, total_item) {
 		let page_no = parseInt(parent.find('.active_pagination').data('pagination')) + 1;
 		parent.find('[data-pagination="' + page_no + '"]').trigger('click');
 	});
+	//*************** Pagination Load More ***************//
+	$(document).on('click', 'div.mp_pagination_main_area  .pagination_load_more', function () {
+		let pagination_page = parseInt($(this).attr('data-load-more'))+1;
+		let parent = $(this).closest('div.mp_pagination_main_area');
+		let per_page_item = parseInt(parent.find('input[name="pagination_per_page"]').val());
+		let count=0;
+		let end_item = per_page_item*pagination_page+per_page_item;
+		$(this).attr('data-load-more', pagination_page).promise().done(function () {
+			parent.find('.mp_pagination_item').each(function (){
+				if(count<end_item){
+					$(this).slideDown(250);
+				}
+				count++;
+			});
+		}).promise().done(function () {
+			lode_more_init(parent);
+		}).promise().done(function () {
+			loadBgImage();
+		});
+	});
+	function lode_more_init(parent) {
+		if (parent.find('.mp_pagination_item:hidden').length === 0) {
+			parent.find('[data-load-more]').attr('disabled', 'disabled');
+		} else {
+			parent.find('[data-load-more]').removeAttr('disabled');
+		}
+	}
+	function load_more_scroll(parent, pagination_page) {
+		let per_page_item = parseInt(parent.find('input[name="pagination_per_page"]').val());
+		let start_item = pagination_page > 0 ? pagination_page * per_page_item : 0;
+		let target = parent.find('.mp_pagination_item:nth-child(' + (start_item + 1) + ')');
+		pageScrollTo(target);
+	}
 }(jQuery));
 //==============================================================Modal / Popup==========//
 (function ($) {

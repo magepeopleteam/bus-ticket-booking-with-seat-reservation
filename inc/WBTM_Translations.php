@@ -24,7 +24,9 @@
 			public static function text_bp() { return esc_html__('Boarding', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_dp() { return esc_html__('Dropping', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_start_point() { return esc_html__('Starting Points', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_pickup() { return esc_html__('Pickup', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_pickup_point() { return esc_html__('Pickup Point', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_drop_off() { return esc_html__('Drop-Off', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_drop_off_point() { return esc_html__('Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_return_trip() { return esc_html__('Return Trip', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_upper_deck() { return esc_html__('Upper Deck', 'bus-ticket-booking-with-seat-reservation'); }
