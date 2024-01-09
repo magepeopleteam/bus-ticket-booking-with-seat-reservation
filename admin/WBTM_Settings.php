@@ -33,21 +33,21 @@ if (!class_exists('WBTM_Settings')) {
                         <li data-tabs-target="#wbtm_settings_seat">
                             <span class="fas fa-chair"></span><?php esc_html_e('Seat Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
+                        <li data-tabs-target="#wbtm_settings_pricing_routing">
+                            <span class="fas fa-file-invoice-dollar"></span><?php esc_html_e('Pricing & Route', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </li>
+                        <li data-tabs-target="#wbtm_settings_ex_service">
+                            <span class="fas fa-list"></span><?php echo WBTM_Translations::text_ex_service(); ?>
+                        </li>
+                        <li data-tabs-target="#wbtm_settings_pickup_point">
+                            <span class="fas fa-route"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </li>
+                        <?php do_action('add_wbtm_add_setting_menu', $post_id); ?>
                         <li data-tabs-target="#wbtm_settings_date">
                             <span class="fas fa-calendar-alt"></span><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
-                        <li data-tabs-target="#wbtm_settings_pricing_routing">
-                            <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Pricing & Route', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </li>
-                        <li data-tabs-target="#wbtm_settings_ex_service">
-                            <span class="fas fa-hand-holding-usd"></span><?php echo WBTM_Translations::text_ex_service(); ?>
-                        </li>
-                        <li data-tabs-target="#wbtm_settings_pickup_point">
-                            <span class="fas fa-flag"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </li>
-                        <?php do_action('add_wbtm_add_setting_menu', $post_id); ?>
                         <li data-tabs-target="#wbtm_settings_tax">
-                            <span class="fas fa-money-bill-wave"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
                         <?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                             <li data-tabs-target="#mp_pp_deposits_type">
@@ -95,10 +95,9 @@ if (!class_exists('WBTM_Settings')) {
             $data = self::description_array($key);
             if ($data) {
                 ?>
-                <i class="info_text">
-                    <span class="fas fa-info-circle"></span>
+                <span>
                     <?php echo esc_html($data); ?>
-                </i>
+                </span>
                 <?php
             }
         }

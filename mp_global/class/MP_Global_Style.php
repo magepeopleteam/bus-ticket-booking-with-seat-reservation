@@ -101,7 +101,7 @@
 						--color_blue: #815DF2;
 						--color_navy_blue: #007CBA;
 						--color_1: #0C5460;
-						--color_2: #0CB32612;
+						--color_2: #caf0ffcc;
 						--color_3: #FAFCFE;
 						--color_4: #6148BA;
 						--color_5: #BCB;

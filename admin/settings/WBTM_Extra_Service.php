@@ -20,42 +20,48 @@
 				$checked_ex = $display_ex == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_ex_service">
-					<h5 class="dFlex">
-						<?php MP_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
-						<span class="_mL"><?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-					</h5>
-					<?php WBTM_Settings::info_text('show_extra_service'); ?>
-					<div class="divider"></div>
-					<div data-collapse="#show_extra_service" class="<?php echo esc_attr($active_ex); ?>">
-						<div class="_mT_dLayout_xs mp_settings_area">
-							<div class="ovAuto">
-								<table>
-									<thead>
-									<tr>
-<!--										<th>--><?php ////esc_html_e('Service Icon', 'bus-ticket-booking-with-seat-reservation'); ?><!--</th>-->
-										<th><?php esc_html_e('Service Name', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
-										<th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
-										<th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
-										<th><?php esc_html_e('Qty Box Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-										<th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-									</tr>
-									</thead>
-									<tbody class="mp_sortable_area mp_item_insert">
-									<?php
-										if (sizeof($extra_services) > 0) {
-											foreach ($extra_services as $extra_service) {
-												$this->extra_service_item($extra_service);
-											}
-										}
-									?>
-									</tbody>
-								</table>
+					<h3 class="mB_xs"><?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<div class="_dLayout_xs_mp_zero">	
+						<div class="_bgColor_2_padding dFlex _justifyBetween">
+							<label class="col_6">
+								<?php esc_html_e('Extra Service', 'bus-ticket-booking-with-seat-reservation'); ?>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_extra_service'); ?></i>
+							</label>
+							<div class="col_6 dFlex _justifyEnd">
+								<?php MP_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
 							</div>
-							<?php MP_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'bus-ticket-booking-with-seat-reservation')); ?>
-							<?php do_action('add_mp_hidden_table', 'wbtm_extra_service_item'); ?>
 						</div>
+						<div data-collapse="#show_extra_service" class="<?php echo esc_attr($active_ex); ?>">
+							<div class="padding mp_settings_area">
+								<div class="ovAuto">
+									<table>
+										<thead>
+										<tr>
+	<!--										<th>--><?php ////esc_html_e('Service Icon', 'bus-ticket-booking-with-seat-reservation'); ?><!--</th>-->
+											<th><?php esc_html_e('Service Name', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
+											<th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
+											<th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
+											<th><?php esc_html_e('Qty Box Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+											<th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+										</tr>
+										</thead>
+										<tbody class="mp_sortable_area mp_item_insert">
+										<?php
+											if (sizeof($extra_services) > 0) {
+												foreach ($extra_services as $extra_service) {
+													$this->extra_service_item($extra_service);
+												}
+											}
+										?>
+										</tbody>
+									</table>
+								</div>
+								<?php MP_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'bus-ticket-booking-with-seat-reservation')); ?>
+								<?php do_action('add_mp_hidden_table', 'wbtm_extra_service_item'); ?>
+							</div>
+						</div>
+						<?php do_action('add_wbtm_extra_service_content',$post_id); ?>
 					</div>
-					<?php do_action('add_wbtm_extra_service_content',$post_id); ?>
 				</div>
 				<?php
 			}
