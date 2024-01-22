@@ -109,7 +109,7 @@ if (!class_exists('WBTM_Layout')) {
                     </div>
                 </div>
             <?php }
-            if ($start_route && $end_route && $r_date) { ?>
+            if ($post_id==0 && $start_route && $end_route && $r_date) { ?>
                 <div class="_dLayout_dShadow_1" id="wbtm_return_container">
                     <h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
                     <div class="divider"></div>
