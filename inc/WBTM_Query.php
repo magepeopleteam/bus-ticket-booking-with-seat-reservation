@@ -110,6 +110,7 @@
 				return $total_booked;
 			}
 			public static function query_seat_booked($post_id, $start, $end, $date) {
+				$seat_booked=[];
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
 					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
@@ -152,10 +153,15 @@
 								)
 							),
 						);
-						$q = get_posts($args);
+						$guest_ids= get_posts($args);
+						if(sizeof($guest_ids)>0){
+							foreach ($guest_ids as $guest_id){
+								$seat_booked[]=MP_Global_Function::get_post_info($guest_id,'wbtm_seat');
+							}
+						}
 					}
 				}
-				return $q;
+				return $seat_booked;
 			}
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
