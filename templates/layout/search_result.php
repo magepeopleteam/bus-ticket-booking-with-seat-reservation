@@ -14,6 +14,7 @@
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 	if (sizeof($bus_ids) > 0) {
 		$bus_count = 0;
+		//echo '<pre>';print_r($bus_ids);echo '</pre>';
 		?>
 
 		<!-- new layout -->
@@ -23,6 +24,7 @@
 			<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>"/>
 			
 			<?php foreach ($bus_ids as $bus_id) : ?>
+				<?php //echo '<pre>'; print_r(WBTM_Query:: query_seat_booked($bus_id, $start_route, $end_route, $date)); echo '</pre>'; ?>
 				<?php  
 					$all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route); 
 					if (sizeof($all_info) > 0) :

@@ -109,6 +109,54 @@
 				}
 				return $total_booked;
 			}
+			public static function query_seat_booked($post_id, $start, $end, $date) {
+				if ($post_id && $start && $end && $date) {
+					$date = date('Y-m-d', strtotime($date));
+					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
+					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
+					if (sizeof($routes) > 0) {
+						$sp = array_search($start, $routes);
+						$ep = array_search($end, $routes);
+						$args = array(
+							'post_type' => 'wbtm_bus_booking',
+							'posts_per_page' => -1,
+							'fields'     => 'ids',
+							'meta_query' => array(
+								array(
+									'relation' => 'AND',
+									array(
+										'key' => 'wbtm_boarding_point',
+										'value' => array_slice($routes, 0, $ep),
+										'compare' => 'IN'
+									),
+									array(
+										'key' => 'wbtm_dropping_point',
+										'value' => array_slice($routes, $sp + 1),
+										'compare' => 'IN'
+									),
+									array(
+										'key' => 'wbtm_boarding_time',
+										'value' => $date,
+										'compare' => 'LIKE'
+									),
+									array(
+										'key' => 'wbtm_bus_id',
+										'value' => $post_id,
+										'compare' => '='
+									),
+									array(
+										'key' => 'wbtm_order_status',
+										'value' => $seat_booked_status,
+										'compare' => 'IN'
+									)
+								)
+							),
+						);
+						$q = get_posts($args);
+					}
+				}
+				return $q;
+			}
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {
