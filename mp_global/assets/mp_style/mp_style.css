@@ -246,8 +246,8 @@
 	.mpStyle .mpBtn, .mpStyle [class*="_mpBtn"],
 	.mpStyle button { position: relative; font-size: var(--button_fs); font-weight: var(--fw-medium); line-height: 1; cursor: pointer; overflow: visible; border: none; -webkit-appearance: button; text-transform: capitalize; }
 	.mpStyle button[disabled] { cursor: not-allowed; opacity: 0.8; background-color: #DDD; }
-	.mpStyle button:hover, .mpStyle button:focus { text-decoration: none; opacity: 0.8; background-color: var(--d_color); color: #FFF; }
-	.mpStyle button:hover span, .mpStyle button:focus span { color: #FFF; }
+	.mpStyle button:hover, .mpStyle button:focus { text-decoration: none; opacity: 0.8; background-color: var(--color_2); color: var(--color_theme); }
+	.mpStyle button:hover span, .mpStyle button:focus span { color: var(--color_theme); }
 	.mpStyle .mpBtn, .mpStyle [class*="_mpBtn"] { padding: var(--dMP_xs) var(--dMP); color: var(--d_color); background-color: transparent; border: 1px solid var(--color_border); }
 	.mpStyle .mpBtn_xs, .mpStyle [class*="_mpBtn_xs"] { padding: 7px var(--dMP_xs); }
 	.mpStyle .mpBtn.mpActive, .mpStyle [class*="_mpBtn"].mpActive { border-color: var(--color_theme); color: var(--color_theme); }
@@ -265,10 +265,10 @@
 	.mpStyle .themeButton:hover, .mpStyle [class*="_themeButton"]:hover { background-color: #000; color: var(--color_theme_alter); border-color: #000; }
 	.mpStyle .themeButton:hover span, .mpStyle [class*="_themeButton"]:hover span { color: var(--color_theme_alter); }
 	/****/
-	.mpStyle .warningButton, .mpStyle [class*="_warningButton"] { background-color: var(--color_warning); color: var(--color_theme_alter); padding: var(--dMP_xs) var(--dMP); border: 2px solid var(--color_warning); }
-	.mpStyle .warningButton span, .mpStyle [class*="_warningButton"] span { color: var(--color_theme_alter); }
-	.mpStyle .warningButton:hover, .mpStyle [class*="_warningButton"]:hover { background-color: var(--color_light); color: var(--color_warning); }
-	.mpStyle .warningButton:hover span, .mpStyle [class*="_warningButton"]:hover span { color: var(--color_warning); }
+	.mpStyle .warningButton, .mpStyle [class*="_warningButton"] { background-color:var(--color_2); color: var(--color_danger); padding: var(--dMP_xs) var(--dMP); border: 2px solid var(--color_2); }
+	.mpStyle .warningButton span, .mpStyle [class*="_warningButton"] span { color: var(--color_danger); }
+	.mpStyle .warningButton:hover, .mpStyle [class*="_warningButton"]:hover { background-color: var(--color_light); color: var(--color_danger); }
+	.mpStyle .warningButton:hover span, .mpStyle [class*="_warningButton"]:hover span { color: var(--color_danger); }
 	/*********/
 	.mpStyle .successButton, .mpStyle [class*="_successButton"] { background-color: var(--color_success); color: var(--color_theme_alter); padding: var(--dMP_xs) var(--dMP); border: 2px solid var(--color_success); }
 	.mpStyle .successButton span, .mpStyle [class*="_successButton"] span { color: var(--color_theme_alter); }
@@ -929,7 +929,7 @@
 		background-color: white; border-radius: 50%;
 		-webkit-transition: .4s; transition: .4s;
 	}
-	.mpStyle .roundSwitchLabel input:checked + .roundSwitch { background-color: var(--color_success); }
+	.mpStyle .roundSwitchLabel input:checked + .roundSwitch { background-color: var(--color_theme); }
 	.mpStyle .roundSwitchLabel input:focus + .roundSwitch { box-shadow: 0 0 1px #2276D2; }
 	.mpStyle .roundSwitchLabel input:checked + .roundSwitch:before { -ms-transform: translateX(35px); transform: translateX(35px); }
 	/*********Group radio check*******/

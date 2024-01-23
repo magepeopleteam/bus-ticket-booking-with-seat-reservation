@@ -20,10 +20,15 @@
 				$bus_stop_lists = MP_Global_Function::get_all_term_data('wbtm_bus_stops');
 				?>
 				<div class="tabsItem wbtm_settings_pricing_routing" data-tabs="#wbtm_settings_pricing_routing">
-					<div class="mpPanel">
-						<div class="mpPanelHeader _bgLight">
-							<h3><?php esc_html_e('Routing Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-							<?php WBTM_Settings::info_text('wbtm_routing_info'); ?>
+					
+					<h3 class="pB_xs"><?php esc_html_e('Price And Routing Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+
+					<div class="_dLayout_xs_mp_zero">
+						<div class="_bgColor_2_padding dFlex">
+							<label class="textBlack ">
+								<?php esc_html_e('Routing Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_routing_info'); ?></i>
+							</label>
 						</div>
 						<div class="mpPanelBody _bgWhite">
 							<div class="mp_settings_area">
@@ -45,10 +50,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="mpPanel _mT">
-						<div class="mpPanelHeader _bgLight">
-							<h3><?php esc_html_e('Pricing Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-							<?php WBTM_Settings::info_text('wbtm_pricing_info'); ?>
+					<div class="_mT"></div>
+					<div class="_dLayout_xs_mp_zero ">
+						<div class="_bgColor_2_padding dFlex">
+							<label class="textBlack ">
+								<?php esc_html_e('Pricing Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_pricing_info'); ?></i>
+							</label>
 						</div>
 						<div class="mpPanelBody _bgWhite">
 							<div class="wbtm_price_setting_area">
@@ -72,7 +80,7 @@
 							<?php MP_Custom_Layout::move_remove_button(); ?>
 						</div>
 						<div class="mpPanelBody">
-							<label>
+							<label class="pB_xs">
 								<span class="_w_75"><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<select name="wbtm_route_place[]" class='formControl'>
 									<option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
@@ -81,11 +89,11 @@
 									<?php } ?>
 								</select>
 							</label>
-							<label>
+							<label class="pB_xs">
 								<span class="_w_75"><?php esc_html_e('Time : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<input type="time" name="wbtm_route_time[]" class='formControl' value="<?php echo esc_attr($time); ?>"/>
 							</label>
-							<label>
+							<label class="pB_xs">
 								<span class="_w_75"><?php esc_html_e('Type : ', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 								<select name="wbtm_route_type[]" class='formControl'>
 									<option selected disabled><?php esc_html_e('Select place type', 'bus-ticket-booking-with-seat-reservation'); ?></option>

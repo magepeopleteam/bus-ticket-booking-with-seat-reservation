@@ -15,8 +15,8 @@
 			public function tab_content($post_id) {
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_tax">
-					<h5><?php esc_html_e('Tax Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-					<div class="divider"></div>
+					<h3 class="pB_xs"><?php esc_html_e('Tax Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					
 					<?php
 						$tax_status = MP_Global_Function::get_post_info($post_id, '_tax_status');
 						$tax_class = MP_Global_Function::get_post_info($post_id, '_tax_class');
@@ -24,27 +24,35 @@
 					?>
 					<?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
 						<div class="_dLayout_xs_mp_zero">
-							<div class="_bgColor_2_padding_xs">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Tax status', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<select class="formControl" name="_tax_status">
-										<option disabled selected><?php echo WBTM_Translations::text_please_select(); ?></option>
-										<option value="taxable" <?php echo esc_attr($tax_status == 'taxable' ? 'selected' : ''); ?>>
-											<?php esc_html_e('Taxable', 'bus-ticket-booking-with-seat-reservation'); ?>
-										</option>
-										<option value="shipping" <?php echo esc_attr($tax_status == 'shipping' ? 'selected' : ''); ?>>
-											<?php esc_html_e('Shipping only', 'bus-ticket-booking-with-seat-reservation'); ?>
-										</option>
-										<option value="none" <?php echo esc_attr($tax_status == 'none' ? 'selected' : ''); ?>>
-											<?php esc_html_e('None', 'bus-ticket-booking-with-seat-reservation'); ?>
-										</option>
-									</select>
+							
+							<div class="_bgColor_2_ padding dFlex">
+								<label class="col_6">
+									<?php esc_html_e('Tax status', 'bus-ticket-booking-with-seat-reservation'); ?>
+									<i class="fas fa-question-circle tool-tips"></i>
 								</label>
+								<div class="col_6">
+									<select class="formControl max_300" name="_tax_status">
+											<option disabled selected><?php echo WBTM_Translations::text_please_select(); ?></option>
+											<option value="taxable" <?php echo esc_attr($tax_status == 'taxable' ? 'selected' : ''); ?>>
+												<?php esc_html_e('Taxable', 'bus-ticket-booking-with-seat-reservation'); ?>
+											</option>
+											<option value="shipping" <?php echo esc_attr($tax_status == 'shipping' ? 'selected' : ''); ?>>
+												<?php esc_html_e('Shipping only', 'bus-ticket-booking-with-seat-reservation'); ?>
+											</option>
+											<option value="none" <?php echo esc_attr($tax_status == 'none' ? 'selected' : ''); ?>>
+												<?php esc_html_e('None', 'bus-ticket-booking-with-seat-reservation'); ?>
+											</option>
+										</select>
+								</div>
 							</div>
-							<div class="_padding_xs">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Tax class', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<select class="formControl" name="_tax_class">
+
+							<div class="padding dFlex">
+								<label class="col_6">
+									<?php esc_html_e('Tax class', 'bus-ticket-booking-with-seat-reservation'); ?>
+									<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('_tax_class'); ?></i>
+								</label>
+								<div class="col_6">
+									<select class="formControl max_300" name="_tax_class">
 										<option disabled selected><?php echo WBTM_Translations::text_please_select(); ?></option>
 										<option value="standard" <?php echo esc_attr($tax_class == 'standard' ? 'selected' : ''); ?>>
 											<?php esc_html_e('Standard', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -57,8 +65,7 @@
 											<?php } ?>
 										<?php } ?>
 									</select>
-								</label>
-								<?php WBTM_Settings::info_text('_tax_class'); ?>
+								</div>
 							</div>
 						</div>
 					<?php }else{ ?>
