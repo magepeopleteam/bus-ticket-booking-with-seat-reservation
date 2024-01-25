@@ -141,7 +141,7 @@
 					update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 					//=========Update particular date ============//
 					$particular_date = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_on_dates');
-					$particular_date = $particular_date ? explode(', ', $particular_date) : [];
+					$particular_date = $particular_date && is_string($particular_date) ? explode(', ', $particular_date) : [];
 					update_post_meta($post_id, 'wbtm_particular_dates', $particular_date);
 					delete_post_meta($post_id, 'wbtm_bus_on_dates');
 					//=========Update pickup point============//
