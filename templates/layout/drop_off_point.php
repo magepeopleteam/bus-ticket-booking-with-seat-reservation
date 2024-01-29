@@ -21,8 +21,8 @@ if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
                 <div class="wbtm_pickup_point">
                     <label class="justifyBetween">
                         <span class="_mR_xs"><?php echo WBTM_Translations::text_drop_off_point(); ?></span>
-                        <select class="formControl" name="wbtm_drop_off_point">
-                            <option selected value=" "><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point(); ?></option>
+                        <select class="formControl" name="wbtm_drop_off_point" required>
+                            <option disabled><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point(); ?></option>
                             <?php foreach ($pickup_infos as $pickup_info) { ?>
                                 <?php $pickup_time = date('Y-m-d H:i', strtotime($date . ' ' . $pickup_info['time'])); ?>
                                 <?php $pickup_time = MP_Global_Function::date_format($pickup_time, 'time'); ?>
