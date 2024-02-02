@@ -7,6 +7,7 @@
 		let start = parent.find('input[name="bus_start_route"]');
 		let end = parent.find('input[name="bus_end_route"]');
 		let j_date = parent.find('input[name="j_date"]');
+		let style = parent.find('input[name="wbtm_list_style"]');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
@@ -32,6 +33,7 @@
 					"j_date": j_date.val(),
 					"r_date": r_date.val(),
 					"post_id": post_id,
+					"style": style.val(),
 				},
 				beforeSend: function () {
 					dLoader(parent.find('.wbtm_search_area'));
