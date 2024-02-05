@@ -74,14 +74,11 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .price {
     width: 15%;
-  }
-}
-@media (min-width: 768px) {
-  .wbtm-bus-flix-style .price {
     flex-direction: column;
   }
 }
