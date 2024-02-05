@@ -37,7 +37,7 @@
 						<div class="wbtm-bus-flix-style">
 							<div class="image">
 								<p class="h6" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></p>
-								<?php MP_Custom_Layout::bg_image($bus_id); ?>
+								<img src="" alt="">
 								<p><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
 							</div>
 							<div class="route">
