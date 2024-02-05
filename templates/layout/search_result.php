@@ -36,21 +36,28 @@
 					<?php if($style=='flix'): ?>
 						<div class="wbtm-bus-flix-style">
 							<div class="image">
-								<h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
+								<p class="h6" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></p>
 								<?php MP_Custom_Layout::bg_image($bus_id); ?>
 								<p><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
 							</div>
 							<div class="route">
-								<div>
-									<h2><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format( $all_info['bp_time'], 'time') : ''); ?></h2>
-									<p><?php echo esc_html($all_info['bp']); ?></p>
+								<div class="route-info">
+									<div class="from">
+										<h2><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format( $all_info['bp_time'], 'time') : ''); ?></h2>
+										<p><?php echo esc_html($all_info['bp']); ?></p>
+									</div>
+									<div class="duration textCenter">
+										<strong><?php echo MP_Global_Function::date_difference($all_info['bp_time'],$all_info['dp_time']); ?></strong>
+									</div>
+									<div class="to">
+										<h2><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format( $all_info['dp_time'], 'time') : ''); ?></h2>
+										<p><?php echo esc_html($all_info['dp']); ?></p>
+									</div>
 								</div>
-								<div class="calculate-time">
-
-								</div>
-								<div>
-									<h2><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format( $all_info['bp_time'], 'time') : ''); ?></h2>
-									<p><?php echo esc_html($all_info['bp']); ?></p>
+								<div class="route-bottom">
+									<div class="items">
+										<p><?php echo WBTM_Translations::text_available(); ?> <strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
+									</div>
 								</div>
 							</div>
 							<div class="price">
@@ -64,6 +71,13 @@
 								</button>
 							</div>
 						</div>
+						<table class="wbtm_bus_details mT_xs">
+							<tbody>
+								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
+									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
+								</tr>
+							</tbody>
+						</table>
 					<?php else: ?>
 						<div class="wbtm-bust-list _dFlex_mT">
 							<div class="wbtm-bus-image ">
