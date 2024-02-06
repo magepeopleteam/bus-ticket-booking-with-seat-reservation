@@ -17,7 +17,7 @@
 			<div class="col_4 col_5_1000 col_6_900 col_12_800">
 				<?php require WBTM_Functions::template_path('layout/seat_plan.php'); ?>
 			</div>
-			<div class="col_6 col_12_1000 col_6_800 col_12_700">
+			<div class="col_7 col_12_1000 col_6_800 col_12_700">
 				<?php if ($display_wbtm_registration == 'yes') { ?>
 					<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
 					<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>

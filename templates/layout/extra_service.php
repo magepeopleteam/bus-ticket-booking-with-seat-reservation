@@ -17,7 +17,7 @@
 			?>
 			<div class="wbtm_ex_service_area">
 				<div class="divider"></div>
-				<h5 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h5>
+				<h3 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h3>
 				<table class="_layoutFixed">
 					<thead>
 					<tr>
