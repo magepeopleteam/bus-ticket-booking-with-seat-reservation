@@ -33,7 +33,7 @@
 						$bus_count++;
 						$price = $all_info['price'];
 				?>
-					
+					<!-- short code new style flix if set -->
 					<?php if($style=='flix'): ?>
 						<div class="wbtm-bus-flix-style">
 							<div class="title">
@@ -79,6 +79,7 @@
 							</tbody>
 						</table>
 					<?php else: ?>
+						<!-- default style -->
 						<div class="wbtm-bust-list _dFlex_mT">
 							<div class="wbtm-bus-image ">
 								<?php MP_Custom_Layout::bg_image($bus_id); ?>
