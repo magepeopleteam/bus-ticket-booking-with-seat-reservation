@@ -17,14 +17,13 @@
 			?>
 			<div class="wbtm_ex_service_area">
 				<div class="divider"></div>
-				<h5><?php echo WBTM_Translations::text_ex_service(); ?> : </h5>
-				<div class="divider"></div>
-				<table class="_layoutFixed_textCenter">
+				<h5 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h5>
+				<table class="_layoutFixed">
 					<thead>
 					<tr>
-						<th><?php echo WBTM_Translations::text_name();?></th>
-						<th><?php echo WBTM_Translations::text_qty(); ?></th>
-						<th><?php echo WBTM_Translations::text_price();?></th>
+						<th class="_textLeft"><?php echo WBTM_Translations::text_name();?></th>
+						<th class="_textCenter"><?php echo WBTM_Translations::text_qty(); ?></th>
+						<th class="_textCenter"><?php echo WBTM_Translations::text_price();?></th>
 					</tr>
 					</thead>
 					<tbody>
@@ -38,12 +37,12 @@
 						$available_ex_service = $total_ex - $sold;
 						?>
 						<tr>
-							<th><?php echo esc_html($ex_name); ?></th>
-							<td>
+							<td class="_textLeft"><?php echo esc_html($ex_name); ?></td>
+							<td class="_textCenter">
 								<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
 								<?php MP_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>
 							</td>
-							<th><?php echo wc_price($row_price); ?></th>
+							<td class="_textCenter"><?php echo wc_price($row_price); ?></td>
 						</tr>
 					<?php } ?>
 					</tbody>

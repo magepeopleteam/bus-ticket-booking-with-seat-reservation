@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-color: var(--color_white);
-  border: 1px solid #e8e8e8;
+  background-color: #F0F7FF;
+  border: 1px solid #2F9DF4;
   margin: 10px auto;
   border-radius: 5px;
   padding: 10px;
@@ -23,10 +23,9 @@
   }
 }
 .wbtm-bus-flix-style .title span {
-  border: 1px solid #e8e8e8;
   padding: 0 5px;
   border-radius: 50px;
-  background-color: #e8f4ff;
+  background-color: #fff;
 }
 .wbtm-bus-flix-style .route {
   width: 100%;
@@ -70,12 +69,12 @@
   }
 }
 .wbtm-bus-flix-style .route .route-info .duration {
-  border-bottom: 1px solid #999;
+  border-bottom: 3px solid #2F9DF4;
   width: 65%;
   position: relative;
 }
 .wbtm-bus-flix-style .route .route-info .duration .time {
-  background: #fff;
+  background: #F0F7FF;
   position: absolute;
   top: -12px;
   left: 50%;
@@ -88,11 +87,10 @@
   align-items: center;
 }
 .wbtm-bus-flix-style .feature .items {
-  border: 1px solid #e8e8e8;
   padding: 2px 8px;
   border-radius: 50px;
   margin: 5px;
-  background-color: #f8f8f8;
+  background-color: #fff;
 }
 
 /*# sourceMappingURL=wbtm.css.map */
