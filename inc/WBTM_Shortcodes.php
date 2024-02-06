@@ -13,7 +13,7 @@
 				add_shortcode('wbtm-bus-search-form', array($this, 'wbtm_bus_search'));
 				add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
 			}
-			public function wbtm_bus_list($attribute, $content = null) {
+			public function wbtm_bus_list($attribute, $content = null){
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				$cat = $params['cat'];
@@ -21,10 +21,12 @@
 				$start = $params['start'];
 				$end = $params['end'];
 				$column = $params['column'];
+				$style = $params['style'];
 				$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat);
 				ob_start();
 				if (sizeof($bus_ids) > 0) {
 					$count = 0;
+					echo $style.'hhjh';
 					?>
 					<div class="mpStyle placeholderLoader mp_pagination_main_area">
 						<div class="mpContainer flexWrap">
@@ -44,7 +46,6 @@
 									<?php } ?>
 									<div class="bg_image_area" data-href="<?php echo esc_attr($url); ?>" data-placeholder>
 										<div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
-
 									</div>
 									<div class="divider"></div>
 									<a href="<?php echo esc_attr($url); ?>">
@@ -76,6 +77,7 @@
 				$cat = $params['cat'];
 				$form_style = $params['style'];
 				$search_path = $params['search-page'];
+				$style = $params['style'];
 				ob_start();
 				do_action('woocommerce_before_single_product');
 				?>

@@ -229,6 +229,16 @@
 					return -1;
 				}
 			}
+			public static function date_difference($startdate,$enddate) {
+				$starttimestamp = strtotime($startdate);
+				$endtimestamp = strtotime($enddate);
+				$difference = abs($endtimestamp - $starttimestamp)/3600; 
+				//return $difference;
+				$datetime1 = new DateTime($startdate);
+				$datetime2 = new DateTime($enddate);
+				$interval = $datetime1->diff($datetime2);
+				return $interval->format('%h')."H ".$interval->format('%i')."M";
+			}
 			//***********************************//
 			public static function get_settings($section, $key, $default = '') {
 				$options = get_option($section);

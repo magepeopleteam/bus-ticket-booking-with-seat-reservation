@@ -527,12 +527,12 @@
   .mpStyle button:focus {
     text-decoration: none;
     opacity: 0.8;
-    background-color: var(--color_2);
-    color: var(--color_theme);
+    background-color: var(--color_theme);
+    color: var(--color_white);
   }
   .mpStyle button:hover span,
   .mpStyle button:focus span {
-    color: var(--color_theme);
+    color: var(--color_white);
   }
   .mpStyle .mpBtn,
   .mpStyle [class*="_mpBtn"] {
@@ -576,7 +576,7 @@
   }
   .mpStyle .dButton.mActive,
   .mpStyle [class*="_dButton"].mActive {
-    color: var(--color_theme_alter);
+    color: var(--color_white);
     background-color: var(--color_theme);
   }
   .mpStyle .dButton span,
