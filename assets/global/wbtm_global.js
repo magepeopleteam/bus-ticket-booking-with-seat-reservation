@@ -34,6 +34,8 @@
 					"r_date": r_date.val(),
 					"post_id": post_id,
 					"style": style.val(),
+					"backend_order": window.location.href.search('wbtm_backend_order'),
+
 				},
 				beforeSend: function () {
 					dLoader(parent.find('.wbtm_search_area'));
@@ -212,6 +214,7 @@
 						"end_route": end,
 						"post_id": post_id,
 						"date": date,
+						"backend_order": window.location.href.search('wbtm_backend_order'),
 					},
 					beforeSend: function () {
 						dLoader(parent);

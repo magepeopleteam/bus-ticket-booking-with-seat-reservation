@@ -13,7 +13,7 @@
 	$seat_row = $seat_row ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 	$seat_column = $seat_column ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 	$seat_infos = $seat_infos ?? MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-	//echo '<pre>'; print_r($ticket_infos); echo '</pre>';
+
 	if (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 		$date = $_POST['date'] ?? '';
 		$seat_position = MP_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
@@ -21,8 +21,10 @@
 		$seat_infos_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
 		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
+		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $date);
 		?>
 		<div class="_dLayout_xs">
+			<?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
 			<div class="wbtm_seat_plan_area">
 				<div class="wbtm_seat_plan_lower ovAuto">
 					<input type="hidden" name="wbtm_selected_seat" value=""/>
@@ -47,8 +49,8 @@
 										<?php } else { ?>
 											<th>
 												<div class="mp_seat_item">
-													<?php $sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
-													<?php if ($sold_seats > 0) { ?>
+													<?php //$sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
+													<?php if (in_array($seat_name,$seat_booked)) { ?>
 														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
 													<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
 														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
