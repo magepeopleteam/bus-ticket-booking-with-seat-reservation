@@ -18,7 +18,7 @@
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(odd) th,
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(odd) td,
 	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) th,
-	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) td {background-color: var(--color_light);color: var(--d_color);text-align: left;}
+	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) td {color: var(--d_color);text-align: left;}
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(even) th,
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(even) td,
 	div.wbtm_bus_details_area table tbody tr:nth-of-type(even) th,
