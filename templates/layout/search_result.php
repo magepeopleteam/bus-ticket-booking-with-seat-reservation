@@ -36,41 +36,40 @@
 					
 					<?php if($style=='flix'): ?>
 						<div class="wbtm-bus-flix-style">
-							<div class="image">
-								<p class="h6" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></p>
-								<img src="" alt="">
-								<p><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
+							<div class="title">
+								<p><span><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
+								<h6 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h6>
 							</div>
 							<div class="route">
 								<div class="route-info">
 									<div class="from">
-										<h2><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format( $all_info['bp_time'], 'time') : ''); ?></h2>
-										<p><?php echo esc_html($all_info['bp']); ?></p>
+										<h2 class="textTheme" ><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format( $all_info['bp_time'], 'time') : ''); ?></h2>
+										<p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
 									</div>
 									<div class="duration textCenter">
-										<strong><?php echo MP_Global_Function::date_difference($all_info['bp_time'],$all_info['dp_time']); ?></strong>
+										<strong class="time"><?php echo MP_Global_Function::date_difference($all_info['bp_time'],$all_info['dp_time']); ?></strong>
 									</div>
 									<div class="to">
-										<h2><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format( $all_info['dp_time'], 'time') : ''); ?></h2>
-										<p><?php echo esc_html($all_info['dp']); ?></p>
+										<h2 class="textTheme" ><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format( $all_info['dp_time'], 'time') : ''); ?></h2>
+										<p><strong><?php echo esc_html($all_info['dp']); ?></strong></p>
 									</div>
 								</div>
-								<div class="route-bottom">
-									<div class="items">
-										<p><?php echo WBTM_Translations::text_available(); ?> <strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
-									</div>
+							</div>
+							<div class="feature">
+								<div class="items">
+									<p><?php echo WBTM_Translations::text_available(); ?> <strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
 								</div>
 							</div>
 							<div class="price">
-								<h2><?php echo wc_price($price); ?></h2>
-								<button type="button" class="_dButton_xs" id="get_wbtm_bus_details"
-									data-bus_id="<?php echo esc_attr($bus_id); ?>"
-									data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-									data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-									data-add-class="mActive">
-									<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
-								</button>
+								<h4 class="textTheme" ><?php echo wc_price($price); ?></h4>
 							</div>
+							<button type="button" class="_dButton_xs" id="get_wbtm_bus_details"
+								data-bus_id="<?php echo esc_attr($bus_id); ?>"
+								data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+								data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+								data-add-class="mActive">
+								<?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
+							</button>
 						</div>
 						<table class="wbtm_bus_details mT_xs">
 							<tbody>
