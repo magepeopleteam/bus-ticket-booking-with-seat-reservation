@@ -72,7 +72,7 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_row = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                     $seat_column = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
                     ?>
-                    <div class="wbtm_registration_area">
+                    <div class="wbtm_registration_area mT">
                         <form action="" method="post" class="">
                             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
                             <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
