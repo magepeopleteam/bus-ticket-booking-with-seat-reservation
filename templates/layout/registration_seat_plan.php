@@ -15,7 +15,11 @@
 		?>
 		<div class="mpRow justifyBetween">
 			<div class="col_4 col_5_1000 col_6_900 col_12_800">
+				<?php if ($display_wbtm_registration == 'yes') { ?>
 				<?php require WBTM_Functions::template_path('layout/seat_plan.php'); ?>
+				<?php }else{ ?>
+					<img src="<?php echo esc_html(WBTM_PLUGIN_URL); ?>/assets/images/bus-seat.png" alt="">
+				<?php } ?>
 			</div>
 			<div class="col_7 col_12_1000 col_6_800 col_12_700">
 				<?php if ($display_wbtm_registration == 'yes') { ?>
@@ -24,12 +28,10 @@
 					<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
 					<?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
 					<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
+					<?php do_action('wbtm_attendee_form', $post_id); ?>
+					<?php require WBTM_Functions::template_path('layout/add_to_cart.php'); ?>
 				<?php }else{ ?>
 					<?php require WBTM_Functions::template_path('layout/registration_off.php'); ?>
-				<?php } ?>
-				<?php if ($display_wbtm_registration == 'yes') { ?>
-				<?php do_action('wbtm_attendee_form', $post_id); ?>
-					<?php require WBTM_Functions::template_path('layout/add_to_cart.php'); ?>
 				<?php } ?>
 			</div>
 		</div>
