@@ -99,7 +99,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 1em;
-	background-color: #F5F5F5;
+	/* background-color: #F5F5F5; */
 	text-align: center;
 	border-radius: var(--dBR);
 	border: 1px solid var(--color_theme);
