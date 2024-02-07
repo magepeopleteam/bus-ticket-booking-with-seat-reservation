@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WBTM_Layout')) {
     class WBTM_Layout {
         public function __construct() {
-            add_action('wbtm_search_result', [$this, 'search_result'], 10, 4);
+            add_action('wbtm_search_result', [$this, 'search_result'], 10, 5);
             /*********************/
             add_action('wp_ajax_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
             add_action('wp_ajax_nopriv_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
@@ -27,7 +27,7 @@ if (!class_exists('WBTM_Layout')) {
             add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
             /**************************/
         }
-        public function search_result($start_route, $end_route, $date, $post_id = '') {
+        public function search_result($start_route, $end_route, $date, $post_id = '',$style='') {
             require WBTM_Functions::template_path('layout/search_result.php');
         }
         public function get_wbtm_dropping_point() {
@@ -55,7 +55,8 @@ if (!class_exists('WBTM_Layout')) {
             $end_route = MP_Global_Function::data_sanitize($_POST['end_route']);
             $j_date = $_POST['j_date'] ?? '';
             $r_date = $_POST['r_date'] ?? '';
-            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date);
+            $style = $_POST['style'] ?? '';
+            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style);
             die();
         }
         public function get_wbtm_bus_details() {
@@ -71,7 +72,7 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_row = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                     $seat_column = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
                     ?>
-                    <div class="wbtm_registration_area">
+                    <div class="wbtm_registration_area mT">
                         <form action="" method="post" class="">
                             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
                             <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
@@ -98,12 +99,12 @@ if (!class_exists('WBTM_Layout')) {
             }
             die();
         }
-        public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date) {
+        public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='') {
             if ($start_route && $end_route && $j_date) { ?>
                 <div class="_dLayout_dShadow_1_mT">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id); ?>
+                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style); ?>
                     <div class="wbtm_search_part _mT_xs">
                         <?php //mage_bus_search_list(false); ?>
                     </div>

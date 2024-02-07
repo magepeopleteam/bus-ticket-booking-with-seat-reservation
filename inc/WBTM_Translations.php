@@ -54,7 +54,7 @@
 			public static function text_price() { return esc_html__('Price', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_fare() { return esc_html__('Fare', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_total() { return esc_html__('Total', 'bus-ticket-booking-with-seat-reservation'); }
-			public static function text_ticket_sub_total() { return esc_html__('Ticket Sub total', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function text_ticket_sub_total() { return esc_html__('Sub total', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_order_total() { return esc_html__('Order Total', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_passenger_capacity() { return esc_html__('Passenger Capacity', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_passenger_info() { return esc_html__('Passenger Information', 'bus-ticket-booking-with-seat-reservation'); }

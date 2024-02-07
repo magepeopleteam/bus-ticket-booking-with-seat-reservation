@@ -1,0 +1,95 @@
+.wbtm-bus-flix-style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #F0F7FF;
+  border: 1px solid #2F9DF4;
+  margin: 10px auto;
+  border-radius: 5px;
+  padding: 10px;
+}
+@media (min-width: 1024px) {
+  .wbtm-bus-flix-style {
+    flex-direction: row;
+  }
+}
+.wbtm-bus-flix-style .title {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .wbtm-bus-flix-style .title {
+    width: 15%;
+  }
+}
+.wbtm-bus-flix-style .title span {
+  padding: 0 5px;
+  border-radius: 50px;
+  background-color: #fff;
+}
+.wbtm-bus-flix-style .route {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .wbtm-bus-flix-style .route {
+    width: 55%;
+  }
+}
+.wbtm-bus-flix-style .route .route-info {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: space-between;
+  align-items: center;
+}
+.wbtm-bus-flix-style .route .route-info .from, .wbtm-bus-flix-style .route .route-info .to {
+  width: 45%;
+}
+@media (min-width: 540px) {
+  .wbtm-bus-flix-style .route .route-info .from, .wbtm-bus-flix-style .route .route-info .to {
+    width: 25%;
+  }
+}
+@media (max-width: 540px) {
+  .wbtm-bus-flix-style .route .route-info .from h2, .wbtm-bus-flix-style .route .route-info .to h2 {
+    font-size: 14px;
+  }
+}
+.wbtm-bus-flix-style .route .route-info .to {
+  padding-left: 0;
+}
+@media (min-width: 768px) {
+  .wbtm-bus-flix-style .route .route-info .to {
+    padding-left: 20px;
+  }
+}
+.wbtm-bus-flix-style .route .route-info .duration {
+  border-bottom: 3px solid #2F9DF4;
+  width: 65%;
+  position: relative;
+}
+.wbtm-bus-flix-style .route .route-info .duration .time {
+  background: #F0F7FF;
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 5px;
+}
+.wbtm-bus-flix-style .feature {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+.wbtm-bus-flix-style .feature .items {
+  padding: 2px 8px;
+  border-radius: 50px;
+  margin: 5px;
+}
+
+/*# sourceMappingURL=wbtm.css.map */

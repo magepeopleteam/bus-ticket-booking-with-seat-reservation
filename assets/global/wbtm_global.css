@@ -12,13 +12,13 @@
 	div.wbtm_bus_list_area table {width: 100%;border: none;border-collapse: collapse;box-shadow: none;margin: 0;}
 	div.wbtm_bus_list_area table th,
 	div.wbtm_bus_list_area table td {border: none;vertical-align: middle;font-size: var(--fs_label);}
-	div.wbtm_bus_list_area table thead th {background-color: var(--color_theme);color: var(--color_theme_alter);text-transform: capitalize;}
+	div.wbtm_bus_list_area table thead th {background-color: var(--color_light); text-transform: capitalize;}
 	div.wbtm_bus_list_area table tbody {background-color: var(--color_theme_alter);}
 	div.wbtm_bus_list_area table tbody tr.bus_item_row td {border-top: 1px solid var(--color_theme); }
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(odd) th,
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(odd) td,
 	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) th,
-	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) td {background-color: var(--color_light_2);color: var(--d_color);text-align: left;}
+	div.wbtm_bus_details_area table tbody tr:nth-of-type(odd) td {color: var(--d_color);text-align: left;}
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(even) th,
 	div.wbtm_selected_seat_details table tbody tr:nth-of-type(even) td,
 	div.wbtm_bus_details_area table tbody tr:nth-of-type(even) th,
@@ -62,6 +62,8 @@
 		display: -webkit-flex;display: flex;
 		-webkit-align-items: center;align-items: center;
 		-webkit-justify-content: center;justify-content: center;
+		border-radius: 15px 15px 0 0;
+		border-bottom: 5px solid var(--color_light);
 	}
 	div.seat_available {background-color: var(--color_theme_alter);cursor: pointer;color: var(--d_color);}
 	div.seat_selected.seat_available,
@@ -97,7 +99,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 1em;
-	background-color: #F5F5F5;
+	/* background-color: #F5F5F5; */
 	text-align: center;
 	border-radius: var(--dBR);
 	border: 1px solid var(--color_theme);

@@ -13,9 +13,11 @@
 	<div class="_dLayout_dShadow_1">
 		<div class="flexWrap">
 			<div class="col_6 col_12_700">
-				<?php MP_Custom_Layout::bg_image($post_id); ?>
+				<div class="mR">
+					<?php MP_Custom_Layout::bg_image($post_id); ?>
+				</div>
 			</div>
-			<div class="col_6 col_12_700">
+			<div class=" col_6 col_12_700">
 				<div class="dLayout_xs">
 					<h4>
 						<?php the_title(); ?>

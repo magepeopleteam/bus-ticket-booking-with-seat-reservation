@@ -29,8 +29,10 @@
 	$placeholder_text = WBTM_Translations::text_please_select();
 	//echo '<pre>'; print_r($_POST); echo '</pre>';
 	//echo '<pre>'; print_r($_REQUEST); echo '</pre>';
+	$style = $style ?? '';
 ?>
 	<div id="wbtm_area">
+		<input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
 		<div class="_dLayout_dShadow_1 wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
 			<?php if ($buy_ticket_text) { ?>
 				<h4><?php echo esc_html($buy_ticket_text); ?></h4>
