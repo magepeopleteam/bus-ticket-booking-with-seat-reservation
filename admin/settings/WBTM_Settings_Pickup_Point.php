@@ -157,97 +157,107 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             <?php
         }
         //*********//
-        public function drop_off_point($post_id) {
-            $drop_off_points_list = MP_Global_Function::get_all_term_data('wbtm_bus_drop_off');
-            $display_drop_off_point = MP_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
-            $active_drop_off_point = $display_drop_off_point == 'no' ? '' : 'mActive';
-            $checked_drop_off_point = $display_drop_off_point == 'no' ? '' : 'checked';
-            $drop_off_points = MP_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
-            $dp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
-            ?>
-            <div class="_dLayout_xs_mp_zero"> 
-                <div class="_bgColor_2_padding dFlex _justifyBetween ">
-                    <label class="col_6">
-                        <?php esc_html_e('Drop-Off Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        <i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('show_drop_off_point'); ?></i>
-                    </label>
-                    <div class="col_6 dFlex _justifyEnd">
-                        <?php MP_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
-                    </div>
-                </div>
-                
-                <div data-collapse="#show_drop_off_point" class="<?php echo esc_attr($active_drop_off_point); ?>">
-                    <?php if (sizeof($dp_points) > 0) { ?>
-                        <?php if (sizeof($drop_off_points_list) > 0) { ?>
-                            <div class="mp_settings_area">
-                                <div class="ovAuto">
-                                    <table>
-                                        <thead>
-                                        <tr>
-                                            <th><?php esc_html_e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                                            <th colspan="3"><?php esc_html_e('Drop-Off Info', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                                            <th class="_w_100"><?php echo WBTM_Translations::text_action(); ?></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody class="mp_sortable_area mp_item_insert">
-                                        <?php
-                                        if (sizeof($drop_off_points) > 0) {
-                                            foreach ($drop_off_points as $drop_off) {
-                                                $this->dp_point_item($drop_off_points_list, $dp_points, $drop_off);
-                                            }
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <?php MP_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_drop_off'); ?>
-                                <div class="mp_hidden_content">
-                                    <table>
-                                        <tbody class="mp_hidden_item">
-                                        <?php $this->dp_point_item($drop_off_points_list, $dp_points); ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        <?php } else { ?>
-                            <div class="padding">
-                                <?php WBTM_Layout::msg(esc_html__('You have no Drop-Off Point . Please add Drop-Off Point and save ,then you can edit Drop-Off point.', 'bus-ticket-booking-with-seat-reservation')); ?>
-                            </div>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <div class="padding">
-                            <?php WBTM_Layout::msg(esc_html__('You have no Bus route . Please add Price and Route and save ,then you can edit Drop-Off point.', 'bus-ticket-booking-with-seat-reservation')); ?>
-                        </div>
-                    <?php } ?>
-                </div>
-            </div>
-            <?php
-        }
-        public function dp_point_item($drop_off_points, $dp_points, $drop_off_data = []) {
-            $drop_off_data = $drop_off_data ?: array();
-            $drop_off_point = array_key_exists('dp_point', $drop_off_data) ? $drop_off_data['dp_point'] : '';
-            $drop_off_infos = array_key_exists('drop_off_info', $drop_off_data) ? $drop_off_data['drop_off_info'] : [];
-            if (sizeof($dp_points) > 0 && sizeof($drop_off_points) > 0) {
-                $unique_name = uniqid();
-                ?>
-                <tr class="mp_remove_area">
-                    <td>
-                        <label>
-                            <input type="hidden" name="wbtm_drop_off_unique_id[]" value="<?php echo esc_attr($unique_name); ?>"/>
-                            <select name="wbtm_dp_pickup[<?php echo esc_attr($unique_name); ?>]" class='formControl'>
-                                <option selected disabled><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_dp(); ?></option>
-                                <?php foreach ($dp_points as $dp_point) { ?>
-                                    <option value="<?php echo esc_attr($dp_point); ?>" <?php echo esc_attr($dp_point == $drop_off_point ? 'selected' : ''); ?>><?php echo esc_html($dp_point); ?></option>
-                                <?php } ?>
-                            </select>
-                        </label>
-                    </td>
-                    
-                    <td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
-                </tr>
-                <?php
-            }
-        }
+		public function drop_off_point($post_id) {
+			$drop_off_points_list = MP_Global_Function::get_all_term_data('wbtm_bus_drop_off');
+			$display_drop_off_point = MP_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
+			$active_drop_off_point = $display_drop_off_point == 'no' ? '' : 'mActive';
+			$checked_drop_off_point = $display_drop_off_point == 'no' ? '' : 'checked';
+			$drop_off_points = MP_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
+			$dp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+			?>
+			<h5 class="dFlex">
+				<?php MP_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
+				<span class="_mL"><?php esc_html_e('Drop-Off Point Settings', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+			</h5>
+			<?php WBTM_Settings::info_text('show_drop_off_point'); ?>
+			<div class="divider"></div>
+			<div data-collapse="#show_drop_off_point" class="<?php echo esc_attr($active_drop_off_point); ?>">
+				<?php if (sizeof($dp_points) > 0) { ?>
+					<?php if (sizeof($drop_off_points_list) > 0) { ?>
+						<div class="_dLayout_xs mp_settings_area">
+							<div class="ovAuto">
+								<table>
+									<thead>
+									<tr>
+										<th><?php esc_html_e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+										<th colspan="3"><?php esc_html_e('Drop-Off Info', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+										<th class="_w_100"><?php echo WBTM_Translations::text_action(); ?></th>
+									</tr>
+									</thead>
+									<tbody class="mp_sortable_area mp_item_insert">
+									<?php
+										if (sizeof($drop_off_points) > 0) {
+											foreach ($drop_off_points as $drop_off) {
+												$this->dp_point_item($drop_off_points_list, $dp_points, $drop_off);
+											}
+										}
+									?>
+									</tbody>
+								</table>
+							</div>
+							<?php MP_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_drop_off'); ?>
+							<div class="mp_hidden_content">
+								<table>
+									<tbody class="mp_hidden_item">
+									<?php $this->dp_point_item($drop_off_points_list, $dp_points); ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					<?php } else { ?>
+						<?php WBTM_Layout::msg(esc_html__('You have no Drop-Off Point . Please add Drop-Off Point and save ,then you can edit Drop-Off point.', 'bus-ticket-booking-with-seat-reservation')); ?>
+					<?php } ?>
+				<?php } else { ?>
+					<?php WBTM_Layout::msg(esc_html__('You have no Bus route . Please add Price and Route and save ,then you can edit Drop-Off point.', 'bus-ticket-booking-with-seat-reservation')); ?>
+				<?php } ?>
+			</div>
+			<?php
+		}
+		public function dp_point_item($drop_off_points, $dp_points, $drop_off_data = []) {
+			$drop_off_data = $drop_off_data ?: array();
+			$drop_off_point = array_key_exists('dp_point', $drop_off_data) ? $drop_off_data['dp_point'] : '';
+			$drop_off_infos = array_key_exists('drop_off_info', $drop_off_data) ? $drop_off_data['drop_off_info'] : [];
+			if (sizeof($dp_points) > 0 && sizeof($drop_off_points) > 0) {
+				$unique_name = uniqid();
+				?>
+				<tr class="mp_remove_area">
+					<td>
+						<label>
+							<input type="hidden" name="wbtm_drop_off_unique_id[]" value="<?php echo esc_attr($unique_name); ?>"/>
+							<select name="wbtm_dp_pickup[<?php echo esc_attr($unique_name); ?>]" class='formControl'>
+								<option selected disabled><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_dp(); ?></option>
+								<?php foreach ($dp_points as $dp_point) { ?>
+									<option value="<?php echo esc_attr($dp_point); ?>" <?php echo esc_attr($dp_point == $drop_off_point ? 'selected' : ''); ?>><?php echo esc_html($dp_point); ?></option>
+								<?php } ?>
+							</select>
+						</label>
+					</td>
+					<td colspan="3">
+						<div class="mp_settings_area">
+							<table>
+								<tbody class="mp_sortable_area mp_item_insert">
+								<?php if (sizeof($drop_off_infos) > 0) { ?>
+									<?php foreach ($drop_off_infos as $drop_off_info) { ?>
+										<?php $this->drop_off_point_item($unique_name, $drop_off_points, $drop_off_info); ?>
+									<?php } ?>
+								<?php } ?>
+								</tbody>
+							</table>
+							<?php MP_Custom_Layout::add_new_button(esc_html__('Add Drop-Off Point', 'bus-ticket-booking-with-seat-reservation')); ?>
+							<div class="mp_hidden_content">
+								<table>
+									<tbody class="mp_hidden_item">
+									<?php $this->drop_off_point_item($unique_name, $drop_off_points); ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</td>
+					<td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
+				</tr>
+				<?php
+			}
+		}
         public function drop_off_point_item($unique_name, $drop_off_points, $drop_off_info = []) {
             $dp_point = array_key_exists('drop_off_point', $drop_off_info) ? $drop_off_info['drop_off_point'] : '';
             $dp_time = array_key_exists('time', $drop_off_info) ? $drop_off_info['time'] : '';
