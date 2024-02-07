@@ -221,7 +221,7 @@
   div.mpStyle label,
   div.mpStyle [class*="_fs_label"] {
     font-size: var(--fs_label);
-    font-weight: var(--fw-medium);
+    /* font-weight: var(--fw-medium); */
   }
   div.mpStyle .fs_50,
   div.mpStyle [class*="_fs_50"] {
@@ -2538,7 +2538,7 @@
   div.mpStyle .mpPanel,
   div.mpStyle .mpPanel_xs {
     position: relative;
-    border: 1px solid var(--color_border);
+    /* border: 1px solid var(--color_border); */
     border-radius: var(--dBR);
   }
   div.mpStyle .mpPanelHeader {
