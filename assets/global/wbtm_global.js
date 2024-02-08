@@ -188,51 +188,51 @@
 }(jQuery));
 //====================================================================//
 (function ($) {
-	"use strict";
-	$(document).on("click", "#get_wbtm_bus_details", function () {
-		let parent = $(this).closest('.wbtm_bus_list_area');
-		let post_id = $(this).attr('data-bus_id');
-		let target = parent.find('tr[data-row_id=' + post_id + ']').find('td.wbtm_bus_details');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
-		if ($(this).hasClass('mActive')) {
-			target.find('>div').slideUp('fast');
-			mp_all_content_change($(this));
-		} else {
-			parent.find('#get_wbtm_bus_details.mActive').each(function () {
-				$(this).trigger('click');
-			});
-			let start = parent.find('input[name="wbtm_start_route"]').val();
-			let end = parent.find('input[name="wbtm_end_route"]').val();
-			let date = parent.find('input[name="wbtm_date"]').val();
-			if (start && end && date && post_id) {
-				$.ajax({
-					type: 'POST',
-					url: mp_ajax_url,
-					data: {
-						"action": "get_wbtm_bus_details",
-						"start_route": start,
-						"end_route": end,
-						"post_id": post_id,
-						"date": date,
-						"backend_order": window.location.href.search('wbtm_backend_order'),
-					},
-					beforeSend: function () {
-						dLoader(parent);
-					},
-					success: function (data) {
-						target.html(data);
-						dLoaderRemove(parent);
-						loadBgImage();
-					},
-					error: function (response) {
-						console.log(response);
-					}
-				});
-			}
-			mp_all_content_change($(this));
-		}
-	});
-}(jQuery));
+  "use strict";
+  $(document).on("click", "#get_wbtm_bus_details", function () {
+    let parent = $(this).closest(".wbtm_bus_list_area");
+    let post_id = $(this).attr("data-bus_id");
+    let target = parent.find("[data-row_id=" + post_id + "]");
+    $("body").find(".woocommerce-notices-wrapper").slideUp("fast");
+    if ($(this).hasClass("mActive")) {
+      target.find(">div").slideUp("fast");
+      mp_all_content_change($(this));
+    } else {
+      parent.find("#get_wbtm_bus_details.mActive").each(function () {
+        $(this).trigger("click");
+      });
+      let start = parent.find('input[name="wbtm_start_route"]').val();
+      let end = parent.find('input[name="wbtm_end_route"]').val();
+      let date = parent.find('input[name="wbtm_date"]').val();
+      if (start && end && date && post_id) {
+        $.ajax({
+          type: "POST",
+          url: mp_ajax_url,
+          data: {
+            action: "get_wbtm_bus_details",
+            start_route: start,
+            end_route: end,
+            post_id: post_id,
+            date: date,
+            backend_order: window.location.href.search("wbtm_backend_order"),
+          },
+          beforeSend: function () {
+            dLoader(parent);
+          },
+          success: function (data) {
+            target.html(data);
+            dLoaderRemove(parent);
+            loadBgImage();
+          },
+          error: function (response) {
+            console.log(response);
+          },
+        });
+      }
+      mp_all_content_change($(this));
+    }
+  });
+})(jQuery);
 //====================================================================//
 (function ($) {
 	"use strict";
