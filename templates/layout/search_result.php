@@ -72,7 +72,7 @@
 								<?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
 							</button>
 						</div>
-						<table class="wbtm_bus_details mT_xs">
+						<table class="wbtm_bus_details _bgWhite mT_xs">
 							<tbody>
 								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
 									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
@@ -125,7 +125,7 @@
 							<table class="wbtm_bus_details">
 								<tbody>
 									<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
-										<td colspan="9" class="wbtm_bus_details mT_xs"></td>
+										<td colspan="9" class="wbtm_bus_details _bgWhite_mT_xs"></td>
 									</tr>
 								</tbody>
 							</table>
