@@ -73,9 +73,13 @@
 							</button>
 						</div>
 						
-						<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
-
-						</div>
+						<table class="wbtm_bus_details _bgWhite mT_xs">
+							<tbody>
+								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
+									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
+								</tr>
+							</tbody>
+						</table>
 					<?php else: ?>
 						<!-- default style -->
 						<div class="wbtm-bust-list _dFlex_mT">
@@ -121,9 +125,13 @@
 							</div>
 							
 						</div>
-						<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
-						<!--  bus details will display here -->
-						</div>
+						<table class="wbtm_bus_details _bgWhite mT_xs">
+							<tbody>
+								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
+									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
+								</tr>
+							</tbody>
+						</table>
 					<?php endif; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
