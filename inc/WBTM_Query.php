@@ -83,7 +83,7 @@
 										'compare' => 'IN'
 									),
 									array(
-										'key' => 'wbtm_boarding_time',
+										'key' => 'wbtm_start_time',
 										'value' => $date,
 										'compare' => 'LIKE'
 									),
@@ -136,7 +136,7 @@
 										'compare' => 'IN'
 									),
 									array(
-										'key' => 'wbtm_boarding_time',
+										'key' => 'wbtm_start_time',
 										'value' => $date,
 										'compare' => 'LIKE'
 									),
@@ -180,7 +180,7 @@
 									'value' => $post_id,
 								),
 								array(
-									'key' => 'wbtm_boarding_time',
+									'key' => 'wbtm_start_time',
 									'compare' => 'LIKE',
 									'value' => $date,
 								),

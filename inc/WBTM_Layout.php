@@ -71,12 +71,13 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
                     $seat_row = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                     $seat_column = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+					$bus_start_time=$all_info['start_time'];
                     ?>
                     <div class="wbtm_registration_area mT">
                         <form action="" method="post" class="">
                             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
                             <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
-                            <input type="hidden" name='wbtm_start_time' value='<?php echo esc_attr($all_info['start_time']); ?>'/>
+                            <input type="hidden" name='wbtm_start_time' value='<?php echo esc_attr($bus_start_time); ?>'/>
                             <input type="hidden" name='wbtm_bp_place' value='<?php echo esc_attr($all_info['bp']); ?>'/>
                             <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
                             <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
