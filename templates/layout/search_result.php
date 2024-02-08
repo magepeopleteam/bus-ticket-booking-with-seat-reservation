@@ -122,6 +122,7 @@
 							
 						</div>
 						<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
+						<!--  bus details will display here -->
 						</div>
 					<?php endif; ?>
 				<?php endif; ?>
