@@ -16,12 +16,13 @@
 
 	if (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 		$date = $_POST['date'] ?? '';
+		$bus_start_time=$bus_start_time??'';
 		$seat_position = MP_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
 		$show_upper_desk = MP_Global_Function::get_post_info($post_id, 'show_upper_desk');
 		$seat_infos_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
 		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
-		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $date);
+		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $bus_start_time);
 		?>
 		<div class="_dLayout_xs">
 			<?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
