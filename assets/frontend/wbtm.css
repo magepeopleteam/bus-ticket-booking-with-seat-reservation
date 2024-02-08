@@ -48,6 +48,7 @@
   justify-content: space-between;
   align-items: space-between;
   align-items: center;
+  margin: 14px 0;
 }
 .wbtm-bus-flix-style .route .route-info .from,
 .wbtm-bus-flix-style .route .route-info .to {
@@ -94,7 +95,6 @@
 .wbtm-bus-flix-style .feature .items {
   padding: 2px 8px;
   border-radius: 50px;
-  margin: 5px;
 }
 
 .pickup-point, .drop-off-point {
@@ -109,6 +109,7 @@
 .pickup-point .point:last-child, .drop-off-point .point:last-child {
   padding-bottom: 0;
   line-height: 0;
+  margin-bottom: 20px;
 }
 
 /*# sourceMappingURL=wbtm.css.map */

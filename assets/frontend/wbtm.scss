@@ -40,6 +40,7 @@
       justify-content: space-between;
       align-items: space-between;
       align-items: center;
+      margin: 14px 0;
       .from,
       .to {
         width: 45%;
@@ -80,7 +81,6 @@
     .items {
       padding: 2px 8px;
       border-radius: 50px;
-      margin: 5px;
     }
   }
 }
@@ -94,6 +94,7 @@
     &:last-child{
         padding-bottom: 0;
         line-height: 0;
+        margin-bottom: 20px;
     }
   }
 }
