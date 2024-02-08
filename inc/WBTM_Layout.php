@@ -148,7 +148,7 @@ if (!class_exists('WBTM_Layout')) {
                     ?>
                     <div class="buttonGroup _hidden_xs_equalChild_fullWidth">
                         <?php foreach ($all_dates as $date) { ?>
-                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_themeButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
+                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_dButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
                                 <?php echo MP_Global_Function::date_format($date); ?>
                             </button>

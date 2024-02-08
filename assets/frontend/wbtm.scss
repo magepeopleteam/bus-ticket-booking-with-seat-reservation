@@ -1,87 +1,99 @@
-.wbtm-bus-flix-style{
+.wbtm-bus-flix-style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #f0f7ff;
+  border: 1px solid #2f9df4;
+  margin: 10px auto;
+  border-radius: 5px;
+  padding: 10px;
+  @media (min-width: 1024px) {
+    flex-direction: row;
+  }
+  .title {
+    width: 100%;
+    @media (min-width: 768px) {
+      width: 15%;
+    }
+    span {
+      padding: 1px 8px;
+      border-radius: 50px;
+      color: #fff;
+      background-color: #2f9df4;
+      font-size: 11px;
+    }
+  }
+  .route {
+    width: 100%;
+    @media (min-width: 768px) {
+      width: 55%;
+    }
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: stretch;
     align-items: center;
-    flex-wrap: wrap;
-    background-color: #F0F7FF;
-    border: 1px solid #2F9DF4;
-    margin: 10px auto;
-    border-radius: 5px;
-    padding: 10px;
-    @media (min-width:1024px) {
-        flex-direction: row;
-    }
-    .title{
-        width: 100%;
-        @media (min-width:768px) {
-            width:15%;
+    .route-info {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: space-between;
+      align-items: center;
+      .from,
+      .to {
+        width: 45%;
+        @media (min-width: 540px) {
+          width: 25%;
         }
-        span{
-            padding:0 5px;
-            border-radius: 50px;
-            color: #fff; 
-            background-color: #2F9DF4; 
+        h2 {
+          @media (max-width: 540px) {
+            font-size: 14px;
+          }
         }
-    }
-    .route{
-        width: 100%;
-        @media (min-width:768px) {
-            width:55%;
-        } 
-        display: flex;
-        flex-direction: column;
-        justify-content: stretch;
-        align-items: center;
-        .route-info{
-            width:100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: space-between;
-            align-items: center;
-            .from,.to{
-                width:45%;
-                @media (min-width:540px) {
-                        width:25%;
-                }
-                h2{
-                    
-                    @media (max-width:540px) {
-                        font-size: 14px;
-                    }
-                }
-            }
-            .to{
-                padding-left:0;
-                @media (min-width:768px) {
-                   padding-left:20px;
-                }
-            }
-            .duration{
-                border-bottom: 3px solid #2F9DF4; 
-                width:65%;
-                position: relative;
-                .time{
-                    background: #F0F7FF;
-                    position: absolute;
-                    top: -12px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 0 5px;
-                }
-            }
+      }
+      .to {
+        padding-left: 0;
+        @media (min-width: 768px) {
+          padding-left: 20px;
         }
-        
-    }
-    .feature{
-        display:flex;
-        justify-content: start;
-        align-items: center;
-        .items{
-            padding: 2px 8px;
-            border-radius: 50px;
-            margin: 5px;
+      }
+      .duration {
+        border-bottom: 3px solid #2f9df4;
+        width: 65%;
+        position: relative;
+        .time {
+          background: #f0f7ff;
+          position: absolute;
+          top: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0 5px;
         }
+      }
     }
-   
+  }
+  .feature {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    .items {
+      padding: 2px 8px;
+      border-radius: 50px;
+      margin: 5px;
+    }
+  }
+}
+.pickup-point,.drop-off-point {
+  margin-left: 8px;
+  border-left: 1px solid;
+  flex-direction: column;
+  .point {
+    margin-left: -0.57em;
+    padding: 15px 0;
+    &:last-child{
+        padding-bottom: 0;
+        line-height: 0;
+    }
+  }
 }

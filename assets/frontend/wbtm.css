@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-color: #F0F7FF;
-  border: 1px solid #2F9DF4;
+  background-color: #f0f7ff;
+  border: 1px solid #2f9df4;
   margin: 10px auto;
   border-radius: 5px;
   padding: 10px;
@@ -23,10 +23,11 @@
   }
 }
 .wbtm-bus-flix-style .title span {
-  padding: 0 5px;
+  padding: 1px 8px;
   border-radius: 50px;
   color: #fff;
-  background-color: #2F9DF4;
+  background-color: #2f9df4;
+  font-size: 11px;
 }
 .wbtm-bus-flix-style .route {
   width: 100%;
@@ -48,16 +49,19 @@
   align-items: space-between;
   align-items: center;
 }
-.wbtm-bus-flix-style .route .route-info .from, .wbtm-bus-flix-style .route .route-info .to {
+.wbtm-bus-flix-style .route .route-info .from,
+.wbtm-bus-flix-style .route .route-info .to {
   width: 45%;
 }
 @media (min-width: 540px) {
-  .wbtm-bus-flix-style .route .route-info .from, .wbtm-bus-flix-style .route .route-info .to {
+  .wbtm-bus-flix-style .route .route-info .from,
+  .wbtm-bus-flix-style .route .route-info .to {
     width: 25%;
   }
 }
 @media (max-width: 540px) {
-  .wbtm-bus-flix-style .route .route-info .from h2, .wbtm-bus-flix-style .route .route-info .to h2 {
+  .wbtm-bus-flix-style .route .route-info .from h2,
+  .wbtm-bus-flix-style .route .route-info .to h2 {
     font-size: 14px;
   }
 }
@@ -70,12 +74,12 @@
   }
 }
 .wbtm-bus-flix-style .route .route-info .duration {
-  border-bottom: 3px solid #2F9DF4;
+  border-bottom: 3px solid #2f9df4;
   width: 65%;
   position: relative;
 }
 .wbtm-bus-flix-style .route .route-info .duration .time {
-  background: #F0F7FF;
+  background: #f0f7ff;
   position: absolute;
   top: -12px;
   left: 50%;
@@ -91,6 +95,20 @@
   padding: 2px 8px;
   border-radius: 50px;
   margin: 5px;
+}
+
+.pickup-point, .drop-off-point {
+  margin-left: 8px;
+  border-left: 1px solid;
+  flex-direction: column;
+}
+.pickup-point .point, .drop-off-point .point {
+  margin-left: -0.57em;
+  padding: 15px 0;
+}
+.pickup-point .point:last-child, .drop-off-point .point:last-child {
+  padding-bottom: 0;
+  line-height: 0;
 }
 
 /*# sourceMappingURL=wbtm.css.map */
