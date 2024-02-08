@@ -15,7 +15,7 @@
 		$ex_services = MP_Global_Function::get_post_info($post_id, 'wbtm_extra_services', []);
 		if (sizeof($ex_services) > 0) {
 			?>
-			<div class="wbtm_ex_service_area">
+			<div class="wbtm_ex_service_area mB_xs">
 
 				<h3 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h3>
 				<table class="_layoutFixed">
