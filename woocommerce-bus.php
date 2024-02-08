@@ -123,7 +123,7 @@
 					$bus_global_search_page = array(
 						'post_type' => 'page',
 						'post_name' => 'bus-global-search-flix',
-						'post_title' => 'Global search form',
+						'post_title' => 'Global search form flix style',
 						'post_content' => '[wbtm-bus-search-form style="flix"]',
 						'post_status' => 'publish',
 					);
