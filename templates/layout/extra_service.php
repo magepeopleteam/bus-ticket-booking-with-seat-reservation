@@ -15,38 +15,40 @@
 		$ex_services = MP_Global_Function::get_post_info($post_id, 'wbtm_extra_services', []);
 		if (sizeof($ex_services) > 0) {
 			?>
-			<div class="wbtm_ex_service_area">
-
+			<div class="wbtm_ex_service_area mB_xs">
 				<h3 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h3>
-				<table class="_layoutFixed">
-					<thead>
-					<tr>
-						<th class="_textLeft"><?php echo WBTM_Translations::text_name();?></th>
-						<th class="_textCenter"><?php echo WBTM_Translations::text_qty(); ?></th>
-						<th class="_textCenter"><?php echo WBTM_Translations::text_price();?></th>
-					</tr>
-					</thead>
-					<tbody>
-					<?php foreach ($ex_services as $ex_service) { ?>
-						<?php
-						$row_price = MP_Global_Function::get_wc_raw_price($post_id, $ex_service['option_price']);
-						$qty_type = $ex_service['option_qty_type'];
-						$ex_name = $ex_service['option_name'];
-						$total_ex = max($ex_service['option_qty'], 0);
-						$sold = WBTM_Query::query_ex_service_sold($post_id, $date, $ex_name);
-						$available_ex_service = $total_ex - $sold;
-						?>
+				<div class="mpPanel">
+					
+					<table class="_layoutFixed">
+						<thead>
 						<tr>
-							<td class="_textLeft"><?php echo esc_html($ex_name); ?></td>
-							<td class="_textCenter">
-								<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
-								<?php MP_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>
-							</td>
-							<td class="_textCenter"><?php echo wc_price($row_price); ?></td>
+							<th class="_textLeft"><?php echo WBTM_Translations::text_name();?></th>
+							<th class="_textCenter"><?php echo WBTM_Translations::text_qty(); ?></th>
+							<th class="_textCenter"><?php echo WBTM_Translations::text_price();?></th>
 						</tr>
-					<?php } ?>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+						<?php foreach ($ex_services as $ex_service) { ?>
+							<?php
+							$row_price = MP_Global_Function::get_wc_raw_price($post_id, $ex_service['option_price']);
+							$qty_type = $ex_service['option_qty_type'];
+							$ex_name = $ex_service['option_name'];
+							$total_ex = max($ex_service['option_qty'], 0);
+							$sold = WBTM_Query::query_ex_service_sold($post_id, $date, $ex_name);
+							$available_ex_service = $total_ex - $sold;
+							?>
+							<tr>
+								<td class="_textLeft"><?php echo esc_html($ex_name); ?></td>
+								<td class="_textCenter">
+									<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
+									<?php MP_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>
+								</td>
+								<td class="_textCenter"><?php echo wc_price($row_price); ?></td>
+							</tr>
+						<?php } ?>
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<?php
 		}

@@ -119,6 +119,17 @@
 					wp_insert_post($bus_global_search_page);
 					flush_rewrite_rules();
 				}
+				if (!MP_Global_Function::get_page_by_slug('bus-global-search-flix')) {
+					$bus_global_search_page = array(
+						'post_type' => 'page',
+						'post_name' => 'bus-global-search-flix',
+						'post_title' => 'Global search form flix style',
+						'post_content' => '[wbtm-bus-search-form style="flix"]',
+						'post_status' => 'publish',
+					);
+					wp_insert_post($bus_global_search_page);
+					flush_rewrite_rules();
+				}
 			}
 		}
 	new Wbtm_Woocommerce_bus();

@@ -60,10 +60,14 @@
     width: 25%;
   }
 }
+.wbtm-bus-flix-style .route .route-info .from h2,
+.wbtm-bus-flix-style .route .route-info .to h2 {
+  font-size: 1.8rem;
+}
 @media (max-width: 540px) {
   .wbtm-bus-flix-style .route .route-info .from h2,
   .wbtm-bus-flix-style .route .route-info .to h2 {
-    font-size: 14px;
+    font-size: 0.9rem;
   }
 }
 .wbtm-bus-flix-style .route .route-info .to {
@@ -97,19 +101,26 @@
   border-radius: 50px;
 }
 
-.pickup-point, .drop-off-point {
+.pickup-point,
+.drop-off-point {
   margin-left: 8px;
   border-left: 1px solid;
   flex-direction: column;
 }
-.pickup-point .point, .drop-off-point .point {
+.pickup-point .point,
+.drop-off-point .point {
   margin-left: -0.57em;
   padding: 15px 0;
 }
-.pickup-point .point:last-child, .drop-off-point .point:last-child {
+.pickup-point .point:first-child,
+.drop-off-point .point:first-child {
+  padding-top: 21px;
+}
+.pickup-point .point:last-child,
+.drop-off-point .point:last-child {
   padding-bottom: 0;
   line-height: 0;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 /*# sourceMappingURL=wbtm.css.map */

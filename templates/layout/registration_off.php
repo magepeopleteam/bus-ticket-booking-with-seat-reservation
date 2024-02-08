@@ -27,7 +27,7 @@
 						?>
 						<h6><?php echo WBTM_Translations::text_pickup_point(); ?></h6>
 						<div class="divider"></div>
-						<h4><i class="fas fa-map-marker-alt"></i>  <?php echo esc_html($start_route); ?></h4>
+						<h4 class="textTheme"><i class="fas fa-map-marker-alt"></i>  <?php echo esc_html($start_route); ?></h4>
 						<div class="wbtm_pickup_poin pickup-point">
 							<?php foreach ($pickup_infos as $pickup_info) { ?>
 								<?php $pickup_time = date('Y-m-d H:i', strtotime($date . ' ' . $pickup_info['time'])); ?>
@@ -57,7 +57,7 @@
 						?>
 						<h6><?php echo WBTM_Translations::text_drop_off_point(); ?></h6>
 						<div class="divider"></div>
-						<h4><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($end_route); ?></h4>
+						<h4 class="textTheme"><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($end_route); ?></h4>
 						<div class="wbtm_pickup_point drop-off-point">
 							
 							<?php foreach ($pickup_infos as $pickup_info) { ?>

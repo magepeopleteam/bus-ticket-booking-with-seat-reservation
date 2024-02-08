@@ -48,8 +48,9 @@
           width: 25%;
         }
         h2 {
+          font-size: 1.8rem;
           @media (max-width: 540px) {
-            font-size: 14px;
+            font-size: 0.9rem;
           }
         }
       }
@@ -84,17 +85,21 @@
     }
   }
 }
-.pickup-point,.drop-off-point {
+.pickup-point,
+.drop-off-point {
   margin-left: 8px;
   border-left: 1px solid;
   flex-direction: column;
   .point {
     margin-left: -0.57em;
     padding: 15px 0;
-    &:last-child{
-        padding-bottom: 0;
-        line-height: 0;
-        margin-bottom: 20px;
+    &:first-child {
+      padding-top: 21px;
+    }
+    &:last-child {
+      padding-bottom: 0;
+      line-height: 0;
+      margin-bottom: 24px;
     }
   }
 }
