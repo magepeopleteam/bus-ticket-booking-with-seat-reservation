@@ -19,10 +19,9 @@
 				$pickup_infos = $pickup_point['pickup_info'];
 				if (sizeof($pickup_infos) > 0) {
 					?>
-					<div class="wbtm_pickup_point">
-						<div class="divider"></div>
+					<div class="wbtm_pickup_point _bgLight padding_xs mB mT">
 						<label class="justifyBetween">
-							<span class="_mR_xs"><?php echo WBTM_Translations::text_pickup_point(); ?></span>
+							<span class="_mR"><?php echo WBTM_Translations::text_pickup_point(); ?></span>
 							<select class="formControl" name="wbtm_pickup_point">
 								<option selected value=" "><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point(); ?></option>
 								<?php foreach ($pickup_infos as $pickup_info) { ?>
@@ -32,7 +31,7 @@
 								<?php } ?>
 							</select>
 						</label>
-						<div class="divider"></div>
+						
 					</div>
 					<?php
 				}

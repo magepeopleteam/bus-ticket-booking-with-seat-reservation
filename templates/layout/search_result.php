@@ -32,13 +32,14 @@
 					if (sizeof($all_info) > 0) :
 						$bus_count++;
 						$price = $all_info['price'];
+						
 				?>
 					<!-- short code new style flix if set -->
 					<?php if($style=='flix'): ?>
 						<div class="wbtm-bus-flix-style">
 							<div class="title">
+								<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
 								<p><span><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
-								<h6 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h6>
 							</div>
 							<div class="route">
 								<div class="route-info">
@@ -63,7 +64,7 @@
 							<div class="price">
 								<h4 class="textTheme" ><?php echo wc_price($price); ?></h4>
 							</div>
-							<button type="button" class="_dButton_xs" id="get_wbtm_bus_details"
+							<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
 								data-bus_id="<?php echo esc_attr($bus_id); ?>"
 								data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
 								data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
@@ -113,7 +114,7 @@
 								</div>
 							</div>
 							<div class="wbtm-seat-book">
-								<button type="button" class="_dButton_xs" id="get_wbtm_bus_details"
+								<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
 									data-bus_id="<?php echo esc_attr($bus_id); ?>"
 									data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
 									data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"

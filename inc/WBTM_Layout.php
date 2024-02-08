@@ -100,26 +100,23 @@ if (!class_exists('WBTM_Layout')) {
             die();
         }
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='') {
+          
             if ($start_route && $end_route && $j_date) { ?>
                 <div class="_dLayout_dShadow_1_mT">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
                     <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style); ?>
-                    <div class="wbtm_search_part _mT_xs">
-                        <?php //mage_bus_search_list(false); ?>
-                    </div>
                 </div>
             <?php }
+              
             if ($post_id==0 && $start_route && $end_route && $r_date) { ?>
+            
                 <div class="_dLayout_dShadow_1" id="wbtm_return_container">
                     <h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
                     <div class="divider"></div>
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
-                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date); ?>
-                    <div class="wbtm_search_part _mT_xs">
-                        <?php //mage_bus_search_list(true); ?>
-                    </div>
+                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style); ?>
                 </div>
             <?php }
         }
@@ -151,7 +148,7 @@ if (!class_exists('WBTM_Layout')) {
                     ?>
                     <div class="buttonGroup _hidden_xs_equalChild_fullWidth">
                         <?php foreach ($all_dates as $date) { ?>
-                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_themeButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
+                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_dButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
                                 <?php echo MP_Global_Function::date_format($date); ?>
                             </button>

@@ -18,7 +18,7 @@ if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
             $pickup_infos = $pickup_point['drop_off_info'];
             if (sizeof($pickup_infos) > 0) {
                 ?>
-                <div class="wbtm_pickup_point">
+                <div class="wbtm_pickup_point _bgLight padding_xs">
                     <label class="justifyBetween">
                         <span class="_mR_xs"><?php echo WBTM_Translations::text_drop_off_point(); ?></span>
                         <select class="formControl" name="wbtm_drop_off_point">
@@ -30,7 +30,6 @@ if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
                             <?php } ?>
                         </select>
                     </label>
-                    <div class="divider"></div>
                 </div>
                 <?php
             }
