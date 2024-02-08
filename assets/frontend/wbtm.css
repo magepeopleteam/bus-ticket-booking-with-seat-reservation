@@ -62,12 +62,12 @@
 }
 .wbtm-bus-flix-style .route .route-info .from h2,
 .wbtm-bus-flix-style .route .route-info .to h2 {
-  font-size: 1.8rem;
+  font-size: 28px;
 }
 @media (max-width: 540px) {
   .wbtm-bus-flix-style .route .route-info .from h2,
   .wbtm-bus-flix-style .route .route-info .to h2 {
-    font-size: 0.9rem;
+    font-size: 16px;
   }
 }
 .wbtm-bus-flix-style .route .route-info .to {
@@ -121,6 +121,10 @@
   padding-bottom: 0;
   line-height: 0;
   margin-bottom: 24px;
+}
+
+.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
+  background: #fff;
 }
 
 /*# sourceMappingURL=wbtm.css.map */
