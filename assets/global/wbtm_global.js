@@ -192,7 +192,9 @@
   $(document).on("click", "#get_wbtm_bus_details", function () {
     let parent = $(this).closest(".wbtm_bus_list_area");
     let post_id = $(this).attr("data-bus_id");
-    let target = parent.find("[data-row_id=" + post_id + "]");
+    let target = parent
+      .find("tr[data-row_id=" + post_id + "]")
+      .find("td.wbtm_bus_details");
     $("body").find(".woocommerce-notices-wrapper").slideUp("fast");
     if ($(this).hasClass("mActive")) {
       target.find(">div").slideUp("fast");

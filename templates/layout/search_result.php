@@ -72,7 +72,7 @@
 								<?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
 							</button>
 						</div>
-						
+	
 						<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
 							<!--  bus details will display here -->
 						</div>
@@ -121,9 +121,13 @@
 							</div>
 							
 						</div>
-						<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
-						<!--  bus details will display here -->
-						</div>
+						<table class="wbtm_bus_details _bgWhite mT_xs">
+							<tbody>
+								<tr data-row_id="<?php echo esc_attr($bus_id); ?>">
+									<td colspan="9" class="wbtm_bus_details mT_xs"></td>
+								</tr>
+							</tbody>
+						</table>
 					<?php endif; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
