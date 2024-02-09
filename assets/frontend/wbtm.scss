@@ -108,4 +108,20 @@
     {
       background:#fff;
     }
+  table tr:hover{
+    background-color: #fff;
+  }
+  table tbody tr:nth-child(2n+1) {
+    background: none;
+  }
+
+}
+
+.wbtm_ex_service_area{
+  table tbody tr:nth-child(2n+1) {
+    background: none;
+  }
+  table tr:nth-child(2n) {
+    background: none;
+  }
 }
