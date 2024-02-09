@@ -126,5 +126,8 @@
 .wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
   background: #fff;
 }
+.wbtm_selected_seat_details table tr:hover {
+  background-color: #fff;
+}
 
 /*# sourceMappingURL=wbtm.css.map */
