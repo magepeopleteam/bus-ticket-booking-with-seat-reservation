@@ -384,21 +384,18 @@
 			let target = parent.find('.wbtm_selected_seat_details .wbtm_item_insert');
 			if (total_qty > 0) {
 				let item_length = target.find('.wbtm_remove_area').length;
-				if (item_length !== total_qty) {
+				//if (item_length !== total_qty) {
 					let hidden_target_tr = parent.find('.wbtm_item_hidden .wbtm_remove_area');
 					parent.find('.seat_available.seat_selected').each(function () {
 						let seat_name = $(this).attr('data-seat_name');
+						let seat_type = $(this).attr('data-seat_type');
 						if (target.find('[data-seat_name="' + seat_name + '"]').length === 0) {
-							let seat_label = $(this).attr('data-seat_label');
-							let seat_price = $(this).attr('data-seat_price');
-							let seat_type = $(this).attr('data-seat_type');
-							hidden_target_tr.attr('data-seat_type', seat_type).attr('data-seat_name', seat_name).promise().done(function () {
-								hidden_target_tr.find('.insert_seat_label').html(seat_label);
-								hidden_target_tr.find('.insert_seat_name').html(seat_name);
-								hidden_target_tr.find('.insert_seat_price').html(mp_price_format(seat_price));
-							}).promise().done(function () {
-								target.append(hidden_target_tr.clone());
-							});
+							wbtm_reload_selected_seat($(this),hidden_target_tr,target);
+						}else{
+							if (target.find('[data-seat_name="' + seat_name + '"]').length === 1 && target.find('[data-seat_type="' + seat_type + '"]').length === 0) {
+								target.find('[data-seat_name="' + seat_name + '"]').remove();
+								wbtm_reload_selected_seat($(this),hidden_target_tr,target);
+							}
 						}
 					}).promise().done(function () {
 						item_length = target.find('.wbtm_remove_area').length;
@@ -411,11 +408,24 @@
 							});
 						}
 					});
-				}
+				//}
 			} else {
 				target.html('');
 			}
 		}
+	}
+	function wbtm_reload_selected_seat(current,hidden_target_tr,target){
+		let seat_label = current.attr('data-seat_label');
+		let seat_price = current.attr('data-seat_price');
+		let seat_name = current.attr('data-seat_name');
+		let seat_type = current.attr('data-seat_type');
+		hidden_target_tr.attr('data-seat_type', seat_type).attr('data-seat_name', seat_name).promise().done(function () {
+			hidden_target_tr.find('.insert_seat_label').html(seat_label);
+			hidden_target_tr.find('.insert_seat_name').html(seat_name);
+			hidden_target_tr.find('.insert_seat_price').html(mp_price_format(seat_price));
+		}).promise().done(function () {
+			target.append(hidden_target_tr.clone());
+		});
 	}
 	function wbtm_attendee_management(parent, total_qty) {
 		let form_target = parent.find('.wbtm_attendee_area');
