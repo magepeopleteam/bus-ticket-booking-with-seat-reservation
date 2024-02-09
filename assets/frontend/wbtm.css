@@ -129,5 +129,15 @@
 .wbtm_selected_seat_details table tr:hover {
   background-color: #fff;
 }
+.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
+  background: none;
+}
+
+.wbtm_ex_service_area table tbody tr:nth-child(2n+1) {
+  background: none;
+}
+.wbtm_ex_service_area table tr:nth-child(2n) {
+  background: none;
+}
 
 /*# sourceMappingURL=wbtm.css.map */
