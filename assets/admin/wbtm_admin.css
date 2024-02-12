@@ -9,6 +9,7 @@
 	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item{min-width:250px;}
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
