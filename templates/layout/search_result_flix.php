@@ -58,7 +58,7 @@
 						<div class="price">
 							<h4 class="textTheme" ><?php echo wc_price($price); ?></h4>
 						</div>
-						<?php echo $button; ?>
+
 						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
 							data-bus_id="<?php echo esc_attr($bus_id); ?>"
 							data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
