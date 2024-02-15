@@ -10,7 +10,6 @@
 	$end_route = $end_route ?? '';
 	$post_id = $post_id ?? '';
 	$date = $date ?? '';
-	$style = $style ?? '';
 	$label = WBTM_Functions::get_name();
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 	if (sizeof($bus_ids) > 0) {

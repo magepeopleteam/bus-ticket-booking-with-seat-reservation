@@ -10,7 +10,7 @@
 	$end_route = $end_route ?? '';
 	$post_id = $post_id ?? '';
 	$date = $date ?? '';
-	$style = $style ?? '';
+	$btn_show = $btn_show ?? '';
 	$label = WBTM_Functions::get_name();
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 	if (sizeof($bus_ids) > 0) {
@@ -64,16 +64,17 @@
 							<p><?php echo WBTM_Translations::text_fare().'/' . WBTM_Translations::text_seat(); ?></p>
 						</div>
 					</div>
-					<div class="wbtm-seat-book">
-						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
-							data-bus_id="<?php echo esc_attr($bus_id); ?>"
-							data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-							data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-							data-add-class="mActive">
-							<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
-						</button>
+					<div style="display: none;">
+						<div class="wbtm-seat-book">
+							<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
+								data-bus_id="<?php echo esc_attr($bus_id); ?>"
+								data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+								data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+								data-add-class="mActive">
+								<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
+							</button>
+						</div>
 					</div>
-					
 				</div>
 				<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
 					<!--  bus details will display here -->
