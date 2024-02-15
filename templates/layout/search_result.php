@@ -64,16 +64,17 @@
 							<p><?php echo WBTM_Translations::text_fare().'/' . WBTM_Translations::text_seat(); ?></p>
 						</div>
 					</div>
-					<div style="display: none;">
-						<div class="wbtm-seat-book">
-							<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
-								data-bus_id="<?php echo esc_attr($bus_id); ?>"
-								data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-								data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-								data-add-class="mActive">
-								<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
-							</button>
-						</div>
+					<?php if($btn_show=='show'){
+						WBTM_Layout::trigger_view_details();
+					} ?>
+					<div class="wbtm-seat-book <?php echo $btn_show;?>">
+						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
+							data-bus_id="<?php echo esc_attr($bus_id); ?>"
+							data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+							data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+							data-add-class="mActive">
+							<span data-text><?php echo esc_html(WBTM_Translations::text_view_seat()); ?></span>
+						</button>
 					</div>
 				</div>
 				<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">
