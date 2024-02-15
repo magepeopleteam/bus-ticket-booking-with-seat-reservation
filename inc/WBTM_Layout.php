@@ -29,7 +29,7 @@ if (!class_exists('WBTM_Layout')) {
         }
         public function search_result($start_route, $end_route, $date, $post_id = '',$style='') {
             if($style=='flix'){
-                require WBTM_Functions::template_path('layout/search_result_'.$style.'.php');
+                require WBTM_Functions::template_path('layout/search_result_flix.php');
             }
             else{
                 require WBTM_Functions::template_path('layout/search_result.php');

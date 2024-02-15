@@ -17,7 +17,6 @@
 		$bus_count = 0;
 
 		?>
-		<!-- new layout -->
 		<div class="wbtm_bus_list_area">
 			<input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>"/>
 			<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>"/>
