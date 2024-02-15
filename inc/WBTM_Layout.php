@@ -28,7 +28,12 @@ if (!class_exists('WBTM_Layout')) {
             /**************************/
         }
         public function search_result($start_route, $end_route, $date, $post_id = '',$style='') {
-            require WBTM_Functions::template_path('layout/search_result.php');
+            if($style=='flix'){
+                require WBTM_Functions::template_path('layout/search_result_'.$style.'.php');
+            }
+            else{
+                require WBTM_Functions::template_path('layout/search_result.php');
+            }
         }
         public function get_wbtm_dropping_point() {
             $post_id = MP_Global_Function::data_sanitize($_POST['post_id']);
