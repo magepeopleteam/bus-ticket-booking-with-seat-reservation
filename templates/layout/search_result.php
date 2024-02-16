@@ -64,8 +64,8 @@
 							<p><?php echo WBTM_Translations::text_fare().'/' . WBTM_Translations::text_seat(); ?></p>
 						</div>
 					</div>
-					<?php if($btn_show=='show'){
-						WBTM_Layout::trigger_view_details();
+					<?php if($btn_show=='hide'){
+						WBTM_Layout::trigger_view_seat_details();
 					} ?>
 					<div class="wbtm-seat-book <?php echo $btn_show;?>">
 						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"

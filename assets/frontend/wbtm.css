@@ -140,7 +140,7 @@
   background: none;
 }
 
-.wbtm-seat-book.show {
+.wbtm-seat-book.hide {
   display: none;
 }
 

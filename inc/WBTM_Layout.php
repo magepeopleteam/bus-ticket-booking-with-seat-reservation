@@ -236,7 +236,7 @@ if (!class_exists('WBTM_Layout')) {
             <?php
         }
         
-        public static function trigger_view_details(){
+        public static function trigger_view_seat_details(){
             ?>
             <script type="text/javascript">
                 var get_wbtm_bus_details = document.getElementById("get_wbtm_bus_details");
