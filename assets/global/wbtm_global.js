@@ -8,6 +8,7 @@
 		let end = parent.find('input[name="bus_end_route"]');
 		let j_date = parent.find('input[name="j_date"]');
 		let style = parent.find('input[name="wbtm_list_style"]');
+		let btn_show = parent.find('input[name="wbtm_list_btn_show"]');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
@@ -24,32 +25,36 @@
 			let r_date = parent.find('input[name="r_date"]');
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
 			$.ajax({
-				type: 'POST',
-				url: mp_ajax_url,
-				data: {
-					"action": "get_wbtm_bus_list",
-					"start_route": start.val(),
-					"end_route": end.val(),
-					"j_date": j_date.val(),
-					"r_date": r_date.val(),
-					"post_id": post_id,
-					"style": style.val(),
-					"backend_order": window.location.href.search('wbtm_backend_order'),
-
-				},
-				beforeSend: function () {
-					dLoader(parent.find('.wbtm_search_area'));
-				},
-				success: function (data) {
-					parent.find('.wbtm_search_result').html(data).promise().done(function () {
-						dLoaderRemove(parent.find('.wbtm_search_area'));
-						loadBgImage();
-					});
-				},
-				error: function (response) {
-					console.log(response);
-				}
-			});
+        type: "POST",
+        url: mp_ajax_url,
+        data: {
+          action: "get_wbtm_bus_list",
+          start_route: start.val(),
+          end_route: end.val(),
+          j_date: j_date.val(),
+          r_date: r_date.val(),
+          post_id: post_id,
+          style: style.val(),
+          btn_show: btn_show.val(),
+          backend_order: window.location.href.search("wbtm_backend_order"),
+        },
+        beforeSend: function () {
+          dLoader(parent.find(".wbtm_search_area"));
+        },
+		  success: function (data) {
+          parent
+            .find(".wbtm_search_result")
+            .html(data)
+            .promise()
+            .done(function () {
+              dLoaderRemove(parent.find(".wbtm_search_area"));
+              loadBgImage();
+            });
+        },
+        error: function (response) {
+          console.log(response);
+        },
+      });
 		}
 	});
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {

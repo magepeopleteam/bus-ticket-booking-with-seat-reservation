@@ -140,4 +140,8 @@
   background: none;
 }
 
+.wbtm-seat-book.hide {
+  display: none;
+}
+
 /*# sourceMappingURL=wbtm.css.map */
