@@ -212,6 +212,21 @@
 				}
 				return $total_booked;
 			}
+            public static function query_check_order($order_id)            {
+                $args = array(
+                    'post_type' => 'wbtm_bus_booking',
+                    'posts_per_page' => -1,
+                    'paged' => 1,
+                    'meta_query' => array(
+                        array(
+                            'key' => 'wbtm_order_id',
+                            'value' => $order_id,
+                            'compare' => '='
+                        )
+                    )
+                );
+                return new WP_Query($args);
+            }
 		}
 		new WBTM_Query();
 	}

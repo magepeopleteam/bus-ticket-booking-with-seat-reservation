@@ -16,7 +16,7 @@
 				/**********************************************/
 				add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 				add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 10, 4);
-				add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'));
+				add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
 				/**********************************************/
 				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
 			}
@@ -126,6 +126,7 @@
 			public function checkout_create_order_line_item($item, $cart_item_key, $values) {
 				$post_id = array_key_exists('wbtm_bus_id', $values) ? $values['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+                  // echo '<pre>';print_r($item);echo '</pre>';die();
 					$passenger_infos = array_key_exists('wbtm_passenger_info', $values) ? $values['wbtm_passenger_info'] : [];
 					//==============//
 					$bp_place = array_key_exists('wbtm_bp_place', $values) ? $values['wbtm_bp_place'] : '';
@@ -210,10 +211,14 @@
 					$order = wc_get_order($order_id);
 					$order_status = $order->get_status();
 					if ($order_status != 'failed') {
+						$check_attendee=WBTM_Query::query_check_order($order_id)->post_count;
 						//$item_id = current( array_keys( $order->get_items() ) );
-						foreach ($order->get_items() as $item_id => $item) {
-							self::add_billing_data($item_id, $order_id);
-						}
+						//echo '<pre>';print_r($check_attendee);echo '</pre>';die();
+						if($check_attendee==0) {
+                            foreach ($order->get_items() as $item_id => $item) {
+                                self::add_billing_data($item_id, $order_id);
+                            }
+                        }
 					}
 				}
 			}
@@ -327,6 +332,7 @@
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 						if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
 							$this->wc_order_status_change($order_status, $post_id, $order_id);
+                            //echo '<pre>';print_r($order_status);echo '</pre>';die();
 							do_action('wbtm_order_status_change', $order_status, $post_id, $order_id);
 						}
 					}

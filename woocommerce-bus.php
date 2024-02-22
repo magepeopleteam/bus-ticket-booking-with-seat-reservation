@@ -28,11 +28,10 @@
 					define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 				}
 				if (!defined('WBTM_PLUGIN_DATA')) {
-					define('WBTM_PLUGIN_DATA', get_plugin_data( __FILE__ ));
+					define('WBTM_PLUGIN_DATA', get_plugin_data(__FILE__));
 				}
 				require_once WBTM_PLUGIN_DIR . '/mp_global/MP_Global_File_Load.php';
 			}
-			
 			private function load_plugin() {
 				if (MP_Global_Function::check_woocommerce() == 1) {
 					$this->appsero_init_tracker();
@@ -42,8 +41,7 @@
 					self::on_activation_page_create();
 					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
 					add_action('activated_plugin', array($this, 'activation_redirect'), 90);
-				}
-				else {
+				} else {
 					require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
 					add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
 				}
@@ -75,8 +73,7 @@
 							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-booking-manager') . '</a>',
 							'get_pro' => '<a href="' . esc_url("https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/") . '" target="_blank" class="wbtm_plugin_pro_meta_link">' . __('Upgrade to PRO Version', 'bus-booking-manager') . '</a>'
 						);
-					}
-					else {
+					} else {
 						$wbtm_links = array(
 							'docs' => '<a href="' . esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/") . '" target="_blank">' . __('Docs', 'bus-booking-manager') . '</a>',
 							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-booking-manager') . '</a>',
@@ -132,5 +129,5 @@
 				}
 			}
 		}
-	new Wbtm_Woocommerce_bus();
+		new Wbtm_Woocommerce_bus();
 	}
