@@ -30,8 +30,8 @@
 	//echo '<pre>'; print_r($_POST); echo '</pre>';
 	//echo '<pre>'; print_r($_REQUEST); echo '</pre>';
 	$style = $style ?? '';
-	$btn_show = is_singular('wbtm_bus')?'hide':'show';
-
+	$global_settings = get_option('mp_global_settings',true);
+	$btn_show = $global_settings['show_hide_view_seats_button']? $global_settings['show_hide_view_seats_button'] : 'show';
 ?>
 	<div id="wbtm_area">
 		<input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>

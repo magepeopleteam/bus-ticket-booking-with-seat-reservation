@@ -10,6 +10,7 @@
 	$end_route = $end_route ?? '';
 	$post_id = $post_id ?? '';
 	$date = $date ?? '';
+	$btn_show = $btn_show ?? '';
 	$label = WBTM_Functions::get_name();
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 	if (sizeof($bus_ids) > 0) {
@@ -58,8 +59,12 @@
 						<div class="price">
 							<h4 class="textTheme" ><?php echo wc_price($price); ?></h4>
 						</div>
-
-						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
+						<?php 
+							if($all_info['regi_status']=='no'){
+								WBTM_Layout::trigger_view_seat_details();
+							}
+						?>
+						<button type="button" class="_themeButton_xs <?php echo $btn_show;?>" id="get_wbtm_bus_details"
 							data-bus_id="<?php echo esc_attr($bus_id); ?>"
 							data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
 							data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
