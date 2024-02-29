@@ -15,8 +15,10 @@
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 	if (sizeof($bus_ids) > 0) {
 		$bus_count = 0;
+
 		?>
 		<!-- new layout -->
+
 		<div class="wbtm_bus_list_area">
 			<input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>"/>
 			<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>"/>
@@ -60,7 +62,7 @@
 							<h4 class="textTheme" ><?php echo wc_price($price); ?></h4>
 						</div>
 						<?php 
-							if($all_info['regi_status']=='no'){
+							if($btn_show=='hide' and $all_info['regi_status']=='no'){
 								WBTM_Layout::trigger_view_seat_details();
 							}
 						?>
