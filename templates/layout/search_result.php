@@ -32,7 +32,7 @@
 						
 				?>
 				<!-- default style -->
-				<div class="wbtm-bust-list _dFlex_mT">
+				<div class="wbtm-bust-list">
 					<div class="wbtm-bus-image ">
 						<?php MP_Custom_Layout::bg_image($bus_id); ?>
 					</div>
