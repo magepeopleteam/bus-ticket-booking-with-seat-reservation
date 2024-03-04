@@ -11,6 +11,7 @@ if (!class_exists('WBTM_Settings')) {
         public function __construct() {
             add_action('add_meta_boxes', [$this, 'settings_meta']);
             add_action('save_post', array($this, 'save_settings'), 99, 1);
+            add_action('wbtm_settings_tab', array($this, 'settings_tab'), 99);
         }
         //************************//
         public function settings_meta() {
@@ -22,7 +23,11 @@ if (!class_exists('WBTM_Settings')) {
         public function settings() {
             $post_id = get_the_id();
             wp_nonce_field('wbtm_type_nonce', 'wbtm_type_nonce');
-            ?>
+            $this->settings_tab($post_id);
+            
+        }
+        public function settings_tab($post_id){
+?>
             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
             <div class="mpStyle">
                 <div class="mpTabs leftTabs">
