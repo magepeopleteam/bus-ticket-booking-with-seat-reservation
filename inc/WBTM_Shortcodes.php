@@ -26,7 +26,6 @@
 				ob_start();
 				if (sizeof($bus_ids) > 0) {
 					$count = 0;
-					echo $style.'hhjh';
 					?>
 					<div class="mpStyle placeholderLoader mp_pagination_main_area">
 						<div class="mpContainer flexWrap">
