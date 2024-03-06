@@ -32,7 +32,7 @@
 						
 				?>
 				<!-- default style -->
-				<div class="wbtm-bust-list _dFlex_mT">
+				<div class="wbtm-bust-list">
 					<div class="wbtm-bus-image ">
 						<?php MP_Custom_Layout::bg_image($bus_id); ?>
 					</div>
@@ -64,9 +64,12 @@
 							<p><?php echo WBTM_Translations::text_fare().'/' . WBTM_Translations::text_seat(); ?></p>
 						</div>
 					</div>
-					<?php if($btn_show=='hide'){
-						WBTM_Layout::trigger_view_seat_details();
-					} ?>
+					<?php 
+						
+						if($btn_show=='hide' and $all_info['regi_status']=='no'){
+							WBTM_Layout::trigger_view_seat_details();
+						}
+					?>
 					<div class="wbtm-seat-book <?php echo $btn_show;?>">
 						<button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
 							data-bus_id="<?php echo esc_attr($bus_id); ?>"

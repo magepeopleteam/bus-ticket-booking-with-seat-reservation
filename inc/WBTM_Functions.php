@@ -156,6 +156,7 @@
 											$total_seat = MP_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 											$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $route_info[0]['time']);
 											$available_seat = $total_seat - $sold_seat;
+											
 											return [
 												'start_point' => $route_info[0]['place'],
 												'start_time' => $route_info[0]['time'],
@@ -166,7 +167,8 @@
 												'price' => WBTM_Functions::get_seat_price($post_id, $start_route, $end_route),
 												'total_seat' => $total_seat,
 												'sold_seat' => $sold_seat,
-												'available_seat' => max(0, $available_seat)
+												'available_seat' => max(0, $available_seat),
+												'regi_status' => MP_Global_Function::get_post_info($post_id, 'wbtm_registration', 0)
 											];
 										}
 									}

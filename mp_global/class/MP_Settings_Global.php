@@ -55,6 +55,17 @@
 							)
 						),
 						array(
+							'name' => 'show_hide_view_seats_button',
+							'label' => esc_html__('Show/hide view seats button', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('If you want to hide view seats button from serach list, if registration off.', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'select',
+							'default' => 'show',
+							'options' => array(
+								'show' => esc_html__('Show', 'bus-ticket-booking-with-seat-reservation'),
+								'hide' => esc_html__('Hide', 'bus-ticket-booking-with-seat-reservation')
+							)
+						),
+						array(
 							'name' => 'set_book_status',
 							'label' => esc_html__('Seat Booked Status', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'bus-ticket-booking-with-seat-reservation'),
