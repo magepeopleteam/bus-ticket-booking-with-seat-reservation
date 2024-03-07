@@ -20,8 +20,7 @@
 					
 					<div class="_dLayout_xs_mp_zero">
 						<!-- if bus transporter panel active it will show title field -->
-						<?php do_action('wbtm_general_settings_fields',$post_id); echo $post_id; ?>
-
+						<?php do_action('wbtm_general_settings_fields',$post_id);?>
 						<div class="_bgColor_2_padding dFlex">
 							<label class="col_6">
 								<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
