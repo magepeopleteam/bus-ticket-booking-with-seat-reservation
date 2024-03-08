@@ -12,7 +12,7 @@
 				$this->define_constants();
 				$this->load_global_file();
 				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
-				add_action('add_admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
+				add_action('transporter_panel_admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
 				add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 80);
 				add_action('admin_head', array($this, 'add_admin_head'), 5);
 				add_action('wp_head', array($this, 'add_frontend_head'), 5);
