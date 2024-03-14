@@ -31,6 +31,8 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             $checked_pickup_point = $display_pickup_point == 'no' ? '' : 'checked';
             $pickup_points = MP_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
             $bp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
+            $wbtm_pickup_point_required = MP_Global_Function::get_post_info($post_id, 'wbtm_pickup_point_required', 'no');
+			$checked_wbtm_pickup_point_required = $wbtm_pickup_point_required == 'no' ? '' : 'checked';
             ?>
             <div class="_dLayout_xs_mp_zero">
                 <div class="_bgColor_2_padding dFlex _justifyBetween ">
@@ -47,6 +49,13 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                     <?php if (sizeof($bp_points) > 0) { ?>
                         <?php if (sizeof($pickup_points_list) > 0) { ?>
                             <div class="padding mp_settings_area">
+                                <div class="margin">
+                                    <div class="_max_700_dFlex">
+                                        <span class="_max_300_fs_label"><?php esc_html_e('Boarding point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                        <?php MP_Custom_Layout::switch_button('wbtm_pickup_point_required', $checked_wbtm_pickup_point_required); ?>
+                                    </div>
+                                    <?php WBTM_Settings::info_text('wbtm_pickup_point_required'); ?>
+                                </div>
                                 <div class="ovAuto">
                                     <table>
                                         <thead>
@@ -164,6 +173,8 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
 			$checked_drop_off_point = $display_drop_off_point == 'no' ? '' : 'checked';
 			$drop_off_points = MP_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
 			$dp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+            $wbtm_dropping_point_required = MP_Global_Function::get_post_info($post_id, 'wbtm_dropping_point_required', 'no');
+			$checked_wbtm_dropping_point_required = $wbtm_dropping_point_required == 'no' ? '' : 'checked';
 			?>
             <div class="_dLayout_xs_mp_zero">
                 <div class="_bgColor_2_padding dFlex _justifyBetween ">
@@ -179,6 +190,13 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                     <?php if (sizeof($dp_points) > 0) { ?>
                         <?php if (sizeof($drop_off_points_list) > 0) { ?>
                             <div class=" mp_settings_area">
+                                <div class="margin">
+                                    <div class="_max_700_dFlex">
+                                        <span class="_max_300_fs_label"><?php esc_html_e('Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                        <?php MP_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
+                                    </div>
+                                    <?php WBTM_Settings::info_text('wbtm_dropping_point_required'); ?>
+                                </div>
                                 <div class="ovAuto">
                                     <table>
                                         <thead>
@@ -296,6 +314,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                 $wbtm_pickup_bp = MP_Global_Function::get_submit_info('wbtm_bp_pickup', array());
                 $wbtm_pickup = MP_Global_Function::get_submit_info('wbtm_pickup_name', array());
                 $wbtm_pickup_time = MP_Global_Function::get_submit_info('wbtm_pickup_time', array());
+                //echo "<pre>"; print_r(array($hidden_ids,$wbtm_pickup_bp,$wbtm_pickup,$wbtm_pickup_time));echo "</pre>";exit;
                 if (sizeof($hidden_ids) > 0) {
                     foreach ($hidden_ids as $hidden_id) {
                         $pickups = array_key_exists($hidden_id, $wbtm_pickup) ? $wbtm_pickup[$hidden_id] : [];
@@ -317,6 +336,8 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                 update_post_meta($post_id, 'wbtm_pickup_point', $pickup_infos);
                 $display_pickup = MP_Global_Function::get_submit_info('show_pickup_point') ? 'yes' : 'no';
                 update_post_meta($post_id, 'show_pickup_point', $display_pickup);
+                $wbtm_pickup_point_required = MP_Global_Function::get_submit_info('wbtm_pickup_point_required') ? 'yes' : 'no';
+                update_post_meta($post_id, 'wbtm_pickup_point_required', $wbtm_pickup_point_required);
                 //************************//
                  $drop_off_infos=[];
                  $d_count=0;
@@ -345,6 +366,8 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                 update_post_meta($post_id, 'wbtm_drop_off_point', $drop_off_infos);
                 $display_dro_off = MP_Global_Function::get_submit_info('show_drop_off_point') ? 'yes' : 'no';
                 update_post_meta($post_id, 'show_drop_off_point', $display_dro_off);
+                $wbtm_dropping_point_required = MP_Global_Function::get_submit_info('wbtm_dropping_point_required') ? 'yes' : 'no';
+                update_post_meta($post_id, 'wbtm_dropping_point_required', $wbtm_dropping_point_required);
 
             }
         }
