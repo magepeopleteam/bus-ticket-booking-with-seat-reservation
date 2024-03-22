@@ -17,7 +17,7 @@ if (!class_exists('WBTM_Settings')) {
         public function settings_meta() {
             $label = WBTM_Functions::get_name();
             $cpt = WBTM_Functions::get_cpt();
-            add_meta_box('mp_meta_box_panel', '<span class="fas fa-cogs"></span>' . $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
+            add_meta_box('mp_meta_box_panel', $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
         }
         //******************************//
         public function settings() {
