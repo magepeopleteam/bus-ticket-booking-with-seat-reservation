@@ -2393,12 +2393,15 @@
   }
   .mpStyle .tabLists span {
     margin: 0 var(--dMP_xs) 0 0;
+    color: var(--color_theme);
   }
   .leftTabs > .tabLists {
     -webkit-flex-flow: column;
     flex-flow: column;
     min-width: 250px;
-    max-width: 250px;
+    max-width: 283px;
+    background-color: var(--color_light);
+    padding: 10px;
   }
   div.mpStyle [data-tabs-target] {
     display: -webkit-flex;
@@ -2410,28 +2413,44 @@
     position: relative;
     text-align: left;
     cursor: pointer;
-    padding: var(--dMP_xs);
+    padding: 15px;
     color: var(--d_color);
+    border-left: 2px solid transparent;
   }
   .mpStyle [data-tabs-target]:hover {
-    font-weight: var(--fw-medium);
-    border-color: var(--color_theme);
-    color: var(--color_theme);
+    border-left: 2px solid var(--color_theme);
+    background-color: var(--color_theme_alter);
   }
   .mpStyle [data-tabs-target].active {
-    font-weight: var(--fw-medium);
-    background-color: var(--color_theme);
-    color: var(--color_theme_alter);
+    background-color: var(--color_theme_alter);
+    color: var(--d_color);
+    border-left: 2px solid var(--color_theme);
   }
+  
   .topTabs [data-tabs-target] {
     border-right: 1px solid var(--color_border);
     -webkit-justify-content: center;
     justify-content: center;
   }
+
   .topTabs [data-tabs-target]:last-child {
     border-right: none;
   }
+
+  .mpStyle [data-tabs-target].active::after,.mpStyle [data-tabs-target]:hover::after{
+    width: 100%;
+  }
+
   .leftTabs [data-tabs-target] {
+    position: relative;
+  }
+  .leftTabs [data-tabs-target]::after{
+    width: 90%;
+    height: 100%;
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
     border-bottom: 1px solid var(--color_border);
   }
   .mpStyle .tabsContent {
