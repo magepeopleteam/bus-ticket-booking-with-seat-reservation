@@ -1631,6 +1631,7 @@
     margin-bottom: var(--dMP);
     background-color: var(--color_white);
     border: 1px solid var(--color_border);
+    border-radius: 0;
   }
   .mpStyle .dLayout_xs,
   .mpStyle [class*="_dLayout_xs"] {
