@@ -3933,4 +3933,11 @@
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
+  .component{
+    border: 1px solid var(--color_border);
+    border-bottom: 0;
+  }
+  .component:last-child{
+    border: 1px solid var(--color_border);
+  }
 }

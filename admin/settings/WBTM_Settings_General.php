@@ -18,10 +18,10 @@
 				<div class="tabsItem" data-tabs="#wbtm_general_info">
 					<h3 class="pB_xs"><?php esc_html_e('General Information Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					
-					<div class="_dLayout_xs_mp_zero">
+					<div class="_mp_zero">
 						<!-- if bus transporter panel active it will show title field -->
 						<?php do_action('wbtm_general_settings_fields',$post_id);?>
-						<div class="_bgColor_2_padding dFlex">
+						<div class="component _padding dFlex">
 							<label class="col_6">
 								<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
 								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></i>
@@ -30,7 +30,7 @@
 								<input class="formControl mp_name_validation max_300" name="wbtm_bus_no" value="<?php echo esc_attr($bus_no); ?>"/>
 							</div>
 						</div>
-						<div class="padding dFlex">
+						<div class="component _padding dFlex">
 							<label class="col_6">
 								<?php echo WBTM_Translations::text_coach_type(); ?>
 								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_category'); ?></i>
@@ -44,7 +44,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="_bgColor_2_padding_dFlex">
+						<div class="component _padding_dFlex">
 							<label class="col_6">
 								<?php esc_html_e('Registration on/off', 'bus-ticket-booking-with-seat-reservation'); ?> 
 								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_registration'); ?></i>
