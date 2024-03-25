@@ -597,9 +597,9 @@
   }
   .mpStyle .themeButton:hover,
   .mpStyle [class*="_themeButton"]:hover {
-    background-color: #ff7b06;
+    background-color: #C6287F;
     color: var(--color_theme_alter);
-    border-color: #ff7b06;
+    border-color: #C6287F;
   }
   .mpStyle .themeButton:hover span,
   .mpStyle [class*="_themeButton"]:hover span {

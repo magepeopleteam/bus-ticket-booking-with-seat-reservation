@@ -87,7 +87,7 @@
 						--color_theme_alter: <?php echo esc_attr($alternate_color); ?>;
 						--color_warning: <?php echo esc_attr($warning_color); ?>;
 						--color_black: #000;
-						--color_success: #006607;
+						--color_success: #00A656;
 						--color_danger: #C00;
 						--color_required: #C00;
 						--color_white: #FFFFFF;
