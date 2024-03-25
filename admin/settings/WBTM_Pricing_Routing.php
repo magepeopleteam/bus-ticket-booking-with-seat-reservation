@@ -34,14 +34,12 @@
 							<div class="mp_settings_area">
 								<div class="flexWrap mp_sortable_area mp_item_insert">
 									<?php if (sizeof($full_route_infos) > 0) { 
-										$data_id = 0; 
 										foreach ($full_route_infos as $full_route_info) { 
 											$this->add_stops_item($bus_stop_lists, $full_route_info);
-											$data_id++;
 										} 
 									} ?>
-									<div class="col_12 _mB_xs  mp_item_insert_before">
-										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_navy_blueButton_fullHeight col_10'); ?>
+									<div class="_mB_xs mp_item_insert_before">
+										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_navy_blueButton_fullHeight'); ?>
 									</div>
 								</div>
 								<div class="mp_hidden_content">
