@@ -16,26 +16,39 @@
 				$checked_wbtm_registration = $display_wbtm_registration == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_general_info">
-					<h3 class="pB_xs"><?php esc_html_e('General Information Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<h3 class=""><?php esc_html_e('General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<p class=""><?php esc_html_e('General Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
-					<div class="_dLayout_xs_mp_zero">
+					<div class="_dLayout_padding_bgLight">
+							<div class="col_6 _dFlex_fdColumn">
+								<label>
+									<?php esc_html_e('Bus Settings', 'bus-ticket-booking-with-seat-reservation'); ?> 
+								</label>
+								<span><?php esc_html_e('Here you can set bus no, category and seat reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							</div>
+						</div>
+					<div>
 						<!-- if bus transporter panel active it will show title field -->
 						<?php do_action('wbtm_general_settings_fields',$post_id);?>
-						<div class="_bgColor_2_padding dFlex">
-							<label class="col_6">
-								<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
-								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></i>
-							</label>
-							<div class="col_6">
+						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+							<div class="col_6 _dFlex_fdColumn">
+								<label>
+									<?php esc_html_e('Bus no', 'bus-ticket-booking-with-seat-reservation'); ?> 
+								</label>
+								<span><?php WBTM_Settings::info_text('wbtm_bus_no'); ?></span>
+							</div>
+							<div class="col_6 textRight">
 								<input class="formControl mp_name_validation max_300" name="wbtm_bus_no" value="<?php echo esc_attr($bus_no); ?>"/>
 							</div>
 						</div>
-						<div class="padding dFlex">
-							<label class="col_6">
-								<?php echo WBTM_Translations::text_coach_type(); ?>
-								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_bus_category'); ?></i>
-							</label>
-							<div class="col_6">
+						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+							<div class="col_6 _dFlex_fdColumn">
+								<label class="col_6">
+									<?php echo WBTM_Translations::text_coach_type(); ?>
+								</label>
+								<span><?php WBTM_Settings::info_text('wbtm_bus_category'); ?></span>
+							</div>
+							<div class="col_6 textRight">
 								<select class="formControl max_300" name="wbtm_bus_category" data-collapse-target required>
 									<option disabled selected><?php echo WBTM_Translations::text_please_select(); ?></option>
 									<?php foreach ($bus_categories as $bus_category) { ?>
@@ -44,12 +57,14 @@
 								</select>
 							</div>
 						</div>
-						<div class="_bgColor_2_padding_dFlex">
-							<label class="col_6">
-								<?php esc_html_e('Registration on/off', 'bus-ticket-booking-with-seat-reservation'); ?> 
-								<i class="fas fa-question-circle tool-tips"><?php WBTM_Settings::info_text('wbtm_registration'); ?></i>
-							</label>
-							<div class="col_6">
+						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+							<div class="col_6 _dFlex_fdColumn">
+								<label>
+									<?php esc_html_e('Registration on/off', 'bus-ticket-booking-with-seat-reservation'); ?> <i class="fas fa-question-circle tool-tips"><span><?php WBTM_Settings::info_text('wbtm_registration_tips'); ?></span></i>
+								</label>
+								<span><?php WBTM_Settings::info_text('wbtm_registration'); ?></span>
+							</div>
+							<div class="col_6 textRight">
 								<?php MP_Custom_Layout::switch_button('wbtm_registration', $checked_wbtm_registration); ?>
 							</div>							
 						</div>

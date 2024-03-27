@@ -17,7 +17,7 @@ if (!class_exists('WBTM_Settings')) {
         public function settings_meta() {
             $label = WBTM_Functions::get_name();
             $cpt = WBTM_Functions::get_cpt();
-            add_meta_box('mp_meta_box_panel', '<span class="fas fa-cogs"></span>' . $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
+            add_meta_box('mp_meta_box_panel', $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
         }
         //******************************//
         public function settings() {
@@ -77,8 +77,9 @@ if (!class_exists('WBTM_Settings')) {
         public static function description_array($key) {
             $des = array(
                 'wbtm_bus_no' => esc_html__('Please add your unique bus id', 'bus-ticket-booking-with-seat-reservation'),
-                'wbtm_bus_category' => esc_html__('Please your bus category', 'bus-ticket-booking-with-seat-reservation'),
-                'wbtm_registration' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_bus_category' => esc_html__('Please add your bus category', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_registration' => esc_html__('On/off you bus seat registration', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_registration_tips' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_boarding_time' => esc_html__('By default Boarding Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_dropping_time' => esc_html__('By default Dropping Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_seat_type_conf' => esc_html__('Please select your bus seat type . Default Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'),
@@ -101,9 +102,7 @@ if (!class_exists('WBTM_Settings')) {
             $data = self::description_array($key);
             if ($data) {
                 ?>
-                <span>
-                    <?php echo esc_html($data); ?>
-                </span>
+                <?php echo esc_html($data); ?>
                 <?php
             }
         }

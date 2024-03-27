@@ -14,7 +14,7 @@
 			}
 			public function add_global_style() {
 				$default_color   = MP_Global_Function::get_style_settings( 'default_text_color', '#303030' );
-				$theme_color     = MP_Global_Function::get_style_settings( 'theme_color', '#2F9DF4' );
+				$theme_color     = MP_Global_Function::get_style_settings( 'theme_color', '#F12971' );
 				$alternate_color = MP_Global_Function::get_style_settings( 'theme_alternate_color', '#fff' );
 				$warning_color   = MP_Global_Function::get_style_settings( 'warning_color', '#E67C30' );
 				$default_fs      = MP_Global_Function::get_style_settings( 'default_font_size', '14' ) . 'px';
@@ -87,7 +87,7 @@
 						--color_theme_alter: <?php echo esc_attr($alternate_color); ?>;
 						--color_warning: <?php echo esc_attr($warning_color); ?>;
 						--color_black: #000;
-						--color_success: #006607;
+						--color_success: #00A656;
 						--color_danger: #C00;
 						--color_required: #C00;
 						--color_white: #FFFFFF;
