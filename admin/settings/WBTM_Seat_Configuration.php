@@ -135,6 +135,7 @@
 						<div class="wbtm_seat_plan_settings col_6">
 							<div class="mB textCenter">
 								<label><?php esc_html_e('Bus Front', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<div class="divider"></div>
 							</div>
 							<div class="wbtm_seat_plan_preview">
 								<?php $this->create_seat_plan($post_id, $seat_row, $seat_column); ?>
@@ -189,7 +190,9 @@
 								<?php MP_Custom_Layout::add_new_button(esc_html__('Create seat Plan', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan_dd', '_themeButton_xs_mT_xs_fullWidth'); ?>
 							</div>
 							<div class="wbtm_seat_plan_settings col_6">
-								<label><?php esc_html_e('Seat Plan Settings', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<div class="mB textCenter">
+									<label><?php esc_html_e('Bus Front', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								</div>
 								<div class="divider"></div>
 								<div class="wbtm_seat_plan_preview_dd">
 									<?php $this->create_seat_plan($post_id, $seat_row, $seat_column, true); ?>
