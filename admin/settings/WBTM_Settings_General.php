@@ -16,8 +16,8 @@
 				$checked_wbtm_registration = $display_wbtm_registration == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_general_info">
-					<h3 class=""><?php esc_html_e('General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p class=""><?php esc_html_e('General Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<h3><?php esc_html_e('General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<p><?php esc_html_e('General Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					<div class="_dLayout_padding_bgLight">
 							<div class="col_6 _dFlex_fdColumn">
