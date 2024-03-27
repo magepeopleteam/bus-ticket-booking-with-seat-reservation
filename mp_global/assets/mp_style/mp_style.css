@@ -31,10 +31,14 @@
     display: table-cell;
   }
   .mpStyle p:not(.mp_wp_editor p) {
+    color: var(--mpl-secondary);
     margin: 0;
-    padding: 0;
-    line-height: 1.5;
-    font-size: var(--fs);
+    margin-bottom: 0px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 24px;
+    font-family: DejaVuSans, sans-serif;
+    margin-bottom: 50px;
   }
   .mpStyle a:not(.mp_wp_editor a) {
     color: var(--color_theme);
@@ -197,8 +201,16 @@
   }
   div.mpStyle h3,
   div.mpStyle [class*="_fs_h3"] {
-    font-size: var(--fs_h3);
-    font-weight: var(--fw-medium);
+    padding: 0;
+    color: var(--mpl-secondary);
+    margin: 30px 0 20px 0;
+    margin-bottom: 20px;
+    margin-bottom: 20px;
+    font-size: 22px;
+    line-height: 26px;
+    font-family: DejaVuSansBold, sans-serif;
+    margin-bottom: 12px;
+    font-weight: 700;
   }
   div.mpStyle h4,
   div.mpStyle [class*="_fs_h4"] {
@@ -220,7 +232,15 @@
   }
   div.mpStyle label,
   div.mpStyle [class*="_fs_label"] {
-    font-size: var(--fs_label);
+    margin: 0;
+    margin-bottom: 0px;
+    margin-bottom: 0px;
+    font-size: 14px;
+    font-family: DejaVuSansBold, sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--mpl-secondary);
     /* font-weight: var(--fw-medium); */
   }
   div.mpStyle .fs_50,
@@ -361,20 +381,7 @@
     -webkit-justify-content: flex-end;
     justify-content: flex-end;
   }
-  /********/
-  .mpStyle label,
-  .mpStyle .customRadio,
-  .mpStyle .formControl,
-  .mpStyle .title_on_border,
-  .mpStyle .alignCenter,
-  .mpStyle [class*="_alignCenter"] {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-  }
+
   [class*="_alignCenter"] {
     -webkit-align-items: center;
     align-items: center;
@@ -1628,17 +1635,21 @@
   .mpStyle .dLayout,
   .mpStyle [class*="_dLayout"] {
     padding: var(--dMP);
-    margin-bottom: var(--dMP);
     background-color: var(--color_white);
     border: 1px solid var(--color_border);
+    border-bottom: 0;
     border-radius: 0;
   }
+  .mpStyle .dLayout:last-child,
+  .mpStyle [class*="_dLayout"]:last-child {
+    border-bottom: 1px solid var(--color_border);
+  }
+
   .mpStyle .dLayout_xs,
   .mpStyle [class*="_dLayout_xs"] {
     padding: var(--dMP_xs);
     background-color: var(--color_white);
     border: 1px solid var(--color_border);
-    margin-bottom: var(--dMP_xs);
   }
   /***********info***********/
   .mpStyle .infoLayout,
@@ -1838,12 +1849,9 @@
   /***************************/
   div.mpStyle .formControl {
     width: 100%;
-    height: auto;
-    min-width: auto;
     max-width: inherit;
-    min-height: 34px;
     border: 1px solid var(--color_border);
-    padding: 5px var(--dMP_xs);
+    padding: 8px;
     font-size: var(--fs);
     color: var(--d_color);
     background-color: #fff;
@@ -1854,12 +1862,12 @@
     border-color: #80bdff;
   }
   div.mpStyle select.formControl {
-    background-image: url("../images/arrow_down.png");
+    /* background-image: url("../images/arrow_down.png");
     background-repeat: no-repeat;
     background-position: calc(100% - var(--dMP_xs));
     background-size: auto;
     -webkit-appearance: none;
-    padding: var(--dMP_xs) 35px var(--dMP_xs) var(--dMP_xs);
+    padding: var(--dMP_xs) 35px var(--dMP_xs) var(--dMP_xs); */
   }
   div.mpStyle select.formControl:focus {
     background-color: var(--color_theme_aa);
