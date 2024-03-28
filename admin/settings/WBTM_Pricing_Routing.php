@@ -95,7 +95,7 @@
 					<div class="_dLayout_dFlex_justifyBetween wbtm_stop_item_content" >
 						<div class="col_4">
 							<div class="_mB_xs"><label ><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<select name="wbtm_route_place[]" class='formControl'>
+							<select name="wbtm_route_place[]" class='formControl max_300'>
 								<option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								<?php foreach ($bus_stop_lists as $bus_stop) { ?>
 									<option value="<?php echo esc_attr($bus_stop); ?>" <?php echo esc_attr($bus_stop == $palace ? 'selected' : ''); ?>><?php echo esc_html($bus_stop); ?></option>
@@ -104,11 +104,11 @@
 						</div>
 						<div class="col_4">
 							<div class="_mB_xs"><label><?php esc_html_e('Time : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<input type="time" name="wbtm_route_time[]" class='formControl ' value="<?php echo esc_attr($time); ?>"/>
+							<input type="time" name="wbtm_route_time[]" class='formControl max_300' value="<?php echo esc_attr($time); ?>"/>
 						</div>
 						<div class="col_4 ">
 							<div class="_mB_xs"><label><?php esc_html_e('Type : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<select name="wbtm_route_type[]" class='formControl'>
+							<select name="wbtm_route_type[]" class='formControl max_300'>
 								<option selected disabled><?php esc_html_e('Select place type', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								<option value="bp" <?php echo esc_attr($type == 'bp' ? 'selected' : ''); ?>><?php esc_html_e('Boarding ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 								<option value="dp" <?php echo esc_attr($type == 'dp' ? 'selected' : ''); ?>><?php esc_html_e('Dropping ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
