@@ -130,7 +130,7 @@
 								<input type="number" pattern="[0-9]*" step="1" class="formControl max_300 mp_number_validation" name="wbtm_seat_cols" placeholder="Ex: 10" value="<?php echo esc_attr($seat_column); ?>"/>
 							</div>
 							<div class="divider"></div>
-							<?php MP_Custom_Layout::add_new_button(esc_html__('Generate Bus Seat', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan', '_themeButton_xs_mT_xs_fullWidth'); ?>
+							<?php MP_Custom_Layout::add_new_button(esc_html__('Generate Bus Seat', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan', '_themeButton_xs_mT_xs'); ?>
 						</div>
 						<div class="wbtm_seat_plan_settings col_6">
 							<div class="mB textCenter">
@@ -187,7 +187,7 @@
 									<input type="number" pattern="[0-9]*" step="1" class="formControl max_300 mp_price_validation" name="wbtm_seat_dd_price_parcent" placeholder="Ex: 10" value="<?php echo esc_attr($price_increase); ?>"/>
 								</div>
 								<div class="divider"></div>
-								<?php MP_Custom_Layout::add_new_button(esc_html__('Create seat Plan', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan_dd', '_themeButton_xs_mT_xs_fullWidth'); ?>
+								<?php MP_Custom_Layout::add_new_button(esc_html__('Create seat Plan', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan_dd', '_themeButton_xs_mT_xs'); ?>
 							</div>
 							<div class="wbtm_seat_plan_settings col_6">
 								<div class="mB textCenter">
