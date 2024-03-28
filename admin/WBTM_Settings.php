@@ -85,7 +85,7 @@ if (!class_exists('WBTM_Settings')) {
                 'wbtm_seat_type_conf' => esc_html__('Please select your bus seat type . Default Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_get_total_seat' => esc_html__('Please Type your bus total seat.', 'bus-ticket-booking-with-seat-reservation'),
                 'show_operational_on_day' => esc_html__('If you want to run particular date  select Particular or your bus run repeatedly select Repeat', 'bus-ticket-booking-with-seat-reservation'),
-                'wbtm_routing_info' => esc_html__('Please configure correctly your bus route', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_routing_info' => esc_html__('Here you can set bus route for stopage and dropping', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_pricing_info' => esc_html__('Please configure bus route price. Before price setting must be complete route configuration .', 'bus-ticket-booking-with-seat-reservation'),
                 'show_extra_service' => esc_html__('By default Extra services is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_pickup_point' => esc_html__('By default Pickup point is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),

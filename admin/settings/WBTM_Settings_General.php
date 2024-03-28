@@ -20,14 +20,14 @@
 					<p><?php esc_html_e('General Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					<div class="_dLayout_padding_bgLight">
-							<div class="col_6 _dFlex_fdColumn">
-								<label>
-									<?php esc_html_e('Bus Settings', 'bus-ticket-booking-with-seat-reservation'); ?> 
-								</label>
-								<span><?php esc_html_e('Here you can set bus no, category and seat reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-							</div>
+						<div class="col_6 _dFlex_fdColumn">
+							<label>
+								<?php esc_html_e('Bus Settings', 'bus-ticket-booking-with-seat-reservation'); ?> 
+							</label>
+							<span><?php esc_html_e('Here you can set bus no, category and seat reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 						</div>
-					<div>
+					</div>
+					<div class="">
 						<!-- if bus transporter panel active it will show title field -->
 						<?php do_action('wbtm_general_settings_fields',$post_id);?>
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">

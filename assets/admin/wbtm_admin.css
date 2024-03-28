@@ -1,4 +1,9 @@
 /********************************************************************  ************************************************/
+@font-face { 
+	font-family: "Font Awesome 5 Free"; 
+	src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/webfonts/fa-regular-400.woff2") 
+	format("embedded-opentype"), 
+}
 @media only screen and (min-width: 10px) {
 	div.wbtm_settings_pricing_routing div.mp_item_insert div:nth-last-child(2) h3 span {display: none;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
@@ -9,7 +14,31 @@
 	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item{min-width:250px;}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item{
+		/* padding: 5px;
+		background-color: var(--color_light);
+		border: 1px solid var(--color_border);
+		position: relative;
+		width: 90%;
+		margin: auto;
+		margin-bottom: 15px; */
+	}
+	/* div.wbtm_settings_pricing_routing div.wbtm_stop_item::before{
+		position: absolute;
+		top: 20px;
+		left: -50px;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: var(--color_light);
+		content: 'ab';
+		transform: translateY(-50%);
+		text-align: center;
+    	padding-top: 5px;
+		font-family: "Font Awesome 5 Free";
+    	content: "\f053";
+	} */
+
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
