@@ -34,16 +34,17 @@
 						</div>
 						<div class="_dLayout_padding">
 							<div class="mp_settings_area">
-								<div class="mp_sortable_area mp_item_insert">
+								<div class="mp_stop_items mp_sortable_area mp_item_insert">
 									<?php if (sizeof($full_route_infos) > 0) { 
 										foreach ($full_route_infos as $full_route_info) { 
 											$this->add_stops_item($bus_stop_lists, $full_route_info);
 										} 
 									} ?>
-									<div class="_mB_xs mp_item_insert_before">
-										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_themeButton_xs_fullHeight'); ?>
-									</div>
+									<div class="_mB_xs mp_item_insert_before"></div>
 								</div>
+								
+									<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_themeButton_xs_fullHeight'); ?>
+								
 								<!-- create new bus route -->
 								<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
@@ -77,8 +78,8 @@
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				?>
 				<div class="mp_remove_area col_12_mB  wbtm_stop_item ">
-					<div class="_dLayout_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header">
-						<label class="mp_zero">
+					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="#1">
+						<label class="col_4 mp_zero">
 							<?php
 								foreach ($bus_stop_lists as $bus_stop) { 
 									echo esc_attr($bus_stop == $palace ? $palace : '');
@@ -86,14 +87,15 @@
 							?>
 						</label>
 						<?php if($time): ?>
-						<label class="mp_zero">
+						<label class="col_4 mp_zero">
 							<i class="fas fa-clock"></i> <?php echo esc_attr($time); ?>
 						</label>
 						<?php endif; ?>
 						<?php MP_Custom_Layout::move_remove_button(); ?>
 					</div>
-					<div class="_dLayout_dFlex_justifyBetween wbtm_stop_item_content" >
-						<div class="col_4">
+					<div class="" data-collapse="#1">
+						<div class="_dFlex_justifyBetween wbtm_stop_item_content">
+							<div class="col_4">
 							<div class="_mB_xs"><label ><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
 							<select name="wbtm_route_place[]" class='formControl max_300'>
 								<option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
@@ -119,6 +121,7 @@
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
 <!--								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
 <!--							</label>-->
+						</div>
 					</div>
 				</div>
 				<?php
@@ -167,8 +170,8 @@
 					<table>
 						<thead>
 						<tr>
-							<th><?php esc_html_e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-							<th><?php esc_html_e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+							<th style="text-align:left"><?php esc_html_e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+							<th style="text-align:left"><?php esc_html_e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 							<th><?php esc_html_e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?>
 								<sup class="required">*</sup>
 							</th>
