@@ -83,16 +83,29 @@
 					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="<?php echo $collapse_id; ?>">
 						<label class="col_4 mp_zero">
 							<?php
+								$location = '';
 								foreach ($bus_stop_lists as $bus_stop) { 
-									echo esc_attr($bus_stop == $palace ? $palace : '');
+									if($bus_stop == $palace){
+										$location = $palace;
+									}
 								}
+								
+								if(empty($location)){
+									_e('Add Stop','bus-ticket-booking-with-seat-reservation');
+								}else{
+									echo esc_html( $location . ($type == 'bp' ? ' (Bording) ' : '') . ($type == 'dp' ? ' (Dropping) ' : '') . ($type == 'both' ? ' (Bording+Dropping) ' : '') );
+								}	
 							?>
 						</label>
-						<?php if($time): ?>
+						
 						<label class="col_4 mp_zero">
-							<i class="fas fa-clock"></i> <?php echo esc_attr($time); ?>
+							<?php if($time): ?>
+								<i class="fas fa-clock"></i> <?php echo esc_html($time); ?>
+							<?php else: ?>
+								<i class="fas fa-clock"></i> <?php _e('--:--','bus-ticket-booking-with-seat-reservation'); ?>
+							<?php endif; ?>
 						</label>
-						<?php endif; ?>
+						
 						<?php MP_Custom_Layout::move_remove_button(); ?>
 					</div>
 					<div class="wbtm_stop_item_content" data-collapse="<?php echo $collapse_id; ?>">
