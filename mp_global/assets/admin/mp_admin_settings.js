@@ -107,6 +107,15 @@ function load_sortable_datepicker(parent, item) {
   });
   //=========Add Setting Item==============//
   $(document).on("click", ".mp_add_item", function () {
+
+    var data = 0;
+    $(".mp_stop_items .wbtm_stop_item").each(function (i) {
+      data = ++i;
+    });
+    $(".mp_hidden_item .wbtm_stop_item").find(".wbtm_stop_item_header").attr("data-collapse-target", data);
+    $(".mp_hidden_item .wbtm_stop_item").find(".wbtm_stop_item_content").attr("data-collapse", data);
+    console.log(data);
+    // ====
     let parent = $(this).closest(".mp_settings_area");
     let item = $(this)
       .next($(".mp_hidden_content"))
