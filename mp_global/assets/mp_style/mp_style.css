@@ -1877,12 +1877,11 @@
   div.mpStyle .formControl[type="date"] {
     background-image: url("../images/calendar.png");
     background-repeat: no-repeat;
-    background-position: var(--dMP_xs) center;
+    background-position: 8px center;
     background-size: auto;
     -webkit-appearance: none;
-    font-size: var(--fs_h6);
-    font-weight: var(--fw-medium);
-    padding: var(--dMP_xs) var(--dMP_xs) var(--dMP_xs) 50px;
+    font-weight: normal;
+    padding: 8px 8px 8px 40px;
   }
   div.mpStyle textarea.formControl {
     height: auto;

@@ -82,7 +82,7 @@
 											}
 										?>
 									</div>
-									<div class="textRight">
+									<div class="_dFlex_justifyEnd">
 										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Particular date', 'bus-ticket-booking-with-seat-reservation')); ?>
 									</div>
 									<div class="mp_hidden_content">
@@ -94,50 +94,82 @@
 							</div>
 						</div>
 						<div class="<?php echo esc_attr($date_type == 'no' ? 'mActive' : ''); ?>" data-collapse="#mp_repeated">
-							
-							<div class="dLayout">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Repeated Start Date', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Repeated Start Date', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Repeated Start Date', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 textRight">
 									<input type="hidden" name="wbtm_repeated_start_date" value="<?php echo esc_attr($hidden_repeated_start_date); ?>"/>
-									<input type="text" readonly name="" class="formControl date_type" value="<?php echo esc_attr($visible_repeated_start_date); ?>" placeholder="<?php echo esc_attr($now); ?>"/>
-								</label>
-							</div>
-							<div class="dLayout">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Repeated End Date', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<input type="hidden" name="wbtm_repeated_end_date" value="<?php echo esc_attr($hidden_repeated_end_date); ?>"/>
-									<input type="text" readonly name="" class="formControl date_type" value="<?php echo esc_attr($visible_repeated_end_date); ?>" placeholder="<?php echo esc_attr($now); ?>"/>
-								</label>
-							</div>
-							<div class="dLayout">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Repeated after', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<input type="text" name="wbtm_repeated_after" class="formControl mp_number_validation" value="<?php echo esc_attr($repeated_after); ?>"/>
-								</label>
-							</div>
-							<div class="dLayout">
-								<label class="max_700">
-									<span class="max_300"><?php esc_html_e('Maximum advanced day booking', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<input type="text" name="wbtm_active_days" class="formControl mp_number_validation" value="<?php echo esc_attr($active_days); ?>"/>
-								</label>
-							</div>
-							<div class="dLayout">
-								<div class="dFlex">
-									<span class="_max_300_fs_label"><?php esc_html_e('Off Day', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-									<div class="groupCheckBox flexWrap">
-										<input type="hidden" name="wbtm_off_days" value="<?php echo esc_attr($off_days); ?>"/>
-										<?php foreach ($days as $key => $day) { ?>
-											<label class="customCheckboxLabel min_200">
-												<input type="checkbox" <?php echo esc_attr(in_array($key, $off_day_array) ? 'checked' : ''); ?> data-checked="<?php echo esc_attr($key); ?>"/>
-												<span class="customCheckbox"><?php echo esc_html($day); ?></span>
-											</label>
-										<?php } ?>
-									</div>
+									<input type="text" readonly name="" class="formControl date_type max_300" value="<?php echo esc_attr($visible_repeated_start_date); ?>" placeholder="<?php echo esc_attr($now); ?>"/>
 								</div>
 							</div>
-							<div class="dLayout">
-								<div class="dFlex">
-									<span class="_max_300_fs_label"><?php esc_html_e('Off Dates', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Repeated End Date', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Repeated Start Date', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 textRight">
+									<input type="hidden" name="wbtm_repeated_end_date" value="<?php echo esc_attr($hidden_repeated_end_date); ?>"/>
+									<input type="text" readonly name="" class="formControl max_300 date_type" value="<?php echo esc_attr($visible_repeated_end_date); ?>" placeholder="<?php echo esc_attr($now); ?>"/>
+								</div>
+							</div>
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Repeated after', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Repeated after', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 textRight">
+									<input type="text" name="wbtm_repeated_after" class="formControl max_300 mp_number_validation" value="<?php echo esc_attr($repeated_after); ?>"/>
+								</div>
+							</div>
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Maximum advanced day booking', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Maximum advanced day booking', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 textRight">
+									<input type="text" name="wbtm_active_days" class="formControl max_300 mp_number_validation" value="<?php echo esc_attr($active_days); ?>"/>
+								</div>
+							</div>
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_2 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Off Day', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Off Day', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_10 textRight">
+									<input type="hidden" name="wbtm_off_days" value="<?php echo esc_attr($off_days); ?>"/>
+									<?php foreach ($days as $key => $day) { ?>
+										<label class="customCheckboxLabel max_200">
+											<input type="checkbox" <?php echo esc_attr(in_array($key, $off_day_array) ? 'checked' : ''); ?> data-checked="<?php echo esc_attr($key); ?>"/>
+											<span class="customCheckbox"><?php echo esc_html($day); ?></span>
+										</label>
+									<?php } ?>
+								</div>
+							</div>
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignStart">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Off Dates', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Off Dates', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 _dFlex_justifyEnd">
 									<div class="mp_settings_area max_400">
 										<div class="mp_item_insert mp_sortable_area">
 											<?php
@@ -151,7 +183,9 @@
 												}
 											?>
 										</div>
-										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date', 'bus-ticket-booking-with-seat-reservation')); ?>
+										<div class="_dFlex_justifyEnd">
+											<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date', 'bus-ticket-booking-with-seat-reservation')); ?>
+										</div>
 										<div class="mp_hidden_content">
 											<div class="mp_hidden_item">
 												<?php $this->particular_date_item('wbtm_off_dates[]'); ?>
@@ -160,9 +194,16 @@
 									</div>
 								</div>
 							</div>
-							<div class="dLayout">
-								<div class="dFlex">
-									<span class="_max_300_fs_label"><?php esc_html_e('Off Dates in Range', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+
+
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignStart">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Off Dates in Range', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Off Dates', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_8">
 									<div class="mp_settings_area _fullWidth">
 										<div class="mp_item_insert mp_sortable_area">
 											<?php
@@ -176,7 +217,9 @@
 												}
 											?>
 										</div>
-										<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date range', 'bus-ticket-booking-with-seat-reservation')); ?>
+										<div class="_dFlex_justifyEnd">
+											<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date range', 'bus-ticket-booking-with-seat-reservation')); ?>
+										</div>
 										<div class="mp_hidden_content">
 											<div class="mp_hidden_item">
 												<?php $this->off_day_range(); ?>
