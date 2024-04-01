@@ -102,40 +102,44 @@
 							<?php endif; ?>
 						</div>
 						
-						<span class="col_4 mp_zero">
+						<label class="col_4 mp_zero">
 							<?php if($time): ?>
 								<i class="far fa-clock"></i> <?php echo esc_html($time); ?>
 							<?php else: ?>
 								<i class="far fa-clock"></i> <?php _e('--:--'); ?>
 							<?php endif; ?>
-						</span>
+						</label>
 						
 						<?php MP_Custom_Layout::move_remove_button(); ?>
 					</div>
 					<div class="wbtm_stop_item_content" data-collapse="<?php echo $collapse_id; ?>">
-						<div class="_dFlex_justifyBetween ">
-							<div class="col_4">
-							<div class="_mB_xs"><label ><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<select name="wbtm_route_place[]" class='formControl max_300'>
-								<option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-								<?php foreach ($bus_stop_lists as $bus_stop) { ?>
-									<option value="<?php echo esc_attr($bus_stop); ?>" <?php echo esc_attr($bus_stop == $palace ? 'selected' : ''); ?>><?php echo esc_html($bus_stop); ?></option>
-								<?php } ?>
-							</select>
-						</div>
-						<div class="col_4">
-							<div class="_mB_xs"><label><?php esc_html_e('Time : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<input type="time" name="wbtm_route_time[]" class='formControl max_300' value="<?php echo esc_attr($time); ?>"/>
-						</div>
-						<div class="col_4 ">
-							<div class="_mB_xs"><label><?php esc_html_e('Type : ', 'bus-ticket-booking-with-seat-reservation'); ?></label></div>
-							<select name="wbtm_route_type[]" class='formControl max_300'>
-								<option selected disabled><?php esc_html_e('Select place type', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-								<option value="bp" <?php echo esc_attr($type == 'bp' ? 'selected' : ''); ?>><?php esc_html_e('Boarding ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-								<option value="dp" <?php echo esc_attr($type == 'dp' ? 'selected' : ''); ?>><?php esc_html_e('Dropping ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-								<option value="both" <?php echo esc_attr($type == 'both' ? 'selected' : ''); ?>><?php esc_html_e('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-							</select>
-						</div>
+						<div class="_dFlex_justifyCenter_alignCenter ">
+							<div class="col_4 _dFlex_justifyCenter_alignCenter">
+								<label class="_mp_zero _mR"><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<select name="wbtm_route_place[]" class='formControl max_200 _mL_xs'>
+									<option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+									<?php foreach ($bus_stop_lists as $bus_stop) { ?>
+										<option value="<?php echo esc_attr($bus_stop); ?>" <?php echo esc_attr($bus_stop == $palace ? 'selected' : ''); ?>><?php echo esc_html($bus_stop); ?></option>
+									<?php } ?>
+								</select>
+							</div>
+							<div class="col_4 _dFlex_justifyCenter_alignCenter">
+								<label class="mp_zero"><?php esc_html_e('Time : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								
+									<input type="time" name="wbtm_route_time[]" class='formControl max_200 _mL_xs'  value="<?php echo esc_attr($time); ?>"/>
+								
+							</div>
+							<div class="col_4 _dFlex_justifyCenter_alignCenter">
+								<label class="mp_zero"><?php esc_html_e('Type : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								
+									<select name="wbtm_route_type[]" class='formControl max_200 _mL_xs'>
+										<option selected disabled><?php esc_html_e('Select place type', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+										<option value="bp" <?php echo esc_attr($type == 'bp' ? 'selected' : ''); ?>><?php esc_html_e('Boarding ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+										<option value="dp" <?php echo esc_attr($type == 'dp' ? 'selected' : ''); ?>><?php esc_html_e('Dropping ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+										<option value="both" <?php echo esc_attr($type == 'both' ? 'selected' : ''); ?>><?php esc_html_e('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+									</select>
+								
+							</div>
 <!--							<label>-->
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
 <!--								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
