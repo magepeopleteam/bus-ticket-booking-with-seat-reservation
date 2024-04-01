@@ -2043,11 +2043,12 @@
   }
   /**********Checkbox Custom*********/
   .mpStyle .customCheckbox {
-    padding: 3px 0 0 30px;
+    padding: 3px 0 0 24px;
     position: relative;
     line-height: 1;
     min-width: auto;
-    white-space: normal !important;
+    white-space: wrap;
+    margin-right: 5px;
   }
   .mpStyle .customCheckbox::before {
     content: "";
