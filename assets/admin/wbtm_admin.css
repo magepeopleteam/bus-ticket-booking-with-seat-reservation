@@ -1,9 +1,4 @@
 /********************************************************************  ************************************************/
-@font-face { 
-	font-family: "Font Awesome 5 Free"; 
-	src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/webfonts/fa-regular-400.woff2") 
-	format("embedded-opentype"), 
-}
 @media only screen and (min-width: 10px) {
 	div.wbtm_settings_pricing_routing div.mp_item_insert div:nth-last-child(2) h3 span {display: none;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
