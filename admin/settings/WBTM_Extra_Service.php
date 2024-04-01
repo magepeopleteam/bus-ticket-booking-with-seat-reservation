@@ -21,7 +21,7 @@
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_ex_service">
 					<h3><?php esc_html_e('Extra Services', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p><?php esc_html_e('Add Extra Services with bus seat reservation', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<p><?php esc_html_e('Add Extra Services for the passanger with bus seat reservation', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					<div class="">	
 						<div class="_dLayout_bgLight_dFlex_justifyBetween">
