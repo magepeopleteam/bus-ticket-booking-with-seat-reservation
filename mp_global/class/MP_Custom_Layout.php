@@ -134,7 +134,7 @@
 			}
 			public static function move_button() {
 				?>
-				<div class="_mpBtn_navy_blueButton_xs mp_sortable_button" type="">
+				<div class="_mpBtn_themeButton_xs mp_sortable_button" type="">
 					<span class="fas fa-expand-arrows-alt mp_zero"></span>
 				</div>
 				<?php

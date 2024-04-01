@@ -87,7 +87,7 @@ if (!class_exists('WBTM_Settings')) {
                 'show_operational_on_day' => esc_html__('If you want to run particular date  select Particular or your bus run repeatedly select Repeat', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_routing_info' => esc_html__('Here you can set bus route for stopage and dropping', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_pricing_info' => esc_html__('Please configure bus route price. Before price setting must be complete route configuration .', 'bus-ticket-booking-with-seat-reservation'),
-                'show_extra_service' => esc_html__('By default Extra services is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
+                'show_extra_service' => esc_html__('Turn On/Off Extra service. By default On.', 'bus-ticket-booking-with-seat-reservation'),
                 'show_pickup_point' => esc_html__('By default Pickup point is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_drop_off_point' => esc_html__('By default Drop-Off point is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 '_tax_class' => esc_html__('To add any new tax class , Please go to WooCommerce ->Settings->Tax Area', 'bus-ticket-booking-with-seat-reservation'),

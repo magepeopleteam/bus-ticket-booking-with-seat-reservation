@@ -20,22 +20,22 @@
 				$checked_ex = $display_ex == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_ex_service">
-					<h3><?php esc_html_e('Extra Service Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p><?php esc_html_e('Extra Service Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<h3><?php esc_html_e('Extra Services', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<p><?php esc_html_e('Add Extra Services with bus seat reservation', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					<div class="">	
 						<div class="_dLayout_bgLight_dFlex_justifyBetween">
 							<div class="_dFlex_fdColumn">
 								<label>
-									<?php esc_html_e('Add Extra service', 'bus-ticket-booking-with-seat-reservation'); ?>
+									<?php esc_html_e('Extra service', 'bus-ticket-booking-with-seat-reservation'); ?>
 								</label>
-								<span><?php esc_html_e('Add Extra service for passanger', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span><?php esc_html_e('Here you can add extra services. Also can be on/off extra service', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 							</div>
 						</div>
 						<div class="_dLayout_dFlex_justifyBetween">
 							<div class="col_10 _dFlex_fdColumn">
 								<label>
-									<?php esc_html_e('Extra Service', 'bus-ticket-booking-with-seat-reservation'); ?>
+									<?php esc_html_e('Show/Hide Extra Service', 'bus-ticket-booking-with-seat-reservation'); ?>
 								</label>
 								<span><?php WBTM_Settings::info_text('show_extra_service'); ?></span>
 							</div>
