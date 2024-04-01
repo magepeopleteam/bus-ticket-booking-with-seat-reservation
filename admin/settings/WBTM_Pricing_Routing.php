@@ -91,7 +91,7 @@
 						?>
 						<div class="col_4 mp_zero">
 							<?php if(empty($location)): ?>
-								<?php _e('Add Stop','bus-ticket-booking-with-seat-reservation'); ?>
+								<label for=""><?php _e('Add Stop','bus-ticket-booking-with-seat-reservation'); ?></label>
 							<?php else: ?>
 								<label for=""><?php esc_html_e( $location); ?></label>
 								<span>
