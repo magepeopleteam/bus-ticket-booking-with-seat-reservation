@@ -219,7 +219,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                 <div class="_dLayout_dFlex_justifyBetween">
                                     <div class="_dFlex_fdColumn">
                                         <label><?php esc_html_e('Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></label>
-                                        <span><?php WBTM_Settings::info_text('wbtm_dropping_point_required'); ?></span>
+                                        <span><?php esc_html_e('Turn On or Off Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                     </div>
                                     <?php MP_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
                                 </div>
