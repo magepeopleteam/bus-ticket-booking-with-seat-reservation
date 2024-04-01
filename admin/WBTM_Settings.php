@@ -78,8 +78,8 @@ if (!class_exists('WBTM_Settings')) {
             $des = array(
                 'wbtm_bus_no' => esc_html__('Please add your unique bus id', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_bus_category' => esc_html__('Please add your bus category', 'bus-ticket-booking-with-seat-reservation'),
-                'wbtm_registration' => esc_html__('On/off you bus seat registration', 'bus-ticket-booking-with-seat-reservation'),
-                'wbtm_registration_tips' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_reservation' => esc_html__('Turn on or off, bus seat registration', 'bus-ticket-booking-with-seat-reservation'),
+                'wbtm_reservation_tips' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_boarding_time' => esc_html__('By default Boarding Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'show_dropping_time' => esc_html__('By default Dropping Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
                 'wbtm_seat_type_conf' => esc_html__('Please select your bus seat type . Default Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'),
