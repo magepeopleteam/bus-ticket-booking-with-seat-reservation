@@ -24,16 +24,16 @@
 				?>
 				<div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
 					<h3><?php esc_html_e('Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p><?php esc_html_e('Here you can configure seat and ticket', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<p><?php esc_html_e('Bus seat configuration. Plan your bus seat.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					
 					<div class="">
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight">
 							<div class="col_6 _dFlex_fdColumn">
 								<label>
-									<?php esc_html_e('Seat Settings', 'bus-ticket-booking-with-seat-reservation'); ?> 
+									<?php esc_html_e('Seat Information', 'bus-ticket-booking-with-seat-reservation'); ?> 
 								</label>
-								<span><?php esc_html_e('Here you can generate seat layout plan for bus', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span><?php esc_html_e('Here you can plan seat of the bus.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 							</div>
 						</div>
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
@@ -86,16 +86,19 @@
 					<div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
 						<div class="_dFlex_fdColumn">
 							<label><?php esc_html_e('Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></label>
-							<span><?php esc_html_e('You can make lower Deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							<span><?php esc_html_e('Lower deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 						</div>
 					</div>
 					<div class="mpPanelBody mp_zero _dFlex">
 						<div class="_dlayout_bR_bgWhite_padding_xs col_6">
 
 							<div class="_dFlex_justifyBetween_alignCenter">
-								<label class="mp_zero">
-									<?php esc_html_e('Show Upper Deck : ', 'bus-ticket-booking-with-seat-reservation'); ?>
-								</label>
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Show Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Turn On or Off upper deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
 								<?php MP_Custom_Layout::switch_button('wbtm_show_upper_desk', $checked_upper_desk); ?>
 							</div>
 							<div class="divider"></div>
