@@ -23,7 +23,7 @@
 	#mp_meta_box_panel table tr:nth-child(odd) {background-color: #FFF;}
 	#mp_meta_box_panel table th,
 	#mp_meta_box_panel table td {border: 0;vertical-align: top;padding: 5px;}
-	#mp_meta_box_panel table th {text-align: center;font-size: var(--fs_label);font-weight: 600;}
+	#mp_meta_box_panel table th {text-align: center;font-size: var(--fs_label);}
 	#mp_meta_box_panel table tbody th {text-align: left;}
 	#mp_meta_box_panel table tbody thead th {text-align: center;}
 	/************************************/

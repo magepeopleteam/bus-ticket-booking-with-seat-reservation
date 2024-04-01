@@ -73,7 +73,7 @@
 				</div>
 				<?php
 			}
-			public function add_stops_item($bus_stop_lists, $full_route_info = [], $collapse_id) {
+			public function add_stops_item($bus_stop_lists, $full_route_info = [], $collapse_id=0) {
 				$palace = array_key_exists('place', $full_route_info) ? $full_route_info['place'] : '';
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
@@ -81,30 +81,34 @@
 				?>
 				<div class="mp_remove_area col_12_mB  wbtm_stop_item ">
 					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="<?php echo $collapse_id; ?>">
-						<label class="col_4 mp_zero">
-							<?php
-								$location = '';
-								foreach ($bus_stop_lists as $bus_stop) { 
-									if($bus_stop == $palace){
-										$location = $palace;
-									}
+						<?php
+							$location = '';
+							foreach ($bus_stop_lists as $bus_stop) { 
+								if($bus_stop == $palace){
+									$location = $palace;
 								}
-								
-								if(empty($location)){
-									_e('Add Stop','bus-ticket-booking-with-seat-reservation');
-								}else{
-									echo esc_html( $location . ($type == 'bp' ? ' (Bording) ' : '') . ($type == 'dp' ? ' (Dropping) ' : '') . ($type == 'both' ? ' (Bording+Dropping) ' : '') );
-								}	
-							?>
-						</label>
-						
-						<label class="col_4 mp_zero">
-							<?php if($time): ?>
-								<i class="fas fa-clock"></i> <?php echo esc_html($time); ?>
+							}
+						?>
+						<div class="col_4 mp_zero">
+							<?php if(empty($location)): ?>
+								<?php _e('Add Stop','bus-ticket-booking-with-seat-reservation'); ?>
 							<?php else: ?>
-								<i class="fas fa-clock"></i> <?php _e('--:--','bus-ticket-booking-with-seat-reservation'); ?>
+								<label for=""><?php esc_html_e( $location); ?></label>
+								<span>
+									<?php esc_html_e( ($type == 'dp') ? ' (Bording) ' : ''); ?>
+									<?php esc_html_e( ($type == 'bp') ? ' (Dropping) ' : ''); ?>
+									<?php esc_html_e( ($type == 'both') ? ' (Bording+Dropping) ' : ''); ?>
+								</span>
 							<?php endif; ?>
-						</label>
+						</div>
+						
+						<span class="col_4 mp_zero">
+							<?php if($time): ?>
+								<i class="far fa-clock"></i> <?php echo esc_html($time); ?>
+							<?php else: ?>
+								<i class="far fa-clock"></i> <?php _e('--:--'); ?>
+							<?php endif; ?>
+						</span>
 						
 						<?php MP_Custom_Layout::move_remove_button(); ?>
 					</div>

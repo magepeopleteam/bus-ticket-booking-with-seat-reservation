@@ -1855,6 +1855,7 @@
     font-size: var(--fs);
     color: var(--d_color);
     background-color: #fff;
+    font-weight: normal;
   }
   .mpStyle .formControl:focus {
     outline: 0;
@@ -2369,8 +2370,9 @@
     background-color: var(--color_light);
     color: var(--d_color);
   }
-  .mpStyle table th {
+  .mpStyle table tbody th {
     vertical-align: top;
+    font-weight: normal;
   }
   .mpStyle table td {
     padding: var(--dMP_xs);
