@@ -596,7 +596,7 @@
     background-color: var(--color_theme);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_theme);
+    border: 1px solid var(--color_theme);
   }
   .mpStyle .themeButton span,
   .mpStyle [class*="_themeButton"] span {
@@ -618,7 +618,7 @@
     background-color: var(--color_2);
     color: var(--color_theme);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_2);
+    border: 1px solid var(--color_2);
   }
   .mpStyle .warningButton span,
   .mpStyle [class*="_warningButton"] span {
@@ -633,13 +633,35 @@
   .mpStyle [class*="_warningButton"]:hover span {
     color: var(--color_danger);
   }
+    /****************/
+  .mpStyle .whiteButton,
+  .mpStyle [class*="_whiteButton"] {
+    background-color: var(--color_white);
+    color: var(--color_black);
+    padding: var(--dMP_xs) var(--dMP);
+    border: 1px solid var(--color_theme);
+    margin-right: -1px;
+  }
+  .mpStyle .whiteButton span,
+  .mpStyle [class*="whiteButton"] span {
+    color: var(--color_theme);
+  }
+  .mpStyle .whiteButton:hover,
+  .mpStyle [class*="whiteButton"]:hover {
+    background-color: var(--color_theme_aa);
+    color: var(--color_white);
+  }
+  .mpStyle .whiteButton:hover span,
+  .mpStyle [class*="whiteButton"]:hover span {
+    color: var(--color_white);
+  }
   /*********/
   .mpStyle .successButton,
   .mpStyle [class*="_successButton"] {
     background-color: var(--color_success);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_success);
+    border: 1px solid var(--color_success);
   }
   .mpStyle .successButton span,
   .mpStyle [class*="_successButton"] span {
@@ -660,7 +682,7 @@
     background-color: var(--color_navy_blue);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_navy_blue);
+    border: 1px solid var(--color_navy_blue);
   }
   .mpStyle .navy_blueButton span,
   .mpStyle [class*="_navy_blueButton"] span {

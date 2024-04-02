@@ -125,9 +125,23 @@
 				</div>
 				<?php
 			}
+			public static function edit_move_remove_button() {
+				?>
+				<div class="allCenter">
+					<div class="buttonGroup max_200">
+						<?php
+							
+							self::edit_button();
+							self::remove_button();
+							self::move_button();
+						?>
+					</div>
+				</div>
+				<?php
+			}
 			public static function remove_button() {
 				?>
-				<button class="_warningButton_xs mp_item_remove" type="button">
+				<button class="_whiteButton_xs mp_item_remove" type="button">
 					<span class="fas fa-trash-alt mp_zero"></span>
 				</button>
 				<?php
@@ -136,6 +150,13 @@
 				?>
 				<div class="_mpBtn_themeButton_xs mp_sortable_button" type="">
 					<span class="fas fa-expand-arrows-alt mp_zero"></span>
+				</div>
+				<?php
+			}
+			public static function edit_button() {
+				?>
+				<div class="_whiteButton_xs " type="">
+					<span class="far fa-edit mp_zero"></span>
 				</div>
 				<?php
 			}

@@ -44,9 +44,10 @@
 									} ?>
 									<div class="_mB_xs mp_item_insert_before"></div>
 								</div>
-								
+								<div class="justifyCenter">
 									<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_themeButton_xs_fullHeight'); ?>
 								
+								</div>
 								<!-- create new bus route -->
 								<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
@@ -110,7 +111,7 @@
 							<?php endif; ?>
 						</label>
 						
-						<?php MP_Custom_Layout::move_remove_button(); ?>
+						<?php MP_Custom_Layout::edit_move_remove_button(); ?>
 					</div>
 					<div class="wbtm_stop_item_content" data-collapse="<?php echo $collapse_id; ?>">
 						<div class="_dFlex_justifyCenter_alignCenter ">

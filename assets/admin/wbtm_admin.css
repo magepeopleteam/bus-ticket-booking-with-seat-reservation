@@ -26,7 +26,7 @@
 	}
 	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before{
 		position: absolute;
-		top: 20px;
+		top: 25px;
 		left: 5px;
 		width: 32px;
 		height: 32px;
@@ -40,6 +40,14 @@
 		background-position: center;
 		background-size: 47%;
 		border: 1px solid var(--d_color);
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after{
+		position: absolute;
+		top: 25px;
+		left: 40px;
+		content: '';
+		width:10px;
+		border: 1px solid var(--color_border);
 	}
 	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header{
 		padding: 5px 10px;
