@@ -35,8 +35,9 @@
 						<div class="_dLayout_padding">
 							<div class="mp_settings_area">
 								<div class="mp_stop_items mp_sortable_area mp_item_insert">
+									<?php $i = 0; ?> 
 									<?php if (sizeof($full_route_infos) > 0) {
-										$i = 0; 
+										
 										foreach ($full_route_infos as $full_route_info) { 
 											$this->add_stops_item($bus_stop_lists, $full_route_info, $i);
 											$i++;
