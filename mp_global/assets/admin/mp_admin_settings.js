@@ -106,6 +106,15 @@ function load_sortable_datepicker(parent, item) {
     }
   });
   // ==================
+  $(document).ready(function () {
+    $(".wbtm_stop_item").each(function (i) {
+      $(this).find(".wbtm_stop_item_header")
+        .attr("data-collapse-target", "d"+i);
+      $(this).find(".wbtm_stop_item_content").attr("data-collapse", "d" + i);
+      i++;
+    });
+  });
+
   function addCollapseId() {
     let collapseId = 0;
     $(".mp_stop_items .wbtm_stop_item").each(function (i) {
@@ -113,10 +122,10 @@ function load_sortable_datepicker(parent, item) {
     });
     $(".mp_hidden_item .wbtm_stop_item")
       .find(".wbtm_stop_item_header")
-      .attr("data-collapse-target", collapseId);
+      .attr("data-collapse-target", "d" + collapseId);
     $(".mp_hidden_item .wbtm_stop_item")
       .find(".wbtm_stop_item_content")
-      .attr("data-collapse", collapseId);
+      .attr("data-collapse", "d" + collapseId);
     console.log(collapseId);
     // ====
   }

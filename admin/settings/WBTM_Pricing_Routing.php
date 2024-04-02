@@ -35,12 +35,10 @@
 						<div class="_dLayout_padding">
 							<div class="mp_settings_area">
 								<div class="mp_stop_items mp_sortable_area mp_item_insert">
-									<?php $i = 0; ?> 
+
 									<?php if (sizeof($full_route_infos) > 0) {
-										
 										foreach ($full_route_infos as $full_route_info) { 
-											$this->add_stops_item($bus_stop_lists, $full_route_info, $i);
-											$i++;
+											$this->add_stops_item($bus_stop_lists, $full_route_info);
 										} 
 									} ?>
 									<div class="_mB_xs mp_item_insert_before"></div>
@@ -52,7 +50,7 @@
 								<!-- create new bus route -->
 								<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
-										<?php $this->add_stops_item($bus_stop_lists,[],$i); ?>
+										<?php $this->add_stops_item($bus_stop_lists,[]); ?>
 									</div>
 								</div>
 							</div>
@@ -75,14 +73,14 @@
 				</div>
 				<?php
 			}
-			public function add_stops_item($bus_stop_lists, $full_route_info = [], $collapse_id=0) {
+			public function add_stops_item($bus_stop_lists, $full_route_info = []) {
 				$palace = array_key_exists('place', $full_route_info) ? $full_route_info['place'] : '';
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				?>
 				<div class="mp_remove_area col_12_mB  wbtm_stop_item ">
-					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="<?php echo $collapse_id; ?>">
+					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
 						<?php
 							$location = '';
 							foreach ($bus_stop_lists as $bus_stop) { 
@@ -114,7 +112,7 @@
 						
 						<?php MP_Custom_Layout::edit_move_remove_button(); ?>
 					</div>
-					<div class="wbtm_stop_item_content" data-collapse="<?php echo $collapse_id; ?>">
+					<div class="wbtm_stop_item_content" data-collapse="">
 						<div class="_dFlex_justifyCenter_alignCenter ">
 							<div class="col_4 _dFlex_justifyCenter_alignCenter">
 								<label class="_mp_zero _mR"><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
