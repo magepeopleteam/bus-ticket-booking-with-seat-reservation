@@ -50,6 +50,7 @@
 					</table>
 				</div>
 			</div>
+			 <?php do_action('wbtm_registration_form_inside', $post_id); ?>
 			<?php
 		}
 	}
