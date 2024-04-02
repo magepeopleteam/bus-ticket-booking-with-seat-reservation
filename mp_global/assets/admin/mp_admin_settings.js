@@ -107,18 +107,19 @@ function load_sortable_datepicker(parent, item) {
   });
   // ==================
   $(document).ready(function () {
-    $(".wbtm_stop_item").each(function (i) {
-      $(this).find(".wbtm_stop_item_header")
-        .attr("data-collapse-target", "d"+i);
-      $(this).find(".wbtm_stop_item_content").attr("data-collapse", "d" + i);
-      i++;
-    });
+    addCollapseId();
   });
 
   function addCollapseId() {
     let collapseId = 0;
-    $(".mp_stop_items .wbtm_stop_item").each(function (i) {
-      collapseId = ++i;
+    $(".wbtm_stop_item").each(function (i) {
+      $(this)
+        .find(".wbtm_stop_item_header")
+        .attr("data-collapse-target", "d" + i);
+      $(this)
+        .find(".wbtm_stop_item_content")
+        .attr("data-collapse", "d" + i);
+      collapseId = i++;
     });
     $(".mp_hidden_item .wbtm_stop_item")
       .find(".wbtm_stop_item_header")
@@ -126,12 +127,19 @@ function load_sortable_datepicker(parent, item) {
     $(".mp_hidden_item .wbtm_stop_item")
       .find(".wbtm_stop_item_content")
       .attr("data-collapse", "d" + collapseId);
-    console.log(collapseId);
+    // input field uncollapse for last element
+    $(".wbtm_stop_item:last-child .wbtm_stop_item_content").css(
+      "display",
+      "block"
+    );
     // ====
   }
   //=========Add Setting Item==============//
   $(document).on("click", ".mp_add_item", function () {
+    
+    // on click event. add collpase id for last child
     addCollapseId();
+
     let parent = $(this).closest(".mp_settings_area");
     let item = $(this)
       .next($(".mp_hidden_content"))
