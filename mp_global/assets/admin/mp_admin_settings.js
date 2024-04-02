@@ -128,10 +128,7 @@ function load_sortable_datepicker(parent, item) {
       .find(".wbtm_stop_item_content")
       .attr("data-collapse", "d" + collapseId);
     // input field uncollapse for last element
-    $(".wbtm_stop_item:last-child .wbtm_stop_item_content").css(
-      "display",
-      "block"
-    );
+    
     // ====
   }
   //=========Add Setting Item==============//
@@ -139,6 +136,10 @@ function load_sortable_datepicker(parent, item) {
     
     // on click event. add collpase id for last child
     addCollapseId();
+    $(".wbtm_stop_item:last-child .wbtm_stop_item_content").css(
+      "display",
+      "block"
+    );
 
     let parent = $(this).closest(".mp_settings_area");
     let item = $(this)

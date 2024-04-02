@@ -102,11 +102,11 @@
 							<?php endif; ?>
 						</div>
 						
-						<label class="col_4 mp_zero">
+						<label class="col_4 _mp_zero _dFlex_alignCenter">
 							<?php if($time): ?>
-								<i class="far fa-clock"></i> <?php echo esc_html($time); ?>
+								<i class="far fa-clock"></i> <input class="_zeroBorder_mp_zero" type="time" value="<?php echo esc_html($time); ?>" readonly>
 							<?php else: ?>
-								<i class="far fa-clock"></i> <?php _e('--:--'); ?>
+								<i class="far fa-clock"></i>&nbsp;<?php _e('--:-- --'); ?>
 							<?php endif; ?>
 						</label>
 						
@@ -193,8 +193,13 @@
 					<table>
 						<thead>
 						<tr>
-							<th style="text-align:left"><?php esc_html_e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-							<th style="text-align:left"><?php esc_html_e('Dropping Point', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+							<th colspan="2">
+								<div class="_dFlex_justifyBetween ">
+									<span><?php esc_html_e('Boarding', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+									
+									<span><?php esc_html_e('Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+							</th>
 							<th><?php esc_html_e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?>
 								<sup class="required">*</sup>
 							</th>
@@ -205,13 +210,19 @@
 						<tbody>
 						<?php foreach ($all_price_info as $price_info) { ?>
 							<tr>
-								<th>
-									<input type="hidden" name="wbtm_price_bp[]" value="<?php echo esc_attr($price_info['bp']); ?>"/>
-									<?php echo esc_html($price_info['bp']); ?>
-								</th>
-								<th>
-									<input type="hidden" name="wbtm_price_dp[]" value="<?php echo esc_attr($price_info['dp']); ?>"/>
-									<?php echo esc_html($price_info['dp']); ?>
+								<th colspan="2">
+									<div class="_dFlex_justifyBetween">
+										<div class="col_5 textLeft">
+											<input type="hidden" name="wbtm_price_bp[]" value="<?php echo esc_attr($price_info['bp']); ?>"/>
+											<span><?php echo esc_html($price_info['bp']); ?></span>
+										</div>
+										<div class="col_2 long-arrow">
+										</div>
+										<div class="col_5 textRight">
+											<input type="hidden" name="wbtm_price_dp[]" value="<?php echo esc_attr($price_info['dp']); ?>"/>
+											<span><?php echo esc_html($price_info['dp']); ?></span>
+										</div>
+									</div>
 								</th>
 								<td>
 									<label>
