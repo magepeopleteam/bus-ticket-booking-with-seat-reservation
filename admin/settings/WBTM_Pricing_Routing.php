@@ -195,11 +195,11 @@
 						<tr>
 							<th colspan="2">
 								<div class="_dFlex_justifyBetween ">
-									<div class="col_5 textLeft">
+									<div class="col_5 _textLeft_pL_xs">
 										<span><?php esc_html_e('Boarding', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 									</div>
 									
-									<div class="col_5 textRight">
+									<div class="col_5 _textRight_pR_xs">
 										<span><?php esc_html_e('Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 									</div>
 								</div>
@@ -216,13 +216,13 @@
 							<tr>
 								<td colspan="2">
 									<div class="_dFlex_justifyBetween_pT_xs">
-										<div class="col_5 textLeft">
+										<div class="col_5 _textLeft_pL_xs">
 											<input type="hidden" name="wbtm_price_bp[]" value="<?php echo esc_attr($price_info['bp']); ?>"/>
 											<span><?php echo esc_html($price_info['bp']); ?></span>
 										</div>
 										<div class="col_2 long-arrow">
 										</div>
-										<div class="col_5 textRight">
+										<div class="col_5 _textRight_pR_xs">
 											<input type="hidden" name="wbtm_price_dp[]" value="<?php echo esc_attr($price_info['dp']); ?>"/>
 											<span><?php echo esc_html($price_info['dp']); ?></span>
 										</div>
