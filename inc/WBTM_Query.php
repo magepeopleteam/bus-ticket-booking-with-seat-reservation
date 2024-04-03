@@ -201,7 +201,7 @@
 							$ex_infos = MP_Global_Function::get_post_info($id, 'wbtm_extra_services', []);
 							if (sizeof($ex_infos) > 0) {
 								foreach ($ex_infos as $ex_info) {
-									if ($ex_info['name'] == $ex_name) {
+									if (is_array($ex_info) && array_key_exists('name',$ex_info) && $ex_info['name'] == $ex_name) {
 										$total_booked += max($ex_info['qty'], 0);
 									}
 								}
