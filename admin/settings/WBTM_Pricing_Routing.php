@@ -195,9 +195,13 @@
 						<tr>
 							<th colspan="2">
 								<div class="_dFlex_justifyBetween ">
-									<span><?php esc_html_e('Boarding', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+									<div class="col_5 textLeft">
+										<span><?php esc_html_e('Boarding', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+									</div>
 									
-									<span><?php esc_html_e('Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+									<div class="col_5 textRight">
+										<span><?php esc_html_e('Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+									</div>
 								</div>
 							</th>
 							<th><?php esc_html_e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -210,8 +214,8 @@
 						<tbody>
 						<?php foreach ($all_price_info as $price_info) { ?>
 							<tr>
-								<th colspan="2">
-									<div class="_dFlex_justifyBetween">
+								<td colspan="2">
+									<div class="_dFlex_justifyBetween_pT_xs">
 										<div class="col_5 textLeft">
 											<input type="hidden" name="wbtm_price_bp[]" value="<?php echo esc_attr($price_info['bp']); ?>"/>
 											<span><?php echo esc_html($price_info['bp']); ?></span>
@@ -223,7 +227,7 @@
 											<span><?php echo esc_html($price_info['dp']); ?></span>
 										</div>
 									</div>
-								</th>
+								</td>
 								<td>
 									<label>
 										<input type="number" pattern="[0-9]*" step="0.01" class="formControl mp_price_validation" name="wbtm_adult_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['adult_price']); ?>" />
