@@ -88,7 +88,7 @@ if (!class_exists('WBTM_Layout')) {
                             <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
                             <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
                             <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
-                            <?php do_action('wbtm_registration_form_inside', $post_id); ?>
+                           
                             <?php
                             if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
                                 require WBTM_Functions::template_path('layout/registration_seat_plan.php');
@@ -228,10 +228,10 @@ if (!class_exists('WBTM_Layout')) {
                 }
             }
         }
-        public static function msg($msg, $class = '_bgWarning') {
+        public static function msg($msg, $class = '') {
             ?>
-            <div class="_dLayout_mZero <?php echo esc_attr($class); ?>">
-                <h4 class="_textCenter_textBlack"><?php echo esc_html($msg); ?></h4>
+            <div class="_mZero_textCenter <?php echo esc_attr($class); ?>">
+                <label class="_textTheme"><?php echo esc_html($msg); ?></label>
             </div>
             <?php
         }

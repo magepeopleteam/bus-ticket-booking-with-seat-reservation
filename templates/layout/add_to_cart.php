@@ -17,11 +17,11 @@
 				<span class="wbtm_total _textTheme"><?php echo wc_price(0); ?></span>
 			</h5>
 			<?php if ($backend_order>0) { ?>
-				<button type="submit" class="_navy_blueButton">
+				<button type="submit" class="_themeButton">
 					<?php echo WBTM_Translations::text_book_now(); ?>
 				</button>
 			<?php } else { ?>
-				<button type="submit" class="_navy_blueButton" name="add-to-cart" value="<?php echo esc_attr($link_wc_product); ?>">
+				<button type="submit" class="_themeButton" name="add-to-cart" value="<?php echo esc_attr($link_wc_product); ?>">
 					<?php echo WBTM_Translations::text_book_now(); ?>
 				</button>
 			<?php } ?>

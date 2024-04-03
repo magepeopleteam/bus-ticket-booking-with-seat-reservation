@@ -16,18 +16,18 @@
 				$checked_wbtm_registration = $display_wbtm_registration == 'no' ? '' : 'checked';
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_general_info">
-					<h3 class=""><?php esc_html_e('General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p class=""><?php esc_html_e('General Settings for bus', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<h3><?php esc_html_e('General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+					<p><?php esc_html_e('Bus General Settings', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					<div class="_dLayout_padding_bgLight">
-							<div class="col_6 _dFlex_fdColumn">
-								<label>
-									<?php esc_html_e('Bus Settings', 'bus-ticket-booking-with-seat-reservation'); ?> 
-								</label>
-								<span><?php esc_html_e('Here you can set bus no, category and seat reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-							</div>
+						<div class="col_6 _dFlex_fdColumn">
+							<label>
+								<?php esc_html_e('Bus Information', 'bus-ticket-booking-with-seat-reservation'); ?> 
+							</label>
+							<span><?php esc_html_e('Here you can set bus number, category and seat reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 						</div>
-					<div>
+					</div>
+					<div class="">
 						<!-- if bus transporter panel active it will show title field -->
 						<?php do_action('wbtm_general_settings_fields',$post_id);?>
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
@@ -60,9 +60,9 @@
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
 							<div class="col_6 _dFlex_fdColumn">
 								<label>
-									<?php esc_html_e('Registration on/off', 'bus-ticket-booking-with-seat-reservation'); ?> <i class="fas fa-question-circle tool-tips"><span><?php WBTM_Settings::info_text('wbtm_registration_tips'); ?></span></i>
+									<?php esc_html_e('Reservation on/off', 'bus-ticket-booking-with-seat-reservation'); ?> <i class="fas fa-question-circle tool-tips"><span><?php WBTM_Settings::info_text('wbtm_reservation_tips'); ?></span></i>
 								</label>
-								<span><?php WBTM_Settings::info_text('wbtm_registration'); ?></span>
+								<span><?php WBTM_Settings::info_text('wbtm_reservation'); ?></span>
 							</div>
 							<div class="col_6 textRight">
 								<?php MP_Custom_Layout::switch_button('wbtm_registration', $checked_wbtm_registration); ?>

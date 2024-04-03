@@ -105,8 +105,42 @@ function load_sortable_datepicker(parent, item) {
       return false;
     }
   });
+  // ==================
+  $(document).ready(function () {
+    addCollapseId();
+  });
+
+  function addCollapseId() {
+    let collapseId = 0;
+    $(".wbtm_stop_item").each(function (i) {
+      $(this)
+        .find(".wbtm_stop_item_header")
+        .attr("data-collapse-target", "d" + i);
+      $(this)
+        .find(".wbtm_stop_item_content")
+        .attr("data-collapse", "d" + i);
+      collapseId = i++;
+    });
+    $(".mp_hidden_item .wbtm_stop_item")
+      .find(".wbtm_stop_item_header")
+      .attr("data-collapse-target", "d" + collapseId);
+    $(".mp_hidden_item .wbtm_stop_item")
+      .find(".wbtm_stop_item_content")
+      .attr("data-collapse", "d" + collapseId);
+    // input field uncollapse for last element
+    
+    // ====
+  }
   //=========Add Setting Item==============//
   $(document).on("click", ".mp_add_item", function () {
+    
+    // on click event. add collpase id for last child
+    addCollapseId();
+    $(".wbtm_stop_item:last-child .wbtm_stop_item_content").css(
+      "display",
+      "block"
+    );
+
     let parent = $(this).closest(".mp_settings_area");
     let item = $(this)
       .next($(".mp_hidden_content"))

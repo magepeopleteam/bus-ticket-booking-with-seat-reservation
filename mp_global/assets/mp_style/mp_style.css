@@ -571,7 +571,7 @@
     height: auto;
     min-height: var(--button_height);
     color: var(--color_button);
-    background-color: var(--button_bg);
+    background-color: var(--color_theme);
   }
   .mpStyle [class*="dButton"] span {
     margin: 0 var(--dMP_xs) 0 0;
@@ -579,7 +579,7 @@
   .mpStyle .dButton,
   .mpStyle [class*="_dButton"] {
     color: var(--color_button);
-    background-color: var(--button_bg);
+    background-color: var(--color_theme);
   }
   .mpStyle .dButton.mActive,
   .mpStyle [class*="_dButton"].mActive {
@@ -596,7 +596,7 @@
     background-color: var(--color_theme);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_theme);
+    border: 1px solid var(--color_theme);
   }
   .mpStyle .themeButton span,
   .mpStyle [class*="_themeButton"] span {
@@ -618,7 +618,7 @@
     background-color: var(--color_2);
     color: var(--color_theme);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_2);
+    border: 1px solid var(--color_2);
   }
   .mpStyle .warningButton span,
   .mpStyle [class*="_warningButton"] span {
@@ -633,13 +633,35 @@
   .mpStyle [class*="_warningButton"]:hover span {
     color: var(--color_danger);
   }
+    /****************/
+  .mpStyle .whiteButton,
+  .mpStyle [class*="_whiteButton"] {
+    background-color: var(--color_white);
+    color: var(--color_black);
+    padding: var(--dMP_xs) var(--dMP);
+    border: 1px solid var(--color_theme);
+    margin-right: -1px;
+  }
+  .mpStyle .whiteButton span,
+  .mpStyle [class*="whiteButton"] span {
+    color: var(--color_theme);
+  }
+  .mpStyle .whiteButton:hover,
+  .mpStyle [class*="whiteButton"]:hover {
+    background-color: var(--color_theme_aa);
+    color: var(--color_white);
+  }
+  .mpStyle .whiteButton:hover span,
+  .mpStyle [class*="whiteButton"]:hover span {
+    color: var(--color_white);
+  }
   /*********/
   .mpStyle .successButton,
   .mpStyle [class*="_successButton"] {
     background-color: var(--color_success);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_success);
+    border: 1px solid var(--color_success);
   }
   .mpStyle .successButton span,
   .mpStyle [class*="_successButton"] span {
@@ -660,7 +682,7 @@
     background-color: var(--color_navy_blue);
     color: var(--color_theme_alter);
     padding: var(--dMP_xs) var(--dMP);
-    border: 2px solid var(--color_navy_blue);
+    border: 1px solid var(--color_navy_blue);
   }
   .mpStyle .navy_blueButton span,
   .mpStyle [class*="_navy_blueButton"] span {
@@ -1637,7 +1659,7 @@
     padding: var(--dMP);
     background-color: var(--color_white);
     border: 1px solid var(--color_border);
-    border-bottom: 0;
+    margin-top: -1px;
     border-radius: 0;
   }
   .mpStyle .dLayout:last-child,
@@ -1855,6 +1877,7 @@
     font-size: var(--fs);
     color: var(--d_color);
     background-color: #fff;
+    font-weight: normal;
   }
   .mpStyle .formControl:focus {
     outline: 0;
@@ -1877,12 +1900,11 @@
   div.mpStyle .formControl[type="date"] {
     background-image: url("../images/calendar.png");
     background-repeat: no-repeat;
-    background-position: var(--dMP_xs) center;
+    background-position: 8px center;
     background-size: auto;
     -webkit-appearance: none;
-    font-size: var(--fs_h6);
-    font-weight: var(--fw-medium);
-    padding: var(--dMP_xs) var(--dMP_xs) var(--dMP_xs) 50px;
+    font-weight: normal;
+    padding: 8px 8px 8px 40px;
   }
   div.mpStyle textarea.formControl {
     height: auto;
@@ -2044,11 +2066,12 @@
   }
   /**********Checkbox Custom*********/
   .mpStyle .customCheckbox {
-    padding: 3px 0 0 30px;
+    padding: 3px 0 0 24px;
     position: relative;
     line-height: 1;
     min-width: auto;
-    white-space: normal !important;
+    white-space: wrap;
+    margin-right: 5px;
   }
   .mpStyle .customCheckbox::before {
     content: "";
@@ -2058,7 +2081,7 @@
     height: 20px;
     width: 20px;
     background-color: var(--color_theme_alter);
-    border: 2px solid var(--d_color);
+    border: 2px solid var(--color_theme_aa);
     border-radius: 2px;
   }
   .mpStyle .customCheckboxLabel {
@@ -2067,7 +2090,7 @@
     font-weight: var(--fw-medium);
   }
   .mpStyle .customCheckboxLabel input:checked ~ .customCheckbox::before {
-    background: var(--d_color);
+    background: var(--color_theme);
   }
   /*******************/
   div.mpStyle .selectCheckbox {
@@ -2369,8 +2392,9 @@
     background-color: var(--color_light);
     color: var(--d_color);
   }
-  .mpStyle table th {
+  .mpStyle table tbody th {
     vertical-align: top;
+    font-weight: normal;
   }
   .mpStyle table td {
     padding: var(--dMP_xs);
@@ -3910,7 +3934,8 @@
     justify-content: center;
   }
   #ui-datepicker-div a.ui-state-default:hover {
-    background-color: darksalmon;
+    background-color: var(--color_theme);
+    color: var(--color_theme_alter);
   }
   #ui-datepicker-div .ui-state-active {
     background-color: var(--color_theme);

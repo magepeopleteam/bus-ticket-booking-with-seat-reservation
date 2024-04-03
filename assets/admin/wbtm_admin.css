@@ -9,7 +9,57 @@
 	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item{min-width:250px;}
+	div.wbtm_settings_pricing_routing div.mp_stop_items{position: relative;}
+	div.wbtm_settings_pricing_routing div.mp_stop_items::before{
+		position:absolute;
+		content: '';
+		left: 0;
+		top: -21px;
+		height: 100%;
+		border: 1px solid var(--d_color);
+		margin-left: 20px;
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item{
+		position: relative;
+		width: 98%;
+		padding-left: 50px;
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before{
+		position: absolute;
+		top: 25px;
+		left: 5px;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: var(--color_light);
+		background-image: url('../images/map-location.svg');
+		font-family: "Font Awesome 5 Free";
+		content: "";
+		transform: translateY(-50%);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 47%;
+		border: 1px solid var(--d_color);
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after{
+		position: absolute;
+		top: 25px;
+		left: 40px;
+		content: '';
+		width:10px;
+		border: 1px solid var(--color_border);
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header{
+		padding: 5px 10px;
+		border: 1px solid var(--color_border);
+	}
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content{
+		padding: 5px ;
+		border: 1px solid var(--color_border);
+		border-top: 0;
+	}
+	
+
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
@@ -55,4 +105,12 @@
 	.tool-tips span:hover{
 		color: var(--color_black);
 	}
+}
+
+.long-arrow{
+	background-image: url('../images/arrow.svg');
+	background-repeat:no-repeat;
+	background-size: contain;
+	width: 100%;
+	background-position: center center;
 }
