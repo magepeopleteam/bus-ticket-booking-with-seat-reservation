@@ -3,7 +3,7 @@
 @media only screen and (min-width: 10px) {
 	div.mp_global_settings {max-width: 1700px; margin: 30px 30px 30px 15px; width: calc(100% - 30px);}
 	div.mp_global_settings .button-primary {min-width: 200px;font-size: var(--fs_h5);font-weight: var(--fw-medium);padding: var(--dMP_xs); }
-	div.mp_global_settings .mpPanelHeader {background: #161B37; color: #FFF;padding: var(--dMP);font-size: var(--fs_h2);text-align: center;}
+	div.mp_global_settings .mpPanelHeader {background: var(--color_theme); color: #FFF;padding: var(--dMP_xs);font-size:var(--fs_h5);font-weight: var(--fw-medium); }
 	div.mp_global_settings .tabLists {border-right: 1px solid var(--color_border);}
 	div.mp_global_settings form > h2 {display: none;}
 	div.mp_global_settings table {table-layout: fixed;margin: 0;}
@@ -12,6 +12,9 @@
 	div.mp_global_settings table th {width: 40%;min-width: 300px;}
 	div.mp_global_settings th label {-webkit-flex-wrap: wrap;flex-wrap: wrap;}
 	div.mp_global_settings label .info_text {width: 100%;margin: 5px 0 0 0;font-size: 11px;}
+	div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {
+		padding: 25px 0 25px 25px;
+	}
 	div.mp_basic_license_settings table th{width:inherit;min-width:inherit; }
 }
 /******************************************************************** Meta tab settings ************************************************/

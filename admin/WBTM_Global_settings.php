@@ -25,7 +25,7 @@
 				$label = WBTM_Functions::get_name();
 				?>
 				<div class="mpStyle mp_global_settings">
-					<div class="_dShadow_6 mpPanel">
+					<div class="mpPanel">
 						<div class="mpPanelHeader"><?php echo esc_html($label . esc_html__(' Global Settings', 'ecab-taxi-booking-manager')); ?></div>
 						<div class="mpPanelBody mp_zero">
 							<div class="mpTabs leftTabs">
