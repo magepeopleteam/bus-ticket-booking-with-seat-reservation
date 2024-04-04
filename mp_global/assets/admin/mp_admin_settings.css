@@ -7,7 +7,7 @@
 	div.mp_global_settings .tabLists {border-right: 1px solid var(--color_border);}
 	div.mp_global_settings form > h2 {display: none;}
 	div.mp_global_settings table {table-layout: fixed;margin: 0;}
-	div.mp_global_settings table tr:nth-child(even) { background-color: #0CB32612;}
+	div.mp_global_settings table tr:nth-child(even) { background-color: var(--color_light);}
 	div.mp_global_settings table tr:nth-child(odd) { background-color: #FFF;}
 	div.mp_global_settings table th {width: 40%;min-width: 300px;}
 	div.mp_global_settings th label {-webkit-flex-wrap: wrap;flex-wrap: wrap;}
