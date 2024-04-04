@@ -38,7 +38,6 @@
     font-weight: 300;
     line-height: 24px;
     font-family: DejaVuSans, sans-serif;
-    margin-bottom: 50px;
   }
   .mpStyle a:not(.mp_wp_editor a) {
     color: var(--color_theme);

@@ -4,10 +4,11 @@
   align-items: center;
   flex-wrap: wrap;
   background-color: #f0f7ff;
-  border: 1px solid #2f9df4;
+  border: 1px solid var(--color_light);
   margin: 10px auto;
   border-radius: 5px;
   padding: 10px;
+  font-family: sans-serif;
 }
 @media (min-width: 1024px) {
   .wbtm-bus-flix-style {
@@ -19,14 +20,14 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .title {
-    width: 15%;
+    width: 12%;
   }
 }
 .wbtm-bus-flix-style .title span {
   padding: 1px 8px;
   border-radius: 50px;
   color: #fff;
-  background-color: #2f9df4;
+  background-color: var(--color_theme_cc);
   font-size: 11px;
 }
 .wbtm-bus-flix-style .route {
@@ -38,7 +39,7 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .route {
-    width: 55%;
+    width: 45%;
   }
 }
 .wbtm-bus-flix-style .route .route-info {
@@ -60,16 +61,6 @@
     width: 25%;
   }
 }
-.wbtm-bus-flix-style .route .route-info .from h2,
-.wbtm-bus-flix-style .route .route-info .to h2 {
-  font-size: 28px;
-}
-@media (max-width: 540px) {
-  .wbtm-bus-flix-style .route .route-info .from h2,
-  .wbtm-bus-flix-style .route .route-info .to h2 {
-    font-size: 16px;
-  }
-}
 .wbtm-bus-flix-style .route .route-info .to {
   padding-left: 0;
 }
@@ -79,7 +70,7 @@
   }
 }
 .wbtm-bus-flix-style .route .route-info .duration {
-  border-bottom: 3px solid #2f9df4;
+  border-bottom: 3px solid var(--d_color);
   width: 65%;
   position: relative;
 }
