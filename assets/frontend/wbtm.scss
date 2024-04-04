@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-color: #f0f7ff;
-  border: 1px solid var(--color_light);
+  background-color: var(--color_light);
+  border: 1px solid var(--color_border);
   margin: 10px auto;
   border-radius: 5px;
   padding: 10px;
@@ -18,11 +18,12 @@
       width: 12%;
     }
     span {
-      padding: 1px 8px;
+      padding: 0 8px;
       border-radius: 50px;
       color: #fff;
       background-color: var(--color_theme_cc);
       font-size: 11px;
+      line-height: 2;
     }
   }
   .route {
@@ -61,7 +62,7 @@
         width: 65%;
         position: relative;
         .time {
-          background: #f0f7ff;
+          background: var(--color_light);
           position: absolute;
           top: -12px;
           left: 50%;

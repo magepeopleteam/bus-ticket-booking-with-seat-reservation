@@ -66,7 +66,7 @@
 								WBTM_Layout::trigger_view_seat_details();
 							}
 						?>
-						<button type="button" class="wbtm-seat-book <?php echo $btn_show;?>" id="get_wbtm_bus_details"
+						<button type="button" class="_themeButton_xs wbtm-seat-book <?php echo $btn_show;?>" id="get_wbtm_bus_details"
 							data-bus_id="<?php echo esc_attr($bus_id); ?>"
 							data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
 							data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
