@@ -226,7 +226,7 @@
 							'label' => esc_html__('Theme Color', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('Select Default Theme Color', 'bus-ticket-booking-with-seat-reservation'),
 							'type' => 'color',
-							'default' => '#0793C9'
+							'default' => '#F12971'
 						),
 						array(
 							'name' => 'theme_alternate_color',
@@ -240,7 +240,7 @@
 							'label' => esc_html__('Default Text Color', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('Select Default Text  Color.', 'bus-ticket-booking-with-seat-reservation'),
 							'type' => 'color',
-							'default' => '#000'
+							'default' => '#303030'
 						),
 						array(
 							'name' => 'default_font_size',
