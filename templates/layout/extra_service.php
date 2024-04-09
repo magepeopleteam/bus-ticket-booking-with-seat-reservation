@@ -33,9 +33,11 @@
 							$row_price = MP_Global_Function::get_wc_raw_price($post_id, $ex_service['option_price']);
 							$qty_type = $ex_service['option_qty_type'];
 							$ex_name = $ex_service['option_name'];
+							$max_qty = $ex_service['max_qty'];
 							$total_ex = max($ex_service['option_qty'], 0);
 							$sold = WBTM_Query::query_ex_service_sold($post_id, $date, $ex_name);
 							$available_ex_service = $total_ex - $sold;
+							$available_ex_service=$max_qty && $max_qty>0?min($max_qty,$available_ex_service):$available_ex_service;
 							?>
 							<tr>
 								<td class="_textLeft"><?php echo esc_html($ex_name); ?></td>

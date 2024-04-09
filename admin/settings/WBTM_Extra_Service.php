@@ -41,6 +41,7 @@
 											<th><?php esc_html_e('Service Name', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
 											<th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
 											<th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
+											<th><?php esc_html_e('Max Qty/Order', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 											<th><?php esc_html_e('Qty Box Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 											<th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 										</tr>
@@ -71,6 +72,7 @@
 				$service_name = array_key_exists('option_name', $field) ? $field['option_name'] : '';
 				$service_price = array_key_exists('option_price', $field) ? $field['option_price'] : '';
 				$service_qty = array_key_exists('option_qty', $field) ? $field['option_qty'] : '';
+				$max_qty = array_key_exists('max_qty', $field) ? $field['max_qty'] : '';
 				$input_type = array_key_exists('option_qty_type', $field) ? $field['option_qty_type'] : 'inputbox';
 				?>
 				<tr class="mp_remove_area">
@@ -90,6 +92,11 @@
 							<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="ex_option_qty[]" placeholder="Ex: 100" value="<?php echo esc_attr($service_qty); ?>"/>
 						</label>
 					</td>
+                    <td>
+                        <label>
+                            <input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="ex_max_qty[]" placeholder="Ex: 100" value="<?php echo esc_attr($max_qty); ?>"/>
+                        </label>
+                    </td>
 					<td>
 						<label>
 							<select name="ex_option_qty_type[]" class='formControl'>
@@ -109,6 +116,7 @@
 					$extra_names = MP_Global_Function::get_submit_info('ex_option_name', array());
 					$extra_price = MP_Global_Function::get_submit_info('ex_option_price', array());
 					$extra_qty = MP_Global_Function::get_submit_info('ex_option_qty', array());
+					$max_qty = MP_Global_Function::get_submit_info('ex_max_qty', array());
 					$extra_qty_type = MP_Global_Function::get_submit_info('ex_option_qty_type', array());
 					$extra_count = count($extra_names);
 					for ($i = 0; $i < $extra_count; $i++) {
@@ -117,6 +125,7 @@
 							$new_extra_service[$i]['option_name'] = $extra_names[$i];
 							$new_extra_service[$i]['option_price'] = $extra_price[$i];
 							$new_extra_service[$i]['option_qty'] = $extra_qty[$i];
+							$new_extra_service[$i]['max_qty'] = $max_qty[$i];
 							$new_extra_service[$i]['option_qty_type'] = $extra_qty_type[$i] ?? 'inputbox';
 						}
 					}

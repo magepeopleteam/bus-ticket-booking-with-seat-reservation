@@ -199,6 +199,7 @@ if (!class_exists('WBTM_Layout')) {
             <?php
             if ($start_route) {
                 $all_dates = WBTM_Functions::get_all_dates($post_id, $start_route);
+               // echo '<pre>';print_r($all_dates);echo '</pre>';
                 do_action('mp_load_date_picker_js', '#wbtm_journey_date', $all_dates);
             }
         }

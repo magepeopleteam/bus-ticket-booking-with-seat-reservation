@@ -1842,7 +1842,7 @@
     max-width: inherit;
     min-height: 34px;
     border: 1px solid var(--color_border);
-    padding: 5px var(--dMP_xs);
+    padding: 5px var(--dMP_xs);margin:0;
     font-size: var(--fs);
     color: var(--d_color);
     background-color: #fff;

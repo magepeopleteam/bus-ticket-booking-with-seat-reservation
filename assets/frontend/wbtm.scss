@@ -76,13 +76,8 @@
     }
   }
   .feature {
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    .items {
-      padding: 2px 8px;
-      border-radius: 50px;
-    }
+    display: flex;    justify-content: start;    align-items: center;
+    .items {      padding: 2px 8px;      border-radius: 50px;    }
   }
 }
 .pickup-point,
