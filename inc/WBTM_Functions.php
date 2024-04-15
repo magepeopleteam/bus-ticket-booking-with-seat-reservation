@@ -75,7 +75,7 @@
 							if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($start_route) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($end_route)) {
 								$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] ? (float)$price_info['wbtm_bus_price'] : '';
 								$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] ? (float)$price_info['wbtm_bus_child_price'] : '';
-								$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] ? (float)$price_info['wbtm_bus_infant_price'] : '';
+								$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info)  ? $price_info['wbtm_bus_infant_price'] : '';
 								if ($adult_price && (float)$adult_price >= 0) {
 									$ticket_infos[] = [
 										'name' => WBTM_Translations::text_adult(),
@@ -90,7 +90,7 @@
 										'type' => 1
 									];
 								}
-								if ($infant_price && (float)$infant_price >= 0) {
+								if ( $infant_price >= 0) {
 									$ticket_infos[] = [
 										'name' => WBTM_Translations::text_infant(),
 										'price' => MP_Global_Function::get_wc_raw_price($post_id, $infant_price),
