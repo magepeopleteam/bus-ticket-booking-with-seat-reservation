@@ -20,10 +20,10 @@
 						'id' => 'mp_global_settings',
 						'title' => esc_html__('Global Settings', 'bus-ticket-booking-with-seat-reservation')
 					),
-					array(
-						'id' => 'mp_slider_settings',
-						'title' => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation')
-					),
+//					array(
+//						'id' => 'mp_slider_settings',
+//						'title' => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation')
+//					),
 					array(
 						'id' => 'mp_style_settings',
 						'title' => esc_html__('Style Settings', 'bus-ticket-booking-with-seat-reservation')
