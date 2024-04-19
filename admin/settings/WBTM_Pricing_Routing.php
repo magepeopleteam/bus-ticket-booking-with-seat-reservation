@@ -95,8 +95,8 @@
 							<?php else: ?>
 								<label for=""><?php esc_html_e( $location); ?></label>
 								<span>
-									<?php esc_html_e( ($type == 'dp') ? ' (Bording) ' : ''); ?>
-									<?php esc_html_e( ($type == 'bp') ? ' (Dropping) ' : ''); ?>
+									<?php esc_html_e( ($type == 'bp') ? ' (Bording) ' : ''); ?>
+									<?php esc_html_e( ($type == 'dp') ? ' (Dropping) ' : ''); ?>
 									<?php esc_html_e( ($type == 'both') ? ' (Bording+Dropping) ' : ''); ?>
 								</span>
 							<?php endif; ?>
