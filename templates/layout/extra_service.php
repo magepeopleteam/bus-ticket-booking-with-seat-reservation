@@ -50,8 +50,7 @@
 					</table>
 				</div>
 			</div>
-			<!-- customer email input box will show here if admin back order -->
-			 <?php do_action('wbtm_registration_form_inside', $post_id); ?>
 			<?php
 		}
 	}
+	do_action('wbtm_registration_form_inside', $post_id);
