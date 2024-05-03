@@ -16,10 +16,9 @@
 				/**********************************************/
 				add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 				add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 10, 4);
-				//add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
-				//   add_action('__experimental_woocommerce_blocks_checkout_order_processed', 'mep_event_booking_management', 90); 
-				//add_action('woocommerce_store_api_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
-				add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
+				add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
+				add_action('woocommerce_store_api_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
+				//add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
 				/**********************************************/
 				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
 			}

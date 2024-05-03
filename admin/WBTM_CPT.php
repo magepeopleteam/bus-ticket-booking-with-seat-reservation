@@ -71,6 +71,17 @@
 				);
 				$args = apply_filters('wbtm_add_cap', $args);
 				register_post_type('wbtm_bus', $args);
+				$args = array(
+					'public' => true,
+					'labels' => '',
+					'menu_icon' => '',
+					'supports' => array(),
+					'rewrite' => array('slug' => $slug),
+					'show_in_rest' => true,
+					'rest_base' => 'wbtm_bus_booking',
+					'capability_type' => 'wbtm_bus_booking',
+				);
+				register_post_type('wbtm_bus_booking', $args);
 			}
 			//************************************//
 			public function set_custom_columns($column) {

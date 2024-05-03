@@ -22,10 +22,16 @@
 			<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>"/>
 			<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>"/>
 			
-			<?php foreach ($bus_ids as $bus_id) : ?>
-				<?php //echo '<pre>'; print_r(WBTM_Query:: query_seat_booked($bus_id, $start_route, $end_route, $date)); echo '</pre>'; ?>
-				<?php  
-					$all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route); 
+			<?php foreach ($bus_ids as $bus_id) :
+              //  echo '<pre>'; print_r(WBTM_Query:: query_seat_booked($bus_id, $start_route, $end_route, $date)); echo '</pre>';
+                //echo '<pre>'; print_r(MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'))); echo '</pre>';
+					$all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+//				echo '<pre>'; print_r($all_info); echo '</pre>';
+//				$all_posts_ids = MP_Global_Function::get_all_post_id('wbtm_bus_booking', -1, 1, 'any');
+//                foreach ($all_posts_ids as $all_posts_id) {
+//	                echo '<pre>'; print_r(MP_Global_Function::get_post_info($all_posts_id, 'wbtm_order_id')); echo '</pre>';
+//                }
+//				echo '<pre>'; print_r($all_posts_ids); echo '</pre>';
 					if (sizeof($all_info) > 0) :
 						$bus_count++;
 						$price = $all_info['price'];
