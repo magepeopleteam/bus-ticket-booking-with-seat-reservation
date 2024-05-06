@@ -16,10 +16,9 @@
 				/**********************************************/
 				add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 				add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 10, 4);
-				//add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
-				//   add_action('__experimental_woocommerce_blocks_checkout_order_processed', 'mep_event_booking_management', 90); 
-				//add_action('woocommerce_store_api_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
-				add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
+				add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
+				add_action('woocommerce_store_api_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
+				//add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
 				/**********************************************/
 				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
 			}
@@ -467,6 +466,7 @@
 								$ticket_info[$count]['ticket_qty'] = 1;
 								$ticket_info[$count]['date'] = $start_date ?? '';
 								$ticket_info[$count]['dd'] = 1;
+								$count++;
 							}
 						}
 					}
@@ -573,12 +573,14 @@
 				$wbtm_seats = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : '';
 				$base_price = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : '';
 				$ticket_count = 0;
+                $tic_key=0;
 				if (sizeof($wbtm_seats) > 0) { ?>
 					<h5 class="_mB_xs"><?php esc_html_e('Ticket Information', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
 					<div class="dLayout_xs">
 						<ul class="cart_list">
-							<?php foreach ($wbtm_seats as $key => $wbtm_seat) { ?>
-								<?php if ($ticket_count > 0) { ?>
+							<?php foreach ($wbtm_seats as $key => $wbtm_seat) {
+								$qty=array_key_exists('ticket_qty',$wbtm_seat) && $wbtm_seat['ticket_qty']>0 ? $wbtm_seat['ticket_qty'] : 1;
+                                if ($ticket_count > 0) { ?>
 									<li>
 										<div class="_divider"></div>
 									</li>
@@ -601,9 +603,19 @@
 									<h6 class="_mR_xs"><?php echo WBTM_Translations::text_price(); ?> :</h6>
 									<span><?php echo ' ( ' . wc_price($wbtm_seat['ticket_price']) . ' x ' . $wbtm_seat['ticket_qty'] . ' ) = ' . wc_price(($wbtm_seat['ticket_price'] * $wbtm_seat['ticket_qty'])); ?></span>
 								</li>
-								<?php do_action('add_wbtm_after_cart_ticket_info', $cart_item, $key); ?>
-								<?php $ticket_count++; ?>
-							<?php } ?>
+								<?php
+                                if($qty>1) {
+	                                for ($i=0;$i<$qty;$i++) {
+                                        ?><div class="_divider"></div><?php
+		                                do_action( 'add_wbtm_after_cart_ticket_info', $cart_item, $tic_key );
+		                                $tic_key++;
+
+                                    }
+                                }else{
+	                                do_action( 'add_wbtm_after_cart_ticket_info', $cart_item, $key );
+                                }
+                                $ticket_count++;
+                            } ?>
 						</ul>
 						<div class="_divider"></div>
 						<div class="justifyBetween">

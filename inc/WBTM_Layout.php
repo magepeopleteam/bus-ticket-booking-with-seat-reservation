@@ -220,7 +220,7 @@ if (!class_exists('WBTM_Layout')) {
                     $j_date = strtotime($j_date);
                     $date_list = [];
                     foreach ($all_dates as $date) {
-                        if (strtotime($date) > $j_date) {
+                        if (strtotime($date) >= $j_date) {
                             $date_list[] = $date;
                         }
                     }
