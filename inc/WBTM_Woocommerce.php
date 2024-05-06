@@ -466,6 +466,7 @@
 								$ticket_info[$count]['ticket_qty'] = 1;
 								$ticket_info[$count]['date'] = $start_date ?? '';
 								$ticket_info[$count]['dd'] = 1;
+								$count++;
 							}
 						}
 					}

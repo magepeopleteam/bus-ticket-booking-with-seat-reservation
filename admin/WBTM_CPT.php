@@ -71,17 +71,24 @@
 				);
 				$args = apply_filters('wbtm_add_cap', $args);
 				register_post_type('wbtm_bus', $args);
-				$args = array(
-					'public' => true,
-					'labels' => '',
-					'menu_icon' => '',
-					'supports' => array(),
-					'rewrite' => array('slug' => $slug),
-					'show_in_rest' => true,
-					'rest_base' => 'wbtm_bus_booking',
-					'capability_type' => 'wbtm_bus_booking',
-				);
-				register_post_type('wbtm_bus_booking', $args);
+
+				$argsl = apply_filters( 'filter_wbtm_bus_booking', array(
+					'public'          => true,
+					'label'           => __( 'Bus Attendee', 'bus-ticket-booking-with-seat-reservation' ),
+					'menu_icon'       => 'dashicons-id',
+					'supports'        => array( 'title' ),
+					// 'show_in_menu' => 'edit.php?post_type=mep_events',
+					'exclude_from_search'   => true,
+					'show_in_menu'    => false,
+					'capability_type' => 'post',
+					'capabilities'    => array(
+						'create_posts' => 'do_not_allow',
+					),
+					'map_meta_cap'    => true,
+					'show_in_rest'    => true,
+					'rest_base'       => 'wbtm_bus_bookings'
+				) );
+				register_post_type( 'wbtm_bus_booking', $argsl );
 			}
 			//************************************//
 			public function set_custom_columns($column) {
