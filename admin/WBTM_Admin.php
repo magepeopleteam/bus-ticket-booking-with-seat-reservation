@@ -45,6 +45,15 @@
 			}
 			//************************************//
 			public function wbtm_upgrade() {
+				if (get_option('wbtm_new_upgrade_global') != 'completed') {
+					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status');
+					$global_settings = get_option('wbtm_general_settings');
+					if ($seat_booked_status) {
+						$global_settings['set_book_status'] = $seat_booked_status;
+					}
+					update_option('wbtm_general_settings', $global_settings);
+					update_option('wbtm_new_upgrade_global', 'completed');
+				}
 				if (get_option('wbtm_upgrade_global_data') != 'completed') {
 					$global_settings = get_option('wbtm_bus_settings');
 					$general_settings = [];

@@ -9,8 +9,9 @@
 	if (!class_exists('MP_Settings_Global')) {
 		class MP_Settings_Global {
 			public function __construct() {
-				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 20, 1);
-				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 20, 1);
+				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
+				add_filter('mp_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
+				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 				add_action('wsa_form_bottom_mp_basic_license_settings', [$this, 'license_settings'], 5);
 				add_action('mp_basic_license_list', [$this, 'licence_area']);
 			}
@@ -20,10 +21,11 @@
 						'id' => 'mp_global_settings',
 						'title' => esc_html__('Global Settings', 'bus-ticket-booking-with-seat-reservation')
 					),
-//					array(
-//						'id' => 'mp_slider_settings',
-//						'title' => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation')
-//					),
+				);
+				return array_merge($default_sec, $sections);
+			}
+            public function global_sec_reg($default_sec): array {
+				$sections = array(
 					array(
 						'id' => 'mp_style_settings',
 						'title' => esc_html__('Style Settings', 'bus-ticket-booking-with-seat-reservation')
@@ -52,33 +54,6 @@
 							'options' => array(
 								'yes' => esc_html__('Yes', 'bus-ticket-booking-with-seat-reservation'),
 								'no' => esc_html__('No', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'show_hide_view_seats_button',
-							'label' => esc_html__('Show/hide view seats button', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('If you want to hide view seats button from serach list, if registration off.', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'show',
-							'options' => array(
-								'show' => esc_html__('Show', 'bus-ticket-booking-with-seat-reservation'),
-								'hide' => esc_html__('Hide', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'set_book_status',
-							'label' => esc_html__('Seat Booked Status', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'multicheck',
-							'default' => array(
-								'processing' => 'processing',
-								'completed' => 'completed'
-							),
-							'options' => array(
-								'on-hold' => esc_html__('On Hold', 'bus-ticket-booking-with-seat-reservation'),
-								'pending' => esc_html__('Pending', 'bus-ticket-booking-with-seat-reservation'),
-								'processing' => esc_html__('Processing', 'bus-ticket-booking-with-seat-reservation'),
-								'completed' => esc_html__('Completed', 'bus-ticket-booking-with-seat-reservation'),
 							)
 						),
 						array(

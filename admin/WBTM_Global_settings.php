@@ -22,11 +22,10 @@
 				add_submenu_page('edit.php?post_type=' . $cpt, $label . esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), $label . esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_settings_page', array($this, 'settings_page'));
 			}
 			public function settings_page() {
-				$label = WBTM_Functions::get_name();
 				?>
 				<div class="mpStyle mp_global_settings">
 					<div class="mpPanel">
-						<div class="mpPanelHeader"><?php echo esc_html($label . esc_html__(' Global Settings', 'ecab-taxi-booking-manager')); ?></div>
+						<div class="mpPanelHeader"><?php echo esc_html(esc_html__(' Global Settings', 'ecab-taxi-booking-manager')); ?></div>
 						<div class="mpPanelBody mp_zero">
 							<div class="mpTabs leftTabs">
 								<?php $this->settings_api->show_navigation(); ?>
@@ -66,6 +65,22 @@
 				$label = WBTM_Functions::get_name();
 				$settings_fields = array(
 					'wbtm_general_settings' => apply_filters('filter_wbtm_general_settings', array(
+						array(
+							'name' => 'set_book_status',
+							'label' => esc_html__('Seat Booked Status', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'multicheck',
+							'default' => array(
+								'processing' => 'processing',
+								'completed' => 'completed'
+							),
+							'options' => array(
+								'on-hold' => esc_html__('On Hold', 'bus-ticket-booking-with-seat-reservation'),
+								'pending' => esc_html__('Pending', 'bus-ticket-booking-with-seat-reservation'),
+								'processing' => esc_html__('Processing', 'bus-ticket-booking-with-seat-reservation'),
+								'completed' => esc_html__('Completed', 'bus-ticket-booking-with-seat-reservation'),
+							)
+						),
 						array(
 							'name' => 'label',
 							'label' => $label . ' ' . esc_html__('Label', 'bus-ticket-booking-with-seat-reservation'),
@@ -124,6 +139,17 @@
 							'type' => 'number',
 							'default' => 0,
 							'placeholder' => esc_html__('Ex:50', 'bus-ticket-booking-with-seat-reservation'),
+						),
+						array(
+							'name' => 'show_hide_view_seats_button',
+							'label' => esc_html__('Show/hide view seats button', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('If you want to hide view seats button from search list, if registration off.', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'select',
+							'default' => 'show',
+							'options' => array(
+								'show' => esc_html__('Show', 'bus-ticket-booking-with-seat-reservation'),
+								'hide' => esc_html__('Hide', 'bus-ticket-booking-with-seat-reservation')
+							)
 						),
 					)),
 				);
