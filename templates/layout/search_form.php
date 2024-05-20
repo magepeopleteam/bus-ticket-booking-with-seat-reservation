@@ -30,7 +30,7 @@
 	//echo '<pre>'; print_r($_POST); echo '</pre>';
 	//echo '<pre>'; print_r($_REQUEST); echo '</pre>';
 	$style = $style ?? '';
-	$global_settings = get_option('mp_global_settings');
+	$global_settings = get_option('wbtm_general_settings');
 	$btn_show = (is_array($global_settings) && array_key_exists('show_hide_view_seats_button',$global_settings))? $global_settings['show_hide_view_seats_button'] : 'show';
 ?>
 	<div id="wbtm_area">

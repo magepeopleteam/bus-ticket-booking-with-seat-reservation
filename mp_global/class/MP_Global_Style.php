@@ -32,18 +32,18 @@
 				?>
 				<style>
 					:root {
-						--dContainer_Width: 1320px;
-						--sidebarLeft: 280px;
-						--sidebarRight: 300px;
-						--mainSection: calc(100% - 300px);
-						--dMPL: 40px;
-						--dMP: 20px;
-						--dMP_negetive: -20px;
-						--dMP_xs: 10px;
-						--dMP_xs_negative: -10px;
-						--dBRL: 10px;
-						--dBR: 5px;
-						--dShadow: 0 0 2px #665F5F7A;
+						--dcontainer_width: 1320px;
+						--sidebarleft: 280px;
+						--sidebarright: 300px;
+						--mainsection: calc(100% - 300px);
+						--dmpl: 40px;
+						--dmp: 20px;
+						--dmp_negetive: -20px;
+						--dmp_xs: 10px;
+						--dmp_xs_negative: -10px;
+						--dbrl: 10px;
+						--dbr: 5px;
+						--dshadow: 0 0 2px #665F5F7A;
 					}
 					/*****Font size********/
 					:root {
@@ -115,11 +115,11 @@
 							--fs_h3: 22px;
 							--fs_h2: 25px;
 							--fs_h1: 30px;
-							--dMPL: 32px;
-							--dMP: 16px;
-							--dMP_negetive: -16px;
-							--dMP_xs: 8px;
-							--dMP_xs_negative: -8px;
+							--dmpl: 32px;
+							--dmp: 16px;
+							--dmp_negetive: -16px;
+							--dmp_xs: 8px;
+							--dmp_xs_negative: -8px;
 						}
 					}
 					@media only screen and (max-width: 700px) {
@@ -133,9 +133,9 @@
 							--fs_h3: 20px;
 							--fs_h2: 22px;
 							--fs_h1: 24px;
-							--dMP: 10px;
-							--dMP_xs: 5px;
-							--dMP_xs_negative: -5px;
+							--dmp: 10px;
+							--dmp_xs: 5px;
+							--dmp_xs_negative: -5px;
 							--button_fs: 14px;
 						}
 					}

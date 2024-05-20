@@ -51,7 +51,7 @@
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
+					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$seat_query = !empty($seat_name) ? array(
@@ -113,7 +113,7 @@
 				$seat_booked=[];
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
+					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$sp = array_search($start, $routes);
@@ -167,7 +167,7 @@
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('mp_global_settings', 'set_book_status', array('processing', 'completed'));
+					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$args = array(
 						'post_type' => 'wbtm_service_booking',
 						'posts_per_page' => -1,
