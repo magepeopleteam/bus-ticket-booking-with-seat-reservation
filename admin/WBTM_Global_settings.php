@@ -125,7 +125,7 @@
 							'placeholder' => current_time('Y-m-d'),
 						),
 						array(
-							'name' => 'wbtm_ticket_sale_max_date',
+							'name' => 'ticket_sale_max_date',
 							'label' => esc_html__('Maximum advanced day Sale', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('Please select Maximum advanced day Ticket Sale . if you dont want to off sale then it will be blank', 'bus-ticket-booking-with-seat-reservation'),
 							'default' => '30',
