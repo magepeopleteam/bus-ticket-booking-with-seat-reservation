@@ -54,9 +54,9 @@
 						'post_title' => get_the_title( $post_id ),
 						'post_name'  => uniqid()
 					);
-					remove_action( 'save_post', 'run_link_product_on_save' );
+					//remove_action( 'save_post', 'run_link_product_on_save' );
 					wp_update_post( $my_post );
-					add_action( 'save_post', 'run_link_product_on_save' );
+					//add_action( 'save_post', 'run_link_product_on_save' );
 				}
 			}
 			public function hide_wc_hidden_product_from_product_list( $query ) {

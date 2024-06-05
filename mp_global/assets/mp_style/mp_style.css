@@ -3962,6 +3962,14 @@
     border: 1px dotted #000;
     padding: 4px 6px;
   }
+  #ui-datepicker-div {	min-width: 342px;}
+  #ui-datepicker-div .ui-datepicker-header {	padding: var(--dmp_xs) !important;}
+  #ui-datepicker-div .ui-datepicker-title {	width: auto;}
+  #ui-datepicker-div .ui-datepicker-next ,
+  #ui-datepicker-div .ui-datepicker-prev {	height: 30px !important;	background-color: var(--color_theme);top: 0 !important;}
+  .ui-datepicker.ui-widget table{border-collapse: collapse !important;}
+  #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-prev::before, #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-next::before,
+  .ui-datepicker .ui-widget-header .ui-datepicker-next::after{mask:initial !important;}
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
