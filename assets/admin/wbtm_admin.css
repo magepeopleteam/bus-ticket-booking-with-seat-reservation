@@ -3,7 +3,7 @@
 	div.wbtm_settings_pricing_routing div.mp_item_insert div:nth-last-child(2) h3 span {display: none;}
 	#mp_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
 	/*****************/
-	div.wbtm_seat_plan_settings {padding: var(--dMP_xs);width: calc(100% - 300px);background-color: var(--color_white);}
+	div.wbtm_seat_plan_settings {padding: var(--dmp_xs);width: calc(100% - 300px);background-color: var(--color_white);}
 	div.wbtm_seat_plan_settings table {border: none;}
 	div.wbtm_seat_plan_settings table th {min-width: 75px;}
 	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}

@@ -9,8 +9,9 @@
 	if (!class_exists('MP_Settings_Global')) {
 		class MP_Settings_Global {
 			public function __construct() {
-				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 20, 1);
-				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 20, 1);
+				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
+				add_filter('mp_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
+				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 				add_action('wsa_form_bottom_mp_basic_license_settings', [$this, 'license_settings'], 5);
 				add_action('mp_basic_license_list', [$this, 'licence_area']);
 			}
@@ -20,10 +21,11 @@
 						'id' => 'mp_global_settings',
 						'title' => esc_html__('Global Settings', 'bus-ticket-booking-with-seat-reservation')
 					),
-					array(
-						'id' => 'mp_slider_settings',
-						'title' => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation')
-					),
+				);
+				return array_merge($default_sec, $sections);
+			}
+            public function global_sec_reg($default_sec): array {
+				$sections = array(
 					array(
 						'id' => 'mp_style_settings',
 						'title' => esc_html__('Style Settings', 'bus-ticket-booking-with-seat-reservation')
@@ -52,33 +54,6 @@
 							'options' => array(
 								'yes' => esc_html__('Yes', 'bus-ticket-booking-with-seat-reservation'),
 								'no' => esc_html__('No', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'show_hide_view_seats_button',
-							'label' => esc_html__('Show/hide view seats button', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('If you want to hide view seats button from serach list, if registration off.', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'show',
-							'options' => array(
-								'show' => esc_html__('Show', 'bus-ticket-booking-with-seat-reservation'),
-								'hide' => esc_html__('Hide', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'set_book_status',
-							'label' => esc_html__('Seat Booked Status', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'multicheck',
-							'default' => array(
-								'processing' => 'processing',
-								'completed' => 'completed'
-							),
-							'options' => array(
-								'on-hold' => esc_html__('On Hold', 'bus-ticket-booking-with-seat-reservation'),
-								'pending' => esc_html__('Pending', 'bus-ticket-booking-with-seat-reservation'),
-								'processing' => esc_html__('Processing', 'bus-ticket-booking-with-seat-reservation'),
-								'completed' => esc_html__('Completed', 'bus-ticket-booking-with-seat-reservation'),
 							)
 						),
 						array(
@@ -128,98 +103,6 @@
 							)
 						),
 					)),
-					'mp_slider_settings' => array(
-						array(
-							'name' => 'slider_type',
-							'label' => esc_html__('Slider Type', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Type Default Slider', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'slider',
-							'options' => array(
-								'slider' => esc_html__('Slider', 'bus-ticket-booking-with-seat-reservation'),
-								'single_image' => esc_html__('Post Thumbnail', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'slider_style',
-							'label' => esc_html__('Slider Style', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Style Default Style One', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'style_1',
-							'options' => array(
-								'style_1' => esc_html__('Style One', 'bus-ticket-booking-with-seat-reservation'),
-								'style_2' => esc_html__('Style Two', 'bus-ticket-booking-with-seat-reservation'),
-							)
-						),
-						array(
-							'name' => 'indicator_visible',
-							'label' => esc_html__('Slider Indicator Visible?', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Indicator Visible or Not? Default ON', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'on',
-							'options' => array(
-								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
-								'off' => esc_html__('Off', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'indicator_type',
-							'label' => esc_html__('Slider Indicator Type', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Indicator Type Default Icon', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'icon',
-							'options' => array(
-								'icon' => esc_html__('Icon Indicator', 'bus-ticket-booking-with-seat-reservation'),
-								'image' => esc_html__('image Indicator', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'showcase_visible',
-							'label' => esc_html__('Slider Showcase Visible?', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Showcase Visible or Not? Default ON', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'on',
-							'options' => array(
-								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
-								'off' => esc_html__('Off', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'showcase_position',
-							'label' => esc_html__('Slider Showcase Position', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Showcase Position Default Right', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'right',
-							'options' => array(
-								'top' => esc_html__('At Top Position', 'bus-ticket-booking-with-seat-reservation'),
-								'right' => esc_html__('At Right Position', 'bus-ticket-booking-with-seat-reservation'),
-								'bottom' => esc_html__('At Bottom Position', 'bus-ticket-booking-with-seat-reservation'),
-								'left' => esc_html__('At Left Position', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'popup_image_indicator',
-							'label' => esc_html__('Slider Popup Image Indicator', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Popup Indicator Image ON or Off? Default ON', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'on',
-							'options' => array(
-								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
-								'off' => esc_html__('Off', 'bus-ticket-booking-with-seat-reservation')
-							)
-						),
-						array(
-							'name' => 'popup_icon_indicator',
-							'label' => esc_html__('Slider Popup Icon Indicator', 'bus-ticket-booking-with-seat-reservation'),
-							'desc' => esc_html__('Please Select Slider Popup Indicator Icon ON or Off? Default ON', 'bus-ticket-booking-with-seat-reservation'),
-							'type' => 'select',
-							'default' => 'on',
-							'options' => array(
-								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
-								'off' => esc_html__('Off', 'bus-ticket-booking-with-seat-reservation')
-							)
-						)
-					),
 					'mp_style_settings' => apply_filters('filter_mp_style_settings', array(
 						array(
 							'name' => 'theme_color',

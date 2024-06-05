@@ -2,8 +2,8 @@
 /******************************************************************** Global settings ************************************************/
 @media only screen and (min-width: 10px) {
 	div.mp_global_settings {max-width: 1700px; margin: 30px 30px 30px 15px; width: calc(100% - 30px);}
-	div.mp_global_settings .button-primary {min-width: 200px;font-size: var(--fs_h5);font-weight: var(--fw-medium);padding: var(--dMP_xs); }
-	div.mp_global_settings .mpPanelHeader {background: var(--color_theme); color: #FFF;padding: var(--dMP_xs);font-size:var(--fs_h5);font-weight: var(--fw-medium); }
+	div.mp_global_settings .button-primary {min-width: 200px;font-size: var(--fs_h5);font-weight: var(--fw-medium);padding: var(--dmp_xs); }
+	div.mp_global_settings .mpPanelHeader {background: var(--color_theme); color: #FFF;padding: var(--dmp_xs);font-size:var(--fs_h5);font-weight: var(--fw-medium); }
 	div.mp_global_settings .tabLists {border-right: 1px solid var(--color_border);}
 	div.mp_global_settings form > h2 {display: none;}
 	div.mp_global_settings table {table-layout: fixed;margin: 0;}
@@ -43,7 +43,7 @@
 /******************************************************************** Image upload  ************************************************/
 @media only screen and (min-width: 10px) {
 	div.mp_multi_image { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap;}
-	div.mp_multi_image_item { position: relative; width: calc(25% - var(--dMP_xs)); min-width: 150px;margin: 0 var(--dMP_xs) var(--dMP_xs) 0;}
+	div.mp_multi_image_item { position: relative; width: calc(25% - var(--dmp_xs)); min-width: 150px;margin: 0 var(--dmp_xs) var(--dmp_xs) 0;}
 	span.mp_remove_single_image,
 	div.mpStyle span.mp_remove_multi_image { cursor: pointer; position: absolute; top: 0; right: 0; background-color: var(--color_danger);margin: 0; opacity: 0;}
 	div.mp_single_image_item:hover span.mp_remove_single_image,
@@ -59,7 +59,7 @@
 	div.mpStyle div.mp_add_icon_image_area button {padding: 5px;font-size: 12px;}
 	div.mp_add_icon_image_area button span {margin: 0 5px 0 0;}
 	div.mpStyle div.mp_add_icon_image_area img {border-radius: 0;}
-	div.mp_add_icon_image_area div.mp_icon_item {padding: var(--dMP_xs);background-color: var(--color_light);font-size: 40px;}
+	div.mp_add_icon_image_area div.mp_icon_item {padding: var(--dmp_xs);background-color: var(--color_light);font-size: 40px;}
 	div.mp_icon_item:hover .mp_remove_icon,
 	div.mp_image_item:hover .mp_remove_icon {opacity: 1;}
 	div.mp_add_icon_popup .popupHeader {
@@ -75,7 +75,7 @@
 	div.mp_add_icon_popup .popupBody {padding: 0;}
 	div.mp_add_icon_popup ul.popupIconMenu {
 		min-width: 270px;background-color: #222;margin: 0;
-		max-height: calc(100vh - var(--dMP) - var(--dMP) - 60px);
+		max-height: calc(100vh - var(--dmp) - var(--dmp) - 60px);
 		overflow: hidden auto;
 	}
 	div.mp_add_icon_popup .popupIconMenu li {
@@ -91,7 +91,7 @@
 	div.mp_add_icon_popup .popupIconMenu li.active:hover {color: #FFF;}
 	div.mp_add_icon_popup .popup_all_icon {
 		width: 100%;padding: 10px;background-color: #FFF;
-		max-height: calc(100vh - var(--dMP) - var(--dMP) - 60px);
+		max-height: calc(100vh - var(--dmp) - var(--dmp) - 60px);
 		overflow: hidden auto;
 	}
 	div.mp_add_icon_popup .popup_all_icon .popupTabItem {width: 100%;}
@@ -123,7 +123,7 @@
 /******************************************************************** ************************************************/
 @media only screen and (min-width: 10px) {
 	div.mpStyle .adminLayout,
-	div.mpStyle [class*="_adminLayout"] {padding: 50px;max-width: 1000px;margin: 100px auto;background-color: #FFF;border: 1px solid var(--color_border);border-radius: var(--dBRL);}
+	div.mpStyle [class*="_adminLayout"] {padding: 50px;max-width: 1000px;margin: 100px auto;background-color: #FFF;border: 1px solid var(--color_border);border-radius: var(--dbrl);}
 	div.mpStyle .adminLayout th,
 	div.mpStyle .adminLayout td,
 	div.mpStyle [class*="_adminLayout"] th,

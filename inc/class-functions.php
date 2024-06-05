@@ -3,7 +3,7 @@
 		$vars[] = 'bus-panel';
 		return $vars;
 	}
-	add_filter('query_vars', 'wbtm_myaccount_query_vars', 0);
+	//add_filter('query_vars', 'wbtm_myaccount_query_vars', 0);
 	/******************************/
 	function wbtm_bus_panel_menu_items($items) {
 		$new_items = array();
@@ -18,7 +18,7 @@
 		$array += array_slice($items, $position, count($items) - $position, true);
 		return $array;
 	}
-	add_filter('woocommerce_account_menu_items', 'wbtm_bus_panel_menu_items');
+	//add_filter('woocommerce_account_menu_items', 'wbtm_bus_panel_menu_items');
 	/******************************/
 	function wbtm_bus_panel_endpoint_title($title) {
 		global $wp_query;
@@ -31,4 +31,4 @@
 		}
 		return $title;
 	}
-	add_filter('the_title', 'wbtm_bus_panel_endpoint_title');
+	//add_filter('the_title', 'wbtm_bus_panel_endpoint_title');

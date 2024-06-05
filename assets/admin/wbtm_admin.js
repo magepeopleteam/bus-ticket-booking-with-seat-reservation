@@ -188,10 +188,10 @@
     function (e) {
       if (e.result) {
         let parent = $(".wbtm_settings_seat");
-        let target = parent.find('[name="wbtm_seat_cols_dd"]');
+        let target = parent.find('[name="wbtm_seat_rows_dd"]');
         let value = parseInt(target.val()) + 1;
         target.val(value);
-        parent.find('[name="wbtm_seat_cols_dd_hidden"]').val(value);
+        parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(value);
       }
     }
   );
