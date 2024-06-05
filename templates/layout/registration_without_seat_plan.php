@@ -13,10 +13,10 @@
 	$display_wbtm_registration = MP_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
 ?>
 	<div class="mpRow ">
-		<div class="_dLayout_mZero col_6 wbtm_bus_details_area">
+		<div class="_dLayout_mZero col_12_600 col_6 wbtm_bus_details_area">
 			<?php require WBTM_Functions::template_path('layout/bus_info.php'); ?>
 		</div>
-		<div class="_dLayout_mZero col_6">
+		<div class="_dLayout_mZero col_12_600 col_6">
 			<?php if (sizeof($ticket_infos) > 0) { ?>
 				<?php if ($display_wbtm_registration == 'yes') { ?>
 					<?php require WBTM_Functions::template_path('layout/regular_ticket.php'); ?>
