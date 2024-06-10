@@ -127,6 +127,17 @@
 					wp_insert_post($bus_global_search_page);
 					flush_rewrite_rules();
 				}
+				if (!MP_Global_Function::get_page_by_slug('search-result')) {
+					$search_result= array(
+						'post_type' => 'page',
+						'post_name' => 'search-result',
+						'post_title' => 'Search Result',
+						'post_content' => '[wbtm-bus-search-form]',
+						'post_status' => 'publish',
+					);
+					wp_insert_post($search_result);
+					flush_rewrite_rules();
+				}
 			}
 		}
 		new Wbtm_Woocommerce_bus();
