@@ -9,13 +9,13 @@
 	//================//
 	$start_route = MP_Global_Function::get_submit_info( 'wbtm_bp_place' );
 	$start_route = $start_route ?: MP_Global_Function::get_submit_info_get_method( 'bus_start_route' );
-	$start_time  = MP_Global_Function::get_submit_info( 'wbtm_bp_time' );
+	$start_time  = MP_Global_Function::get_submit_info( 'j_date' );
 	$start_time  = $start_time ?: MP_Global_Function::get_submit_info_get_method( 'j_date' );
 	$start_time  = $start_time ? date( 'Y-m-d', strtotime( $start_time ) ) : '';
 	//===============//
 	$end_route = MP_Global_Function::get_submit_info( 'wbtm_dp_place' );
 	$end_route = $end_route ?: MP_Global_Function::get_submit_info_get_method( 'bus_end_route' );
-	$end_time  = MP_Global_Function::get_submit_info( 'wbtm_dp_time' );
+	$end_time  = MP_Global_Function::get_submit_info( 'r_date' );
 	$end_time  = $end_time ?: MP_Global_Function::get_submit_info_get_method( 'r_date' );
 	$end_time  = $end_time ? date( 'Y-m-d', strtotime( $end_time ) ) : '';
 	//================//

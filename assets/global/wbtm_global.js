@@ -219,6 +219,10 @@
             end_route: end,
             post_id: post_id,
             date: date,
+			  bus_start_route: parent.find('input[name="bus_start_route"]').val(),
+			  bus_end_route: parent.find('input[name="bus_end_route"]').val(),
+			  j_date: parent.find('input[name="j_date"]').val(),
+			  r_date: parent.find('input[name="r_date"]').val(),
             backend_order: window.location.href.search("wbtm_backend_order"),
           },
           beforeSend: function () {
