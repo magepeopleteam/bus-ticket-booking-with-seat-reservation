@@ -151,6 +151,24 @@
 								'hide' => esc_html__('Hide', 'bus-ticket-booking-with-seat-reservation')
 							)
 						),
+						array(
+							'name' => 'active_redirect_page',
+							'label' => esc_html__('Active Redirect page', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('If you want to Active Redirect page,please select on', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
+								'off' => esc_html__('OFF', 'bus-ticket-booking-with-seat-reservation')
+							)
+						),
+						array(
+							'name' => 'search_page_redirect',
+							'label' => esc_html__('Search result page', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('If you want to redirect Search result page , please select below page', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'pages',
+							'default' => MP_Global_Function::get_id_by_slug('search-result'),
+						),
 					)),
 				);
 				return array_merge($default_fields, $settings_fields);

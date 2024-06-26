@@ -352,6 +352,14 @@
 				}
 				return false;
 			}
+			public static function get_id_by_slug($page_slug) {
+				$page = get_page_by_path($page_slug);
+				if ($page) {
+					return $page->ID;
+				} else {
+					return null;
+				}
+			}
 			//***********************************//
 			public static function check_plugin($plugin_dir_name, $plugin_file): int {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';

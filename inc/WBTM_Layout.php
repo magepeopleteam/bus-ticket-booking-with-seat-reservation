@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WBTM_Layout')) {
     class WBTM_Layout {
         public function __construct() {
-            add_action('wbtm_search_result', [$this, 'search_result'], 10, 6);
+            add_action('wbtm_search_result', [$this, 'search_result'], 10, 7);
             /*********************/
             add_action('wp_ajax_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
             add_action('wp_ajax_nopriv_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
@@ -27,7 +27,7 @@ if (!class_exists('WBTM_Layout')) {
             add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
             /**************************/
         }
-        public function search_result($start_route, $end_route, $date, $post_id = '',$style='',$btn_show='') {
+        public function search_result($start_route, $end_route, $date, $post_id = '',$style='',$btn_show='',$search_info=[]) {
             if($style=='flix'){
                 require WBTM_Functions::template_path('layout/search_result_flix.php');
             }
@@ -62,7 +62,11 @@ if (!class_exists('WBTM_Layout')) {
             $r_date = $_POST['r_date'] ?? '';
             $style = $_POST['style'] ?? '';
             $btn_show = $_POST['btn_show'] ?? '';
-            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style,$btn_show);
+            $search_info['bus_start_route']=$start_route;
+            $search_info['bus_end_route']=$end_route;
+            $search_info['j_date']=$j_date;
+            $search_info['r_date']=$r_date;
+            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style,$btn_show,$search_info);
             die();
         }
         public function get_wbtm_bus_details() {
@@ -88,7 +92,11 @@ if (!class_exists('WBTM_Layout')) {
                             <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
                             <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
                             <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
-                           
+                            <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(MP_Global_Function::data_sanitize($_POST['bus_start_route'])); ?>'/>
+                            <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(MP_Global_Function::data_sanitize($_POST['bus_end_route'])); ?>'/>
+                            <input type="hidden" name='j_date' value='<?php echo esc_attr(MP_Global_Function::data_sanitize($_POST['j_date'])); ?>'/>
+                            <input type="hidden" name='r_date' value='<?php echo esc_attr(MP_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
+
                             <?php
                             if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
                                 require WBTM_Functions::template_path('layout/registration_seat_plan.php');
@@ -106,12 +114,13 @@ if (!class_exists('WBTM_Layout')) {
             }
             die();
         }
-        public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='') {
+        public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[]) {
+
             if ($start_route && $end_route && $j_date) { ?>
                 <div class="_dLayout_dShadow_1_mT">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show); ?>
+                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info); ?>
                 </div>
             <?php }
               
@@ -122,7 +131,7 @@ if (!class_exists('WBTM_Layout')) {
                     <div class="divider"></div>
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
-                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show); ?>
+                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info); ?>
                 </div>
             <?php }
         }
