@@ -94,8 +94,6 @@
 					},
 					success: function (data) {
 						target.append(data).promise().done(function () {
-							wbtm_load_journey_date(parent, post_id, start_route);
-						}).promise().done(function () {
 							dLoaderRemove(parent);
 							target.find('input.formControl').trigger('click');
 						});
@@ -124,6 +122,8 @@
 				exit_route = 1;
 			}
 		}).promise().done(function () {
+			wbtm_load_journey_date(parent);
+		}).promise().done(function (){
 			if (exit_route > 0) {
 				parent.find('input[name="j_date"]').siblings('input').focus();
 			} else {
@@ -132,7 +132,10 @@
 		});
 		//alert(start_route);
 	});
-	function wbtm_load_journey_date(parent, post_id, start_route) {
+	function wbtm_load_journey_date(parent) {
+		let post_id = parent.find('[name="wbtm_post_id"]').val();
+		let start_route = parent.find('[name="bus_start_route"]').val();
+		let end_route = parent.find('[name="bus_end_route"]').val();
 		let target = parent.find('.wbtm_journey_date');
 		$.ajax({
 			type: 'POST',
@@ -140,10 +143,15 @@
 			data: {
 				"action": "get_wbtm_journey_date",
 				"start_route": start_route,
+				"bus_end_route": end_route,
 				"post_id": post_id,
+			},
+			beforeSend: function () {
+				dLoader_xs(target);
 			},
 			success: function (data) {
 				target.html(data);
+				dLoaderRemove(target);
 			},
 			error: function (response) {
 				console.log(response);
@@ -156,6 +164,7 @@
 		let target = parent.find('.wbtm_return_date');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (target.length > 0 && date) {
+			let start_route = parent.find('[name="bus_start_route"]').val();
 			let end_route = parent.find('input[name="bus_end_route"]').val();
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
 			//alert(date);
@@ -165,6 +174,7 @@
 				url: mp_ajax_url,
 				data: {
 					"action": "get_wbtm_return_date",
+					"start_route": start_route,
 					"end_route": end_route,
 					"j_date": date,
 					"post_id": post_id,
