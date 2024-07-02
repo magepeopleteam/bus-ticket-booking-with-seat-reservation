@@ -21,10 +21,10 @@
 		<!-- new layout -->
 
 		<div class="wbtm_bus_list_area">
-            <input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exit('bus_start_route',$search_info)?$search_info['bus_start_route']:''); ?>"/>
-            <input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exit('bus_end_route',$search_info)?$search_info['bus_end_route']:''); ?>"/>
-            <input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exit('j_date',$search_info)?$search_info['j_date']:''); ?>"/>
-            <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exit('r_date',$search_info)?$search_info['r_date']:''); ?>"/>
+            <input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route',$search_info)?$search_info['bus_start_route']:''); ?>"/>
+            <input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route',$search_info)?$search_info['bus_end_route']:''); ?>"/>
+            <input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date',$search_info)?$search_info['j_date']:''); ?>"/>
+            <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date',$search_info)?$search_info['r_date']:''); ?>"/>
 			<input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>"/>
 			<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>"/>
 			<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>"/>
