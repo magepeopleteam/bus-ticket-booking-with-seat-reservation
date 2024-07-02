@@ -181,13 +181,13 @@
 				return [];
 			}
 			//==========================//
-			public static function get_all_dates( $post_id = 0, $start_route = '' ) {
+			public static function get_all_dates( $post_id = 0, $start_route = '' ,$end_route='') {
 				$all_dates = [];
 				if ( $post_id > 0 ) {
 					$all_dates = self::get_route_date( $post_id, $start_route );
 				} else {
 					if ( $start_route ) {
-						$bus_ids = WBTM_Query::get_bus_id( $start_route );
+						$bus_ids = WBTM_Query::get_bus_id( $start_route ,$end_route);
 						if ( sizeof( $bus_ids ) > 0 ) {
 							foreach ( $bus_ids as $bus_id ) {
 								$dates     = self::get_route_date( $bus_id, $start_route );

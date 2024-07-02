@@ -17,9 +17,8 @@
 				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 10);
 			}
 			public function global_settings_menu() {
-				$label = WBTM_Functions::get_name();
 				$cpt = WBTM_Functions::get_cpt();
-				add_submenu_page('edit.php?post_type=' . $cpt, $label . esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), $label . esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_settings_page', array($this, 'settings_page'));
+				add_submenu_page('edit.php?post_type=' . $cpt,  esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), esc_html__(' Settings', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_settings_page', array($this, 'settings_page'));
 			}
 			public function settings_page() {
 				?>

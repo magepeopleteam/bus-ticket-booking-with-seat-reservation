@@ -12,9 +12,7 @@
 	div.mp_global_settings table th {width: 40%;min-width: 300px;}
 	div.mp_global_settings th label {-webkit-flex-wrap: wrap;flex-wrap: wrap;}
 	div.mp_global_settings label .info_text {width: 100%;margin: 5px 0 0 0;font-size: 11px;}
-	div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {
-		padding: 25px 0 25px 25px;
-	}
+	div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {		padding: 25px 0 25px 25px;	}
 	div.mp_basic_license_settings table th{width:inherit;min-width:inherit; }
 }
 /******************************************************************** Meta tab settings ************************************************/
