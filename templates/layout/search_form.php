@@ -36,6 +36,7 @@
 	$active_redirect_page = MP_Global_Function::get_settings( 'wbtm_general_settings', 'active_redirect_page', 'off' );
 	$search_page_redirect = MP_Global_Function::get_settings( 'wbtm_general_settings', 'search_page_redirect' );
     $redirect_url=$active_redirect_page=='on' && $search_page_redirect && $post_id==0 ? get_home_url().'/'.get_page_uri( $search_page_redirect ):'';
+    $redirect_url=is_admin()?'':$redirect_url;
 ?>
     <div id="wbtm_area">
             <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr( $style ); ?>"/>
@@ -46,6 +47,10 @@
 				<?php } ?>
                 <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr( $post_id ); ?>"/>
                 <form action="<?php echo esc_attr($redirect_url);?>" method="get"  class="mpForm">
+                    <?php if(is_admin()){ ?>
+                        <input type="hidden" name="post_type" value="wbtm_bus"/>
+                        <input type="hidden" name="page" value="wbtm_backend_order"/>
+                    <?php } ?>
 
                     <div class="inputList mp_input_select wbtm_start_point">
                         <label class="fdColumn">
