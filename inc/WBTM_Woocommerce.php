@@ -222,8 +222,6 @@
 					$order_status = $order->get_status();
 					if ( $order_status != 'failed' ) {
 						$check_attendee = WBTM_Query::query_check_order( $order_id )->post_count;
-						//$item_id = current( array_keys( $order->get_items() ) );
-						//echo '<pre>';print_r($check_attendee);echo '</pre>';die();
 						if ( $check_attendee == 0 ) {
 							foreach ( $order->get_items() as $item_id => $item ) {
 								self::add_billing_data( $item_id, $order_id );
