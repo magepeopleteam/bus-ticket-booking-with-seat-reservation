@@ -63,7 +63,7 @@
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
-			parent.find('.get_wbtm_bus_list').trigger('click');
+			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
 		});
 	});
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {

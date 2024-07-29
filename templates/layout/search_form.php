@@ -78,7 +78,7 @@
                         <div class="_dFlex_fdColumn_justifyBetween_fullHeight">
                             <span>&nbsp;</span>
 							<?php if ( $active_redirect_page == 'on' && $search_page_redirect ) { ?>
-                                <button type="submit" class="_themeButton_radius ">
+                                <button type="submit" class="_themeButton_radius wbtm_bus_submit">
                                     <span class="fas fa-search mR_xs"></span><?php echo WBTM_Translations::text_search(); ?>
                                 </button>
 							<?php } else { ?>
