@@ -228,7 +228,7 @@
 			}
 			//***********************************//
 			public static function get_settings( $section, $key, $default = '' ) {
-				$options = get_option( $section );
+				$options = esc_html(get_option( $section ));
 				if ( isset( $options[ $key ] ) && $options[ $key ] ) {
 					$default = $options[ $key ];
 				}
@@ -312,7 +312,7 @@
 				return wc_price( $return_price ) . ' ' . $display_suffix;
 			}
 			public static function get_wc_raw_price( $post_id, $price, $args = array() ) {
-				$price = self::wc_price( $post_id, $price, $args = array() );
+				$price = self::wc_price( $post_id, $price, $args );
 				return self::price_convert_raw( $price );
 			}
 			//***********************************//
