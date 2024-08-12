@@ -38,6 +38,7 @@
 				wp_enqueue_script('jquery');
 				wp_enqueue_script('jquery-ui-core');
 				wp_enqueue_script('jquery-ui-datepicker');
+				wp_localize_script('mp_ajax_url', 'mp_ajax_url', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('mp-ajax-nonce')));
 				wp_enqueue_style('mp_jquery_ui', MP_GLOBAL_PLUGIN_URL . '/assets/jquery-ui.min.css', array(), '1.13.2');
 				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
 				wp_enqueue_style('mp_select_2', MP_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.css', array(), '4.0.13');
