@@ -143,7 +143,7 @@
 			data: {
 				"action": "get_wbtm_journey_date",
 				"start_route": start_route,
-				"bus_end_route": end_route,
+				"end_route": end_route,
 				"post_id": post_id,
 			},
 			beforeSend: function () {
