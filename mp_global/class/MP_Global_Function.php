@@ -228,11 +228,27 @@
 			}
 			//***********************************//
 			public static function get_settings( $section, $key, $default = '' ) {
-				$options = esc_html(get_option( $section ));
-				if ( isset( $options[ $key ] ) && $options[ $key ] ) {
-					$default = $options[ $key ];
+				$option = get_option( $section );
+				if ( isset( $options[ $option ] ) ) {
+					if ( is_array( $options[ $option ] ) ) {
+						if ( ! empty( $options[ $option ] ) ) {
+							return $options[ $option ];
+						} else {
+							return $default;
+						}
+					} else {
+						if ( ! empty( $options[ $option ] ) ) {
+							return wp_kses_post( $options[ $option ] );
+						} else {
+							return $default;
+						}
+					}
 				}
-				return $default;
+				if ( is_array( $default ) ) {
+					return $default;
+				} else {
+					return wp_kses_post( $default );
+				}
 			}
 			public static function get_style_settings( $key, $default = '' ) {
 				return self::get_settings( 'mp_style_settings', $key, $default );

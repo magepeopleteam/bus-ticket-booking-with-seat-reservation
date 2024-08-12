@@ -102,7 +102,7 @@
 						'label' => $label,
 						'slug' => $slug
 					];
-					$new_general_settings_data = is_array($general_settings_data) ? array_replace($general_settings_data, $update_general_settings_arr) : $update_general_settings_arr;
+					$new_general_settings_data =$general_settings_data &&  is_array($general_settings_data) ? array_replace($general_settings_data, $update_general_settings_arr) : $update_general_settings_arr;
 					update_option('wbtm_general_settings', $new_general_settings_data);
 					wp_redirect(admin_url('edit.php?post_type=wbtm_bus'));
 				}
