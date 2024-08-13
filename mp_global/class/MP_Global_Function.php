@@ -228,17 +228,17 @@
 			}
 			//***********************************//
 			public static function get_settings( $section, $key, $default = '' ) {
-				$option = get_option( $section );
-				if ( isset( $options[ $option ] ) ) {
-					if ( is_array( $options[ $option ] ) ) {
-						if ( ! empty( $options[ $option ] ) ) {
-							return $options[ $option ];
+				$options = get_option( $section );
+				if ( isset( $options[ $key ] ) ) {
+					if ( is_array( $options[ $key ] ) ) {
+						if ( ! empty( $options[ $key ] ) ) {
+							return $options[ $key ];
 						} else {
 							return $default;
 						}
 					} else {
-						if ( ! empty( $options[ $option ] ) ) {
-							return wp_kses_post( $options[ $option ] );
+						if ( ! empty( $options[ $key ] ) ) {
+							return wp_kses_post( $options[ $key ] );
 						} else {
 							return $default;
 						}
