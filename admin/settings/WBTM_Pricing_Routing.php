@@ -70,6 +70,7 @@
 							<?php $this->route_pricing($post_id, $full_route_infos); ?>
 						</div>
 					</div>
+                    <?php do_action('wbtm_add_return_discount',$post_id); ?>
 				</div>
 				<?php
 			}

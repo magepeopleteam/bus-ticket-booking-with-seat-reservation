@@ -100,6 +100,7 @@ if (!class_exists('WBTM_Layout')) {
                             <input type="hidden" name='r_date' value='<?php echo esc_attr(MP_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
 
                             <?php
+	                            do_action('wbtm_form_hidden', $post_id);
                             if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
                                 require WBTM_Functions::template_path('layout/registration_seat_plan.php');
                             } else {
