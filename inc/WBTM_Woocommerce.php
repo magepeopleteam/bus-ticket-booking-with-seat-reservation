@@ -22,24 +22,24 @@
 				/**********************************************/
 				add_filter( 'woocommerce_order_status_changed', array( $this, 'order_status_changed' ), 10, 4 );
 			}
-
 			public function add_cart_item_data( $cart_item_data, $product_id ) {
 				$linked_id = MP_Global_Function::get_post_info( $product_id, 'link_wbtm_bus', $product_id );
 				$post_id   = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
-					$ticket_infos                          = self::get_cart_ticket_info( $post_id );
-					$seat_price                            = self::get_cart_seat_price( $ticket_infos );
-					$ex_service_infos                      = self::get_cart_extra_service_info( $post_id );
-					$ex_service_price                      = self::get_cart_ex_service_price( $ex_service_infos );
-					$total_price                           = $seat_price + $ex_service_price;
-					$bp                                    = MP_Global_Function::get_submit_info( 'wbtm_bp_place' );
-					$bp_time                               = MP_Global_Function::get_submit_info( 'wbtm_bp_time' );
+					$bp               = MP_Global_Function::get_submit_info( 'wbtm_bp_place' );
+					$bp_time          = MP_Global_Function::get_submit_info( 'wbtm_bp_time' );
+					$dp               = MP_Global_Function::get_submit_info( 'wbtm_dp_place' );
+					$ticket_infos     = self::get_cart_ticket_info( $post_id );
+					$seat_price       = self::get_cart_seat_price( $ticket_infos );
+					$ex_service_infos = self::get_cart_extra_service_info( $post_id );
+					$ex_service_price = self::get_cart_ex_service_price( $ex_service_infos );
+					$total_price      = $seat_price + $ex_service_price;;
 					$cart_item_data['wbtm_bus_id']         = $post_id;
 					$cart_item_data['wbtm_start_point']    = MP_Global_Function::get_submit_info( 'wbtm_start_point' );
 					$cart_item_data['wbtm_start_time']     = MP_Global_Function::get_submit_info( 'wbtm_start_time' );
 					$cart_item_data['wbtm_bp_place']       = $bp;
 					$cart_item_data['wbtm_bp_time']        = $bp_time;
-					$cart_item_data['wbtm_dp_place']       = MP_Global_Function::get_submit_info( 'wbtm_dp_place' );
+					$cart_item_data['wbtm_dp_place']       = $dp;
 					$cart_item_data['wbtm_dp_time']        = MP_Global_Function::get_submit_info( 'wbtm_dp_time' );
 					$cart_item_data['wbtm_pickup_point']   = MP_Global_Function::get_submit_info( 'wbtm_pickup_point' );
 					$cart_item_data['wbtm_drop_off_point'] = MP_Global_Function::get_submit_info( 'wbtm_drop_off_point' );
@@ -58,7 +58,6 @@
 				//echo '<pre>'; print_r($cart_item_data); echo '</pre>'; die();
 				return $cart_item_data;
 			}
-
 			public function before_calculate_totals( $cart_object ) {
 				foreach ( $cart_object->cart_contents as $value ) {
 					$post_id = array_key_exists( 'wbtm_bus_id', $value ) ? $value['wbtm_bus_id'] : 0;
@@ -72,16 +71,13 @@
 					}
 				}
 			}
-
 			public function cart_item_thumbnail( $thumbnail, $cart_item ) {
 				$post_id = array_key_exists( 'wbtm_bus_id', $cart_item ) ? $cart_item['wbtm_bus_id'] : 0;
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
 					$thumbnail = '<div class="bg_image_area" data-href="' . get_the_permalink( $post_id ) . '"><div data-bg-image="' . MP_Global_Function::get_image_url( $post_id ) . '"></div></div>';
 				}
-
 				return $thumbnail;
 			}
-
 			public function get_item_data( $item_data, $cart_item ) {
 				$post_id = array_key_exists( 'wbtm_bus_id', $cart_item ) ? $cart_item['wbtm_bus_id'] : 0;
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
@@ -90,10 +86,8 @@
 					do_action( 'wbtm_show_cart_item', $cart_item, $post_id );
 					$item_data[] = array( 'key' => esc_html__( 'Booking Details ', 'bus-ticket-booking-with-seat-reservation' ), 'value' => ob_get_clean() );
 				}
-
 				return $item_data;
 			}
-
 			/*********************/
 			public function after_checkout_validation() {
 				$cart_items = WC()->cart->get_cart();
@@ -131,7 +125,6 @@
 					}
 				}
 			}
-
 			public function checkout_create_order_line_item( $item, $cart_item_key, $values ) {
 				$post_id = array_key_exists( 'wbtm_bus_id', $values ) ? $values['wbtm_bus_id'] : 0;
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
@@ -215,7 +208,6 @@
 					do_action( 'wbtm_checkout_create_order_line_item', $item, $values );
 				}
 			}
-
 			public function checkout_order_processed( $order_id ) {
 				if ( $order_id ) {
 					$order        = wc_get_order( $order_id );
@@ -231,11 +223,9 @@
 					}
 				}
 			}
-
 			public function api_checkout_order_processed( $order ) {
 				$this->checkout_order_processed( $order->get_id() );
 			}
-
 			/*********************/
 			public static function add_billing_data( $item_id, $order_id ) {
 				$post_id = MP_Global_Function::get_order_item_meta( $item_id, '_wbtm_bus_id' );
@@ -337,7 +327,6 @@
 					}
 				}
 			}
-
 			/*********************/
 			public function order_status_changed( $order_id ) {
 				$order        = wc_get_order( $order_id );
@@ -353,7 +342,6 @@
 					}
 				}
 			}
-
 			public function wc_order_status_change( $order_status, $post_id, $order_id ) {
 				$args = array(
 					'post_type'      => 'wbtm_bus_booking',
@@ -404,7 +392,6 @@
 					update_post_meta( $user_id, 'wbtm_order_status', $order_status );
 				}
 			}
-
 			/*********************/
 			public static function get_cart_seat_price( $ticket_infos = [] ) {
 				$total_price = 0;
@@ -413,10 +400,8 @@
 						$total_price = $total_price + $ticket_info['ticket_price'] * $ticket_info['ticket_qty'];
 					}
 				}
-
 				return max( 0, $total_price );
 			}
-
 			public static function get_cart_ticket_qty( $ticket_infos = [] ) {
 				$total_qty = 0;
 				if ( sizeof( $ticket_infos ) > 0 ) {
@@ -424,10 +409,8 @@
 						$total_qty = $total_qty + $ticket_info['ticket_qty'];
 					}
 				}
-
 				return max( 0, $total_qty );
 			}
-
 			public static function get_cart_ex_service_price( $ex_service_infos = [] ) {
 				$total_price = 0;
 				if ( sizeof( $ex_service_infos ) > 0 ) {
@@ -435,10 +418,8 @@
 						$total_price = $total_price + $ticket_info['price'] * $ticket_info['qty'];
 					}
 				}
-
 				return max( 0, $total_price );
 			}
-
 			public static function get_cart_ticket_info( $post_id ) {
 				$ticket_info = [];
 				$seat_type   = MP_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
@@ -508,10 +489,8 @@
 						}
 					}
 				}
-
 				return apply_filters( 'wbtm_cart_ticket_info_data_prepare', $ticket_info, $post_id );
 			}
-
 			public static function get_cart_extra_service_info( $post_id ): array {
 				$start_date    = MP_Global_Function::get_submit_info( 'wbtm_bp_time' );
 				$service_name  = MP_Global_Function::get_submit_info( 'extra_service_name', array() );
@@ -528,10 +507,8 @@
 						}
 					}
 				}
-
 				return $extra_service;
 			}
-
 			/*********************/
 			public function show_cart_item( $cart_item, $post_id ) {
 				?>
@@ -544,7 +521,6 @@
                 </div>
 				<?php
 			}
-
 			public function show_cart_route_details( $cart_item ) {
 				$bp             = array_key_exists( 'wbtm_bp_place', $cart_item ) ? $cart_item['wbtm_bp_place'] : '';
 				$bp_time        = array_key_exists( 'wbtm_bp_time', $cart_item ) ? $cart_item['wbtm_bp_time'] : '';
@@ -592,7 +568,6 @@
                 </div>
 				<?php
 			}
-
 			public function show_cart_ticket_information( $cart_item ) {
 				$wbtm_seats   = array_key_exists( 'wbtm_seats', $cart_item ) ? $cart_item['wbtm_seats'] : '';
 				$base_price   = array_key_exists( 'wbtm_base_price', $cart_item ) ? $cart_item['wbtm_base_price'] : '';
@@ -649,7 +624,6 @@
                     </div>
 				<?php }
 			}
-
 			public function show_cart_ex_service( $cart_item ) {
 				$ex_base_price = array_key_exists( 'wbtm_base_ex_price', $cart_item ) ? $cart_item['wbtm_base_ex_price'] : '';
 				$extra_service = array_key_exists( 'wbtm_extra_services', $cart_item ) ? $cart_item['wbtm_extra_services'] : [];
@@ -687,7 +661,6 @@
                     </div>
 				<?php }
 			}
-
 			/*********************/
 			public static function add_cpt_data( $cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array() ) {
 				$new_post = array(
