@@ -219,6 +219,8 @@
       let start = parent.find('input[name="wbtm_start_route"]').val();
       let end = parent.find('input[name="wbtm_end_route"]').val();
       let date = parent.find('input[name="wbtm_date"]').val();
+      let j_date = parent.find('input[name="j_date"]').val();
+      let r_date = parent.find('input[name="r_date"]').val();
       if (start && end && date && post_id) {
         $.ajax({
           type: "POST",
@@ -229,6 +231,8 @@
             end_route: end,
             post_id: post_id,
             date: date,
+			  j_date: j_date,
+			  r_date: r_date,
             backend_order: window.location.href.search("wbtm_backend_order"),
           },
           beforeSend: function () {
