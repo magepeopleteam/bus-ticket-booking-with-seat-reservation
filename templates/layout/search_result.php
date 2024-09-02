@@ -14,7 +14,7 @@
 	$btn_show = $btn_show ?? '';
 	$label = WBTM_Functions::get_name();
 	$bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
-	//echo '<pre>';	print_r($bus_ids);	echo '</pre>';
+	//echo '<pre>';	print_r($search_info);	echo '</pre>';
 	if (sizeof($bus_ids) > 0) {
 		$bus_count = 0;
 
