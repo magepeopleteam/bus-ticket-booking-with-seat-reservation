@@ -142,3 +142,23 @@
 		}
 		new Wbtm_Woocommerce_bus();
 	}
+	add_action( 'rest_api_init', 'wbtm_bookings_cunstom_fields_to_rest_init' );
+	if ( ! function_exists( 'wbtm_bookings_cunstom_fields_to_rest_init' ) ) {
+		function wbtm_bookings_cunstom_fields_to_rest_init() {
+			register_rest_field( 'wbtm_bus_booking', 'passenger_informations', array(
+				'get_callback' => 'wbtm_get_passenger_custom_meta_for_api',
+				'schema'       => null,
+			) );
+			register_rest_field( 'wbtm_bus', 'bus_informations', array(
+				'get_callback' => 'wbtm_get_passenger_custom_meta_for_api',
+				'schema'       => null,
+			) );
+		}
+	}
+	if ( ! function_exists( 'wbtm_get_passenger_custom_meta_for_api' ) ) {
+		function wbtm_get_passenger_custom_meta_for_api( $object ) {
+			$post_id   = $object['id'];
+			$post_meta = get_post_meta( $post_id );
+			return $post_meta;
+		}
+	}
