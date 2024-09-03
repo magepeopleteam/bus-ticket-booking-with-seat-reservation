@@ -190,6 +190,7 @@
   text-align: right;
 }
 /* ============= */
+.wbtm-bust-list.in_cart {background-color: #F2C9C9;}
 .wbtm-bust-list {
   display: flex;
   flex-direction: column;

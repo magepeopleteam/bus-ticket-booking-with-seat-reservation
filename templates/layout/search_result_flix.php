@@ -38,7 +38,7 @@
 						$price = $all_info['price'];
 				?>
 					<!-- short code new style flix if set -->
-					<div class="wbtm-bus-flix-style">
+					<div class="wbtm-bus-flix-style <?php echo esc_attr(MP_Global_Function::check_product_in_cart($post_id)?'in_cart':''); ?>">
 						<div class="title">
 							<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
 							<p><span><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
