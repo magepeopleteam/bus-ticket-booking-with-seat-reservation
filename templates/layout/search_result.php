@@ -32,14 +32,13 @@
                 foreach ($bus_ids as $bus_id){
 	                //echo '<pre>'; print_r($bus_id); echo '</pre>';
 				$all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
-				//echo '<pre>'; print_r($all_info); echo '</pre>';
 				if (sizeof($all_info) > 0) :
 					$bus_count++;
 					$price = $all_info['price'];
 
 					?>
                     <!-- default style -->
-                    <div class="wbtm-bust-list">
+                    <div class="wbtm-bust-list <?php echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id)?'in_cart':''); ?>">
                         <div class="wbtm-bus-image ">
 							<?php MP_Custom_Layout::bg_image($bus_id); ?>
                         </div>
