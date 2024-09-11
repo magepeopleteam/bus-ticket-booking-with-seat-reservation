@@ -202,7 +202,7 @@ class License {
      */
     public function menu_output() {
 
-        if ( isset( $_POST['submit'] ) ) {
+        if ( isset( $_POST['submit'] ) && (isset($_POST['wbtm_ls_nonce']) || !wp_verify_nonce($_POST['wbtm_ls_nonce'], 'wbtm_ls_nonce')) ) {
             $this->license_form_submit( $_POST );
         }
 
@@ -225,6 +225,7 @@ class License {
                 <div class="appsero-license-details">
                     <p>Activate <strong><?php echo $this->client->name; ?></strong> by your license key to get professional support and automatic update from your WordPress dashboard.</p>
                     <form method="post" action="<?php $this->formActionUrl(); ?>" novalidate="novalidate" spellcheck="false">
+	                    <?php wp_nonce_field('wbtm_ls_nonce', 'wbtm_ls_nonce'); ?>
                         <input type="hidden" name="_action" value="<?php echo $action; ?>">
                         <input type="hidden" name="_nonce" value="<?php echo wp_create_nonce( $this->client->name ); ?>">
                         <div class="license-input-fields">
