@@ -50,6 +50,7 @@
 			<?php } ?>
             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr( $post_id ); ?>"/>
             <form action="<?php echo esc_attr( $redirect_url ); ?>" method="get" class="mpForm">
+                <?php wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce'); ?>
 				<?php if ( is_admin() ) { ?>
                     <input type="hidden" name="post_type" value="wbtm_bus"/>
                     <input type="hidden" name="page" value="wbtm_backend_order"/>
