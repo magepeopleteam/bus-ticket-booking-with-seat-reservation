@@ -31,7 +31,9 @@
 				return array_unique( $all_data );
 			}
 			public static function get_post_info( $post_id, $key, $default = '' ) {
+				
 				$data = get_post_meta( $post_id, $key, true ) ?: $default;
+				
 				return self::data_sanitize( $data );
 			}
 			//***********************************//
