@@ -168,6 +168,17 @@
 							'type' => 'pages',
 							'default' => MP_Global_Function::get_id_by_slug('search-result'),
 						),
+						array(
+							'name' => 'make_processing_completed',
+							'label' => esc_html__('Turn processing status into conpleted Status', 'bus-ticket-booking-with-seat-reservation'),
+							'desc' => esc_html__('If you want to make woocommerce processing status to completed automatically select ON', 'bus-ticket-booking-with-seat-reservation'),
+							'type' => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
+								'off' => esc_html__('OFF', 'bus-ticket-booking-with-seat-reservation')
+							)
+						)
 					)),
 				);
 				return array_merge($default_fields, $settings_fields);
