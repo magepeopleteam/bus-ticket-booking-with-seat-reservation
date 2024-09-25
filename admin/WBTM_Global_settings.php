@@ -170,7 +170,7 @@
 						),
 						array(
 							'name' => 'make_processing_completed',
-							'label' => esc_html__('Turn processing status into conpleted Status', 'bus-ticket-booking-with-seat-reservation'),
+							'label' => esc_html__('Turn order status processing to completed automatically', 'bus-ticket-booking-with-seat-reservation'),
 							'desc' => esc_html__('If you want to make woocommerce processing status to completed automatically select ON', 'bus-ticket-booking-with-seat-reservation'),
 							'type' => 'select',
 							'default' => 'off',
