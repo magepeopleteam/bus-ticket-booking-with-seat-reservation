@@ -29,6 +29,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function add_cart_item_data($cart_item_data, $product_id)
 		{
+
 			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
 			$post_id   = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt() && (isset($_POST['wbtm_form_nonce']) || !wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce'))) {
@@ -66,6 +67,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function before_calculate_totals($cart_object)
 		{
+
 			foreach ($cart_object->cart_contents as $value) {
 				$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
@@ -80,8 +82,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function update_order_status($order_id)
 		{
-			$force_processing_completed =  MP_Global_Function::get_settings( 'wbtm_general_settings', 'make_processing_completed', 'off' );
-			if($force_processing_completed == 'on'){
+			$force_processing_completed =  MP_Global_Function::get_settings('wbtm_general_settings', 'make_processing_completed', 'off');
+			if ($force_processing_completed == 'on') {
 				if (!$order_id) {
 					return;
 				}
@@ -91,7 +93,6 @@ if (! class_exists('WBTM_Woocommerce')) {
 				}
 				return;
 			}
-			
 		}
 		public function cart_item_thumbnail($thumbnail, $cart_item)
 		{
@@ -152,6 +153,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function checkout_create_order_line_item($item, $cart_item_key, $values)
 		{
+			error_log('All values: ' . print_r($values, true));
 			$post_id = array_key_exists('wbtm_bus_id', $values) ? $values['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 				// echo '<pre>';print_r($item);echo '</pre>';die();
@@ -179,6 +181,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 				if ($drop_off_point) {
 					$item->add_meta_data(WBTM_Translations::text_drop_off_point(), $drop_off_point);
 				}
+
 				//==============//
 				$ticket_infos = array_key_exists('wbtm_seats', $values) ? $values['wbtm_seats'] : [];
 				$ticket_qty   = array_key_exists('wbtm_seats_qty', $values) ? $values['wbtm_seats_qty'] : 0;
@@ -257,7 +260,9 @@ if (! class_exists('WBTM_Woocommerce')) {
 		/*********************/
 		public static function add_billing_data($item_id, $order_id)
 		{
+
 			$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
+
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 				$order = wc_get_order($order_id);
 				//$order_meta = get_post_meta($order_id);
@@ -339,6 +344,42 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$booking_data                 = apply_filters('add_wbtm_booking_data', $data, $post_id, $count);
 							self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 							$count++;
+						}
+					}
+					if (class_exists('Wbtm_Woocommerce_bus_Pro')) {
+						$bus_name_short  = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
+						$bus_name = get_the_title($post_id);
+						$minimum_seat_treshold =  MP_Global_Function::get_settings('wbtm_email_settings', 'minimum_seat_treshold');
+						$minimum_seat_treshold_email_content =  MP_Global_Function::get_settings('wbtm_email_settings', 'seat_treshold_email_content');
+						$minimum_seat_treshold_email_content = str_replace(
+							array('{bus_name}', '{journey_date}'), // Placeholders to replace
+							array($bus_name, $start_time), // Values to replace with
+							$minimum_seat_treshold_email_content
+						);
+						$seat_infos = $seat_infos ?? MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+						$total_seat_count = 0;
+						foreach ($seat_infos as $seats) {
+							foreach ($seats as $seat) {
+								if (!empty($seat)) {
+									$total_seat_count++;
+								}
+							}
+						}
+						$seat_booked = WBTM_Query::query_seat_booked($post_id, $start_point, $dp, $start_time);
+						$seat_left = $total_seat_count - count($seat_booked);
+						$seat_left = $seat_left - $count;
+						$notification_receiver_email = MP_Global_Function::get_settings('wbtm_email_settings', 'pdf_admin_notification_email');
+						$formatted_date = str_replace([' ', ':'], '', $start_time); // Removes spaces and colons
+						$bus_unique_string = $formatted_date . $bus_name_short;
+						$email_sent = get_option($bus_unique_string);
+						if ($minimum_seat_treshold != -1 && $minimum_seat_treshold >= $seat_left) {
+							if ($email_sent !== 'yes') {
+								// Send the email
+								wp_mail($notification_receiver_email, 'Bus Minimum Seat Treshold', $minimum_seat_treshold_email_content);
+
+								// Mark the email as sent by storing 'yes' in the wp_options table with the unique key
+								update_option($bus_unique_string, 'yes'); // Use $bus_unique_string here
+							} 
 						}
 					}
 				}

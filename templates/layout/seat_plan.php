@@ -10,10 +10,11 @@
 	$start_route = $start_route ?? MP_Global_Function::data_sanitize($_POST['start_route']);
 	$end_route = $end_route ?? MP_Global_Function::data_sanitize($_POST['end_route']);
 	$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
+	
 	$seat_row = $seat_row ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 	$seat_column = $seat_column ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 	$seat_infos = $seat_infos ?? MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-
+	
 	if (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 		$date = $_POST['date'] ?? '';
 		$bus_start_time=$bus_start_time??'';
@@ -23,6 +24,17 @@
 		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
 		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $bus_start_time);
+		$seat_count = 0;
+		foreach ($seat_infos as $seats) {
+			foreach ($seats as $seat) {
+				if (!empty($seat)) {
+					$seat_count++;
+				}
+			}
+		}
+		echo '<pre>';
+		echo $seat_count - count($seat_booked);
+		echo '</pre>';
 		?>
 		<div class="_dLayout_xs">
 			<?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
