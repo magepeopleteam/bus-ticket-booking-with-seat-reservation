@@ -178,7 +178,8 @@
 								'on' => esc_html__('ON', 'bus-ticket-booking-with-seat-reservation'),
 								'off' => esc_html__('OFF', 'bus-ticket-booking-with-seat-reservation')
 							)
-						)
+						),
+						
 					)),
 				);
 				return array_merge($default_fields, $settings_fields);
