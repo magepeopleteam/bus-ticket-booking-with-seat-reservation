@@ -26,6 +26,36 @@ if (! class_exists('WBTM_Woocommerce')) {
 			add_filter('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
 
 			add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+
+			add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
+		}
+		public function prevent_duplicate_bookings($cart_object)
+		{
+			foreach ($cart_object->cart_contents as $key => $cart_item) {
+				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					$start_route = array_key_exists('wbtm_bp_place', $cart_item) ? $cart_item['wbtm_bp_place'] : '';
+					$end_route   = array_key_exists('wbtm_dp_place', $cart_item) ? $cart_item['wbtm_dp_place'] : '';
+					$date        = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
+					$seat_type   = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+
+					if ($seat_type == 'wbtm_seat_plan') {
+						$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
+
+						if (sizeof($cart_seat_infos) > 0) {
+							foreach ($cart_seat_infos as $seat_info) {
+								$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
+
+								if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
+									WC()->cart->remove_cart_item($key);
+									wc_add_notice(sprintf(__("Seat %s has already been booked by another user. Please choose another seat.", 'woocommerce'), $seat_name), 'error');
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		public function add_cart_item_data($cart_item_data, $product_id)
 		{
@@ -379,7 +409,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 								// Mark the email as sent by storing 'yes' in the wp_options table with the unique key
 								update_option($bus_unique_string, 'yes'); // Use $bus_unique_string here
-							} 
+							}
 						}
 					}
 				}
