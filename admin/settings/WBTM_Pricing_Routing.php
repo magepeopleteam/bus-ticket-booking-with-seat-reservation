@@ -79,6 +79,7 @@
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
+				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
 				?>
 				<div class="mp_remove_area col_12_mB  wbtm_stop_item ">
 					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
@@ -141,11 +142,32 @@
 									</select>
 								
 							</div>
+							<div class="col_4 _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none';  ?>;margin-left: 2%;
+">
+                        <label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                        <input type="checkbox" name="wbtm_route_next_day[]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
+                    </div>
 <!--							<label>-->
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
 <!--								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
 <!--							</label>-->
 						</div>
+						<script>
+            jQuery(document).ready(function($) {
+                $('select[name="wbtm_route_type[]"]').on('change', function() {
+                    var type = $(this).val();
+                    var nextDayCheckbox = $(this).closest('.wbtm_stop_item').find('.next-day-dropping-checkbox');
+                    if (type == 'dp' || type == 'both') {
+                        nextDayCheckbox.show();
+                    } else {
+                        nextDayCheckbox.hide();
+                    }
+                });
+                $('select[name="wbtm_route_type[]"]').each(function() {
+                    $(this).trigger('change');
+                });
+            });
+        </script>
 					</div>
 				</div>
 				<?php
@@ -264,6 +286,7 @@
 					$times = MP_Global_Function::get_submit_info('wbtm_route_time', array());
 					$types = MP_Global_Function::get_submit_info('wbtm_route_type', array());
 					//$intervals = MP_Global_Function::get_submit_info('wbtm_route_interval', array());
+					$next_days = MP_Global_Function::get_submit_info('wbtm_route_next_day', array());
 					if (sizeof($stops) > 0) {
 						foreach ($stops as $key => $stop) {
 							if ($stop && $times[$key] && $types[$key]) {
@@ -272,6 +295,7 @@
 									'time' => $times[$key],
 									'type' => $types[$key],
 									//'interval' => max(0, $intervals[$key]),
+									'next_day' => in_array($key, $next_days),
 								];
 								
 							}
