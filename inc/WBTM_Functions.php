@@ -110,6 +110,7 @@
 				$all_dates   = sizeof( $all_dates ) > 0 ? $all_dates : self::get_post_date( $post_id );
 				$all_infos   = [];
 				$route_infos = MP_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				
 				if ( sizeof( $all_dates ) > 0 ) {
 					foreach ( $all_dates as $date ) {
 						if ( $date ) {
@@ -118,12 +119,16 @@
 							$count          = 0;
 							foreach ( $route_infos as $info ) {
 								$current_date = date( 'Y-m-d H:i', strtotime( $prev_date . ' ' . $info['time'] ) );
-								if ( $count > 0 ) {
+								if (isset($info['next_day']) && $info['next_day'] == '1') {
+									$current_date = date('Y-m-d H:i', strtotime($current_date . ' +1 day'));
+								}
+								if ($count > 0) {
 									if ( strtotime( $prev_full_date ) > strtotime( $current_date ) ) {
 										$current_date = date( 'Y-m-d H:i', strtotime( $current_date . ' +1 day' ) );
 									}
 								}
-								$info['time']         = $current_date;
+								$info['time']    = $current_date;
+								$info['next_day'] = isset($info['next_day']) ? $info['next_day'] : '0';
 								$all_infos[ $date ][] = $info;
 								$prev_full_date       = $current_date;
 								$prev_date            = date( 'Y-m-d', strtotime( $current_date ) );
@@ -134,6 +139,7 @@
 				}
 				return $all_infos;
 			}
+
 			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route ) {
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {
 					$all_dates   = WBTM_Functions::get_post_date( $post_id );

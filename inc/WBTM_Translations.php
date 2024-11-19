@@ -74,6 +74,7 @@
 			//*************************//
 			public static function text_action() { return esc_html__('Action', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_available() { return esc_html__('Seats Available', 'bus-ticket-booking-with-seat-reservation'); }
+			public static function duration_text() { return esc_html__('Duration :', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_view_seat() { return esc_html__('View Seats', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_close_seat() { return esc_html__('Close Seat', 'bus-ticket-booking-with-seat-reservation'); }
 			public static function text_book_now() { return esc_html__('Book Now', 'bus-ticket-booking-with-seat-reservation'); }
