@@ -392,15 +392,24 @@
 				return $value ?? '';
 			}
 			public static function check_product_in_cart( $post_id ) {
+				// Check if WooCommerce is properly initialized
 				$status = MP_Global_Function::check_woocommerce();
+			
 				if ( $status == 1 ) {
-					$product_id = MP_Global_Function::get_post_info( $post_id, 'link_wc_product' );
-					foreach ( WC()->cart->get_cart() as $cart_item ) {
-						if ( $cart_item['product_id'] == $product_id ) {
-							return true;
+					// Ensure WC()->cart is initialized
+					if ( WC()->cart && ! is_null( WC()->cart ) ) {
+						$product_id = MP_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+			
+						foreach ( WC()->cart->get_cart() as $cart_item ) {
+							if ( $cart_item['product_id'] == $product_id ) {
+								return true;
+							}
 						}
+					} else {
+						error_log( 'WooCommerce cart is not initialized.' ); // Log an error for debugging
 					}
 				}
+			
 				return false;
 			}
 			public static function wc_product_sku( $product_id ) {
