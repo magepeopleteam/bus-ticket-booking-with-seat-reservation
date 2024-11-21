@@ -138,7 +138,7 @@
 					}
 				}
 				return $all_infos;
-			}
+		}
 
 			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route ) {
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {

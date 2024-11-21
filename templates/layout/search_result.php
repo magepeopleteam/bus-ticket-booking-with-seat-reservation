@@ -31,17 +31,37 @@ if (sizeof($bus_ids) > 0) {
         // Collect all bus info first
         $bus_data = [];
 
-        foreach ($bus_data as $bus) {
+        foreach ($bus_ids as $bus_id) {
+            $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+            if (sizeof($all_info) > 0) {
+                $bus_data[] = [
+                    'bus_id'   => $bus_id,
+                    'all_info' => $all_info,
+                ];
+            }
+        }
+
+        // Sort bus data by 'bp_time' in 24-hour format
+        usort($bus_data, function ($a, $b) {
+            return strtotime($a['all_info']['bp_time']) - strtotime($b['all_info']['bp_time']);
+        });
+
+foreach ($bus_data as $bus) {
     $bus_id = $bus['bus_id'];
     $all_info = $bus['all_info'];
     $bus_count++;
     $price = $all_info['price'];
-    $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0';
+    
+    // Check if next_day exists and set a default value if not
+    $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
     $bp_time = $all_info['bp_time'];
     $dp_time = $all_info['dp_time'];
+    
+    // Adjust dp_time if next_day is '1'
     if ($next_day == '1') {
-        $dp_timestamp += 24 * 60 * 60;
+        $dp_timestamp += 24 * 60 * 60; // Add 24 hours in seconds
     }
+
     $bp_timestamp = strtotime($bp_time);
     $dp_timestamp = strtotime($dp_time);
     $duration_seconds = $dp_timestamp - $bp_timestamp;
@@ -67,7 +87,8 @@ if (sizeof($bus_ids) > 0) {
                         <i class="fas fa-map-marker-alt"></i>
                         <?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? '(' . MP_Global_Function::date_format($all_info['dp_time'], 'time') . ')' : ''); ?>
                     </h6>
-                    <p><?php echo WBTM_Translations::duration_text(); ?><?php echo esc_html($duration_formatted); ?></p>
+                    <i class="fas fa-clock"></i> <strong><?php echo WBTM_Translations::duration_text(); ?><?php echo esc_html($duration_formatted); ?> </strong>
+                </h6>
                 </div>
                 <div class="wbtm-seat-info text-center">
                     <div>
