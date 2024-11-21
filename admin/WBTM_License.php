@@ -14,7 +14,7 @@
 			public function bus_licence() {
 				?>
 				<tr>
-					<th colspan="4" class="_textLeft"><?php echo esc_html(WBTM_PLUGIN_DATA['Name']); ?></th>
+					<th colspan="4" class="_textLeft"><?php echo esc_html('bus-ticket-booking-with-seat-reservation'); ?></th>
 					<th><?php esc_html_e('Free','bus-ticket-booking-with-seat-reservation'); ?></th>
 					<th></th>
 					<th colspan="2"><?php esc_html_e('Unlimited','bus-ticket-booking-with-seat-reservation'); ?></th>
