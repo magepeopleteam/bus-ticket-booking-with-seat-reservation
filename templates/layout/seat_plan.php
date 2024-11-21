@@ -32,9 +32,6 @@
 				}
 			}
 		}
-		echo '<pre>';
-		echo $seat_count - count($seat_booked);
-		echo '</pre>';
 		?>
 		<div class="_dLayout_xs">
 			<?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
