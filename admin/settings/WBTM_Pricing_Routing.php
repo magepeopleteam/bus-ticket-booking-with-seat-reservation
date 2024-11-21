@@ -142,8 +142,7 @@
 									</select>
 								
 							</div>
-							<div class="col_4 _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none';  ?>;margin-left: 2%;
-">
+							<div class="col_4 _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none'; ?>;">
                         <label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                         <input type="checkbox" name="wbtm_route_next_day[]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
                     </div>
@@ -154,15 +153,20 @@
 						</div>
 						<script>
             jQuery(document).ready(function($) {
+                // Handle showing/hiding checkbox when selecting "Dropping" or "Boarding & Dropping"
                 $('select[name="wbtm_route_type[]"]').on('change', function() {
                     var type = $(this).val();
                     var nextDayCheckbox = $(this).closest('.wbtm_stop_item').find('.next-day-dropping-checkbox');
+                    
+                    // Show or hide the "Next Day Dropping" checkbox based on the selected type
                     if (type == 'dp' || type == 'both') {
                         nextDayCheckbox.show();
                     } else {
                         nextDayCheckbox.hide();
                     }
                 });
+                
+                // Trigger the change event on page load to ensure the checkbox visibility is correct
                 $('select[name="wbtm_route_type[]"]').each(function() {
                     $(this).trigger('change');
                 });
