@@ -12,6 +12,7 @@
   div.wbtm_bus_list_area table {    width: 100%;    border: none;    border-collapse: collapse;    box-shadow: none;    margin: 0;  }
   div.wbtm_bus_list_area table th,
   div.wbtm_bus_list_area table td {    border: none;    vertical-align: middle;    font-size: var(--fs_label); text-align:left; text-transform: none;  }
+  h5.wbtm_sub_total.col_6.paddingLeft_xs{text-align:right;}
   div.wbtm_bus_list_area table thead th {    background-color: var(--color_light);    text-transform: capitalize;  }
   div.wbtm_bus_list_area table tbody {    background-color: var(--color_theme_alter);  }
   div.wbtm_bus_list_area table tbody tr.bus_item_row td {    border-top: 1px solid var(--color_theme);  }
