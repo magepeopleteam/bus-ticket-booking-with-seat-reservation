@@ -11,6 +11,7 @@
 			public function __construct() {
 				add_action('init', array($this, 'language_load'));
 				$this->load_file();
+				$this->appsero_init_tracker();
 				add_action('add_mp_global_enqueue', array($this, 'global_enqueue'), 90);
 				add_action('add_mp_admin_enqueue', array($this, 'admin_enqueue'), 90);
 				add_action('add_mp_frontend_enqueue', array($this, 'frontend_enqueue'), 90);
@@ -45,6 +46,13 @@
 				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				do_action('add_wbtm_admin_script');
+			}
+			public function appsero_init_tracker() {
+				if (!class_exists('Appsero\Client')) {
+					require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
+				}
+				$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
+				$client->insights()->init();
 			}
 			public function frontend_enqueue() {
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time());

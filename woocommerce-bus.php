@@ -34,7 +34,6 @@
 			}
 			private function load_plugin() {
 				if (MP_Global_Function::check_woocommerce() == 1) {
-					$this->appsero_init_tracker();
 					$this->setBusPermission();
 					add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
 					add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
@@ -58,13 +57,7 @@
 					exit(wp_redirect(admin_url('admin.php?post_type=wbtm_bus&page=wbtm_quick_setup')));
 				}
 			}
-			public function appsero_init_tracker() {
-				if (!class_exists('Appsero\Client')) {
-					require_once __DIR__ . '/lib/appsero/src/Client.php';
-				}
-				$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
-				$client->insights()->init();
-			}
+			
 			function wbtm_plugin_row_meta($links_array, $plugin_file_name) {
 				if (strpos($plugin_file_name, basename(__FILE__))) {
 					if (!is_plugin_active('addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php')) {
