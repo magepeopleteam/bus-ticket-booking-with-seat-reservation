@@ -126,8 +126,6 @@ Rest assured, we provide top-notch support for our plugin. With full confidence 
 
 
 **CHECKOUT OUR OTHER PLUGINS** 
-- [Multipurpose Ticket Booking Manager (Bus/Train/Ferry/Boat/Shuttle)
-](https://wordpress.org/plugins/bus-booking-manager/)
 - [Bus Ticket Booking with Seat Reservation](https://wordpress.org/plugins/bus-ticket-booking-with-seat-reservation/)
 - [Woocommerce Events Manager](https://wordpress.org/plugins/mage-eventpress/)
 - [Advanced – Deposit & Partial Payments](https://wordpress.org/plugins/advanced-partial-payment-or-deposit-for-woocommerce/)
