@@ -1,0 +1,19 @@
+.wbtm_bus_search_result_holder{
+    width: 100%;
+    display: block;
+    float: left;
+    position: relative;
+}
+
+.wbtm_bus_list_area{
+    margin-left: 250px;
+}
+
+.wbtm_bus_left_filter_holder{
+    width: 250px;
+    display: block;
+    float: left;
+    position: relative;
+    height: auto;
+    /*background-color: #0a7aff;*/
+}
