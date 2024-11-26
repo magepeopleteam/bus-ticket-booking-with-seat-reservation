@@ -23,6 +23,7 @@ if (sizeof($bus_ids) > 0) {
     $bus_data = [];
 
     $bus_titles = [];
+    $bus_types = [];
     foreach ($bus_ids as $bus_id) {
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
         if (sizeof($all_info) > 0) {
@@ -31,34 +32,19 @@ if (sizeof($bus_ids) > 0) {
                 'all_info' => $all_info,
             ];
             $bus_titles[] = get_the_title($bus_id);
+            $bus_types[] = MP_Global_Function::get_post_info( $bus_id, 'wbtm_bus_category');
         }
 
     }
 
 ?>
-    <div class="wbtm_bus_left_filter_holder">
-        <div id="filter-options">
-            <label>
-                <input type="checkbox" class="filter-checkbox" data-filter="bus_start_route" value="Paris">
-                Paris
-            </label>
-            <label>
-                <input type="checkbox" class="filter-checkbox" data-filter="AC" value="AC">
-                AC
-            </label>
-            <label>
-                <input type="checkbox" class="filter-checkbox" data-filter="Non AC" value="Non AC">
-                Non AC
-            </label>
-            <?php foreach ( $bus_titles as $bus_title ) { ?>
-            <div>
-                <input type="checkbox" class="filter-checkbox" data-filter="wbtm_bus_name" value="<?php echo esc_attr( $bus_title ); ?>">
-                <span><?php echo esc_attr( $bus_title );?></span>
-            </div>
-        <?php }?>
+    <div class="wbtm_search_result_holder">
+        <div class="wbtm_bus_left_filter_holder">
+            <?php if( count( $bus_titles ) > 0 ){
+                echo  WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route);
+            } ?>
         </div>
-    </div>
-    <div class="wbtm_bus_list_area">
+        <div class="wbtm_bus_list_area">
             <input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
             <input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
             <input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
@@ -100,8 +86,11 @@ if (sizeof($bus_ids) > 0) {
                 $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
                 ?>
 
-                <div class="wbtm-bust-list <?php echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>">
-                    <input type="hidden" name="wbtm_bus_name" value="<?php echo  $bus_titles[$key]; ?>" />
+                <div class="wbtm-bust-list <?php echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+                    <input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title($bus_id); ?>" />
+                    <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
+                    <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>" />
+
                     <div class="wbtm-bus-image ">
                         <?php MP_Custom_Layout::bg_image($bus_id); ?>
                     </div>
@@ -123,7 +112,7 @@ if (sizeof($bus_ids) > 0) {
                     </div>
                     <div class="wbtm-seat-info text-center">
                         <div>
-                            <h6><?php echo MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_category'); ?></h6>
+                            <h6><?php echo esc_attr( $bus_types[$key]); ?></h6>
                             <p><?php echo WBTM_Translations::text_coach_type(); ?></p>
                         </div>
                         <div>
@@ -160,6 +149,8 @@ if (sizeof($bus_ids) > 0) {
                 </div>
             <?php endif; ?>
         </div>
+    </div>
+
 
 <?php
 } else {

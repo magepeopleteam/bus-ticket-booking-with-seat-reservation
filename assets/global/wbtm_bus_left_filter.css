@@ -6,14 +6,34 @@
 }
 
 .wbtm_bus_list_area{
-    margin-left: 250px;
+    /*margin-left: 180px;*/
+    width: calc( 100% - 180px );
+    /*margin: auto;*/
 }
 
 .wbtm_bus_left_filter_holder{
-    width: 250px;
+    width: 180px;
     display: block;
     float: left;
     position: relative;
     height: auto;
-    /*background-color: #0a7aff;*/
+    padding: 10px 2px;
+}
+.wbtm_bus_toggle-header{
+    text-align: left;
+    font-weight: normal;
+    font-size: 15px;
+    color: #e90c57;
+    padding: 8px 1px;
+}
+.wbtm_bus_left_filter_checkbox_holder{
+    padding: 3px;
+}
+.wbtm_search_result_holder{
+    display: flex;
+    width: 100%;
+}
+.wbtm_bus_filter_title_text{
+    font-size: 17px;
+    font-weight: bold;
 }
