@@ -191,8 +191,8 @@
 				<?php
 			}
 			public function setup_general_content() {
-				$label = MP_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
-				$slug = MP_Global_Function::get_settings('wbtm_general_settings','slug','bus');
+				$label = MP_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Boat', 'bus-ticket-booking-with-seat-reservation'));
+				$slug = MP_Global_Function::get_settings('wbtm_general_settings','slug','boat');
 				?>
 				<div data-tabs-next="#wbtm_qs_general">
 					<div class="section">

@@ -421,7 +421,7 @@
 				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'label', esc_html__( 'Bus', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
 			public static function get_slug() {
-				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'bus', 'bus' );
+				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'slug', 'bus' );
 			}
 			public static function get_icon() {
 				$svg = '<svg width="60" height="51" viewBox="0 0 60 51" fill="none" xmlns="http://www.w3.org/2000/svg">
