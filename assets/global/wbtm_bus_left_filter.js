@@ -51,7 +51,6 @@
         }
 
         // Trigger filtering on checkbox change
-        // $('.filter-checkbox').on('change', filterBuses);
         $(document).on('change', '.filter-checkbox', function() {
             filterBuses();
         });

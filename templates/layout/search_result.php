@@ -19,6 +19,22 @@ $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end
 if (sizeof($bus_ids) > 0) {
     $bus_count = 0;
 
+    // Collect all bus info first
+    $bus_data = [];
+
+    $bus_titles = [];
+    foreach ($bus_ids as $bus_id) {
+        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+        if (sizeof($all_info) > 0) {
+            $bus_data[] = [
+                'bus_id'   => $bus_id,
+                'all_info' => $all_info,
+            ];
+            $bus_titles[] = get_the_title($bus_id);
+        }
+
+    }
+
 ?>
     <div class="wbtm_bus_left_filter_holder">
         <div id="filter-options">
@@ -34,10 +50,12 @@ if (sizeof($bus_ids) > 0) {
                 <input type="checkbox" class="filter-checkbox" data-filter="Non AC" value="Non AC">
                 Non AC
             </label>
-            <label>
-                <input type="checkbox" class="filter-checkbox" data-filter="wbtm_bus_name" value="BYD Express">
-                BYD Express
-            </label>
+            <?php foreach ( $bus_titles as $bus_title ) { ?>
+            <div>
+                <input type="checkbox" class="filter-checkbox" data-filter="wbtm_bus_name" value="<?php echo esc_attr( $bus_title ); ?>">
+                <span><?php echo esc_attr( $bus_title );?></span>
+            </div>
+        <?php }?>
         </div>
     </div>
     <div class="wbtm_bus_list_area">
@@ -50,27 +68,14 @@ if (sizeof($bus_ids) > 0) {
             <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>" />
 
             <?php
-            // Collect all bus info first
-            $bus_data = [];
 
-            foreach ($bus_ids as $bus_id) {
-                $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
-                if (sizeof($all_info) > 0) {
-                    $bus_data[] = [
-                        'bus_id'   => $bus_id,
-                        'all_info' => $all_info,
-                    ];
-                }
-            }
 
             // Sort bus data by 'bp_time' in 24-hour format
             usort($bus_data, function ($a, $b) {
                 return strtotime($a['all_info']['bp_time']) - strtotime($b['all_info']['bp_time']);
             });
 
-            error_log( print_r( $bus_data, true ) );
-
-            foreach ($bus_data as $bus) {
+            foreach ($bus_data as $key => $bus) {
                 $bus_id = $bus['bus_id'];
                 $all_info = $bus['all_info'];
                 $bus_count++;
@@ -96,7 +101,7 @@ if (sizeof($bus_ids) > 0) {
                 ?>
 
                 <div class="wbtm-bust-list <?php echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>">
-                    <input type="hidden" name="wbtm_bus_name" value="<?php echo  get_the_title($bus_id); ?>" />
+                    <input type="hidden" name="wbtm_bus_name" value="<?php echo  $bus_titles[$key]; ?>" />
                     <div class="wbtm-bus-image ">
                         <?php MP_Custom_Layout::bg_image($bus_id); ?>
                     </div>
