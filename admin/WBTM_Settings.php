@@ -54,6 +54,12 @@ if (!class_exists('WBTM_Settings')) {
                         <li data-tabs-target="#wbtm_settings_tax">
                             <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
+                        <li data-tabs-target="#wbtm_cancellation_policy">
+                            <span class="fas fa-tools"></span><?php esc_html_e(' Cancellation Policy ', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </li>
+                        <li data-tabs-target="#wbtm_features">
+                            <span class="fas fa-tools"></span><?php esc_html_e(' Features ', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </li>
                         <?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                             <li data-tabs-target="#mp_pp_deposits_type">
                                 <span class=""></span>&nbsp;&nbsp;<?php esc_html_e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
