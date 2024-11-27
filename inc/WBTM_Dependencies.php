@@ -17,6 +17,16 @@
 				add_action('add_mp_frontend_enqueue', array($this, 'frontend_enqueue'), 90);
 				add_filter('single_template', array($this, 'load_single_template'), 10);
 				add_filter('template_include', array($this, 'load_template'));
+				add_filter('register_post_type_args', array($this, 'modify_bus_slug'), 5, 2); 
+
+			}
+			public function modify_bus_slug($args, $post_type) {
+				if ('wbtm_bus' === $post_type) {
+					$slug = MP_Global_Function::get_settings( 'wbtm_general_settings', 'slug', 'bus' );
+					var_dump($slug);
+					$args['rewrite']['slug'] = $slug;
+				}
+				return $args;
 			}
 			public function language_load(): void {
 				$plugin_dir = basename(dirname(__DIR__)) . "/languages/";
