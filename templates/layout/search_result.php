@@ -11,10 +11,11 @@ $start_route = $start_route ?? '';
 $end_route = $end_route ?? '';
 $post_id = $post_id ?? '';
 $date = $date ?? '';
+$journey_type = $journey_type ?? '';
 $btn_show = $btn_show ?? '';
 $label = WBTM_Functions::get_name();
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
-
+//error_log( print_r( ['$journey_type' => $journey_type], true ) );
 //echo '<pre>';	print_r($search_info);	echo '</pre>';
 if (sizeof($bus_ids) > 0) {
     $bus_count = 0;
@@ -37,14 +38,25 @@ if (sizeof($bus_ids) > 0) {
 
     }
 
+    if( $journey_type === 'start_journey' ){
+        $width = 'calc( 100% - 180px )';
+        $wbtm_bus_search = 'wbtm_bus_search_journey_start';
+        $filter_by_box = 'filter-checkbox';
+    }else{
+        $width = '100%';
+        $wbtm_bus_search = 'wbtm_bus_search_journey_return';
+        $filter_by_box = 'return_filter-checkbox';
+    }
 ?>
     <div class="wbtm_search_result_holder">
+        <?php if( count( $bus_titles ) > 0 ){ ?>
         <div class="wbtm_bus_left_filter_holder">
-            <?php if( count( $bus_titles ) > 0 ){
-                echo  WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route);
-            } ?>
+          <?php
+            echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box );
+          ?>
         </div>
-        <div class="wbtm_bus_list_area">
+        <?php  }?>
+        <div class="wbtm_bus_list_area" style="width: <?php echo $width?>">
             <input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
             <input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
             <input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
@@ -86,7 +98,7 @@ if (sizeof($bus_ids) > 0) {
                 $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
                 ?>
 
-                <div class="wbtm-bust-list <?php echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+                <div class="wbtm-bust-list  <?php echo $wbtm_bus_search; echo esc_attr(MP_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                     <input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title($bus_id); ?>" />
                     <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
                     <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>" />

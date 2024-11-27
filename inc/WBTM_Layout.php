@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WBTM_Layout')) {
     class WBTM_Layout {
         public function __construct() {
-            add_action('wbtm_search_result', [$this, 'search_result'], 10, 7);
+            add_action('wbtm_search_result', [$this, 'search_result'], 10, 8);
             /*********************/
             add_action('wp_ajax_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
             add_action('wp_ajax_nopriv_get_wbtm_dropping_point', [$this, 'get_wbtm_dropping_point']);
@@ -27,7 +27,7 @@ if (!class_exists('WBTM_Layout')) {
             add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
             /**************************/
         }
-        public function search_result($start_route, $end_route, $date, $post_id = '',$style='',$btn_show='',$search_info=[]) {
+        public function search_result($start_route, $end_route, $date, $post_id = '',$style='',$btn_show='',$search_info=[], $journey_type='') {
             if($style=='flix'){
                 require WBTM_Functions::template_path('layout/search_result_flix.php');
             }
@@ -123,7 +123,7 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
                 <div class="_dLayout_dShadow_1_mT">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info); ?>
+                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey'); ?>
                 </div>
             <?php }
               
@@ -134,7 +134,7 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
                     <div class="divider"></div>
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
-                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info); ?>
+                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info,'return_journey'); ?>
                 </div>
             <?php }
         }

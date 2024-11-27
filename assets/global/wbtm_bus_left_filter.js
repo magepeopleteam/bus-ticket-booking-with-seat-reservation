@@ -45,10 +45,12 @@
             });
         }
 
-        function filterBuses() {
+        function filterBuses( search_form, checkbox ) {
+            // alert( search_form );
             const selectedFilters = {};
 
-            $('.filter-checkbox:checked').each(function () {
+            $('.' + checkbox + ':checked').each(function () {
+            // $('.filter-checkbox:checked').each(function () {
                 const filterKey = $(this).data('filter');
                 const filterValue = $(this).val();
 
@@ -58,7 +60,7 @@
                 selectedFilters[filterKey].push(filterValue);
             });
 
-            $('.wbtm-bust-list').each(function () {
+            $('.'+search_form).each(function () {
                 const $bus = $(this);
                 let showBus = true;
 
@@ -93,7 +95,11 @@
         }
 
         $(document).on('change', '.filter-checkbox', function() {
-            filterBuses();
+            filterBuses( 'wbtm_bus_search_journey_start', 'filter-checkbox');
+            // filterBuses_single();
+        });
+        $(document).on('change', '.return_filter-checkbox', function() {
+            filterBuses( 'wbtm_bus_search_journey_return', 'return_filter-checkbox');
             // filterBuses_single();
         });
     });
