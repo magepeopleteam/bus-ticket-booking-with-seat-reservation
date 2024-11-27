@@ -11,16 +11,50 @@ $start_route = $start_route ?? '';
 $end_route = $end_route ?? '';
 $post_id = $post_id ?? '';
 $date = $date ?? '';
+$journey_type = $journey_type ?? '';
 $btn_show = $btn_show ?? '';
 $label = WBTM_Functions::get_name();
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 if (sizeof($bus_ids) > 0) {
 	$bus_count = 0;
 
+    $bus_data = [];
+    $bus_titles = [];
+    $bus_types = [];
+
+
+    foreach ($bus_ids as $bus_id) {
+        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+        if (sizeof($all_info) > 0) {
+            $bus_data[] = [
+                'bus_id'   => $bus_id,
+                'all_info' => $all_info,
+            ];
+
+            $bus_titles[] = get_the_title($bus_id);
+            $bus_types[] = MP_Global_Function::get_post_info( $bus_id, 'wbtm_bus_category');
+        }
+    }
+
+    if( $journey_type === 'start_journey' ){
+        $wbtm_bus_search = 'wbtm_bus_search_journey_start';
+        $filter_by_box = 'filter-checkbox';
+    }else{
+        $wbtm_bus_search = 'wbtm_bus_search_journey_return';
+        $filter_by_box = 'return_filter-checkbox';
+    }
+
 ?>
 	<!-- new layout -->
-
-	<div class="wbtm_bus_list_area">
+    <div class="wbtm_search_result_holder">
+        <?php if( count( $bus_titles ) > 0 ){ ?>
+            <div class="wbtm_bus_left_filter_holder">
+                <?php
+                echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box );
+                ?>
+            </div>
+        <?php  }?>
+        <div class="wbtm_bus_list_area">
 		<input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
 		<input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
 		<input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
@@ -31,17 +65,6 @@ if (sizeof($bus_ids) > 0) {
 
 		<?php
 		// Collect all bus info first
-		$bus_data = [];
-
-		foreach ($bus_ids as $bus_id) {
-			$all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
-			if (sizeof($all_info) > 0) {
-				$bus_data[] = [
-					'bus_id'   => $bus_id,
-					'all_info' => $all_info,
-				];
-			}
-		}
 
 		// Sort bus data by 'bp_time' in 24-hour format
 		usort($bus_data, function ($a, $b) {
@@ -49,7 +72,7 @@ if (sizeof($bus_ids) > 0) {
 		});
 
 		// Now loop through the sorted data
-		foreach ($bus_data as $bus) {
+		foreach ($bus_data as $key => $bus) {
 			$bus_id = $bus['bus_id'];
 			$all_info = $bus['all_info'];
 			$bus_count++;
@@ -57,8 +80,13 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style <?php echo esc_attr(MP_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
-				<div class="title">
+			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(MP_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
+                <input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title($bus_id); ?>" />
+                <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
+                <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>" />
+
+
+                <div class="title">
 					<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
 					<p><span><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
 				</div>
@@ -111,6 +139,7 @@ if (sizeof($bus_ids) > 0) {
 			</div>
 		<?php endif; ?>
 	</div>
+    </div>
 
 <?php
 } else {

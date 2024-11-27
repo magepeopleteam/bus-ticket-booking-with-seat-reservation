@@ -456,7 +456,7 @@
                         </div>
                     <?php } if( !empty( $bus_titles ) ) { ?>
                     <div class="wbtm_bus_filter_items">
-                        <span class="wbtm_bus_toggle-header">Operator <span class="wbtm_bus_toggle-icon"></span></span>
+                        <span class="wbtm_bus_toggle-header">Bus Operator <span class="wbtm_bus_toggle-icon"></span></span>
                         <?php
                         $search_bus_titles = array_unique( $bus_titles );
                         foreach ( $search_bus_titles as $bus_title ) {
