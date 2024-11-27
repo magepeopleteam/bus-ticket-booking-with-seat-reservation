@@ -10,8 +10,6 @@
 		let style = parent.find('input[name="wbtm_list_style"]');
 		let btn_show = parent.find('input[name="wbtm_list_btn_show"]');
 		let left_filter_input = parent.find('input[name="wbtm_left_filter_show"]');
-		// let left_filter_show = left_filter_input.val();
-		// alert( left_filter_show );
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
