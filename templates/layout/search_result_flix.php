@@ -13,6 +13,7 @@ $post_id = $post_id ?? '';
 $date = $date ?? '';
 $journey_type = $journey_type ?? '';
 $btn_show = $btn_show ?? '';
+$left_filter_show = $left_filter_show ?? '';
 $label = WBTM_Functions::get_name();
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 if (sizeof($bus_ids) > 0) {
@@ -47,14 +48,18 @@ if (sizeof($bus_ids) > 0) {
 ?>
 	<!-- new layout -->
     <div class="wbtm_search_result_holder">
-        <?php if( count( $bus_titles ) > 0 ){ ?>
+        <?php if( $left_filter_show === 'yes' && count( $bus_titles ) > 0 ){
+            $width = 'calc( 100% - 180px )'
+            ?>
             <div class="wbtm_bus_left_filter_holder">
                 <?php
                 echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box );
                 ?>
             </div>
-        <?php  }?>
-        <div class="wbtm_bus_list_area">
+        <?php  }else{
+            $width = '100%';
+        }?>
+        <div class="wbtm_bus_list_area" style="width: <?php echo $width?>">
 		<input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
 		<input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
 		<input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
@@ -81,7 +86,7 @@ if (sizeof($bus_ids) > 0) {
 
 			<!-- short code new style flix if set -->
 			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(MP_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
-                <input type="hidden" name="wbtm_bus_name" value="<?php echo get_the_title($bus_id); ?>" />
+                <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
                 <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>" />
 
