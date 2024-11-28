@@ -9,10 +9,157 @@
 	if (!class_exists('WBTM_Taxonomy')) {
 		class WBTM_Taxonomy {
 			public function __construct() {
-				add_action('init', [$this, 'taxonomy']);
-			}
+            add_action('init', [$this, 'taxonomy']);
+            add_action('wbtm_bus_features_add_form_fields', [$this, 'add_feature_image_field']);
+            add_action('wbtm_bus_features_edit_form_fields', [$this, 'edit_feature_image_field']);
+            add_action('created_wbtm_bus_features', [$this, 'save_feature_image'], 10, 2);
+            add_action('edited_wbtm_bus_features', [$this, 'save_feature_image'], 10, 2);
+        }
+        public function add_feature_image_field() {
+           
+            ?>
+            <div class="form-field feature-image-upload">
+                <label for="feature_image"><?php esc_html_e('Feature Image (150x150 px)', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                <input type="text" name="feature_image" id="feature_image" value="" class="feature_image_field" />
+                <button class="upload_image_button button"><?php esc_html_e('Upload Image', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+                <div class="uploaded_image_preview"></div>
+                <div class="error-message" style="display:none;"></div>
+                <script>
+                    jQuery(document).ready(function($) {
+                        var custom_uploader;
+                        $('.upload_image_button').click(function(e) {
+                            e.preventDefault();
+                            if (custom_uploader) {
+                                custom_uploader.open();
+                                return;
+                            }
+                            custom_uploader = wp.media({
+                                title: '<?php esc_html_e("Choose Image", "bus-ticket-booking-with-seat-reservation"); ?>',
+                                button: {
+                                    text: '<?php esc_html_e("Use this image", "bus-ticket-booking-with-seat-reservation"); ?>'
+                                },
+                                multiple: false
+                            }).on('select', function() {
+                                var attachment = custom_uploader.state().get('selection').first().toJSON();
+                                var img = new Image();
+                                img.src = attachment.url;
+                                img.onload = function() {
+                                    if (img.width == 150 && img.height == 150) {
+                                        $('#feature_image').val(attachment.url);
+                                        $('.uploaded_image_preview').html('<img src="' + attachment.url + '" />');
+                                        $('.error-message').hide();
+                                    } else {
+                                        $('.error-message').text('<?php esc_html_e("Image size must be 150x150 pixels.", "bus-ticket-booking-with-seat-reservation"); ?>').show();
+                                        $('#feature_image').val('');
+                                        $('.uploaded_image_preview').html('');
+                                    }
+                                };
+                            });
+                            custom_uploader.open();
+                        });
+                    });
+                </script>
+            </div>
+            <?php
+        }
+
+        public function edit_feature_image_field($term) {
+            $feature_image = get_term_meta($term->term_id, 'feature_image', true);
+            add_action('admin_head', [$this, 'enqueue_admin_styles']);
+            ?>
+            <tr class="form-field feature-image-upload">
+                <th scope="row"><label for="feature_image"><?php esc_html_e('Feature Image (150x150 px)', 'bus-ticket-booking-with-seat-reservation'); ?></label></th>
+                <td>
+                    <input type="text" name="feature_image" id="feature_image" value="<?php echo esc_attr($feature_image); ?>" class="feature_image_field" />
+                    <button class="upload_image_button button"><?php esc_html_e('Upload Image', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+                    <div class="uploaded_image_preview">
+                        <?php if ($feature_image): ?>
+                            <img src="<?php echo esc_url($feature_image); ?>" alt="<?php esc_html_e('Feature Image', 'bus-ticket-booking-with-seat-reservation'); ?>" />
+                        <?php else: ?>
+                            <p><?php esc_html_e('No image uploaded.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="error-message" style="display:none;"></div>
+                    <script>
+                        jQuery(document).ready(function($) {
+                            var custom_uploader;
+                            $('.upload_image_button').click(function(e) {
+                                e.preventDefault();
+                                if (custom_uploader) {
+                                    custom_uploader.open();
+                                    return;
+                                }
+                                custom_uploader = wp.media({
+                                    title: '<?php esc_html_e("Choose Image", "bus-ticket-booking-with-seat-reservation"); ?>',
+                                    button: {
+                                        text: '<?php esc_html_e("Use this image", "bus-ticket-booking-with-seat-reservation"); ?>'
+                                    },
+                                    multiple: false
+                                }).on('select', function() {
+                                    var attachment = custom_uploader.state().get('selection').first().toJSON();
+                                    var img = new Image();
+                                    img.src = attachment.url;
+                                    img.onload = function() {
+                                        if (img.width == 150 && img.height == 150) {
+                                            $('#feature_image').val(attachment.url);
+                                            $('.uploaded_image_preview').html('<img src="' + attachment.url + '" />');
+                                            $('.error-message').hide();
+                                        } else {
+                                            $('.error-message').text('<?php esc_html_e("Image size must be 150x150 pixels.", "bus-ticket-booking-with-seat-reservation"); ?>').show();
+                                            $('#feature_image').val(''); 
+                                            $('.uploaded_image_preview').html(''); 
+                                        }
+                                    };
+                                });
+                                custom_uploader.open();
+                            });
+                        });
+                    </script>
+                </td>
+            </tr>
+            <?php
+        }
+
+        // Save the image URL when a new term is created or edited
+        public function save_feature_image($term_id) {
+            if (isset($_POST['feature_image'])) {
+                update_term_meta($term_id, 'feature_image', esc_url($_POST['feature_image']));
+            }
+        }
 			public function taxonomy() {
 				$name = WBTM_Functions::get_name();
+				$labels = array(
+                'name' => esc_html__('Features', 'bus-ticket-booking-with-seat-reservation'),
+                'singular_name' => esc_html__('Feature', 'bus-ticket-booking-with-seat-reservation'),
+                'menu_name' => esc_html__('Features', 'bus-ticket-booking-with-seat-reservation'),
+                'all_items' => esc_html__('All Features', 'bus-ticket-booking-with-seat-reservation'),
+                'new_item_name' => esc_html__('New Feature Name', 'bus-ticket-booking-with-seat-reservation'),
+                'add_new_item' => esc_html__('Add New Feature', 'bus-ticket-booking-with-seat-reservation'),
+                'edit_item' => esc_html__('Edit Feature', 'bus-ticket-booking-with-seat-reservation'),
+                'update_item' => esc_html__('Update Feature', 'bus-ticket-booking-with-seat-reservation'),
+                'view_item' => esc_html__('View Feature', 'bus-ticket-booking-with-seat-reservation'),
+                'search_items' => esc_html__('Search Features', 'bus-ticket-booking-with-seat-reservation'),
+                'not_found' => esc_html__('Not Found', 'bus-ticket-booking-with-seat-reservation'),
+                'no_terms' => esc_html__('No Features', 'bus-ticket-booking-with-seat-reservation'),
+                'items_list' => esc_html__('Features List', 'bus-ticket-booking-with-seat-reservation'),
+                'items_list_navigation' => esc_html__('Features List Navigation', 'bus-ticket-booking-with-seat-reservation'),
+            );
+
+            $args = [
+                'hierarchical' => true,
+                'public' => true,
+                'labels' => $labels,
+                'show_ui' => true,
+                'show_admin_column' => true,
+                'update_count_callback' => '_update_post_term_count',
+                'query_var' => true,
+                'rewrite' => ['slug' => 'bus-feature'],
+                'show_in_rest' => true,
+                'rest_base' => 'bus_feature',
+                'meta_box_cb' => false,
+            ];
+
+            register_taxonomy('wbtm_bus_features', 'wbtm_bus', $args);
 				$labels = array(
 					'name' => $name . ' ' . esc_html__(' Type', 'bus-ticket-booking-with-seat-reservation'),
 					'singular_name' => _x($name . ' Type', 'bus-ticket-booking-with-seat-reservation'),

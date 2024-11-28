@@ -13,6 +13,7 @@
 				add_filter( 'mp_settings_sec_reg', array( $this, 'global_sec_reg' ), 90, 1 );
 				add_filter( 'mp_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
 				add_action( 'wsa_form_bottom_mp_basic_license_settings', [ $this, 'license_settings' ], 5 );
+				
 				add_action( 'mp_basic_license_list', [ $this, 'licence_area' ] );
 			}
 			public function settings_sec_reg( $default_sec ): array {
@@ -35,6 +36,10 @@
 						'title' => esc_html__( 'Custom CSS', 'bus-ticket-booking-with-seat-reservation' )
 					),
 					array(
+                    'id'    => 'mp_cancellation_policy',
+                    'title' => esc_html__( 'Cancellation Policy', 'bus-ticket-booking-with-seat-reservation' )
+                ),
+					array(
 						'id'    => 'mp_basic_license_settings',
 						'title' => esc_html__( 'Mage-People License', 'bus-ticket-booking-with-seat-reservation' )
 					)
@@ -44,6 +49,15 @@
 			public function settings_sec_fields( $default_fields ): array {
 				$current_date    = current_time( 'Y-m-d' );
 				$settings_fields = array(
+					'mp_cancellation_policy' => apply_filters( 'filter_mp_cancellation_policy', array(
+                    array(
+                        'name'  => 'cancellation_policy_text',
+                        'label' => esc_html__( 'Cancellation Policy', 'bus-ticket-booking-with-seat-reservation' ),
+                        'desc'  => esc_html__( 'Write your cancellation policy here. This will be displayed to users.', 'bus-ticket-booking-with-seat-reservation' ),
+                        'type'  => 'textarea',
+                        'default' => '',
+                    ),
+                )),
 					'mp_global_settings' => apply_filters( 'filter_mp_global_settings', array(
 						array(
 							'name'    => 'disable_block_editor',
@@ -228,6 +242,7 @@
 				);
 				return array_merge( $default_fields, $settings_fields );
 			}
+			
 			public function license_settings() {
 				?>
                 <div class="mp_basic_license_settings">
