@@ -65,14 +65,14 @@ if (sizeof($bus_ids) > 0) {
 				<div class="route">
 					<div class="route-info">
 						<div class="from">
-							<h2 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h2>
+							<h4 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h4>
 							<p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
 						</div>
 						<div class="duration textCenter">
 							<strong class="time"><?php echo MP_Global_Function::date_difference($all_info['bp_time'], $all_info['dp_time']); ?></strong>
 						</div>
 						<div class="to">
-							<h2 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h2>
+							<h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
 							<p><strong><?php echo esc_html($all_info['dp']); ?></strong></p>
 						</div>
 					</div>
