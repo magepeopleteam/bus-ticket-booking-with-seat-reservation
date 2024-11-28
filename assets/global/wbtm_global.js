@@ -9,6 +9,7 @@
 		let j_date = parent.find('input[name="j_date"]');
 		let style = parent.find('input[name="wbtm_list_style"]');
 		let btn_show = parent.find('input[name="wbtm_list_btn_show"]');
+		let left_filter_input = parent.find('input[name="wbtm_left_filter_show"]');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
@@ -36,6 +37,7 @@
           post_id: post_id,
           style: style.val(),
           btn_show: btn_show.val(),
+		  left_filter_show: left_filter_input.val(),
           backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {

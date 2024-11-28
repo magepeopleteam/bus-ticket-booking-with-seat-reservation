@@ -435,5 +435,49 @@
 				</svg>';
 				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'data:image/svg+xml;base64,' . base64_encode( $svg ) );
 			}
+
+            public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box ): void {
+                ?>
+                <div id="wbtm_bus_filter-options">
+                    <div class="wbtm_bus_filter_title"><span class="wbtm_bus_filter_title_text"> Filter </span></div>
+                    <?php if( !empty( $bus_types ) ) {?>
+                    <div class="wbtm_bus_filter_items">
+                            <span class="wbtm_bus_toggle-header">Bus Type <span class="wbtm_bus_toggle-icon"></span></span>
+                            <?php
+                            $search_bus_types = array_unique($bus_types);
+                            foreach ( $search_bus_types as $bus_type) {
+                                if( !empty( $bus_type ) ){
+                                ?>
+                                <div class="wbtm_bus_left_filter_checkbox_holder">
+                                    <input type="checkbox" class="<?php echo $filter_by_box;?>" data-filter="wbtm_bus_type" value="<?php echo esc_attr( $bus_type );?>">
+                                    <span><?php echo esc_attr( $bus_type );?></span>
+                                </div>
+                            <?php } }?>
+                        </div>
+                    <?php } if( !empty( $bus_titles ) ) { ?>
+                    <div class="wbtm_bus_filter_items">
+                        <span class="wbtm_bus_toggle-header">Bus Operator <span class="wbtm_bus_toggle-icon"></span></span>
+                        <?php
+                        $search_bus_titles = array_unique( $bus_titles );
+                        foreach ( $search_bus_titles as $bus_title ) {
+                            if( !empty( $bus_title ) ){
+                            ?>
+                            <div class="wbtm_bus_left_filter_checkbox_holder">
+                                <input type="checkbox" class="<?php echo $filter_by_box;?>" data-filter="wbtm_bus_name" value="<?php echo esc_attr( $bus_title ); ?>">
+                                <span><?php echo esc_attr( $bus_title );?></span>
+                            </div>
+                        <?php } }?>
+                    </div>
+                    <?php }?>
+                    <div class="wbtm_bus_filter_items">
+                        <span class="wbtm_bus_toggle-header">Boarding Point <span class="wbtm_bus_toggle-icon"></span></span>
+                        <div class="wbtm_bus_left_filter_checkbox_holder">
+                            <input type="checkbox" class="<?php echo $filter_by_box?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>">
+                            <span><?php echo esc_attr($start_route); ?></span>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
 		}
 	}

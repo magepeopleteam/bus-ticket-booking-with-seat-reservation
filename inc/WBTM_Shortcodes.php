@@ -71,12 +71,13 @@
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
-				$defaults = array("cat" => "0", "style" => '', "search-page" => '');
+				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'yes');
 				$params = shortcode_atts($defaults, $attr);
 				$cat = $params['cat'];
 				$form_style = $params['style'];
 				$search_path = $params['search-page'];
 				$style = $params['style'];
+				$left_filter = $params['left_filter'];
 				ob_start();
 				do_action('woocommerce_before_single_product');
 				?>
