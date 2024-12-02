@@ -35,7 +35,10 @@
 	$search_page_redirect = MP_Global_Function::get_settings( 'wbtm_general_settings', 'search_page_redirect' );
 	$redirect_url         = $active_redirect_page == 'on' && $search_page_redirect && $post_id == 0 ? get_home_url() . '/' . get_page_uri( $search_page_redirect ) : '';
 	$redirect_url         = is_admin() ? '' : $redirect_url;
-    $left_filter         = $left_filter ?? 'yes';
+    $left_filter          = $left_filter ?? 'yes';
+    $left_filter_type     = $left_filter_type ?? 'on';
+    $left_filter_operator = $left_filter_operator ?? 'on';
+    $left_filter_boarding = $left_filter_boarding ?? 'on';
 
     /*********************************/
 	$search_info['bus_start_route']=$start_route;
@@ -47,6 +50,9 @@
         <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr( $style ); ?>"/>
         <input type="hidden" name='wbtm_list_btn_show' value="<?php echo esc_attr( $btn_show ); ?>"/>
         <input type="hidden" name='wbtm_left_filter_show' value="<?php echo esc_attr( $left_filter ); ?>"/>
+        <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr( $left_filter_type ); ?>"/>
+        <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr( $left_filter_operator ); ?>"/>
+        <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr( $left_filter_boarding ); ?>"/>
         <div class="_dLayout_dShadow_1 wbtm_search_area <?php echo esc_attr( $form_style_class ); ?>">
 			<?php if ( $buy_ticket_text ) { ?>
                 <h4><?php echo esc_html( $buy_ticket_text ); ?></h4>

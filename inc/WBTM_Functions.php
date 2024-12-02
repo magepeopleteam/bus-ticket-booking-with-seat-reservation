@@ -436,11 +436,11 @@
 				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'data:image/svg+xml;base64,' . base64_encode( $svg ) );
 			}
 
-            public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box ): void {
+            public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box, $left_filter_show ): void {
                 ?>
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_bus_filter_title"><span class="wbtm_bus_filter_title_text"> Filter </span></div>
-                    <?php if( !empty( $bus_types ) ) {?>
+                    <?php if( $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
                     <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header">Bus Type <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php
@@ -454,7 +454,8 @@
                                 </div>
                             <?php } }?>
                         </div>
-                    <?php } if( !empty( $bus_titles ) ) { ?>
+                    <?php }
+                    if( $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
                     <div class="wbtm_bus_filter_items">
                         <span class="wbtm_bus_toggle-header">Bus Operator <span class="wbtm_bus_toggle-icon"></span></span>
                         <?php
@@ -469,7 +470,7 @@
                         <?php } }?>
                     </div>
                     <?php }
-                    if( is_array( $start_routes ) && count( $start_routes ) >0 ){
+                    if( $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
                     ?>
                     <div class="wbtm_bus_filter_items">
                         <span class="wbtm_bus_toggle-header">Boarding Point <span class="wbtm_bus_toggle-icon"></span></span>

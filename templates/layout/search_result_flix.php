@@ -22,7 +22,7 @@ if (sizeof($bus_ids) > 0) {
     $bus_data = [];
     $bus_titles = [];
     $bus_types = [];
-
+    $all_boarding_routes = [];
 
     foreach ($bus_ids as $bus_id) {
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
@@ -34,8 +34,16 @@ if (sizeof($bus_ids) > 0) {
 
             $bus_titles[] = get_the_title($bus_id);
             $bus_types[] = MP_Global_Function::get_post_info( $bus_id, 'wbtm_bus_category');
+            $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
+            foreach ( $get_boarding_routes as $route ){
+                if( !empty( $route ) ){
+                    $all_boarding_routes[] = $route;
+                }
+            }
         }
     }
+
+    $all_boarding_routes = array_unique( $all_boarding_routes );
 
     if( $journey_type === 'start_journey' ){
         $wbtm_bus_search = 'wbtm_bus_search_journey_start';
@@ -48,12 +56,12 @@ if (sizeof($bus_ids) > 0) {
 ?>
 	<!-- new layout -->
     <div class="wbtm_search_result_holder">
-        <?php if( $left_filter_show === 'yes' && count( $bus_titles ) > 0 ){
+        <?php if( $left_filter_show['left_filter_input'] === 'yes' && count( $bus_titles ) > 0 ){
             $width = 'calc( 100% - 180px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
                 <?php
-                echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box );
+                echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
                 ?>
             </div>
         <?php  }else{
@@ -82,13 +90,20 @@ if (sizeof($bus_ids) > 0) {
 			$all_info = $bus['all_info'];
 			$bus_count++;
 			$price = $all_info['price'];
+
+            $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
 		?>
 
 			<!-- short code new style flix if set -->
 			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(MP_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
-                <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>" />
+
+                <?php if( is_array( $bus_boarding_routes ) && count( $bus_boarding_routes ) > 0 ){
+                    foreach ( $bus_boarding_routes as $boarding_route ){
+                        ?>
+                        <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($boarding_route); ?>" />
+                    <?php } }?>
 
 
                 <div class="title">

@@ -17,7 +17,6 @@ $left_filter_show = $left_filter_show ?? '';
 $label = WBTM_Functions::get_name();
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 //echo '<pre>';	print_r($search_info);	echo '</pre>';
-//$start_all_routes = WBTM_Functions::get_bus_route();
 if (sizeof($bus_ids) > 0) {
     $bus_count = 0;
 
@@ -57,12 +56,13 @@ if (sizeof($bus_ids) > 0) {
     }
 ?>
 <div class="wbtm_search_result_holder">
-    <?php if( $left_filter_show === 'yes' && count( $bus_titles ) > 0 ){
+    <?php
+    if( $left_filter_show['left_filter_input'] === 'yes' && count( $bus_titles ) > 0 ){
      $width = 'calc( 100% - 180px )'
     ?>
     <div class="wbtm_bus_left_filter_holder">
       <?php
-        echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box );
+        echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
       ?>
     </div>
     <?php  }else{
