@@ -436,7 +436,7 @@
 				return MP_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'data:image/svg+xml;base64,' . base64_encode( $svg ) );
 			}
 
-            public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_route, $filter_by_box ): void {
+            public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box ): void {
                 ?>
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_bus_filter_title"><span class="wbtm_bus_filter_title_text"> Filter </span></div>
@@ -468,14 +468,19 @@
                             </div>
                         <?php } }?>
                     </div>
-                    <?php }?>
+                    <?php }
+                    if( is_array( $start_routes ) && count( $start_routes ) >0 ){
+                    ?>
                     <div class="wbtm_bus_filter_items">
                         <span class="wbtm_bus_toggle-header">Boarding Point <span class="wbtm_bus_toggle-icon"></span></span>
-                        <div class="wbtm_bus_left_filter_checkbox_holder">
-                            <input type="checkbox" class="<?php echo $filter_by_box?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($start_route); ?>">
-                            <span><?php echo esc_attr($start_route); ?></span>
-                        </div>
+                        <?php  foreach ( $start_routes as $route ){?>
+                            <div class="wbtm_bus_left_filter_checkbox_holder">
+                                <input type="checkbox" class="<?php echo $filter_by_box?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($route); ?>">
+                                <span><?php echo esc_attr($route); ?></span>
+                            </div>
+                        <?php }?>
                     </div>
+                    <?php }?>
                 </div>
                 <?php
             }

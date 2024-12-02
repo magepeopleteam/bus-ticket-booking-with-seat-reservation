@@ -65,10 +65,19 @@
                 let showBus = true;
 
                 $.each(selectedFilters, function (key, values) {
-                    if (key === "wbtm_start_route") {
-                        const startRoute = $bus.find('input[name="wbtm_bus_start_route"]').val();
-                        if (!values.includes(startRoute)) {
+                    console.log( key );
+                    if (key === "wbtm_bus_start_route") {
+                        let hasMatchingRoute = false;
+                        $bus.find('input[name="wbtm_bus_start_route"]').each(function () {
+                            const startRoute = $(this).val();
+                            if (values.includes(startRoute)) {
+                                hasMatchingRoute = true;
+                                return false;
+                            }
+                        });
+                        if (!hasMatchingRoute) {
                             showBus = false;
+                            return false;
                         }
                     }
                     if (key === "wbtm_bus_name") {
