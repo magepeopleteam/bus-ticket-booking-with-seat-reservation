@@ -389,6 +389,7 @@
 				foreach ( $results as $result ) {
 					$value = $result->meta_value;
 				}
+				
 				return $value ?? '';
 			}
 			public static function check_product_in_cart( $post_id ) {
