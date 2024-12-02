@@ -9,13 +9,16 @@
     /*width: calc( 100% - 180px );*/
 }
 
-.wbtm_bus_left_filter_holder{
+.wbtm_bus_left_filter_holder {
     width: 180px;
+    background: var(--color_light);
+    margin-top: 10px;
     display: block;
     float: left;
+    margin-right: 10px;
     position: relative;
     height: auto;
-    padding: 10px 2px;
+    padding: 10px 10px;
 }
 .wbtm_bus_toggle-header{
     text-align: left;
