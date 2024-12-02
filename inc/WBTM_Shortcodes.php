@@ -71,7 +71,7 @@
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
-				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'yes', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on');
+				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'on', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on');
 				$params = shortcode_atts($defaults, $attr);
 				$cat = $params['cat'];
 				$form_style = $params['style'];

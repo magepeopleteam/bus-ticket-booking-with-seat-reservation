@@ -35,7 +35,12 @@
 	$search_page_redirect = MP_Global_Function::get_settings( 'wbtm_general_settings', 'search_page_redirect' );
 	$redirect_url         = $active_redirect_page == 'on' && $search_page_redirect && $post_id == 0 ? get_home_url() . '/' . get_page_uri( $search_page_redirect ) : '';
 	$redirect_url         = is_admin() ? '' : $redirect_url;
-    $left_filter          = $left_filter ?? 'yes';
+
+    if (is_page()) {
+        $left_filter          = $left_filter ?? 'on';
+    }else{
+        $left_filter          = 'off';
+    }
     $left_filter_type     = $left_filter_type ?? 'on';
     $left_filter_operator = $left_filter_operator ?? 'on';
     $left_filter_boarding = $left_filter_boarding ?? 'on';

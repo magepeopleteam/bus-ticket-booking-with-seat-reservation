@@ -54,10 +54,11 @@ if (sizeof($bus_ids) > 0) {
         $wbtm_bus_search = 'wbtm_bus_search_journey_return';
         $filter_by_box = 'return_filter-checkbox';
     }
+
 ?>
 <div class="wbtm_search_result_holder">
     <?php
-    if( $left_filter_show['left_filter_input'] === 'yes' && count( $bus_titles ) > 0 ){
+    if( $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
      $width = 'calc( 100% - 180px )'
     ?>
     <div class="wbtm_bus_left_filter_holder">
