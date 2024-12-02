@@ -183,11 +183,14 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function checkout_create_order_line_item($item, $cart_item_key, $values)
 		{
-			error_log('All values: ' . print_r($values, true));
+			
 			$post_id = array_key_exists('wbtm_bus_id', $values) ? $values['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 				// echo '<pre>';print_r($item);echo '</pre>';die();
 				$passenger_infos = array_key_exists('wbtm_passenger_info', $values) ? $values['wbtm_passenger_info'] : [];
+				
+				
+
 				//==============//
 				$bp_place = array_key_exists('wbtm_bp_place', $values) ? $values['wbtm_bp_place'] : '';
 				$bp_time  = array_key_exists('wbtm_bp_time', $values) ? $values['wbtm_bp_time'] : '';
@@ -336,6 +339,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 				/*******************/
 				$attendee_info = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_passenger_info');
 				$attendee_info = $attendee_info ? MP_Global_Function::data_sanitize($attendee_info) : [];
+				
+				
 				/*******************/
 				$ticket_infos = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_ticket_info');
 				$ticket_infos = $ticket_infos ? MP_Global_Function::data_sanitize($ticket_infos) : [];
@@ -344,6 +349,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 					$count = 0;
 					foreach ($ticket_infos as $ticket_info) {
 						$qty = $ticket_info['ticket_qty'];
+
 						for ($key = 0; $key < $qty; $key++) {
 							$data['wbtm_order_id']        = $order_id;
 							$data['wbtm_bus_id']          = $post_id;
