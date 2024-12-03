@@ -103,6 +103,16 @@
             });
         }
 
+        $(document).on('click', '.wbtm_reset_filter-checkbox', function() {
+            $('.filter-checkbox:checked').prop('checked', false);
+            $('.wbtm_bus_search_journey_start').fadeIn(600);
+        });
+
+        $(document).on('click', '.wbtm_reset_return_filter-checkbox', function() {
+            $('.return_filter-checkbox:checked').prop('checked', false);
+            $('.wbtm_bus_search_journey_return').fadeIn(600);
+        });
+
         $(document).on('change', '.filter-checkbox', function() {
             filterBuses( 'wbtm_bus_search_journey_start', 'filter-checkbox');
             // filterBuses_single();
@@ -111,6 +121,8 @@
             filterBuses( 'wbtm_bus_search_journey_return', 'return_filter-checkbox');
             // filterBuses_single();
         });
+
+
     });
 
 
