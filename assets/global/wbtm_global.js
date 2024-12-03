@@ -10,6 +10,9 @@
 		let style = parent.find('input[name="wbtm_list_style"]');
 		let btn_show = parent.find('input[name="wbtm_list_btn_show"]');
 		let left_filter_input = parent.find('input[name="wbtm_left_filter_show"]');
+		let wbtm_left_filter_type = parent.find('input[name="wbtm_left_filter_type"]');
+		let wbtm_left_filter_operator = parent.find('input[name="wbtm_left_filter_operator"]');
+		let wbtm_left_filter_boarding = parent.find('input[name="wbtm_left_filter_boarding"]');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!mp_check_required(start)) {
 			start.trigger('click');
@@ -37,7 +40,12 @@
           post_id: post_id,
           style: style.val(),
           btn_show: btn_show.val(),
-		  left_filter_show: left_filter_input.val(),
+		  left_filter_show:{
+			  left_filter_input : left_filter_input.val(),
+			  left_filter_type : wbtm_left_filter_type.val(),
+			  left_filter_operator : wbtm_left_filter_operator.val(),
+			  left_filter_boarding : wbtm_left_filter_boarding.val(),
+		  },
           backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {

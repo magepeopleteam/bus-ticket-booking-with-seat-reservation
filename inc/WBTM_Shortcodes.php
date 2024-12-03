@@ -71,13 +71,16 @@
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
-				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'yes');
+				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'on', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on');
 				$params = shortcode_atts($defaults, $attr);
 				$cat = $params['cat'];
 				$form_style = $params['style'];
 				$search_path = $params['search-page'];
 				$style = $params['style'];
-				$left_filter = $params['left_filter'];
+				$left_filter            = $params['left_filter'];
+				$left_filter_type       = $params['left_filter_type'];
+				$left_filter_operator   = $params['left_filter_operator'];
+				$left_filter_boarding   = $params['left_filter_boarding'];
 				ob_start();
 				do_action('woocommerce_before_single_product');
 				?>

@@ -18,7 +18,7 @@
     margin-right: 10px;
     position: relative;
     height: auto;
-    padding: 10px 10px;
+    padding-left: 5px;
 }
 .wbtm_bus_toggle-header{
     text-align: left;
@@ -34,7 +34,56 @@
     display: flex;
     width: 100%;
 }
+.wbtm_bus_filter_reset_text{
+    background-color: #f13f7c;
+    padding: 2px 7px;
+    color: #F6F6F6;
+    border-radius: 2px;
+}
+.wbtm_bus_filter_reset_text:hover{
+    background-color: #eb0452;
+    color: #e7e7e7;
+}
 .wbtm_bus_filter_title_text{
     font-size: 17px;
     font-weight: bold;
+}
+.wbtm_bus_filter-options{
+    display: flex;
+}
+
+.wbtm_left_filter_title_holder{
+    display: flex;
+    padding-top: 8px;
+    flex-direction: row;
+}
+.wbtm_bus_filter_title{
+    flex: 1;
+    width: 50%;
+}
+.wbtm_bus_filter_reset{
+    flex: 1;
+    width: 50%;
+    text-align: right;
+    padding-right: 5px;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 520px) {
+    .wbtm_search_result_holder{
+        flex-direction: column;
+    }
+    .wbtm_left_filter_element_holder{
+        /*display: flex;
+        gap: 5px;*/
+    }
+
+    .wbtm_bus_left_filter_holder{
+        flex: 1;
+        width: 100%;
+    }
+    .wbtm_bus_list_area{
+        flex: 1;
+        width: 100% !important;
+    }
 }

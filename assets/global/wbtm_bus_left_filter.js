@@ -65,10 +65,19 @@
                 let showBus = true;
 
                 $.each(selectedFilters, function (key, values) {
-                    if (key === "wbtm_start_route") {
-                        const startRoute = $bus.find('input[name="wbtm_bus_start_route"]').val();
-                        if (!values.includes(startRoute)) {
+                    console.log( key );
+                    if (key === "wbtm_bus_start_route") {
+                        let hasMatchingRoute = false;
+                        $bus.find('input[name="wbtm_bus_start_route"]').each(function () {
+                            const startRoute = $(this).val();
+                            if (values.includes(startRoute)) {
+                                hasMatchingRoute = true;
+                                return false;
+                            }
+                        });
+                        if (!hasMatchingRoute) {
                             showBus = false;
+                            return false;
                         }
                     }
                     if (key === "wbtm_bus_name") {
@@ -94,6 +103,16 @@
             });
         }
 
+        $(document).on('click', '.wbtm_reset_filter-checkbox', function() {
+            $('.filter-checkbox:checked').prop('checked', false);
+            $('.wbtm_bus_search_journey_start').fadeIn(600);
+        });
+
+        $(document).on('click', '.wbtm_reset_return_filter-checkbox', function() {
+            $('.return_filter-checkbox:checked').prop('checked', false);
+            $('.wbtm_bus_search_journey_return').fadeIn(600);
+        });
+
         $(document).on('change', '.filter-checkbox', function() {
             filterBuses( 'wbtm_bus_search_journey_start', 'filter-checkbox');
             // filterBuses_single();
@@ -102,6 +121,8 @@
             filterBuses( 'wbtm_bus_search_journey_return', 'return_filter-checkbox');
             // filterBuses_single();
         });
+
+
     });
 
 
