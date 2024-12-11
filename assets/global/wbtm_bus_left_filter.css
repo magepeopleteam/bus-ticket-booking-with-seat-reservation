@@ -11,7 +11,9 @@
 
 .wbtm_bus_left_filter_holder {
     width: 180px;
-    background: var(--color_light);
+    background: #fffafa;
+    border: 1px solid #d1cacaee;
+    border-radius:5px;
     margin-top: 10px;
     display: block;
     float: left;
@@ -25,7 +27,8 @@
     font-weight: normal;
     font-size: 15px;
     color: #e90c57;
-    padding: 8px 1px;
+    font-weight: 500;
+    padding: 5px 1px;
 }
 .wbtm_bus_left_filter_checkbox_holder{
     padding: 3px;
