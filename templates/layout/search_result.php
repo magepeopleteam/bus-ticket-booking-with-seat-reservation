@@ -14,6 +14,7 @@ $date = $date ?? '';
 $journey_type = $journey_type ?? '';
 $btn_show = $btn_show ?? '';
 $left_filter_show = $left_filter_show ?? '';
+
 $label = WBTM_Functions::get_name();
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 //echo '<pre>';	print_r($search_info);	echo '</pre>';
@@ -58,7 +59,7 @@ if (sizeof($bus_ids) > 0) {
 ?>
 <div class="wbtm_search_result_holder">
     <?php
-    if( $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
+    if( !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && $left_filter_show['left_filter_input'] && count( $bus_titles ) > 0 ){
      $width = 'calc( 100% - 180px )'
     ?>
     <div class="wbtm_bus_left_filter_holder">
