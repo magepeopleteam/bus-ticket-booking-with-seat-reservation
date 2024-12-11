@@ -463,6 +463,8 @@
                                 <?php } }?>
                             </div>
                         <?php }
+						
+						
                         if( $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
                         <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header">Bus Operator <span class="wbtm_bus_toggle-icon"></span></span>
@@ -478,6 +480,7 @@
                             <?php } }?>
                         </div>
                         <?php }
+						
                         if( $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
                         ?>
                         <div class="wbtm_bus_filter_items">

@@ -32,6 +32,7 @@ if (!class_exists('WBTM_Layout')) {
                 require WBTM_Functions::template_path('layout/search_result_flix.php');
             }
             else{
+                
                 require WBTM_Functions::template_path('layout/search_result.php');
             }
         }
@@ -119,7 +120,7 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
             die();
         }
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[], $left_filter_show='') {
-
+            
             if ($start_route && $end_route && $j_date) { ?>
                 <div class="_dLayout_dShadow_1_mT">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
