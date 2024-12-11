@@ -92,6 +92,22 @@ if (sizeof($bus_ids) > 0) {
 			$price = $all_info['price'];
 
             $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
+			// Check if next_day exists and set a default value if not
+            $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
+            $bp_time = $all_info['bp_time'];
+            $dp_time = $all_info['dp_time'];
+
+            // Adjust dp_time if next_day is '1'
+            if ($next_day == '1') {
+                $dp_timestamp += 24 * 60 * 60; // Add 24 hours in seconds
+            }
+			$bp_timestamp = strtotime($bp_time);
+            $dp_timestamp = strtotime($dp_time);
+            $duration_seconds = $dp_timestamp - $bp_timestamp;
+
+            $duration_hours = floor($duration_seconds / 3600);
+            $duration_minutes = floor(($duration_seconds % 3600) / 60);
+            $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
 		?>
 
 			<!-- short code new style flix if set -->
@@ -117,7 +133,7 @@ if (sizeof($bus_ids) > 0) {
 							<p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
 						</div>
 						<div class="duration textCenter">
-							<strong class="time"><?php echo MP_Global_Function::date_difference($all_info['bp_time'], $all_info['dp_time']); ?></strong>
+						<i class="fas fa-clock"></i> <strong><?php echo esc_html($duration_formatted); ?> </strong>
 						</div>
 						<div class="to">
 							<h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
