@@ -172,10 +172,12 @@
                                         <div class="mp_item_insert mp_sortable_area">
 											<?php
 												$off_day_lists = MP_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
+												print_r($off_day_lists);
 												if ( sizeof( $off_day_lists ) ) {
 													foreach ( $off_day_lists as $off_day ) {
 														if ( $off_day ) {
-															$this->particular_date_item( 'wbtm_off_dates[]', $off_day );
+															$has_year = true;
+															$this->particular_date_item( 'wbtm_off_dates[]', $off_day, $has_year);
 														}
 													}
 												}
@@ -230,11 +232,11 @@
 				<?php
 			}
 
-			public function particular_date_item( $name, $date = '' ) {
+			public function particular_date_item( $name, $date = '', $has_year='' ) {
 				?>
                 <div class="mp_remove_area">
                     <div class="justifyBetween">
-						<?php $this->date_item_without_year( $name, $date ); ?>
+						<?php $this->date_item_without_year( $name, $date, $has_year ); ?>
 						<?php MP_Custom_Layout::move_remove_button(); ?>
                     </div>
                     <div class="divider"></div>
@@ -255,19 +257,34 @@
 				<?php
 			}
 
-			public function date_item_without_year( $name, $date = '' ) {
-				$year         = current_time( 'Y' );
-				$date         = $date ? date( 'Y-m-d', strtotime( $year . '-' . $date ) ) : '';
-				$date_format  = MP_Global_Function::date_picker_format_without_year();
-				$now          = date_i18n( $date_format, strtotime( current_time( 'm-d' ) ) );
-				$hidden_date  = $date ? date( 'm-d', strtotime( $date ) ) : '';
-				$visible_date = $date ? date_i18n( $date_format, strtotime( $date ) ) : '';
-				?>
-                <label class="_fullWidth_mR">
-                    <input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>"/>
-                    <input value="<?php echo esc_attr( $visible_date ); ?>" class="formControl date_type_without_year" placeholder="<?php echo esc_attr( $now ); ?>"/>
-                </label>
-				<?php
+			public function date_item_without_year( $name, $date = '', $has_year= '' ) {
+				if(!$has_year){
+					$year         = current_time( 'Y' );
+					$date         = $date ? date( 'Y-m-d', strtotime( $year . '-' . $date ) ) : '';
+					$date_format  = MP_Global_Function::date_picker_format_without_year();
+					
+					$now          = date_i18n( $date_format, strtotime( current_time( 'm-d' ) ) );
+					$hidden_date  = $date ? date( 'm-d', strtotime( $date ) ) : '';
+					$visible_date = $date ? date_i18n( $date_format, strtotime( $date ) ) : '';
+					?>
+					<label class="_fullWidth_mR">
+						<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>"/>
+						<input value="<?php echo esc_attr( $visible_date ); ?>" class="formControl date_type_without_year" placeholder="<?php echo esc_attr( $now ); ?>"/>
+					</label>
+					<?php
+				}else{
+					$date_format  = MP_Global_Function::date_picker_format();
+					$now          = date_i18n($date_format);
+					$hidden_date  = $date ? date('Y-m-d', strtotime( $date )) : '';
+					$visible_date = $date ? date_i18n($date_format, strtotime( $date )) : '';
+					?>
+					<label class="_fullWidth_mR">
+						<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>"/>
+						<input value="<?php echo esc_attr( $visible_date ); ?>" class="formControl date_type" placeholder="<?php echo esc_attr( $now ); ?>"/>
+					</label>
+					<?php
+				}
+				
 			}
 
 			/*************************************/

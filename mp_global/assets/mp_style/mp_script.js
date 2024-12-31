@@ -81,43 +81,32 @@ function pageScrollTo(target) {
 }
 //====================================================Load Date picker==============//
 function mp_load_date_picker(parent = jQuery('.mpStyle')) {
-	parent.find(".date_type.hasDatepicker").each(function () {
-		jQuery(this).removeClass('hasDatepicker').attr('id', '').removeData('datepicker').unbind();
-	}).promise().done(function () {
-		parent.find(".date_type").datepicker({
-			dateFormat: mp_date_format,
-			//showButtonPanel: true,
-			autoSize: true,
-			changeMonth: true,
-			changeYear: true,
-			onSelect: function (dateString, data) {
-				let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
-				jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
-			},
-			// closeText: 'Clear Date',
-			// onClose: function (dateText, inst) {
-			// 	if (jQuery(this).hasClass('ui-datepicker-close')) {
-			// 		document.getElementById(this.id).reset();
-			// 	}
-			// }
-		});
-	});
-	parent.find(".date_type_without_year.hasDatepicker").each(function () {
-		jQuery(this).removeClass('hasDatepicker').attr('id', '').removeData('datepicker').unbind();
-	}).promise().done(function () {
-		parent.find(".date_type_without_year").datepicker({
-			dateFormat: mp_date_format_without_year,
-			//showButtonPanel: true,
-			autoSize: true,
-			changeMonth: true,
-			changeYear: false,
-			onSelect: function (dateString, data) {
-				//console.log(mp_date_format_without_year);
-				let date = ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
-				jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
-			}
-		});
-	});
+    // Unified Date Picker Initialization
+    parent.find(".date_type, .date_type_without_year").each(function () {
+        // Reset existing datepicker instances
+        jQuery(this).removeClass('hasDatepicker').attr('id', '').removeData('datepicker').unbind();
+    }).promise().done(function () {
+        // Apply new datepicker settings
+        parent.find(".date_type, .date_type_without_year").datepicker({
+            dateFormat: mp_date_format, // Ensure this includes the year, e.g., 'yy-mm-dd'
+            autoSize: true,
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (dateString, data) {
+                // Construct full date (YYYY-MM-DD)
+                const year = data.selectedYear || new Date().getFullYear();
+                const month = ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2);
+                const day = ('0' + parseInt(data.selectedDay)).slice(-2);
+
+                const fullDate = `${year}-${month}-${day}`;
+                jQuery(this)
+                    .closest('label')
+                    .find('input[type="hidden"]')
+                    .val(fullDate)
+                    .trigger('change');
+            },
+        });
+    });
 }
 //========================================================Alert==============//
 function mp_alert($this, attr = 'alert') {
