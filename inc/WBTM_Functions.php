@@ -282,16 +282,30 @@
 								}
 							}
 							$particular_off_dates = MP_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
-							if ( sizeof( $particular_off_dates ) > 0 ) {
-								foreach ( $particular_off_dates as $particular_off_date ) {
-									$particular_off_date = date( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
-									if ( strtotime( $particular_off_date ) < strtotime( $now ) ) {
-										$particular_off_date = date( 'Y-m-d', strtotime( $year + 1 . '-' . $particular_off_date ) );
+							
+							$year      = current_time('Y');
+							$now       = current_time('Y-m-d');
+
+							if (sizeof($particular_off_dates) > 0) {
+								foreach ($particular_off_dates as $particular_off_date) {
+									// Check if the date is already in 'Y-m-d' format
+									if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $particular_off_date)) {
+										$processed_date = $particular_off_date;
+									} else {
+										// Assume date is in 'MM-DD' format, prepend year
+										$processed_date = date('Y-m-d', strtotime($year . '-' . $particular_off_date));
+
+										// Check if the date is in the past; move to next year if needed
+										if (strtotime($processed_date) < strtotime($now)) {
+											$processed_date = date('Y-m-d', strtotime(($year + 1) . '-' . $particular_off_date));
+										}
 									}
-									$off_dates[] = $particular_off_date;
+
+									$off_dates[] = $processed_date;
 								}
 							}
-							$off_dates     = array_unique( $off_dates );
+
+							$off_dates = array_unique($off_dates);
 							$off_days      = MP_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
 							$off_day_array = $off_days ? explode( ',', $off_days ) : [];
 							$repeat        = MP_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
