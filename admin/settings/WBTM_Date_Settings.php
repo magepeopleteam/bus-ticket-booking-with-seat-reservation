@@ -172,7 +172,7 @@
                                         <div class="mp_item_insert mp_sortable_area">
 											<?php
 												$off_day_lists = MP_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
-												
+
 												if ( sizeof( $off_day_lists ) ) {
 													foreach ( $off_day_lists as $off_day ) {
 														if ( $off_day ) {
@@ -205,11 +205,11 @@
                                     <div class="mp_settings_area _fullWidth">
                                         <div class="mp_item_insert mp_sortable_area">
 											<?php
-												$off_day_schedules = MP_Global_Function::get_post_info( $post_id, 'wbtm_offday_schedule', array() );
-												if ( sizeof( $off_day_schedules ) ) {
-													foreach ( $off_day_schedules as $off_day_schedule ) {
-														if ( sizeof( $off_day_schedule ) > 0 && $off_day_schedule['from_date'] && $off_day_schedule['to_date'] ) {
-															$this->off_day_range( $off_day_schedule['from_date'], $off_day_schedule['to_date'] );
+												$off_day_ranges = MP_Global_Function::get_post_info( $post_id, 'wbtm_offday_range', array() );
+												if ( sizeof( $off_day_ranges ) ) {
+													foreach ( $off_day_ranges as $off_day_range ) {
+														if ( sizeof( $off_day_range ) > 0 && $off_day_range['from_date'] && $off_day_range['to_date'] ) {
+															$this->off_day_range( $off_day_range['from_date'], $off_day_range['to_date'] );
 														}
 													}
 												}
@@ -220,7 +220,7 @@
                                         </div>
                                         <div class="mp_hidden_content">
                                             <div class="mp_hidden_item">
-												<?php $this->off_day_range(); ?>
+												<?php $this->off_day_range('wbtm_offday_range'); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -244,12 +244,12 @@
 				<?php
 			}
 
-			public function off_day_range( $from_date = '', $to_date = '' ) {
+			public function off_day_range( $from_date = '', $to_date = '',$has_year='' ) {
 				?>
                 <div class="mp_remove_area">
                     <div class="justifyBetween">
-						<?php $this->date_item_without_year( 'wbtm_from_date[]', $from_date ); ?>
-						<?php $this->date_item_without_year( 'wbtm_to_date[]', $to_date ); ?>
+						<?php $this->date_item_without_year( 'wbtm_from_off_date[]', $from_date,$has_year ); ?>
+						<?php $this->date_item_without_year( 'wbtm_to_off_date[]', $to_date,$has_year ); ?>
 						<?php MP_Custom_Layout::move_remove_button(); ?>
                     </div>
                     <div class="divider"></div>
@@ -258,21 +258,7 @@
 			}
 
 			public function date_item_without_year( $name, $date = '', $has_year= '' ) {
-				if(!$has_year){
-					$year         = current_time( 'Y' );
-					$date         = $date ? date( 'Y-m-d', strtotime( $year . '-' . $date ) ) : '';
-					$date_format  = MP_Global_Function::date_picker_format_without_year();
-					
-					$now          = date_i18n( $date_format, strtotime( current_time( 'm-d' ) ) );
-					$hidden_date  = $date ? date( 'm-d', strtotime( $date ) ) : '';
-					$visible_date = $date ? date_i18n( $date_format, strtotime( $date ) ) : '';
-					?>
-					<label class="_fullWidth_mR">
-						<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>"/>
-						<input value="<?php echo esc_attr( $visible_date ); ?>" class="formControl date_type_without_year" placeholder="<?php echo esc_attr( $now ); ?>"/>
-					</label>
-					<?php
-				}else{
+			
 					$date_format  = MP_Global_Function::date_picker_format();
 					$now          = date_i18n($date_format);
 					$hidden_date  = $date ? date('Y-m-d', strtotime( $date )) : '';
@@ -283,7 +269,7 @@
 						<input value="<?php echo esc_attr( $visible_date ); ?>" class="formControl date_type" placeholder="<?php echo esc_attr( $now ); ?>"/>
 					</label>
 					<?php
-				}
+				
 				
 			}
 
@@ -346,6 +332,26 @@
 						}
 					}
 					update_post_meta( $post_id, 'wbtm_offday_schedule', $off_schedules );
+
+                    //***********************************//
+                    // Collect From and To Dates for Off Day Ranges
+$off_date_ranges = [];
+$from_dates      = MP_Global_Function::get_submit_info('wbtm_from_off_date', array());
+$to_dates        = MP_Global_Function::get_submit_info('wbtm_to_off_date', array());
+
+if (sizeof($from_dates) > 0) {
+    foreach ($from_dates as $key => $from_date) {
+        // Ensure both dates are present and valid
+        if ($from_date && $to_dates[$key]) {
+            $off_date_ranges[] = [
+                'from_date' => $from_date,
+                'to_date'   => $to_dates[$key],
+            ];
+        }
+    }
+}
+update_post_meta($post_id, 'wbtm_offday_range', $off_date_ranges);
+
 				}
 			}
 		}
