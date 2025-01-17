@@ -62,7 +62,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
 			$post_id   = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
-			if (get_post_type($post_id) == WBTM_Functions::get_cpt() && (isset($_POST['wbtm_form_nonce']) || !wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce'))) {
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt() && (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce'))) {
 				$bp               = MP_Global_Function::get_submit_info('wbtm_bp_place');
 				$bp_time          = MP_Global_Function::get_submit_info('wbtm_bp_time');
 				$dp               = MP_Global_Function::get_submit_info('wbtm_dp_place');
