@@ -24,7 +24,7 @@
 			}
 			public function quick_setup() {
 				$status = MP_Global_Function::check_woocommerce();
-				if (isset($_POST['active_woo_btn']) && (isset($_POST['wbtm_qs_nonce']) || !wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
+				if (isset($_POST['active_woo_btn']) && (isset($_POST['wbtm_qs_nonce']) && wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
 					?>
 					<script>
 						dLoaderBody();
@@ -47,7 +47,7 @@
 					</script>
 					<?php
 				}
-				if (isset($_POST['install_and_active_woo_btn']) && (isset($_POST['wbtm_qs_nonce']) || !wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
+				if (isset($_POST['install_and_active_woo_btn']) && (isset($_POST['wbtm_qs_nonce']) && wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
 					echo '<div style="display:none">';
 					include_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
 					include_once(ABSPATH . 'wp-admin/includes/file.php');
@@ -94,7 +94,7 @@
 					</script>
 					<?php
 				}
-				if (isset($_POST['finish_quick_setup']) && (isset($_POST['wbtm_qs_nonce']) || !wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
+				if (isset($_POST['finish_quick_setup']) && (isset($_POST['wbtm_qs_nonce']) && wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
 					$label = isset($_POST['bus_menu_label']) ? sanitize_text_field($_POST['bus_menu_label']) : 'Bus';
 					$slug = isset($_POST['bus_menu_slug']) ? sanitize_text_field($_POST['bus_menu_slug']) : 'bus';
 					$general_settings_data = get_option('wbtm_general_settings');
@@ -108,7 +108,7 @@
 				}
 				?>
 				<div class="mpStyle">
-					<div class=_dShadow_6_adminLayout">
+					<div class="_dShadow_6_adminLayout">
 						<form method="post" action="">
                             <?php wp_nonce_field('wbtm_qs_nonce', 'wbtm_qs_nonce'); ?>
 							<div class="mpTabsNext">

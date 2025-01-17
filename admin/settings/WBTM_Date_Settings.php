@@ -172,7 +172,7 @@
                                         <div class="mp_item_insert mp_sortable_area">
 											<?php
 												$off_day_lists = MP_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
-												print_r($off_day_lists);
+												
 												if ( sizeof( $off_day_lists ) ) {
 													foreach ( $off_day_lists as $off_day ) {
 														if ( $off_day ) {
