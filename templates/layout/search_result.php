@@ -42,7 +42,6 @@ if (sizeof($bus_ids) > 0) {
                     $all_boarding_routes[] = $route;
                 }
             }
-//
         }
 
     }
