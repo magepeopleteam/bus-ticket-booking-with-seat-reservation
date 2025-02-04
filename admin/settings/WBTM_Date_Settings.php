@@ -75,7 +75,8 @@
 											if ( sizeof( $particular_date_lists ) ) {
 												foreach ( $particular_date_lists as $particular_date ) {
 													if ( $particular_date ) {
-														$this->particular_date_item( 'wbtm_particular_dates[]', $particular_date );
+                                                        $has_year = true;
+														$this->particular_date_item( 'wbtm_particular_dates[]', $particular_date,$has_year);
 													}
 												}
 											}
@@ -280,16 +281,20 @@
 					$date_type = MP_Global_Function::get_submit_info( 'show_operational_on_day', 'no' );
 					update_post_meta( $post_id, 'show_operational_on_day', $date_type );
 					//**********************//
-					$particular_dates = MP_Global_Function::get_submit_info( 'wbtm_particular_dates', array() );
-					$particular       = array();
-					if ( sizeof( $particular_dates ) > 0 ) {
-						foreach ( $particular_dates as $particular_date ) {
-							if ( $particular_date ) {
-								$particular[] = $particular_date;
-							}
-						}
-					}
-					update_post_meta( $post_id, 'wbtm_particular_dates', array_unique( $particular ) );
+                    $particular_dates = MP_Global_Function::get_submit_info( 'wbtm_particular_dates', array() );
+                    $particular = array();
+                    if ( ! empty( $particular_dates ) ) {
+                        foreach ( $particular_dates as $particular_date ) {
+                            if ( ! empty( $particular_date ) ) {
+                                if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_date ) ) {
+                                    $particular[] = $particular_date;
+                                } else {
+                                    $particular[] = date( 'Y-m-d', strtotime( date( 'Y' ) . '-' . $particular_date ) );
+                                }
+                            }
+                        }
+                    }
+                    update_post_meta( $post_id, 'wbtm_particular_dates', array_unique( $particular ) );
 					//*************************//
 					$repeated_start_date = MP_Global_Function::get_submit_info( 'wbtm_repeated_start_date' );
 					$repeated_start_date = $repeated_start_date ? date( 'Y-m-d', strtotime( $repeated_start_date ) ) : '';
