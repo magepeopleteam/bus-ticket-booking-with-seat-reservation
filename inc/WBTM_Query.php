@@ -21,11 +21,24 @@
 					'value' => $end,
 					'compare' => 'LIKE',
 				) : '';
-				$cat_query = !empty($cat) ? array(
-					'key' => 'wbtm_bus_category',
-					'value' => $cat,
-					'compare' => '=',
-				) : '';
+                if (!empty($cat)) {
+                    $taxonomies = get_object_taxonomies('wbtm_bus');
+                    $cat_value = $cat;
+                    if (!empty($taxonomies)) {
+                        foreach ($taxonomies as $tax) {
+                            $term = get_term_by('id', $cat, $tax);
+                            if ($term && !is_wp_error($term)) {
+                                $cat_value = trim($term->name);
+                                break;
+                            }
+                        }
+                    }
+                    $cat_query[] = array(
+                        'key'     => 'wbtm_bus_category',
+                        'value'   => $cat_value,
+                        'compare' => '='
+                    );
+                }
 				$args = array(
 					'post_type' => array('wbtm_bus'),
 					'posts_per_page' => -1,
