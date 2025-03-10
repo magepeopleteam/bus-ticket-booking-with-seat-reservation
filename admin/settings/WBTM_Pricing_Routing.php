@@ -37,8 +37,8 @@
 								<div class="mp_stop_items mp_sortable_area mp_item_insert">
 
 									<?php if (sizeof($full_route_infos) > 0) {
-										foreach ($full_route_infos as $full_route_info) { 
-											$this->add_stops_item($bus_stop_lists, $full_route_info);
+										foreach ($full_route_infos as $key => $full_route_info) { 
+											$this->add_stops_item($bus_stop_lists, $full_route_info, $key);
 										} 
 									} ?>
 									<div class="_mB_xs mp_item_insert_before"></div>
@@ -50,7 +50,7 @@
 								<!-- create new bus route -->
 								<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
-										<?php $this->add_stops_item($bus_stop_lists,[]); ?>
+										<?php $this->add_stops_item($bus_stop_lists,[], 0); ?>
 									</div>
 								</div>
 							</div>
@@ -74,7 +74,7 @@
 				</div>
 				<?php
 			}
-			public function add_stops_item($bus_stop_lists, $full_route_info = []) {
+			public function add_stops_item($bus_stop_lists, $full_route_info = [], $key = 0) {
 				$palace = array_key_exists('place', $full_route_info) ? $full_route_info['place'] : '';
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
@@ -144,7 +144,8 @@
 							</div>
 							<div class="col_4 _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none'; ?>;">
                         <label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
-                        <input type="checkbox" name="wbtm_route_next_day[]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
+                        <input type="hidden" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="0" />
+                        <input type="checkbox" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
                     </div>
 <!--							<label>-->
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
@@ -294,12 +295,13 @@
 					if (sizeof($stops) > 0) {
 						foreach ($stops as $key => $stop) {
 							if ($stop && $times[$key] && $types[$key]) {
+								$next_day_value = isset($next_days[$key]) ? $next_days[$key] : '0';
 								$route_infos[] = [
 									'place' => $stop,
 									'time' => $times[$key],
 									'type' => $types[$key],
 									//'interval' => max(0, $intervals[$key]),
-									'next_day' => in_array($key, $next_days),
+									'next_day' => $next_day_value == '1',
 								];
 								
 							}
@@ -354,14 +356,12 @@
 						}
 					}
 					update_post_meta($post_id, 'wbtm_bus_prices', $price_infos);
-					//echo '<pre>';print_r($price_infos);echo '</pre>';die();
 				}
 			}
-			/**************************/
 			public function wbtm_reload_pricing() {
 				$post_id = MP_Global_Function::data_sanitize($_POST['post_id']);
-				$route_infos = MP_Global_Function::data_sanitize($_POST['route_infos']);
-				$this->route_pricing($post_id, $route_infos);
+				$full_route_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
+				$this->route_pricing($post_id, $full_route_infos);
 				die();
 			}
 		}
