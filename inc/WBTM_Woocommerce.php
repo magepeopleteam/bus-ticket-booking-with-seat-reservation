@@ -38,7 +38,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 					$start_route = array_key_exists('wbtm_bp_place', $cart_item) ? $cart_item['wbtm_bp_place'] : '';
 					$end_route   = array_key_exists('wbtm_dp_place', $cart_item) ? $cart_item['wbtm_dp_place'] : '';
 					$date        = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
-					$seat_type   = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+					$seat_type   = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 
 					if ($seat_type == 'wbtm_seat_plan') {
 						$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
@@ -60,26 +60,26 @@ if (! class_exists('WBTM_Woocommerce')) {
 		public function add_cart_item_data($cart_item_data, $product_id)
 		{
 
-			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
+			$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
 			$post_id   = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt() && (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce'))) {
-				$bp               = MP_Global_Function::get_submit_info('wbtm_bp_place');
-				$bp_time          = MP_Global_Function::get_submit_info('wbtm_bp_time');
-				$dp               = MP_Global_Function::get_submit_info('wbtm_dp_place');
+				$bp               = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
+				$bp_time          = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
+				$dp               = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
 				$ticket_infos     = self::get_cart_ticket_info($post_id);
 				$seat_price       = self::get_cart_seat_price($ticket_infos);
 				$ex_service_infos = self::get_cart_extra_service_info($post_id);
 				$ex_service_price = self::get_cart_ex_service_price($ex_service_infos);
 				$total_price      = $seat_price + $ex_service_price;;
 				$cart_item_data['wbtm_bus_id']         = $post_id;
-				$cart_item_data['wbtm_start_point']    = MP_Global_Function::get_submit_info('wbtm_start_point');
-				$cart_item_data['wbtm_start_time']     = MP_Global_Function::get_submit_info('wbtm_start_time');
+				$cart_item_data['wbtm_start_point']    = WBTM_Global_Function::get_submit_info('wbtm_start_point');
+				$cart_item_data['wbtm_start_time']     = WBTM_Global_Function::get_submit_info('wbtm_start_time');
 				$cart_item_data['wbtm_bp_place']       = $bp;
 				$cart_item_data['wbtm_bp_time']        = $bp_time;
 				$cart_item_data['wbtm_dp_place']       = $dp;
-				$cart_item_data['wbtm_dp_time']        = MP_Global_Function::get_submit_info('wbtm_dp_time');
-				$cart_item_data['wbtm_pickup_point']   = MP_Global_Function::get_submit_info('wbtm_pickup_point');
-				$cart_item_data['wbtm_drop_off_point'] = MP_Global_Function::get_submit_info('wbtm_drop_off_point');
+				$cart_item_data['wbtm_dp_time']        = WBTM_Global_Function::get_submit_info('wbtm_dp_time');
+				$cart_item_data['wbtm_pickup_point']   = WBTM_Global_Function::get_submit_info('wbtm_pickup_point');
+				$cart_item_data['wbtm_drop_off_point'] = WBTM_Global_Function::get_submit_info('wbtm_drop_off_point');
 				$cart_item_data['wbtm_seats']          = $ticket_infos;
 				$cart_item_data['wbtm_seats_qty']      = self::get_cart_ticket_qty($ticket_infos);
 				$cart_item_data['wbtm_base_price']     = $seat_price;
@@ -91,7 +91,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$cart_item_data['line_subtotal']       = $total_price;
 				$cart_item_data                        = apply_filters('wbtm_add_cart_item', $cart_item_data, $post_id);
 			}
-			//echo '<pre>'; print_r(MP_Global_Function::get_post_info($post_id, 'wbtm_selected_seat')); echo '</pre>';
+			//echo '<pre>'; print_r(WBTM_Global_Function::get_post_info($post_id, 'wbtm_selected_seat')); echo '</pre>';
 			//echo '<pre>'; print_r($cart_item_data); echo '</pre>'; die();
 			return $cart_item_data;
 		}
@@ -112,7 +112,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function update_order_status($order_id)
 		{
-			$force_processing_completed =  MP_Global_Function::get_settings('wbtm_general_settings', 'make_processing_completed', 'off');
+			$force_processing_completed =  WBTM_Global_Function::get_settings('wbtm_general_settings', 'make_processing_completed', 'off');
 			if ($force_processing_completed == 'on') {
 				if (!$order_id) {
 					return;
@@ -128,7 +128,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		{
 			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-				$thumbnail = '<div class="bg_image_area" data-href="' . get_the_permalink($post_id) . '"><div data-bg-image="' . MP_Global_Function::get_image_url($post_id) . '"></div></div>';
+				$thumbnail = '<div class="bg_image_area" data-href="' . get_the_permalink($post_id) . '"><div data-bg-image="' . WBTM_Global_Function::get_image_url($post_id) . '"></div></div>';
 			}
 			return $thumbnail;
 		}
@@ -155,7 +155,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 					$date        = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
 					$seats_qty   = array_key_exists('wbtm_seats_qty', $cart_item) ? $cart_item['wbtm_seats_qty'] : '';
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-						$seat_type = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+						$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 						if ($seat_type == 'wbtm_seat_plan') {
 							$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : '';
 							if (sizeof($cart_seat_infos) > 0) {
@@ -169,7 +169,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 							}
 							do_action('something');
 						} else {
-							$total_seat     = MP_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+							$total_seat     = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 							$sold_seat      = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 							$available_seat = max(0, $total_seat - $sold_seat);
 							if ($available_seat < $seats_qty) {
@@ -194,16 +194,16 @@ if (! class_exists('WBTM_Woocommerce')) {
 				//==============//
 				$bp_place = array_key_exists('wbtm_bp_place', $values) ? $values['wbtm_bp_place'] : '';
 				$bp_time  = array_key_exists('wbtm_bp_time', $values) ? $values['wbtm_bp_time'] : '';
-				$item->add_meta_data(WBTM_Translations::text_bp(), $bp_place . '(' . MP_Global_Function::date_format($bp_time, 'full') . ')');
+				$item->add_meta_data(WBTM_Translations::text_bp(), $bp_place . '(' . WBTM_Global_Function::date_format($bp_time, 'full') . ')');
 				//==============//
 				$dp_place = array_key_exists('wbtm_dp_place', $values) ? $values['wbtm_dp_place'] : '';
 				$dp_time  = array_key_exists('wbtm_dp_time', $values) ? $values['wbtm_dp_time'] : '';
-				$item->add_meta_data(WBTM_Translations::text_dp(), $dp_place . '(' . MP_Global_Function::date_format($dp_time, 'full') . ')');
+				$item->add_meta_data(WBTM_Translations::text_dp(), $dp_place . '(' . WBTM_Global_Function::date_format($dp_time, 'full') . ')');
 				//==============//
 				$start_point = array_key_exists('wbtm_start_point', $values) ? $values['wbtm_start_point'] : '';
 				$start_time  = array_key_exists('wbtm_start_time', $values) ? $values['wbtm_start_time'] : '';
 				if ($bp_place != $start_point) {
-					$item->add_meta_data(WBTM_Translations::text_start_point(), $start_point . '(' . MP_Global_Function::date_format($start_time, 'full') . ')');
+					$item->add_meta_data(WBTM_Translations::text_start_point(), $start_point . '(' . WBTM_Global_Function::date_format($start_time, 'full') . ')');
 				}
 				//==============//
 				$pickup_point = array_key_exists('wbtm_pickup_point', $values) ? $values['wbtm_pickup_point'] : '';
@@ -294,7 +294,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		public static function add_billing_data($item_id, $order_id)
 		{
 
-			$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
+			$post_id = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
 
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 				$order = wc_get_order($order_id);
@@ -310,40 +310,40 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$billing_address = $order->get_billing_address_1() . ' ' . $order->get_billing_address_2();
 				$now_full        = current_time('Y-m-d H:i');
 				/********************************/
-				$bp      = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp');
-				$bp      = $bp ? MP_Global_Function::data_sanitize($bp) : '';
-				$bp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bp_time');
-				$bp_time = $bp_time ? MP_Global_Function::data_sanitize($bp_time) : '';
+				$bp      = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_bp');
+				$bp      = $bp ? WBTM_Global_Function::data_sanitize($bp) : '';
+				$bp_time = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_bp_time');
+				$bp_time = $bp_time ? WBTM_Global_Function::data_sanitize($bp_time) : '';
 				/*******************/
-				$dp      = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp');
-				$dp      = $dp ? MP_Global_Function::data_sanitize($dp) : '';
-				$dp_time = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_dp_time');
-				$dp_time = $dp_time ? MP_Global_Function::data_sanitize($dp_time) : '';
+				$dp      = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_dp');
+				$dp      = $dp ? WBTM_Global_Function::data_sanitize($dp) : '';
+				$dp_time = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_dp_time');
+				$dp_time = $dp_time ? WBTM_Global_Function::data_sanitize($dp_time) : '';
 				/*******************/
-				$start_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_point');
-				$start_point = $start_point ? MP_Global_Function::data_sanitize($start_point) : '';
-				$start_time  = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_start_time');
-				$start_time  = $start_time ? MP_Global_Function::data_sanitize($start_time) : '';
+				$start_point = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_start_point');
+				$start_point = $start_point ? WBTM_Global_Function::data_sanitize($start_point) : '';
+				$start_time  = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_start_time');
+				$start_time  = $start_time ? WBTM_Global_Function::data_sanitize($start_time) : '';
 				/*******************/
-				$pickup_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_pickup_point');
-				$pickup_point = $pickup_point ? MP_Global_Function::data_sanitize($pickup_point) : '';
+				$pickup_point = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_pickup_point');
+				$pickup_point = $pickup_point ? WBTM_Global_Function::data_sanitize($pickup_point) : '';
 				/*******************/
-				$drop_off_point = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_drop_off_point');
-				$drop_off_point = $drop_off_point ? MP_Global_Function::data_sanitize($drop_off_point) : '';
+				$drop_off_point = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_drop_off_point');
+				$drop_off_point = $drop_off_point ? WBTM_Global_Function::data_sanitize($drop_off_point) : '';
 				/*******************/
-				$order_total = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
-				$order_total = $order_total ? MP_Global_Function::data_sanitize($order_total) : '';
+				$order_total = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_tp');
+				$order_total = $order_total ? WBTM_Global_Function::data_sanitize($order_total) : '';
 				/*******************/
-				$service_info = MP_Global_Function::get_order_item_meta($item_id, '_extra_services');
-				$service_info = $service_info ? MP_Global_Function::data_sanitize($service_info) : [];
+				$service_info = WBTM_Global_Function::get_order_item_meta($item_id, '_extra_services');
+				$service_info = $service_info ? WBTM_Global_Function::data_sanitize($service_info) : [];
 				/*******************/
-				$attendee_info = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_passenger_info');
-				$attendee_info = $attendee_info ? MP_Global_Function::data_sanitize($attendee_info) : [];
+				$attendee_info = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_passenger_info');
+				$attendee_info = $attendee_info ? WBTM_Global_Function::data_sanitize($attendee_info) : [];
 				
 				
 				/*******************/
-				$ticket_infos = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_ticket_info');
-				$ticket_infos = $ticket_infos ? MP_Global_Function::data_sanitize($ticket_infos) : [];
+				$ticket_infos = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_ticket_info');
+				$ticket_infos = $ticket_infos ? WBTM_Global_Function::data_sanitize($ticket_infos) : [];
 				/*************************/
 				if (sizeof($ticket_infos) > 0) {
 					$count = 0;
@@ -383,16 +383,16 @@ if (! class_exists('WBTM_Woocommerce')) {
 						}
 					}
 					if (class_exists('Wbtm_Woocommerce_bus_Pro')) {
-						$bus_name_short  = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
+						$bus_name_short  = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
 						$bus_name = get_the_title($post_id);
-						$minimum_seat_treshold =  MP_Global_Function::get_settings('wbtm_email_settings', 'minimum_seat_treshold');
-						$minimum_seat_treshold_email_content =  MP_Global_Function::get_settings('wbtm_email_settings', 'seat_treshold_email_content');
+						$minimum_seat_treshold =  WBTM_Global_Function::get_settings('wbtm_email_settings', 'minimum_seat_treshold');
+						$minimum_seat_treshold_email_content =  WBTM_Global_Function::get_settings('wbtm_email_settings', 'seat_treshold_email_content');
 						$minimum_seat_treshold_email_content = str_replace(
 							array('{bus_name}', '{journey_date}'), // Placeholders to replace
 							array($bus_name, $start_time), // Values to replace with
 							$minimum_seat_treshold_email_content
 						);
-						$seat_infos = $seat_infos ?? MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+						$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 						$total_seat_count = 0;
 						foreach ($seat_infos as $seats) {
 							foreach ($seats as $seat) {
@@ -404,7 +404,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 						$seat_booked = WBTM_Query::query_seat_booked($post_id, $start_point, $dp, $start_time);
 						$seat_left = $total_seat_count - count($seat_booked);
 						$seat_left = $seat_left - $count;
-						$notification_receiver_email = MP_Global_Function::get_settings('wbtm_email_settings', 'pdf_admin_notification_email');
+						$notification_receiver_email = WBTM_Global_Function::get_settings('wbtm_email_settings', 'pdf_admin_notification_email');
 						$formatted_date = str_replace([' ', ':'], '', $start_time); // Removes spaces and colons
 						$bus_unique_string = $formatted_date . $bus_name_short;
 						$email_sent = get_option($bus_unique_string);
@@ -439,7 +439,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 			$order        = wc_get_order($order_id);
 			$order_status = $order->get_status();
 			foreach ($order->get_items() as $item_id => $item_values) {
-				$post_id = MP_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
+				$post_id = WBTM_Global_Function::get_order_item_meta($item_id, '_wbtm_bus_id');
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
 						$this->wc_order_status_change($order_status, $post_id, $order_id);
@@ -534,19 +534,19 @@ if (! class_exists('WBTM_Woocommerce')) {
 		public static function get_cart_ticket_info($post_id)
 		{
 			$ticket_info = [];
-			$seat_type   = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-			$seat_infos  = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-			$seat_row    = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-			$seat_column = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+			$seat_type   = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+			$seat_infos  = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+			$seat_row    = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
+			$seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 			/************************/
-			$start_place = MP_Global_Function::get_submit_info('wbtm_bp_place');
-			$end_place   = MP_Global_Function::get_submit_info('wbtm_dp_place');
-			$start_date  = MP_Global_Function::get_submit_info('wbtm_bp_time');
+			$start_place = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
+			$end_place   = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
+			$start_date  = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
 			if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 				$count                = 0;
-				$selected_seat        = MP_Global_Function::get_submit_info('wbtm_selected_seat');
+				$selected_seat        = WBTM_Global_Function::get_submit_info('wbtm_selected_seat');
 				$selected_seat        = $selected_seat ? explode(',', $selected_seat) : [];
-				$selected_ticket_type = MP_Global_Function::get_submit_info('wbtm_selected_seat_type');
+				$selected_ticket_type = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_type');
 				$selected_ticket_type = $selected_ticket_type ? explode(',', $selected_ticket_type) : [0];
 				if (sizeof($selected_seat) > 0 && sizeof($selected_ticket_type) > 0) {
 					foreach ($selected_seat as $key => $seat_name) {
@@ -563,9 +563,9 @@ if (! class_exists('WBTM_Woocommerce')) {
 						}
 					}
 				}
-				$selected_seat_dd        = MP_Global_Function::get_submit_info('wbtm_selected_seat_dd');
+				$selected_seat_dd        = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_dd');
 				$selected_seat_dd        = $selected_seat_dd ? explode(',', $selected_seat_dd) : [];
-				$selected_ticket_type_dd = MP_Global_Function::get_submit_info('wbtm_selected_seat_dd_type');
+				$selected_ticket_type_dd = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_dd_type');
 				$selected_ticket_type_dd = $selected_ticket_type_dd ? explode(',', $selected_ticket_type_dd) : [0];
 				if (sizeof($selected_seat_dd) > 0 && sizeof($selected_ticket_type_dd) > 0) {
 					foreach ($selected_seat_dd as $key => $seat_name) {
@@ -583,8 +583,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 					}
 				}
 			} else {
-				$qty            = MP_Global_Function::get_submit_info('wbtm_seat_qty', array());
-				$passenger_type = MP_Global_Function::get_submit_info('wbtm_passenger_type', []);
+				$qty            = WBTM_Global_Function::get_submit_info('wbtm_seat_qty', array());
+				$passenger_type = WBTM_Global_Function::get_submit_info('wbtm_passenger_type', []);
 				$count          = count($passenger_type);
 				if ($count > 0) {
 					for ($i = 0; $i < count($passenger_type); $i++) {
@@ -605,9 +605,9 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public static function get_cart_extra_service_info($post_id): array
 		{
-			$start_date    = MP_Global_Function::get_submit_info('wbtm_bp_time');
-			$service_name  = MP_Global_Function::get_submit_info('extra_service_name', array());
-			$service_qty   = MP_Global_Function::get_submit_info('extra_service_qty', array());
+			$start_date    = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
+			$service_name  = WBTM_Global_Function::get_submit_info('extra_service_name', array());
+			$service_qty   = WBTM_Global_Function::get_submit_info('extra_service_qty', array());
 			$extra_service = array();
 			if (sizeof($service_name) > 0) {
 				for ($i = 0; $i < count($service_name); $i++) {
@@ -626,7 +626,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		public function show_cart_item($cart_item, $post_id)
 		{
 ?>
-			<div class="mpStyle">
+			<div class="wbtm_style">
 				<?php do_action('mptbm_before_cart_item_display', $cart_item, $post_id); ?>
 				<?php $this->show_cart_route_details($cart_item); ?>
 				<?php $this->show_cart_ticket_information($cart_item); ?>
@@ -651,18 +651,18 @@ if (! class_exists('WBTM_Woocommerce')) {
 					<li>
 						<span class="fas fa-map-marker-alt"></span>
 						<h6 class="_mR_xs"><?php echo WBTM_Translations::text_bp(); ?> :</h6>
-						<span><?php echo esc_html($bp) . ' ' . esc_html($bp_time ? ' (' . MP_Global_Function::date_format($bp_time, 'full') . ' )' : ''); ?></span>
+						<span><?php echo esc_html($bp) . ' ' . esc_html($bp_time ? ' (' . WBTM_Global_Function::date_format($bp_time, 'full') . ' )' : ''); ?></span>
 					</li>
 					<li>
 						<span class="fas fa-map-marker-alt"></span>
 						<h6 class="_mR_xs"><?php echo WBTM_Translations::text_dp(); ?> :</h6>
-						<span><?php echo esc_html($dp) . ' ' . esc_html($dp_time ? ' (' . MP_Global_Function::date_format($dp_time, 'full') . ' )' : ''); ?></span>
+						<span><?php echo esc_html($dp) . ' ' . esc_html($dp_time ? ' (' . WBTM_Global_Function::date_format($dp_time, 'full') . ' )' : ''); ?></span>
 					</li>
 					<?php if ($start_point != $bp) { ?>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
 							<h6 class="_mR_xs"><?php echo WBTM_Translations::text_start_point(); ?> :</h6>
-							<span><?php echo esc_html($start_point) . ' ' . esc_html($start_time ? ' (' . MP_Global_Function::date_format($start_time, 'full') . ' )' : ''); ?></span>
+							<span><?php echo esc_html($start_point) . ' ' . esc_html($start_time ? ' (' . WBTM_Global_Function::date_format($start_time, 'full') . ' )' : ''); ?></span>
 						</li>
 					<?php } ?>
 					<?php if ($pickup_point) { ?>

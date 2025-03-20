@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-color: var(--color_light);
-  border: 1px solid var(--color_border);
+  background-color: var(--wbtm_color_light);
+  border: 1px solid var(--wbtm_color_border);
   margin: 10px auto;
   border-radius: 5px;
   padding: 10px;
@@ -21,7 +21,7 @@
       padding: 0 8px;
       border-radius: 50px;
       color: #fff;
-      background-color: var(--color_theme_cc);
+      background-color: var(--wbtm_color_theme_cc);
       font-size: 11px;
       line-height: 2;
     }
@@ -58,11 +58,11 @@
         }
       }
       .duration {
-        border-bottom: 3px solid var(--d_color);
+        border-bottom: 3px solid var(--wbtm_d_color);
         width: 65%;
         position: relative;
         .time {
-          background: var(--color_light);
+          background: var(--wbtm_color_light);
           position: absolute;
           top: -12px;
           left: 50%;

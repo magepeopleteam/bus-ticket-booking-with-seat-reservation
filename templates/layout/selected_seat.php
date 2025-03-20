@@ -28,7 +28,7 @@
 					<td class="insert_seat_name"></td>
 					<td class="insert_seat_price"></td>
 					<td>
-						<div class="allCenter"><?php MP_Custom_Layout::remove_button(); ?></div>
+						<div class="allCenter"><?php WBTM_Custom_Layout::remove_button(); ?></div>
 					</td>
 				</tr>
 				</tbody>

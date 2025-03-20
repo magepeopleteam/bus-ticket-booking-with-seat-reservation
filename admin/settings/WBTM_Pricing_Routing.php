@@ -16,8 +16,8 @@
 				add_action('wp_ajax_nopriv_wbtm_reload_pricing', [$this, 'wbtm_reload_pricing']);
 			}
 			public function tab_content($post_id) {
-				$full_route_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_route_info',[]);
-				$bus_stop_lists = MP_Global_Function::get_all_term_data('wbtm_bus_stops');
+				$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info',[]);
+				$bus_stop_lists = WBTM_Global_Function::get_all_term_data('wbtm_bus_stops');
 				?>
 				<div class="tabsItem wbtm_settings_pricing_routing" data-tabs="#wbtm_settings_pricing_routing">
 					
@@ -33,22 +33,22 @@
 							</div>
 						</div>
 						<div class="_dLayout_padding">
-							<div class="mp_settings_area">
-								<div class="mp_stop_items mp_sortable_area mp_item_insert">
+							<div class="wbtm_settings_area">
+								<div class="mp_stop_items wbtm_sortable_area wbtm_item_insert">
 
 									<?php if (sizeof($full_route_infos) > 0) {
 										foreach ($full_route_infos as $key => $full_route_info) { 
 											$this->add_stops_item($bus_stop_lists, $full_route_info, $key);
 										} 
 									} ?>
-									<div class="_mB_xs mp_item_insert_before"></div>
+									<div class="_mB_xs wbtm_item_insert_before"></div>
 								</div>
 								<div class="justifyCenter">
-									<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'mp_add_item', '_themeButton_xs_fullHeight'); ?>
+									<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Stops', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_item', '_themeButton_xs_fullHeight'); ?>
 								
 								</div>
 								<!-- create new bus route -->
-								<div class="mp_hidden_content">
+<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
 										<?php $this->add_stops_item($bus_stop_lists,[], 0); ?>
 									</div>
@@ -81,7 +81,7 @@
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
 				?>
-				<div class="mp_remove_area col_12_mB  wbtm_stop_item ">
+				<div class="wbtm_remove_area col_12_mB  wbtm_stop_item ">
 					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
 						<?php
 							$location = '';
@@ -112,7 +112,7 @@
 							<?php endif; ?>
 						</label>
 						
-						<?php MP_Custom_Layout::edit_move_remove_button(); ?>
+						<?php WBTM_Custom_Layout::edit_move_remove_button(); ?>
 					</div>
 					<div class="wbtm_stop_item_content" data-collapse="">
 						<div class="_dFlex_justifyCenter_alignCenter ">
@@ -149,7 +149,7 @@
                     </div>
 <!--							<label>-->
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
-<!--								<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
+<!--								<input type="number" pattern="[0-9]*" step="1" class="formControl wbtm_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
 <!--							</label>-->
 						</div>
 						<script>
@@ -178,10 +178,10 @@
 				<?php
 			}
 			public function route_pricing($post_id, $full_route_infos) {
-				//echo '<pre>';print_r(MP_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []));echo '</pre>';
+				//echo '<pre>';print_r(WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []));echo '</pre>';
 				$all_price_info = [];
 				if (sizeof($full_route_infos) > 0) {
-					$price_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+					$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
 					foreach ($full_route_infos as $key => $full_route_info) {
 						if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') {
 							$bp = $full_route_info['place'];
@@ -258,17 +258,17 @@
 								</td>
 								<td>
 									<label>
-										<input type="number" pattern="[0-9]*" step="0.01" class="formControl mp_price_validation" name="wbtm_adult_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['adult_price']); ?>" />
+										<input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_adult_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['adult_price']); ?>" />
 									</label>
 								</td>
 								<td>
 									<label>
-										<input type="number" pattern="[0-9]*" step="0.01" class="formControl mp_price_validation" name="wbtm_child_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['child_price']); ?>"/>
+										<input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_child_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['child_price']); ?>"/>
 									</label>
 								</td>
 								<td>
 									<label>
-										<input type="number" pattern="[0-9]*" step="0.01" class="formControl mp_price_validation" name="wbtm_infant_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['infant_price']); ?>"/>
+										<input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_infant_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['infant_price']); ?>"/>
 									</label>
 								</td>
 							</tr>
@@ -287,11 +287,11 @@
 					$route_infos = [];
 					$bp = [];
 					$dp = [];
-					$stops = MP_Global_Function::get_submit_info('wbtm_route_place', array());
-					$times = MP_Global_Function::get_submit_info('wbtm_route_time', array());
-					$types = MP_Global_Function::get_submit_info('wbtm_route_type', array());
-					//$intervals = MP_Global_Function::get_submit_info('wbtm_route_interval', array());
-					$next_days = MP_Global_Function::get_submit_info('wbtm_route_next_day', array());
+					$stops = WBTM_Global_Function::get_submit_info('wbtm_route_place', array());
+					$times = WBTM_Global_Function::get_submit_info('wbtm_route_time', array());
+					$types = WBTM_Global_Function::get_submit_info('wbtm_route_type', array());
+					//$intervals = WBTM_Global_Function::get_submit_info('wbtm_route_interval', array());
+					$next_days = WBTM_Global_Function::get_submit_info('wbtm_route_next_day', array());
 					if (sizeof($stops) > 0) {
 						foreach ($stops as $key => $stop) {
 							if ($stop && $times[$key] && $types[$key]) {
@@ -337,11 +337,11 @@
 					}
 					/********************************************/
 					$price_infos = [];
-					$stops_bps = MP_Global_Function::get_submit_info('wbtm_price_bp', array());
-					$stops_dps = MP_Global_Function::get_submit_info('wbtm_price_dp', array());
-					$adult_price = MP_Global_Function::get_submit_info('wbtm_adult_price', array());
-					$child_price = MP_Global_Function::get_submit_info('wbtm_child_price', array());
-					$infant_price = MP_Global_Function::get_submit_info('wbtm_infant_price', array());
+					$stops_bps = WBTM_Global_Function::get_submit_info('wbtm_price_bp', array());
+					$stops_dps = WBTM_Global_Function::get_submit_info('wbtm_price_dp', array());
+					$adult_price = WBTM_Global_Function::get_submit_info('wbtm_adult_price', array());
+					$child_price = WBTM_Global_Function::get_submit_info('wbtm_child_price', array());
+					$infant_price = WBTM_Global_Function::get_submit_info('wbtm_infant_price', array());
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
 							if ($stops_bp && $stops_dps[$key] && $adult_price[$key]) {
@@ -359,9 +359,9 @@
 				}
 			}
 			public function wbtm_reload_pricing() {
-				$post_id = MP_Global_Function::data_sanitize($_POST['post_id']);
-				$full_route_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
-				$this->route_pricing($post_id, $full_route_infos);
+$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
+				$route_infos = WBTM_Global_Function::data_sanitize($_POST['route_infos']);
+				$this->route_pricing($post_id, $route_infos);
 				die();
 			}
 		}

@@ -3,7 +3,7 @@
 	 * Plugin Name: Bus Ticket Booking with Seat Reservation
 	 * Plugin URI: http://mage-people.com
 	 * Description: A Complete Bus Ticketing System for WordPress & WooCommerce
-	 * Version: 5.4.3
+	 * Version: 5.4.6
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
 	 * Text Domain: bus-ticket-booking-with-seat-reservation
@@ -27,13 +27,10 @@
 				if (!defined('WBTM_PLUGIN_URL')) {
 					define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 				}
-				if (!defined('WBTM_PLUGIN_DATA')) {
-					// define('WBTM_PLUGIN_DATA', get_plugin_data(__FILE__));
-				}
-				require_once WBTM_PLUGIN_DIR . '/mp_global/MP_Global_File_Load.php';
+				require_once WBTM_PLUGIN_DIR . '/mp_global/WBTM_Global_File_Load.php';
 			}
 			private function load_plugin() {
-				if (MP_Global_Function::check_woocommerce() == 1) {
+				if (WBTM_Global_Function::check_woocommerce() == 1) {
 					$this->setBusPermission();
 					add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
 					add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
@@ -97,7 +94,7 @@
 				}
 			}
 			public static function on_activation_page_create() {
-				if (!MP_Global_Function::get_page_by_slug('bus-global-search')) {
+				if (!WBTM_Global_Function::get_page_by_slug('bus-global-search')) {
 					$bus_global_search_page = array(
 						'post_type' => 'page',
 						'post_name' => 'bus-global-search',
@@ -108,7 +105,7 @@
 					wp_insert_post($bus_global_search_page);
 					flush_rewrite_rules();
 				}
-				if (!MP_Global_Function::get_page_by_slug('bus-global-search-flix')) {
+				if (!WBTM_Global_Function::get_page_by_slug('bus-global-search-flix')) {
 					$bus_global_search_page = array(
 						'post_type' => 'page',
 						'post_name' => 'bus-global-search-flix',
@@ -119,7 +116,7 @@
 					wp_insert_post($bus_global_search_page);
 					flush_rewrite_rules();
 				}
-				if (!MP_Global_Function::get_page_by_slug('search-result')) {
+				if (!WBTM_Global_Function::get_page_by_slug('search-result')) {
 					$search_result= array(
 						'post_type' => 'page',
 						'post_name' => 'search-result',

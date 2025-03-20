@@ -33,7 +33,7 @@ if (sizeof($bus_ids) > 0) {
             ];
 
             $bus_titles[] = get_the_title($bus_id);
-            $bus_types[] = MP_Global_Function::get_post_info( $bus_id, 'wbtm_bus_category');
+            $bus_types[] = WBTM_Global_Function::get_post_info( $bus_id, 'wbtm_bus_category');
             $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
             foreach ( $get_boarding_routes as $route ){
                 if( !empty( $route ) ){
@@ -111,7 +111,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(MP_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
+			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr( $bus_types[$key]); ?>" />
 
@@ -124,19 +124,19 @@ if (sizeof($bus_ids) > 0) {
 
                 <div class="title">
 					<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
-					<p><span><?php echo esc_html(MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
+					<p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
 				</div>
 				<div class="route">
 					<div class="route-info">
 						<div class="from">
-							<h4 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? MP_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h4>
+							<h4 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? WBTM_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h4>
 							<p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
 						</div>
 						<div class="duration textCenter">
 						<i class="fas fa-clock"></i> <strong><?php echo esc_html($duration_formatted); ?> </strong>
 						</div>
 						<div class="to">
-							<h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? MP_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
+							<h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? WBTM_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
 							<p><strong><?php echo esc_html($all_info['dp']); ?></strong></p>
 						</div>
 					</div>

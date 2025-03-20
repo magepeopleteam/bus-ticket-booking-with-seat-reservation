@@ -1,34 +1,34 @@
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-	div.wbtm_settings_pricing_routing div.mp_item_insert div:nth-last-child(2) h3 span {display: none;}
-	#mp_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
+	div.wbtm_settings_pricing_routing div.wbtm_item_insert div:nth-last-child(2) h3 span {display: none;}
+	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
 	/*****************/
-	div.wbtm_seat_plan_settings {padding: var(--dmp_xs);width: calc(100% - 300px);background-color: var(--color_white);}
+	div.wbtm_seat_plan_settings {padding: var(--wbtm_dmp_xs);width: calc(100% - 300px);background-color: var(--wbtm_color_white);}
 	div.wbtm_seat_plan_settings table {border: none;}
 	div.wbtm_seat_plan_settings table th {min-width: 75px;}
 	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}
-	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
-	#mp_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
+	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
+	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
 	div.wbtm_settings_pricing_routing div.mp_stop_items {position: relative;}
-	div.wbtm_settings_pricing_routing div.mp_stop_items::before { position: absolute; content: ""; left: 0; top: -21px; height: 100%; border: 1px solid var(--d_color); margin-left: 20px; }
+	div.wbtm_settings_pricing_routing div.mp_stop_items::before { position: absolute; content: ""; left: 0; top: -21px; height: 100%; border: 1px solid var(--wbtm_d_color); margin-left: 20px; }
 	div.wbtm_settings_pricing_routing div.wbtm_stop_item { position: relative; width: 98%; padding-left: 50px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--d_color); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--color_border); border-top: 0; }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-	.mpStyle .tabsContent { overflow: visible; }
-	.tool-tips { color: var(--color_light_1); position: relative; padding: 0 0.2em; }
+	.wbtm_style .tabsContent { overflow: visible; }
+	.tool-tips { color: var(--wbtm_color_light_1); position: relative; padding: 0 0.2em; }
 	.tool-tips:hover span { visibility: visible; }
 	.tool-tips span {
 		font-weight: normal;
 		font-size: .8rem;
 		visibility: hidden;
-		background-color: var(--color_black);
+		background-color: var(--wbtm_color_black);
 		opacity: .8;
-		color: var(--color_white);
+		color: var(--wbtm_color_white);
 		text-align: center;
 		border-radius: .2em;
 		padding: .5em;
@@ -45,11 +45,11 @@
 		top: 100%; /* At the bottom of the tooltip */
 		left: 50%;
 		transform: translate(-50%);
-		border: 5px solid var(--color_black);
-		border-color: var(--color_black) transparent transparent transparent;
+		border: 5px solid var(--wbtm_color_black);
+		border-color: var(--wbtm_color_black) transparent transparent transparent;
 	}
 	.tool-tips span:hover {
-		color: var(--color_black);
+		color: var(--wbtm_color_black);
 	}
 }
 .long-arrow {

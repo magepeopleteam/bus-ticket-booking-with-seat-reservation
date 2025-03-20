@@ -18,9 +18,9 @@
 					<h3><?php esc_html_e('Tax Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					<p><?php esc_html_e('Bus tax Configuration settings.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					<?php
-						$tax_status = MP_Global_Function::get_post_info($post_id, '_tax_status');
-						$tax_class = MP_Global_Function::get_post_info($post_id, '_tax_class');
-						$all_tax_class = MP_Global_Function::all_tax_list();
+						$tax_status = WBTM_Global_Function::get_post_info($post_id, '_tax_status');
+						$tax_class = WBTM_Global_Function::get_post_info($post_id, '_tax_class');
+						$all_tax_class = WBTM_Global_Function::all_tax_list();
 					?>
 					<div class="_dLayout_padding_bgLight">
 						<div class="col_6 _dFlex_fdColumn">
@@ -91,8 +91,8 @@
 			}
 			public function settings_save($post_id) {
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-					$tax_status = MP_Global_Function::get_submit_info('_tax_status','none');
-					$tax_class = MP_Global_Function::get_submit_info('_tax_class');
+					$tax_status = WBTM_Global_Function::get_submit_info('_tax_status','none');
+					$tax_class = WBTM_Global_Function::get_submit_info('_tax_class');
 					update_post_meta($post_id, '_tax_status', $tax_status);
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}

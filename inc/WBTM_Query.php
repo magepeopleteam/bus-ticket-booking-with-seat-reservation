@@ -66,8 +66,8 @@
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
-					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
+					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
+					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$seat_query = !empty($seat_name) ? array(
 							'key' => 'wbtm_seat',
@@ -128,8 +128,8 @@
 				$seat_booked=[];
 				if ($post_id && $start && $end && $date) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
-					$routes = MP_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
+					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
+					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$sp = array_search($start, $routes);
 						$ep = array_search($end, $routes);
@@ -171,7 +171,7 @@
 						$guest_ids= get_posts($args);
 						if(sizeof($guest_ids)>0){
 							foreach ($guest_ids as $guest_id){
-								$seat_booked[]=MP_Global_Function::get_post_info($guest_id,'wbtm_seat');
+								$seat_booked[]=WBTM_Global_Function::get_post_info($guest_id,'wbtm_seat');
 							}
 						}
 					}
@@ -182,7 +182,7 @@
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {
 					$date = date('Y-m-d', strtotime($date));
-					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
+					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$args = array(
 						'post_type' => 'wbtm_service_booking',
 						'posts_per_page' => -1,
@@ -213,7 +213,7 @@
 						while ($query->have_posts()) {
 							$query->the_post();
 							$id = get_the_id();
-							$ex_infos = MP_Global_Function::get_post_info($id, 'wbtm_extra_services', []);
+							$ex_infos = WBTM_Global_Function::get_post_info($id, 'wbtm_extra_services', []);
 							if (sizeof($ex_infos) > 0) {
 								foreach ($ex_infos as $ex_info) {
 									if (is_array($ex_info) && array_key_exists('name',$ex_info) && $ex_info['name'] == $ex_name) {
