@@ -6,22 +6,22 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	$post_id = $post_id ?? MP_Global_Function::data_sanitize($_POST['post_id']);
-	$start_route = $start_route ?? MP_Global_Function::data_sanitize($_POST['start_route']);
-	$end_route = $end_route ?? MP_Global_Function::data_sanitize($_POST['end_route']);
+	$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
+	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 	$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 	
-	$seat_row = $seat_row ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-	$seat_column = $seat_column ?? MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
-	$seat_infos = $seat_infos ?? MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+	$seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
+	$seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+	$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 	
 	if (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 		$date = $_POST['date'] ?? '';
 		$bus_start_time=$bus_start_time??'';
-		$seat_position = MP_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
-		$show_upper_desk = MP_Global_Function::get_post_info($post_id, 'show_upper_desk');
-		$seat_infos_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
-		$adult_price = MP_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
+		$seat_position = WBTM_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
+		$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
+		$seat_infos_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+		$adult_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
 		//echo current($seat_infos)['price'];
 		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $bus_start_time);
 		$seat_count = 0;
@@ -44,7 +44,7 @@
 						<tr>
 							<th colspan="<?php echo esc_attr($seat_column); ?>">
 								<div class="mp_driver_image <?php echo esc_attr($seat_position == 'driver_left' ? '' : 'fRight'); ?>">
-									<?php MP_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/images/wbtm-driving-wheel.svg'); ?>
+									<?php WBTM_Custom_Layout::bg_image('', WBTM_PLUGIN_URL . '/assets/images/wbtm-driving-wheel.svg'); ?>
 								</div>
 							</th>
 						</tr>
@@ -106,7 +106,7 @@
 				</div>
 				<?php if ($show_upper_desk == 'yes' && sizeof($seat_infos_dd) > 0) { ?>
 					<?php
-					$seat_dd_increase = (int)MP_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent', 0);
+					$seat_dd_increase = (int)WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent', 0);
 					$adult_price_dd = $adult_price + ($adult_price * $seat_dd_increase / 100);
 					?>
 					<div class="wbtm_seat_plan_upper ovAuto">
@@ -145,7 +145,7 @@
 																	<ul class="mp_list">
 																		<?php foreach ($ticket_infos as $key => $ticket_info) { ?>
 																			<?php
-																			$ticket_price = $key > 0 ? MP_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
+																			$ticket_price = $key > 0 ? WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
 																			$ticket_price = $ticket_price + ($ticket_price * $seat_dd_increase / 100);
 																			?>
 																			<li class="justifyBetween"

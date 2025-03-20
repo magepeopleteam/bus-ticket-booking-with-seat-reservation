@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_License')) {
 		class WBTM_License {
 			public function __construct() {
-				add_action('mp_license_page_plugin_list', [$this, 'bus_licence'], 10);
+				add_action('wbtm_license_page_plugin_list', [$this, 'bus_licence'], 10);
 			}
 			public function bus_licence() {
 				?>

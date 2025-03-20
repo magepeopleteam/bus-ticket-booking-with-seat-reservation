@@ -27,19 +27,19 @@
 				if (sizeof($bus_ids) > 0) {
 					$count = 0;
 					?>
-					<div class="mpStyle placeholderLoader mp_pagination_main_area">
+					<div class="wbtm_style wbtm_placeholderLoader wbtm_pagination_main_area">
 						<div class="mpContainer flexWrap">
 							<?php foreach ($bus_ids as $bus_id) { ?>
 								<?php
-								$thumbnail = MP_Global_Function::get_image_url($bus_id);
+								$thumbnail = WBTM_Global_Function::get_image_url($bus_id);
 								$url = get_the_permalink($bus_id);
-								$category = MP_Global_Function::get_post_info($bus_id, 'wbtm_bus_category');
-								$route = MP_Global_Function::get_post_info($bus_id, 'wbtm_route_direction', []);
+								$category = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_category');
+								$route = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_route_direction', []);
 								$d_class = $show > $count ? '' : 'dNone';
 								$grid_class = 'grid_' . $column;
 								$count++;
 								?>
-								<div class="placeholder_area mp_pagination_item _dShadow_9 <?php echo esc_attr($grid_class . ' ' . $d_class); ?>">
+								<div class="placeholder_area wbtm_pagination_item _dShadow_9 <?php echo esc_attr($grid_class . ' ' . $d_class); ?>">
 									<?php if ($category) { ?>
 										<div class="ribbon"><?php echo esc_html($category); ?></div>
 									<?php } ?>
@@ -55,7 +55,7 @@
 									<div class="divider"></div>
 									<h6 class="_allCenter">
 										<strong><?php echo WBTM_Translations::text_passenger_capacity(); ?> :</strong>
-										<?php echo MP_Global_Function::get_post_info($bus_id, 'wbtm_get_total_seat', 0); ?>
+										<?php echo WBTM_Global_Function::get_post_info($bus_id, 'wbtm_get_total_seat', 0); ?>
 									</h6>
 									<div class="divider"></div>
 									<div class="mp_wp_editor">
@@ -64,7 +64,7 @@
 								</div>
 							<?php } ?>
 						</div>
-						<?php do_action('add_mp_pagination_section', $params, sizeof($bus_ids)); ?>
+						<?php do_action('wbtm_pagination_section', $params, sizeof($bus_ids)); ?>
 					</div>
 					<?php
 				}
@@ -84,7 +84,7 @@
 				ob_start();
 				do_action('woocommerce_before_single_product');
 				?>
-				<div class="mpStyle wbtm_container">
+				<div class="wbtm_style wbtm_container">
 					<?php require WBTM_Functions::template_path('layout/search_form.php'); ?>
 				</div>
 				<?php

@@ -12,7 +12,7 @@
 				add_action('admin_menu', array($this, 'quick_setup_menu'));
 			}
 			public function quick_setup_menu() {
-				$status = MP_Global_Function::check_woocommerce();
+				$status = WBTM_Global_Function::check_woocommerce();
 				if ($status == 1) {
 					add_submenu_page('edit.php?post_type=wbtm_bus', __('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 					add_submenu_page('wbtm_bus', esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
@@ -23,11 +23,11 @@
 				}
 			}
 			public function quick_setup() {
-				$status = MP_Global_Function::check_woocommerce();
+				$status = WBTM_Global_Function::check_woocommerce();
 				if (isset($_POST['active_woo_btn']) && (isset($_POST['wbtm_qs_nonce']) && wp_verify_nonce($_POST['wbtm_qs_nonce'], 'wbtm_qs_nonce'))) {
 					?>
 					<script>
-						dLoaderBody();
+						wbtm_loaderBody();
 					</script>
 					<?php
 					activate_plugin('woocommerce/woocommerce.php');
@@ -107,11 +107,11 @@
 					wp_redirect(admin_url('edit.php?post_type=wbtm_bus'));
 				}
 				?>
-				<div class="mpStyle">
+				<div class="wbtm_style">
 					<div class="_dShadow_6_adminLayout">
 						<form method="post" action="">
                             <?php wp_nonce_field('wbtm_qs_nonce', 'wbtm_qs_nonce'); ?>
-							<div class="mpTabsNext">
+							<div class="wbtm_tab_next">
 								<div class="tabListsNext _max_700_mAuto">
 									<div data-tabs-target-next="#wbtm_qs_welcome" class="tabItemNext" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
 										<h4 class="circleIcon" data-class>
@@ -160,7 +160,7 @@
 				<?php
 			}
 			public function setup_welcome_content() {
-				$status = MP_Global_Function::check_woocommerce();
+				$status = WBTM_Global_Function::check_woocommerce();
 				?>
 				<div data-tabs-next="#wbtm_qs_welcome">
 					<h2><?php esc_html_e('Bus Booking with Seat Reservation For Woocommerce Plugin', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
@@ -191,8 +191,8 @@
 				<?php
 			}
 			public function setup_general_content() {
-				$label = MP_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
-				$slug = MP_Global_Function::get_settings('wbtm_general_settings','slug','bus');
+				$label = WBTM_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
+				$slug = WBTM_Global_Function::get_settings('wbtm_general_settings','slug','bus');
 				?>
 				<div data-tabs-next="#wbtm_qs_general">
 					<div class="section">

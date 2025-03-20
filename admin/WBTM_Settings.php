@@ -17,7 +17,7 @@ if (!class_exists('WBTM_Settings')) {
         public function settings_meta() {
             $label = WBTM_Functions::get_name();
             $cpt = WBTM_Functions::get_cpt();
-            add_meta_box('mp_meta_box_panel', $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
+            add_meta_box('wbtm_meta_box_panel', $label . esc_html__(' Information Settings : ', 'bus-ticket-booking-with-seat-reservation') . get_the_title(get_the_id()), array($this, 'settings'), $cpt, 'normal', 'high');
         }
         //******************************//
         public function settings() {
@@ -29,8 +29,8 @@ if (!class_exists('WBTM_Settings')) {
         public function settings_tab($post_id){
 ?>
             <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
-            <div class="mpStyle">
-                <div class="mpTabs leftTabs">
+            <div class="wbtm_style">
+                <div class="wbtm_tabs leftTabs">
                     <ul class="tabLists">
                         <li data-tabs-target="#wbtm_general_info">
                             <span class="fas fa-tools"></span><?php esc_html_e('General Info', 'bus-ticket-booking-with-seat-reservation'); ?>

@@ -8,9 +8,9 @@ if (!defined('ABSPATH')) {
     die; // Cannot access pages directly.
 }
 
-$post_id = $post_id ?? MP_Global_Function::data_sanitize($_POST['post_id']);
-$backend_order = MP_Global_Function::data_sanitize($_POST['backend_order']);
-$link_wc_product = MP_Global_Function::get_post_info($post_id, 'link_wc_product');
+$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+$backend_order = WBTM_Global_Function::data_sanitize($_POST['backend_order']);
+$link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_product');
 
 ?>
 <div class="_dLayout_xs col_12 wbtm_form_submit_area mT_xs">

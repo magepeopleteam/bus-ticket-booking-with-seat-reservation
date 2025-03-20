@@ -14,8 +14,8 @@
 				add_action('wbtm_settings_save', [$this, 'settings_save']);
 			}
 			public function tab_content($post_id) {
-				$extra_services = MP_Global_Function::get_post_info($post_id, 'wbtm_extra_services',[]);
-				$display_ex = MP_Global_Function::get_post_info($post_id, 'show_extra_service', 'yes');
+				$extra_services = WBTM_Global_Function::get_post_info($post_id, 'wbtm_extra_services',[]);
+				$display_ex = WBTM_Global_Function::get_post_info($post_id, 'show_extra_service', 'yes');
 				$active_ex = $display_ex == 'no' ? '' : 'mActive';
 				$checked_ex = $display_ex == 'no' ? '' : 'checked';
 				?>
@@ -40,12 +40,12 @@
 								<span><?php WBTM_Settings::info_text('show_extra_service'); ?></span>
 							</div>
 							<div class="col_2 dFlex _justifyEnd">
-								<?php MP_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
+								<?php WBTM_Custom_Layout::switch_button('show_extra_service', $checked_ex); ?>
 							</div>
 						</div>
 						<div data-collapse="#show_extra_service" class="<?php echo esc_attr($active_ex); ?>">
 							<div class="_dLayout">
-								<div class="mp_settings_area">
+								<div class="wbtm_settings_area">
 									<div class="ovAuto">
 										<table>
 											<thead>
@@ -58,7 +58,7 @@
 												<th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 											</tr>
 											</thead>
-											<tbody class="mp_sortable_area mp_item_insert">
+											<tbody class="wbtm_sortable_area wbtm_item_insert">
 											<?php
 												if (sizeof($extra_services) > 0) {
 													foreach ($extra_services as $extra_service) {
@@ -69,8 +69,8 @@
 											</tbody>
 										</table>
 									</div>
-									<?php MP_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'bus-ticket-booking-with-seat-reservation')); ?>
-									<?php do_action('add_mp_hidden_table', 'wbtm_extra_service_item'); ?>
+									<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'bus-ticket-booking-with-seat-reservation')); ?>
+									<?php do_action('wbtm_hidden_table', 'wbtm_extra_service_item'); ?>
 								</div>
 							</div>
 						</div>
@@ -87,21 +87,20 @@
 				$service_qty = array_key_exists('option_qty', $field) ? $field['option_qty'] : '';
 				$input_type = array_key_exists('option_qty_type', $field) ? $field['option_qty_type'] : 'inputbox';
 				?>
-				<tr class="mp_remove_area">
-<!--					<td>--><?php ////do_action('mp_input_add_icon', 'ex_option_icon[]', $service_icon); ?><!--</td>-->
+				<tr class="wbtm_remove_area">
 					<td>
 						<label>
-							<input type="text" class="formControl mp_name_validation" name="ex_option_name[]" placeholder="Ex: Cap" value="<?php echo esc_attr($service_name); ?>"/>
+							<input type="text" class="formControl wbtm_name_validation" name="ex_option_name[]" placeholder="Ex: Cap" value="<?php echo esc_attr($service_name); ?>"/>
 						</label>
 					</td>
 					<td>
 						<label>
-							<input type="number" pattern="[0-9]*" step="0.01" class="formControl mp_price_validation" name="ex_option_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($service_price); ?>"/>
+							<input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="ex_option_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($service_price); ?>"/>
 						</label>
 					</td>
 					<td>
 						<label>
-							<input type="number" pattern="[0-9]*" step="1" class="formControl mp_number_validation" name="ex_option_qty[]" placeholder="Ex: 100" value="<?php echo esc_attr($service_qty); ?>"/>
+							<input type="number" pattern="[0-9]*" step="1" class="formControl wbtm_number_validation" name="ex_option_qty[]" placeholder="Ex: 100" value="<?php echo esc_attr($service_qty); ?>"/>
 						</label>
 					</td>
 					<td>
@@ -112,18 +111,18 @@
 							</select>
 						</label>
 					</td>
-					<td><?php MP_Custom_Layout::move_remove_button(); ?></td>
+					<td><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
 				</tr>
 				<?php
 			}
 			public function settings_save($post_id) {
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$new_extra_service = array();
-					//$extra_icon = MP_Global_Function::get_submit_info('ex_option_icon', array());
-					$extra_names = MP_Global_Function::get_submit_info('ex_option_name', array());
-					$extra_price = MP_Global_Function::get_submit_info('ex_option_price', array());
-					$extra_qty = MP_Global_Function::get_submit_info('ex_option_qty', array());
-					$extra_qty_type = MP_Global_Function::get_submit_info('ex_option_qty_type', array());
+					//$extra_icon = WBTM_Global_Function::get_submit_info('ex_option_icon', array());
+					$extra_names = WBTM_Global_Function::get_submit_info('ex_option_name', array());
+					$extra_price = WBTM_Global_Function::get_submit_info('ex_option_price', array());
+					$extra_qty = WBTM_Global_Function::get_submit_info('ex_option_qty', array());
+					$extra_qty_type = WBTM_Global_Function::get_submit_info('ex_option_qty_type', array());
 					$extra_count = count($extra_names);
 					for ($i = 0; $i < $extra_count; $i++) {
 						if ($extra_names[$i] && $extra_price[$i] && $extra_qty[$i] > 0) {
@@ -135,7 +134,7 @@
 						}
 					}
 					update_post_meta($post_id, 'wbtm_extra_services', $new_extra_service);
-					$display_ex = MP_Global_Function::get_submit_info('show_extra_service') ? 'yes' : 'no';
+					$display_ex = WBTM_Global_Function::get_submit_info('show_extra_service') ? 'yes' : 'no';
 					update_post_meta($post_id, 'show_extra_service', $display_ex);
 				}
 			}

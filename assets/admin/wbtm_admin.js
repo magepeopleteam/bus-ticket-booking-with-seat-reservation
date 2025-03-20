@@ -26,18 +26,18 @@
           route_infos[count - 1]["type"] = "dp";
           $.ajax({
             type: "POST",
-            url: mp_ajax_url,
+            url: wbtm_ajax_url,
             data: {
               action: "wbtm_reload_pricing",
               post_id: post_id,
               route_infos: route_infos,
             },
             beforeSend: function () {
-              dLoader(target);
+              wbtm_loader(target);
             },
             success: function (data) {
               target.html(data);
-              //dLoaderRemove(parent);
+              //wbtm_loaderRemove(parent);
             },
             error: function (response) {
               console.log(response);
@@ -50,7 +50,7 @@
   }
   $(document).on(
     "click",
-    ".wbtm_settings_pricing_routing .wbtm_stop_item .mp_item_remove",
+    ".wbtm_settings_pricing_routing .wbtm_stop_item .wbtm_item_remove",
     function (e) {
       if (e.result) {
         wbtm_reload_pricing($(".wbtm_settings_pricing_routing"));
@@ -80,7 +80,7 @@
       if (row > 0 && column > 0) {
         $.ajax({
           type: "POST",
-          url: mp_ajax_url,
+          url: wbtm_ajax_url,
           data: {
             action: "wbtm_create_seat_plan",
             post_id: post_id,
@@ -88,13 +88,13 @@
             column: column,
           },
           beforeSend: function () {
-            dLoader(target);
+            wbtm_loader(target);
           },
           success: function (data) {
             parent.find('[name="wbtm_seat_cols_hidden"]').val(column);
             parent.find('[name="wbtm_seat_rows_hidden"]').val(row);
             target.html(data);
-            //dLoaderRemove(parent);
+            //wbtm_loaderRemove(parent);
           },
           error: function (response) {
             console.log(response);
@@ -107,7 +107,7 @@
   );
   $(document).on(
     "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview .mp_item_remove",
+    ".wbtm_settings_seat .wbtm_seat_plan_preview .wbtm_item_remove",
     function (e) {
       if (e.result) {
         let parent = $(".wbtm_settings_seat");
@@ -120,7 +120,7 @@
   );
   $(document).on(
     "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview .mp_add_item",
+    ".wbtm_settings_seat .wbtm_seat_plan_preview .wbtm_add_item",
     function (e) {
       if (e.result) {
         let parent = $(".wbtm_settings_seat");
@@ -144,7 +144,7 @@
       if (row > 0 && column > 0) {
         $.ajax({
           type: "POST",
-          url: mp_ajax_url,
+          url: wbtm_ajax_url,
           data: {
             action: "wbtm_create_seat_plan_dd",
             post_id: post_id,
@@ -152,13 +152,13 @@
             column: column,
           },
           beforeSend: function () {
-            dLoader(target);
+            wbtm_loader(target);
           },
           success: function (data) {
             parent.find('[name="wbtm_seat_cols_dd_hidden"]').val(column);
             parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(row);
             target.html(data);
-            //dLoaderRemove(parent);
+            //wbtm_loaderRemove(parent);
           },
           error: function (response) {
             console.log(response);
@@ -171,7 +171,7 @@
   );
   $(document).on(
     "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .mp_item_remove",
+    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .wbtm_item_remove",
     function (e) {
       if (e.result) {
         let parent = $(".wbtm_settings_seat");
@@ -184,7 +184,7 @@
   );
   $(document).on(
     "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .mp_add_item",
+    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .wbtm_add_item",
     function (e) {
       if (e.result) {
         let parent = $(".wbtm_settings_seat");
@@ -200,12 +200,12 @@
 (function ($) {
   "use strict";
   $(document).on("click", ".wbtm_add_group_pickup", function () {
-    let parent = $(this).closest(".mp_settings_area");
+    let parent = $(this).closest(".wbtm_settings_area");
     let target_item = $(this)
-      .next($(".mp_hidden_content"))
-      .find(" .mp_hidden_item");
+      .next($(".wbtm_hidden_content"))
+      .find(" .wbtm_hidden_item");
     let item = target_item.html();
-    load_sortable_datepicker(parent, item);
+    wbtm_load_sortable_datepicker(parent, item);
     let unique_id = Math.floor(Math.random() * 9999 + 9999);
     target_item.find('[name="wbtm_pickup_unique_id[]"]').val(unique_id);
     target_item
@@ -219,12 +219,12 @@
       .attr("name", "wbtm_pickup_time[" + unique_id + "][]");
   });
   $(document).on("click", ".wbtm_add_group_drop_off", function () {
-    let parent = $(this).closest(".mp_settings_area");
+    let parent = $(this).closest(".wbtm_settings_area");
     let target_item = $(this)
-      .next($(".mp_hidden_content"))
-      .find(" .mp_hidden_item");
+      .next($(".wbtm_hidden_content"))
+      .find(" .wbtm_hidden_item");
     let item = target_item.html();
-    load_sortable_datepicker(parent, item);
+    wbtm_load_sortable_datepicker(parent, item);
     let unique_id = Math.floor(Math.random() * 9999 + 9999);
     target_item.find('[name="wbtm_drop_off_unique_id[]"]').val(unique_id);
     target_item

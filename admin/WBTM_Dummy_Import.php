@@ -10,7 +10,7 @@
 			public function dummy_import() {
 				$dummy_post_inserted = get_option('wbtm_bus_seat_plan_data_input_done', 'no');
 				$count_existing_event = wp_count_posts('wbtm_bus')->publish;
-				$plugin_active = MP_Global_Function::check_plugin('bus-ticket-booking-with-seat-reservation', 'woocommerce-bus.php');
+				$plugin_active = WBTM_Global_Function::check_plugin('bus-ticket-booking-with-seat-reservation', 'woocommerce-bus.php');
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {

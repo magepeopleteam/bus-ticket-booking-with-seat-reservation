@@ -14,15 +14,15 @@
 		let wbtm_left_filter_operator = parent.find('input[name="wbtm_left_filter_operator"]');
 		let wbtm_left_filter_boarding = parent.find('input[name="wbtm_left_filter_boarding"]');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
-		if (!mp_check_required(start)) {
+		if (!wbtm_check_required(start)) {
 			start.trigger('click');
 			return false;
 		}
-		if (!mp_check_required(end)) {
+		if (!wbtm_check_required(end)) {
 			end.trigger('click');
 			return false;
 		}
-		if (!mp_check_required(j_date)) {
+		if (!wbtm_check_required(j_date)) {
 			j_date.siblings('input').focus();
 			return false;
 		} else {
@@ -30,7 +30,7 @@
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
 			$.ajax({
         type: "POST",
-        url: mp_ajax_url,
+        url: wbtm_ajax_url,
         data: {
           action: "get_wbtm_bus_list",
           start_route: start.val(),
@@ -49,7 +49,7 @@
           backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {
-          dLoader(parent.find(".wbtm_search_area"));
+          wbtm_loader(parent.find(".wbtm_search_area"));
         },
 		  success: function (data) {
           parent
@@ -57,8 +57,8 @@
             .html(data)
             .promise()
             .done(function () {
-              dLoaderRemove(parent.find(".wbtm_search_area"));
-              loadBgImage();
+              wbtm_loaderRemove(parent.find(".wbtm_search_area"));
+              wbtm_loadBgImage();
             });
         },
         error: function (response) {
@@ -82,11 +82,11 @@
 		let parent = current.closest('.wbtm_search_area');
 		let target = parent.find('.wbtm_dropping_point');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
-		parent.find('.wbtm_dropping_point .mp_input_select_list').remove();
+		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
-		dLoader_xs(parent);
+		wbtm_loader_xs(parent);
 		let exit_route = 0;
-		parent.find('.wbtm_start_point .mp_input_select_list li').each(function () {
+		parent.find('.wbtm_start_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
 			if (current_route === start_route) {
 				exit_route = 1;
@@ -96,7 +96,7 @@
 				let post_id = parent.find('[name="wbtm_post_id"]').val();
 				$.ajax({
 					type: 'POST',
-					url: mp_ajax_url,
+					url: wbtm_ajax_url,
 					data: {
 						"action": "get_wbtm_dropping_point",
 						"start_route": start_route,
@@ -104,7 +104,7 @@
 					},
 					success: function (data) {
 						target.append(data).promise().done(function () {
-							dLoaderRemove(parent);
+							wbtm_loaderRemove(parent);
 							target.find('input.formControl').trigger('click');
 						});
 					},
@@ -113,8 +113,8 @@
 					}
 				});
 			} else {
-				dLoaderRemove(parent);
-				mp_alert(target);
+				wbtm_loaderRemove(parent);
+				wbtm_alert(target);
 				current.val('').trigger('click');
 			}
 		});
@@ -126,7 +126,7 @@
 		let parent = current.closest('.wbtm_search_area');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let exit_route = 0;
-		parent.find('.wbtm_dropping_point .mp_input_select_list li').each(function () {
+		parent.find('.wbtm_dropping_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
 			if (current_route === end_route) {
 				exit_route = 1;
@@ -149,7 +149,7 @@
 		let target = parent.find('.wbtm_journey_date');
 		$.ajax({
 			type: 'POST',
-			url: mp_ajax_url,
+			url: wbtm_ajax_url,
 			data: {
 				"action": "get_wbtm_journey_date",
 				"start_route": start_route,
@@ -157,11 +157,11 @@
 				"post_id": post_id,
 			},
 			beforeSend: function () {
-				dLoader_xs(target);
+				wbtm_loader_xs(target);
 			},
 			success: function (data) {
 				target.html(data);
-				dLoaderRemove(target);
+				wbtm_loaderRemove(target);
 			},
 			error: function (response) {
 				console.log(response);
@@ -181,7 +181,7 @@
 			//alert(end_route);
 			$.ajax({
 				type: 'POST',
-				url: mp_ajax_url,
+				url: wbtm_ajax_url,
 				data: {
 					"action": "get_wbtm_return_date",
 					"start_route": start_route,
@@ -190,11 +190,11 @@
 					"post_id": post_id,
 				},
 				beforeSend: function () {
-					dLoader_xs(target);
+					wbtm_loader_xs(target);
 				},
 				success: function (data) {
 					target.html(data);
-					dLoaderRemove(target);
+					wbtm_loaderRemove(target);
 				},
 				error: function (response) {
 					console.log(response);
@@ -207,7 +207,7 @@
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		let start = parent.find('input[name="bus_start_route"]').val();
 		if (!start) {
-			mp_alert($(this));
+			wbtm_alert($(this));
 		}
 	});
 }(jQuery));
@@ -221,7 +221,7 @@
     $("body").find(".woocommerce-notices-wrapper").slideUp("fast");
     if ($(this).hasClass("mActive")) {
       target.find(">div").slideUp("fast");
-      mp_all_content_change($(this));
+      wbtm_all_content_change($(this));
     } else {
       parent.find("#get_wbtm_bus_details.mActive").each(function () {
         $(this).trigger("click");
@@ -234,7 +234,7 @@
       if (start && end && date && post_id) {
         $.ajax({
           type: "POST",
-          url: mp_ajax_url,
+          url: wbtm_ajax_url,
           data: {
             action: "get_wbtm_bus_details",
             start_route: start,
@@ -246,19 +246,19 @@
             backend_order: window.location.href.search("wbtm_backend_order"),
           },
           beforeSend: function () {
-            dLoader(parent);
+            wbtm_loader(parent);
           },
           success: function (data) {
             target.html(data);
-            dLoaderRemove(parent);
-            loadBgImage();
+            wbtm_loaderRemove(parent);
+            wbtm_loadBgImage();
           },
           error: function (response) {
             console.log(response);
           },
         });
       }
-      mp_all_content_change($(this));
+      wbtm_all_content_change($(this));
     }
   });
 })(jQuery);
@@ -272,16 +272,16 @@
 		let target_summary = parent.find('.wbtm_total');
 		let target_sub_total = parent.find('.wbtm_sub_total');
 		let total = wbtm_ticket_price(parent);
-		target_sub_total.html(mp_price_format(total));
+		target_sub_total.html(wbtm_price_format(total));
 		if (total_qty > 0) {
 			parent.find('.wbtm_ex_service_area').slideDown('fast');
 			parent.find('.wbtm_form_submit_area').slideDown('fast');
 			total = total + wbtm_ex_service_price(parent);
-			target_summary.html(mp_price_format(total));
+			target_summary.html(wbtm_price_format(total));
 		} else {
 			parent.find('.wbtm_ex_service_area').slideUp('fast');
 			parent.find('.wbtm_form_submit_area').slideUp('fast');
-			target_summary.html(mp_price_format(total));
+			target_summary.html(wbtm_price_format(total));
 		}
 	}
 	function wbtm_ticket_price(parent) {
@@ -362,7 +362,7 @@
 			}
 		});
 	});
-	$(document).on('click', '.wbtm_registration_area .wbtm_selected_seat_details .mp_item_remove', function () {
+	$(document).on('click', '.wbtm_registration_area .wbtm_selected_seat_details .wbtm_item_remove', function () {
 		let current = $(this);
 		let current_tr = current.closest('tr');
 		let seat_name = current_tr.attr('data-seat_name');
@@ -451,7 +451,7 @@
 		hidden_target_tr.attr('data-seat_type', seat_type).attr('data-seat_name', seat_name).promise().done(function () {
 			hidden_target_tr.find('.insert_seat_label').html(seat_label);
 			hidden_target_tr.find('.insert_seat_name').html(seat_name);
-			hidden_target_tr.find('.insert_seat_price').html(mp_price_format(seat_price));
+			hidden_target_tr.find('.insert_seat_price').html(wbtm_price_format(seat_price));
 		}).promise().done(function () {
 			target.append(hidden_target_tr.clone());
 		});
@@ -471,7 +471,7 @@
 							hidden_target.find('.wbtm_seat_name').html(seat_name).promise().done(function () {
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
-								mp_load_date_picker(parent);
+								wbtm_load_date_picker(parent);
 							});
 						}
 					}).promise().done(function () {
@@ -495,7 +495,7 @@
 							hidden_target.find('.wbtm_seat_name').html(i + 1).promise().done(function () {
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
-								mp_load_date_picker(parent);
+								wbtm_load_date_picker(parent);
 							});
 						}
 					}

@@ -25,13 +25,13 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
         }
         //*********//
         public function pickup_point($post_id) {
-            $pickup_points_list = MP_Global_Function::get_all_term_data('wbtm_bus_pickpoint');
-            $display_pickup_point = MP_Global_Function::get_post_info($post_id, 'show_pickup_point', 'no');
+            $pickup_points_list = WBTM_Global_Function::get_all_term_data('wbtm_bus_pickpoint');
+            $display_pickup_point = WBTM_Global_Function::get_post_info($post_id, 'show_pickup_point', 'no');
             $active_pickup_point = $display_pickup_point == 'no' ? '' : 'mActive';
             $checked_pickup_point = $display_pickup_point == 'no' ? '' : 'checked';
-            $pickup_points = MP_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
-            $bp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
-            $wbtm_pickup_point_required = MP_Global_Function::get_post_info($post_id, 'wbtm_pickup_point_required', 'no');
+            $pickup_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
+            $bp_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
+            $wbtm_pickup_point_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point_required', 'no');
 			$checked_wbtm_pickup_point_required = $wbtm_pickup_point_required == 'no' ? '' : 'checked';
             ?>
             <div class="">
@@ -52,20 +52,20 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                         <?php WBTM_Settings::info_text('show_pickup_point'); ?>
                     </div>
                     <div class="col_2_dFlex _justifyEnd">
-                        <?php MP_Custom_Layout::switch_button('show_pickup_point', $checked_pickup_point); ?>
+                        <?php WBTM_Custom_Layout::switch_button('show_pickup_point', $checked_pickup_point); ?>
                     </div>
                 </div>
                 
                 <div data-collapse="#show_pickup_point" class="<?php echo esc_attr($active_pickup_point); ?>">
                         <?php if (sizeof($bp_points) > 0) { ?>
                             <?php if (sizeof($pickup_points_list) > 0) { ?>
-                                <div class="mp_settings_area">
+                                <div class="wbtm_settings_area">
                                     <div class="_dLayout dFlex _justifyBetween ">
                                         <div class="col_10_dFlex_fdColumn">
                                             <label><?php _e('Boarding point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                                             <span><?php _e('Turn On or Off Boarding point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                         </div>
-                                        <?php MP_Custom_Layout::switch_button('wbtm_pickup_point_required', $checked_wbtm_pickup_point_required); ?>
+                                        <?php WBTM_Custom_Layout::switch_button('wbtm_pickup_point_required', $checked_wbtm_pickup_point_required); ?>
                                     </div>
                                     <div class="_dLayout">
                                         <div class="ovAuto">
@@ -77,7 +77,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                                 <th class="_w_100"><?php echo WBTM_Translations::text_action(); ?></th>
                                             </tr>
                                             </thead>
-                                            <tbody class="mp_sortable_area mp_item_insert">
+                                            <tbody class="wbtm_sortable_area wbtm_item_insert">
                                             <?php
                                             if (sizeof($pickup_points) > 0) {
                                                 foreach ($pickup_points as $pickup_point) {
@@ -88,10 +88,10 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <?php MP_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_pickup'); ?>
-                                    <div class="mp_hidden_content">
+                                    <?php WBTM_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_pickup'); ?>
+                                    <div class="wbtm_hidden_content">
                                         <table>
-                                            <tbody class="mp_hidden_item">
+                                            <tbody class="wbtm_hidden_item">
                                             <?php $this->bp_point_item($pickup_points_list, $bp_points); ?>
                                             </tbody>
                                         </table>
@@ -117,7 +117,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             if (sizeof($bp_points) > 0 && sizeof($pickup_points) > 0) {
                 $unique_name = uniqid();
                 ?>
-                <tr class="mp_remove_area">
+                <tr class="wbtm_remove_area">
                     <td>
                         <label>
                             <input type="hidden" name="wbtm_pickup_unique_id[]" value="<?php echo esc_attr($unique_name); ?>"/>
@@ -130,9 +130,9 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                         </label>
                     </td>
                     <td colspan="3">
-                        <div class="mp_settings_area">
+                        <div class="wbtm_settings_area">
                             <table>
-                                <tbody class="mp_sortable_area mp_item_insert">
+                                <tbody class="wbtm_sortable_area wbtm_item_insert">
                                 <?php if (sizeof($pickup_infos) > 0) { ?>
                                     <?php foreach ($pickup_infos as $pickup_info) { ?>
                                         <?php $this->pickup_point_item($unique_name, $pickup_points, $pickup_info); ?>
@@ -140,17 +140,17 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                 <?php } ?>
                                 </tbody>
                             </table>
-                            <?php MP_Custom_Layout::add_new_button(esc_html__('Add Pickup Point', 'bus-ticket-booking-with-seat-reservation')); ?>
-                            <div class="mp_hidden_content">
+                            <?php WBTM_Custom_Layout::add_new_button(esc_html__('Add Pickup Point', 'bus-ticket-booking-with-seat-reservation')); ?>
+                            <div class="wbtm_hidden_content">
                                 <table>
-                                    <tbody class="mp_hidden_item">
+                                    <tbody class="wbtm_hidden_item">
                                     <?php $this->pickup_point_item($unique_name, $pickup_points); ?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </td>
-                    <td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
+                    <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
                 </tr>
                 <?php
             }
@@ -159,7 +159,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             $bp_point = array_key_exists('pickup_point', $pickup_info) ? $pickup_info['pickup_point'] : '';
             $bp_time = array_key_exists('time', $pickup_info) ? $pickup_info['time'] : '';
             ?>
-            <tr class="mp_remove_area">
+            <tr class="wbtm_remove_area">
                 <td>
                     <label>
                         <select name="wbtm_pickup_name[<?php echo esc_attr($unique_name); ?>][]" class='formControl'>
@@ -175,19 +175,19 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                         <input type="time" name="wbtm_pickup_time[<?php echo esc_attr($unique_name); ?>][]" class='formControl' value="<?php echo esc_attr($bp_time); ?>"/>
                     </label>
                 </td>
-                <td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
+                <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
             </tr>
             <?php
         }
         //*********//
 		public function drop_off_point($post_id) {
-			$drop_off_points_list = MP_Global_Function::get_all_term_data('wbtm_bus_drop_off');
-			$display_drop_off_point = MP_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
+			$drop_off_points_list = WBTM_Global_Function::get_all_term_data('wbtm_bus_drop_off');
+			$display_drop_off_point = WBTM_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
 			$active_drop_off_point = $display_drop_off_point == 'no' ? '' : 'mActive';
 			$checked_drop_off_point = $display_drop_off_point == 'no' ? '' : 'checked';
-			$drop_off_points = MP_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
-			$dp_points = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
-            $wbtm_dropping_point_required = MP_Global_Function::get_post_info($post_id, 'wbtm_dropping_point_required', 'no');
+			$drop_off_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
+			$dp_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+            $wbtm_dropping_point_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_dropping_point_required', 'no');
 			$checked_wbtm_dropping_point_required = $wbtm_dropping_point_required == 'no' ? '' : 'checked';
 			?>
             <div class="">
@@ -209,19 +209,19 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                         </span>
                     </div>
                     <div class="col_2 dFlex _justifyEnd">
-                        <?php MP_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
+                        <?php WBTM_Custom_Layout::switch_button('show_drop_off_point', $checked_drop_off_point); ?>
                     </div>
                 </div>
                 <div data-collapse="#show_drop_off_point" class="_dLayout <?php echo esc_attr($active_drop_off_point); ?>">
                     <?php if (sizeof($dp_points) > 0) { ?>
                         <?php if (sizeof($drop_off_points_list) > 0) { ?>
-                            <div class=" mp_settings_area">
+                            <div class=" wbtm_settings_area">
                                 <div class="_dLayout_dFlex_justifyBetween">
                                     <div class="_dFlex_fdColumn">
                                         <label><?php esc_html_e('Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                                         <span><?php esc_html_e('Turn On or Off Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                     </div>
-                                    <?php MP_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
+                                    <?php WBTM_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
                                 </div>
                                 <div class="_dLayout">
                                     <div class="ovAuto">
@@ -233,7 +233,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                                 <th class="_w_100"><?php echo WBTM_Translations::text_action(); ?></th>
                                             </tr>
                                             </thead>
-                                            <tbody class="mp_sortable_area mp_item_insert">
+                                            <tbody class="wbtm_sortable_area wbtm_item_insert">
                                             <?php
                                                 if (sizeof($drop_off_points) > 0) {
                                                     foreach ($drop_off_points as $drop_off) {
@@ -244,10 +244,10 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <?php MP_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_drop_off'); ?>
-                                    <div class="mp_hidden_content">
+                                    <?php WBTM_Custom_Layout::add_new_button(esc_html__('Add More Point', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_group_drop_off'); ?>
+                                    <div class="wbtm_hidden_content">
                                         <table>
-                                            <tbody class="mp_hidden_item">
+                                            <tbody class="wbtm_hidden_item">
                                             <?php $this->dp_point_item($drop_off_points_list, $dp_points); ?>
                                             </tbody>
                                         </table>
@@ -271,7 +271,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
 			if (sizeof($dp_points) > 0 && sizeof($drop_off_points) > 0) {
 				$unique_name = uniqid();
 				?>
-				<tr class="mp_remove_area">
+				<tr class="wbtm_remove_area">
 					<td>
 						<label>
 							<input type="hidden" name="wbtm_drop_off_unique_id[]" value="<?php echo esc_attr($unique_name); ?>"/>
@@ -284,9 +284,9 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
 						</label>
 					</td>
 					<td colspan="3">
-						<div class="mp_settings_area">
+						<div class="wbtm_settings_area">
 							<table>
-								<tbody class="mp_sortable_area mp_item_insert">
+								<tbody class="wbtm_sortable_area wbtm_item_insert">
 								<?php if (sizeof($drop_off_infos) > 0) { ?>
 									<?php foreach ($drop_off_infos as $drop_off_info) { ?>
 										<?php $this->drop_off_point_item($unique_name, $drop_off_points, $drop_off_info); ?>
@@ -294,17 +294,17 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
 								<?php } ?>
 								</tbody>
 							</table>
-							<?php MP_Custom_Layout::add_new_button(esc_html__('Add Drop-Off Point', 'bus-ticket-booking-with-seat-reservation')); ?>
-							<div class="mp_hidden_content">
+							<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add Drop-Off Point', 'bus-ticket-booking-with-seat-reservation')); ?>
+							<div class="wbtm_hidden_content">
 								<table>
-									<tbody class="mp_hidden_item">
+									<tbody class="wbtm_hidden_item">
 									<?php $this->drop_off_point_item($unique_name, $drop_off_points); ?>
 									</tbody>
 								</table>
 							</div>
 						</div>
 					</td>
-					<td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
+					<td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
 				</tr>
 				<?php
 			}
@@ -313,7 +313,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             $dp_point = array_key_exists('drop_off_point', $drop_off_info) ? $drop_off_info['drop_off_point'] : '';
             $dp_time = array_key_exists('time', $drop_off_info) ? $drop_off_info['time'] : '';
             ?>
-            <tr class="mp_remove_area">
+            <tr class="wbtm_remove_area">
                 <td>
                     <label>
                         <select name="wbtm_drop_off_name[<?php echo esc_attr($unique_name); ?>][]" class='formControl'>
@@ -329,7 +329,7 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                         <input type="time" name="wbtm_drop_off_time[<?php echo esc_attr($unique_name); ?>][]" class='formControl' value="<?php echo esc_attr($dp_time); ?>"/>
                     </label>
                 </td>
-                <td class="_w_100"><?php MP_Custom_Layout::move_remove_button(); ?></td>
+                <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
             </tr>
             <?php
         }
@@ -338,10 +338,10 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
             if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
                 $pickup_infos = [];
                 $count = 0;
-                $hidden_ids = MP_Global_Function::get_submit_info('wbtm_pickup_unique_id', array());
-                $wbtm_pickup_bp = MP_Global_Function::get_submit_info('wbtm_bp_pickup', array());
-                $wbtm_pickup = MP_Global_Function::get_submit_info('wbtm_pickup_name', array());
-                $wbtm_pickup_time = MP_Global_Function::get_submit_info('wbtm_pickup_time', array());
+                $hidden_ids = WBTM_Global_Function::get_submit_info('wbtm_pickup_unique_id', array());
+                $wbtm_pickup_bp = WBTM_Global_Function::get_submit_info('wbtm_bp_pickup', array());
+                $wbtm_pickup = WBTM_Global_Function::get_submit_info('wbtm_pickup_name', array());
+                $wbtm_pickup_time = WBTM_Global_Function::get_submit_info('wbtm_pickup_time', array());
                 //echo "<pre>"; print_r(array($hidden_ids,$wbtm_pickup_bp,$wbtm_pickup,$wbtm_pickup_time));echo "</pre>";exit;
                 if (sizeof($hidden_ids) > 0) {
                     foreach ($hidden_ids as $hidden_id) {
@@ -362,17 +362,17 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                     }
                 }
                 update_post_meta($post_id, 'wbtm_pickup_point', $pickup_infos);
-                $display_pickup = MP_Global_Function::get_submit_info('show_pickup_point') ? 'yes' : 'no';
+                $display_pickup = WBTM_Global_Function::get_submit_info('show_pickup_point') ? 'yes' : 'no';
                 update_post_meta($post_id, 'show_pickup_point', $display_pickup);
-                $wbtm_pickup_point_required = MP_Global_Function::get_submit_info('wbtm_pickup_point_required') ? 'yes' : 'no';
+                $wbtm_pickup_point_required = WBTM_Global_Function::get_submit_info('wbtm_pickup_point_required') ? 'yes' : 'no';
                 update_post_meta($post_id, 'wbtm_pickup_point_required', $wbtm_pickup_point_required);
                 //************************//
                  $drop_off_infos=[];
                  $d_count=0;
-                $d_hidden_ids = MP_Global_Function::get_submit_info('wbtm_drop_off_unique_id', array());
-                $wbtm_dp_pickup = MP_Global_Function::get_submit_info('wbtm_dp_pickup', array());
-                $wbtm_drop_off_name = MP_Global_Function::get_submit_info('wbtm_drop_off_name', array());
-                $wbtm_drop_off_time = MP_Global_Function::get_submit_info('wbtm_drop_off_time', array());
+                $d_hidden_ids = WBTM_Global_Function::get_submit_info('wbtm_drop_off_unique_id', array());
+                $wbtm_dp_pickup = WBTM_Global_Function::get_submit_info('wbtm_dp_pickup', array());
+                $wbtm_drop_off_name = WBTM_Global_Function::get_submit_info('wbtm_drop_off_name', array());
+                $wbtm_drop_off_time = WBTM_Global_Function::get_submit_info('wbtm_drop_off_time', array());
                 if (sizeof($d_hidden_ids) > 0) {
                     foreach ($d_hidden_ids as $d_hidden_id) {
                         $drop_offs = array_key_exists($d_hidden_id, $wbtm_drop_off_name) ? $wbtm_drop_off_name[$d_hidden_id] : [];
@@ -392,9 +392,9 @@ if (!class_exists('WBTM_Settings_Pickup_Point')) {
                     }
                 }
                 update_post_meta($post_id, 'wbtm_drop_off_point', $drop_off_infos);
-                $display_dro_off = MP_Global_Function::get_submit_info('show_drop_off_point') ? 'yes' : 'no';
+                $display_dro_off = WBTM_Global_Function::get_submit_info('show_drop_off_point') ? 'yes' : 'no';
                 update_post_meta($post_id, 'show_drop_off_point', $display_dro_off);
-                $wbtm_dropping_point_required = MP_Global_Function::get_submit_info('wbtm_dropping_point_required') ? 'yes' : 'no';
+                $wbtm_dropping_point_required = WBTM_Global_Function::get_submit_info('wbtm_dropping_point_required') ? 'yes' : 'no';
                 update_post_meta($post_id, 'wbtm_dropping_point_required', $wbtm_dropping_point_required);
 
             }

@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
     die; // Cannot access pages directly.
 }
 
-$post_id = $post_id ?? MP_Global_Function::data_sanitize($_POST['post_id']);
-$start_route = $start_route ?? MP_Global_Function::data_sanitize($_POST['start_route']);
-$end_route = $end_route ?? MP_Global_Function::data_sanitize($_POST['end_route']);
+$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
+$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 $date = $_POST['date'] ?? '';
 $all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
 $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
@@ -29,7 +29,7 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
                 <th><?php echo esc_html($ticket_info['name']); ?></th>
                 <td>
                     <input type="hidden" name="wbtm_passenger_type[]" value="<?php echo esc_attr($ticket_info['type']); ?>">
-                    <?php MP_Custom_Layout::qty_input('wbtm_seat_qty[]', $ticket_info['price'], $all_info['available_seat'], 0, 0, $all_info['available_seat']); ?>
+                    <?php WBTM_Custom_Layout::qty_input('wbtm_seat_qty[]', $ticket_info['price'], $all_info['available_seat'], 0, 0, $all_info['available_seat']); ?>
                 </td>
                 <th><?php echo wc_price($ticket_info['price']); ?></th>
             </tr>

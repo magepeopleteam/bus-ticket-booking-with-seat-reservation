@@ -46,7 +46,7 @@
 			//************************************//
 			public function wbtm_upgrade() {
 				if (get_option('wbtm_new_upgrade_global') != 'completed') {
-					$seat_booked_status = MP_Global_Function::get_settings('wbtm_general_settings', 'set_book_status');
+					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status');
 					$global_settings = get_option('wbtm_general_settings');
 					if ($seat_booked_status) {
 						$global_settings['set_book_status'] = $seat_booked_status;
@@ -94,7 +94,7 @@
 					update_option('wbtm_upgrade_global_data', 'completed');
 				}
 				if (get_option('wbtm_upgrade_post_meta') != 'completed') {
-					$all_posts_ids = MP_Global_Function::get_all_post_id('wbtm_bus', -1, 1, 'any');
+					$all_posts_ids = WBTM_Global_Function::get_all_post_id('wbtm_bus', -1, 1, 'any');
 					if (sizeof($all_posts_ids) > 0) {
 						foreach ($all_posts_ids as $post_id) {
 							$this->update_bus_info($post_id);
@@ -106,7 +106,7 @@
 			public function update_bus_info($post_id) {
 				if ($post_id > 0) {
 					//=========Update off day ============//
-					$old_off_days = MP_Global_Function::get_post_info($post_id, 'weekly_offday', []);
+					$old_off_days = WBTM_Global_Function::get_post_info($post_id, 'weekly_offday', []);
 					$off_day = '';
 					if (sizeof($old_off_days) > 0) {
 						foreach ($old_off_days as $off_day) {
@@ -116,11 +116,11 @@
 					}
 					update_post_meta($post_id, 'wbtm_off_days', $off_day);
 					//=========Update total seat ============//
-					$seat_type = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+					$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 					$total_seat = 0;
 					if ($seat_type == 'wbtm_seat_plan') {
-						$seats_rows = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info');
-						$seat_col = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols');
+						$seats_rows = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info');
+						$seat_col = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols');
 						if ($seats_rows && $seat_col) {
 							foreach ($seats_rows as $seat) {
 								for ($i = 1; $i <= (int)$seat_col; $i++) {
@@ -130,8 +130,8 @@
 									}
 								}
 							}
-							$seats_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd');
-							$seat_col_dd = MP_Global_Function::get_post_info($post_id, 'wbtm_seat_cols_dd');
+							$seats_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd');
+							$seat_col_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols_dd');
 							if (is_array($seats_dd) && sizeof($seats_dd) > 0) {
 								foreach ($seats_dd as $seat) {
 									for ($i = 1; $i <= $seat_col_dd; $i++) {
@@ -145,18 +145,18 @@
 						}
 					}
 					else {
-						$total_seat = MP_Global_Function::get_post_info($post_id, 'wbtm_total_seat');
+						$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_total_seat');
 					}
 					update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 					//=========Update particular date ============//
-					$particular_date = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_on_dates');
+					$particular_date = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_on_dates');
 					$particular_date = $particular_date ? explode(', ', $particular_date) : [];
 					update_post_meta($post_id, 'wbtm_particular_dates', $particular_date);
 					delete_post_meta($post_id, 'wbtm_bus_on_dates');
 					//=========Update pickup point============//
 					$new_pickup_points = [];
 					$count = 0;
-					$old_points = MP_Global_Function::get_post_info($post_id, 'wbtm_pickpoint_selected_city');
+					$old_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickpoint_selected_city');
 					delete_post_meta($post_id, 'wbtm_pickpoint_selected_city');
 					$old_points = $old_points ? explode(',', $old_points) : [];
 					if (sizeof($old_points) > 0) {
@@ -165,7 +165,7 @@
 							if ($bp_points) {
 								$point_name = $bp_points->name;
 								$key = 'wbtm_selected_pickpoint_name_' . $old_point;
-								$points = MP_Global_Function::get_post_info($post_id, $key, []);
+								$points = WBTM_Global_Function::get_post_info($post_id, $key, []);
 								delete_post_meta($post_id, $key);
 								if (sizeof($points) > 0) {
 									$new_pickup_points[$count]['bp_point'] = $point_name;
@@ -183,12 +183,12 @@
 					update_post_meta($post_id, 'wbtm_pickup_point', $new_pickup_points);
 					//=========Update bus type============//
 					$term = get_the_terms($post_id, 'wbtm_bus_cat');
-					$bus_type = $term ? MP_Global_Function::data_sanitize($term[0]->name) : '';
+					$bus_type = $term ? WBTM_Global_Function::data_sanitize($term[0]->name) : '';
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_type);
 					//========= Update  route info , direction , bp_stp, dp_stop============//
 					$date = current_time('Y-m-d H:i');
-					$start_routes = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
-					$end_routes = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+					$start_routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
+					$end_routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
 					$bp_infos = [];
 					$dp_infos = [];
 					if (sizeof($end_routes) > 0 && sizeof($start_routes) > 0) {
@@ -248,7 +248,7 @@
 								];
 							}
 						}
-						usort($full_route_infos, "MP_Global_Function::sort_date_array");
+						usort($full_route_infos, "WBTM_Global_Function::sort_date_array");
 						foreach ($full_route_infos as $key => $route) {
 							$full_route_infos[$key]['time'] = date('H:i', strtotime($route['time']));
 						}
@@ -273,7 +273,7 @@
 						//===================//
 						$all_price_info = [];
 						if (sizeof($full_route_infos) > 0) {
-							$price_infos = MP_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+							$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
 							foreach ($full_route_infos as $key => $full_route_info) {
 								if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') {
 									$bp = $full_route_info['place'];
@@ -315,13 +315,13 @@
 						update_post_meta($post_id, 'wbtm_bus_next_stops', $all_dp);
 					}
 					//==========Extra service===========//
-					$old_ex_service = MP_Global_Function::get_post_info($post_id, 'mep_events_extra_prices', []);
+					$old_ex_service = WBTM_Global_Function::get_post_info($post_id, 'mep_events_extra_prices', []);
 					update_post_meta($post_id, 'wbtm_extra_services', $old_ex_service);
 				}
 			}
 			//************Disable Gutenberg************************//
 			public function disable_gutenberg($current_status, $post_type) {
-				$user_status = MP_Global_Function::get_settings('mp_global_settings', 'disable_block_editor', 'yes');
+				$user_status = WBTM_Global_Function::get_settings('wbtm_global_settings', 'disable_block_editor', 'yes');
 				if ($post_type === WBTM_Functions::get_cpt() && $user_status == 'yes') {
 					return false;
 				}

@@ -6,11 +6,11 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	$post_id = $post_id ?? MP_Global_Function::data_sanitize($_POST['post_id']);
-	$start_route = $start_route ?? MP_Global_Function::data_sanitize($_POST['start_route']);
-	$end_route = $end_route ?? MP_Global_Function::data_sanitize($_POST['end_route']);
+	$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
+	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 	$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
-	$display_wbtm_registration = MP_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
+	$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
 	if (sizeof($ticket_infos) > 0) {
 		?>
 			<?php if ($display_wbtm_registration == 'yes') { ?>
