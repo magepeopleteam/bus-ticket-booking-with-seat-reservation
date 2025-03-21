@@ -19,6 +19,7 @@
 				add_filter( 'single_template', array( $this, 'load_single_template' ), 10 );
 				add_filter( 'template_include', array( $this, 'load_template' ) );
 				add_filter( 'register_post_type_args', array( $this, 'modify_bus_slug' ), 5, 2 );
+
 			}
 
 			public function modify_bus_slug( $args, $post_type ) {
@@ -113,4 +114,3 @@
 		}
 		new WBTM_Dependencies();
 	}
-	
