@@ -37,6 +37,7 @@
 					self::on_activation_page_create();
 					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
 					add_action('activated_plugin', array($this, 'activation_redirect'), 90);
+				}else{
 					require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
 					add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
 				}
