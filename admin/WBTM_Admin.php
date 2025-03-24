@@ -33,11 +33,14 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Extra_Service.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_Pickup_Point.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Tax_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Translation_Settings.php'; // Add this line
+
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Status.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Dummy_Import.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Analytics_Dashboard.php';
 				//==================//
 			}
 			public function add_dummy_data() {
