@@ -41,6 +41,7 @@
 				}else{
 					require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
 					add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
+					add_action( 'admin_init', [ $this, 'flush_rules_wbtm_post_list_page' ] );
 				}
 			}
 			public function activation_redirect($plugin) {
