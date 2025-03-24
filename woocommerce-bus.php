@@ -37,6 +37,7 @@
 					self::on_activation_page_create();
 					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
 					add_action('activated_plugin', array($this, 'activation_redirect'), 90);
+					add_action( 'admin_init', [ $this, 'flush_rules_wbtm_post_list_page' ] );
 				}else{
 					require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Quick_Setup.php';
 					add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
@@ -54,6 +55,11 @@
 					exit(wp_redirect(admin_url('admin.php?post_type=wbtm_bus&page=wbtm_quick_setup')));
 				}
 			}
+			function flush_rules_wbtm_post_list_page() {				
+				if ( isset( $_GET['post_type'] ) && sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) == 'wbtm_bus' ) {
+					flush_rewrite_rules(); 
+				}
+			}			
 			function wbtm_plugin_row_meta($links_array, $plugin_file_name) {
 				if (strpos($plugin_file_name, basename(__FILE__))) {
 					if (!is_plugin_active('addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php')) {
