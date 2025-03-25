@@ -931,7 +931,7 @@
 		}
 		new WBTM_Global_Function();
 	}
-	if ( class_exists( 'Wbtm_Woocommerce_bus_Pro' ) && get_option( 'wbtm_conflict_update_pro' ) != 'completed' && ! class_exists( 'MP_Global_Function' ) ) {
+	if ( (class_exists( 'Wbtm_Woocommerce_bus_Pro' ) && get_option( 'wbtm_conflict_update_pro' ) != 'completed' && ! class_exists( 'MP_Global_Function' )) || (class_exists( 'WBTM_Dependence_QR_Code' ) && get_option( 'wbtm_conflict_update_qr' ) != 'completed' && ! class_exists( 'MP_Global_Function' ))  ) {
 		class MP_Global_Function {
 			public function __construct() {
 			}
