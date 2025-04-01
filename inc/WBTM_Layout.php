@@ -96,8 +96,8 @@ if (!class_exists('WBTM_Layout')) {
                             <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
                             <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
                             <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
-                            <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['bus_start_route'])); ?>'/>
-                            <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['bus_end_route'])); ?>'/>
+                            <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_start_route')); ?>'/>
+                            <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_end_route')); ?>'/>
                             <input type="hidden" name='j_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['j_date'])); ?>'/>
                             <input type="hidden" name='r_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
 
