@@ -42,6 +42,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Dummy_Import.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Analytics_Dashboard.php';
 				//==================//
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Bus_Import.php';
 			}
 			public function add_dummy_data() {
 				new WBTM_Dummy_Import();
