@@ -48,8 +48,8 @@
 								
 								</div>
 								<!-- create new bus route -->
-<div class="mp_hidden_content">
-									<div class="mp_hidden_item">
+<div class="wbtm_hidden_content">
+									<div class="wbtm_hidden_item">
 										<?php $this->add_stops_item($bus_stop_lists,[], 0); ?>
 									</div>
 								</div>
