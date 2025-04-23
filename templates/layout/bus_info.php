@@ -61,7 +61,12 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
                 <span class="fas fa-bus"></span>
                 <?php echo WBTM_Translations::text_coach_type(); ?>
             </th>
-            <td><?php echo WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category'); ?></td>
+            <td>
+                <?php 
+                $bus_type = WBTM_Functions::synchronize_bus_type($post_id);
+                echo $bus_type; 
+                ?>
+            </td>
         </tr>
         <tr>
             <th>

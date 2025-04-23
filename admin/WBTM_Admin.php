@@ -14,6 +14,22 @@
 				add_action('init', [$this, 'add_dummy_data']);
 				add_filter('use_block_editor_for_post_type', [$this, 'disable_gutenberg'], 10, 2);
 				add_action('upgrader_process_complete', [$this, 'flush_rewrite'], 0);
+				
+				// Add back all original hooks, now that we have placeholder methods
+				add_action('add_meta_boxes', [$this, 'wbtm_metabox_register']);
+				add_action('save_post', [$this, 'save_settings']);
+				add_action('init', [$this, 'wbtm_meta_search']); // Using our placeholder
+				add_action('init', [$this, 'wbtm_search']); // Using our placeholder
+				add_action('admin_menu', [$this, 'wbtm_remove_meta']); // Using our placeholder
+				add_action('display_post_states', [$this, 'wbtm_add_pending_status'], 10, 2);
+				add_filter('manage_wbtm_bus_posts_columns', [$this, 'wbtm_add_custom_column']);
+				add_action('manage_wbtm_bus_posts_custom_column', [$this, 'wbtm_custom_column_content'], 10, 2);
+				add_action('wp_ajax_wbtm_get_bus_detail', [$this, 'get_bus_detail']);
+				add_action('wp_ajax_nopriv_wbtm_get_bus_detail', [$this, 'get_bus_detail']);
+				add_action('wbtm_before_add_to_cart', [$this, 'booking_information']);
+				add_action('wbtm_after_add_to_cart', [$this, 'cart_validation']);
+				add_action('woocommerce_order_status_changed', [$this, 'wbtm_order_status_change'], 10, 4);
+				add_action('admin_init', [$this, 'synchronize_all_bus_types'], 99);
 			}
 			public function flush_rewrite() {
 				flush_rewrite_rules();
@@ -187,8 +203,25 @@
 					update_post_meta($post_id, 'wbtm_pickup_point', $new_pickup_points);
 					//=========Update bus type============//
 					$term = get_the_terms($post_id, 'wbtm_bus_cat');
-					$bus_type = $term ? WBTM_Global_Function::data_sanitize($term[0]->name) : '';
-					update_post_meta($post_id, 'wbtm_bus_category', $bus_type);
+
+					if (is_array($term) && !empty($term)) {
+						// Get all term names
+						$term_names = array_map(function($t) {
+							return WBTM_Global_Function::data_sanitize($t->name);
+						}, $term);
+						
+						// Use the first term name for backward compatibility
+						$bus_type = $term_names[0];
+						
+						// Store the term names in the post meta
+						update_post_meta($post_id, 'wbtm_bus_category', $bus_type);
+						
+						// For debugging or potential future use, also store all term names
+						update_post_meta($post_id, 'wbtm_bus_category_all', $term_names);
+					} else {
+						update_post_meta($post_id, 'wbtm_bus_category', '');
+						update_post_meta($post_id, 'wbtm_bus_category_all', array());
+					}
 					//========= Update  route info , direction , bp_stp, dp_stop============//
 					$date = current_time('Y-m-d H:i');
 					$start_routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
@@ -330,6 +363,66 @@
 					return false;
 				}
 				return $current_status;
+			}
+			/**
+			 * Synchronize all bus types to ensure consistency
+			 * 
+			 * This function will loop through all bus posts and
+			 * ensure that the wbtm_bus_category meta and wbtm_bus_cat taxonomy
+			 * are in sync.
+			 */
+			public function synchronize_all_bus_types() {
+				// Check if this is an admin request and not an AJAX call
+				if (!is_admin() || (defined('DOING_AJAX') && DOING_AJAX)) {
+					return;
+				}
+				
+				// Only run this synchronization occasionally - once per hour is sufficient
+				$last_sync = get_option('wbtm_bus_type_last_sync', 0);
+				$current_time = time();
+				
+				// If less than 1 hour has passed since the last sync, skip this run
+				if (($current_time - $last_sync) < 3600) {
+					return;
+				}
+				
+				// Get all bus posts
+				$args = array(
+					'post_type' => WBTM_Functions::get_cpt(),
+					'post_status' => 'publish',
+					'posts_per_page' => -1,
+					'fields' => 'ids'
+				);
+				
+				$bus_posts = get_posts($args);
+				
+				if (!empty($bus_posts)) {
+					foreach ($bus_posts as $post_id) {
+						// Use the synchronize_bus_type function to ensure consistency
+						WBTM_Functions::synchronize_bus_type($post_id);
+					}
+				}
+				
+				// Update the last sync time
+				update_option('wbtm_bus_type_last_sync', $current_time);
+			}
+			/**
+			 * Placeholder for removed method
+			 */
+			public function wbtm_meta_search() {
+				// Intentionally left empty
+			}
+			/**
+			 * Placeholder for removed method
+			 */
+			public function wbtm_search() {
+				// Intentionally left empty
+			}
+			/**
+			 * Placeholder for removed method
+			 */
+			public function wbtm_remove_meta() {
+				// Intentionally left empty
 			}
 		}
 		new WBTM_Admin();
