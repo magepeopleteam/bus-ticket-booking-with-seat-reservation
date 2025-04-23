@@ -100,7 +100,7 @@
 				unset($column['date']);
 				$column['wbtm_bus_no'] = esc_html__('Coach no', 'bus-ticket-booking-with-seat-reservation');
 				$column['wbtm_bus_type'] = $name . ' ' . esc_html__('Type', 'bus-ticket-booking-with-seat-reservation');
-				$column['taxonomy-wbtm_bus_cat'] = WBTM_Translations::text_coach_type();
+				$column['wbtm_coach_type'] = WBTM_Translations::text_coach_type();
 				$column['wbtm_added_by'] = esc_html__('Added by', 'bus-ticket-booking-with-seat-reservation');
 				$column['date'] = $date;
 				return $column;
@@ -114,6 +114,10 @@
 						break;
 					case 'wbtm_bus_type':
 						echo "<span class=''>" . $seat_plan_text . "</span>";
+						break;
+					case 'wbtm_coach_type':
+						$category = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category');
+						echo "<span class=''>" . ($category ? esc_html($category) : '-') . "</span>";
 						break;
 					case 'wbtm_added_by':
 						$user_id = get_post_field('post_author', $post_id);

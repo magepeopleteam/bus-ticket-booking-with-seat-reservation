@@ -76,8 +76,27 @@
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$bus_no = WBTM_Global_Function::get_submit_info('wbtm_bus_no');
 					update_post_meta($post_id, 'wbtm_bus_no', $bus_no);
+					
 					$bus_category = WBTM_Global_Function::get_submit_info('wbtm_bus_category');
+					
+					// Update post meta
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
+					
+					// Check if the term exists, if not create it
+					$term = term_exists($bus_category, 'wbtm_bus_cat');
+					if (!$term) {
+						$term = wp_insert_term($bus_category, 'wbtm_bus_cat');
+					}
+					
+					// Set the taxonomy term for this bus
+					if (!is_wp_error($term)) {
+						// Get the term ID
+						$term_id = is_array($term) ? $term['term_id'] : $term;
+						
+						// Set the term for the post, replacing any existing terms
+						$result = wp_set_object_terms($post_id, intval($term_id), 'wbtm_bus_cat', false);
+					}
+					
 					$wbtm_registration = WBTM_Global_Function::get_submit_info('wbtm_registration') ? 'yes' : 'no';
 					update_post_meta($post_id, 'wbtm_registration', $wbtm_registration);
 				}

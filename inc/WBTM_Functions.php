@@ -477,8 +477,25 @@
                         <div class="wbtm_bus_filter_items">
                                 <span class="wbtm_bus_toggle-header">Bus Type <span class="wbtm_bus_toggle-icon"></span></span>
                                 <?php
-                                $search_bus_types = array_unique($bus_types);
-                                foreach ( $search_bus_types as $bus_type) {
+                                // Get global list of bus types from taxonomy
+                                $bus_cat_terms = get_terms(array(
+                                    'taxonomy' => 'wbtm_bus_cat',
+                                    'hide_empty' => false,
+                                ));
+                                
+                                $unique_bus_types = array();
+                                if (!is_wp_error($bus_cat_terms) && !empty($bus_cat_terms)) {
+                                    foreach ($bus_cat_terms as $term) {
+                                        $unique_bus_types[] = $term->name;
+                                    }
+                                }
+                                
+                                // If no terms found, fall back to the passed array
+                                if (empty($unique_bus_types)) {
+                                    $unique_bus_types = array_unique($bus_types);
+                                }
+                                
+                                foreach ( $unique_bus_types as $bus_type) {
                                     if( !empty( $bus_type ) ){
                                     ?>
                                     <div class="wbtm_bus_left_filter_checkbox_holder">
@@ -521,6 +538,69 @@
                     </div>
                 </div>
                 <?php
+            }
+            
+            /**
+             * Synchronize bus type between taxonomy and post meta
+             * 
+             * This function ensures that the bus type stored in post meta (wbtm_bus_category)
+             * is consistent with the taxonomy terms (wbtm_bus_cat).
+             * 
+             * @param int $post_id The bus post ID
+             * @return string The synchronized bus type
+             */
+            public static function synchronize_bus_type($post_id) {
+                // Get the current bus type from post meta
+                $meta_bus_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category', '');
+                
+                // Get the taxonomies for this bus
+                $terms = get_the_terms($post_id, 'wbtm_bus_cat');
+                
+                if (is_array($terms) && !empty($terms)) {
+                    // Get the first term name
+                    $term_name = WBTM_Global_Function::data_sanitize($terms[0]->name);
+                    
+                    // If the post meta doesn't match the taxonomy term, update it
+                    if ($meta_bus_type !== $term_name) {
+                        update_post_meta($post_id, 'wbtm_bus_category', $term_name);
+                        
+                        // Also update the term_order to ensure this term is always first
+                        if (count($terms) > 1) {
+                            // Store all term IDs to maintain all associations
+                            $term_ids = array_map(function($term) {
+                                return $term->term_id;
+                            }, $terms);
+                            
+                            // First remove all terms
+                            wp_set_object_terms($post_id, array(), 'wbtm_bus_cat');
+                            
+                            // Then add them back with the first term first
+                            wp_set_object_terms($post_id, $term_ids, 'wbtm_bus_cat', false);
+                        }
+                        
+                        return $term_name;
+                    }
+                    
+                    return $meta_bus_type;
+                } elseif (!empty($meta_bus_type)) {
+                    // If we have a meta bus type but no taxonomy terms, create the term
+                    $term = term_exists($meta_bus_type, 'wbtm_bus_cat');
+                    if (!$term) {
+                        $term = wp_insert_term($meta_bus_type, 'wbtm_bus_cat');
+                    }
+                    
+                    if (!is_wp_error($term)) {
+                        // Get the term ID
+                        $term_id = is_array($term) ? $term['term_id'] : $term;
+                        
+                        // Set the term for the post
+                        wp_set_object_terms($post_id, intval($term_id), 'wbtm_bus_cat', false);
+                    }
+                    
+                    return $meta_bus_type;
+                }
+                
+                return '';
             }
 		}
 	}
