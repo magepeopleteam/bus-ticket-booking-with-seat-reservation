@@ -424,6 +424,73 @@
 			public function wbtm_remove_meta() {
 				// Intentionally left empty
 			}
+			/**
+			 * Add custom columns to the bus list table
+			 *
+			 * @param array $columns Array of columns
+			 * @return array Modified columns
+			 */
+			public function wbtm_add_custom_column($columns) {
+				// Return the default columns unchanged
+				return $columns;
+			}
+			/**
+			 * Display content for custom columns
+			 *
+			 * @param string $column Column name
+			 * @param int $post_id Post ID
+			 */
+			public function wbtm_custom_column_content($column, $post_id) {
+				// Empty implementation
+			}
+			/**
+			 * Add metaboxes to the bus post type
+			 */
+			public function wbtm_metabox_register() {
+				// Empty implementation
+			}
+			/**
+			 * Save settings from metaboxes
+			 *
+			 * @param int $post_id Post ID
+			 */
+			public function save_settings($post_id) {
+				// Empty implementation
+			}
+			/**
+			 * Add pending status to posts
+			 *
+			 * @param array $post_states Post states
+			 * @param WP_Post $post Post object
+			 * @return array Modified post states
+			 */
+			public function wbtm_add_pending_status($post_states, $post) {
+				return $post_states;
+			}
+			/**
+			 * Get bus detail (AJAX handler)
+			 */
+			public function get_bus_detail() {
+				// Empty implementation
+			}
+			/**
+			 * Handle booking information
+			 */
+			public function booking_information() {
+				// Empty implementation
+			}
+			/**
+			 * Validate cart
+			 */
+			public function cart_validation() {
+				// Empty implementation
+			}
+			/**
+			 * Handle order status changes
+			 */
+			public function wbtm_order_status_change() {
+				// Empty implementation
+			}
 		}
 		new WBTM_Admin();
 	}
