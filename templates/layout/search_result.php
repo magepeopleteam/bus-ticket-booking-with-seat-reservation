@@ -120,7 +120,7 @@ if (sizeof($bus_ids) > 0) {
             $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
             ?>
 
-            <div class="wbtm-bust-list  <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+            <div class="wbtm-bus-list  <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -136,11 +136,11 @@ if (sizeof($bus_ids) > 0) {
                 <div class="wbtm-bus-image ">
                     <?php WBTM_Custom_Layout::bg_image($bus_id); ?>
                 </div>
-                <div class="wbtm-bus-name text-start">
+                <div class="wbtm-bus-name">
                     <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
                     <p><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
                 </div>
-                <div class="wbtm-bus-route text-start">
+                <div class="wbtm-bus-route">
                     <h6>
                         <span class="fa fa-map-pin"></span>
                         <?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? '(' . WBTM_Global_Function::date_format($all_info['bp_time'], 'time') . ')' : ''); ?>
@@ -149,11 +149,11 @@ if (sizeof($bus_ids) > 0) {
                         <i class="fas fa-map-marker-alt"></i>
                         <?php echo esc_html($all_info['dp']) . ' ' . esc_html($all_info['dp_time'] ? '(' . WBTM_Global_Function::date_format($all_info['dp_time'], 'time') . ')' : ''); ?>
                     </h6>
-                    <i class="fas fa-clock"></i> <strong><?php echo WBTM_Translations::duration_text(); ?><?php echo esc_html($duration_formatted); ?> </strong>
+                    <h6>
+                        <i class="far fa-clock"></i><?php echo WBTM_Translations::duration_text(); ?><?php echo esc_html($duration_formatted); ?>
                     </h6>
                 </div>
-                <div class="wbtm-seat-info text-center">
-                    <div>
+                <div class="wbtm-seat-info">
                         <?php 
                         // Get the bus type directly at the point of display
                         $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
@@ -161,14 +161,13 @@ if (sizeof($bus_ids) > 0) {
                         <h6><?php echo esc_attr($bus_type); ?></h6>
                         <p><?php echo WBTM_Translations::text_coach_type(); ?></p>
                     </div>
-                    <div>
-                        <h6><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></h6>
-                        <p><?php echo WBTM_Translations::text_available(); ?></p>
-                    </div>
-                    <div>
+                <div class="wbtm-seat-info">
+                    <h6><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></h6>
+                    <p><?php echo WBTM_Translations::text_available(); ?></p>
+                </div>
+                <div class="wbtm-seat-info">
                         <h6><?php echo wc_price($price); ?></h6>
                         <p><?php echo WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat(); ?></p>
-                    </div>
                 </div>
                 <?php
                 if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {

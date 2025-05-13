@@ -20,7 +20,7 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .title {
-    width: 15%;
+    width: 12%;
   }
 }
 .wbtm-bus-flix-style .title span {
@@ -91,6 +91,137 @@
 .wbtm-bus-flix-style .feature .items {
   padding: 2px 8px;
   border-radius: 50px;
+}
+
+.wbtm_style .wbtm_search_area {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+.wbtm_style .wbtm_search_area .inputList {
+  margin: 0 10px 5px 0;
+}
+.wbtm_style .wbtm_search_area .inputList:last-child {
+  margin-right: 0;
+}
+.wbtm_style .wbtm_search_area .marker, .wbtm_style .wbtm_search_area .calendar {
+  position: relative;
+}
+.wbtm_style .wbtm_search_area .marker i, .wbtm_style .wbtm_search_area .calendar i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+  color: #999;
+}
+.wbtm_style .wbtm_search_area .marker input, .wbtm_style .wbtm_search_area .calendar input {
+  padding-left: 30px;
+  font-size: 16px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion {
+  margin-bottom: 20px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date {
+  margin-right: 5px;
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: var(--wbtm_d_color);
+  font-weight: normal;
+  font-size: 16px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:last-child {
+  margin-right: 0;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:hover {
+  color: var(--wbtm_color_theme);
+  border: 1px solid var(--wbtm_color_theme);
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date.active {
+  background-color: var(--wbtm_color_theme);
+  color: #fff;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-route {
+  background-color: white;
+  padding: 15px;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid var(--wbtm_color_theme);
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  margin-top: 0;
+  margin-bottom: 15px;
+  background-color: #fff;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
+  padding: 15px;
+  background-color: #f0f2f5;
+  border-radius: 0 0 0 12px;
+  width: 10%;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  width: auto;
+  width: 20%;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  width: auto;
+  width: 30%;
+  align-items: start;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  width: auto;
+  width: 10%;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  width: auto;
+  width: 10%;
+  border-right: 0;
 }
 
 .pickup-point,
