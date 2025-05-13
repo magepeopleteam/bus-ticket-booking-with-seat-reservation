@@ -199,6 +199,15 @@
             border-right: 0;
           }
         }
+        .lists-title{
+          background: linear-gradient(135deg, var(--wbtm_color_theme), var(--wbtm_color_theme_cc));
+          color: #fff;
+          padding: 30px 0;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          margin-bottom: 30px;
+          text-align: center;
+        }
       }
     }
 }
