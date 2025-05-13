@@ -196,6 +196,7 @@
   border-right: 1px solid #eee;
   width: auto;
   width: 30%;
+  gap: 5px;
   align-items: start;
 }
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {

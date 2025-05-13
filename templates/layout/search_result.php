@@ -142,7 +142,7 @@ if (sizeof($bus_ids) > 0) {
                 </div>
                 <div class="wbtm-bus-route">
                     <h6>
-                        <span class="fa fa-map-pin"></span>
+                        <i class="fa fa-map-pin"></i>
                         <?php echo esc_html($all_info['bp']) . ' ' . esc_html($all_info['bp_time'] ? '(' . WBTM_Global_Function::date_format($all_info['bp_time'], 'time') . ')' : ''); ?>
                     </h6>
                     <h6>

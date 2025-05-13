@@ -187,7 +187,9 @@
           .wbtm-bus-route{
             @include center-columns;
             width: 30%;
+            gap:5px;
             align-items: start;
+            
           }
           .wbtm-seat-info{
             @include center-columns;
