@@ -165,12 +165,15 @@
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
-  flex-direction: column;
   gap: 0;
+  flex-wrap: wrap;
+  border: 1px solid #ddd;
 }
 @media (min-width: 800px) {
   .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
     flex-direction: row;
+    flex-wrap: nowrap;
+    border: 0;
   }
 }
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list:hover {
@@ -207,13 +210,18 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  border-right: 1px solid #eee;
+  border-top: 1px solid #eee;
   width: auto;
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 5px;
   align-items: start;
-  width: 100%;
+  width: 50%;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+    border-right: 1px solid #eee;
+  }
 }
 @media (min-width: 800px) {
   .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
@@ -232,11 +240,15 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  border-right: 1px solid #eee;
+  border-top: 1px solid #eee;
   width: auto;
-  width: 100%;
-  gap: 8px;
+  width: 50%;
   align-items: start;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+    border-right: 1px solid #eee;
+  }
 }
 @media (min-width: 800px) {
   .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
@@ -265,9 +277,14 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  border-right: 1px solid #eee;
+  border-top: 1px solid #eee;
   width: auto;
-  width: 100%;
+  width: 33%;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+    border-right: 1px solid #eee;
+  }
 }
 @media (min-width: 800px) {
   .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
@@ -306,15 +323,23 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  border-right: 1px solid #eee;
+  border-top: 1px solid #eee;
   width: auto;
   border-right: 0;
   width: 100%;
 }
 @media (min-width: 800px) {
   .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+    border-right: 1px solid #eee;
+  }
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
     width: 10%;
   }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book button {
+  width: 100%;
 }
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .lists-title {
   background: linear-gradient(105deg, #dddddd, #d8d8d8);
