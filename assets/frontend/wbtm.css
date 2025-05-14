@@ -153,7 +153,7 @@
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid var(--wbtm_color_theme);
 }
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
@@ -166,6 +166,10 @@
   display: flex;
   justify-content: space-between;
   gap: 0;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
   background-color: #f0f2f5;
@@ -311,14 +315,16 @@
   margin-bottom: 24px;
 }
 
-.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
-  background: #fff;
+.wbtm_selected_seat_details table thead th {
+  font-size: 16px;
+  color: #666;
 }
-.wbtm_selected_seat_details table tr:hover {
-  background-color: #fff;
+.wbtm_selected_seat_details table tbody tr {
+  border-bottom: 1px solid #d8d8d8;
 }
-.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
-  background: none;
+
+div.wbtm_selected_seat_details table tbody tr td {
+  border-bottom: 1px solid #d8d8d8;
 }
 
 .wbtm_ex_service_area table tbody tr:nth-child(2n+1) {

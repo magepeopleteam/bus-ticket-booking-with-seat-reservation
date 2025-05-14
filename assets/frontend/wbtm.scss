@@ -147,7 +147,7 @@
         align-items: center;
         justify-content: space-between;
         font-weight: 600;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         border-bottom: 2px solid var(--wbtm_color_theme);
       }
 
@@ -162,6 +162,10 @@
           display: flex;
           justify-content: space-between;
           gap: 0;
+          &:hover{
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+          }
           @mixin center-columns{
             margin: 0;
             padding: 15px;
@@ -292,19 +296,18 @@
   }
 }
 .wbtm_selected_seat_details{
-  table tbody tr:nth-child(2n+1)
-    {
-      background:#fff;
-    }
-  table tr:hover{
-    background-color: #fff;
+  table thead th{
+    font-size: 16px;
+    color: #666;
   }
-  table tbody tr:nth-child(2n+1) {
-    background: none;
+  
+  table tbody tr{
+    border-bottom: 1px solid #d8d8d8;
   }
-
 }
-
+div.wbtm_selected_seat_details table tbody tr td{
+  border-bottom: 1px solid #d8d8d8;
+}
 .wbtm_ex_service_area{
   table tbody tr:nth-child(2n+1) {
     background: none;
