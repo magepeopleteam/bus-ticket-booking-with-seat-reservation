@@ -49,7 +49,7 @@
           backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {
-          wbtm_loader(parent.find(".wbtm_search_area"));
+          wbtm_loader(parent.find(".wbtm_search_result"));
         },
 		  success: function (data) {
           parent
@@ -84,7 +84,7 @@
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
-		wbtm_loader_xs(parent);
+		wbtm_loader_xs(target);
 		let exit_route = 0;
 		parent.find('.wbtm_start_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');

@@ -164,7 +164,7 @@
           gap: 0;
           @mixin center-columns{
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -174,26 +174,85 @@
             width: auto;
           }
           .wbtm-bus-image {
-            
-            padding:15px;
             background-color: #f0f2f5;
             border-radius:0 0 0 12px;
             width: 10%;
+            height: 110px;
+            .bg_image_area {
+              width: 100%;
+              height: 100%;
+              & > div {
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-position: center;
+                border-radius:0 0 0 12px;
+              }
+            }
           }
           .wbtm-bus-name{
             @include center-columns;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            align-items: start;
             width: 20%;
+            p{
+              font-size: 14px;
+              color: gray;
+            }
           }
           .wbtm-bus-route{
             @include center-columns;
             width: 30%;
-            gap:5px;
+            gap:8px;
             align-items: start;
-            
+            h6:nth-child(1){
+              i{
+                color: #28a745;
+                padding-right: 10px;
+              }
+            }
+            h6:nth-child(2){
+              i{
+                color: #dc3545;
+                padding-right: 10px;
+              }
+            }
+            h6:nth-child(3){
+              i{
+                padding-right: 10px;
+              }
+            }
+            .time{
+              color: gray;
+            }
           }
           .wbtm-seat-info{
             @include center-columns;
             width: 10%;
+            .ac{
+              background-color: #e0f7fa;
+              color: #0097a7;
+              padding: 2px 6px;
+              border-radius: 5px;
+            }
+            .none-ac{
+              background-color: #fff8e1;
+              color: #ffa000;
+              padding: 2px 6px;
+              border-radius: 5px;
+            }
+            .seats-available{
+              color: #28a745;
+              font-size: 16px;
+              font-weight: bold;
+            }
+            .seats-price{
+              color: var(--wbtm_color_theme);
+              font-size: 16px;
+              font-weight: bold;
+            }
           }
           .wbtm-seat-book {
             @include center-columns;
@@ -202,12 +261,12 @@
           }
         }
         .lists-title{
-          background: linear-gradient(135deg, var(--wbtm_color_theme), var(--wbtm_color_theme_cc));
-          color: #fff;
-          padding: 30px 0;
+          background: linear-gradient(105deg, #dddddd, #d8d8d8);
+          color: var(--wbtm_color_theme);
+          padding: 10px 0;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          margin-bottom: 30px;
+          margin: 30px 0;
           text-align: center;
         }
       }

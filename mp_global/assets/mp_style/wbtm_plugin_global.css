@@ -110,10 +110,10 @@
 	div.wbtm_style .dShadow_4,
 	[class*="_dShadow_4"],
 	div.wbtm_style ul.wbtm_input_select_list {
-		-webkit-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
-		-moz-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
-		-o-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
-		box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+		-webkit-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+		-moz-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+		-o-box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+		box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 	}
 	div.wbtm_style .dShadow_5,
 	div.wbtm_style [class*="_dShadow_5"],
@@ -1707,8 +1707,8 @@
 		border-bottom: none;
 	}
 	.wbtm_style ul.wbtm_input_select_list li:hover {
-		background-color: #777;
-		color: #FFF;
+		background-color: #f8f8f8;
+		color: #666;
 	}
 	.wbtm_style ul.wbtm_input_select_list li span {
 		margin: 0 var(--wbtm_dmp_xs) 0 0;
