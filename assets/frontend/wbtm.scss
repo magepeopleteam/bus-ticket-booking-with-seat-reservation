@@ -161,7 +161,11 @@
           border-radius: 12px;
           display: flex;
           justify-content: space-between;
+          flex-direction: column;
           gap: 0;
+          @media (min-width:800px) {
+            flex-direction: row;
+          }
           &:hover{
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
@@ -180,8 +184,11 @@
           .wbtm-bus-image {
             background-color: #f0f2f5;
             border-radius:0 0 0 12px;
-            width: 10%;
+            width: 100%;
             height: 110px;
+            @media (min-width:800px) {
+              width: 10%;
+            }
             .bg_image_area {
               width: 100%;
               height: 100%;
@@ -200,7 +207,10 @@
             font-weight: 700;
             margin-bottom: 5px;
             align-items: start;
-            width: 20%;
+            width: 100%;
+            @media (min-width:800px) {
+              width: 20%;
+            }
             p{
               font-size: 14px;
               color: gray;
@@ -208,9 +218,12 @@
           }
           .wbtm-bus-route{
             @include center-columns;
-            width: 30%;
+            width: 100%;
             gap:8px;
             align-items: start;
+            @media (min-width:800px) {
+              width: 30%;
+            }
             h6:nth-child(1){
               i{
                 color: #28a745;
@@ -234,7 +247,10 @@
           }
           .wbtm-seat-info{
             @include center-columns;
-            width: 10%;
+            width: 100%;
+            @media (min-width:800px) {
+              width: 10%;
+            }
             .ac{
               background-color: #e0f7fa;
               color: #0097a7;
@@ -251,17 +267,22 @@
               color: #28a745;
               font-size: 16px;
               font-weight: bold;
+              margin-bottom: 10px;
             }
             .seats-price{
               color: var(--wbtm_color_theme);
               font-size: 16px;
               font-weight: bold;
+              margin-bottom: 10px;
             }
           }
           .wbtm-seat-book {
             @include center-columns;
-            width: 10%;
             border-right: 0;
+            width: 100%;
+            @media (min-width:800px) {
+              width: 10%;
+            }
           }
         }
         .lists-title{
@@ -272,6 +293,11 @@
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           margin: 30px 0;
           text-align: center;
+        }
+        .wbtm_registration_area{
+          padding: 20px;
+          border: 1px solid #d0d0d0;
+          margin-bottom: 20px;
         }
       }
     }
@@ -304,11 +330,26 @@
   table tbody tr{
     border-bottom: 1px solid #d8d8d8;
   }
+  
+}
+table.wbtm_totals{
+  tbody{
+    tr{
+      h5{
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
 }
 div.wbtm_selected_seat_details table tbody tr td{
   border-bottom: 1px solid #d8d8d8;
 }
 .wbtm_ex_service_area{
+  table thead th{
+    font-size: 16px;
+    color: #666;
+  }
   table tbody tr:nth-child(2n+1) {
     background: none;
   }
