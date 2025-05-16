@@ -20,7 +20,7 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .title {
-    width: 12%;
+    width: 16%;
   }
 }
 .wbtm-bus-flix-style .title span {
@@ -40,7 +40,7 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .route {
-    width: 45%;
+    width: 40%;
   }
 }
 .wbtm-bus-flix-style .route .route-info {
