@@ -9,8 +9,10 @@
   border-radius: 5px;
   padding: 10px;
   font-family: sans-serif;
+  
   @media (min-width: 1024px) {
     flex-direction: row;
+    flex-wrap: nowrap;
   }
   .title {
     width: 100%;

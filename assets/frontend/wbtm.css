@@ -13,6 +13,7 @@
 @media (min-width: 1024px) {
   .wbtm-bus-flix-style {
     flex-direction: row;
+    flex-wrap: nowrap;
   }
 }
 .wbtm-bus-flix-style .title {
