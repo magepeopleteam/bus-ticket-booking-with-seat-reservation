@@ -158,7 +158,8 @@ if (sizeof($bus_ids) > 0) {
 						// Add more detailed logging
 						error_log('FLIX DISPLAY - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Using Bus Type: ' . $bus_types[$key] . ' - Date: ' . $date);
 						?>
-						<p><?php echo WBTM_Translations::text_available(); ?> <strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
+						<p><strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
+						<p><?php echo WBTM_Translations::text_available(); ?></p>
 					</div>
 				</div>
 				<div class="price">

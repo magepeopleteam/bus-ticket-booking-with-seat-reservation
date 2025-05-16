@@ -140,17 +140,18 @@
 										<option value="dp" <?php echo esc_attr($type == 'dp' ? 'selected' : ''); ?>><?php esc_html_e('Dropping ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 										<option value="both" <?php echo esc_attr($type == 'both' ? 'selected' : ''); ?>><?php esc_html_e('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 									</select>
-								
 							</div>
-							<div class="col_4 _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none'; ?>;">
-                        <label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
-                        <input type="hidden" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="0" />
-                        <input type="checkbox" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
-                    </div>
 <!--							<label>-->
 <!--								<span class="_w_75">--><?php //esc_html_e('Interval : ', 'bus-ticket-booking-with-seat-reservation'); ?><!--</span>-->
 <!--								<input type="number" pattern="[0-9]*" step="1" class="formControl wbtm_number_validation" name="wbtm_route_interval[]" placeholder="Ex: 1" value="--><?php //echo esc_attr($interval); ?><!--"/>-->
 <!--							</label>-->
+						</div>
+						<div class="_dFlex_justifyCenter_alignCenter ">
+							<div class="col_12 _margin _dFlex_justifyCenter_alignCenter next-day-dropping-checkbox" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none'; ?>;">
+								<label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<input type="hidden" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="0" />
+								<input type="checkbox" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
+							</div>
 						</div>
 						<script>
             jQuery(document).ready(function($) {

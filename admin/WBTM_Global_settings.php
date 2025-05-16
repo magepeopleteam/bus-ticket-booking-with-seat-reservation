@@ -379,7 +379,7 @@
 							'label'   => esc_html__( 'Theme Color', 'bus-ticket-booking-with-seat-reservation' ),
 							'desc'    => esc_html__( 'Select Default Theme Color', 'bus-ticket-booking-with-seat-reservation' ),
 							'type'    => 'color',
-							'default' => '#F12971'
+							'default' => '#ff4500'
 						),
 						array(
 							'name'    => 'theme_alternate_color',

@@ -163,16 +163,16 @@ if (sizeof($bus_ids) > 0) {
                         <?php 
                         $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
                         ?>
-                        <p class="<?php echo esc_attr($bus_type=='AC')?'ac':'none-ac'; ?>"><?php echo esc_attr($bus_type); ?></p>
+                        <span class="<?php echo esc_attr($bus_type=='AC')?'ac':'none-ac'; ?>"><?php echo esc_attr($bus_type); ?></span>
                         
                     </div>
                 <div class="wbtm-seat-info">
                     <h6 class="seats-available"><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></h6>
-                    <p><?php echo WBTM_Translations::text_available(); ?></p>
+                    <span><?php echo WBTM_Translations::text_available(); ?></span>
                 </div>
                 <div class="wbtm-seat-info">
                         <h6 class="seats-price"><?php echo wc_price($price); ?></h6>
-                        <p><?php echo WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat(); ?></p>
+                        <span><?php echo WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat(); ?></span>
                 </div>
                 <?php
                 if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {

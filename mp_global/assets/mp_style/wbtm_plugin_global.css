@@ -589,10 +589,10 @@
 	/***/
 	.wbtm_style .themeButton,
 	.wbtm_style [class*="_themeButton"] {
-		background-color: var(--wbtm_color_theme);
+		background-color: var(--wbtm-primary);
 		color: var(--wbtm_color_theme_alter);
 		padding: var(--wbtm_dmp_xs) var(--wbtm_dmp);
-		border: 1px solid var(--wbtm_color_theme);
+		border: 1px solid var(--wbtm-primary);
 	}
 	.wbtm_style .themeButton span,
 	.wbtm_style [class*="_themeButton"] span {
@@ -600,9 +600,9 @@
 	}
 	.wbtm_style .themeButton:hover,
 	.wbtm_style [class*="_themeButton"]:hover {
-		background-color: var(--wbtm_color_theme);
+		background-color: var(--wbtm-primary);
 		color: var(--wbtm_color_theme_alter);
-		border-color: var(--wbtm_color_theme);
+		border-color: var(--wbtm-primary);
 	}
 	.wbtm_style .themeButton:hover span,
 	.wbtm_style [class*="_themeButton"]:hover span {
@@ -612,7 +612,7 @@
 	.wbtm_style .warningButton,
 	.wbtm_style [class*="_warningButton"] {
 		background-color: var(--wbtm_color_2);
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 		padding: var(--wbtm_dmp_xs) var(--wbtm_dmp);
 		border: 1px solid var(--wbtm_color_2);
 	}
@@ -635,12 +635,12 @@
 		background-color: var(--wbtm_color_white);
 		color: var(--wbtm_color_black);
 		padding: var(--wbtm_dmp_xs) var(--wbtm_dmp);
-		border: 1px solid var(--wbtm_color_theme);
+		border: 1px solid var(--wbtm-primary);
 		margin-right: -1px;
 	}
 	.wbtm_style .whiteButton span,
 	.wbtm_style [class*="whiteButton"] span {
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 	}
 	.wbtm_style .whiteButton:hover,
 	.wbtm_style [class*="whiteButton"]:hover {
@@ -703,7 +703,7 @@
 	}
 	/*************************/
 	.wbtm_style [class*="dButton"].mpActive {
-		background-color: var(--wbtm_color_theme);
+		background-color: var(--wbtm-primary);
 		color: var(--wbtm_color_theme_alter);
 	}
 }
@@ -1093,7 +1093,7 @@
 	}
 	div[class*="wbtm_loader"] {
 		background: #0003;
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 	}
 	div[class*="wbtm_loader"].pFixed {
 		position: fixed;
@@ -1105,9 +1105,9 @@
 	}
 	div[class*="wbtm_loader"].border_spin_loader span {
 		border-top: 5px solid var(--wbtm_color_theme_alter);
-		border-right: 5px solid var(--wbtm_color_theme);
+		border-right: 5px solid var(--wbtm-primary);
 		border-bottom: 5px solid var(--wbtm_color_theme_alter);
-		border-left: 5px solid var(--wbtm_color_theme);
+		border-left: 5px solid var(--wbtm-primary);
 		width: 60px;
 		height: 60px;
 		-webkit-animation: spin 1000ms linear infinite;
@@ -1137,7 +1137,7 @@
 	}
 	div[class*="simpleSpinner"] {
 		padding: var(--wbtm_dmp);
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 	}
 	/******/
 	.wbtm_placeholderLoader .placeholder_area {
@@ -1899,7 +1899,7 @@
 		transition: 0.4s;
 	}
 	.wbtm_style .roundSwitchLabel input:checked + .roundSwitch {
-		background-color: var(--wbtm_color_theme);
+		background-color: var(--wbtm-primary);
 	}
 	.wbtm_style .roundSwitchLabel input:focus + .roundSwitch {
 		box-shadow: 0 0 1px #2276D2;
@@ -2159,7 +2159,7 @@
 	}
 	.wbtm_style .tabLists span {
 		margin: 0 var(--wbtm_dmp_xs) 0 0;
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 	}
 	.leftTabs > .tabLists {
 		-webkit-flex-flow: column;
@@ -2184,13 +2184,13 @@
 		border-left: 2px solid transparent;
 	}
 	.wbtm_style [data-tabs-target]:hover {
-		border-left: 2px solid var(--wbtm_color_theme);
+		border-left: 2px solid var(--wbtm-primary);
 		background-color: var(--wbtm_color_theme_alter);
 	}
 	.wbtm_style [data-tabs-target].active {
 		background-color: var(--wbtm_color_theme_alter);
 		color: var(--wbtm_d_color);
-		border-left: 2px solid var(--wbtm_color_theme);
+		border-left: 2px solid var(--wbtm-primary);
 	}
 	.topTabs [data-tabs-target] {
 		border-right: 1px solid var(--wbtm_color_border);
@@ -3182,16 +3182,16 @@
 	/*****Theme*********/
 	div.wbtm_style .textTheme,
 	div.wbtm_style [class*="_textTheme"] {
-		color: var(--wbtm_color_theme);
+		color: var(--wbtm-primary);
 	}
 	div.wbtm_style .bgTheme,
 	div.wbtm_style [class*="_bgTheme"] {
-		background-color: var(--wbtm_color_theme);
+		background-color: var(--wbtm-primary);
 		color: var(--wbtm_color_theme_alter);
 	}
 	div.wbtm_style [class*="_bTheme"],
 	.bTheme {
-		border: 1px solid var(--wbtm_color_theme);
+		border: 1px solid var(--wbtm-primary);
 	}
 	/*****default*********/
 	div.wbtm_style [class*="textDefault"] {

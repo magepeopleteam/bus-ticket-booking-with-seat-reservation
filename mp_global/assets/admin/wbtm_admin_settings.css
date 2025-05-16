@@ -1,9 +1,12 @@
 @charset "utf-8";
+:root{
+	--wbtm-primary:#f12971;
+}
 /******************************************************************** Global settings ************************************************/
 @media only screen and (min-width: 10px) {
 	div.wbtm_global_settings {max-width: 1700px; margin: 30px 30px 30px 15px; width: calc(100% - 30px);}
 	div.wbtm_global_settings .button-primary {min-width: 200px;font-size: var(--wbtm_fs_h5);font-weight: var(--wbtm_fw-medium);padding: var(--wbtm_dmp_xs); }
-	div.wbtm_global_settings .mpPanelHeader {background: var(--wbtm_color_theme); color: #FFF;padding: var(--wbtm_dmp_xs);font-size:var(--wbtm_fs_h5);font-weight: var(--wbtm_fw-medium); }
+	div.wbtm_global_settings .mpPanelHeader {background: var(--wbtm-primary); color: #FFF;padding: var(--wbtm_dmp_xs);font-size:var(--wbtm_fs_h5);font-weight: var(--wbtm_fw-medium); }
 	div.wbtm_global_settings .tabLists {border-right: 1px solid var(--wbtm_color_border);}
 	div.wbtm_global_settings form > h2 {display: none;}
 	div.wbtm_global_settings table {table-layout: fixed;margin: 0;}
@@ -32,8 +35,8 @@
 	#wbtm_meta_box_panel {margin: 15px 0;}
 	#wbtm_meta_box_panel .inside,
 	#wbtm_meta_box_panel .form-section {margin: 0;padding: 0;}
-	#wbtm_meta_box_panel .postbox-header { background-color: var(--wbtm_color_theme);}
-	#wbtm_meta_box_panel .postbox-header .handle-actions .handle-order-higher, #wbtm_meta_box_panel .postbox-header .handle-actions .handle-order-lower, #wbtm_meta_box_panel .postbox-header .handle-actions .toggle-indicator, .travel-list .postbox-header .handle-actions .handle-order-higher, .travel-list .postbox-header .handle-actions .handle-order-lower, .travel-list .postbox-header .handle-actions .toggle-indicator{ color: var(--wbtm_color_theme_alter);}
+	#wbtm_meta_box_panel .postbox-header { background-color: var(--wbtm-primary);}
+	#wbtm_meta_box_panel .postbox-header .handle-actions .handle-order-higher, #wbtm_meta_box_panel .postbox-header .handle-actions .handle-order-lower, #wbtm_meta_box_panel .postbox-header .handle-actions .toggle-indicator, .travel-list .postbox-header .handle-actions .handle-order-higher, .travel-list .postbox-header .handle-actions .handle-order-lower, .travel-list .postbox-header .handle-actions .toggle-indicator{ color: var(--wbtm-primary_alter);}
 	#wbtm_meta_box_panel .postbox-header h2 {color: #FFF;font-size: 18px;-webkit-justify-content: flex-start;justify-content: flex-start;}
 	#wbtm_meta_box_panel .postbox-header h2 span {margin: 0 7px 0 0;}
 	#wbtm_meta_box_panel .wp-editor-wrap {width: 100%;}
@@ -52,7 +55,7 @@
 }
 /******************************************************************** add Icon image ************************************************/
 @media only screen and (min-width: 10px) {
-	div.wbtm_add_icon_image_area {border: 1px solid var(--wbtm_color_theme);position: relative;max-width: 120px;}
+	div.wbtm_add_icon_image_area {border: 1px solid var(--wbtm-primary);position: relative;max-width: 120px;}
 	div.wbtm_add_icon_image_area img {max-height: 100px;}
 	div.wbtm_style div.wbtm_add_icon_image_area button {padding: 5px;font-size: 12px;}
 	div.wbtm_add_icon_image_area button span {margin: 0 5px 0 0;}
