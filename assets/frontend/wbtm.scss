@@ -85,6 +85,12 @@
 // global search form
 
 .wbtm_style{
+  background-color: #f5f7fa;
+  padding: 20px;
+  border-radius: 20px;
+  font-weight: normal;
+  font-size: 15px;
+  color:#333;
     .wbtm_search_area{
       border: 0;
       border-radius: 12px;
@@ -196,8 +202,8 @@
             width: 100%;
             height: 250px;
             @media (min-width:800px) {
-              width: 10%;
-              height: 110px;
+              width: 15%;
+              height: 130px;
             }
             .bg_image_area {
               width: 100%;
@@ -218,7 +224,7 @@
             font-weight: 700;
             margin-bottom: 5px;
             align-items: start;
-            width: 50%;
+            width: 100%;
             @media (min-width:800px) {
               width:20%;
             }
@@ -229,11 +235,13 @@
           }
           .wbtm-bus-route{
             @include center-columns;
-            width: 50%;
-            @media (min-width:800px) {
-              width:30%;
-            }
             align-items: start;
+            gap:20px;
+            width: 100%;
+            @media (min-width:800px) {
+              width:25%;
+            }
+            
             h6:nth-child(1){
               i{
                 color: #28a745;
@@ -316,7 +324,139 @@
       }
     }
 }
-
+// +++++++++++++theme button+++++++++++++++++++++++
+.wbtm_style .themeButton,
+	.wbtm_style [class*="_themeButton"] {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+		padding: var(--wbtm_dmp_xs) var(--wbtm_dmp);
+		border: 1px solid var(--wbtm-primary);
+	}
+	.wbtm_style .themeButton span,
+	.wbtm_style [class*="_themeButton"] span {
+		color: var(--wbtm_color_theme_alter);
+	}
+	.wbtm_style .themeButton:hover,
+	.wbtm_style [class*="_themeButton"]:hover {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+		border-color: var(--wbtm_color_theme);
+	}
+	.wbtm_style .themeButton:hover span,
+	.wbtm_style [class*="_themeButton"]:hover span {
+		color: var(--wbtm_color_theme_alter);
+	}
+/******************************************************************** Date picker ************************************************/
+@media only screen and (min-width: 10px) {
+	#ui-datepicker-div {
+		width: 342px;
+		border-color: var(--wbtm_color_theme);
+		padding: 0;
+		background-color: #FFF;
+	}
+	#ui-datepicker-div .ui-datepicker-header {
+		background-color: var(--wbtm_color_theme);
+		background-image: none;
+		border-color: var(--wbtm_color_theme);
+		padding: var(--wbtm_dmp_xs);
+		color: var(--wbtm_color_theme_alter);
+		border-radius: 0;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-justify-content: center;
+		justify-content: center;
+		font-size: var(--wbtm_fs_h6);
+	}
+	#ui-datepicker-div .ui-datepicker-header .ui-icon {
+		display: none;
+	}
+	#ui-datepicker-div .ui-datepicker-prev {
+		top: var(--wbtm_dmp_xs);
+		left: 5px;
+		height: 30px;
+		width: 30px;
+	}
+	#ui-datepicker-div .ui-datepicker-next {
+		top: var(--wbtm_dmp_xs);
+		right: 5px;
+		height: 30px;
+		width: 30px;
+	}
+	#ui-datepicker-div .ui-datepicker-prev:hover,
+	#ui-datepicker-div .ui-datepicker-prev:focus,
+	#ui-datepicker-div .ui-datepicker-next:focus,
+	#ui-datepicker-div .ui-datepicker-next:hover {
+		box-shadow: 0 0 0 2px #FFF, 0 0 2px 1px #FFF;
+		outline: 1px solid transparent;
+	}
+	#ui-datepicker-div .ui-datepicker-header a.ui-datepicker-prev::before,
+	#ui-datepicker-div .ui-datepicker-header a.ui-datepicker-next::before {
+		position: absolute;
+		content: ">";
+		color: #FFF;
+		left: 10px;
+		font-size: var(--wbtm_fs_h3);
+		top: 5px;
+		font-weight: bold;
+		line-height: 1;
+	}
+	#ui-datepicker-div .ui-datepicker-header a.ui-datepicker-prev::before {
+		content: "<";
+	}
+	#ui-datepicker-div .ui-datepicker-header .ui-state-hover {
+		background-color: var(--wbtm_color_theme);
+		background-image: none;
+		border-color: var(--wbtm_color_theme);
+	}
+	#ui-datepicker-div .ui-state-default {
+		background-color: transparent;
+		background-image: none;
+		border: none;
+		border-radius: 50%;
+		width: 35px;
+		height: 35px;
+		color: var(--wbtm_color_theme);
+		font-weight: bold;
+		padding: 0;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-align-items: center;
+		align-items: center;
+		-webkit-justify-content: center;
+		justify-content: center;
+	}
+	#ui-datepicker-div a.ui-state-default:hover {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+	}
+	#ui-datepicker-div .ui-state-active {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+		background-image: none;
+	}
+	#ui-datepicker-div .ui-datepicker-title {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+		background-image: none;
+		font-size: var(--wbtm_fs_h5);
+		display: -webkit-flex;
+		display: flex;
+		margin: 0;
+	}
+	#ui-datepicker-div .ui-datepicker-title select {
+		min-width: 100px;
+		height: 30px;
+		font-size: var(--wbtm_fs);
+		padding: 0 var(--wbtm_dmp_xs);
+		text-align: left;
+	}
+	#ui-datepicker-div.ui-datepicker td {
+		background-color: floralwhite;
+		border: 1px dotted #000;
+		padding: 4px 6px;
+	}
+}
+// =========================
 .pickup-point,
 .drop-off-point {
   margin-left: 8px;
