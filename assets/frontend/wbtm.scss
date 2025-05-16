@@ -82,6 +82,241 @@
     }
   }
 }
+// global search form
+
+.wbtm_style{
+    .wbtm_search_area{
+      border: 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      .inputList{
+        margin: 0 10px 5px 0;
+        &:last-child{
+          margin-right: 0;
+        }
+      }
+      .marker,.calendar{
+        position: relative;
+        i{
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          left: 10px;
+          color: #999;
+        }
+        input{
+          padding-left:30px;
+          font-size: 16px;
+        }
+      }
+    }
+    .wbtm_search_result{
+      .wbtm-date-suggetion{
+        margin-bottom: 20px;
+        .wbtm_next_date{
+          margin-right:5px;
+          padding: 12px;
+          text-align: center;
+          border-radius: 8px;
+          cursor: pointer;
+          border: 1px solid #ddd;
+          background-color:#fff;
+          color:var(--wbtm_d_color);
+          font-weight: normal;
+          font-size: 16px;
+          &:last-child{
+            margin-right: 0;
+          }
+          &:hover{
+            color: var(--wbtm_color_theme);
+            border: 1px solid var(--wbtm_color_theme);
+          }
+          &.active{
+            background-color: var(--wbtm_color_theme);
+            color:#fff;
+          }
+        }
+      }
+
+      .wbtm-date-route{
+        background-color: white;
+        padding: 15px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-bottom: 2px solid var(--wbtm_color_theme);
+      }
+
+      .wbtm-bus-lists{
+        .wbtm-bus-list{
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);   
+          transition: all 0.3s; 
+          margin-top: 0;  
+          margin-bottom: 15px;
+          background-color: #fff;
+          border-radius: 12px;
+          display: flex;
+          justify-content: space-between;
+          gap: 0;
+          flex-wrap: wrap;
+          border: 1px solid #ddd;
+          @media (min-width:800px) {
+            flex-direction: row;
+            flex-wrap: nowrap;
+            border:0;
+          }
+          &:hover{
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+          }
+          @mixin center-columns{
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: auto;
+            @media (min-width:800px) {
+              border-right: 1px solid #eee;
+            }
+            @media (max-width:800px) {
+              border-top: 1px solid #eee;
+            }
+            
+          }
+          .wbtm-bus-image {
+            background-color: #f0f2f5;
+            border-radius:0 0 0 12px;
+            width: 100%;
+            height: 250px;
+            @media (min-width:800px) {
+              width: 10%;
+              height: 110px;
+            }
+            .bg_image_area {
+              width: 100%;
+              height: 100%;
+              border-radius:0 0 0 12px;
+              & > div {
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-position: center;
+                border-radius:0 0 0 12px;
+              }
+            }
+          }
+          .wbtm-bus-name{
+            @include center-columns;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            align-items: start;
+            width: 50%;
+            @media (min-width:800px) {
+              width:20%;
+            }
+            p{
+              font-size: 14px;
+              color: gray;
+            }
+          }
+          .wbtm-bus-route{
+            @include center-columns;
+            width: 50%;
+            @media (min-width:800px) {
+              width:30%;
+            }
+            align-items: start;
+            h6:nth-child(1){
+              i{
+                color: #28a745;
+                padding-right: 10px;
+              }
+            }
+            h6:nth-child(2){
+              i{
+                color: #dc3545;
+                padding-right: 10px;
+              }
+            }
+            h6:nth-child(3){
+              i{
+                padding-right: 10px;
+              }
+            }
+            .time{
+              color: gray;
+            }
+          }
+          .wbtm-seat-info{
+            @include center-columns;
+            width: 33%;
+            @media (min-width:800px) {
+              width: 10%;
+            }
+            .ac{
+              background-color: #e0f7fa;
+              color: #0097a7;
+              padding: 2px 6px;
+              border-radius: 5px;
+            }
+            .none-ac{
+              background-color: #fff8e1;
+              color: #ffa000;
+              padding: 2px 6px;
+              border-radius: 5px;
+            }
+            .seats-available{
+              color: #28a745;
+              font-size: 16px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .seats-price{
+              color: var(--wbtm_color_theme);
+              font-size: 16px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+          }
+          .wbtm-seat-book {
+            @include center-columns;
+            border-right: 0;
+            width: 100%;
+            @media (min-width:800px) {
+              width: 10%;
+              border-right: 0;
+            }
+            button{
+              width: 100%;
+            }
+          }
+        }
+        .lists-title{
+          background: linear-gradient(105deg, #dddddd, #d8d8d8);
+          color: var(--wbtm_color_theme);
+          padding: 10px 0;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          margin: 30px 0;
+          text-align: center;
+        }
+        .wbtm_registration_area{
+          padding: 20px;
+          border: 1px solid #d0d0d0;
+          margin-bottom: 20px;
+        }
+      }
+    }
+}
+
 .pickup-point,
 .drop-off-point {
   margin-left: 8px;
@@ -101,20 +336,34 @@
   }
 }
 .wbtm_selected_seat_details{
-  table tbody tr:nth-child(2n+1)
-    {
-      background:#fff;
-    }
-  table tr:hover{
-    background-color: #fff;
+  table thead th{
+    font-size: 16px;
+    color: #666;
   }
-  table tbody tr:nth-child(2n+1) {
-    background: none;
+  
+  table tbody tr{
+    border-bottom: 1px solid #d8d8d8;
   }
-
+  
 }
-
+table.wbtm_totals{
+  tbody{
+    tr{
+      h5{
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
+}
+div.wbtm_selected_seat_details table tbody tr td{
+  border-bottom: 1px solid #d8d8d8;
+}
 .wbtm_ex_service_area{
+  table thead th{
+    font-size: 16px;
+    color: #666;
+  }
   table tbody tr:nth-child(2n+1) {
     background: none;
   }

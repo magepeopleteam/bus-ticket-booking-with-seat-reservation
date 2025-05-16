@@ -14,7 +14,7 @@
 			}
 			public function add_global_style() {
 				$default_color   = WBTM_Global_Function::get_style_settings( 'default_text_color', '#303030' );
-				$theme_color     = WBTM_Global_Function::get_style_settings( 'theme_color', '#F12971' );
+				$theme_color     = WBTM_Global_Function::get_style_settings( 'theme_color', '#ff4500' );
 				$alternate_color = WBTM_Global_Function::get_style_settings( 'theme_alternate_color', '#fff' );
 				$warning_color   = WBTM_Global_Function::get_style_settings( 'warning_color', '#E67C30' );
 				$default_fs      = WBTM_Global_Function::get_style_settings( 'default_font_size', '14' ) . 'px';

@@ -122,21 +122,30 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[], $left_filter_show='') {
             
             if ($start_route && $end_route && $j_date) { ?>
-                <div class="_dLayout_dShadow_1_mT">
+                <div class="wbtm-date-suggetion">
                     <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
+                </div>
+                <div class="wbtm-date-route">
                     <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
+                </div>
+                <div class="wbtm-bus-lists">
                     <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey', $left_filter_show); ?>
                 </div>
             <?php }
               
             if ($post_id==0 && $start_route && $end_route && $r_date) { ?>
             
-                <div class="_dLayout_dShadow_1" id="wbtm_return_container">
-                    <h4 class="textCenter"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
-                    <div class="divider"></div>
-                    <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
-                    <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
-                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info,'return_journey', $left_filter_show); ?>
+                <div class="wbtm-bus-lists" id="wbtm_return_container">
+                    <h4 class="lists-title"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
+                    <div class="wbtm-date-suggetion">
+                        <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
+                    </div>
+                    <div class="wbtm-date-route">
+                        <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
+                    </div>
+                    <div class="wbtm-bus-lists">
+                        <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info,'return_journey', $left_filter_show); ?>
+                    </div>
                 </div>
             <?php }
         }
@@ -147,7 +156,7 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
                 <ul class="wbtm_input_select_list">
                     <?php foreach ($all_routes as $route) { ?>
                         <li data-value="<?php echo esc_attr($route); ?>">
-                            <span class="fas fa-map-marker"></span><?php echo esc_html($route); ?>
+                            <?php echo esc_html($route); ?>
                         </li>
                     <?php } ?>
                 </ul>
@@ -166,9 +175,9 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
                     $start_key = $total_date - 3 <= $key ? max(0, $total_date - 5) : $start_key;
                     $all_dates = array_slice($all_dates, $start_key, 5);
                     ?>
-                    <div class="buttonGroup _hidden_xs_equalChild_fullWidth">
+                    <div class="_xs_equalChild ">
                         <?php foreach ($all_dates as $date) { ?>
-                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? '_dButton_textWhite' : '_mpBtn_bgLight_textTheme'; ?>
+                            <?php $btn_class = strtotime($date) == strtotime($active_date) ? 'active' : ''; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
                                 <?php echo WBTM_Global_Function::date_format($date); ?>
                             </button>
@@ -186,15 +195,13 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
             $date = $return ? $r_date : $j_date;
             if ($date) {
                 ?>
-                <div class="buttonGroup _mT_xs_equalChild_fullWidth">
-                    <button type="button" class="_mpBtn_h4">
-                        <?php echo esc_html($start); ?>
-                        <span class="fas fa-long-arrow-alt-right _mLR_xs"></span>
-                        <?php echo esc_html($end); ?>
-                    </button>
-                    <button type="button" class="_mpBtn_h4">
-                        <?php echo WBTM_Global_Function::date_format($date); ?>
-                    </button>
+                <div>
+                    <?php echo esc_html($start); ?>
+                    <span class="fas fa-long-arrow-alt-right _mLR_xs"></span>
+                    <?php echo esc_html($end); ?>
+                </div>
+                <div>
+                    <?php echo WBTM_Global_Function::date_format($date); ?>
                 </div>
                 <?php
             }
@@ -206,9 +213,12 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
-                <span><i class="fas fa-calendar-alt"></i> <?php echo WBTM_Translations::text_journey_date(); ?></span>
-                <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
-                <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
+                <?php echo WBTM_Translations::text_journey_date(); ?>
+                <div class="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
+                    <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
+                </div>
             </label>
             <?php
             if ($start_route) {
@@ -223,9 +233,12 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
-                <span><i class="fas fa-calendar-alt"></i> <?php echo WBTM_Translations::text_return_date(); ?></span>
-                <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>
-                <input id="wbtm_return_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
+                <?php echo WBTM_Translations::text_return_date(); ?>
+                <div class="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>
+                    <input id="wbtm_return_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
+                </div>
             </label>
             <?php
             if ($end_route && $j_date) {

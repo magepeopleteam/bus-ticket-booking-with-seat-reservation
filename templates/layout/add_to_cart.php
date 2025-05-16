@@ -15,10 +15,9 @@ $link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_produc
 ?>
 <div class="_dLayout_xs col_12 wbtm_form_submit_area mT_xs">
     <div class="justifyBetween _alignCenter">
-        <h5><?php echo WBTM_Translations::text_total(); ?> :</h5>
-        <h5>
-            <span class="wbtm_total _textTheme"><?php echo wc_price(0); ?></span>
-        </h5>
+        <div>
+            <h5><?php echo WBTM_Translations::text_total(); ?> : <span class="wbtm_total _textTheme"><?php echo wc_price(0); ?></span></h5>
+        </div>
         <?php if ($backend_order > 0) { ?>
             <button type="submit" class="_themeButton">
                 <?php echo WBTM_Translations::text_book_now(); ?>

@@ -58,7 +58,7 @@
         <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr( $left_filter_type ); ?>"/>
         <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr( $left_filter_operator ); ?>"/>
         <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr( $left_filter_boarding ); ?>"/>
-        <div class="_dLayout_dShadow_1 wbtm_search_area <?php echo esc_attr( $form_style_class ); ?>">
+        <div class="_dLayout wbtm_search_area <?php echo esc_attr( $form_style_class ); ?>">
 			<?php if ( $buy_ticket_text ) { ?>
                 <h4><?php echo esc_html( $buy_ticket_text ); ?></h4>
 			<?php } ?>
@@ -71,15 +71,21 @@
 				<?php } ?>
                 <div class="inputList wbtm_input_select wbtm_start_point">
                     <label class="fdColumn">
-                        <span><i class="fas fa-map-marker"></i> <?php echo WBTM_Translations::text_from(); ?> : </span>
-                        <input type="text" class="formControl" name="bus_start_route" value="<?php echo esc_attr( $start_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
+                        <?php echo WBTM_Translations::text_from(); ?>
+                        <div class="marker">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" class="formControl" name="bus_start_route" value="<?php echo esc_attr( $start_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
+                        </div>
                     </label>
 					<?php WBTM_Layout::route_list( $post_id ); ?>
                 </div>
                 <div class="inputList wbtm_input_select wbtm_dropping_point" data-alert="<?php echo WBTM_Translations::text_select_wrong_route(); ?>">
                     <label class="fdColumn ">
-                        <span><i class="fas fa-map-marker"></i> <?php echo esc_html( WBTM_Translations::text_to() ); ?> : </span>
-                        <input type="text" class="formControl" name="bus_end_route" value="<?php echo esc_attr( $end_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
+                        <?php echo esc_html( WBTM_Translations::text_to() ); ?>
+                        <div class="marker">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" class="formControl" name="bus_end_route" value="<?php echo esc_attr( $end_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
+                        </div>
                     </label>
 					<?php WBTM_Layout::route_list( $post_id ); ?>
                 </div>

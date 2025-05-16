@@ -20,7 +20,7 @@
 }
 @media (min-width: 768px) {
   .wbtm-bus-flix-style .title {
-    width: 15%;
+    width: 12%;
   }
 }
 .wbtm-bus-flix-style .title span {
@@ -93,6 +93,288 @@
   border-radius: 50px;
 }
 
+.wbtm_style .wbtm_search_area {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+.wbtm_style .wbtm_search_area .inputList {
+  margin: 0 10px 5px 0;
+}
+.wbtm_style .wbtm_search_area .inputList:last-child {
+  margin-right: 0;
+}
+.wbtm_style .wbtm_search_area .marker, .wbtm_style .wbtm_search_area .calendar {
+  position: relative;
+}
+.wbtm_style .wbtm_search_area .marker i, .wbtm_style .wbtm_search_area .calendar i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+  color: #999;
+}
+.wbtm_style .wbtm_search_area .marker input, .wbtm_style .wbtm_search_area .calendar input {
+  padding-left: 30px;
+  font-size: 16px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion {
+  margin-bottom: 20px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date {
+  margin-right: 5px;
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: var(--wbtm_d_color);
+  font-weight: normal;
+  font-size: 16px;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:last-child {
+  margin-right: 0;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:hover {
+  color: var(--wbtm_color_theme);
+  border: 1px solid var(--wbtm_color_theme);
+}
+.wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date.active {
+  background-color: var(--wbtm_color_theme);
+  color: #fff;
+}
+.wbtm_style .wbtm_search_result .wbtm-date-route {
+  background-color: white;
+  padding: 15px;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid var(--wbtm_color_theme);
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  margin-top: 0;
+  margin-bottom: 15px;
+  background-color: #fff;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+  flex-wrap: wrap;
+  border: 1px solid #ddd;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    border: 0;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
+  background-color: #f0f2f5;
+  border-radius: 0 0 0 12px;
+  width: 100%;
+  height: 250px;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
+    width: 10%;
+    height: 110px;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image .bg_image_area {
+  width: 100%;
+  height: 100%;
+  border-radius: 0 0 0 12px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image .bg_image_area > div {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 0 0 0 12px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+  margin: 0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: auto;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  align-items: start;
+  width: 50%;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+    border-right: 1px solid #eee;
+  }
+}
+@media (max-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+    border-top: 1px solid #eee;
+  }
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name {
+    width: 20%;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-name p {
+  font-size: 14px;
+  color: gray;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+  margin: 0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: auto;
+  width: 50%;
+  align-items: start;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+    border-right: 1px solid #eee;
+  }
+}
+@media (max-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+    border-top: 1px solid #eee;
+  }
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route {
+    width: 30%;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route h6:nth-child(1) i {
+  color: #28a745;
+  padding-right: 10px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route h6:nth-child(2) i {
+  color: #dc3545;
+  padding-right: 10px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route h6:nth-child(3) i {
+  padding-right: 10px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-route .time {
+  color: gray;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+  margin: 0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: auto;
+  width: 33%;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+    border-right: 1px solid #eee;
+  }
+}
+@media (max-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+    border-top: 1px solid #eee;
+  }
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info {
+    width: 10%;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info .ac {
+  background-color: #e0f7fa;
+  color: #0097a7;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info .none-ac {
+  background-color: #fff8e1;
+  color: #ffa000;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info .seats-available {
+  color: #28a745;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-info .seats-price {
+  color: var(--wbtm_color_theme);
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+  margin: 0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: auto;
+  border-right: 0;
+  width: 100%;
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+    border-right: 1px solid #eee;
+  }
+}
+@media (max-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+    border-top: 1px solid #eee;
+  }
+}
+@media (min-width: 800px) {
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book {
+    width: 10%;
+    border-right: 0;
+  }
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-seat-book button {
+  width: 100%;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .lists-title {
+  background: linear-gradient(105deg, #dddddd, #d8d8d8);
+  color: var(--wbtm_color_theme);
+  padding: 10px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 30px 0;
+  text-align: center;
+}
+.wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm_registration_area {
+  padding: 20px;
+  border: 1px solid #d0d0d0;
+  margin-bottom: 20px;
+}
+
 .pickup-point,
 .drop-off-point {
   margin-left: 8px;
@@ -115,16 +397,27 @@
   margin-bottom: 24px;
 }
 
-.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
-  background: #fff;
+.wbtm_selected_seat_details table thead th {
+  font-size: 16px;
+  color: #666;
 }
-.wbtm_selected_seat_details table tr:hover {
-  background-color: #fff;
-}
-.wbtm_selected_seat_details table tbody tr:nth-child(2n+1) {
-  background: none;
+.wbtm_selected_seat_details table tbody tr {
+  border-bottom: 1px solid #d8d8d8;
 }
 
+table.wbtm_totals tbody tr h5 {
+  font-size: 16px;
+  color: #333;
+}
+
+div.wbtm_selected_seat_details table tbody tr td {
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.wbtm_ex_service_area table thead th {
+  font-size: 16px;
+  color: #666;
+}
 .wbtm_ex_service_area table tbody tr:nth-child(2n+1) {
   background: none;
 }
