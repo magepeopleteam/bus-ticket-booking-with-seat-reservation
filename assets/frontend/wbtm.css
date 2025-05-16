@@ -60,7 +60,7 @@
 @media (min-width: 540px) {
   .wbtm-bus-flix-style .route .route-info .from,
   .wbtm-bus-flix-style .route .route-info .to {
-    width: 25%;
+    width: 33%;
   }
 }
 .wbtm-bus-flix-style .route .route-info .to {
@@ -73,7 +73,7 @@
 }
 .wbtm-bus-flix-style .route .route-info .duration {
   border-bottom: 3px solid var(--wbtm_d_color);
-  width: 65%;
+  width: 33%;
   position: relative;
 }
 .wbtm-bus-flix-style .route .route-info .duration .time {

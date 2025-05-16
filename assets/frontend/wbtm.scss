@@ -49,7 +49,7 @@
       .to {
         width: 45%;
         @media (min-width: 540px) {
-          width: 25%;
+          width: 33%;
         }
         
       }
@@ -61,7 +61,7 @@
       }
       .duration {
         border-bottom: 3px solid var(--wbtm_d_color);
-        width: 65%;
+        width: 33%;
         position: relative;
         .time {
           background: var(--wbtm_color_light);
