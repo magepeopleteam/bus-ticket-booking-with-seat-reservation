@@ -456,7 +456,41 @@
 		padding: 4px 6px;
 	}
 }
-// =========================
+// ==============loader===========
+  div[class*="wbtm_loader"] {
+		background: #0003;
+		color: var(--wbtm_color_theme);
+	}
+  div[class*="wbtm_loader"].border_spin_loader span {
+		border-top: 5px solid var(--wbtm_color_theme_alter);
+		border-right: 5px solid var(--wbtm_color_theme);
+		border-bottom: 5px solid var(--wbtm_color_theme_alter);
+		border-left: 5px solid var(--wbtm_color_theme);
+		width: 60px;
+		height: 60px;
+		-webkit-animation: spin 1000ms linear infinite;
+		animation: spin 1000ms linear infinite;
+	}
+  div[class*="simpleSpinner"] {
+		padding: var(--wbtm_dmp);
+		color: var(--wbtm_color_theme);
+	}
+
+  /*****Text Theme*********/
+	div.wbtm_style .textTheme,
+	div.wbtm_style [class*="_textTheme"] {
+		color: var(--wbtm_color_theme);
+	}
+	div.wbtm_style .bgTheme,
+	div.wbtm_style [class*="_bgTheme"] {
+		background-color: var(--wbtm_color_theme);
+		color: var(--wbtm_color_theme_alter);
+	}
+	div.wbtm_style [class*="_bTheme"],
+	.bTheme {
+		border: 1px solid var(--wbtm_color_theme);
+	}
+
 .pickup-point,
 .drop-off-point {
   margin-left: 8px;
