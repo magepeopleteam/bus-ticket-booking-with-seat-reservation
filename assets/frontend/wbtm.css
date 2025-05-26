@@ -10,6 +10,65 @@
   padding: 10px;
   font-family: sans-serif;
 }
+/* Blocked seat style for bus seat booking */
+.seat_blocked {
+  background: #e0e0e0 !important;
+  color: #888 !important;
+  border: 2px solid #bdbdbd !important;
+  cursor: not-allowed !important;
+  position: relative;
+  opacity: 0.7;
+  text-align: center;
+  font-weight: bold;
+}
+.seat_blocked:before {
+  content: "\1F512"; /* Unicode lock icon */
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 2px;
+}
+
+/* Seat type badges */
+.wbtm_seat_type_badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  margin-right: 2px;
+  color: #fff;
+}
+.wbtm_seat_type_vip { background: #d4af37; color: #222; }
+.wbtm_seat_type_standard { background: #1976d2; }
+.wbtm_seat_type_economy { background: #388e3c; }
+.wbtm_seat_type_sleeper { background: #7b1fa2; }
+
+/* Seat label */
+.wbtm_seat_label {
+  display: inline-block;
+  font-size: 10px;
+  color: #666;
+  margin-left: 2px;
+  margin-bottom: 2px;
+} 
+/* Blocked seat style for bus seat booking */
+.seat_blocked {
+  background: #e0e0e0 !important;
+  color: #888 !important;
+  border: 2px solid #bdbdbd !important;
+  cursor: not-allowed !important;
+  position: relative;
+  opacity: 0.7;
+  text-align: center;
+  font-weight: bold;
+}
+.seat_blocked:before {
+  content: "\1F512"; /* Unicode lock icon */
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 2px;
+} 
 @media (min-width: 1024px) {
   .wbtm-bus-flix-style {
     flex-direction: row;

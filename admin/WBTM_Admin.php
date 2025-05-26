@@ -226,11 +226,27 @@
 					$date = current_time('Y-m-d H:i');
 					$start_routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
 					$end_routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+					// Normalize to array of arrays
+					if (is_array($start_routes) && isset($start_routes['wbtm_bus_bp_stops_name'])) {
+						$start_routes = [$start_routes];
+					}
+					if (!is_array($start_routes)) {
+						$start_routes = [];
+					}
+					if (is_array($end_routes) && isset($end_routes['wbtm_bus_next_stops_name'])) {
+						$end_routes = [$end_routes];
+					}
+					if (!is_array($end_routes)) {
+						$end_routes = [];
+					}
 					$bp_infos = [];
 					$dp_infos = [];
 					if (sizeof($end_routes) > 0 && sizeof($start_routes) > 0) {
 						$prev_date = $date;
 						foreach ($start_routes as $start_route) {
+							if (!is_array($start_route)) {
+								continue;
+							}
 							$bp = $start_route['wbtm_bus_bp_stops_name'];
 							$bp_date = date('Y-m-d', strtotime($prev_date)) . ' ' . $start_route['wbtm_bus_bp_start_time'];
 							$bp_date = date('Y-m-d H:i', strtotime($bp_date));
@@ -246,6 +262,9 @@
 						$bp_prev_date = $bp_infos[0]['bp_time'];
 						$bp_prev_date = date('Y-m-d H:i', strtotime($bp_prev_date));
 						foreach ($end_routes as $end_route) {
+							if (!is_array($end_route)) {
+								continue;
+							}
 							$dp = $end_route['wbtm_bus_next_stops_name'];
 							$dp_date = date('Y-m-d', strtotime($bp_prev_date)) . ' ' . $end_route['wbtm_bus_next_end_time'];
 							$dp_date = date('Y-m-d H:i', strtotime($dp_date));

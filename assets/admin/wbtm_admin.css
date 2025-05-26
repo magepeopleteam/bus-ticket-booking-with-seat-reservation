@@ -18,6 +18,7 @@
 	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
 }
 /********************************************************************  ************************************************/
+
 @media only screen and (min-width: 10px) {
 	.wbtm_style .tabsContent { overflow: visible; }
 	.tool-tips { color: var(--wbtm_color_light_1); position: relative; padding: 0 0.2em; }

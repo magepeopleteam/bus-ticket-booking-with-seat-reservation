@@ -219,15 +219,34 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$ticket_infos = array_key_exists('wbtm_seats', $values) ? $values['wbtm_seats'] : [];
 				$ticket_qty   = array_key_exists('wbtm_seats_qty', $values) ? $values['wbtm_seats_qty'] : 0;
 				$base_price   = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
+				// Fetch seat type/label meta
+				$seat_types = get_post_meta($post_id, 'wbtm_seat_types', true);
+				if (!is_array($seat_types)) $seat_types = [];
+				$seat_labels = get_post_meta($post_id, 'wbtm_seat_labels', true);
+				if (!is_array($seat_labels)) $seat_labels = [];
+				$seat_types_dd = get_post_meta($post_id, 'wbtm_seat_types_dd', true);
+				if (!is_array($seat_types_dd)) $seat_types_dd = [];
+				$seat_labels_dd = get_post_meta($post_id, 'wbtm_seat_labels_dd', true);
+				if (!is_array($seat_labels_dd)) $seat_labels_dd = [];
 				if (sizeof($ticket_infos) > 0) {
 					foreach ($ticket_infos as $ticket_info) {
 						$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_info['ticket_name']);
 						if (array_key_exists('seat_name', $ticket_info)) {
 							$seat_name = $ticket_info['seat_name'];
-							if (array_key_exists('dd', $ticket_info) && $ticket_info['dd']) {
-								$seat_name = $seat_name . '(' . WBTM_Translations::text_upper_deck() . ')';
+							$is_dd = (array_key_exists('dd', $ticket_info) && $ticket_info['dd']);
+							$type = $is_dd ? (isset($seat_types_dd[$seat_name]) ? $seat_types_dd[$seat_name] : '') : (isset($seat_types[$seat_name]) ? $seat_types[$seat_name] : '');
+							$label = $is_dd ? (isset($seat_labels_dd[$seat_name]) ? $seat_labels_dd[$seat_name] : '') : (isset($seat_labels[$seat_name]) ? $seat_labels[$seat_name] : '');
+							$seat_display = $seat_name;
+							if ($type) {
+								$seat_display .= ' [' . ucfirst($type) . ']';
 							}
-							$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_name);
+							if ($label) {
+								$seat_display .= ' (' . $label . ')';
+							}
+							if ($is_dd) {
+								$seat_display .= ' (' . WBTM_Translations::text_upper_deck() . ')';
+							}
+							$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_display);
 						}
 						$item->add_meta_data(WBTM_Translations::text_qty(), $ticket_info['ticket_qty']);
 						$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $ticket_info["ticket_price"] . ' x ' . $ticket_info['ticket_qty'] . ' ) = ' . wc_price($ticket_info['ticket_price'] * $ticket_info['ticket_qty']));
@@ -589,6 +608,13 @@ if (! class_exists('WBTM_Woocommerce')) {
 			$start_place = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
 			$end_place   = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
 			$start_date  = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
+			$user_email  = '';
+			if (is_user_logged_in()) {
+				$current_user = wp_get_current_user();
+				$user_email = $current_user->user_email;
+			} elseif (isset($_POST['billing_email'])) {
+				$user_email = sanitize_email($_POST['billing_email']);
+			}
 			if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
 				$count                = 0;
 				$selected_seat        = WBTM_Global_Function::get_submit_info('wbtm_selected_seat');
@@ -602,7 +628,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							$ticket_info[$count]['ticket_price'] = WBTM_Functions::extract_seat_price(WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $seat_name, $start_date, $user_email));
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = '';
@@ -621,7 +647,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
+							$ticket_info[$count]['ticket_price'] = WBTM_Functions::extract_seat_price(WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true, $seat_name, $start_date, $user_email));
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = 1;
@@ -641,7 +667,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$ticket_info[$i]['ticket_name']  = $ticket_name;
 							$ticket_info[$i]['seat_name']    = $ticket_name;
 							$ticket_info[$i]['ticket_type']  = $type;
-							$ticket_info[$i]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							$ticket_info[$i]['ticket_price'] = WBTM_Functions::extract_seat_price(WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, '', $start_date, $user_email));
 							$ticket_info[$i]['ticket_qty']   = $qty[$i];
 							$ticket_info[$i]['date']         = $start_date ?? '';
 						}
@@ -736,6 +762,16 @@ if (! class_exists('WBTM_Woocommerce')) {
 			$base_price   = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : '';
 			$ticket_count = 0;
 			$tic_key      = 0;
+			// Fetch seat type/label meta
+			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+			$seat_types = get_post_meta($post_id, 'wbtm_seat_types', true);
+			if (!is_array($seat_types)) $seat_types = [];
+			$seat_labels = get_post_meta($post_id, 'wbtm_seat_labels', true);
+			if (!is_array($seat_labels)) $seat_labels = [];
+			$seat_types_dd = get_post_meta($post_id, 'wbtm_seat_types_dd', true);
+			if (!is_array($seat_types_dd)) $seat_types_dd = [];
+			$seat_labels_dd = get_post_meta($post_id, 'wbtm_seat_labels_dd', true);
+			if (!is_array($seat_labels_dd)) $seat_labels_dd = [];
 			if (sizeof($wbtm_seats) > 0) { ?>
 				<h5 class="_mB_xs"><?php esc_html_e('Ticket Information', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
 				<div class="dLayout_xs">
@@ -751,10 +787,25 @@ if (! class_exists('WBTM_Woocommerce')) {
 								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_ticket_type(); ?> :</h6>
 								<span><?php echo esc_html($wbtm_seat['ticket_name']); ?></span>
 							</li>
-							<?php if ($wbtm_seat['seat_name']) { ?>
+							<?php if ($wbtm_seat['seat_name']) {
+								$seat_name = $wbtm_seat['seat_name'];
+								$is_dd = (array_key_exists('dd', $wbtm_seat) && $wbtm_seat['dd']);
+								$type = $is_dd ? (isset($seat_types_dd[$seat_name]) ? $seat_types_dd[$seat_name] : '') : (isset($seat_types[$seat_name]) ? $seat_types[$seat_name] : '');
+								$label = $is_dd ? (isset($seat_labels_dd[$seat_name]) ? $seat_labels_dd[$seat_name] : '') : (isset($seat_labels[$seat_name]) ? $seat_labels[$seat_name] : '');
+								$seat_display = $seat_name;
+								if ($type) {
+									$seat_display .= ' [' . ucfirst($type) . ']';
+								}
+								if ($label) {
+									$seat_display .= ' (' . $label . ')';
+								}
+								if ($is_dd) {
+									$seat_display .= ' (' . WBTM_Translations::text_upper_deck() . ')';
+								}
+								?>
 								<li>
 									<h6 class="_mR_xs"><?php echo WBTM_Translations::text_seat_name(); ?> :</h6>
-									<span><?php echo esc_html($wbtm_seat['seat_name']); ?></span>
+									<span><?php echo esc_html($seat_display); ?></span>
 								</li>
 							<?php } ?>
 							<li>

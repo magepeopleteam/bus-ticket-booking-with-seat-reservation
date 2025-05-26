@@ -39,7 +39,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_types[] = $bus_type;
             
             // Log bus types for debugging
-            error_log('FLIX Template - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
+           // error_log('FLIX Template - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
             
             $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
             foreach ( $get_boarding_routes as $route ){

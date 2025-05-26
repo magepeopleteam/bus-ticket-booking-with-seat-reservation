@@ -3,6 +3,9 @@ function wbtm_price_format(price) {
     if (typeof price === 'string') {
         price = Number(price);
     }
+    if (typeof price !== 'number' || isNaN(price)) {
+        return '-'; // fallback for invalid price
+    }
     price = price.toFixed(wbtm_num_of_decimal);
     let total_part = price.toString().split(".");
     total_part[0] = total_part[0].replace(/\B(?=(\d{3})+(?!\d))/g, wbtm_currency_thousands_separator);

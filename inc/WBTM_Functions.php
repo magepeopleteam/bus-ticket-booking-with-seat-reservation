@@ -343,25 +343,111 @@
 				return $date;
 			}
 			//==========================//
-			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false ) {
-				if ( $post_id && $start_route && $end_route ) {
-					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route );
-					if ( sizeof( $ticket_infos ) > 0 ) {
-						foreach ( $ticket_infos as $ticket_info ) {
-							if ( $ticket_info['type'] == $seat_type ) {
-								$price          = $ticket_info['price'];
-								$seat_plan_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
-								if ( $seat_plan_type == 'wbtm_seat_plan' && $dd ) {
-									$seat_dd_increase = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_dd_price_parcent', 0 );
-									$price            = $price + ( $price * $seat_dd_increase / 100 );
+			public static function get_seat_price($post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $seat_name = '', $date = '', $user_email ='') {
+				// 0. Date range pricing (highest priority)
+				$seat_date_ranges = get_post_meta($post_id, 'wbtm_seat_date_ranges', true);
+				if (!is_array($seat_date_ranges)) $seat_date_ranges = [];
+				if ($seat_name && isset($seat_date_ranges[$seat_name]) && is_array($seat_date_ranges[$seat_name]) && $date) {
+					foreach ($seat_date_ranges[$seat_name] as $range) {
+						if (!empty($range['start']) && !empty($range['end']) && $date >= $range['start'] && $date <= $range['end']) {
+							$base_price = isset($range['prices'][$seat_type]) ? floatval($range['prices'][$seat_type]) : 0;
+							$promo_flag = isset($range['promo_flags'][$seat_type]) ? $range['promo_flags'][$seat_type] : 0;
+							$promo = isset($range['promos'][$seat_type]) ? floatval($range['promos'][$seat_type]) : 0;
+							if ($base_price > 0) {
+								if ($promo_flag && $promo > 0) {
+									$base_price = floatval($base_price);
+									$promo = floatval($promo);
+									$discount = round($base_price * $promo / 100, 2);
+									$final_price = $base_price - $discount;
+									return [
+										'price' => $final_price,
+										'original_price' => $base_price,
+										'promo_percent' => $promo,
+										'saved' => $discount,
+										'date_range' => [$range['start'], $range['end']]
+									];
 								}
-								return $price;
+								return $base_price;
 							}
 						}
 					}
 				}
-				return false;
+				// 1. Advanced promo rules (date/user-specific)
+				$promo_rules = get_post_meta($post_id, $dd ? 'wbtm_seat_promo_rules_dd' : 'wbtm_seat_promo_rules', true);
+				if (!is_array($promo_rules)) $promo_rules = [];
+				if ($seat_name && isset($promo_rules[$seat_name]) && is_array($promo_rules[$seat_name])) {
+					foreach ($promo_rules[$seat_name] as $rule) {
+						$match_date = true;
+						$match_user = true;
+						if (!empty($rule['start']) && !empty($rule['end']) && $date) {
+							$match_date = ($date >= $rule['start'] && $date <= $rule['end']);
+						}
+						if (!empty($rule['user']) && $user_email) {
+							$match_user = (stripos($user_email, $rule['user']) !== false);
+						} elseif (!empty($rule['user'])) {
+							$match_user = false;
+						}
+						if ($match_date && $match_user && !empty($rule['price'])) {
+							return floatval($rule['price']);
+						}
+					}
+				}
+				// 2. Promo price (if promo flag is set) - per seat, per type
+				$promo_flags = get_post_meta($post_id, $dd ? 'wbtm_seat_promo_flags_dd' : 'wbtm_seat_promo_flags', true);
+				if (!is_array($promo_flags)) $promo_flags = [];
+				$promo_prices = get_post_meta($post_id, $dd ? 'wbtm_seat_promo_prices_dd' : 'wbtm_seat_promo_prices', true);
+				if (!is_array($promo_prices)) $promo_prices = [];
+				$seat_prices = get_post_meta($post_id, $dd ? 'wbtm_seat_prices_dd' : 'wbtm_seat_prices', true);
+				if (!is_array($seat_prices)) $seat_prices = [];
+				if ($seat_name && isset($seat_prices[$seat_name][$seat_type]) && $seat_prices[$seat_name][$seat_type] > 0) {
+					$seat_price = floatval($seat_prices[$seat_name][$seat_type]);
+					if (isset($promo_flags[$seat_name][$seat_type]) && $promo_flags[$seat_name][$seat_type] && isset($promo_prices[$seat_name][$seat_type]) && $promo_prices[$seat_name][$seat_type] > 0) {
+						// Treat promo as percent discount
+						$promo_percent = floatval($promo_prices[$seat_name][$seat_type]);
+						$discount = round($seat_price * $promo_percent / 100, 2);
+						$final_price = $seat_price - $discount;
+						return [
+							'price' => $final_price,
+							'original_price' => $seat_price,
+							'promo_percent' => $promo_percent,
+							'saved' => $discount
+						];
+					}
+					return $seat_price;
+				}
+				// 4. Route price (default)
+				return self::get_route_price($post_id, $start_route, $end_route, $seat_type, $dd);
 			}
+
+			public static function get_route_price($post_id, $start_route, $end_route, $seat_type = 0, $dd = false) {
+				// This is the original route-based price logic
+				$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+				$price = 0;
+				if (sizeof($price_infos) > 0) {
+					foreach ($price_infos as $price_info) {
+						if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($start_route) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($end_route)) {
+							if ($seat_type == 1 && isset($price_info['wbtm_bus_child_price'])) {
+								$price = $price_info['wbtm_bus_child_price'];
+							} elseif ($seat_type == 2 && isset($price_info['wbtm_bus_infant_price'])) {
+								$price = $price_info['wbtm_bus_infant_price'];
+							} else {
+								$price = $price_info['wbtm_bus_price'];
+							}
+							break;
+						}
+					}
+				}
+				// Upper deck price increase
+				if ($dd) {
+					$increase = (float)WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent', 0);
+					$price = floatval($price); // Ensure $price is always numeric
+					if ($increase > 0) {
+						$price = $price + ($price * $increase / 100);
+					}
+				}
+				return floatval($price);
+			}
+			//==========================//
 			public static function get_ex_service_price( $post_id, $service_name ) {
 				$show_extra_service = WBTM_Global_Function::get_post_info( $post_id, 'show_extra_service', 'no' );
 				if ( $show_extra_service == 'yes' ) {
@@ -601,6 +687,13 @@
                 }
                 
                 return '';
+            }
+
+            public static function extract_seat_price($seat_price_data) {
+                if (is_array($seat_price_data) && isset($seat_price_data['price'])) {
+                    return floatval($seat_price_data['price']);
+                }
+                return floatval($seat_price_data);
             }
 		}
 	}
