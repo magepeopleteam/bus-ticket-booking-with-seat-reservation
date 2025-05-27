@@ -126,6 +126,12 @@
 					esc_html__('Attendee ID', 'bus-ticket-booking-with-seat-reservation')
 				); 
 			}
+
+			public static function text_passenger_type() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Passenger Type', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
 			
 			public static function text_order_status() { 
 				return self::get_translation(__FUNCTION__,
