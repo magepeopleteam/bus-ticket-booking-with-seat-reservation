@@ -63,31 +63,35 @@
 				}
 				return $all_routes;
 			}
+			
 			public static function get_ticket_info( $post_id, $start_route, $end_route ) {
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
 					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					
 					if ( sizeof( $price_infos ) > 0 ) {
 						foreach ( $price_infos as $price_info ) {
 							if ( strtolower( $price_info['wbtm_bus_bp_price_stop'] ) == strtolower( $start_route ) && strtolower( $price_info['wbtm_bus_dp_price_stop'] ) == strtolower( $end_route ) ) {
-								$adult_price  = array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] ? (float) $price_info['wbtm_bus_price'] : '';
-								$child_price  = array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] ? (float) $price_info['wbtm_bus_child_price'] : '';
-								$infant_price = array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] ? (float) $price_info['wbtm_bus_infant_price'] : '';
-								if ( $adult_price && (float) $adult_price >= 0 ) {
+								$adult_price  = array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] !== '' ? (float) $price_info['wbtm_bus_price'] : '';
+								$child_price  = array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ? (float) $price_info['wbtm_bus_child_price'] : '';
+								$infant_price = array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ? (float) $price_info['wbtm_bus_infant_price'] : '';
+								
+								if ( $adult_price !== '' ) {
 									$ticket_infos[] = [
 										'name'  => WBTM_Translations::text_adult(),
 										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_price ),
 										'type'  => 0
 									];
 								}
-								if ( $child_price && (float) $child_price >= 0 ) {
+								if ( $child_price !== '' ) {
 									$ticket_infos[] = [
 										'name'  => WBTM_Translations::text_child(),
 										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_price ),
 										'type'  => 1
 									];
 								}
-								if ( $infant_price && (float) $infant_price >= 0 ) {
+								
+								if ( $infant_price !== '' ) {
 									$ticket_infos[] = [
 										'name'  => WBTM_Translations::text_infant(),
 										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_price ),
