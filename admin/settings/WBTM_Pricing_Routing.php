@@ -181,8 +181,11 @@
 			public function route_pricing($post_id, $full_route_infos) {
 				//echo '<pre>';print_r(WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []));echo '</pre>';
 				$all_price_info = [];
+
 				if (sizeof($full_route_infos) > 0) {
 					$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+					
+					
 					foreach ($full_route_infos as $key => $full_route_info) {
 						if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') {
 							$bp = $full_route_info['place'];
@@ -197,10 +200,9 @@
 										if (sizeof($price_infos) > 0) {
 											foreach ($price_infos as $price_info) {
 												if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)) {
-													$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] ? (float)$price_info['wbtm_bus_price'] : '';
-													$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] ? (float)$price_info['wbtm_bus_child_price'] : '';
-													$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] ? (float)$price_info['wbtm_bus_infant_price'] : '';
-												}
+													$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] !== '' ? (float)$price_info['wbtm_bus_price'] : '';
+													$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] !== '' ? (float)$price_info['wbtm_bus_child_price'] : '';
+													$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] !== '' ? (float)$price_info['wbtm_bus_infant_price'] : '';											}
 											}
 										}
 										$all_price_info[] = [
@@ -284,6 +286,7 @@
 				}
 			}
 			public function settings_save($post_id) {
+				
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$route_infos = [];
 					$bp = [];
@@ -345,17 +348,22 @@
 					$infant_price = WBTM_Global_Function::get_submit_info('wbtm_infant_price', array());
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
-							if ($stops_bp && $stops_dps[$key] && $adult_price[$key]) {
+							if ($stops_bp && $stops_dps[$key] && isset($adult_price[$key])) {
+								$adult = $adult_price[$key] === '' ? '' : (float)$adult_price[$key];
+								$child = !isset($child_price[$key]) || $child_price[$key] === '' ? '' : (float)$child_price[$key];
+								$infant = !isset($infant_price[$key]) || $infant_price[$key] === '' ? '' : (float)$infant_price[$key];
+								
 								$price_infos[] = [
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
-									'wbtm_bus_price' => $adult_price[$key],
-									'wbtm_bus_child_price' => $child_price[$key],
-									'wbtm_bus_infant_price' => $infant_price[$key],
+									'wbtm_bus_price' => $adult,
+									'wbtm_bus_child_price' => $child,
+									'wbtm_bus_infant_price' => $infant,
 								];
 							}
 						}
 					}
+					
 					update_post_meta($post_id, 'wbtm_bus_prices', $price_infos);
 				}
 			}
