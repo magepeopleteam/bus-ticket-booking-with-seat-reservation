@@ -28,6 +28,14 @@ if (! class_exists('WBTM_Woocommerce')) {
 			add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
 
 			add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
+			
+			// Add redirect logic after adding to cart
+			add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
+			add_action('wp_footer', array($this, 'add_checkout_redirect_script'));
+			add_action('woocommerce_add_to_cart', array($this, 'maybe_set_redirect_flag'), 10, 6);
+			
+			// Prevent add to cart notices when redirect is enabled
+			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 		}
 		public function prevent_duplicate_bookings($cart_object)
 		{
@@ -479,6 +487,106 @@ if (! class_exists('WBTM_Woocommerce')) {
 					self::add_cpt_data('wbtm_service_booking', $billing_name, $ex_data);
 				}
 			}
+		}
+		/*********************/
+		public function maybe_redirect_to_checkout($url)
+		{
+			// Check if the redirect setting is enabled
+			$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'checkout_redirect_after_booking', 'off');
+			
+			if ($redirect_enabled === 'on') {
+				// Check if the last added item is a bus booking
+				$cart_items = WC()->cart->get_cart();
+				if (!empty($cart_items)) {
+					$last_item = end($cart_items);
+					$post_id = array_key_exists('wbtm_bus_id', $last_item) ? $last_item['wbtm_bus_id'] : 0;
+					
+					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+						// Redirect to checkout page
+						return wc_get_checkout_url();
+					}
+				}
+			}
+			
+			return $url;
+		}
+		/*********************/
+		public function maybe_set_redirect_flag($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
+		{
+			// Check if the redirect setting is enabled
+			$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'checkout_redirect_after_booking', 'off');
+			
+			if ($redirect_enabled === 'on') {
+				// Check if this is a bus booking
+				$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
+				$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
+				
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					// Set a flag to indicate we should redirect
+					WC()->session->set('wbtm_redirect_to_checkout', true);
+				}
+			}
+		}
+		/*********************/
+		public function add_checkout_redirect_script()
+		{
+			// Only add script if redirect is enabled and we're on a bus booking page
+			$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'checkout_redirect_after_booking', 'off');
+			
+			if ($redirect_enabled === 'on' && (is_singular(WBTM_Functions::get_cpt()) || (WC()->session && WC()->session->get('wbtm_redirect_to_checkout')))) {
+				// Clear the flag if it exists
+				if (WC()->session && WC()->session->get('wbtm_redirect_to_checkout')) {
+					WC()->session->set('wbtm_redirect_to_checkout', false);
+				}
+				
+				// Add script to redirect to checkout after bus booking
+				?>
+				<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					// Handle bus booking form submission
+					$(document).on('submit', 'form[name="wbtm_bus_booking_form"]', function(e) {
+						var form = $(this);
+						var button = form.find('button[type="submit"]');
+						
+						// Check if this is an add-to-cart submission
+						if (button.attr('name') === 'add-to-cart' && button.attr('value')) {
+							// Use a flag to track if we should redirect
+							window.wbtm_should_redirect = true;
+						}
+					});
+					
+					// Listen for WooCommerce add to cart events
+					$(document.body).on('added_to_cart', function(event, fragments, cart_hash, button) {
+						if (window.wbtm_should_redirect) {
+							// Redirect to checkout immediately (no notice to remove)
+							window.location.href = '<?php echo wc_get_checkout_url(); ?>';
+						}
+					});
+				});
+				</script>
+				<?php
+			}
+		}
+		/*********************/
+		public function maybe_remove_add_to_cart_message($message, $products, $show_qty)
+		{
+			// Check if redirect is enabled
+			$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'checkout_redirect_after_booking', 'off');
+			
+			if ($redirect_enabled === 'on') {
+				// Check if any of the added products are bus bookings
+				foreach ($products as $product_id => $qty) {
+					$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
+					$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
+					
+					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+						// This is a bus booking, don't show the message
+						return '';
+					}
+				}
+			}
+			
+			return $message;
 		}
 		/*********************/
 		public function order_status_changed($order_id)

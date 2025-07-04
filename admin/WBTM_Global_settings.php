@@ -221,6 +221,17 @@
 								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
 							)
 						),
+						array(
+							'name'    => 'checkout_redirect_after_booking',
+							'label'   => esc_html__( 'Redirect to checkout after booking', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'If you want to redirect users directly to checkout after booking instead of showing the cart notice, select ON', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on'  => esc_html__( 'ON', 'bus-ticket-booking-with-seat-reservation' ),
+								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
+							)
+						),
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'filter_wbtm_global_settings', array(
 						array(
