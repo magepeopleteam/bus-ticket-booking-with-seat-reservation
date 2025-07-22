@@ -33,10 +33,26 @@ if (! class_exists('WBTM_Woocommerce')) {
 			add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
 			add_action('wp_footer', array($this, 'add_checkout_redirect_script'));
 			add_action('woocommerce_add_to_cart', array($this, 'maybe_set_redirect_flag'), 10, 6);
-			
+			add_filter('woocommerce_cart_item_permalink', array($this, 'cmv_fix_bus_cart_item_link'), 10, 3);
+			add_filter('woocommerce_cart_item_price', array($this, 'cmv_fix_cart_dropdown_price'), 10, 3);
 			// Prevent add to cart notices when redirect is enabled
 			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 		}
+
+		//Price of product in mini cart
+		public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {
+			$line_total = $cart_item['line_total']; // Prezzo totale della riga
+			return wc_price($line_total);
+			}
+
+			//Link product in the mini cart
+			public function cmv_fix_bus_cart_item_link($permalink, $cart_item, $cart_item_key) {
+				// Controlla se è un bus (e se ha l'ID del post bus)
+				if (isset($cart_item['wbtm_bus_id']) && get_post_type($cart_item['wbtm_bus_id']) === 'wbtm_bus') {
+					$permalink = get_permalink($cart_item['wbtm_bus_id']);
+				}
+				return $permalink;
+			}
 		public function prevent_duplicate_bookings($cart_object)
 		{
 			foreach ($cart_object->cart_contents as $key => $cart_item) {
