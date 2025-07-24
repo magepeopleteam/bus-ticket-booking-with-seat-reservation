@@ -391,26 +391,22 @@ if (! class_exists('WBTM_Woocommerce')) {
 						}
 					}
 					if (class_exists('Wbtm_Woocommerce_bus_Pro')) {
-						error_log('WBTM Seat Threshold Debug - Environment: ' . (defined('WP_ENV') ? WP_ENV : 'unknown'));
-						error_log('WBTM Seat Threshold Debug - Server: ' . $_SERVER['SERVER_NAME']);
-						error_log('WBTM Seat Threshold Debug - Starting seat count check');
-						error_log('WBTM Seat Threshold Debug - Post ID: ' . $post_id);
+						
 						
 						// Get seat type configuration
 						$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-						error_log('WBTM Seat Threshold Debug - Seat Type: ' . $seat_type);
+						
 						
 						$total_seat_count = 0;
 						
 						if ($seat_type === 'wbtm_seat_plan') {
-							error_log('WBTM Seat Threshold Debug - Using seat plan configuration');
 							
 							// Get raw seat info from database
 							$raw_seat_info = get_post_meta($post_id, 'wbtm_bus_seats_info', true);
-							error_log('WBTM Seat Threshold Debug - Raw Seat Info: ' . print_r($raw_seat_info, true));
+							
 							
 							$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-							error_log('WBTM Seat Threshold Debug - Processed Seat Info: ' . print_r($seat_infos, true));
+							
 							
 							if (is_array($seat_infos)) {
 								foreach ($seat_infos as $row_index => $seats) {
@@ -424,11 +420,10 @@ if (! class_exists('WBTM_Woocommerce')) {
 								}
 							}
 						} else if ($seat_type === 'wbtm_without_seat_plan') {
-							error_log('WBTM Seat Threshold Debug - Using without seat plan configuration');
 							$total_seat_count = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 						}
 						
-						error_log('WBTM Seat Threshold Debug - Total Seats Counted: ' . $total_seat_count);
+						
 						
 						$minimum_seat_treshold = WBTM_Global_Function::get_settings('wbtm_email_settings', 'minimum_seat_treshold');
 						$minimum_seat_treshold_email_content = WBTM_Global_Function::get_settings('wbtm_email_settings', 'seat_treshold_email_content');
@@ -437,9 +432,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 						$seat_left = $total_seat_count - count($seat_booked);
 						$seat_left = $seat_left - $count;
 						
-						error_log('WBTM Seat Threshold Debug - Threshold: ' . $minimum_seat_treshold);
-						error_log('WBTM Seat Threshold Debug - Seats Left: ' . $seat_left);
-						error_log('WBTM Seat Threshold Debug - Should Send Email: ' . ($minimum_seat_treshold != -1 && $minimum_seat_treshold >= $seat_left ? 'Yes' : 'No'));
+						
 						
 						if ($minimum_seat_treshold != -1 && $minimum_seat_treshold >= $seat_left) {
 							$minimum_seat_treshold_email_content = str_replace(
@@ -453,25 +446,21 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$bus_unique_string = $formatted_date . $bus_name_short;
 							$email_sent = get_option($bus_unique_string);
 							
-							error_log('WBTM Seat Threshold Debug - Notification Email: ' . $notification_receiver_email);
-							error_log('WBTM Seat Threshold Debug - Email Already Sent: ' . ($email_sent === 'yes' ? 'Yes' : 'No'));
+							
 							
 							if ($email_sent !== 'yes') {
-								error_log('WBTM Seat Threshold Debug - Attempting to send notification email');
-								error_log('WBTM Seat Threshold Debug - Email Content: ' . $minimum_seat_treshold_email_content);
+								
 								
 								$email_result = wp_mail($notification_receiver_email, 'Bus Minimum Seat Treshold', $minimum_seat_treshold_email_content);
 								
-								error_log('WBTM Seat Threshold Debug - Email Send Result: ' . ($email_result ? 'Success' : 'Failed'));
+								
 								
 								if ($email_result) {
 									$update_result = update_option($bus_unique_string, 'yes');
-									error_log('WBTM Seat Threshold Debug - Database Update Result: ' . ($update_result ? 'Success' : 'Failed'));
+									
 								}
 							}
-						} else {
-							error_log('WBTM Seat Threshold Debug - Skipping email: Threshold not met or disabled');
-						}
+						} 
 					}
 				}
 				/*******************/

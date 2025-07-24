@@ -858,3 +858,27 @@ function wbtm_pagination_page_management(parent, pagination_page, total_item) {
         }
     });
 }(jQuery));
+
+// --- Pagination Fix: Always re-initialize pagination after rendering ---
+function wbtm_init_pagination_fix() {
+    jQuery('.pagination_area').each(function() {
+        var parent = jQuery(this);
+        var page = parseInt(parent.find('.active_pagination').data('pagination')) || 0;
+        var total = parseInt(parent.find('input[name="mp_total_item"]').val()) || 0;
+        wbtm_pagination_page_management(parent, page, total);
+    });
+}
+
+// Run on page load
+jQuery(document).ready(function() {
+    wbtm_init_pagination_fix();
+});
+
+// Run after AJAX loads passenger list (you may need to adjust selector/event for your use case)
+jQuery(document).ajaxComplete(function(event, xhr, settings) {
+    // Only re-init if passenger list or pagination is updated
+    if (xhr.responseText && xhr.responseText.indexOf('pagination_area') !== -1) {
+        wbtm_init_pagination_fix();
+    }
+});
+// --- End Pagination Fix ---

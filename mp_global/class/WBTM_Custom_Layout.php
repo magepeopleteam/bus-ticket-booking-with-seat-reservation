@@ -10,7 +10,7 @@
 		class WBTM_Custom_Layout {
 			public function __construct() {
 				add_action( 'wbtm_hidden_table', array( $this, 'hidden_table' ), 10, 2 );
-				add_action( 'wbtm_pagination_section', array( $this, 'pagination' ), 10, 3 );
+				//add_action( 'wbtm_pagination_section', array( $this, 'pagination' ), 10, 3 );
 			}
 			public function hidden_table( $hook_name, $data = array() ) {
 				?>

@@ -21,6 +21,7 @@
 		$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
 		$seat_infos_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
 		$adult_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
+		$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 		//echo current($seat_infos)['price'];
 		
 		$seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $bus_start_time);
@@ -52,13 +53,26 @@
 						<tbody>
 						<?php foreach ($seat_infos as $seat_info) { ?>
 							<tr>
-								<?php foreach ($seat_info as $seat_name) { ?>
+								<?php foreach ($seat_info as $seat_key => $seat_name) { ?>
+									<?php 
+									// Skip rotation keys (they end with _rotation)
+									if (strpos($seat_key, '_rotation') !== false) {
+										continue;
+									}
+									?>
 									<?php if ($seat_name) { ?>
 										<?php if ($seat_name == 'door' || $seat_name == 'wc') { ?>
 											<td><?php echo esc_html($seat_name); ?></td>
 										<?php } else { ?>
+											<?php 
+											$rotation = 0;
+											if ($enable_rotation == 'yes' && isset($seat_info[$seat_key . '_rotation'])) {
+												$rotation = intval($seat_info[$seat_key . '_rotation']);
+											}
+											$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+											?>
 											<th>
-												<div class="mp_seat_item">
+												<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 													<?php //$sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
 													<?php if (in_array($seat_name,$seat_booked)) { ?>
 														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
@@ -119,13 +133,26 @@
 							<tbody>
 							<?php foreach ($seat_infos_dd as $seat_info_dd) { ?>
 								<tr>
-									<?php foreach ($seat_info_dd as $info) { ?>
+									<?php foreach ($seat_info_dd as $seat_key => $info) { ?>
+										<?php 
+										// Skip rotation keys (they end with _rotation)
+										if (strpos($seat_key, '_rotation') !== false) {
+											continue;
+										}
+										?>
 										<?php if ($info) { ?>
 											<?php if ($info == 'door' || $info == 'wc') { ?>
 												<td><?php echo esc_html($info) ?></td>
 											<?php } else { ?>
+												<?php 
+												$rotation = 0;
+												if ($enable_rotation == 'yes' && isset($seat_info_dd[$seat_key . '_rotation'])) {
+													$rotation = intval($seat_info_dd[$seat_key . '_rotation']);
+												}
+												$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+												?>
 												<th>
-													<div class="mp_seat_item">
+													<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 														<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $info); ?>
 														<?php if ($seat_available > 0) { ?>
 															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>"><?php echo esc_html($info); ?></div>
