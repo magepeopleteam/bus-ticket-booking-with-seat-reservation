@@ -121,6 +121,12 @@
 				); 
 			}
 			
+			public static function text_bus_operator() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus Operator', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
 			public static function text_attendee_id() { 
 				return self::get_translation(__FUNCTION__,
 					esc_html__('Attendee ID', 'bus-ticket-booking-with-seat-reservation')
