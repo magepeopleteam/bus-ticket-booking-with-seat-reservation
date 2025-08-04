@@ -612,4 +612,382 @@ div.wbtm_selected_seat_details table tbody tr td {
   display: none;
 }
 
+/* Frontend Seat Rotation Styles */
+.wbtm_seat_rotated_90 .mp_seat {
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.wbtm_seat_rotated_180 .mp_seat {
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+
+.wbtm_seat_rotated_270 .mp_seat {
+  transform: rotate(270deg);
+  transform-origin: center;
+}
+
+/* Ensure rotated seats maintain proper spacing and alignment */
+.wbtm_seat_plan_area .mp_seat_item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .mp_seat {
+  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure consistent seat styling for both lower and upper deck */
+.wbtm_seat_plan_area table th,
+.wbtm_seat_plan_area table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+/* Make upper deck exactly the same as lower deck */
+.wbtm_seat_plan_upper {
+  /* Inherit all lower deck styles */
+}
+
+.wbtm_seat_plan_upper table {
+  margin: 0 auto !important;
+}
+
+.wbtm_seat_plan_upper table tr {
+  background-color: var(--wbtm_color_theme_alter) !important;
+}
+
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+.wbtm_seat_plan_upper table thead th {
+  height: auto !important;
+}
+
+/* More specific selectors to override global CSS */
+div.wbtm_bus_list_area div.wbtm_seat_plan_area table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_area table td,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+/* Ensure seat items have consistent styling */
+.wbtm_seat_plan_area .mp_seat_item,
+.wbtm_seat_plan_upper .mp_seat_item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure seats have consistent styling */
+.wbtm_seat_plan_area .mp_seat,
+.wbtm_seat_plan_upper .mp_seat {
+  border: 1px solid var(--wbtm_color_border);
+  width: 100%;
+  height: 100%;
+  border-radius: 15px 15px 0 0;
+  border-bottom: 5px solid var(--wbtm_color_light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* More specific selectors for seat styling */
+div.wbtm_bus_list_area div.wbtm_seat_plan_area div.mp_seat,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
+  border: 1px solid var(--wbtm_color_border) !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Force upper deck to use exact same styling as lower deck */
+.wbtm_seat_plan_upper div.mp_seat_item {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.wbtm_seat_plan_upper div.mp_seat {
+  border: 1px solid var(--wbtm_color_border) !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Most aggressive approach - copy exact lower deck styles to upper deck */
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table {
+  margin: 0 auto !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table tr {
+  background-color: var(--wbtm_color_theme_alter) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table thead th {
+  height: auto !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat_item {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
+  border: 1px solid var(--wbtm_color_border) !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure seat states are consistent */
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available {
+  background-color: var(--wbtm_color_theme_alter) !important;
+  cursor: pointer !important;
+  color: var(--wbtm_d_color) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked {
+  cursor: not-allowed !important;
+  background-color: var(--wbtm_color_warning) !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart {
+  cursor: not-allowed !important;
+  background-color: var(--wbtm_color_light_3) !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+/* ULTIMATE FIX - Force upper deck to be exactly like lower deck */
+.wbtm_seat_plan_upper * {
+  box-sizing: border-box !important;
+}
+
+.wbtm_seat_plan_upper table {
+  table-layout: fixed !important;
+  width: auto !important;
+  margin: 0 auto !important;
+}
+
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
+  padding: 5px !important;
+  margin: 0 !important;
+  border: none !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  min-height: 50px !important;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  min-height: 50px !important;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  border: 1px solid var(--wbtm_color_border) !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Override any other styles that might be affecting upper deck */
+.wbtm_seat_plan_upper {
+  font-size: inherit !important;
+}
+
+.wbtm_seat_plan_upper * {
+  font-size: inherit !important;
+}
+
+/* Force the same dimensions as lower deck */
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Fix upper deck seat price dropdown positioning */
+.wbtm_seat_plan_upper .mp_seat_item {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list {
+  position: absolute !important;
+  left: 0 !important;
+  top: 100% !important;
+  min-width: 150px !important;
+  width: 100% !important;
+  display: none !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: var(--wbtm_color_light) !important;
+  border: 1px solid var(--wbtm_color_theme) !important;
+  border-radius: var(--wbtm_dbr) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item:hover .wbtm_seat_item_list {
+  display: block !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list::before {
+  position: absolute !important;
+  content: "" !important;
+  width: 20px !important;
+  height: 20px !important;
+  left: 15px !important;
+  top: -20px !important;
+  border: 10px solid transparent !important;
+  border-bottom-color: var(--wbtm_color_theme) !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li {
+  cursor: pointer !important;
+  padding: 5px var(--wbtm_dmp_xs) !important;
+  background-color: var(--wbtm_color_light) !important;
+  border-bottom: 1px solid #eee !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:last-child {
+  border-bottom: none !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:hover {
+  background-color: var(--wbtm_color_theme) !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+/* Fix positioning for seats on the right side of upper deck */
+.wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list {
+  right: 0 !important;
+  left: inherit !important;
+}
+
+.wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list::before {
+  left: inherit !important;
+  right: 15px !important;
+}
+
+/* Fix positioning for seats on the bottom rows of upper deck */
+.wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list {
+  top: calc(-100% - 23px) !important;
+}
+
+.wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list::before {
+  top: 100% !important;
+  border-top-color: var(--wbtm_color_theme) !important;
+  border-bottom-color: transparent !important;
+}
+
+/* Ensure upper deck container doesn't clip the dropdown */
+.wbtm_seat_plan_upper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.wbtm_seat_plan_upper .ovAuto {
+  overflow: visible !important;
+}
+
+/* Responsive adjustments for rotated seats */
+@media only screen and (max-width: 768px) {
+  .wbtm_seat_rotated_90 .mp_seat,
+  .wbtm_seat_rotated_270 .mp_seat {
+    font-size: 0.9em;
+  }
+  
+  .wbtm_seat_rotated_180 .mp_seat {
+    font-size: 0.95em;
+  }
+}
+
 /*# sourceMappingURL=wbtm.css.map */

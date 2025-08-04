@@ -80,6 +80,9 @@
 				/***************************/
 				$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
 				$checked_upper_desk = $show_upper_desk == 'yes' ? 'checked' : '';
+				/***************************/
+				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+				$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
 				?>
 				
 				<div class="mpPanel mT">
@@ -142,6 +145,16 @@
 							</div>
 							<div class="wbtm_seat_plan_preview">
 								<?php $this->create_seat_plan($post_id, $seat_row, $seat_column); ?>
+							</div>
+							<div class="divider"></div>
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Enable seat rotation for individual seats', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
 							</div>
 						</div>
 					</div>
@@ -210,8 +223,10 @@
 				if ($seat_row > 0 && $seat_column > 0) {
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
+					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
-					<div class=" wbtm_settings_area">
+					<div class="wbtm_settings_area <?php echo esc_attr($rotation_class); ?>">
 						<div class="ovAuto">
 							<table>
 								<tbody class="wbtm_item_insert wbtm_sortable_area">
@@ -235,19 +250,37 @@
 			}
 			public function seat_plan_row($seat_column, $dd, $row_info = []) {
 				$seat_key = $dd ? 'dd_seat' : 'seat';
+				$post_id = get_the_ID();
+				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 				?>
 				<tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $seat_column; $j++) { ?>
 						<?php $key = $seat_key . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
+						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
 						<th>
-							<label>
-								<input type="text" class="formControl wbtm_id_validation"
-									name="wbtm_<?php echo esc_attr($key); ?>[]"
-									placeholder="<?php esc_attr_e('Blank', 'bus-ticket-booking-with-seat-reservation'); ?>"
-									value="<?php echo esc_attr($seat_name); ?>"
-								/>
-							</label>
+							<div class="wbtm_seat_container">
+								<label>
+									<input type="text" class="formControl wbtm_id_validation"
+										name="wbtm_<?php echo esc_attr($key); ?>[]"
+										placeholder="<?php esc_attr_e('Blank', 'bus-ticket-booking-with-seat-reservation'); ?>"
+										value="<?php echo esc_attr($seat_name); ?>"
+									/>
+								</label>
+								<?php if ($enable_rotation == 'yes') { ?>
+									<div class="wbtm_seat_rotation_controls">
+										<button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+												data-seat-key="<?php echo esc_attr($key); ?>" 
+												data-rotation="<?php echo esc_attr($seat_rotation); ?>"
+												title="<?php esc_attr_e('Rotate Seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+											<span class="fas fa-redo-alt mp_zero"></span>
+										</button>
+										<input type="hidden" name="wbtm_<?php echo esc_attr($key); ?>_rotation[]" 
+											   value="<?php echo esc_attr($seat_rotation); ?>" 
+											   class="wbtm_rotation_value" />
+									</div>
+								<?php } ?>
+							</div>
 						</th>
 					<?php } ?>
 					<th> <?php WBTM_Custom_Layout::move_remove_button(); ?> </th>
@@ -263,16 +296,22 @@
 					$driver_seat_position = WBTM_Global_Function::get_submit_info('driver_seat_position');
 					$rows = WBTM_Global_Function::get_submit_info('wbtm_seat_rows_hidden', 0);
 					$columns = WBTM_Global_Function::get_submit_info('wbtm_seat_cols_hidden', 0);
+					$wbtm_enable_seat_rotation = WBTM_Global_Function::get_submit_info('wbtm_enable_seat_rotation') ? 'yes' : 'no';
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
+					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
 					$lower_deck_info = [];
 					$total_seat=0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, []);
+							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', []);
 							for ($i = 0; $i < $rows; $i++) {
 								$lower_deck_info[$i]['seat' . $j] = $col_infos[$i];
+								if ($wbtm_enable_seat_rotation == 'yes') {
+									$lower_deck_info[$i]['seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
+								}
 								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc') {
 									$total_seat++;
 								}
@@ -293,8 +332,12 @@
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, []);
+							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', []);
 							for ($i = 0; $i < $rows_dd; $i++) {
 								$upper_deck_info[$i]['dd_seat' . $j] = $col_infos[$i];
+								if ($wbtm_enable_seat_rotation == 'yes') {
+									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
+								}
 								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes') {
 									$total_seat++;
 								}

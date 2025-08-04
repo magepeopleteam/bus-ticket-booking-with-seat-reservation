@@ -59,3 +59,95 @@
 	width: 100%;
 	background-position: center center;
 }
+
+/* Seat Rotation Styles */
+/* Hide rotation controls by default when rotation is disabled */
+.wbtm_seat_rotation_controls {
+  display: none;
+}
+
+/* Show rotation controls when rotation is enabled */
+.wbtm_enable_rotation .wbtm_seat_rotation_controls {
+  display: flex;
+}
+
+/* Ensure proper spacing for rotation controls */
+.wbtm_seat_container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 0;
+  min-height: 80px; /* Increased height to accommodate rotation controls */
+}
+
+.wbtm_seat_container label {
+  width: 100%;
+  margin: 0;
+}
+
+.wbtm_seat_container .formControl {
+  width: 100%;
+  margin: 0;
+}
+
+.wbtm_seat_rotation_controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+  width: 100%;
+}
+
+.wbtm_rotate_seat {
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wbtm_rotate_seat:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.wbtm_rotate_seat.rotated-90 {
+  transform: rotate(90deg);
+}
+
+.wbtm_rotate_seat.rotated-180 {
+  transform: rotate(180deg);
+}
+
+.wbtm_rotate_seat.rotated-270 {
+  transform: rotate(270deg);
+}
+
+/* Ensure table cells have enough space for rotation controls */
+.wbtm_seat_plan_settings table th {
+  min-height: 100px; /* Increased height to accommodate rotation controls */
+  vertical-align: top;
+  padding: 8px 4px;
+}
+
+/* Responsive adjustments */
+@media only screen and (max-width: 768px) {
+	.wbtm_seat_container {
+		min-height: 50px;
+		padding: 3px 0;
+	}
+	
+	.wbtm_rotate_seat {
+		padding: 3px 4px;
+		font-size: 10px;
+	}
+	
+	.wbtm_seat_plan_settings table th {
+		min-height: 60px;
+		padding: 4px 2px;
+	}
+}

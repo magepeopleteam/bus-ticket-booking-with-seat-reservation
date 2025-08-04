@@ -238,3 +238,106 @@
       .attr("name", "wbtm_drop_off_time[" + unique_id + "][]");
   });
 })(jQuery);
+
+//==========Seat Rotation=================//
+(function ($) {
+  "use strict";
+  
+  // Handle seat rotation button clicks
+  $(document).on("click", ".wbtm_rotate_seat", function (e) {
+    e.preventDefault();
+    
+    let $button = $(this);
+    let $rotationInput = $button.siblings('.wbtm_rotation_value');
+    let currentRotation = parseInt($rotationInput.val()) || 0;
+    
+    // Calculate next rotation (0 -> 90 -> 180 -> 270 -> 0)
+    let newRotation = (currentRotation + 90) % 360;
+    
+    // Update the hidden input value
+    $rotationInput.val(newRotation);
+    
+    // Update button appearance
+    $button.removeClass('rotated-90 rotated-180 rotated-270');
+    if (newRotation > 0) {
+      $button.addClass('rotated-' + newRotation);
+    }
+    
+    // Update data attribute for visual feedback
+    $button.attr('data-rotation', newRotation);
+  });
+  
+  // Initialize rotation buttons when seat plan is loaded
+  $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd', function() {
+    initializeRotationButtons();
+  });
+  
+  // Also initialize on page load
+  $(document).ready(function() {
+    initializeRotationButtons();
+  });
+  
+  function initializeRotationButtons() {
+    $('.wbtm_rotate_seat').each(function() {
+      let $button = $(this);
+      let rotation = parseInt($button.attr('data-rotation')) || 0;
+      
+      // Apply initial rotation class
+      if (rotation > 0) {
+        $button.removeClass('rotated-90 rotated-180 rotated-270');
+        $button.addClass('rotated-' + rotation);
+      }
+    });
+  }
+  
+  // Handle rotation setting toggle
+  $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function() {
+    let isEnabled = $(this).is(':checked');
+    let $seatPlanContainer = $('.wbtm_seat_plan_settings');
+    
+    if (isEnabled) {
+      // Show rotation controls immediately
+      $seatPlanContainer.addClass('wbtm_enable_rotation');
+      $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
+      
+      // Add rotation controls to existing seats if they don't have them
+      $seatPlanContainer.find('.wbtm_seat_container').each(function() {
+        let $container = $(this);
+        if ($container.find('.wbtm_seat_rotation_controls').length === 0) {
+          let $input = $container.find('input[class*="wbtm_id_validation"]');
+          let inputName = $input.attr('name');
+          let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
+          
+          let rotationControls = `
+            <div class="wbtm_seat_rotation_controls">
+              <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+                      data-seat-key="${seatKey}" 
+                      data-rotation="0"
+                      title="Rotate Seat">
+                <span class="fas fa-redo-alt mp_zero"></span>
+              </button>
+              <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
+                     value="0" 
+                     class="wbtm_rotation_value" />
+            </div>
+          `;
+          $container.append(rotationControls);
+        }
+      });
+    } else {
+      // Hide rotation controls immediately
+      $seatPlanContainer.removeClass('wbtm_enable_rotation');
+      $seatPlanContainer.find('.wbtm_seat_rotation_controls').hide();
+    }
+  });
+  
+  // Initialize rotation setting on page load
+  $(document).ready(function() {
+    let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
+    if ($rotationToggle.is(':checked')) {
+      $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
+      $('.wbtm_seat_rotation_controls').show();
+    }
+  });
+  
+})(jQuery);
