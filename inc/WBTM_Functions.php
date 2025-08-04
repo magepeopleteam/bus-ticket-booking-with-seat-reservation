@@ -470,16 +470,16 @@
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_left_filter_title_holder">
                         <div class="wbtm_bus_filter_title">
-                            <span class="wbtm_bus_filter_title_text"> Filter </span>
+                            <span class="wbtm_bus_filter_title_text"><?php echo esc_html(WBTM_Translations::text_filter()); ?></span>
                         </div>
                         <div class="wbtm_bus_filter_reset">
-                            <span class="wbtm_bus_filter_reset_text wbtm_reset_<?php echo esc_attr( $filter_by_box ) ?>"> Reset </span>
+                            <span class="wbtm_bus_filter_reset_text wbtm_reset_<?php echo esc_attr( $filter_by_box ) ?>"><?php echo esc_html(WBTM_Translations::text_reset()); ?></span>
                         </div>
                     </div>
                     <div class="wbtm_left_filter_element_holder">
                         <?php if( $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
                         <div class="wbtm_bus_filter_items">
-                                <span class="wbtm_bus_toggle-header">Bus Type <span class="wbtm_bus_toggle-icon"></span></span>
+                                <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_type()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                                 <?php
                                 // Get global list of bus types from taxonomy
                                 $bus_cat_terms = get_terms(array(
@@ -513,7 +513,7 @@
 						
                         if( $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
                         <div class="wbtm_bus_filter_items">
-                            <span class="wbtm_bus_toggle-header">Bus Operator <span class="wbtm_bus_toggle-icon"></span></span>
+                            <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_operator()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php
                             $search_bus_titles = array_unique( $bus_titles );
                             foreach ( $search_bus_titles as $bus_title ) {
@@ -530,7 +530,7 @@
                         if( $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
                         ?>
                         <div class="wbtm_bus_filter_items">
-                            <span class="wbtm_bus_toggle-header">Boarding Point <span class="wbtm_bus_toggle-icon"></span></span>
+                            <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_boarding_point()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php  foreach ( $start_routes as $route ){?>
                                 <div class="wbtm_bus_left_filter_checkbox_holder">
                                     <input type="checkbox" class="<?php echo $filter_by_box?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($route); ?>">

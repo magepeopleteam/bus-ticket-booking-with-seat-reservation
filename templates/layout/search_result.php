@@ -41,7 +41,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_types[] = $bus_type;
             
             // Log bus types for debugging
-            error_log('Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
+           // error_log('Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
             
             $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
             foreach ( $get_boarding_routes as $route ){
@@ -117,7 +117,11 @@ if (sizeof($bus_ids) > 0) {
 
             $duration_hours = floor($duration_seconds / 3600);
             $duration_minutes = floor(($duration_seconds % 3600) / 60);
-            $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
+            $duration_formatted = sprintf(
+                _x('%d H %d M', 'Duration format (hours and minutes)', 'bus-ticket-booking-with-seat-reservation'),
+                $duration_hours,
+                $duration_minutes
+            );
             ?>
 
             <div class="wbtm-bus-list  <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">

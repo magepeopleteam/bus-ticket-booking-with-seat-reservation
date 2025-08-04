@@ -121,6 +121,12 @@
 				); 
 			}
 			
+			public static function text_bus_operator() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus Operator', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
 			public static function text_attendee_id() { 
 				return self::get_translation(__FUNCTION__,
 					esc_html__('Attendee ID', 'bus-ticket-booking-with-seat-reservation')
@@ -404,7 +410,20 @@
 					esc_html__('Passenger Details', 'bus-ticket-booking-with-seat-reservation')
 				); 
 			}
-			
+
+			// filter translations
+			public static function text_filter() { 
+				return self::get_translation(__FUNCTION__, 
+					esc_html__('Filter', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+
+			public static function text_reset() { 
+				return self::get_translation(__FUNCTION__, 
+					esc_html__('Reset', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+						
 			public static function text_mobile_number() { 
 				return self::get_translation(__FUNCTION__, 
 					esc_html__('Mobile Number', 'bus-ticket-booking-with-seat-reservation')
