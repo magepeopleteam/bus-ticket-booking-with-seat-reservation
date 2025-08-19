@@ -887,7 +887,9 @@ if (! class_exists('WBTM_Woocommerce')) {
 																$tic_key++;
 															}
 														} else {
-															do_action('add_wbtm_after_cart_ticket_info', $cart_item, $key);
+															// Fixed by Shahnur Alam: Use $tic_key instead of $key to maintain proper passenger indexing
+															do_action('add_wbtm_after_cart_ticket_info', $cart_item, $tic_key);
+															$tic_key++; // Fixed by Shahnur Alam: Increment $tic_key for consistency
 														}
 														$ticket_count++;
 													} ?>
