@@ -1,0 +1,3 @@
+<?php
+return ['project-id-version'=>'Bus Ticket Booking with Seat Reservation 5.4.7','report-msgid-bugs-to'=>'https://wordpress.org/support/plugin/bus-ticket-booking-with-seat-reservation','last-translator'=>'','language-team'=>'English (UK)','mime-version'=>'1.0','content-type'=>'text/plain; charset=UTF-8','content-transfer-encoding'=>'8bit','pot-creation-date'=>'2025-08-19T02:32:51+02:00','po-revision-date'=>'2025-08-19 00:48+0000','x-generator'=>'Loco https://localise.biz/','x-domain'=>'bus-ticket-booking-with-seat-reservation
+','language'=>'en_GB','plural-forms'=>'nplurals=2; plural=n != 1;','x-loco-version'=>'2.8.0; wp-6.8.2; php-8.0.30','messages'=>[]];

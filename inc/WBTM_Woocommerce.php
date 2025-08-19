@@ -37,6 +37,21 @@ if (! class_exists('WBTM_Woocommerce')) {
 			add_filter('woocommerce_cart_item_price', array($this, 'cmv_fix_cart_dropdown_price'), 10, 3);
 			// Prevent add to cart notices when redirect is enabled
 			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
+			add_action('template_redirect', ['WBTM_Woocommerce', 'enforce_booking_privacy']);
+		}
+
+		// Privacy check: Only allow booking owner or admin to view single wbtm_bus_booking posts
+		public static function enforce_booking_privacy() {
+			if (is_singular('wbtm_bus_booking')) {
+				global $post;
+				$current_user = wp_get_current_user();
+				$is_admin = current_user_can('manage_options');
+				$is_owner = ($current_user && $current_user->ID && $post->post_author == $current_user->ID);
+				if (!$is_admin && !$is_owner) {
+					wp_die(__('Not authorized to view this booking.', 'bus-ticket-booking-with-seat-reservation'), __('Not authorized', 'bus-ticket-booking-with-seat-reservation'), array('response' => 403));
+					exit;
+				}
+			}
 		}
 
 		//Price of product in mini cart
@@ -73,6 +88,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 								if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 									WC()->cart->remove_cart_item($key);
+									/* translators: %s: seat name */
 									wc_add_notice(sprintf(__("Seat %s has already been booked by another user. Please choose another seat.", 'woocommerce'), $seat_name), 'error');
 								}
 							}

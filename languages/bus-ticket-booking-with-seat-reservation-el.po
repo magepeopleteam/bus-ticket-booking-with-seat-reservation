@@ -1,0 +1,3126 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the same license as the Bus Ticket Booking with Seat Reservation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.4.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-"
+"booking-with-seat-reservation\n"
+"Last-Translator: \n"
+"Language-Team: Greek\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-19T02:32:51+02:00\n"
+"PO-Revision-Date: 2025-08-19 00:48+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.30"
+
+#. Plugin Name of the plugin
+#: woocommerce-bus.php
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "Κράτηση εισιτηρίων λεωφορείου με κράτηση θέσης"
+
+#. Plugin URI of the plugin
+#: woocommerce-bus.php
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Description of the plugin
+#: woocommerce-bus.php
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr ""
+"Ένα πλήρες σύστημα έκδοσης εισιτηρίων λεωφορείων για WordPress και "
+"WooCommerce"
+
+#. Author of the plugin
+#: woocommerce-bus.php
+msgid "MagePeople Team"
+msgstr "Ομάδα MagePeople"
+
+#. Author URI of the plugin
+#: woocommerce-bus.php
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/settings/WBTM_Date_Settings.php:35 admin/WBTM_Settings.php:52
+msgid "Date Settings"
+msgstr "Ρυθμίσεις ημερομηνίας"
+
+#: admin/settings/WBTM_Date_Settings.php:36
+msgid ""
+"Bus date settings will help to operation a bus in a particular or repeated "
+"date."
+msgstr ""
+"Οι ρυθμίσεις ημερομηνίας λεωφορείου θα βοηθήσουν στη λειτουργία ενός "
+"λεωφορείου σε μια συγκεκριμένη ή επαναλαμβανόμενη ημερομηνία."
+
+#: admin/settings/WBTM_Date_Settings.php:41
+msgid "Date Information"
+msgstr "Πληροφορίες ημερομηνίας"
+
+#: admin/settings/WBTM_Date_Settings.php:43
+msgid "Here you can set bus seat booking date."
+msgstr "Εδώ μπορείτε να ορίσετε την ημερομηνία κράτησης θέσης λεωφορείου."
+
+#: admin/settings/WBTM_Date_Settings.php:49
+msgid "Bus Operation Date Type"
+msgstr "Τύπος ημερομηνίας λειτουργίας λεωφορείου"
+
+#: admin/settings/WBTM_Date_Settings.php:57
+#: admin/settings/WBTM_Seat_Configuration.php:48
+#: admin/settings/WBTM_Seat_Configuration.php:114
+msgid "Please select ..."
+msgstr "Παρακαλώ επιλέξτε..."
+
+#: admin/settings/WBTM_Date_Settings.php:58
+msgid "Particular"
+msgstr "Ιδιαίτερος"
+
+#: admin/settings/WBTM_Date_Settings.php:59
+msgid "Repeated"
+msgstr "Αλλεπάλληλος"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+#: admin/settings/WBTM_Date_Settings.php:69
+msgid "Particular Dates"
+msgstr "Συγκεκριμένες Ημερομηνίες"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Add New Particular date"
+msgstr "Προσθήκη νέας συγκεκριμένης ημερομηνίας"
+
+#: admin/settings/WBTM_Date_Settings.php:100
+msgid "Repeated Start Date"
+msgstr "Επαναλαμβανόμενη ημερομηνία έναρξης"
+
+#: admin/settings/WBTM_Date_Settings.php:102
+msgid "Select repeated start date."
+msgstr "Επιλέξτε επαναλαμβανόμενη ημερομηνία έναρξης."
+
+#: admin/settings/WBTM_Date_Settings.php:114
+msgid "Repeated End Date"
+msgstr "Επαναλαμβανόμενη ημερομηνία λήξης"
+
+#: admin/settings/WBTM_Date_Settings.php:116
+msgid "Select repeated end date."
+msgstr "Επιλέξτε επαναλαμβανόμενη ημερομηνία λήξης."
+
+#: admin/settings/WBTM_Date_Settings.php:128
+msgid "Repeated after"
+msgstr "Επαναλαμβάνεται μετά"
+
+#: admin/settings/WBTM_Date_Settings.php:130
+msgid "Set repeated date step count."
+msgstr "Ορίστε τον αριθμό επαναλαμβανόμενων βημάτων ημερομηνίας."
+
+#: admin/settings/WBTM_Date_Settings.php:139
+msgid "Maximum advanced day for booking"
+msgstr "Μέγιστη ημέρα προκράτησης για κράτηση"
+
+#: admin/settings/WBTM_Date_Settings.php:141
+msgid "Set maximum advanced day for booking."
+msgstr "Ορίστε τη μέγιστη ημέρα προκράτησης για κράτηση."
+
+#: admin/settings/WBTM_Date_Settings.php:150
+msgid "Off Day"
+msgstr "Ανάποδη μέρα"
+
+#: admin/settings/WBTM_Date_Settings.php:152
+msgid "Select days for off day."
+msgstr "Επιλέξτε ημέρες για ημέρες εκτός λειτουργίας."
+
+#: admin/settings/WBTM_Date_Settings.php:167
+msgid "Off Dates"
+msgstr "Ημερομηνίες εκτός λειτουργίας"
+
+#: admin/settings/WBTM_Date_Settings.php:169
+msgid "Select dates for off day."
+msgstr "Επιλέξτε ημερομηνίες για ημέρες εκτός λειτουργίας."
+
+#: admin/settings/WBTM_Date_Settings.php:188
+msgid "Add New Off date"
+msgstr "Προσθήκη νέας ημερομηνίας απενεργοποίησης"
+
+#: admin/settings/WBTM_Date_Settings.php:201
+msgid "Off Dates in Range"
+msgstr "Ημερομηνίες εκτός εύρους"
+
+#: admin/settings/WBTM_Date_Settings.php:203
+msgid "Select date range for off day."
+msgstr "Επιλέξτε εύρος ημερομηνιών για την ημέρα εκτός λειτουργίας."
+
+#: admin/settings/WBTM_Date_Settings.php:220
+msgid "Add New Off date range"
+msgstr "Προσθήκη νέου εύρους ημερομηνιών εκτός λειτουργίας"
+
+#: admin/settings/WBTM_Extra_Service.php:23 inc/WBTM_Translations.php:324
+msgid "Extra Services"
+msgstr "Επιπλέον Υπηρεσίες"
+
+#: admin/settings/WBTM_Extra_Service.php:24
+msgid "Add Extra Services for the passanger with bus seat reservation"
+msgstr ""
+"Προσθήκη επιπλέον υπηρεσιών για τον επιβάτη με κράτηση θέσης λεωφορείου"
+
+#: admin/settings/WBTM_Extra_Service.php:30
+msgid "Extra service"
+msgstr "Επιπλέον υπηρεσία"
+
+#: admin/settings/WBTM_Extra_Service.php:32
+msgid "Here you can add extra services. Also can be on/off extra service"
+msgstr ""
+"Εδώ μπορείτε να προσθέσετε επιπλέον υπηρεσίες. Επίσης, μπορεί να είναι "
+"ενεργοποιημένη/απενεργοποιημένη η επιπλέον υπηρεσία."
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Show/Hide Extra Service"
+msgstr "Εμφάνιση/Απόκρυψη Επιπλέον Υπηρεσίας"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Service Name"
+msgstr "Όνομα υπηρεσίας"
+
+#: admin/settings/WBTM_Extra_Service.php:55
+msgid "Service Price"
+msgstr "Τιμή Υπηρεσίας"
+
+#: admin/settings/WBTM_Extra_Service.php:56
+msgid "Available Qty"
+msgstr "Διαθέσιμη ποσότητα"
+
+#: admin/settings/WBTM_Extra_Service.php:57
+msgid "Qty Box Type"
+msgstr "Ποσότητα Τύπος κουτιού"
+
+#: admin/settings/WBTM_Extra_Service.php:58 admin/WBTM_Global_settings.php:541
+#: inc/WBTM_Translations.php:354
+msgid "Action"
+msgstr "Δράση"
+
+#: admin/settings/WBTM_Extra_Service.php:72
+msgid "Add Extra New Service"
+msgstr "Προσθήκη επιπλέον νέας υπηρεσίας"
+
+#: admin/settings/WBTM_Extra_Service.php:109
+msgid "Input Box"
+msgstr "Πλαίσιο εισαγωγής"
+
+#: admin/settings/WBTM_Extra_Service.php:110
+msgid "Dropdown List"
+msgstr "Αναπτυσσόμενη λίστα"
+
+#: admin/settings/WBTM_Pricing_Routing.php:61
+msgid "Price And Routing Settings"
+msgstr "Ρυθμίσεις τιμής και δρομολόγησης"
+
+#: admin/settings/WBTM_Pricing_Routing.php:62
+msgid "Here you can configure Price And Routing for a bus."
+msgstr ""
+"Εδώ μπορείτε να διαμορφώσετε την τιμή και τη δρομολόγηση για ένα λεωφορείο."
+
+#: admin/settings/WBTM_Pricing_Routing.php:66
+msgid "GTFS Export Ready!"
+msgstr "Η εξαγωγή GTFS είναι έτοιμη!"
+
+#: admin/settings/WBTM_Pricing_Routing.php:67
+msgid ""
+"Add GPS coordinates to your bus stops to enable Google Transit integration. "
+"This allows your routes to appear in Google Maps, Apple Maps, and other "
+"transit apps."
+msgstr ""
+"Προσθέστε συντεταγμένες GPS στις στάσεις λεωφορείων σας για να "
+"ενεργοποιήσετε την ενσωμάτωση του Google Transit. Αυτό επιτρέπει στις "
+"διαδρομές σας να εμφανίζονται στους Χάρτες Google, τους Χάρτες Apple και "
+"άλλες εφαρμογές συγκοινωνιών."
+
+#: admin/settings/WBTM_Pricing_Routing.php:69
+msgid "Export GTFS Feed"
+msgstr "Εξαγωγή ροής GTFS"
+
+#: admin/settings/WBTM_Pricing_Routing.php:77
+msgid "Boarding and Dropping Settings"
+msgstr "Ρυθμίσεις επιβίβασης και αποβίβασης"
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Add New Stops"
+msgstr "Προσθήκη νέων στάσεων"
+
+#: admin/settings/WBTM_Pricing_Routing.php:110
+msgid "Pricing Settings"
+msgstr "Ρυθμίσεις τιμολόγησης"
+
+#: admin/settings/WBTM_Pricing_Routing.php:230
+msgid "Add Stop"
+msgstr "Προσθήκη στάσης"
+
+#: admin/settings/WBTM_Pricing_Routing.php:254
+msgid "Stop : "
+msgstr "Στάση:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:256
+msgid "Select bus stop"
+msgstr "Επιλέξτε στάση λεωφορείου"
+
+#: admin/settings/WBTM_Pricing_Routing.php:263
+msgid "Time : "
+msgstr "Ώρα:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:269
+msgid "Type : "
+msgstr "Τύπος:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:272
+msgid "Select place type"
+msgstr "Επιλέξτε τύπο μέρους"
+
+#: admin/settings/WBTM_Pricing_Routing.php:273
+msgid "Boarding "
+msgstr "Επιβίβαση"
+
+#: admin/settings/WBTM_Pricing_Routing.php:274
+msgid "Dropping "
+msgstr "Πτώση"
+
+#: admin/settings/WBTM_Pricing_Routing.php:275
+msgid "Boarding & Dropping"
+msgstr "Επιβίβαση & Αποβίβαση"
+
+#: admin/settings/WBTM_Pricing_Routing.php:285
+msgid "Next Day Dropping: "
+msgstr "Πτώση την επόμενη μέρα:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:297
+msgid "GTFS Coordinates (for Google Transit)"
+msgstr "Συντεταγμένες GTFS (για το Google Transit)"
+
+#: admin/settings/WBTM_Pricing_Routing.php:301
+msgid ""
+"Add GPS coordinates for this stop to enable Google Maps integration. You can "
+"find coordinates using Google Maps or GPS tools."
+msgstr ""
+"Προσθέστε συντεταγμένες GPS για αυτήν τη στάση για να ενεργοποιήσετε την "
+"ενσωμάτωση με τους Χάρτες Google. Μπορείτε να βρείτε συντεταγμένες "
+"χρησιμοποιώντας τους Χάρτες Google ή τα εργαλεία GPS."
+
+#: admin/settings/WBTM_Pricing_Routing.php:307
+msgid "Latitude:"
+msgstr "Γεωγραφικό πλάτος:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:323
+msgid "Longitude:"
+msgstr "Γεωγραφικό μήκος:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:339
+msgid "Example: New York City = Lat: 40.7128, Lon: -74.0060"
+msgstr ""
+"Παράδειγμα: Νέα Υόρκη = Γεωγραφικό πλάτος: 40,7128, Γεωγραφικό μήκος: -74,"
+"0060"
+
+#: admin/settings/WBTM_Pricing_Routing.php:343
+msgid "Get from Map"
+msgstr "Λήψη από τον χάρτη"
+
+#: admin/settings/WBTM_Pricing_Routing.php:346
+msgid "Validate"
+msgstr "Επικυρώνω"
+
+#: admin/settings/WBTM_Pricing_Routing.php:405 inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr "Επιβίβαση"
+
+#: admin/settings/WBTM_Pricing_Routing.php:409 inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr "Πτώση"
+
+#: admin/settings/WBTM_Pricing_Routing.php:413
+msgid "Adult Price"
+msgstr "Τιμή ενηλίκων"
+
+#: admin/settings/WBTM_Pricing_Routing.php:416
+msgid "Child Price"
+msgstr "Τιμή παιδιού"
+
+#: admin/settings/WBTM_Pricing_Routing.php:417
+msgid "Infant Price"
+msgstr "Τιμή για βρέφη"
+
+#: admin/settings/WBTM_Pricing_Routing.php:458
+msgid "Please Create Bus route ."
+msgstr "Παρακαλώ δημιουργήστε μια διαδρομή λεωφορείου."
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Seat Configuration"
+msgstr "Διαμόρφωση καθίσματος"
+
+#: admin/settings/WBTM_Seat_Configuration.php:27
+msgid "Bus seat configuration. Plan your bus seat."
+msgstr "Διαμόρφωση θέσης λεωφορείου. Σχεδιάστε τη θέση σας στο λεωφορείο."
+
+#: admin/settings/WBTM_Seat_Configuration.php:34
+#: admin/settings/WBTM_Translation_Settings.php:53
+msgid "Seat Information"
+msgstr "Πληροφορίες θέσης"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Here you can plan seat of the bus."
+msgstr "Εδώ μπορείτε να προγραμματίσετε τη θέση του λεωφορείου."
+
+#: admin/settings/WBTM_Seat_Configuration.php:42 inc/WBTM_Translations.php:240
+msgid "Seat Type"
+msgstr "Τύπος καθίσματος"
+
+#: admin/settings/WBTM_Seat_Configuration.php:49
+msgid "Seat Plan"
+msgstr "Σχέδιο θέσεων"
+
+#: admin/settings/WBTM_Seat_Configuration.php:50
+msgid "Without Seat Plan"
+msgstr "Χωρίς σχέδιο θέσεων"
+
+#: admin/settings/WBTM_Seat_Configuration.php:58
+msgid "Total Seat"
+msgstr "Συνολική θέση"
+
+#: admin/settings/WBTM_Seat_Configuration.php:91
+msgid "Lower Deck"
+msgstr "Κάτω κατάστρωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:92
+msgid "Lower deck seat plan"
+msgstr "Σχέδιο καθισμάτων στο κάτω κατάστρωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:101
+msgid "Show Upper Deck"
+msgstr "Εμφάνιση Άνω Καταστρώματος"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103
+msgid "Turn On or Off upper deck seat plan"
+msgstr ""
+"Ενεργοποίηση ή απενεργοποίηση του προγράμματος καθισμάτων στο πάνω κατάστρωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:111
+msgid "Driver Position"
+msgstr "Θέση οδηγού"
+
+#: admin/settings/WBTM_Seat_Configuration.php:115
+msgid "Left"
+msgstr "Αριστερά"
+
+#: admin/settings/WBTM_Seat_Configuration.php:116
+msgid "Right"
+msgstr "Δικαίωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:123
+msgid "Seat Rows"
+msgstr "Σειρές καθισμάτων"
+
+#: admin/settings/WBTM_Seat_Configuration.php:133
+msgid "Seat Columns"
+msgstr "Στήλες καθισμάτων"
+
+#: admin/settings/WBTM_Seat_Configuration.php:139
+msgid "Generate Bus Seat"
+msgstr "Δημιουργία θέσης λεωφορείου"
+
+#: admin/settings/WBTM_Seat_Configuration.php:143
+#: admin/settings/WBTM_Seat_Configuration.php:210
+msgid "Bus Front"
+msgstr "Μπροστά Λεωφορείου"
+
+#: admin/settings/WBTM_Seat_Configuration.php:153
+msgid "Enable Rotation"
+msgstr "Ενεργοποίηση περιστροφής"
+
+#: admin/settings/WBTM_Seat_Configuration.php:155
+msgid "Enable seat rotation for individual seats"
+msgstr "Ενεργοποίηση εναλλαγής καθισμάτων για μεμονωμένες θέσεις"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176 inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr "Ανω κατάστρωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:177
+msgid "You can make Upper Deck seat plan"
+msgstr "Μπορείτε να κάνετε ένα πλάνο θέσεων στο πάνω κατάστρωμα"
+
+#: admin/settings/WBTM_Seat_Configuration.php:184
+msgid "Seat Rows : "
+msgstr "Σειρές καθισμάτων:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:193
+msgid "Seat Columns : "
+msgstr "Στήλες καθισμάτων:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:201
+msgid "Price Increase : "
+msgstr "Αύξηση τιμής:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:206
+msgid "Create seat Plan"
+msgstr "Δημιουργία σχεδίου θέσεων"
+
+#: admin/settings/WBTM_Seat_Configuration.php:240
+msgid "Add New Row"
+msgstr "Προσθήκη νέας γραμμής"
+
+#: admin/settings/WBTM_Seat_Configuration.php:266
+msgid "Blank"
+msgstr "Κενό"
+
+#: admin/settings/WBTM_Seat_Configuration.php:275
+msgid "Rotate Seat"
+msgstr "Περιστροφή καθίσματος"
+
+#: admin/settings/WBTM_Settings_General.php:19
+msgid "General Settings"
+msgstr "Γενικές ρυθμίσεις"
+
+#: admin/settings/WBTM_Settings_General.php:20
+msgid "Bus General Settings"
+msgstr "Γενικές ρυθμίσεις διαύλου"
+
+#: admin/settings/WBTM_Settings_General.php:25
+#: admin/settings/WBTM_Translation_Settings.php:48
+msgid "Bus Information"
+msgstr "Πληροφορίες Λεωφορείου"
+
+#: admin/settings/WBTM_Settings_General.php:27
+msgid "Here you can set bus number, category and seat reservation on/off"
+msgstr ""
+"Εδώ μπορείτε να ενεργοποιήσετε/απενεργοποιήσετε τον αριθμό λεωφορείου, την "
+"κατηγορία και την κράτηση θέσης"
+
+#: admin/settings/WBTM_Settings_General.php:36
+msgid "Bus no"
+msgstr "Αριθμός λεωφορείου"
+
+#: admin/settings/WBTM_Settings_General.php:63
+msgid "Reservation on/off"
+msgstr "Ενεργοποίηση/απενεργοποίηση κράτησης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:19
+msgid "Pickup And Drop-Off Point Settings"
+msgstr "Ρυθμίσεις σημείου παραλαβής και παράδοσης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:20
+msgid "Here you can set bus pick up and drop off point settings."
+msgstr ""
+"Εδώ μπορείτε να ορίσετε τις ρυθμίσεις για το σημείο παραλαβής και αποβίβασης "
+"του λεωφορείου."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:41
+msgid "Pick up settings"
+msgstr "Ρυθμίσεις παραλαβής"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:43
+msgid "Here you can set pickup location"
+msgstr "Εδώ μπορείτε να ορίσετε την τοποθεσία παραλαβής"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:50
+msgid "On/Off Pickup Point"
+msgstr "Σημείο παραλαβής ανοιχτό/κλειστό"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "Boarding point Required?"
+msgstr "Απαιτείται σημείο επιβίβασης;"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:66
+msgid "Turn On or Off Boarding point Required?"
+msgstr "Απαιτείται ενεργοποίηση ή απενεργοποίηση του σημείου επιβίβασης;"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:75
+#: inc/WBTM_Translations.php:607
+msgid "Boarding Point"
+msgstr "Σημείο επιβίβασης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:76
+msgid "Pickup Info"
+msgstr "Πληροφορίες παραλαβής"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:91
+#: admin/settings/WBTM_Settings_Pickup_Point.php:247
+msgid "Add More Point"
+msgstr "Προσθήκη Περισσότερου Πόντου"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:102
+msgid ""
+"You have no Pickup Point . Please add Pickup Point and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Δεν έχετε σημείο παραλαβής. Προσθέστε το σημείο παραλαβής και αποθηκεύστε το "
+"και στη συνέχεια μπορείτε να επεξεργαστείτε το σημείο παραλαβής."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:105
+msgid ""
+"You have no Bus route . Please add Price and Route and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Δεν έχετε διαδρομή λεωφορείου. Προσθέστε την τιμή και τη διαδρομή και "
+"αποθηκεύστε την και, στη συνέχεια, μπορείτε να επεξεργαστείτε το σημείο "
+"παραλαβής."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:143
+msgid "Add Pickup Point"
+msgstr "Προσθήκη σημείου παραλαβής"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:197
+msgid "Drop-off settings"
+msgstr "Ρυθμίσεις παράδοσης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:199
+msgid "Here you can set drop-off location."
+msgstr "Εδώ μπορείτε να ορίσετε την τοποθεσία αποβίβασης."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:205
+msgid "Drop-Off Point Settings"
+msgstr "Ρυθμίσεις σημείου αποβίβασης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:221
+msgid "Dropping point Required?"
+msgstr "Απαιτείται σημείο πτώσης;"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:222
+msgid "Turn On or Off Dropping point Required?"
+msgstr "Απαιτείται ενεργοποίηση ή απενεργοποίηση του σημείου ρίψης;"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:231
+#: inc/WBTM_Translations.php:613
+msgid "Dropping Point"
+msgstr "Σημείο πτώσης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:232
+msgid "Drop-Off Info"
+msgstr "Πληροφορίες Παράδοσης"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:258
+msgid ""
+"You have no Drop-Off Point. Please add Drop-Off Point from left sidebar menu."
+msgstr ""
+"Δεν έχετε σημείο αποβίβασης. Προσθέστε το σημείο αποβίβασης από το αριστερό "
+"πλευρικό μενού."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:261
+msgid ""
+"You have no Bus route. Please add Price and Route and save ,then you can "
+"edit Drop-Off point."
+msgstr ""
+"Δεν έχετε διαδρομή λεωφορείου. Προσθέστε την τιμή και τη διαδρομή και "
+"αποθηκεύστε την και, στη συνέχεια, μπορείτε να επεξεργαστείτε το σημείο "
+"αποβίβασης."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:297
+msgid "Add Drop-Off Point"
+msgstr "Προσθήκη σημείου αποβίβασης"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "Διαμόρφωση φόρου"
+
+#: admin/settings/WBTM_Tax_Settings.php:19
+msgid "Bus tax Configuration settings."
+msgstr "Ρυθμίσεις διαμόρφωσης φόρου διαύλου."
+
+#: admin/settings/WBTM_Tax_Settings.php:28
+msgid "Tax Settings Information"
+msgstr "Πληροφορίες Ρυθμίσεων Φόρου"
+
+#: admin/settings/WBTM_Tax_Settings.php:30
+msgid "Here you can configure tax settings."
+msgstr "Εδώ μπορείτε να διαμορφώσετε τις ρυθμίσεις φόρου."
+
+#: admin/settings/WBTM_Tax_Settings.php:38
+msgid "Tax status"
+msgstr "Φορολογική κατάσταση"
+
+#: admin/settings/WBTM_Tax_Settings.php:41
+msgid "Select tax status type."
+msgstr "Επιλέξτε τύπο φορολογικής κατάστασης."
+
+#: admin/settings/WBTM_Tax_Settings.php:48
+msgid "Taxable"
+msgstr "Φορολογήσιμος"
+
+#: admin/settings/WBTM_Tax_Settings.php:51
+msgid "Shipping only"
+msgstr "Μόνο αποστολή"
+
+#: admin/settings/WBTM_Tax_Settings.php:54
+msgid "None"
+msgstr "Κανένας"
+
+#: admin/settings/WBTM_Tax_Settings.php:63
+msgid "Tax class"
+msgstr "Φορολογική κατηγορία"
+
+#: admin/settings/WBTM_Tax_Settings.php:71
+msgid "Standard"
+msgstr "Πρότυπο"
+
+#: admin/settings/WBTM_Tax_Settings.php:86
+msgid "Tax not active. Please add Tax settings from woocommerce."
+msgstr ""
+"Ο φόρος δεν είναι ενεργός. Προσθέστε ρυθμίσεις φόρου από το woocommerce."
+
+#: admin/settings/WBTM_Translation_Settings.php:17
+msgid "Translation Settings"
+msgstr "Ρυθμίσεις μετάφρασης"
+
+#: admin/settings/WBTM_Translation_Settings.php:18
+msgid "Translations"
+msgstr "Μεταφράσεις"
+
+#: admin/settings/WBTM_Translation_Settings.php:33
+msgid "General Labels"
+msgstr "Γενικές ετικέτες"
+
+#: admin/settings/WBTM_Translation_Settings.php:38
+msgid "Booking Labels"
+msgstr "Ετικέτες κράτησης"
+
+#: admin/settings/WBTM_Translation_Settings.php:43
+#: inc/WBTM_Translations.php:318
+msgid "Passenger Information"
+msgstr "Πληροφορίες Επιβατών"
+
+#: admin/settings/WBTM_Translation_Settings.php:58
+msgid "Button Labels"
+msgstr "Ετικέτες κουμπιών"
+
+#: admin/settings/WBTM_Translation_Settings.php:63
+msgid "Error Messages"
+msgstr "Μηνύματα σφάλματος"
+
+#: admin/settings/WBTM_Translation_Settings.php:68
+msgid "Ticket Status"
+msgstr "Κατάσταση εισιτηρίου"
+
+#: admin/settings/WBTM_Translation_Settings.php:73
+msgid "Passenger Form"
+msgstr "Φόρμα Επιβάτη"
+
+#: admin/settings/WBTM_Translation_Settings.php:78
+msgid "Journey Information"
+msgstr "Πληροφορίες Ταξιδιού"
+
+#: admin/settings/WBTM_Translation_Settings.php:83
+msgid "Price Information"
+msgstr "Πληροφορίες τιμών"
+
+#: admin/settings/WBTM_Translation_Settings.php:193
+msgid "Bus Ticket Booking Translations"
+msgstr "Μεταφράσεις Κρατήσεων Εισιτηρίων Λεωφορείων"
+
+#: admin/settings/WBTM_Translation_Settings.php:228
+#, php-format
+msgid "Default: %s"
+msgstr "Προεπιλογή: %s"
+
+#: admin/settings/WBTM_Translation_Settings.php:240
+msgid "Save Changes"
+msgstr "Αποθήκευση αλλαγών"
+
+#: admin/WBTM_Analytics_Dashboard.php:16
+msgid "Analytics Dashboard"
+msgstr "Πίνακας ελέγχου αναλυτικών στοιχείων"
+
+#: admin/WBTM_Analytics_Dashboard.php:17
+msgid "Analytics"
+msgstr "Αναλυτικά στοιχεία"
+
+#: admin/WBTM_Analytics_Dashboard.php:231
+msgid "Bus Booking Analytics Dashboard"
+msgstr "Πίνακας Ελέγχου Ανάλυσης Κρατήσεων Λεωφορείων"
+
+#: admin/WBTM_Analytics_Dashboard.php:241
+msgid "Total Bookings"
+msgstr "Συνολικές Κρατήσεις"
+
+#: admin/WBTM_Analytics_Dashboard.php:251
+msgid "Total Revenue"
+msgstr "Συνολικά έσοδα"
+
+#: admin/WBTM_Analytics_Dashboard.php:261
+msgid "Total Seats Booked"
+msgstr "Συνολικές θέσεις που έχουν κρατηθεί"
+
+#: admin/WBTM_Analytics_Dashboard.php:269
+msgid "Popular Routes"
+msgstr "Δημοφιλείς Διαδρομές"
+
+#: admin/WBTM_Analytics_Dashboard.php:274
+msgid "Monthly Revenue"
+msgstr "Μηνιαία έσοδα"
+
+#: admin/WBTM_Analytics_Dashboard.php:281
+msgid "Advanced Analytics"
+msgstr "Προηγμένη Ανάλυση"
+
+#: admin/WBTM_Analytics_Dashboard.php:286
+msgid "Peak Booking Hours"
+msgstr "Ώρες αιχμής κρατήσεων"
+
+#: admin/WBTM_Analytics_Dashboard.php:292
+msgid "Weekly Booking Pattern"
+msgstr "Εβδομαδιαίο μοτίβο κρατήσεων"
+
+#: admin/WBTM_Analytics_Dashboard.php:298
+msgid "Ticket Type Distribution"
+msgstr "Διανομή τύπου εισιτηρίου"
+
+#: admin/WBTM_Analytics_Dashboard.php:304
+msgid "Bus Type Performance"
+msgstr "Απόδοση τύπου λεωφορείου"
+
+#: admin/WBTM_Analytics_Dashboard.php:312
+msgid "Return Customer Rate"
+msgstr "Ποσοστό Επαναλαμβανόμενων Πελατών"
+
+#: admin/WBTM_Analytics_Dashboard.php:324
+msgid "Average Occupancy Rate"
+msgstr "Μέσο ποσοστό πληρότητας"
+
+#: admin/WBTM_Bus_Import.php:20 admin/WBTM_Bus_Import.php:21
+#: admin/WBTM_Bus_Import.php:46 admin/WBTM_Bus_Import.php:116
+msgid "Import Buses"
+msgstr "Εισαγωγή Λεωφορείων"
+
+#: admin/WBTM_Bus_Import.php:53
+#, php-format
+msgid "%s bus imported successfully."
+msgid_plural "%s buses imported successfully."
+msgstr[0] "Η εισαγωγή του %s διαύλου ολοκληρώθηκε με επιτυχία."
+msgstr[1] "%s λεωφορεία εισήχθησαν με επιτυχία."
+
+#: admin/WBTM_Bus_Import.php:60
+#, php-format
+msgid "%s bus failed to import."
+msgid_plural "%s buses failed to import."
+msgstr[0] "Η εισαγωγή του διαύλου %s απέτυχε."
+msgstr[1] "Η εισαγωγή %s λεωφορείων απέτυχε."
+
+#: admin/WBTM_Bus_Import.php:71
+msgid "Import Buses from CSV"
+msgstr "Εισαγωγή λεωφορείων από CSV"
+
+#: admin/WBTM_Bus_Import.php:72
+msgid ""
+"Upload a CSV file to import multiple buses at once. This will allow you to "
+"create all your buses in a single operation instead of adding them one by "
+"one."
+msgstr ""
+"Ανεβάστε ένα αρχείο CSV για να εισαγάγετε πολλά λεωφορεία ταυτόχρονα. Αυτό "
+"θα σας επιτρέψει να δημιουργήσετε όλα τα λεωφορεία σας με μία μόνο "
+"λειτουργία αντί να τα προσθέτετε ένα προς ένα."
+
+#: admin/WBTM_Bus_Import.php:80
+msgid "Choose CSV File"
+msgstr "Επιλέξτε αρχείο CSV"
+
+#: admin/WBTM_Bus_Import.php:84
+msgid "Select a CSV file with your bus data."
+msgstr "Επιλέξτε ένα αρχείο CSV με τα δεδομένα του διαύλου σας."
+
+#: admin/WBTM_Bus_Import.php:89
+msgid "CSV Format"
+msgstr "Μορφή CSV"
+
+#: admin/WBTM_Bus_Import.php:92
+msgid "Your CSV file should include the following columns:"
+msgstr "Το αρχείο CSV σας θα πρέπει να περιλαμβάνει τις ακόλουθες στήλες:"
+
+#: admin/WBTM_Bus_Import.php:94
+msgid "Bus name (required)"
+msgstr "Όνομα λεωφορείου (απαιτείται)"
+
+#: admin/WBTM_Bus_Import.php:95
+msgid "Bus number (required)"
+msgstr "Αριθμός λεωφορείου (απαιτείται)"
+
+#: admin/WBTM_Bus_Import.php:96
+msgid "Bus category (AC/Non AC)"
+msgstr "Κατηγορία λεωφορείου (AC/Χωρίς A/C)"
+
+#: admin/WBTM_Bus_Import.php:97
+msgid "Seat type configuration (wbtm_seat_plan)"
+msgstr "Διαμόρφωση τύπου θέσης (wbtm_seat_plan)"
+
+#: admin/WBTM_Bus_Import.php:98
+msgid "Driver seat position (driver_left/driver_right)"
+msgstr "Θέση καθίσματος οδηγού (οδηγός_αριστερά/οδηγός_δεξιά)"
+
+#: admin/WBTM_Bus_Import.php:99
+msgid "Number of seat rows"
+msgstr "Αριθμός σειρών καθισμάτων"
+
+#: admin/WBTM_Bus_Import.php:100
+msgid "Number of seat columns"
+msgstr "Αριθμός στηλών καθισμάτων"
+
+#: admin/WBTM_Bus_Import.php:101
+msgid "Total number of seats"
+msgstr "Συνολικός αριθμός θέσεων"
+
+#: admin/WBTM_Bus_Import.php:102
+msgid "Has upper deck (yes/no)"
+msgstr "Έχει άνω κατάστρωμα (ναι/όχι)"
+
+#: admin/WBTM_Bus_Import.php:103
+msgid "Starting point of route (comma separated for multiple routes)"
+msgstr ""
+"Σημείο εκκίνησης διαδρομής (διαχωρισμένο με κόμμα για πολλαπλές διαδρομές)"
+
+#: admin/WBTM_Bus_Import.php:104
+msgid "End point of route (comma separated for multiple routes)"
+msgstr ""
+"Τελικό σημείο διαδρομής (διαχωρισμένο με κόμμα για πολλαπλές διαδρομές)"
+
+#: admin/WBTM_Bus_Import.php:105
+msgid "Boarding points (comma separated)"
+msgstr "Σημεία επιβίβασης (χωρισμένα με κόμμα)"
+
+#: admin/WBTM_Bus_Import.php:106
+msgid "Dropping points (comma separated)"
+msgstr "Σημεία απόρριψης (διαχωρισμένα με κόμμα)"
+
+#: admin/WBTM_Bus_Import.php:107
+msgid "Start date (YYYY-MM-DD)"
+msgstr "Ημερομηνία έναρξης (ΕΕΕΕ-ΜΜ-ΗΗ)"
+
+#: admin/WBTM_Bus_Import.php:108
+msgid "End date (YYYY-MM-DD)"
+msgstr "Ημερομηνία λήξης (ΕΕΕΕ-ΜΜ-ΗΗ)"
+
+#: admin/WBTM_Bus_Import.php:109
+msgid "Price data in format: from|to|price,from|to|price"
+msgstr "Δεδομένα τιμών σε μορφή: από|έως|τιμή,από|έως|τιμή"
+
+#: admin/WBTM_Bus_Import.php:117
+msgid "Download Sample CSV"
+msgstr "Λήψη δείγματος CSV"
+
+#: admin/WBTM_Bus_Import.php:123
+msgid "Import Instructions"
+msgstr "Οδηγίες εισαγωγής"
+
+#: admin/WBTM_Bus_Import.php:125
+msgid "Download the sample CSV file to see the required format."
+msgstr "Κατεβάστε το δείγμα αρχείου CSV για να δείτε την απαιτούμενη μορφή."
+
+#: admin/WBTM_Bus_Import.php:126
+msgid "Fill in your bus data following the same format."
+msgstr ""
+"Συμπληρώστε τα δεδομένα του λεωφορείου σας ακολουθώντας την ίδια μορφή."
+
+#: admin/WBTM_Bus_Import.php:127
+msgid "Upload your CSV file using the form above."
+msgstr "Ανεβάστε το αρχείο CSV χρησιμοποιώντας την παραπάνω φόρμα."
+
+#: admin/WBTM_Bus_Import.php:128
+msgid "Review the import results and check your buses."
+msgstr "Ελέγξτε τα αποτελέσματα εισαγωγής και τα λεωφορεία σας."
+
+#: admin/WBTM_Bus_Import.php:132
+msgid "Important Notes:"
+msgstr "Σημαντικές σημειώσεις:"
+
+#: admin/WBTM_Bus_Import.php:134
+msgid "Make sure your CSV file is properly formatted with the correct columns."
+msgstr ""
+"Βεβαιωθείτε ότι το αρχείο CSV έχει μορφοποιηθεί σωστά με τις σωστές στήλες."
+
+#: admin/WBTM_Bus_Import.php:135
+msgid "Bus names and numbers must be unique."
+msgstr "Τα ονόματα και οι αριθμοί των λεωφορείων πρέπει να είναι μοναδικά."
+
+#: admin/WBTM_Bus_Import.php:136
+msgid ""
+"For complex seat arrangements, you may need to edit the buses after import."
+msgstr ""
+"Για σύνθετες διατάξεις θέσεων, ίσως χρειαστεί να επεξεργαστείτε τα λεωφορεία "
+"μετά την εισαγωγή."
+
+#: admin/WBTM_Bus_Import.php:137
+msgid "The import process may take some time depending on the number of buses."
+msgstr ""
+"Η διαδικασία εισαγωγής ενδέχεται να διαρκέσει κάποιο χρόνο ανάλογα με τον "
+"αριθμό των λεωφορείων."
+
+#: admin/WBTM_Bus_Import.php:163
+msgid "Security check failed. Please try again."
+msgstr "Ο έλεγχος ασφαλείας απέτυχε. Δοκιμάστε ξανά."
+
+#: admin/WBTM_Bus_Import.php:168
+msgid "You do not have sufficient permissions to import data."
+msgstr "Δεν έχετε επαρκή δικαιώματα για την εισαγωγή δεδομένων."
+
+#: admin/WBTM_Bus_Import.php:173
+msgid "No file uploaded or upload error."
+msgstr "Δεν έγινε μεταφόρτωση αρχείου ή σφάλμα μεταφόρτωσης."
+
+#: admin/WBTM_Bus_Import.php:180
+msgid "Invalid file type. Please upload a CSV file."
+msgstr "Μη έγκυρος τύπος αρχείου. Παρακαλώ μεταφορτώστε ένα αρχείο CSV."
+
+#: admin/WBTM_Bus_Import.php:209
+msgid "Could not open the file."
+msgstr "Δεν ήταν δυνατό το άνοιγμα του αρχείου."
+
+#: admin/WBTM_Bus_Import.php:217
+msgid "Could not read CSV headers."
+msgstr "Δεν ήταν δυνατή η ανάγνωση κεφαλίδων CSV."
+
+#: admin/WBTM_Bus_Import.php:230
+#, php-format
+msgid "Required column \"%s\" is missing."
+msgstr "Η απαιτούμενη στήλη \"%s\" λείπει."
+
+#: admin/WBTM_CPT.php:30 admin/WBTM_Taxonomy.php:20
+msgid "All"
+msgstr "Ολοι"
+
+#: admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32 admin/WBTM_Taxonomy.php:24
+#: admin/WBTM_Taxonomy.php:78 admin/WBTM_Taxonomy.php:114
+msgid "Add New"
+msgstr "Προσθήκη νέου"
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "Νέος"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "Εκδίδω"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "Εκσυγχρονίζω"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "Θέα"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr "Ερευνα"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "Δεν βρέθηκε"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "Δεν βρέθηκε στον Κάδο"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "Χαρακτηριστική εικόνα"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "Σειρά"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "επιλεγμένη εικόνα"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "Αφαιρώ"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "Χρήση ως"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "Εισαγωγή σε"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "Μεταφορτώθηκε σε αυτό"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr "λίστα"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr "πλοήγηση λίστας"
+
+#: admin/WBTM_CPT.php:49 inc/WBTM_Translations.php:417
+msgid "Filter"
+msgstr "Φίλτρο"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "λίστα"
+
+#: admin/WBTM_CPT.php:77
+msgid "Bus Attendee"
+msgstr "Συνοδός λεωφορείου"
+
+#: admin/WBTM_CPT.php:101
+msgid "Coach no"
+msgstr "Αριθμός προπονητή"
+
+#: admin/WBTM_CPT.php:102 admin/WBTM_Global_settings.php:536
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21
+msgid "Type"
+msgstr "Τύπος"
+
+#: admin/WBTM_CPT.php:104
+msgid "Added by"
+msgstr "Προστέθηκε από"
+
+#: admin/WBTM_CPT.php:110
+msgid "Seal Plan"
+msgstr "Σχέδιο Σφραγίδας"
+
+#: admin/WBTM_CPT.php:110
+msgid "Without Seal Plan"
+msgstr "Χωρίς Σχέδιο Σφραγίδας"
+
+#: admin/WBTM_Global_settings.php:26
+msgid " Settings"
+msgstr "Ρυθμίσεις"
+
+#: admin/WBTM_Global_settings.php:70
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#: admin/WBTM_Global_settings.php:74
+msgid "Global Settings"
+msgstr "Καθολικές ρυθμίσεις"
+
+#: admin/WBTM_Global_settings.php:85
+msgid "Slider Settings"
+msgstr "Ρυθμίσεις ρυθμιστικού"
+
+#: admin/WBTM_Global_settings.php:89
+msgid "Style Settings"
+msgstr "Ρυθμίσεις στυλ"
+
+#: admin/WBTM_Global_settings.php:93 admin/WBTM_Global_settings.php:504
+msgid "Custom CSS"
+msgstr "Προσαρμοσμένο CSS"
+
+#: admin/WBTM_Global_settings.php:97 admin/WBTM_Global_settings.php:517
+msgid "Mage-People License"
+msgstr "Άδεια Mage-People"
+
+#: admin/WBTM_Global_settings.php:111
+msgid "Seat Booked Status"
+msgstr "Κατάσταση κράτησης θέσης"
+
+#: admin/WBTM_Global_settings.php:112
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr ""
+"Επιλέξτε πότε και σε ποια κατάσταση παραγγελίας θα γίνει κράτηση/μείωση "
+"θέσης."
+
+#: admin/WBTM_Global_settings.php:119
+msgid "On Hold"
+msgstr "Σε αναμονή"
+
+#: admin/WBTM_Global_settings.php:120
+msgid "Pending"
+msgstr "Εκκρεμής"
+
+#: admin/WBTM_Global_settings.php:121
+msgid "Processing"
+msgstr "Επεξεργασία"
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Completed"
+msgstr "Ολοκληρώθηκε το"
+
+#: admin/WBTM_Global_settings.php:127 admin/WBTM_Global_settings.php:131
+msgid "Label"
+msgstr "Επιγραφή"
+
+#: admin/WBTM_Global_settings.php:128
+msgid ""
+"If you like to change the label in the dashboard menu, you can change it "
+"here."
+msgstr ""
+"Αν θέλετε να αλλάξετε την ετικέτα στο μενού του πίνακα ελέγχου, μπορείτε να "
+"την αλλάξετε εδώ."
+
+#: admin/WBTM_Global_settings.php:135 admin/WBTM_Global_settings.php:139
+msgid "Slug"
+msgstr "Γυμνοσάλιαγκας"
+
+#: admin/WBTM_Global_settings.php:136
+msgid ""
+"Please enter the slug name you want. Remember, after changing this slug; you "
+"need to flush permalink; go to"
+msgstr ""
+"Παρακαλώ εισάγετε το όνομα του slug που θέλετε. Να θυμάστε ότι, αφού "
+"αλλάξετε αυτό το slug, θα πρέπει να διαγράψετε τον μόνιμο σύνδεσμο. "
+"Μεταβείτε στο"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "Settings-> Permalinks"
+msgstr "Ρυθμίσεις-> Μόνιμοι σύνδεσμοι"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "hit the Save Settings button."
+msgstr "πατήστε το κουμπί Αποθήκευση ρυθμίσεων."
+
+#: admin/WBTM_Global_settings.php:143
+#: mp_global/class/WBTM_Select_Icon_image.php:33
+#: mp_global/class/WBTM_Select_Icon_image.php:165
+msgid "Icon"
+msgstr "Εικόνισμα"
+
+#: admin/WBTM_Global_settings.php:144
+msgid ""
+"If you want to change the  icon in the dashboard menu, you can change it "
+"from here, and the Dashboard icon only supports the Dashicons, So please go "
+"to "
+msgstr ""
+"Αν θέλετε να αλλάξετε το εικονίδιο στο μενού του πίνακα ελέγχου, μπορείτε να "
+"το αλλάξετε από εδώ και το εικονίδιο του Πίνακα Ελέγχου υποστηρίζει μόνο τα "
+"εικονίδια Dash. Επομένως, μεταβείτε στη διεύθυνση"
+
+#: admin/WBTM_Global_settings.php:144
+msgid "Dashicons Library."
+msgstr "Βιβλιοθήκη Ντάσικονς."
+
+#: admin/WBTM_Global_settings.php:144
+msgid "and copy your icon code and paste it here."
+msgstr "και αντιγράψτε τον κώδικα του εικονιδίου σας και επικολλήστε τον εδώ."
+
+#: admin/WBTM_Global_settings.php:150
+msgid "Show return Date Search"
+msgstr "Εμφάνιση αναζήτησης ημερομηνίας επιστροφής"
+
+#: admin/WBTM_Global_settings.php:151
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"Απενεργοποιήστε την επιλογή αν δεν θέλετε να εμφανίζεται το πεδίο επιστροφής "
+"στην αναζήτηση. Από προεπιλογή, Ενεργοποιήστε την."
+
+#: admin/WBTM_Global_settings.php:155
+msgid "Disable"
+msgstr "Καθιστώ ανίκανο"
+
+#: admin/WBTM_Global_settings.php:156
+msgid "Enable"
+msgstr "Καθιστώ ικανό"
+
+#: admin/WBTM_Global_settings.php:161
+msgid "Ticket sale off after date"
+msgstr "Διακοπή πώλησης εισιτηρίων μετά την ημερομηνία"
+
+#: admin/WBTM_Global_settings.php:162
+msgid ""
+"Please select Seat sale off after date . if you dont want to off sale then "
+"it will be blank"
+msgstr ""
+"Επιλέξτε \"Ημερομηνία λήξης προσφοράς θέσεων μετά την ημερομηνία λήξης\". "
+"Εάν δεν θέλετε να ισχύει η έκπτωση, τότε το πεδίο θα είναι κενό."
+
+#: admin/WBTM_Global_settings.php:170
+msgid "Maximum advanced day Sale"
+msgstr "Μέγιστη προκαταβολική ημερήσια πώληση"
+
+#: admin/WBTM_Global_settings.php:171
+msgid ""
+"Please select Maximum advanced day Ticket Sale . if you dont want to off "
+"sale then it will be blank"
+msgstr ""
+"Επιλέξτε Μέγιστη ημερήσια πώληση εισιτηρίων προπώλησης. Εάν δεν θέλετε να "
+"διακοπεί η πώληση, τότε θα είναι κενό."
+
+#: admin/WBTM_Global_settings.php:178
+msgid "Buffer Time"
+msgstr "Χρόνος προσωρινής αποθήκευσης"
+
+#: admin/WBTM_Global_settings.php:179
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr ""
+"Παρακαλώ εισάγετε εδώ τον χρόνο προσωρινής αποθήκευσης του αυτοκινήτου σε "
+"λεπτά. Από προεπιλογή είναι 0"
+
+#: admin/WBTM_Global_settings.php:182
+msgid "Ex:50"
+msgstr "Π.χ.: 50"
+
+#: admin/WBTM_Global_settings.php:186
+msgid "Show/hide view seats button"
+msgstr "Κουμπί εμφάνισης/απόκρυψης προβολής θέσεων"
+
+#: admin/WBTM_Global_settings.php:187
+msgid ""
+"If you want to hide view seats button from search list, if registration off."
+msgstr ""
+"Εάν θέλετε να αποκρύψετε το κουμπί προβολής θέσεων από τη λίστα αναζήτησης, "
+"εάν η εγγραφή είναι απενεργοποιημένη."
+
+#: admin/WBTM_Global_settings.php:191
+msgid "Show"
+msgstr "Επίδειξη"
+
+#: admin/WBTM_Global_settings.php:192
+msgid "Hide"
+msgstr "Κρύβω"
+
+#: admin/WBTM_Global_settings.php:197
+msgid "Active Redirect page"
+msgstr "Ενεργή σελίδα ανακατεύθυνσης"
+
+#: admin/WBTM_Global_settings.php:198
+msgid "If you want to Active Redirect page,please select on"
+msgstr "Αν θέλετε να ενεργοποιήσετε τη σελίδα ανακατεύθυνσης, επιλέξτε"
+
+#: admin/WBTM_Global_settings.php:202 admin/WBTM_Global_settings.php:220
+#: admin/WBTM_Global_settings.php:231 admin/WBTM_Global_settings.php:325
+#: admin/WBTM_Global_settings.php:347 admin/WBTM_Global_settings.php:371
+#: admin/WBTM_Global_settings.php:382
+msgid "ON"
+msgstr "ΕΠΙ"
+
+#: admin/WBTM_Global_settings.php:203 admin/WBTM_Global_settings.php:221
+#: admin/WBTM_Global_settings.php:232
+msgid "OFF"
+msgstr "ΜΑΚΡΙΑ ΑΠΟ"
+
+#: admin/WBTM_Global_settings.php:208
+msgid "Search result page"
+msgstr "Σελίδα αποτελεσμάτων αναζήτησης"
+
+#: admin/WBTM_Global_settings.php:209
+msgid "If you want to redirect Search result page , please select below page"
+msgstr ""
+"Αν θέλετε να ανακατευθύνετε τη σελίδα αποτελεσμάτων αναζήτησης, επιλέξτε την "
+"παρακάτω σελίδα"
+
+#: admin/WBTM_Global_settings.php:215
+msgid "Turn order status processing to completed automatically"
+msgstr ""
+"Ενεργοποιήστε την επεξεργασία της κατάστασης της παραγγελίας σε αυτόματη "
+"ολοκλήρωση"
+
+#: admin/WBTM_Global_settings.php:216
+msgid ""
+"If you want to make woocommerce processing status to completed automatically "
+"select ON"
+msgstr ""
+"Αν θέλετε η κατάσταση επεξεργασίας του woocommerce να ολοκληρωθεί αυτόματα, "
+"επιλέξτε ΕΝΕΡΓΟΠΟΙΗΣΗ"
+
+#: admin/WBTM_Global_settings.php:226
+msgid "Redirect to checkout after booking"
+msgstr "Ανακατεύθυνση στο checkout μετά την κράτηση"
+
+#: admin/WBTM_Global_settings.php:227
+msgid ""
+"If you want to redirect users directly to checkout after booking instead of "
+"showing the cart notice, select ON"
+msgstr ""
+"Αν θέλετε να ανακατευθύνετε τους χρήστες απευθείας στο checkout μετά την "
+"κράτηση αντί να εμφανίζεται η ειδοποίηση του καλαθιού αγορών, επιλέξτε "
+"ΕΝΕΡΓΟΠΟΙΗΣΗ"
+
+#: admin/WBTM_Global_settings.php:239
+msgid "Disable Block/Gutenberg Editor"
+msgstr "Απενεργοποίηση Επεξεργαστή Μπλοκ/Gutenberg"
+
+#: admin/WBTM_Global_settings.php:240
+msgid ""
+"If you want to disable WordPress's new Block/Gutenberg editor, please select "
+"Yes."
+msgstr ""
+"Αν θέλετε να απενεργοποιήσετε τον νέο επεξεργαστή Block/Gutenberg του "
+"WordPress, επιλέξτε Ναι."
+
+#: admin/WBTM_Global_settings.php:244 admin/WBTM_Status.php:22
+msgid "Yes"
+msgstr "Ναί"
+
+#: admin/WBTM_Global_settings.php:245 admin/WBTM_Status.php:22
+msgid "No"
+msgstr "Οχι"
+
+#: admin/WBTM_Global_settings.php:250
+msgid "Date Picker Format"
+msgstr "Μορφή επιλογής ημερομηνίας"
+
+#: admin/WBTM_Global_settings.php:251
+msgid ""
+"If you want to change Date Picker Format, please select format. Default  is "
+"D d M , yy."
+msgstr ""
+"Αν θέλετε να αλλάξετε τη μορφή επιλογής ημερομηνίας, επιλέξτε τη μορφή. Η "
+"προεπιλογή είναι Η η Μ , εε."
+
+#: admin/WBTM_Global_settings.php:271
+msgid "Short Date  Format"
+msgstr "Σύντομη μορφή ημερομηνίας"
+
+#: admin/WBTM_Global_settings.php:272
+msgid ""
+"If you want to change Short Date  Format, please select format. Default  is "
+"M , Y."
+msgstr ""
+"Αν θέλετε να αλλάξετε τη μορφή σύντομης ημερομηνίας, επιλέξτε τη μορφή. Η "
+"προεπιλογή είναι M, Y."
+
+#: admin/WBTM_Global_settings.php:298
+msgid "Slider Type"
+msgstr "Τύπος ολισθητήρα"
+
+#: admin/WBTM_Global_settings.php:299
+msgid "Please Select Slider Type Default Slider"
+msgstr "Επιλέξτε τύπο ρυθμιστικού Προεπιλεγμένο ρυθμιστικό"
+
+#: admin/WBTM_Global_settings.php:303
+msgid "Slider"
+msgstr "Ολισθητής"
+
+#: admin/WBTM_Global_settings.php:304
+msgid "Post Thumbnail"
+msgstr "Μικρογραφία ανάρτησης"
+
+#: admin/WBTM_Global_settings.php:309
+msgid "Slider Style"
+msgstr "Στυλ ρυθμιστικού"
+
+#: admin/WBTM_Global_settings.php:310
+msgid "Please Select Slider Style Default Style One"
+msgstr "Επιλέξτε Στυλ Ρυθμιστικού Προεπιλεγμένο Στυλ Ένα"
+
+#: admin/WBTM_Global_settings.php:314
+msgid "Style One"
+msgstr "Στυλ Ένα"
+
+#: admin/WBTM_Global_settings.php:315
+msgid "Style Two"
+msgstr "Στυλ Δύο"
+
+#: admin/WBTM_Global_settings.php:320
+msgid "Slider Indicator Visible?"
+msgstr "Είναι ορατή η ένδειξη ολισθητήρα;"
+
+#: admin/WBTM_Global_settings.php:321
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr ""
+"Επιλέξτε \"Ορατός ή όχι ο δείκτης ρυθμιστικού\"; Προεπιλογή: ΕΝΕΡΓΟΠΟΙΗΜΕΝΟΣ"
+
+#: admin/WBTM_Global_settings.php:326 admin/WBTM_Global_settings.php:348
+#: admin/WBTM_Global_settings.php:372 admin/WBTM_Global_settings.php:383
+msgid "Off"
+msgstr "Μακριά από"
+
+#: admin/WBTM_Global_settings.php:331
+msgid "Slider Indicator Type"
+msgstr "Τύπος δείκτη ολισθητήρα"
+
+#: admin/WBTM_Global_settings.php:332
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "Επιλέξτε Τύπος ένδειξης ρυθμιστικού Προεπιλεγμένο εικονίδιο"
+
+#: admin/WBTM_Global_settings.php:336
+msgid "Icon Indicator"
+msgstr "Ένδειξη εικονιδίου"
+
+#: admin/WBTM_Global_settings.php:337
+msgid "image Indicator"
+msgstr "Δείκτης εικόνας"
+
+#: admin/WBTM_Global_settings.php:342
+msgid "Slider Showcase Visible?"
+msgstr "Ορατό το Slider Showcase;"
+
+#: admin/WBTM_Global_settings.php:343
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr ""
+"Επιλέξτε \"Ορατό ή όχι το Slider Showcase\"; Προεπιλογή: ΕΝΕΡΓΟΠΟΙΗΜΕΝΟ"
+
+#: admin/WBTM_Global_settings.php:353
+msgid "Slider Showcase Position"
+msgstr "Θέση Προβολής Ολισθητήρα"
+
+#: admin/WBTM_Global_settings.php:354
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "Επιλέξτε Θέση Προβολής Ολισθητήρα - Προεπιλογή Δεξιά"
+
+#: admin/WBTM_Global_settings.php:358
+msgid "At Top Position"
+msgstr "Στην κορυφαία θέση"
+
+#: admin/WBTM_Global_settings.php:359
+msgid "At Right Position"
+msgstr "Στη σωστή θέση"
+
+#: admin/WBTM_Global_settings.php:360
+msgid "At Bottom Position"
+msgstr "Στην κάτω θέση"
+
+#: admin/WBTM_Global_settings.php:361
+msgid "At Left Position"
+msgstr "Στην αριστερή θέση"
+
+#: admin/WBTM_Global_settings.php:366
+msgid "Slider Popup Image Indicator"
+msgstr "Ένδειξη αναδυόμενης εικόνας ρυθμιστικού"
+
+#: admin/WBTM_Global_settings.php:367
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr ""
+"Επιλέξτε την εικόνα ένδειξης αναδυόμενου παραθύρου ρυθμιστικού ON ή Off; "
+"Προεπιλογή ON"
+
+#: admin/WBTM_Global_settings.php:377
+msgid "Slider Popup Icon Indicator"
+msgstr "Ένδειξη εικονιδίου αναδυόμενου παραθύρου ρυθμιστικού"
+
+#: admin/WBTM_Global_settings.php:378
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr ""
+"Επιλέξτε το εικονίδιο ένδειξης αναδυόμενου παραθύρου ρυθμιστικού ON ή Off; "
+"Προεπιλογή ON"
+
+#: admin/WBTM_Global_settings.php:390
+msgid "Theme Color"
+msgstr "Χρώμα θέματος"
+
+#: admin/WBTM_Global_settings.php:391
+msgid "Select Default Theme Color"
+msgstr "Επιλογή προεπιλεγμένου χρώματος θέματος"
+
+#: admin/WBTM_Global_settings.php:397
+msgid "Theme Alternate Color"
+msgstr "Εναλλακτικό χρώμα θέματος"
+
+#: admin/WBTM_Global_settings.php:398
+msgid ""
+"Select Default Theme Alternate  Color that means, if background theme color "
+"then it will be text color."
+msgstr ""
+"Επιλέξτε το προεπιλεγμένο εναλλακτικό χρώμα θέματος, που σημαίνει ότι εάν το "
+"χρώμα του θέματος φόντου είναι το χρώμα του κειμένου."
+
+#: admin/WBTM_Global_settings.php:404
+msgid "Default Text Color"
+msgstr "Προεπιλεγμένο χρώμα κειμένου"
+
+#: admin/WBTM_Global_settings.php:405
+msgid "Select Default Text  Color."
+msgstr "Επιλέξτε Προεπιλεγμένο χρώμα κειμένου."
+
+#: admin/WBTM_Global_settings.php:411
+msgid "Default Font Size"
+msgstr "Προεπιλεγμένο μέγεθος γραμματοσειράς"
+
+#: admin/WBTM_Global_settings.php:412
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "Πληκτρολογήστε Προεπιλεγμένο μέγεθος γραμματοσειράς (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:418
+msgid "Font Size h1 Title"
+msgstr "Μέγεθος γραμματοσειράς h1 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:419
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "Μέγεθος γραμματοσειράς Πληκτρολογήστε Κύριος τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:425
+msgid "Font Size h2 Title"
+msgstr "Μέγεθος γραμματοσειράς h2 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:426
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "Τύπος Μέγεθος γραμματοσειράς h2 Τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:432
+msgid "Font Size h3 Title"
+msgstr "Μέγεθος γραμματοσειράς h3 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:433
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "Μέγεθος γραμματοσειράς τύπου h3 Τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:439
+msgid "Font Size h4 Title"
+msgstr "Μέγεθος γραμματοσειράς h4 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:440
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "Τύπος Μέγεθος γραμματοσειράς h4 Τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:446
+msgid "Font Size h5 Title"
+msgstr "Μέγεθος γραμματοσειράς h5 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:447
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "Τύπος Μέγεθος γραμματοσειράς h5 Τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:453
+msgid "Font Size h6 Title"
+msgstr "Μέγεθος γραμματοσειράς h6 Τίτλος"
+
+#: admin/WBTM_Global_settings.php:454
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "Τύπος Μέγεθος γραμματοσειράς h6 Τίτλος (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:460
+msgid "Button Font Size "
+msgstr "Μέγεθος γραμματοσειράς κουμπιού"
+
+#: admin/WBTM_Global_settings.php:461
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "Πληκτρολογήστε το κουμπί μεγέθους γραμματοσειράς (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:467
+msgid "Button Text Color"
+msgstr "Χρώμα κειμένου κουμπιού"
+
+#: admin/WBTM_Global_settings.php:468
+msgid "Select Button Text  Color."
+msgstr "Επιλέξτε Χρώμα κειμένου κουμπιού."
+
+#: admin/WBTM_Global_settings.php:474
+msgid "Button Background Color"
+msgstr "Χρώμα φόντου κουμπιού"
+
+#: admin/WBTM_Global_settings.php:475
+msgid "Select Button Background  Color."
+msgstr "Επιλέξτε Χρώμα φόντου κουμπιού."
+
+#: admin/WBTM_Global_settings.php:481
+msgid "Label Font Size "
+msgstr "Μέγεθος γραμματοσειράς ετικέτας"
+
+#: admin/WBTM_Global_settings.php:482
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "Πληκτρολογήστε Ετικέτα μεγέθους γραμματοσειράς (σε μονάδες PX)."
+
+#: admin/WBTM_Global_settings.php:488
+msgid "Warning Color"
+msgstr "Χρώμα προειδοποίησης"
+
+#: admin/WBTM_Global_settings.php:489
+msgid "Select Warning  Color."
+msgstr "Επιλέξτε Χρώμα προειδοποίησης."
+
+#: admin/WBTM_Global_settings.php:495
+msgid "Section Background color"
+msgstr "Χρώμα φόντου ενότητας"
+
+#: admin/WBTM_Global_settings.php:496
+msgid "Select Background  Color."
+msgstr "Επιλέξτε Χρώμα φόντου."
+
+#: admin/WBTM_Global_settings.php:505
+msgid "Write Your Custom CSS Code Here"
+msgstr "Γράψτε τον προσαρμοσμένο κώδικα CSS σας εδώ"
+
+#: admin/WBTM_Global_settings.php:520
+msgid ""
+"Thanking you for using our Mage-People plugin. Our some plugin  free and no "
+"license is required. We have some Additional addon to enhance feature of "
+"this plugin functionality. If you have any addon you need to enter a valid "
+"license for that plugin below."
+msgstr ""
+"Σας ευχαριστούμε που χρησιμοποιείτε το πρόσθετο Mage-People. Το πρόσθετο μας "
+"είναι δωρεάν και δεν απαιτείται άδεια χρήσης. Έχουμε κάποια πρόσθετα "
+"πρόσθετα για να βελτιώσουμε τη λειτουργικότητα αυτού του πρόσθετου. Εάν "
+"έχετε κάποιο πρόσθετο, πρέπει να εισαγάγετε μια έγκυρη άδεια χρήσης για αυτό "
+"το πρόσθετο παρακάτω."
+
+#: admin/WBTM_Global_settings.php:535
+msgid "Plugin Name"
+msgstr "Όνομα πρόσθετου"
+
+#: admin/WBTM_Global_settings.php:537
+msgid "Order No"
+msgstr "Αριθμός παραγγελίας"
+
+#: admin/WBTM_Global_settings.php:538
+msgid "Expire on"
+msgstr "Λήγει στις"
+
+#: admin/WBTM_Global_settings.php:539
+msgid "License Key"
+msgstr "Κλειδί άδειας χρήσης"
+
+#: admin/WBTM_Global_settings.php:540 admin/WBTM_Status.php:17
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "Δωρεάν"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "Απεριόριστος"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "Δεν χρειάζεται"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "Ενεργός"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
+#: admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "Γρήγορη Ρύθμιση"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:194
+#: inc/WBTM_Functions.php:456
+msgid "Bus"
+msgstr "Λεωφορείο"
+
+#: admin/WBTM_Quick_Setup.php:121 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "Καλωσόρισμα"
+
+#: admin/WBTM_Quick_Setup.php:128
+msgid "General"
+msgstr "Γενικός"
+
+#: admin/WBTM_Quick_Setup.php:135
+msgid "Done"
+msgstr "Γινώμενος"
+
+#: admin/WBTM_Quick_Setup.php:148
+msgid "Previous"
+msgstr "Προηγούμενος"
+
+#: admin/WBTM_Quick_Setup.php:152
+msgid "Next"
+msgstr "Επόμενος"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "Κράτηση Λεωφορείου με Κράτηση Θέσης για το Πρόσθετο Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:167
+msgid ""
+"Bus Booking with Seat Reservation Plugin for WooCommerce for your site, "
+"Please go step by step and choose some options to get started."
+msgstr ""
+"Κράτηση Λεωφορείου με Πρόσθετο Κράτησης Θέσης για το WooCommerce για τον "
+"ιστότοπό σας. Παρακαλούμε προχωρήστε βήμα προς βήμα και επιλέξτε μερικές "
+"επιλογές για να ξεκινήσετε."
+
+#: admin/WBTM_Quick_Setup.php:171
+msgid "Woocommerce already installed and activated"
+msgstr "Το Woocommerce έχει ήδη εγκατασταθεί και ενεργοποιηθεί"
+
+#: admin/WBTM_Quick_Setup.php:174
+msgid "Woocommerce need to install and active"
+msgstr "Το Woocommerce χρειάζεται εγκατάσταση και ενεργοποίηση"
+
+#: admin/WBTM_Quick_Setup.php:177
+msgid "Woocommerce already install , please activate it"
+msgstr "Το Woocommerce είναι ήδη εγκατεστημένο, παρακαλώ ενεργοποιήστε το."
+
+#: admin/WBTM_Quick_Setup.php:185
+msgid "Install & Active Now"
+msgstr "Εγκατάσταση & Ενεργοποίηση τώρα"
+
+#: admin/WBTM_Quick_Setup.php:187
+msgid "Active Now"
+msgstr "Ενεργό τώρα"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "General settings"
+msgstr "Γενικές ρυθμίσεις"
+
+#: admin/WBTM_Quick_Setup.php:200
+msgid "Choose some general option."
+msgstr "Επιλέξτε κάποια γενική επιλογή."
+
+#: admin/WBTM_Quick_Setup.php:203
+msgid "Bus Label:"
+msgstr "Ετικέτα λεωφορείου:"
+
+#: admin/WBTM_Quick_Setup.php:208
+msgid "It will change the Bus post type label on the entire plugin."
+msgstr "Θα αλλάξει την ετικέτα τύπου δημοσίευσης Bus σε ολόκληρο το πρόσθετο."
+
+#: admin/WBTM_Quick_Setup.php:212
+msgid "Bus Slug:"
+msgstr "Λεωφορείο Slug:"
+
+#: admin/WBTM_Quick_Setup.php:217
+msgid ""
+"It will change the Bus slug on the entire plugin. Remember after changing "
+"this slug you need to flush permalinks. Just go to Settings->Permalinks hit "
+"the Save Settings button"
+msgstr ""
+"Θα αλλάξει το slug του Bus σε ολόκληρο το πρόσθετο. Να θυμάστε ότι μετά την "
+"αλλαγή αυτού του slug πρέπει να καθαρίσετε τους μόνιμους συνδέσμους. Απλώς "
+"μεταβείτε στις Ρυθμίσεις->Μόνιμοι σύνδεσμοι και πατήστε το κουμπί Αποθήκευση "
+"ρυθμίσεων."
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "Finalize Setup"
+msgstr "Οριστικοποίηση εγκατάστασης"
+
+#: admin/WBTM_Quick_Setup.php:228
+msgid ""
+"You are about to Finish & Save Bus Booking with Seat Reservation For "
+"Woocommerce Plugin setup process"
+msgstr ""
+"Πρόκειται να ολοκληρώσετε και να αποθηκεύσετε την κράτηση λεωφορείου με "
+"κράτηση θέσης για τη διαδικασία εγκατάστασης του πρόσθετου Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:230
+msgid "Finish & Save"
+msgstr "Ολοκλήρωση & Αποθήκευση"
+
+#: admin/WBTM_Settings.php:20
+msgid " Information Settings : "
+msgstr "Ρυθμίσεις πληροφοριών:"
+
+#: admin/WBTM_Settings.php:36
+msgid "General Info"
+msgstr "Γενικές πληροφορίες"
+
+#: admin/WBTM_Settings.php:39
+msgid "Seat Configure"
+msgstr "Διαμόρφωση θέσης"
+
+#: admin/WBTM_Settings.php:42
+msgid "Pricing & Route"
+msgstr "Τιμολόγηση & Διαδρομή"
+
+#: admin/WBTM_Settings.php:48
+msgid "Pickup/Drop-Off Point"
+msgstr "Σημείο παραλαβής/παράδοσης"
+
+#: admin/WBTM_Settings.php:55
+msgid "Tax Configure"
+msgstr "Διαμόρφωση φόρου"
+
+#: admin/WBTM_Settings.php:59
+msgid "Partial Payment"
+msgstr "Μερική Πληρωμή"
+
+#: admin/WBTM_Settings.php:67
+msgid "Partial Payment Settings : "
+msgstr "Ρυθμίσεις μερικής πληρωμής:"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please add your unique bus id"
+msgstr "Παρακαλώ προσθέστε το μοναδικό αναγνωριστικό λεωφορείου σας"
+
+#: admin/WBTM_Settings.php:80
+msgid "Please add your bus category"
+msgstr "Παρακαλώ προσθέστε την κατηγορία λεωφορείου σας"
+
+#: admin/WBTM_Settings.php:81
+msgid "Turn on or off, bus seat registration"
+msgstr "Ενεργοποίηση ή απενεργοποίηση, εγγραφή θέσης λεωφορείου"
+
+#: admin/WBTM_Settings.php:82
+msgid ""
+"By default Registration is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Από προεπιλογή, η εγγραφή είναι ενεργοποιημένη, αλλά μπορείτε να την "
+"απενεργοποιήσετε ενεργοποιώντας αυτήν την επιλογή."
+
+#: admin/WBTM_Settings.php:83
+msgid ""
+"By default Boarding Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Από προεπιλογή, η ώρα επιβίβασης είναι ενεργοποιημένη, αλλά μπορείτε να την "
+"απενεργοποιήσετε ενεργοποιώντας αυτήν την επιλογή."
+
+#: admin/WBTM_Settings.php:84
+msgid ""
+"By default Dropping Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Από προεπιλογή, ο χρόνος απόθεσης είναι ενεργοποιημένος, αλλά μπορείτε να "
+"τον απενεργοποιήσετε ενεργοποιώντας αυτήν την επιλογή."
+
+#: admin/WBTM_Settings.php:85
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr ""
+"Επιλέξτε τον τύπο θέσης του λεωφορείου σας. Προεπιλογή χωρίς πρόγραμμα θέσεων"
+
+#: admin/WBTM_Settings.php:86
+msgid "Please Type your bus total seat."
+msgstr "Παρακαλώ εισάγετε τον συνολικό αριθμό θέσεων στο λεωφορείο σας."
+
+#: admin/WBTM_Settings.php:87
+msgid "Select Particular Date or Repeated Date."
+msgstr "Επιλέξτε Συγκεκριμένη Ημερομηνία ή Επαναλαμβανόμενη Ημερομηνία."
+
+#: admin/WBTM_Settings.php:88
+msgid "Here you can set bus route for stopage and dropping"
+msgstr ""
+"Εδώ μπορείτε να ορίσετε τη διαδρομή του λεωφορείου για στάση και αποβίβαση"
+
+#: admin/WBTM_Settings.php:89
+msgid ""
+"Please configure bus route price. Before price setting must be complete "
+"route configuration ."
+msgstr ""
+"Παρακαλώ ρυθμίστε την τιμή της διαδρομής του λεωφορείου. Πριν από τον ορισμό "
+"της τιμής, πρέπει να ολοκληρωθεί η διαμόρφωση της διαδρομής."
+
+#: admin/WBTM_Settings.php:90
+msgid "Turn On or Off Extra service."
+msgstr "Ενεργοποίηση ή απενεργοποίηση επιπλέον υπηρεσίας."
+
+#: admin/WBTM_Settings.php:91
+msgid "Turn On or Off pickup point."
+msgstr "Ενεργοποίηση ή απενεργοποίηση σημείου παραλαβής."
+
+#: admin/WBTM_Settings.php:92
+msgid "Turn On or Off drop-off point."
+msgstr "Ενεργοποίηση ή απενεργοποίηση σημείου αποβίβασης."
+
+#: admin/WBTM_Settings.php:93
+msgid ""
+"To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr ""
+"Για να προσθέσετε οποιαδήποτε νέα φορολογική κατηγορία, μεταβείτε στο "
+"WooCommerce ->Ρυθμίσεις->Φορολογική Περιοχή"
+
+#: admin/WBTM_Settings.php:95
+msgid "Please upload images for gallery"
+msgstr "Παρακαλώ ανεβάστε εικόνες για τη συλλογή"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">Κατάσταση</span>"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Για την κατάσταση περιβάλλοντος Woocommerce"
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "Έκδοση WordPress:"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "Εγκατεστημένο Woocommerce:"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "Έκδοση Woocommerce:"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "Όνομα:"
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "Διεύθυνση ηλεκτρονικού ταχυδρομείου:"
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr "Τύπος"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22
+#: admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:111
+msgid "Parent"
+msgstr "Μητρική εταιρεία"
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "Τύπος:"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
+#: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr "Σημείο Παραλαβής"
+
+#: admin/WBTM_Taxonomy.php:74 admin/WBTM_Taxonomy.php:110
+msgid "Allx "
+msgstr "Allx"
+
+#: admin/WBTM_Taxonomy.php:107 admin/WBTM_Taxonomy.php:111
+#: admin/WBTM_Taxonomy.php:114 inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr "Σημείο Αποβίβασης"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "Καλώς ορίσατε στο WBTM"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "ΕΠΑΓΓΕΛΜΑΤΙΑΣ"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "Καλώς ορίσατε στην Κράτηση Εισιτηρίων Λεωφορείου με Κράτηση Θέσης"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "Εισαγωγή"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "Βάση γνώσεων"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "Πώς να εισαγάγετε εικονικό περιεχόμενο"
+
+#: admin/WBTM_Welcome.php:30
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"Ακολουθήστε την παρακάτω διαδικασία για να εισαγάγετε δεδομένα εικονικών "
+"συμβάντων στον ιστότοπό σας."
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "Βήμα-1:"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "κατηγορία.xml"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "περιεχόμενο.xml"
+
+#: admin/WBTM_Welcome.php:46
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"Ή, μπορείτε να κατεβάσετε τα αρχεία XML σε μορφή zip και να τα εξαγάγετε "
+"στον κατάλογο του υπολογιστή σας."
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "Λήψη του συμπιεσμένου αρχείου (ZIP) των αρχείων XML"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "Βήμα-2:"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "Αφού κατεβάσετε το αρχείο XML, μεταβείτε στη διεύθυνση:"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "Εργαλεία -> Εισαγωγή"
+
+#: admin/WBTM_Welcome.php:58
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"Στο κάτω μέρος αυτής της σελίδας υπάρχει μια επιλογή εισαγωγής WordPress. "
+"Εάν την έχετε ήδη ενεργοποιήσει, μπορείτε να δείτε την επιλογή Εκτέλεση "
+"εισαγωγής. Εάν όχι, κάντε κλικ στον σύνδεσμο Εγκατάσταση τώρα. Στη συνέχεια, "
+"κάντε κλικ στην επιλογή Εκτέλεση εισαγωγέα και επιλέξτε το αρχείο XML που "
+"κατεβάσατε νωρίτερα."
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "Βήμα-3:"
+
+#: admin/WBTM_Welcome.php:66
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"Τώρα, επιλέξτε τον χρήστη του ιστότοπού σας για να αντιστοιχίσετε τα "
+"περιεχόμενα από το αναπτυσσόμενο μενού και, στη συνέχεια, επιλέξτε το "
+"πλαίσιο ελέγχου Λήψη συνημμένου και εκτέλεση της διαδικασίας. Μετά από λίγα "
+"λεπτά, θα δείτε το μήνυμα Επιτυχία. Τέλος! Καλή διασκέδαση."
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "Εκπαιδευτικό βίντεο"
+
+#: admin/WBTM_Welcome.php:76
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr ""
+"Καλώς ορίσατε στην Τεκμηρίωση Κράτησης Εισιτηρίων Λεωφορείου με Πρόσθετο "
+"Κράτησης Θέσης"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "ΑΓΟΡΑΣΤΕ ΕΠΑΓΓΕΛΜΑΤΙΚΑ"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "Πώς να εγκαταστήσω το πρόσθετο;"
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr ""
+"Παρακολουθήστε το βίντεο για να μάθετε πώς μπορείτε να εγκαταστήσετε το "
+"πρόσθετο."
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "Πώς να προσθέσετε ένα νέο λεωφορείο;"
+
+#: admin/WBTM_Welcome.php:89
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"Αφού εγκαταστήσετε το πρόσθετο, μπορείτε να προσθέσετε ένα νέο λεωφορείο. "
+"Παρακολουθήστε το βίντεο για να μάθετε πώς μπορείτε να το κάνετε:"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "Πώς να κλείσω εισιτήριο λεωφορείου;"
+
+#: admin/WBTM_Welcome.php:96
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr ""
+"Σε αυτό το βίντεο μπορείτε να μάθετε πόσο εύκολο είναι να κάνετε μια "
+"παραγγελία για να κλείσετε εισιτήριο λεωφορείου:"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "Πώς να ρυθμίσω ένα εισιτήριο σε μορφή PDF;"
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr ""
+"Παρακολουθήστε το βίντεο για να μάθετε πώς να ρυθμίσετε το εισιτήριο σε PDF."
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "Πώς να ρυθμίσω το email;"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "Παρακολουθήστε το βίντεο για να μάθετε πώς να ρυθμίσετε το email."
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "Πώς να ορίσετε την τιμή του εισιτηρίου λεωφορείου;"
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να ορίσετε την τιμή του "
+"εισιτηρίου λεωφορείου."
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "Πώς να ορίσω λεωφορείο σε μια συγκεκριμένη ημέρα;"
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να ρυθμίσετε το λεωφορείο σε "
+"μια συγκεκριμένη ημέρα."
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "Πώς να ορίσω την ώρα buffer κράτησης λεωφορείων;"
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να ορίσετε την κράτηση "
+"λεωφορείου σε χρόνο buffer."
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "Πώς μπορώ να αποκτήσω ένα ticket από τον πίνακα διαχείρισης;"
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να αποκτήσετε ένα ticket από "
+"τον πίνακα διαχείρισης."
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "Πώς μπορώ να εξάγω τη λίστα επιβατών σε μορφή CSV;"
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να εξάγετε τη λίστα επιβατών "
+"σε μορφή CSV."
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr ""
+"Πώς να δημιουργήσετε ένα σχέδιο καθισμάτων με δύο πόρτες και τέσσερις "
+"κολώνες;"
+
+#: admin/WBTM_Welcome.php:153
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να δημιουργήσετε ένα σχέδιο "
+"καθισμάτων με δύο πόρτες και τέσσερις κολώνες."
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "Πώς να δημιουργήσετε ένα σχέδιο καθισμάτων τριών στηλών;"
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να δημιουργήσετε ένα σχέδιο "
+"καθισμάτων τριών στηλών."
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "Πώς να κάνετε κράτηση λεωφορείου;"
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr ""
+"Παρακολουθήστε αυτό το βίντεο για να μάθετε πώς να κάνετε κράτηση λεωφορείου."
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "Πώς να αγοράσετε την έκδοση PRO;"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "Κράτηση εισιτηρίων λεωφορείου με το Seat Reservation PRO"
+
+#: admin/WBTM_Welcome.php:179
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr ""
+"Σύντομοι κωδικοί που περιλαμβάνονται στο πρόσθετο κράτησης εισιτηρίων "
+"λεωφορείου με κράτηση θέσης:"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "Σύντομος κώδικας"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "Παράμετρος"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "γάτα"
+
+#: admin/WBTM_Welcome.php:193
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"Από προεπιλογή εμφανίζονται όλα τα λεωφορεία, αλλά αν θέλετε να εμφανίσετε "
+"τη λίστα λεωφορείων μιας συγκεκριμένης κατηγορίας, μπορείτε να "
+"χρησιμοποιήσετε αυτό το χαρακτηριστικό, απλώς τοποθετήστε το αναγνωριστικό "
+"κατηγορίας με αυτό. Παράδειγμα:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "επίδειξη"
+
+#: admin/WBTM_Welcome.php:201
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"Από προεπιλογή, εμφανίζονται 20 λεωφορεία ανά σελίδα. Εάν θέλετε να το "
+"αλλάξετε και να ορίσετε όριο, εισαγάγετε τον αριθμό ορίου. Παράδειγμα:"
+
+#: admin/WBTM_Welcome.php:210
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"Αυτός ο σύντομος κωδικός θα εμφανίσει τη φόρμα Δημιουργία εισιτηρίου. Ο "
+"χρήστης πρέπει να εισάγει τον κωδικό PIN του εισιτηρίου του στο πλαίσιο και "
+"να πατήσει το κουμπί Enter, στη συνέχεια θα εμφανιστεί το εισιτήριο. Μόνο οι "
+"συνδεδεμένοι χρήστες μπορούν να δουν αυτήν τη σελίδα."
+
+#: admin/WBTM_Welcome.php:217
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"Αυτός ο σύντομος κώδικας θα εμφανίσει τη φόρμα αναζήτησης, όπως αν θέλετε να "
+"εμφανίσετε ένα πλαίσιο αναζήτησης κάπου στην αρχική σελίδα ή σε οποιαδήποτε "
+"σελίδα, τότε απλώς τοποθετήστε αυτόν τον σύντομο κώδικα εκεί και θα "
+"εκτυπώσει τη φόρμα αναζήτησης διαύλου."
+
+#: admin/WBTM_Welcome.php:224
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"Αυτός ο σύντομος κώδικας θα εκτυπώσει επίσης μια φόρμα αναζήτησης διαύλου, "
+"αλλά θα εμφανίσει επίσης το αποτέλεσμα αναζήτησης στην ίδια σελίδα, κάτω από "
+"τη φόρμα αναζήτησης."
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "Εισιτήριο"
+
+#: inc/WBTM_GTFS_Export.php:60 inc/WBTM_GTFS_Export.php:61
+#: inc/WBTM_GTFS_Export.php:71
+msgid "GTFS Export"
+msgstr "Εξαγωγή GTFS"
+
+#: inc/WBTM_GTFS_Export.php:72
+msgid ""
+"Export your bus data to GTFS format for Google Transit and other transit "
+"applications."
+msgstr ""
+"Εξαγάγετε τα δεδομένα του λεωφορείου σας σε μορφή GTFS για το Google Transit "
+"και άλλες εφαρμογές συγκοινωνιών."
+
+#: inc/WBTM_GTFS_Export.php:79
+msgid "Agency Name"
+msgstr "Όνομα Πρακτορείου"
+
+#: inc/WBTM_GTFS_Export.php:83
+msgid "The name of your transit agency"
+msgstr "Το όνομα του πρακτορείου συγκοινωνιών σας"
+
+#: inc/WBTM_GTFS_Export.php:88
+msgid "Agency URL"
+msgstr "URL πρακτορείου"
+
+#: inc/WBTM_GTFS_Export.php:92
+msgid "Your agency website URL"
+msgstr "URL ιστότοπου του πρακτορείου σας"
+
+#: inc/WBTM_GTFS_Export.php:97
+msgid "Agency Timezone"
+msgstr "Ζώνη ώρας πρακτορείου"
+
+#: inc/WBTM_GTFS_Export.php:109
+msgid "Timezone for your bus operations"
+msgstr "Ζώνη ώρας για τις λεωφορειακές σας δραστηριότητες"
+
+#: inc/WBTM_GTFS_Export.php:114
+msgid "Export Date Range"
+msgstr "Εύρος ημερομηνιών εξαγωγής"
+
+#: inc/WBTM_GTFS_Export.php:118
+msgid "to"
+msgstr "να"
+
+#: inc/WBTM_GTFS_Export.php:120
+msgid "Date range for schedule export (recommended: 30-90 days)"
+msgstr ""
+"Εύρος ημερομηνιών για την εξαγωγή προγραμματισμού (συνιστάται: 30-90 ημέρες)"
+
+#: inc/WBTM_GTFS_Export.php:125
+msgid "Select Buses"
+msgstr "Επιλέξτε Λεωφορεία"
+
+#: inc/WBTM_GTFS_Export.php:138
+msgid "Select All"
+msgstr "Επιλογή όλων"
+
+#: inc/WBTM_GTFS_Export.php:147
+msgid "Select which buses to include in the GTFS export"
+msgstr "Επιλέξτε ποια λεωφορεία θα συμπεριληφθούν στην εξαγωγή GTFS"
+
+#: inc/WBTM_GTFS_Export.php:153
+msgid "Export GTFS"
+msgstr "Εξαγωγή GTFS"
+
+#: inc/WBTM_GTFS_Export.php:158
+msgid "Export Progress"
+msgstr "Πρόοδος εξαγωγής"
+
+#: inc/WBTM_GTFS_Export.php:162
+msgid "Preparing export..."
+msgstr "Προετοιμασία εξαγωγής..."
+
+#: inc/WBTM_GTFS_Export.php:166
+msgid "Export Complete"
+msgstr "Η εξαγωγή ολοκληρώθηκε"
+
+#: inc/WBTM_GTFS_Export.php:168
+msgid "Download GTFS Feed"
+msgstr "Λήψη ροής GTFS"
+
+#: inc/WBTM_GTFS_Export.php:189
+msgid "Please select at least one bus to export."
+msgstr "Επιλέξτε τουλάχιστον ένα λεωφορείο για εξαγωγή."
+
+#: inc/WBTM_GTFS_Export.php:224
+msgid "Export failed. Please try again."
+msgstr "Η εξαγωγή απέτυχε. Δοκιμάστε ξανά."
+
+#: inc/WBTM_GTFS_Export.php:237 inc/WBTM_GTFS_Validator.php:534
+msgid "Security check failed"
+msgstr "Ο έλεγχος ασφαλείας απέτυχε"
+
+#: inc/WBTM_GTFS_Export.php:242 inc/WBTM_GTFS_Validator.php:538
+msgid "Insufficient permissions"
+msgstr "Ανεπαρκή δικαιώματα"
+
+#: inc/WBTM_GTFS_Export.php:269
+msgid "GTFS feed exported successfully!"
+msgstr "Η ροή GTFS εξήχθη με επιτυχία!"
+
+#: inc/WBTM_GTFS_Export.php:274
+msgid "Failed to generate GTFS feed"
+msgstr "Αποτυχία δημιουργίας ροής GTFS"
+
+#: inc/WBTM_GTFS_Export.php:280
+#, php-format
+msgid "Export error: %s"
+msgstr "Σφάλμα εξαγωγής: %s"
+
+#: inc/WBTM_GTFS_Validator.php:56
+msgid "GTFS feed file not found"
+msgstr "Δεν βρέθηκε το αρχείο ροής GTFS"
+
+#: inc/WBTM_GTFS_Validator.php:63
+msgid "Could not extract GTFS feed"
+msgstr "Δεν ήταν δυνατή η εξαγωγή της ροής GTFS"
+
+#: inc/WBTM_GTFS_Validator.php:88
+#, php-format
+msgid "Validation error: %s"
+msgstr "Σφάλμα επικύρωσης: %s"
+
+#: inc/WBTM_GTFS_Validator.php:116
+#, php-format
+msgid "Required file missing: %s"
+msgstr "Λείπει το απαιτούμενο αρχείο: %s"
+
+#: inc/WBTM_GTFS_Validator.php:126
+#, php-format
+msgid "Unknown file found: %s"
+msgstr "Βρέθηκε άγνωστο αρχείο: %s"
+
+#: inc/WBTM_GTFS_Validator.php:139
+msgid "agency.txt is empty or invalid"
+msgstr "Το agency.txt είναι κενό ή μη έγκυρο."
+
+#: inc/WBTM_GTFS_Validator.php:149
+#, php-format
+msgid "Invalid timezone in agency.txt row %d: %s"
+msgstr "Μη έγκυρη ζώνη ώρας στη σειρά agency.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:153
+#, php-format
+msgid "Invalid URL in agency.txt row %d: %s"
+msgstr "Μη έγκυρη διεύθυνση URL στη σειρά agency.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:166
+msgid "stops.txt is empty or invalid"
+msgstr "Το stops.txt είναι κενό ή μη έγκυρο."
+
+#: inc/WBTM_GTFS_Validator.php:178
+#, php-format
+msgid "Duplicate stop_id in stops.txt: %s"
+msgstr "Διπλότυπο stop_id στο stops.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:187
+#, php-format
+msgid "Invalid latitude in stops.txt row %d: %s"
+msgstr "Μη έγκυρο γεωγραφικό πλάτος στη σειρά stops.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:194
+#, php-format
+msgid "Invalid longitude in stops.txt row %d: %s"
+msgstr "Μη έγκυρο γεωγραφικό μήκος στη σειρά stops.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:201
+#, php-format
+msgid "Stop at coordinates (0,0) in stops.txt row %d - please verify location"
+msgstr ""
+"Στάση στις συντεταγμένες (0,0) στη σειρά %d του stops.txt - επαληθεύστε την "
+"τοποθεσία"
+
+#: inc/WBTM_GTFS_Validator.php:215
+msgid "routes.txt is empty or invalid"
+msgstr "Το routes.txt είναι κενό ή μη έγκυρο."
+
+#: inc/WBTM_GTFS_Validator.php:227
+#, php-format
+msgid "Duplicate route_id in routes.txt: %s"
+msgstr "Διπλότυπο route_id στο routes.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:236
+#, php-format
+msgid "Invalid route_type in routes.txt row %d: %s"
+msgstr "Μη έγκυρος τύπος_δρομολογίου στη σειρά routes.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:242
+#, php-format
+msgid ""
+"Either route_short_name or route_long_name must be provided in routes.txt "
+"row %d"
+msgstr ""
+"Πρέπει να παρέχεται είτε το route_short_name είτε το route_long_name στη "
+"γραμμή %d του routes.txt."
+
+#: inc/WBTM_GTFS_Validator.php:255
+msgid "trips.txt is empty or invalid"
+msgstr "Το trips.txt είναι κενό ή μη έγκυρο."
+
+#: inc/WBTM_GTFS_Validator.php:267
+#, php-format
+msgid "Duplicate trip_id in trips.txt: %s"
+msgstr "Διπλότυπο trip_id στο trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:274
+#, php-format
+msgid "Invalid direction_id in trips.txt row %d: %s"
+msgstr "Μη έγκυρο direction_id στη σειρά trips.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:279
+#, php-format
+msgid "Invalid wheelchair_accessible in trips.txt row %d: %s"
+msgstr "Μη έγκυρο wheelchair_accessible στη σειρά trips.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:284
+#, php-format
+msgid "Invalid bikes_allowed in trips.txt row %d: %s"
+msgstr "Μη έγκυρο bikes_allowed στη σειρά trips.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:297
+msgid "stop_times.txt is empty or invalid"
+msgstr "Το αρχείο stop_times.txt είναι κενό ή μη έγκυρο"
+
+#: inc/WBTM_GTFS_Validator.php:316
+#, php-format
+msgid "Invalid arrival_time format in stop_times.txt row %d: %s"
+msgstr "Μη έγκυρη μορφή arrival_time στη σειρά stop_times.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:320
+#, php-format
+msgid "Invalid departure_time format in stop_times.txt row %d: %s"
+msgstr "Μη έγκυρη μορφή departure_time στη σειρά stop_times.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:325
+#, php-format
+msgid "Invalid pickup_type in stop_times.txt row %d: %s"
+msgstr "Μη έγκυρος τύπος_παραλαβής στη σειρά stop_times.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:329
+#, php-format
+msgid "Invalid drop_off_type in stop_times.txt row %d: %s"
+msgstr "Μη έγκυρος τύπος_drop_off στη σειρά stop_times.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:337
+#, php-format
+msgid "Duplicate stop_sequence values for trip_id: %s"
+msgstr "Διπλότυπες τιμές stop_sequence για trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:344
+#, php-format
+msgid "Stop sequences not in order for trip_id: %s"
+msgstr "Οι ακολουθίες διακοπής δεν είναι σε σειρά για το trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:354
+msgid "Either calendar.txt or calendar_dates.txt must be provided"
+msgstr "Πρέπει να καταχωρηθεί είτε το calendar.txt είτε το calendar_dates.txt"
+
+#: inc/WBTM_GTFS_Validator.php:372
+msgid "calendar.txt is empty or invalid"
+msgstr "Το calendar.txt είναι κενό ή μη έγκυρο."
+
+#: inc/WBTM_GTFS_Validator.php:384
+#, php-format
+msgid "Invalid %s value in calendar.txt row %d: %s"
+msgstr "Μη έγκυρη τιμή %s στη σειρά calendar.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:390
+#, php-format
+msgid "Invalid start_date format in calendar.txt row %d: %s"
+msgstr "Μη έγκυρη μορφή ημερομηνίας_έναρξης στη σειρά calendar.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:394
+#, php-format
+msgid "Invalid end_date format in calendar.txt row %d: %s"
+msgstr "Μη έγκυρη μορφή ημερομηνίας_λήξης στη σειρά calendar.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:400
+#, php-format
+msgid "end_date must be after start_date in calendar.txt row %d"
+msgstr ""
+"Η ημερομηνία_λήξης πρέπει να είναι μετά την ημερομηνία_έναρξης στη σειρά %d "
+"του calendar.txt."
+
+#: inc/WBTM_GTFS_Validator.php:411
+msgid "calendar_dates.txt is empty or invalid"
+msgstr "Το calendar_dates.txt είναι κενό ή μη έγκυρο"
+
+#: inc/WBTM_GTFS_Validator.php:421
+#, php-format
+msgid "Invalid date format in calendar_dates.txt row %d: %s"
+msgstr "Μη έγκυρη μορφή ημερομηνίας στη σειρά calendar_dates.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:426
+#, php-format
+msgid "Invalid exception_type in calendar_dates.txt row %d: %s"
+msgstr "Μη έγκυρος τύπος_εξαίρεσης στη σειρά calendar_dates.txt %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:470
+#, php-format
+msgid "Required field missing in %s: %s"
+msgstr "Λείπει το υποχρεωτικό πεδίο στο %s: %s"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr "Ημερομηνία Ταξιδιού"
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr "Ημερομηνία Επιστροφής (Προαιρετικό)"
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr "Ημερομηνία"
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr "Ημερομηνία παραγγελίας"
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr "ΑΓΟΡΑΣΤΕ ΕΙΣΙΤΗΡΙΟ"
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr "Από"
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr "Να"
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr "Παρακαλώ επιλέξτε"
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr "Σημεία εκκίνησης"
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr "Βελτίωση"
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr "Παράδοση"
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr "ΚΑΡΦΙΤΣΑ"
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr "Τύπος λεωφορείου"
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr "Χειριστής Λεωφορείου"
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr "Αναγνωριστικό συμμετέχοντα"
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr "Τύπος επιβάτη"
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr "Κατάσταση παραγγελίας"
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr "Μέθοδος πληρωμής"
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr "Ταξίδι επιστροφής"
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr "Προστέθηκε ήδη στο καλάθι!"
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr "Δεν βρέθηκε λεωφορείο!"
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr "Δεν βρέθηκε εισιτήριο!"
+
+#: inc/WBTM_Translations.php:186
+msgid "No Seat Plan Available !"
+msgstr "Δεν υπάρχει διαθέσιμο πρόγραμμα θέσεων!"
+
+#: inc/WBTM_Translations.php:192
+msgid "No Seat Available !!"
+msgstr "Δεν υπάρχει διαθέσιμη θέση!!"
+
+#: inc/WBTM_Translations.php:198
+msgid "This bus Now Closed."
+msgstr "Αυτό το λεωφορείο είναι τώρα κλειστό."
+
+#: inc/WBTM_Translations.php:204
+msgid "Available Seat"
+msgstr "Διαθέσιμη θέση"
+
+#: inc/WBTM_Translations.php:210
+msgid "Already Sold"
+msgstr "Ήδη πωλημένο"
+
+#: inc/WBTM_Translations.php:216
+msgid "You select Wrong Route !"
+msgstr "Επιλέγεις Λάθος Διαδρομή!"
+
+#: inc/WBTM_Translations.php:222
+msgid "Please select Starting Point !"
+msgstr "Παρακαλώ επιλέξτε Σημείο Εκκίνησης!"
+
+#: inc/WBTM_Translations.php:228
+msgid "Schedule"
+msgstr "Πρόγραμμα"
+
+#: inc/WBTM_Translations.php:234
+msgid "Coach Type"
+msgstr "Τύπος λεωφορείου"
+
+#: inc/WBTM_Translations.php:246 inc/WBTM_Translations.php:252
+msgid "Seat"
+msgstr "Κάθισμα"
+
+#: inc/WBTM_Translations.php:258
+msgid "Name"
+msgstr "Ονομα"
+
+#: inc/WBTM_Translations.php:264 mp_global/class/WBTM_Select_Icon_image.php:110
+#: mp_global/class/WBTM_Select_Icon_image.php:136
+#: mp_global/class/WBTM_Select_Icon_image.php:163
+msgid "Image"
+msgstr "Εικών"
+
+#: inc/WBTM_Translations.php:270
+msgid "Quantity"
+msgstr "Ποσότητα"
+
+#: inc/WBTM_Translations.php:276
+msgid "Total Quantity"
+msgstr "Συνολική Ποσότητα"
+
+#: inc/WBTM_Translations.php:282
+msgid "Price"
+msgstr "Τιμή"
+
+#: inc/WBTM_Translations.php:288
+msgid "Fare"
+msgstr "Ναύλος"
+
+#: inc/WBTM_Translations.php:294
+msgid "Total"
+msgstr "Σύνολο"
+
+#: inc/WBTM_Translations.php:300
+msgid "Ticket Sub total"
+msgstr "Μερικό σύνολο εισιτηρίων"
+
+#: inc/WBTM_Translations.php:306
+msgid "Order Total"
+msgstr "Σύνολο Παραγγελίας"
+
+#: inc/WBTM_Translations.php:312
+msgid "Passenger Capacity"
+msgstr "Χωρητικότητα επιβατών"
+
+#: inc/WBTM_Translations.php:330
+msgid "Extra Service Sub total"
+msgstr "Μερικό σύνολο επιπλέον υπηρεσιών"
+
+#: inc/WBTM_Translations.php:336
+msgid "Adult"
+msgstr "Ενήλικας"
+
+#: inc/WBTM_Translations.php:342
+msgid "Child"
+msgstr "Παιδί"
+
+#: inc/WBTM_Translations.php:348
+msgid "Infant"
+msgstr "Βρέφος"
+
+#: inc/WBTM_Translations.php:360
+msgid "Seats Available"
+msgstr "Διαθέσιμες θέσεις"
+
+#: inc/WBTM_Translations.php:366
+msgid "Duration :"
+msgstr "Διάρκεια:"
+
+#: inc/WBTM_Translations.php:372
+msgid "View Seats"
+msgstr "Δείτε τις θέσεις"
+
+#: inc/WBTM_Translations.php:378
+msgid "Close Seat"
+msgstr "Κλείσιμο καθίσματος"
+
+#: inc/WBTM_Translations.php:384
+msgid "Book Now"
+msgstr "Κάντε κράτηση τώρα"
+
+#: inc/WBTM_Translations.php:390
+msgid "This seat is already reserved."
+msgstr "Αυτή η θέση είναι ήδη κρατημένη."
+
+#: inc/WBTM_Translations.php:397
+msgid "Seat Details"
+msgstr "Λεπτομέρειες θέσης"
+
+#: inc/WBTM_Translations.php:403
+msgid "Seat Selection"
+msgstr "Επιλογή θέσης"
+
+#: inc/WBTM_Translations.php:410
+msgid "Passenger Details"
+msgstr "Στοιχεία Επιβάτη"
+
+#: inc/WBTM_Translations.php:423
+msgid "Reset"
+msgstr "Επαναφορά"
+
+#: inc/WBTM_Translations.php:429
+msgid "Mobile Number"
+msgstr "Αριθμός κινητού τηλεφώνου"
+
+#: inc/WBTM_Translations.php:435
+msgid "Email"
+msgstr "E-mail"
+
+#: inc/WBTM_Translations.php:441
+msgid "Gender"
+msgstr "Γένος"
+
+#: inc/WBTM_Translations.php:448
+msgid "Booking Date"
+msgstr "Ημερομηνία Κράτησης"
+
+#: inc/WBTM_Translations.php:454
+msgid "Booking ID"
+msgstr "Αναγνωριστικό κράτησης"
+
+#: inc/WBTM_Translations.php:460
+msgid "Booking Status"
+msgstr "Κατάσταση κράτησης"
+
+#: inc/WBTM_Translations.php:467
+msgid "Departure Time"
+msgstr "Ωρα αναχώρησης"
+
+#: inc/WBTM_Translations.php:473
+msgid "Arrival Time"
+msgstr "Ώρα Άφιξης"
+
+#: inc/WBTM_Translations.php:479
+msgid "Route Details"
+msgstr "Λεπτομέρειες διαδρομής"
+
+#: inc/WBTM_Translations.php:486
+msgid "Payment Status"
+msgstr "Κατάσταση πληρωμής"
+
+#: inc/WBTM_Translations.php:492
+msgid "Transaction ID"
+msgstr "Αναγνωριστικό συναλλαγής"
+
+#: inc/WBTM_Translations.php:499
+msgid "Booking Successful!"
+msgstr "Η κράτηση ολοκληρώθηκε με επιτυχία!"
+
+#: inc/WBTM_Translations.php:505
+msgid "Booking Failed!"
+msgstr "Η κράτηση απέτυχε!"
+
+#: inc/WBTM_Translations.php:511
+msgid "Selected seat(s) no longer available!"
+msgstr "Η/Οι επιλεγμένη/ες θέση/εις δεν είναι πλέον διαθέσιμη/ές!"
+
+#: inc/WBTM_Translations.php:518
+msgid "Proceed"
+msgstr "Προχωρώ"
+
+#: inc/WBTM_Translations.php:524
+msgid "Cancel"
+msgstr "Ματαίωση"
+
+#: inc/WBTM_Translations.php:530
+msgid "Print Ticket"
+msgstr "Εκτύπωση εισιτηρίου"
+
+#: inc/WBTM_Translations.php:537
+msgid "Terms & Conditions"
+msgstr "Όροι και Προϋποθέσεις"
+
+#: inc/WBTM_Translations.php:543
+msgid "Note"
+msgstr "Σημείωμα"
+
+#: inc/WBTM_Translations.php:550
+msgid "This field is required"
+msgstr "Αυτό το πεδίο είναι υποχρεωτικό"
+
+#: inc/WBTM_Translations.php:556
+msgid "Please enter a valid email address"
+msgstr "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου"
+
+#: inc/WBTM_Translations.php:562
+msgid "Please enter a valid phone number"
+msgstr "Παρακαλώ εισάγετε έναν έγκυρο αριθμό τηλεφώνου"
+
+#: inc/WBTM_Translations.php:569
+msgid "Ticket Confirmed"
+msgstr "Το εισιτήριο επιβεβαιώθηκε"
+
+#: inc/WBTM_Translations.php:575
+msgid "Ticket Pending"
+msgstr "Εισιτήριο σε εκκρεμότητα"
+
+#: inc/WBTM_Translations.php:581
+msgid "Ticket Cancelled"
+msgstr "Το εισιτήριο ακυρώθηκε"
+
+#: inc/WBTM_Translations.php:588
+msgid "Passenger Name"
+msgstr "Όνομα επιβάτη"
+
+#: inc/WBTM_Translations.php:594
+msgid "Age"
+msgstr "Ηλικία"
+
+#: inc/WBTM_Translations.php:600
+msgid "NID/Passport"
+msgstr "NID/Διαβατήριο"
+
+#: inc/WBTM_Translations.php:619
+msgid "Journey Time"
+msgstr "Χρόνος Ταξιδιού"
+
+#: inc/WBTM_Translations.php:625
+msgid "Distance"
+msgstr "Απόσταση"
+
+#: inc/WBTM_Translations.php:632
+msgid "Seat Number"
+msgstr "Αριθμός θέσης"
+
+#: inc/WBTM_Translations.php:638
+msgid "Seat Status"
+msgstr "Κατάσταση θέσης"
+
+#: inc/WBTM_Translations.php:645
+msgid "Tax"
+msgstr "Φόρος"
+
+#: inc/WBTM_Translations.php:651
+msgid "Discount"
+msgstr "Εκπτωση"
+
+#: inc/WBTM_Translations.php:657
+msgid "Grand Total"
+msgstr "Γενικό Σύνολο"
+
+#: inc/WBTM_Translations.php:664
+msgid "Payment Pending"
+msgstr "Πληρωμή σε εκκρεμότητα"
+
+#: inc/WBTM_Translations.php:670
+msgid "Payment Complete"
+msgstr "Η πληρωμή ολοκληρώθηκε"
+
+#: inc/WBTM_Translations.php:676
+msgid "Payment Failed"
+msgstr "Η πληρωμή απέτυχε"
+
+#: inc/WBTM_Woocommerce.php:166
+msgid "Booking Details "
+msgstr "Λεπτομέρειες Κράτησης"
+
+#: inc/WBTM_Woocommerce.php:853
+msgid "Ticket Information"
+msgstr "Πληροφορίες εισιτηρίων"
+
+#: mp_global/class/WBTM_Custom_Layout.php:39
+#: mp_global/class/WBTM_Custom_Layout.php:179
+#: mp_global/class/WBTM_Custom_Layout.php:180
+#: mp_global/class/WBTM_Custom_Layout.php:266
+msgid "Load More"
+msgstr "Φόρτωση περισσότερων"
+
+#: mp_global/class/WBTM_Custom_Layout.php:50
+#: mp_global/class/WBTM_Custom_Layout.php:277
+msgid "GoTO Previous Page"
+msgstr "Μετάβαση στην προηγούμενη σελίδα"
+
+#: mp_global/class/WBTM_Custom_Layout.php:70
+#: mp_global/class/WBTM_Custom_Layout.php:297
+msgid "GoTO Next Page"
+msgstr "Μετάβαση στην επόμενη σελίδα"
+
+#: mp_global/class/WBTM_Custom_Layout.php:179
+msgid "Less More"
+msgstr "Λιγότερα Περισσότερα"
+
+#: mp_global/class/WBTM_Custom_Layout.php:219
+msgid "Please select"
+msgstr "Παρακαλώ επιλέξτε"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "View All"
+msgstr "Δείτε όλα"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "Images"
+msgstr "Εικόνες"
+
+#: mp_global/class/WBTM_Global_Function.php:223
+#: mp_global/class/WBTM_Global_Function.php:1045
+msgid "Lifetime"
+msgstr "Διάρκεια ζωής"
+
+#: mp_global/class/WBTM_Global_Function.php:227
+#: mp_global/class/WBTM_Global_Function.php:1049
+msgid "Expired"
+msgstr "Λήξη"
+
+#: mp_global/class/WBTM_Global_Function.php:487
+msgid "Monday"
+msgstr "Δευτέρα"
+
+#: mp_global/class/WBTM_Global_Function.php:488
+msgid "Tuesday"
+msgstr "Τρίτη"
+
+#: mp_global/class/WBTM_Global_Function.php:489
+msgid "Wednesday"
+msgstr "Τετάρτη"
+
+#: mp_global/class/WBTM_Global_Function.php:490
+msgid "Thursday"
+msgstr "Πέμπτη"
+
+#: mp_global/class/WBTM_Global_Function.php:491
+msgid "Friday"
+msgstr "Παρασκευή"
+
+#: mp_global/class/WBTM_Global_Function.php:492
+msgid "Saturday"
+msgstr "Σάββατο"
+
+#: mp_global/class/WBTM_Global_Function.php:493
+msgid "Sunday"
+msgstr "Κυριακή"
+
+#: mp_global/class/WBTM_Global_Function.php:642
+#: mp_global/class/WBTM_Global_Function.php:668
+#: mp_global/class/WBTM_Global_Function.php:1243
+#: mp_global/class/WBTM_Global_Function.php:1269
+msgid "An error occurred, please try again."
+msgstr "Παρουσιάστηκε σφάλμα, δοκιμάστε ξανά."
+
+#: mp_global/class/WBTM_Global_Function.php:650
+#: mp_global/class/WBTM_Global_Function.php:1251
+msgid "Your license key has been disabled."
+msgstr "Το κλειδί άδειας χρήσης σας έχει απενεργοποιηθεί."
+
+#: mp_global/class/WBTM_Global_Function.php:653
+#: mp_global/class/WBTM_Global_Function.php:1254
+msgid "Missing license."
+msgstr "Λείπει άδεια."
+
+#: mp_global/class/WBTM_Global_Function.php:656
+#: mp_global/class/WBTM_Global_Function.php:1257
+msgid "Invalid license."
+msgstr "Μη έγκυρη άδεια."
+
+#: mp_global/class/WBTM_Global_Function.php:659
+#: mp_global/class/WBTM_Global_Function.php:1260
+msgid "Your license is not active for this URL."
+msgstr "Η άδειά σας δεν είναι ενεργή για αυτήν τη διεύθυνση URL."
+
+#: mp_global/class/WBTM_Global_Function.php:662
+#: mp_global/class/WBTM_Global_Function.php:1263
+msgid "This appears to be an invalid license key for ."
+msgstr "Αυτό φαίνεται να είναι ένα μη έγκυρο κλειδί άδειας χρήσης για το ."
+
+#: mp_global/class/WBTM_Global_Function.php:665
+#: mp_global/class/WBTM_Global_Function.php:1266
+msgid "Your license key has reached its activation limit."
+msgstr "Το κλειδί άδειας χρήσης σας έχει φτάσει στο όριο ενεργοποίησης."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Success, License Key is valid for the plugin"
+msgstr "Επιτυχία, το Κλειδί Άδειας Χρήσης είναι έγκυρο για το πρόσθετο"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Your Order id is"
+msgstr "Το αναγνωριστικό παραγγελίας σας είναι"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Validity of this licenses is"
+msgstr "Η ισχύς αυτών των αδειών είναι"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:28
+#: mp_global/class/WBTM_Select_Icon_image.php:154
+msgid "Remove Icon"
+msgstr "Αφαίρεση εικονιδίου"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:47
+msgid "Select Icon"
+msgstr "Επιλογή εικονιδίου"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:49
+msgid "Icon/class name...."
+msgstr "Όνομα εικονιδίου/κλάσης...."
+
+#: mp_global/class/WBTM_Select_Icon_image.php:65
+msgid "All Icon"
+msgstr "Όλα τα εικονίδια"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:158
+msgid "Remove Image"
+msgstr "Αφαίρεση εικόνας"
+
+#: templates/layout/search_result.php:121
+#, php-format
+msgctxt "Duration format (hours and minutes)"
+msgid "%d H %d M"
+msgstr "%d H %d M"

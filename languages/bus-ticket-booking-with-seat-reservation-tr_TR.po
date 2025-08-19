@@ -1,0 +1,3093 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the same license as the Bus Ticket Booking with Seat Reservation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.4.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-"
+"booking-with-seat-reservation\n"
+"Last-Translator: \n"
+"Language-Team: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-19T02:32:51+02:00\n"
+"PO-Revision-Date: 2025-08-19 00:53+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+"Language: tr_TR\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.30"
+
+#. Plugin Name of the plugin
+#: woocommerce-bus.php
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "Koltuk Rezervasyonlu Otobüs Bileti Rezervasyonu"
+
+#. Plugin URI of the plugin
+#: woocommerce-bus.php
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Description of the plugin
+#: woocommerce-bus.php
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr "WordPress ve WooCommerce için Eksiksiz Bir Otobüs Bileti Sistemi"
+
+#. Author of the plugin
+#: woocommerce-bus.php
+msgid "MagePeople Team"
+msgstr "MagePeople Ekibi"
+
+#. Author URI of the plugin
+#: woocommerce-bus.php
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/settings/WBTM_Date_Settings.php:35 admin/WBTM_Settings.php:52
+msgid "Date Settings"
+msgstr "Tarih Ayarları"
+
+#: admin/settings/WBTM_Date_Settings.php:36
+msgid ""
+"Bus date settings will help to operation a bus in a particular or repeated "
+"date."
+msgstr ""
+"Otobüs tarih ayarları, otobüsün belirli veya tekrarlanan bir tarihte "
+"çalıştırılmasına yardımcı olacaktır."
+
+#: admin/settings/WBTM_Date_Settings.php:41
+msgid "Date Information"
+msgstr "Tarih Bilgileri"
+
+#: admin/settings/WBTM_Date_Settings.php:43
+msgid "Here you can set bus seat booking date."
+msgstr "Burada otobüs koltuğu rezervasyon tarihini ayarlayabilirsiniz."
+
+#: admin/settings/WBTM_Date_Settings.php:49
+msgid "Bus Operation Date Type"
+msgstr "Otobüs İşletme Tarihi Türü"
+
+#: admin/settings/WBTM_Date_Settings.php:57
+#: admin/settings/WBTM_Seat_Configuration.php:48
+#: admin/settings/WBTM_Seat_Configuration.php:114
+msgid "Please select ..."
+msgstr "Lütfen seçiniz..."
+
+#: admin/settings/WBTM_Date_Settings.php:58
+msgid "Particular"
+msgstr "Özel"
+
+#: admin/settings/WBTM_Date_Settings.php:59
+msgid "Repeated"
+msgstr "Tekrarlandı"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+#: admin/settings/WBTM_Date_Settings.php:69
+msgid "Particular Dates"
+msgstr "Belirli Tarihler"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Add New Particular date"
+msgstr "Yeni Belirli Tarih Ekle"
+
+#: admin/settings/WBTM_Date_Settings.php:100
+msgid "Repeated Start Date"
+msgstr "Tekrarlanan Başlangıç Tarihi"
+
+#: admin/settings/WBTM_Date_Settings.php:102
+msgid "Select repeated start date."
+msgstr "Tekrarlanan başlangıç tarihini seçin."
+
+#: admin/settings/WBTM_Date_Settings.php:114
+msgid "Repeated End Date"
+msgstr "Tekrarlanan Bitiş Tarihi"
+
+#: admin/settings/WBTM_Date_Settings.php:116
+msgid "Select repeated end date."
+msgstr "Tekrarlanan bitiş tarihini seçin."
+
+#: admin/settings/WBTM_Date_Settings.php:128
+msgid "Repeated after"
+msgstr "Tekrarlandıktan sonra"
+
+#: admin/settings/WBTM_Date_Settings.php:130
+msgid "Set repeated date step count."
+msgstr "Tekrarlanan tarih adım sayısını ayarlayın."
+
+#: admin/settings/WBTM_Date_Settings.php:139
+msgid "Maximum advanced day for booking"
+msgstr "Rezervasyon için maksimum ileri tarih"
+
+#: admin/settings/WBTM_Date_Settings.php:141
+msgid "Set maximum advanced day for booking."
+msgstr "Rezervasyon için maksimum ileri tarih belirleyin."
+
+#: admin/settings/WBTM_Date_Settings.php:150
+msgid "Off Day"
+msgstr "Tatil Günü"
+
+#: admin/settings/WBTM_Date_Settings.php:152
+msgid "Select days for off day."
+msgstr "Tatil günlerini seçin."
+
+#: admin/settings/WBTM_Date_Settings.php:167
+msgid "Off Dates"
+msgstr "Kapalı Tarihler"
+
+#: admin/settings/WBTM_Date_Settings.php:169
+msgid "Select dates for off day."
+msgstr "Tatil günlerinizi seçin."
+
+#: admin/settings/WBTM_Date_Settings.php:188
+msgid "Add New Off date"
+msgstr "Yeni Kapanış Tarihi Ekle"
+
+#: admin/settings/WBTM_Date_Settings.php:201
+msgid "Off Dates in Range"
+msgstr "Aralık Dışı Tarihler"
+
+#: admin/settings/WBTM_Date_Settings.php:203
+msgid "Select date range for off day."
+msgstr "İzin günü için tarih aralığını seçin."
+
+#: admin/settings/WBTM_Date_Settings.php:220
+msgid "Add New Off date range"
+msgstr "Yeni Kapalı tarih aralığı ekle"
+
+#: admin/settings/WBTM_Extra_Service.php:23 inc/WBTM_Translations.php:324
+msgid "Extra Services"
+msgstr "Ekstra Hizmetler"
+
+#: admin/settings/WBTM_Extra_Service.php:24
+msgid "Add Extra Services for the passanger with bus seat reservation"
+msgstr "Otobüs koltuğu rezervasyonu ile yolcuya Ekstra Hizmetler ekleyin"
+
+#: admin/settings/WBTM_Extra_Service.php:30
+msgid "Extra service"
+msgstr "Ekstra hizmet"
+
+#: admin/settings/WBTM_Extra_Service.php:32
+msgid "Here you can add extra services. Also can be on/off extra service"
+msgstr ""
+"Buraya ekstra hizmetler ekleyebilirsiniz. Ayrıca ekstra hizmetleri açıp "
+"kapatabilirsiniz."
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Show/Hide Extra Service"
+msgstr "Ekstra Hizmeti Göster/Gizle"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Service Name"
+msgstr "Hizmet Adı"
+
+#: admin/settings/WBTM_Extra_Service.php:55
+msgid "Service Price"
+msgstr "Hizmet Fiyatı"
+
+#: admin/settings/WBTM_Extra_Service.php:56
+msgid "Available Qty"
+msgstr "Mevcut Miktar"
+
+#: admin/settings/WBTM_Extra_Service.php:57
+msgid "Qty Box Type"
+msgstr "Miktar Kutu Tipi"
+
+#: admin/settings/WBTM_Extra_Service.php:58 admin/WBTM_Global_settings.php:541
+#: inc/WBTM_Translations.php:354
+msgid "Action"
+msgstr "Aksiyon"
+
+#: admin/settings/WBTM_Extra_Service.php:72
+msgid "Add Extra New Service"
+msgstr "Ekstra Yeni Hizmet Ekle"
+
+#: admin/settings/WBTM_Extra_Service.php:109
+msgid "Input Box"
+msgstr "Giriş Kutusu"
+
+#: admin/settings/WBTM_Extra_Service.php:110
+msgid "Dropdown List"
+msgstr "Açılır Liste"
+
+#: admin/settings/WBTM_Pricing_Routing.php:61
+msgid "Price And Routing Settings"
+msgstr "Fiyat ve Yönlendirme Ayarları"
+
+#: admin/settings/WBTM_Pricing_Routing.php:62
+msgid "Here you can configure Price And Routing for a bus."
+msgstr "Burada bir otobüs için Fiyat ve Rotayı yapılandırabilirsiniz."
+
+#: admin/settings/WBTM_Pricing_Routing.php:66
+msgid "GTFS Export Ready!"
+msgstr "GTFS İhracata Hazır!"
+
+#: admin/settings/WBTM_Pricing_Routing.php:67
+msgid ""
+"Add GPS coordinates to your bus stops to enable Google Transit integration. "
+"This allows your routes to appear in Google Maps, Apple Maps, and other "
+"transit apps."
+msgstr ""
+"Google Transit entegrasyonunu etkinleştirmek için otobüs duraklarınıza GPS "
+"koordinatları ekleyin. Bu, rotalarınızın Google Haritalar, Apple Haritalar "
+"ve diğer toplu taşıma uygulamalarında görünmesini sağlar."
+
+#: admin/settings/WBTM_Pricing_Routing.php:69
+msgid "Export GTFS Feed"
+msgstr "GTFS Beslemesini Dışa Aktar"
+
+#: admin/settings/WBTM_Pricing_Routing.php:77
+msgid "Boarding and Dropping Settings"
+msgstr "Biniş ve Bırakma Ayarları"
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Add New Stops"
+msgstr "Yeni Duraklar Ekle"
+
+#: admin/settings/WBTM_Pricing_Routing.php:110
+msgid "Pricing Settings"
+msgstr "Fiyatlandırma Ayarları"
+
+#: admin/settings/WBTM_Pricing_Routing.php:230
+msgid "Add Stop"
+msgstr "Durdurma Ekle"
+
+#: admin/settings/WBTM_Pricing_Routing.php:254
+msgid "Stop : "
+msgstr "Durmak : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:256
+msgid "Select bus stop"
+msgstr "Otobüs durağını seçin"
+
+#: admin/settings/WBTM_Pricing_Routing.php:263
+msgid "Time : "
+msgstr "Zaman : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:269
+msgid "Type : "
+msgstr "Tip : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:272
+msgid "Select place type"
+msgstr "Yer türünü seçin"
+
+#: admin/settings/WBTM_Pricing_Routing.php:273
+msgid "Boarding "
+msgstr "Biniş"
+
+#: admin/settings/WBTM_Pricing_Routing.php:274
+msgid "Dropping "
+msgstr "Bırakma"
+
+#: admin/settings/WBTM_Pricing_Routing.php:275
+msgid "Boarding & Dropping"
+msgstr "Biniş ve Bırakma"
+
+#: admin/settings/WBTM_Pricing_Routing.php:285
+msgid "Next Day Dropping: "
+msgstr "Ertesi Gün Teslimat:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:297
+msgid "GTFS Coordinates (for Google Transit)"
+msgstr "GTFS Koordinatları (Google Transit için)"
+
+#: admin/settings/WBTM_Pricing_Routing.php:301
+msgid ""
+"Add GPS coordinates for this stop to enable Google Maps integration. You can "
+"find coordinates using Google Maps or GPS tools."
+msgstr ""
+"Google Haritalar entegrasyonunu etkinleştirmek için bu durak için GPS "
+"koordinatlarını ekleyin. Koordinatları Google Haritalar veya GPS araçlarını "
+"kullanarak bulabilirsiniz."
+
+#: admin/settings/WBTM_Pricing_Routing.php:307
+msgid "Latitude:"
+msgstr "Enlem:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:323
+msgid "Longitude:"
+msgstr "Boylam:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:339
+msgid "Example: New York City = Lat: 40.7128, Lon: -74.0060"
+msgstr "Örnek: New York Şehri = Enlem: 40.7128, Boylam: -74.0060"
+
+#: admin/settings/WBTM_Pricing_Routing.php:343
+msgid "Get from Map"
+msgstr "Haritadan Al"
+
+#: admin/settings/WBTM_Pricing_Routing.php:346
+msgid "Validate"
+msgstr "Doğrula"
+
+#: admin/settings/WBTM_Pricing_Routing.php:405 inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr "Biniş"
+
+#: admin/settings/WBTM_Pricing_Routing.php:409 inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr "Bırakma"
+
+#: admin/settings/WBTM_Pricing_Routing.php:413
+msgid "Adult Price"
+msgstr "Yetişkin Fiyatı"
+
+#: admin/settings/WBTM_Pricing_Routing.php:416
+msgid "Child Price"
+msgstr "Çocuk Fiyatı"
+
+#: admin/settings/WBTM_Pricing_Routing.php:417
+msgid "Infant Price"
+msgstr "Bebek Fiyatı"
+
+#: admin/settings/WBTM_Pricing_Routing.php:458
+msgid "Please Create Bus route ."
+msgstr "Lütfen Otobüs güzergahı oluşturun."
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Seat Configuration"
+msgstr "Koltuk Yapılandırması"
+
+#: admin/settings/WBTM_Seat_Configuration.php:27
+msgid "Bus seat configuration. Plan your bus seat."
+msgstr "Otobüs koltuk konfigürasyonu. Otobüs koltuğunuzu planlayın."
+
+#: admin/settings/WBTM_Seat_Configuration.php:34
+#: admin/settings/WBTM_Translation_Settings.php:53
+msgid "Seat Information"
+msgstr "Koltuk Bilgileri"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Here you can plan seat of the bus."
+msgstr "Burada otobüs koltuğunuzu planlayabilirsiniz."
+
+#: admin/settings/WBTM_Seat_Configuration.php:42 inc/WBTM_Translations.php:240
+msgid "Seat Type"
+msgstr "Koltuk Tipi"
+
+#: admin/settings/WBTM_Seat_Configuration.php:49
+msgid "Seat Plan"
+msgstr "Koltuk Planı"
+
+#: admin/settings/WBTM_Seat_Configuration.php:50
+msgid "Without Seat Plan"
+msgstr "Koltuk Planı Olmadan"
+
+#: admin/settings/WBTM_Seat_Configuration.php:58
+msgid "Total Seat"
+msgstr "Toplam Koltuk"
+
+#: admin/settings/WBTM_Seat_Configuration.php:91
+msgid "Lower Deck"
+msgstr "Alt güverte"
+
+#: admin/settings/WBTM_Seat_Configuration.php:92
+msgid "Lower deck seat plan"
+msgstr "Alt güverte koltuk planı"
+
+#: admin/settings/WBTM_Seat_Configuration.php:101
+msgid "Show Upper Deck"
+msgstr "Üst Güverteyi Göster"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103
+msgid "Turn On or Off upper deck seat plan"
+msgstr "Üst güverte koltuk planını açın veya kapatın"
+
+#: admin/settings/WBTM_Seat_Configuration.php:111
+msgid "Driver Position"
+msgstr "Sürücü Pozisyonu"
+
+#: admin/settings/WBTM_Seat_Configuration.php:115
+msgid "Left"
+msgstr "Sol"
+
+#: admin/settings/WBTM_Seat_Configuration.php:116
+msgid "Right"
+msgstr "Sağ"
+
+#: admin/settings/WBTM_Seat_Configuration.php:123
+msgid "Seat Rows"
+msgstr "Koltuk Sıraları"
+
+#: admin/settings/WBTM_Seat_Configuration.php:133
+msgid "Seat Columns"
+msgstr "Koltuk Sütunları"
+
+#: admin/settings/WBTM_Seat_Configuration.php:139
+msgid "Generate Bus Seat"
+msgstr "Otobüs Koltuğu Oluştur"
+
+#: admin/settings/WBTM_Seat_Configuration.php:143
+#: admin/settings/WBTM_Seat_Configuration.php:210
+msgid "Bus Front"
+msgstr "Otobüs Önü"
+
+#: admin/settings/WBTM_Seat_Configuration.php:153
+msgid "Enable Rotation"
+msgstr "Döndürmeyi Etkinleştir"
+
+#: admin/settings/WBTM_Seat_Configuration.php:155
+msgid "Enable seat rotation for individual seats"
+msgstr "Bireysel koltuklar için koltuk dönüşünü etkinleştirin"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176 inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr "Üst Güverte"
+
+#: admin/settings/WBTM_Seat_Configuration.php:177
+msgid "You can make Upper Deck seat plan"
+msgstr "Üst Güverte koltuk planını yapabilirsiniz"
+
+#: admin/settings/WBTM_Seat_Configuration.php:184
+msgid "Seat Rows : "
+msgstr "Koltuk Sıraları :"
+
+#: admin/settings/WBTM_Seat_Configuration.php:193
+msgid "Seat Columns : "
+msgstr "Koltuk Kolonları :"
+
+#: admin/settings/WBTM_Seat_Configuration.php:201
+msgid "Price Increase : "
+msgstr "Fiyat Artışı :"
+
+#: admin/settings/WBTM_Seat_Configuration.php:206
+msgid "Create seat Plan"
+msgstr "Koltuk Planı Oluştur"
+
+#: admin/settings/WBTM_Seat_Configuration.php:240
+msgid "Add New Row"
+msgstr "Yeni Satır Ekle"
+
+#: admin/settings/WBTM_Seat_Configuration.php:266
+msgid "Blank"
+msgstr "Boşluk"
+
+#: admin/settings/WBTM_Seat_Configuration.php:275
+msgid "Rotate Seat"
+msgstr "Koltuğu Döndür"
+
+#: admin/settings/WBTM_Settings_General.php:19
+msgid "General Settings"
+msgstr "Genel Ayarlar"
+
+#: admin/settings/WBTM_Settings_General.php:20
+msgid "Bus General Settings"
+msgstr "Otobüs Genel Ayarları"
+
+#: admin/settings/WBTM_Settings_General.php:25
+#: admin/settings/WBTM_Translation_Settings.php:48
+msgid "Bus Information"
+msgstr "Otobüs Bilgileri"
+
+#: admin/settings/WBTM_Settings_General.php:27
+msgid "Here you can set bus number, category and seat reservation on/off"
+msgstr ""
+"Burada otobüs numarasını, kategoriyi ve koltuk rezervasyonunu açıp "
+"kapatabilirsiniz"
+
+#: admin/settings/WBTM_Settings_General.php:36
+msgid "Bus no"
+msgstr "Otobüs no"
+
+#: admin/settings/WBTM_Settings_General.php:63
+msgid "Reservation on/off"
+msgstr "Rezervasyon açma/kapatma"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:19
+msgid "Pickup And Drop-Off Point Settings"
+msgstr "Alım ve Bırakma Noktası Ayarları"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:20
+msgid "Here you can set bus pick up and drop off point settings."
+msgstr "Burada otobüslerin kalkış ve iniş noktalarını ayarlayabilirsiniz."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:41
+msgid "Pick up settings"
+msgstr "Alma ayarları"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:43
+msgid "Here you can set pickup location"
+msgstr "Burada teslim alma yerini ayarlayabilirsiniz"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:50
+msgid "On/Off Pickup Point"
+msgstr "Açma/Kapatma Alma Noktası"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "Boarding point Required?"
+msgstr "Biniş noktası gerekli mi?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:66
+msgid "Turn On or Off Boarding point Required?"
+msgstr "Biniş Noktasını Açmak veya Kapatmak Gerekli mi?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:75
+#: inc/WBTM_Translations.php:607
+msgid "Boarding Point"
+msgstr "Biniş Noktası"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:76
+msgid "Pickup Info"
+msgstr "Teslim Alma Bilgileri"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:91
+#: admin/settings/WBTM_Settings_Pickup_Point.php:247
+msgid "Add More Point"
+msgstr "Daha Fazla Nokta Ekle"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:102
+msgid ""
+"You have no Pickup Point . Please add Pickup Point and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Teslim Alma Noktanız yok. Lütfen Teslim Alma Noktasını ekleyin ve kaydedin, "
+"ardından teslim alma noktasını düzenleyebilirsiniz."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:105
+msgid ""
+"You have no Bus route . Please add Price and Route and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Otobüs güzergahınız bulunmamaktadır. Lütfen Fiyat ve Güzergah bilgilerini "
+"ekleyip kaydedin, ardından kalkış noktasını düzenleyebilirsiniz."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:143
+msgid "Add Pickup Point"
+msgstr "Teslim Alma Noktası Ekle"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:197
+msgid "Drop-off settings"
+msgstr "Bırakma ayarları"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:199
+msgid "Here you can set drop-off location."
+msgstr "Burada bırakma yerini ayarlayabilirsiniz."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:205
+msgid "Drop-Off Point Settings"
+msgstr "Bırakma Noktası Ayarları"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:221
+msgid "Dropping point Required?"
+msgstr "Bırakma noktası gerekli mi?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:222
+msgid "Turn On or Off Dropping point Required?"
+msgstr "Açma veya Kapatma Bırakma Noktası Gerekli mi?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:231
+#: inc/WBTM_Translations.php:613
+msgid "Dropping Point"
+msgstr "Bırakma Noktası"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:232
+msgid "Drop-Off Info"
+msgstr "Bırakma Bilgileri"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:258
+msgid ""
+"You have no Drop-Off Point. Please add Drop-Off Point from left sidebar menu."
+msgstr ""
+"Bırakma Noktanız yok. Lütfen sol kenar çubuğundan Bırakma Noktası ekleyin."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:261
+msgid ""
+"You have no Bus route. Please add Price and Route and save ,then you can "
+"edit Drop-Off point."
+msgstr ""
+"Otobüs güzergahınız bulunmuyor. Lütfen Fiyat ve Güzergah bilgilerini ekleyip "
+"kaydedin, ardından Bırakma Noktasını düzenleyebilirsiniz."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:297
+msgid "Add Drop-Off Point"
+msgstr "Bırakma Noktası Ekle"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "Vergi Yapılandırması"
+
+#: admin/settings/WBTM_Tax_Settings.php:19
+msgid "Bus tax Configuration settings."
+msgstr "Otobüs vergisi Yapılandırma ayarları."
+
+#: admin/settings/WBTM_Tax_Settings.php:28
+msgid "Tax Settings Information"
+msgstr "Vergi Ayarları Bilgileri"
+
+#: admin/settings/WBTM_Tax_Settings.php:30
+msgid "Here you can configure tax settings."
+msgstr "Burada vergi ayarlarını yapılandırabilirsiniz."
+
+#: admin/settings/WBTM_Tax_Settings.php:38
+msgid "Tax status"
+msgstr "Vergi durumu"
+
+#: admin/settings/WBTM_Tax_Settings.php:41
+msgid "Select tax status type."
+msgstr "Vergi durum türünü seçin."
+
+#: admin/settings/WBTM_Tax_Settings.php:48
+msgid "Taxable"
+msgstr "Vergilendirilebilir"
+
+#: admin/settings/WBTM_Tax_Settings.php:51
+msgid "Shipping only"
+msgstr "Sadece kargo"
+
+#: admin/settings/WBTM_Tax_Settings.php:54
+msgid "None"
+msgstr "Hiçbiri"
+
+#: admin/settings/WBTM_Tax_Settings.php:63
+msgid "Tax class"
+msgstr "Vergi sınıfı"
+
+#: admin/settings/WBTM_Tax_Settings.php:71
+msgid "Standard"
+msgstr "Standart"
+
+#: admin/settings/WBTM_Tax_Settings.php:86
+msgid "Tax not active. Please add Tax settings from woocommerce."
+msgstr "Vergi aktif değil. Lütfen WooCommerce'den Vergi ayarlarını ekleyin."
+
+#: admin/settings/WBTM_Translation_Settings.php:17
+msgid "Translation Settings"
+msgstr "Çeviri Ayarları"
+
+#: admin/settings/WBTM_Translation_Settings.php:18
+msgid "Translations"
+msgstr "Çeviriler"
+
+#: admin/settings/WBTM_Translation_Settings.php:33
+msgid "General Labels"
+msgstr "Genel Etiketler"
+
+#: admin/settings/WBTM_Translation_Settings.php:38
+msgid "Booking Labels"
+msgstr "Rezervasyon Etiketleri"
+
+#: admin/settings/WBTM_Translation_Settings.php:43
+#: inc/WBTM_Translations.php:318
+msgid "Passenger Information"
+msgstr "Yolcu Bilgileri"
+
+#: admin/settings/WBTM_Translation_Settings.php:58
+msgid "Button Labels"
+msgstr "Düğme Etiketleri"
+
+#: admin/settings/WBTM_Translation_Settings.php:63
+msgid "Error Messages"
+msgstr "Hata Mesajları"
+
+#: admin/settings/WBTM_Translation_Settings.php:68
+msgid "Ticket Status"
+msgstr "Bilet Durumu"
+
+#: admin/settings/WBTM_Translation_Settings.php:73
+msgid "Passenger Form"
+msgstr "Yolcu Formu"
+
+#: admin/settings/WBTM_Translation_Settings.php:78
+msgid "Journey Information"
+msgstr "Yolculuk Bilgileri"
+
+#: admin/settings/WBTM_Translation_Settings.php:83
+msgid "Price Information"
+msgstr "Fiyat Bilgileri"
+
+#: admin/settings/WBTM_Translation_Settings.php:193
+msgid "Bus Ticket Booking Translations"
+msgstr "Otobüs Bileti Rezervasyon Çevirileri"
+
+#: admin/settings/WBTM_Translation_Settings.php:228
+#, php-format
+msgid "Default: %s"
+msgstr "Varsayılan: %s"
+
+#: admin/settings/WBTM_Translation_Settings.php:240
+msgid "Save Changes"
+msgstr "Değişiklikleri Kaydet"
+
+#: admin/WBTM_Analytics_Dashboard.php:16
+msgid "Analytics Dashboard"
+msgstr "Analitik Pano"
+
+#: admin/WBTM_Analytics_Dashboard.php:17
+msgid "Analytics"
+msgstr "Analitik"
+
+#: admin/WBTM_Analytics_Dashboard.php:231
+msgid "Bus Booking Analytics Dashboard"
+msgstr "Otobüs Rezervasyon Analitiği Panosu"
+
+#: admin/WBTM_Analytics_Dashboard.php:241
+msgid "Total Bookings"
+msgstr "Toplam Rezervasyonlar"
+
+#: admin/WBTM_Analytics_Dashboard.php:251
+msgid "Total Revenue"
+msgstr "Toplam Gelir"
+
+#: admin/WBTM_Analytics_Dashboard.php:261
+msgid "Total Seats Booked"
+msgstr "Toplam Rezervasyonlu Koltuk Sayısı"
+
+#: admin/WBTM_Analytics_Dashboard.php:269
+msgid "Popular Routes"
+msgstr "Popüler Rotalar"
+
+#: admin/WBTM_Analytics_Dashboard.php:274
+msgid "Monthly Revenue"
+msgstr "Aylık Gelir"
+
+#: admin/WBTM_Analytics_Dashboard.php:281
+msgid "Advanced Analytics"
+msgstr "Gelişmiş Analitik"
+
+#: admin/WBTM_Analytics_Dashboard.php:286
+msgid "Peak Booking Hours"
+msgstr "Yoğun Rezervasyon Saatleri"
+
+#: admin/WBTM_Analytics_Dashboard.php:292
+msgid "Weekly Booking Pattern"
+msgstr "Haftalık Rezervasyon Deseni"
+
+#: admin/WBTM_Analytics_Dashboard.php:298
+msgid "Ticket Type Distribution"
+msgstr "Bilet Türü Dağıtımı"
+
+#: admin/WBTM_Analytics_Dashboard.php:304
+msgid "Bus Type Performance"
+msgstr "Otobüs Tipi Performansı"
+
+#: admin/WBTM_Analytics_Dashboard.php:312
+msgid "Return Customer Rate"
+msgstr "Geri Dönen Müşteri Oranı"
+
+#: admin/WBTM_Analytics_Dashboard.php:324
+msgid "Average Occupancy Rate"
+msgstr "Ortalama Doluluk Oranı"
+
+#: admin/WBTM_Bus_Import.php:20 admin/WBTM_Bus_Import.php:21
+#: admin/WBTM_Bus_Import.php:46 admin/WBTM_Bus_Import.php:116
+msgid "Import Buses"
+msgstr "İthalat Otobüsleri"
+
+#: admin/WBTM_Bus_Import.php:53
+#, php-format
+msgid "%s bus imported successfully."
+msgid_plural "%s buses imported successfully."
+msgstr[0] "%s veri yolu başarıyla içe aktarıldı."
+msgstr[1] "%s otobüs başarıyla içe aktarıldı."
+
+#: admin/WBTM_Bus_Import.php:60
+#, php-format
+msgid "%s bus failed to import."
+msgid_plural "%s buses failed to import."
+msgstr[0] "%s veri yolu içe aktarılamadı."
+msgstr[1] "%s otobüsleri içe aktarılamadı."
+
+#: admin/WBTM_Bus_Import.php:71
+msgid "Import Buses from CSV"
+msgstr "CSV'den Otobüsleri İçe Aktar"
+
+#: admin/WBTM_Bus_Import.php:72
+msgid ""
+"Upload a CSV file to import multiple buses at once. This will allow you to "
+"create all your buses in a single operation instead of adding them one by "
+"one."
+msgstr ""
+"Birden fazla otobüsü aynı anda içe aktarmak için bir CSV dosyası yükleyin. "
+"Bu, tüm otobüslerinizi tek tek eklemek yerine tek bir işlemde oluşturmanıza "
+"olanak tanır."
+
+#: admin/WBTM_Bus_Import.php:80
+msgid "Choose CSV File"
+msgstr "CSV Dosyasını Seçin"
+
+#: admin/WBTM_Bus_Import.php:84
+msgid "Select a CSV file with your bus data."
+msgstr "Otobüs verilerinizin bulunduğu bir CSV dosyası seçin."
+
+#: admin/WBTM_Bus_Import.php:89
+msgid "CSV Format"
+msgstr "CSV Format"
+
+#: admin/WBTM_Bus_Import.php:92
+msgid "Your CSV file should include the following columns:"
+msgstr "CSV dosyanız aşağıdaki sütunları içermelidir:"
+
+#: admin/WBTM_Bus_Import.php:94
+msgid "Bus name (required)"
+msgstr "Otobüs adı (gerekli)"
+
+#: admin/WBTM_Bus_Import.php:95
+msgid "Bus number (required)"
+msgstr "Otobüs numarası (gerekli)"
+
+#: admin/WBTM_Bus_Import.php:96
+msgid "Bus category (AC/Non AC)"
+msgstr "Otobüs kategorisi (Klimalı/Klimasız)"
+
+#: admin/WBTM_Bus_Import.php:97
+msgid "Seat type configuration (wbtm_seat_plan)"
+msgstr "Koltuk tipi yapılandırması (wbtm_seat_plan)"
+
+#: admin/WBTM_Bus_Import.php:98
+msgid "Driver seat position (driver_left/driver_right)"
+msgstr "Sürücü koltuğu pozisyonu (sürücü_sol/sürücü_sağ)"
+
+#: admin/WBTM_Bus_Import.php:99
+msgid "Number of seat rows"
+msgstr "Koltuk sırası sayısı"
+
+#: admin/WBTM_Bus_Import.php:100
+msgid "Number of seat columns"
+msgstr "Koltuk kolonu sayısı"
+
+#: admin/WBTM_Bus_Import.php:101
+msgid "Total number of seats"
+msgstr "Toplam koltuk sayısı"
+
+#: admin/WBTM_Bus_Import.php:102
+msgid "Has upper deck (yes/no)"
+msgstr "Üst güvertesi var (evet/hayır)"
+
+#: admin/WBTM_Bus_Import.php:103
+msgid "Starting point of route (comma separated for multiple routes)"
+msgstr "Rotanın başlangıç noktası (birden fazla rota için virgülle ayrılmış)"
+
+#: admin/WBTM_Bus_Import.php:104
+msgid "End point of route (comma separated for multiple routes)"
+msgstr "Rotanın bitiş noktası (birden fazla rota için virgülle ayrılmış)"
+
+#: admin/WBTM_Bus_Import.php:105
+msgid "Boarding points (comma separated)"
+msgstr "Biniş noktaları (virgülle ayrılmış)"
+
+#: admin/WBTM_Bus_Import.php:106
+msgid "Dropping points (comma separated)"
+msgstr "Noktaları bırakma (virgülle ayrılmış)"
+
+#: admin/WBTM_Bus_Import.php:107
+msgid "Start date (YYYY-MM-DD)"
+msgstr "Başlangıç tarihi (YYYY-AA-GG)"
+
+#: admin/WBTM_Bus_Import.php:108
+msgid "End date (YYYY-MM-DD)"
+msgstr "Bitiş tarihi (YYYY-AA-GG)"
+
+#: admin/WBTM_Bus_Import.php:109
+msgid "Price data in format: from|to|price,from|to|price"
+msgstr ""
+"Fiyat verileri şu formattadır: başlangıç|bitiş|fiyat, başlangıç|bitiş|fiyat"
+
+#: admin/WBTM_Bus_Import.php:117
+msgid "Download Sample CSV"
+msgstr "Örnek CSV'yi İndirin"
+
+#: admin/WBTM_Bus_Import.php:123
+msgid "Import Instructions"
+msgstr "İthalat Talimatları"
+
+#: admin/WBTM_Bus_Import.php:125
+msgid "Download the sample CSV file to see the required format."
+msgstr "Gerekli formatı görmek için örnek CSV dosyasını indirin."
+
+#: admin/WBTM_Bus_Import.php:126
+msgid "Fill in your bus data following the same format."
+msgstr "Otobüs bilgilerinizi aynı formatta doldurun."
+
+#: admin/WBTM_Bus_Import.php:127
+msgid "Upload your CSV file using the form above."
+msgstr "Yukarıdaki formu kullanarak CSV dosyanızı yükleyin."
+
+#: admin/WBTM_Bus_Import.php:128
+msgid "Review the import results and check your buses."
+msgstr "İthalat sonuçlarını inceleyin ve otobüslerinizi kontrol edin."
+
+#: admin/WBTM_Bus_Import.php:132
+msgid "Important Notes:"
+msgstr "Önemli Notlar:"
+
+#: admin/WBTM_Bus_Import.php:134
+msgid "Make sure your CSV file is properly formatted with the correct columns."
+msgstr ""
+"CSV dosyanızın doğru sütunlarla düzgün biçimde biçimlendirildiğinden emin "
+"olun."
+
+#: admin/WBTM_Bus_Import.php:135
+msgid "Bus names and numbers must be unique."
+msgstr "Otobüs adları ve numaraları benzersiz olmalıdır."
+
+#: admin/WBTM_Bus_Import.php:136
+msgid ""
+"For complex seat arrangements, you may need to edit the buses after import."
+msgstr ""
+"Karmaşık koltuk düzenlemeleri için, içe aktarma işleminden sonra otobüsleri "
+"düzenlemeniz gerekebilir."
+
+#: admin/WBTM_Bus_Import.php:137
+msgid "The import process may take some time depending on the number of buses."
+msgstr "Otobüs sayısına bağlı olarak ithalat süreci biraz zaman alabilir."
+
+#: admin/WBTM_Bus_Import.php:163
+msgid "Security check failed. Please try again."
+msgstr "Güvenlik kontrolü başarısız oldu. Lütfen tekrar deneyin."
+
+#: admin/WBTM_Bus_Import.php:168
+msgid "You do not have sufficient permissions to import data."
+msgstr "Verileri içe aktarmak için yeterli izniniz yok."
+
+#: admin/WBTM_Bus_Import.php:173
+msgid "No file uploaded or upload error."
+msgstr "Dosya yüklenmedi veya yükleme hatası."
+
+#: admin/WBTM_Bus_Import.php:180
+msgid "Invalid file type. Please upload a CSV file."
+msgstr "Geçersiz dosya türü. Lütfen bir CSV dosyası yükleyin."
+
+#: admin/WBTM_Bus_Import.php:209
+msgid "Could not open the file."
+msgstr "Dosya açılamadı."
+
+#: admin/WBTM_Bus_Import.php:217
+msgid "Could not read CSV headers."
+msgstr "CSV başlıkları okunamadı."
+
+#: admin/WBTM_Bus_Import.php:230
+#, php-format
+msgid "Required column \"%s\" is missing."
+msgstr "Gerekli \"%s\" sütunu eksik."
+
+#: admin/WBTM_CPT.php:30 admin/WBTM_Taxonomy.php:20
+msgid "All"
+msgstr "Tüm"
+
+#: admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32 admin/WBTM_Taxonomy.php:24
+#: admin/WBTM_Taxonomy.php:78 admin/WBTM_Taxonomy.php:114
+msgid "Add New"
+msgstr "Yeni Ekle"
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "Yeni"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "Düzenlemek"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "Güncelleme"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "Görüş"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr "Aramak"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "Bulunamadı"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "Çöp Kutusunda bulunamadı"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "Özellik Görseli"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "Ayarlamak"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "öne çıkan görsel"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "Kaldırmak"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "Olarak kullan"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "İçine yerleştirin"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "Buraya yüklendi"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr "liste"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr "liste gezintisi"
+
+#: admin/WBTM_CPT.php:49 inc/WBTM_Translations.php:417
+msgid "Filter"
+msgstr "Filtre"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "liste"
+
+#: admin/WBTM_CPT.php:77
+msgid "Bus Attendee"
+msgstr "Otobüs Katılımcısı"
+
+#: admin/WBTM_CPT.php:101
+msgid "Coach no"
+msgstr "Koç hayır"
+
+#: admin/WBTM_CPT.php:102 admin/WBTM_Global_settings.php:536
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21
+msgid "Type"
+msgstr "Tip"
+
+#: admin/WBTM_CPT.php:104
+msgid "Added by"
+msgstr "Tarafından eklendi"
+
+#: admin/WBTM_CPT.php:110
+msgid "Seal Plan"
+msgstr "Mühür Planı"
+
+#: admin/WBTM_CPT.php:110
+msgid "Without Seal Plan"
+msgstr "Mühür Planı Olmadan"
+
+#: admin/WBTM_Global_settings.php:26
+msgid " Settings"
+msgstr "Ayarlar"
+
+#: admin/WBTM_Global_settings.php:70
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: admin/WBTM_Global_settings.php:74
+msgid "Global Settings"
+msgstr "Küresel Ayarlar"
+
+#: admin/WBTM_Global_settings.php:85
+msgid "Slider Settings"
+msgstr "Kaydırıcı Ayarları"
+
+#: admin/WBTM_Global_settings.php:89
+msgid "Style Settings"
+msgstr "Stil Ayarları"
+
+#: admin/WBTM_Global_settings.php:93 admin/WBTM_Global_settings.php:504
+msgid "Custom CSS"
+msgstr "Özel CSS"
+
+#: admin/WBTM_Global_settings.php:97 admin/WBTM_Global_settings.php:517
+msgid "Mage-People License"
+msgstr "Büyücü-İnsanlar Lisansı"
+
+#: admin/WBTM_Global_settings.php:111
+msgid "Seat Booked Status"
+msgstr "Koltuk Rezervasyon Durumu"
+
+#: admin/WBTM_Global_settings.php:112
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr ""
+"Lütfen Koltuğun Ne Zaman ve Hangi Sipariş Durumunda Rezerve "
+"Edileceğini/İndirimli Olacağını Seçin."
+
+#: admin/WBTM_Global_settings.php:119
+msgid "On Hold"
+msgstr "Beklemede"
+
+#: admin/WBTM_Global_settings.php:120
+msgid "Pending"
+msgstr "Askıda olması"
+
+#: admin/WBTM_Global_settings.php:121
+msgid "Processing"
+msgstr "İşleme"
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Completed"
+msgstr "Tamamlanmış"
+
+#: admin/WBTM_Global_settings.php:127 admin/WBTM_Global_settings.php:131
+msgid "Label"
+msgstr "Etiket"
+
+#: admin/WBTM_Global_settings.php:128
+msgid ""
+"If you like to change the label in the dashboard menu, you can change it "
+"here."
+msgstr ""
+"Eğer gösterge panelindeki etiketi değiştirmek isterseniz buradan "
+"değiştirebilirsiniz."
+
+#: admin/WBTM_Global_settings.php:135 admin/WBTM_Global_settings.php:139
+msgid "Slug"
+msgstr "Sümüklü böcek"
+
+#: admin/WBTM_Global_settings.php:136
+msgid ""
+"Please enter the slug name you want. Remember, after changing this slug; you "
+"need to flush permalink; go to"
+msgstr ""
+"Lütfen istediğiniz slug adını girin. Unutmayın, bu slug'ı değiştirdikten "
+"sonra; kalıcı bağlantıyı temizlemeniz gerekir; şuraya gidin:"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "Settings-> Permalinks"
+msgstr "Ayarlar-> Kalıcı Bağlantılar"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "hit the Save Settings button."
+msgstr "Ayarları Kaydet butonuna basın."
+
+#: admin/WBTM_Global_settings.php:143
+#: mp_global/class/WBTM_Select_Icon_image.php:33
+#: mp_global/class/WBTM_Select_Icon_image.php:165
+msgid "Icon"
+msgstr "Simge"
+
+#: admin/WBTM_Global_settings.php:144
+msgid ""
+"If you want to change the  icon in the dashboard menu, you can change it "
+"from here, and the Dashboard icon only supports the Dashicons, So please go "
+"to "
+msgstr ""
+"Gösterge paneli menüsündeki simgeyi değiştirmek istiyorsanız, buradan "
+"değiştirebilirsiniz ve Gösterge Paneli simgesi yalnızca Dashicons'ı "
+"destekler, bu nedenle lütfen şuraya gidin:"
+
+#: admin/WBTM_Global_settings.php:144
+msgid "Dashicons Library."
+msgstr "Dashicons Kütüphanesi."
+
+#: admin/WBTM_Global_settings.php:144
+msgid "and copy your icon code and paste it here."
+msgstr "ve ikon kodunuzu kopyalayıp buraya yapıştırın."
+
+#: admin/WBTM_Global_settings.php:150
+msgid "Show return Date Search"
+msgstr "Dönüş Tarihi Aramasını Göster"
+
+#: admin/WBTM_Global_settings.php:151
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"Aramada dönüş alanının gösterilmesini istemiyorsanız devre dışı bırakın. "
+"Varsayılan olarak Etkinleştir"
+
+#: admin/WBTM_Global_settings.php:155
+msgid "Disable"
+msgstr "Devre dışı bırakmak"
+
+#: admin/WBTM_Global_settings.php:156
+msgid "Enable"
+msgstr "Olanak vermek"
+
+#: admin/WBTM_Global_settings.php:161
+msgid "Ticket sale off after date"
+msgstr "Bilet satışları tarihten sonra sona eriyor"
+
+#: admin/WBTM_Global_settings.php:162
+msgid ""
+"Please select Seat sale off after date . if you dont want to off sale then "
+"it will be blank"
+msgstr ""
+"Lütfen Koltuk satışından sonra indirim seçeneğini seçin. İndirimden "
+"yararlanmak istemiyorsanız bu alan boş olacaktır."
+
+#: admin/WBTM_Global_settings.php:170
+msgid "Maximum advanced day Sale"
+msgstr "Maksimum ileri günlük satış"
+
+#: admin/WBTM_Global_settings.php:171
+msgid ""
+"Please select Maximum advanced day Ticket Sale . if you dont want to off "
+"sale then it will be blank"
+msgstr ""
+"Lütfen Maksimum ileri tarihli Bilet Satışını seçin. Satıştan çekilmek "
+"istemiyorsanız boş olacaktır."
+
+#: admin/WBTM_Global_settings.php:178
+msgid "Buffer Time"
+msgstr "Tampon Zamanı"
+
+#: admin/WBTM_Global_settings.php:179
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr ""
+"Lütfen buraya araç tampon süresini dakika olarak girin. Varsayılan değer "
+"0'dır."
+
+#: admin/WBTM_Global_settings.php:182
+msgid "Ex:50"
+msgstr "Örn:50"
+
+#: admin/WBTM_Global_settings.php:186
+msgid "Show/hide view seats button"
+msgstr "Koltuk görünümünü göster/gizle düğmesi"
+
+#: admin/WBTM_Global_settings.php:187
+msgid ""
+"If you want to hide view seats button from search list, if registration off."
+msgstr ""
+"Kayıt kapalıysa, arama listesinden koltukları görüntüle butonunu gizlemek "
+"istiyorsanız."
+
+#: admin/WBTM_Global_settings.php:191
+msgid "Show"
+msgstr "Göstermek"
+
+#: admin/WBTM_Global_settings.php:192
+msgid "Hide"
+msgstr "Saklamak"
+
+#: admin/WBTM_Global_settings.php:197
+msgid "Active Redirect page"
+msgstr "Aktif Yönlendirme sayfası"
+
+#: admin/WBTM_Global_settings.php:198
+msgid "If you want to Active Redirect page,please select on"
+msgstr "Aktif Yönlendirme sayfasını istiyorsanız lütfen seçin"
+
+#: admin/WBTM_Global_settings.php:202 admin/WBTM_Global_settings.php:220
+#: admin/WBTM_Global_settings.php:231 admin/WBTM_Global_settings.php:325
+#: admin/WBTM_Global_settings.php:347 admin/WBTM_Global_settings.php:371
+#: admin/WBTM_Global_settings.php:382
+msgid "ON"
+msgstr "AÇIK"
+
+#: admin/WBTM_Global_settings.php:203 admin/WBTM_Global_settings.php:221
+#: admin/WBTM_Global_settings.php:232
+msgid "OFF"
+msgstr "KAPALI"
+
+#: admin/WBTM_Global_settings.php:208
+msgid "Search result page"
+msgstr "Arama sonucu sayfası"
+
+#: admin/WBTM_Global_settings.php:209
+msgid "If you want to redirect Search result page , please select below page"
+msgstr ""
+"Arama sonuç sayfasını yönlendirmek istiyorsanız lütfen aşağıdaki sayfayı "
+"seçin"
+
+#: admin/WBTM_Global_settings.php:215
+msgid "Turn order status processing to completed automatically"
+msgstr "Sipariş durumu işlemeyi otomatik olarak tamamlandı olarak ayarlayın"
+
+#: admin/WBTM_Global_settings.php:216
+msgid ""
+"If you want to make woocommerce processing status to completed automatically "
+"select ON"
+msgstr ""
+"WooCommerce işlem durumunun otomatik olarak tamamlandı olarak ayarlanmasını "
+"istiyorsanız AÇIK seçeneğini belirleyin"
+
+#: admin/WBTM_Global_settings.php:226
+msgid "Redirect to checkout after booking"
+msgstr "Rezervasyondan sonra ödeme sayfasına yönlendir"
+
+#: admin/WBTM_Global_settings.php:227
+msgid ""
+"If you want to redirect users directly to checkout after booking instead of "
+"showing the cart notice, select ON"
+msgstr ""
+"Kullanıcıları rezervasyondan sonra sepet bildirimini göstermek yerine "
+"doğrudan ödeme sayfasına yönlendirmek istiyorsanız AÇIK seçeneğini belirleyin"
+
+#: admin/WBTM_Global_settings.php:239
+msgid "Disable Block/Gutenberg Editor"
+msgstr "Blok/Gutenberg Düzenleyicisini Devre Dışı Bırak"
+
+#: admin/WBTM_Global_settings.php:240
+msgid ""
+"If you want to disable WordPress's new Block/Gutenberg editor, please select "
+"Yes."
+msgstr ""
+"WordPress'in yeni Block/Gutenberg düzenleyicisini devre dışı bırakmak "
+"istiyorsanız lütfen Evet'i seçin."
+
+#: admin/WBTM_Global_settings.php:244 admin/WBTM_Status.php:22
+msgid "Yes"
+msgstr "Evet"
+
+#: admin/WBTM_Global_settings.php:245 admin/WBTM_Status.php:22
+msgid "No"
+msgstr "HAYIR"
+
+#: admin/WBTM_Global_settings.php:250
+msgid "Date Picker Format"
+msgstr "Tarih Seçici Biçimi"
+
+#: admin/WBTM_Global_settings.php:251
+msgid ""
+"If you want to change Date Picker Format, please select format. Default  is "
+"D d M , yy."
+msgstr ""
+"Tarih Seçici Biçimini değiştirmek istiyorsanız lütfen biçimi seçin. "
+"Varsayılan G g A , yy'dir."
+
+#: admin/WBTM_Global_settings.php:271
+msgid "Short Date  Format"
+msgstr "Kısa Tarih Biçimi"
+
+#: admin/WBTM_Global_settings.php:272
+msgid ""
+"If you want to change Short Date  Format, please select format. Default  is "
+"M , Y."
+msgstr ""
+"Kısa Tarih Formatını değiştirmek istiyorsanız lütfen formatı seçin. "
+"Varsayılan M , Y'dir."
+
+#: admin/WBTM_Global_settings.php:298
+msgid "Slider Type"
+msgstr "Kaydırıcı Türü"
+
+#: admin/WBTM_Global_settings.php:299
+msgid "Please Select Slider Type Default Slider"
+msgstr "Lütfen Kaydırıcı Türünü Seçin Varsayılan Kaydırıcı"
+
+#: admin/WBTM_Global_settings.php:303
+msgid "Slider"
+msgstr "Kaydırıcı"
+
+#: admin/WBTM_Global_settings.php:304
+msgid "Post Thumbnail"
+msgstr "Gönderi Küçük Resmi"
+
+#: admin/WBTM_Global_settings.php:309
+msgid "Slider Style"
+msgstr "Kaydırıcı Stili"
+
+#: admin/WBTM_Global_settings.php:310
+msgid "Please Select Slider Style Default Style One"
+msgstr "Lütfen Kaydırıcı Stilini Seçin Varsayılan Stil Bir"
+
+#: admin/WBTM_Global_settings.php:314
+msgid "Style One"
+msgstr "Stil Bir"
+
+#: admin/WBTM_Global_settings.php:315
+msgid "Style Two"
+msgstr "Stil İki"
+
+#: admin/WBTM_Global_settings.php:320
+msgid "Slider Indicator Visible?"
+msgstr "Slider Göstergesi Görünüyor mu?"
+
+#: admin/WBTM_Global_settings.php:321
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr ""
+"Lütfen Kaydırıcı Göstergesinin Görünür mü Yoksa Görünmez mi Olduğunu Seçin? "
+"Varsayılan AÇIK"
+
+#: admin/WBTM_Global_settings.php:326 admin/WBTM_Global_settings.php:348
+#: admin/WBTM_Global_settings.php:372 admin/WBTM_Global_settings.php:383
+msgid "Off"
+msgstr "Kapalı"
+
+#: admin/WBTM_Global_settings.php:331
+msgid "Slider Indicator Type"
+msgstr "Kaydırıcı Gösterge Türü"
+
+#: admin/WBTM_Global_settings.php:332
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "Lütfen Kaydırıcı Gösterge Türünü Varsayılan Simge Olarak Seçin"
+
+#: admin/WBTM_Global_settings.php:336
+msgid "Icon Indicator"
+msgstr "Simge Göstergesi"
+
+#: admin/WBTM_Global_settings.php:337
+msgid "image Indicator"
+msgstr "görüntü göstergesi"
+
+#: admin/WBTM_Global_settings.php:342
+msgid "Slider Showcase Visible?"
+msgstr "Slider Vitrini Görünüyor mu?"
+
+#: admin/WBTM_Global_settings.php:343
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr ""
+"Lütfen Slider Vitrini Görünür mü Yoksa Görünmez mi Seçin? Varsayılan AÇIK"
+
+#: admin/WBTM_Global_settings.php:353
+msgid "Slider Showcase Position"
+msgstr "Kaydırıcı Vitrin Konumu"
+
+#: admin/WBTM_Global_settings.php:354
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "Lütfen Slider Vitrin Konumunu Varsayılan Sağa Seçin"
+
+#: admin/WBTM_Global_settings.php:358
+msgid "At Top Position"
+msgstr "En Üst Pozisyonda"
+
+#: admin/WBTM_Global_settings.php:359
+msgid "At Right Position"
+msgstr "Doğru Pozisyonda"
+
+#: admin/WBTM_Global_settings.php:360
+msgid "At Bottom Position"
+msgstr "Alt Pozisyonda"
+
+#: admin/WBTM_Global_settings.php:361
+msgid "At Left Position"
+msgstr "Sol Pozisyonda"
+
+#: admin/WBTM_Global_settings.php:366
+msgid "Slider Popup Image Indicator"
+msgstr "Kaydırıcı Açılır Görüntü Göstergesi"
+
+#: admin/WBTM_Global_settings.php:367
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr ""
+"Lütfen Kaydırıcı Açılır Pencere Göstergesi Görüntüsünü AÇIK veya Kapalı "
+"olarak seçin? Varsayılan AÇIK"
+
+#: admin/WBTM_Global_settings.php:377
+msgid "Slider Popup Icon Indicator"
+msgstr "Kaydırıcı Açılır Pencere Simgesi Göstergesi"
+
+#: admin/WBTM_Global_settings.php:378
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr ""
+"Lütfen Kaydırıcı Açılır Pencere Gösterge Simgesini AÇIK veya Kapalı olarak "
+"seçin? Varsayılan AÇIK"
+
+#: admin/WBTM_Global_settings.php:390
+msgid "Theme Color"
+msgstr "Tema Rengi"
+
+#: admin/WBTM_Global_settings.php:391
+msgid "Select Default Theme Color"
+msgstr "Varsayılan Tema Rengini Seçin"
+
+#: admin/WBTM_Global_settings.php:397
+msgid "Theme Alternate Color"
+msgstr "Tema Alternatif Rengi"
+
+#: admin/WBTM_Global_settings.php:398
+msgid ""
+"Select Default Theme Alternate  Color that means, if background theme color "
+"then it will be text color."
+msgstr ""
+"Varsayılan Tema Alternatif Rengini Seçin, yani arka plan teması rengi ise "
+"metin rengi olacaktır."
+
+#: admin/WBTM_Global_settings.php:404
+msgid "Default Text Color"
+msgstr "Varsayılan Metin Rengi"
+
+#: admin/WBTM_Global_settings.php:405
+msgid "Select Default Text  Color."
+msgstr "Varsayılan Metin Rengini Seçin."
+
+#: admin/WBTM_Global_settings.php:411
+msgid "Default Font Size"
+msgstr "Varsayılan Yazı Tipi Boyutu"
+
+#: admin/WBTM_Global_settings.php:412
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "Varsayılan Yazı Tipi Boyutunu (PX Birimi cinsinden) yazın."
+
+#: admin/WBTM_Global_settings.php:418
+msgid "Font Size h1 Title"
+msgstr "Yazı Tipi Boyutu h1 Başlık"
+
+#: admin/WBTM_Global_settings.php:419
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu Ana Başlık (PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:425
+msgid "Font Size h2 Title"
+msgstr "Yazı Tipi Boyutu h2 Başlık"
+
+#: admin/WBTM_Global_settings.php:426
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu h2 Başlık (PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:432
+msgid "Font Size h3 Title"
+msgstr "Yazı Tipi Boyutu h3 Başlık"
+
+#: admin/WBTM_Global_settings.php:433
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu h3 Başlık(PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:439
+msgid "Font Size h4 Title"
+msgstr "Yazı Tipi Boyutu h4 Başlık"
+
+#: admin/WBTM_Global_settings.php:440
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu h4 Başlık (PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:446
+msgid "Font Size h5 Title"
+msgstr "Yazı Tipi Boyutu h5 Başlık"
+
+#: admin/WBTM_Global_settings.php:447
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu h5 Başlık(PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:453
+msgid "Font Size h6 Title"
+msgstr "Yazı Tipi Boyutu h6 Başlık"
+
+#: admin/WBTM_Global_settings.php:454
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "Yazı Tipi Yazı Boyutu h6 Başlık(PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:460
+msgid "Button Font Size "
+msgstr "Düğme Yazı Tipi Boyutu"
+
+#: admin/WBTM_Global_settings.php:461
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "Yazı Tipi Boyutu Düğmesi (PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:467
+msgid "Button Text Color"
+msgstr "Düğme Metin Rengi"
+
+#: admin/WBTM_Global_settings.php:468
+msgid "Select Button Text  Color."
+msgstr "Düğme Metin Rengini Seçin."
+
+#: admin/WBTM_Global_settings.php:474
+msgid "Button Background Color"
+msgstr "Düğme Arkaplan Rengi"
+
+#: admin/WBTM_Global_settings.php:475
+msgid "Select Button Background  Color."
+msgstr "Düğme Arkaplan Rengini Seçin."
+
+#: admin/WBTM_Global_settings.php:481
+msgid "Label Font Size "
+msgstr "Etiket Yazı Tipi Boyutu"
+
+#: admin/WBTM_Global_settings.php:482
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "Yazı Tipi Yazı Tipi Boyutu Etiket (PX Biriminde)."
+
+#: admin/WBTM_Global_settings.php:488
+msgid "Warning Color"
+msgstr "Uyarı Rengi"
+
+#: admin/WBTM_Global_settings.php:489
+msgid "Select Warning  Color."
+msgstr "Uyarı Rengini Seçin."
+
+#: admin/WBTM_Global_settings.php:495
+msgid "Section Background color"
+msgstr "Bölüm Arkaplan rengi"
+
+#: admin/WBTM_Global_settings.php:496
+msgid "Select Background  Color."
+msgstr "Arkaplan Rengini Seçin."
+
+#: admin/WBTM_Global_settings.php:505
+msgid "Write Your Custom CSS Code Here"
+msgstr "Özel CSS Kodunuzu Buraya Yazın"
+
+#: admin/WBTM_Global_settings.php:520
+msgid ""
+"Thanking you for using our Mage-People plugin. Our some plugin  free and no "
+"license is required. We have some Additional addon to enhance feature of "
+"this plugin functionality. If you have any addon you need to enter a valid "
+"license for that plugin below."
+msgstr ""
+"Mage-People eklentimizi kullandığınız için teşekkür ederiz. Bazı "
+"eklentilerimiz ücretsizdir ve lisans gerektirmez. Bu eklentinin "
+"işlevselliğini artırmak için bazı ek eklentilerimiz de mevcuttur. Herhangi "
+"bir eklentiniz varsa, o eklenti için geçerli bir lisans girmeniz "
+"gerekmektedir."
+
+#: admin/WBTM_Global_settings.php:535
+msgid "Plugin Name"
+msgstr "Eklenti Adı"
+
+#: admin/WBTM_Global_settings.php:537
+msgid "Order No"
+msgstr "Sipariş No"
+
+#: admin/WBTM_Global_settings.php:538
+msgid "Expire on"
+msgstr "Son kullanma tarihi"
+
+#: admin/WBTM_Global_settings.php:539
+msgid "License Key"
+msgstr "Lisans Anahtarı"
+
+#: admin/WBTM_Global_settings.php:540 admin/WBTM_Status.php:17
+msgid "Status"
+msgstr "Durum"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "Özgür"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "Sınırsız"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "Gerek yok"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "Aktif"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
+#: admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "Hızlı Kurulum"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:194
+#: inc/WBTM_Functions.php:456
+msgid "Bus"
+msgstr "Otobüs"
+
+#: admin/WBTM_Quick_Setup.php:121 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "Hoş geldin"
+
+#: admin/WBTM_Quick_Setup.php:128
+msgid "General"
+msgstr "Genel"
+
+#: admin/WBTM_Quick_Setup.php:135
+msgid "Done"
+msgstr "Tamamlamak"
+
+#: admin/WBTM_Quick_Setup.php:148
+msgid "Previous"
+msgstr "Öncesi"
+
+#: admin/WBTM_Quick_Setup.php:152
+msgid "Next"
+msgstr "Sonraki"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "Woocommerce Eklentisi İçin Koltuk Rezervasyonlu Otobüs Rezervasyonu"
+
+#: admin/WBTM_Quick_Setup.php:167
+msgid ""
+"Bus Booking with Seat Reservation Plugin for WooCommerce for your site, "
+"Please go step by step and choose some options to get started."
+msgstr ""
+"Siteniz için WooCommerce için Koltuk Rezervasyonu Eklentisi ile Otobüs "
+"Rezervasyonu, Lütfen adım adım ilerleyin ve başlamak için bazı seçenekleri "
+"seçin."
+
+#: admin/WBTM_Quick_Setup.php:171
+msgid "Woocommerce already installed and activated"
+msgstr "Woocommerce zaten kurulu ve etkinleştirildi"
+
+#: admin/WBTM_Quick_Setup.php:174
+msgid "Woocommerce need to install and active"
+msgstr "Woocommerce'un kurulması ve etkinleştirilmesi gerekiyor"
+
+#: admin/WBTM_Quick_Setup.php:177
+msgid "Woocommerce already install , please activate it"
+msgstr "Woocommerce zaten yüklü, lütfen etkinleştirin"
+
+#: admin/WBTM_Quick_Setup.php:185
+msgid "Install & Active Now"
+msgstr "Şimdi Yükle ve Etkinleştir"
+
+#: admin/WBTM_Quick_Setup.php:187
+msgid "Active Now"
+msgstr "Şu Anda Aktif"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "General settings"
+msgstr "Genel ayarlar"
+
+#: admin/WBTM_Quick_Setup.php:200
+msgid "Choose some general option."
+msgstr "Genel bir seçenek seçin."
+
+#: admin/WBTM_Quick_Setup.php:203
+msgid "Bus Label:"
+msgstr "Otobüs Etiketi:"
+
+#: admin/WBTM_Quick_Setup.php:208
+msgid "It will change the Bus post type label on the entire plugin."
+msgstr "Tüm eklentideki Bus yazı tipi etiketini değiştirecek."
+
+#: admin/WBTM_Quick_Setup.php:212
+msgid "Bus Slug:"
+msgstr "Otobüs Slug'ı:"
+
+#: admin/WBTM_Quick_Setup.php:217
+msgid ""
+"It will change the Bus slug on the entire plugin. Remember after changing "
+"this slug you need to flush permalinks. Just go to Settings->Permalinks hit "
+"the Save Settings button"
+msgstr ""
+"Eklentinin tamamındaki Bus slug'ını değiştirecektir. Bu slug'ı "
+"değiştirdikten sonra kalıcı bağlantıları temizlemeniz gerektiğini unutmayın. "
+"Ayarlar->Kalıcı Bağlantılar'a gidin ve Ayarları Kaydet düğmesine basın."
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "Finalize Setup"
+msgstr "Kurulumu Sonlandır"
+
+#: admin/WBTM_Quick_Setup.php:228
+msgid ""
+"You are about to Finish & Save Bus Booking with Seat Reservation For "
+"Woocommerce Plugin setup process"
+msgstr ""
+"Woocommerce Eklentisi kurulum süreci için Koltuk Rezervasyonu ile Otobüs "
+"Rezervasyonunu Tamamlamak ve Kaydetmek üzeresiniz"
+
+#: admin/WBTM_Quick_Setup.php:230
+msgid "Finish & Save"
+msgstr "Bitir ve Kaydet"
+
+#: admin/WBTM_Settings.php:20
+msgid " Information Settings : "
+msgstr "Bilgi Ayarları :"
+
+#: admin/WBTM_Settings.php:36
+msgid "General Info"
+msgstr "Genel Bilgiler"
+
+#: admin/WBTM_Settings.php:39
+msgid "Seat Configure"
+msgstr "Koltuk Yapılandırması"
+
+#: admin/WBTM_Settings.php:42
+msgid "Pricing & Route"
+msgstr "Fiyatlandırma ve Rota"
+
+#: admin/WBTM_Settings.php:48
+msgid "Pickup/Drop-Off Point"
+msgstr "Alım/Bırakma Noktası"
+
+#: admin/WBTM_Settings.php:55
+msgid "Tax Configure"
+msgstr "Vergi Yapılandırması"
+
+#: admin/WBTM_Settings.php:59
+msgid "Partial Payment"
+msgstr "Kısmi Ödeme"
+
+#: admin/WBTM_Settings.php:67
+msgid "Partial Payment Settings : "
+msgstr "Kısmi Ödeme Ayarları :"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please add your unique bus id"
+msgstr "Lütfen benzersiz otobüs kimliğinizi ekleyin"
+
+#: admin/WBTM_Settings.php:80
+msgid "Please add your bus category"
+msgstr "Lütfen otobüs kategorinizi ekleyin"
+
+#: admin/WBTM_Settings.php:81
+msgid "Turn on or off, bus seat registration"
+msgstr "Otobüs koltuğu kaydını açma veya kapatma"
+
+#: admin/WBTM_Settings.php:82
+msgid ""
+"By default Registration is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Varsayılan olarak Kayıt AÇIK'tır ancak bu seçeneği değiştirerek kapalı "
+"tutabilirsiniz"
+
+#: admin/WBTM_Settings.php:83
+msgid ""
+"By default Boarding Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Varsayılan olarak Biniş Saati AÇIK'tır ancak bu seçeneği değiştirerek kapalı "
+"tutabilirsiniz"
+
+#: admin/WBTM_Settings.php:84
+msgid ""
+"By default Dropping Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Varsayılan olarak Bırakma Süresi AÇIK'tır ancak bu seçeneği değiştirerek "
+"kapalı tutabilirsiniz"
+
+#: admin/WBTM_Settings.php:85
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr "Lütfen otobüs koltuk tipinizi seçin. Koltuk Planı Olmadan Varsayılan"
+
+#: admin/WBTM_Settings.php:86
+msgid "Please Type your bus total seat."
+msgstr "Lütfen otobüsünüzün toplam koltuk sayısını yazın."
+
+#: admin/WBTM_Settings.php:87
+msgid "Select Particular Date or Repeated Date."
+msgstr "Belirli Tarih veya Tekrarlanan Tarih'i seçin."
+
+#: admin/WBTM_Settings.php:88
+msgid "Here you can set bus route for stopage and dropping"
+msgstr "Burada otobüslerin duraklama ve bırakma güzergahını ayarlayabilirsiniz"
+
+#: admin/WBTM_Settings.php:89
+msgid ""
+"Please configure bus route price. Before price setting must be complete "
+"route configuration ."
+msgstr ""
+"Lütfen otobüs güzergah fiyatını yapılandırın. Fiyat ayarlamasından önce "
+"güzergah yapılandırmasının tamamlanmış olması gerekir."
+
+#: admin/WBTM_Settings.php:90
+msgid "Turn On or Off Extra service."
+msgstr "Ekstra hizmeti açın veya kapatın."
+
+#: admin/WBTM_Settings.php:91
+msgid "Turn On or Off pickup point."
+msgstr "Alım noktasını açın veya kapatın."
+
+#: admin/WBTM_Settings.php:92
+msgid "Turn On or Off drop-off point."
+msgstr "Bırakma noktasını açın veya kapatın."
+
+#: admin/WBTM_Settings.php:93
+msgid ""
+"To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr ""
+"Herhangi bir yeni vergi sınıfı eklemek için lütfen WooCommerce ->Ayarlar->"
+"Vergi Alanı'na gidin"
+
+#: admin/WBTM_Settings.php:95
+msgid "Please upload images for gallery"
+msgstr "Lütfen galeriye görsel yükleyin"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">Durum</span>"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Woocommerce Ortam Durumu İçin"
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "WordPress Sürümü :"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "Woocommerce Kurulu:"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "Woocommerce Sürümü :"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "İsim : "
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "E-posta Adresi :"
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr " Tip"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22
+#: admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:111
+msgid "Parent"
+msgstr "Ebeveyn"
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "Tip:"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
+#: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr "Teslim Alma Noktası"
+
+#: admin/WBTM_Taxonomy.php:74 admin/WBTM_Taxonomy.php:110
+msgid "Allx "
+msgstr "Allx"
+
+#: admin/WBTM_Taxonomy.php:107 admin/WBTM_Taxonomy.php:111
+#: admin/WBTM_Taxonomy.php:114 inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr "Bırakma Noktası"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "WBTM'ye hoş geldiniz"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "PRO"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "Koltuk Rezervasyonlu Otobüs Bileti Rezervasyonuna Hoş Geldiniz"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "İçe aktarmak"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "Bilgi Tabanı"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "Sahte İçerik Nasıl İçe Aktarılır"
+
+#: admin/WBTM_Welcome.php:30
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"Sahte etkinlik verilerini web sitenize aktarmak için lütfen aşağıdaki süreci "
+"izleyin."
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "Adım-1:"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "kategori.xml"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "içerik.xml"
+
+#: admin/WBTM_Welcome.php:46
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"Veya XML dosyalarını zip olarak indirip bilgisayar dizininize "
+"çıkarabilirsiniz."
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "XML Dosyalarının Zip'ini İndirin"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "Adım-2:"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "XML dosyasını indirdikten sonra şuraya gidin:"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "Araçlar -> İçe Aktar"
+
+#: admin/WBTM_Welcome.php:58
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"Bu sayfanın alt kısmında bir WordPress içe aktarma seçeneği bulunmaktadır. "
+"Bunu zaten etkinleştirdiyseniz, İçe Aktarmayı Çalıştır seçeneğini "
+"görebilirsiniz. Etkinleştirmediyseniz, Şimdi Yükle bağlantısına tıklayın. "
+"Ardından, İçe Aktarmayı Çalıştır'a tıklayın ve daha önce indirdiğiniz XML "
+"dosyasını seçin."
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "Adım-3:"
+
+#: admin/WBTM_Welcome.php:66
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"Şimdi, açılır menüden içerikleri atayacağınız web sitenizin kullanıcısını "
+"seçin ve \"Eki İndir\" onay kutusunu işaretleyip İşlemi Çalıştırın. Birkaç "
+"dakika sonra \"Başarılı\" mesajını göreceksiniz. Tamamdır! İyi eğlenceler."
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "Video Eğitimi"
+
+#: admin/WBTM_Welcome.php:76
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr ""
+"Koltuk Rezervasyonu Eklentisi ile Otobüs Bileti Rezervasyonunun "
+"Belgelenmesine Hoş Geldiniz"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "PRO SATIN AL"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "Eklenti nasıl kurulur?"
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr "Eklentiyi nasıl kuracağınızı öğrenmek için lütfen videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "Yeni Otobüs Nasıl Eklenir?"
+
+#: admin/WBTM_Welcome.php:89
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"Eklentiyi yükledikten sonra yeni bir veri yolu ekleyebilirsiniz. Nasıl "
+"yapabileceğinizi öğrenmek için lütfen videoyu izleyin:"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "Otobüs bileti nasıl alınır?"
+
+#: admin/WBTM_Welcome.php:96
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr ""
+"Bu videoda otobüs bileti siparişinin ne kadar kolay verildiğini "
+"görebilirsiniz:"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "PDF bileti nasıl kurulur?"
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "PDF biletinin nasıl kurulacağını öğrenmek için lütfen videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "E-posta nasıl kurulur?"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "E-postanın nasıl kurulacağını öğrenmek için lütfen videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "Bilet fiyatına otobüs nasıl eklenir?"
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr ""
+"Bilet fiyatına otobüs ücretinin nasıl ekleneceğini öğrenmek için lütfen bu "
+"videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "Belirli bir güne otobüs nasıl ayarlanır?"
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr ""
+"Belirli bir günde otobüsün nasıl ayarlanacağını öğrenmek için lütfen bu "
+"videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "Otobüs rezervasyon tampon süresi nasıl ayarlanır?"
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr ""
+"Tampon zamanında otobüs rezervasyonunun nasıl ayarlanacağını öğrenmek için "
+"lütfen bu videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "Admin panelinden bilet nasıl alınır?"
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr ""
+"Admin panelinden bilet almanın nasıl yapılacağını öğrenmek için lütfen bu "
+"videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "Yolcu listesi CSV formatında nasıl dışa aktarılır?"
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr ""
+"Yolcu listesinin CSV formatında nasıl dışa aktarılacağını öğrenmek için "
+"lütfen bu videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr "İki kapılı ve dört kolonlu oturma planı nasıl oluşturulur?"
+
+#: admin/WBTM_Welcome.php:153
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"İki kapılı ve dört kolonlu oturma planının nasıl oluşturulacağını öğrenmek "
+"için lütfen bu videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "Üç sütunlu oturma planı nasıl oluşturulur?"
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr ""
+"Üç sütunlu oturma planının nasıl oluşturulacağını öğrenmek için lütfen bu "
+"videoyu izleyin."
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "Otobüs rezervasyonu nasıl yapılır?"
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr ""
+"Otobüs rezervasyonunun nasıl yapılacağını öğrenmek için lütfen bu videoyu "
+"izleyin."
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "PRO sürümü nasıl satın alınır?"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "Koltuk Rezervasyonu PRO ile Otobüs Bileti Rezervasyonu"
+
+#: admin/WBTM_Welcome.php:179
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr ""
+"Koltuk Rezervasyonu Eklentisi ile Otobüs Bileti Rezervasyonuna dahil edilen "
+"kısayol kodları:"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "Kısa kod"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "Parametre"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "Tanım"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "kedi"
+
+#: admin/WBTM_Welcome.php:193
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"Varsayılan olarak tüm otobüsleri gösterir, ancak belirli bir kategorinin "
+"otobüs listesini göstermek istiyorsanız bu özelliği kullanabilirsiniz, "
+"sadece kategori kimliğini buna eklemeniz yeterli. Örnek:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "göstermek"
+
+#: admin/WBTM_Welcome.php:201
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"Varsayılan olarak sayfa başına 20 veri yolu gösteriliyor. Bunu değiştirmek "
+"ve sınır girmek istiyorsanız, sınır numarasını girin. Örnek:"
+
+#: admin/WBTM_Welcome.php:210
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"Bu kısa kod, Bilet Oluşturma formunu gösterecektir. Kullanıcının bilet pin "
+"kodunu kutuya girmesi ve enter tuşuna basması gerekir, ardından bilet "
+"görünecektir. Yalnızca oturum açan kullanıcılar bu sayfayı görüntüleyebilir."
+
+#: admin/WBTM_Welcome.php:217
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"Bu kısa kod, ana sayfada veya herhangi bir sayfada bir arama kutusu "
+"göstermek istiyorsanız arama formunu görüntüleyecektir. O zaman bu kısa kodu "
+"oraya koymanız yeterlidir; otobüs arama formunu yazdıracaktır."
+
+#: admin/WBTM_Welcome.php:224
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"Bu kısayol kodu aynı zamanda bir otobüs arama formu da yazdıracak ancak aynı "
+"sayfada, arama formunun altında arama sonucunu da gösterecektir."
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "Bilet"
+
+#: inc/WBTM_GTFS_Export.php:60 inc/WBTM_GTFS_Export.php:61
+#: inc/WBTM_GTFS_Export.php:71
+msgid "GTFS Export"
+msgstr "GTFS Dışa Aktarma"
+
+#: inc/WBTM_GTFS_Export.php:72
+msgid ""
+"Export your bus data to GTFS format for Google Transit and other transit "
+"applications."
+msgstr ""
+"Otobüs verilerinizi Google Transit ve diğer ulaşım uygulamaları için GTFS "
+"formatına aktarın."
+
+#: inc/WBTM_GTFS_Export.php:79
+msgid "Agency Name"
+msgstr "Acente Adı"
+
+#: inc/WBTM_GTFS_Export.php:83
+msgid "The name of your transit agency"
+msgstr "Transit acentenizin adı"
+
+#: inc/WBTM_GTFS_Export.php:88
+msgid "Agency URL"
+msgstr "Ajans URL'si"
+
+#: inc/WBTM_GTFS_Export.php:92
+msgid "Your agency website URL"
+msgstr "Acente web sitenizin URL'si"
+
+#: inc/WBTM_GTFS_Export.php:97
+msgid "Agency Timezone"
+msgstr "Ajans Zaman Dilimi"
+
+#: inc/WBTM_GTFS_Export.php:109
+msgid "Timezone for your bus operations"
+msgstr "Otobüs operasyonlarınız için saat dilimi"
+
+#: inc/WBTM_GTFS_Export.php:114
+msgid "Export Date Range"
+msgstr "İhracat Tarih Aralığı"
+
+#: inc/WBTM_GTFS_Export.php:118
+msgid "to"
+msgstr "ile"
+
+#: inc/WBTM_GTFS_Export.php:120
+msgid "Date range for schedule export (recommended: 30-90 days)"
+msgstr "Zamanlama dışa aktarımı için tarih aralığı (önerilen: 30-90 gün)"
+
+#: inc/WBTM_GTFS_Export.php:125
+msgid "Select Buses"
+msgstr "Seçili Otobüsler"
+
+#: inc/WBTM_GTFS_Export.php:138
+msgid "Select All"
+msgstr "Tümünü Seç"
+
+#: inc/WBTM_GTFS_Export.php:147
+msgid "Select which buses to include in the GTFS export"
+msgstr "GTFS dışa aktarımına hangi otobüslerin dahil edileceğini seçin"
+
+#: inc/WBTM_GTFS_Export.php:153
+msgid "Export GTFS"
+msgstr "GTFS'yi dışa aktar"
+
+#: inc/WBTM_GTFS_Export.php:158
+msgid "Export Progress"
+msgstr "İhracat İlerlemesi"
+
+#: inc/WBTM_GTFS_Export.php:162
+msgid "Preparing export..."
+msgstr "İhracat hazırlanıyor..."
+
+#: inc/WBTM_GTFS_Export.php:166
+msgid "Export Complete"
+msgstr "İhracat Tamamlandı"
+
+#: inc/WBTM_GTFS_Export.php:168
+msgid "Download GTFS Feed"
+msgstr "GTFS Beslemesini İndirin"
+
+#: inc/WBTM_GTFS_Export.php:189
+msgid "Please select at least one bus to export."
+msgstr "Lütfen dışa aktarmak için en az bir otobüs seçin."
+
+#: inc/WBTM_GTFS_Export.php:224
+msgid "Export failed. Please try again."
+msgstr "Dışa aktarma başarısız oldu. Lütfen tekrar deneyin."
+
+#: inc/WBTM_GTFS_Export.php:237 inc/WBTM_GTFS_Validator.php:534
+msgid "Security check failed"
+msgstr "Güvenlik kontrolü başarısız oldu"
+
+#: inc/WBTM_GTFS_Export.php:242 inc/WBTM_GTFS_Validator.php:538
+msgid "Insufficient permissions"
+msgstr "Yetersiz izinler"
+
+#: inc/WBTM_GTFS_Export.php:269
+msgid "GTFS feed exported successfully!"
+msgstr "GTFS beslemesi başarıyla dışa aktarıldı!"
+
+#: inc/WBTM_GTFS_Export.php:274
+msgid "Failed to generate GTFS feed"
+msgstr "GTFS beslemesi oluşturulamadı"
+
+#: inc/WBTM_GTFS_Export.php:280
+#, php-format
+msgid "Export error: %s"
+msgstr "Dışa aktarma hatası: %s"
+
+#: inc/WBTM_GTFS_Validator.php:56
+msgid "GTFS feed file not found"
+msgstr "GTFS besleme dosyası bulunamadı"
+
+#: inc/WBTM_GTFS_Validator.php:63
+msgid "Could not extract GTFS feed"
+msgstr "GTFS beslemesi çıkarılamadı"
+
+#: inc/WBTM_GTFS_Validator.php:88
+#, php-format
+msgid "Validation error: %s"
+msgstr "Doğrulama hatası: %s"
+
+#: inc/WBTM_GTFS_Validator.php:116
+#, php-format
+msgid "Required file missing: %s"
+msgstr "Gerekli dosya eksik: %s"
+
+#: inc/WBTM_GTFS_Validator.php:126
+#, php-format
+msgid "Unknown file found: %s"
+msgstr "Bilinmeyen dosya bulundu: %s"
+
+#: inc/WBTM_GTFS_Validator.php:139
+msgid "agency.txt is empty or invalid"
+msgstr "agency.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:149
+#, php-format
+msgid "Invalid timezone in agency.txt row %d: %s"
+msgstr "agency.txt satırında geçersiz saat dilimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:153
+#, php-format
+msgid "Invalid URL in agency.txt row %d: %s"
+msgstr "agency.txt satırında geçersiz URL %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:166
+msgid "stops.txt is empty or invalid"
+msgstr "stops.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:178
+#, php-format
+msgid "Duplicate stop_id in stops.txt: %s"
+msgstr "stops.txt dosyasında yinelenen stop_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:187
+#, php-format
+msgid "Invalid latitude in stops.txt row %d: %s"
+msgstr "stops.txt satırında geçersiz enlem %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:194
+#, php-format
+msgid "Invalid longitude in stops.txt row %d: %s"
+msgstr "stops.txt satırında geçersiz boylam %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:201
+#, php-format
+msgid "Stop at coordinates (0,0) in stops.txt row %d - please verify location"
+msgstr ""
+"stops.txt dosyasındaki %d satırında (0,0) koordinatlarında durun - lütfen "
+"konumu doğrulayın"
+
+#: inc/WBTM_GTFS_Validator.php:215
+msgid "routes.txt is empty or invalid"
+msgstr "routes.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:227
+#, php-format
+msgid "Duplicate route_id in routes.txt: %s"
+msgstr "routes.txt dosyasında yinelenen route_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:236
+#, php-format
+msgid "Invalid route_type in routes.txt row %d: %s"
+msgstr "routes.txt satırında geçersiz route_type %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:242
+#, php-format
+msgid ""
+"Either route_short_name or route_long_name must be provided in routes.txt "
+"row %d"
+msgstr ""
+"routes.txt satırında %d'de route_short_name veya route_long_name "
+"belirtilmelidir"
+
+#: inc/WBTM_GTFS_Validator.php:255
+msgid "trips.txt is empty or invalid"
+msgstr "trips.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:267
+#, php-format
+msgid "Duplicate trip_id in trips.txt: %s"
+msgstr "trips.txt dosyasında yinelenen trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:274
+#, php-format
+msgid "Invalid direction_id in trips.txt row %d: %s"
+msgstr "trips.txt satırında geçersiz direction_id %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:279
+#, php-format
+msgid "Invalid wheelchair_accessible in trips.txt row %d: %s"
+msgstr "trips.txt satırında geçersiz wheelchair_accessible %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:284
+#, php-format
+msgid "Invalid bikes_allowed in trips.txt row %d: %s"
+msgstr "trips.txt satırında geçersiz bikes_allowed %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:297
+msgid "stop_times.txt is empty or invalid"
+msgstr "stop_times.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:316
+#, php-format
+msgid "Invalid arrival_time format in stop_times.txt row %d: %s"
+msgstr "stop_times.txt satırında geçersiz varış_saati biçimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:320
+#, php-format
+msgid "Invalid departure_time format in stop_times.txt row %d: %s"
+msgstr "stop_times.txt satırında geçersiz kalkış_saati biçimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:325
+#, php-format
+msgid "Invalid pickup_type in stop_times.txt row %d: %s"
+msgstr "stop_times.txt satırında geçersiz pickup_type %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:329
+#, php-format
+msgid "Invalid drop_off_type in stop_times.txt row %d: %s"
+msgstr "stop_times.txt satırında geçersiz drop_off_type %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:337
+#, php-format
+msgid "Duplicate stop_sequence values for trip_id: %s"
+msgstr "trip_id için yinelenen stop_sequence değerleri: %s"
+
+#: inc/WBTM_GTFS_Validator.php:344
+#, php-format
+msgid "Stop sequences not in order for trip_id: %s"
+msgstr "trip_id: %s için durdurma dizileri sıralı değil"
+
+#: inc/WBTM_GTFS_Validator.php:354
+msgid "Either calendar.txt or calendar_dates.txt must be provided"
+msgstr "calendar.txt veya calendar_dates.txt sağlanmalıdır"
+
+#: inc/WBTM_GTFS_Validator.php:372
+msgid "calendar.txt is empty or invalid"
+msgstr "calendar.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:384
+#, php-format
+msgid "Invalid %s value in calendar.txt row %d: %s"
+msgstr "calendar.txt satırında geçersiz %s değeri %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:390
+#, php-format
+msgid "Invalid start_date format in calendar.txt row %d: %s"
+msgstr "calendar.txt satırında geçersiz başlangıç_tarihi biçimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:394
+#, php-format
+msgid "Invalid end_date format in calendar.txt row %d: %s"
+msgstr "calendar.txt satırında geçersiz bitiş_tarihi biçimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:400
+#, php-format
+msgid "end_date must be after start_date in calendar.txt row %d"
+msgstr ""
+"bitiş_tarihi, calendar.txt satırındaki %d numaralı satırda "
+"başlangıç_tarihinden sonra olmalıdır"
+
+#: inc/WBTM_GTFS_Validator.php:411
+msgid "calendar_dates.txt is empty or invalid"
+msgstr "calendar_dates.txt boş veya geçersiz"
+
+#: inc/WBTM_GTFS_Validator.php:421
+#, php-format
+msgid "Invalid date format in calendar_dates.txt row %d: %s"
+msgstr "calendar_dates.txt satırında geçersiz tarih biçimi %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:426
+#, php-format
+msgid "Invalid exception_type in calendar_dates.txt row %d: %s"
+msgstr "calendar_dates.txt satırında geçersiz exception_type %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:470
+#, php-format
+msgid "Required field missing in %s: %s"
+msgstr "%s'de gerekli alan eksik: %s"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr "Yolculuk Tarihi"
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr "Dönüş Tarihi (İsteğe bağlı)"
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr "Tarih"
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr "Sipariş Tarihi"
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr "BİLET AL"
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr "İtibaren"
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr "İle"
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr "Lütfen Seçin"
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr "Başlangıç Noktaları"
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr "Toplamak"
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr "Bırakma"
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr "PIN"
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr "Otobüs Tipi"
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr "Otobüs Operatörü"
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr "Katılımcı Kimliği"
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr "Yolcu Tipi"
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr "Sipariş Durumu"
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr "Ödeme yöntemi"
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr "Dönüş Yolculuğu"
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr "Zaten sepete eklendi!"
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr "Otobüs Bulunamadı!"
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr "Bilet bulunamadı!"
+
+#: inc/WBTM_Translations.php:186
+msgid "No Seat Plan Available !"
+msgstr "Koltuk Planı Mevcut Değil!"
+
+#: inc/WBTM_Translations.php:192
+msgid "No Seat Available !!"
+msgstr "Yer Yok !!"
+
+#: inc/WBTM_Translations.php:198
+msgid "This bus Now Closed."
+msgstr "Bu otobüs artık kapalı."
+
+#: inc/WBTM_Translations.php:204
+msgid "Available Seat"
+msgstr "Mevcut Koltuk"
+
+#: inc/WBTM_Translations.php:210
+msgid "Already Sold"
+msgstr "Zaten Satıldı"
+
+#: inc/WBTM_Translations.php:216
+msgid "You select Wrong Route !"
+msgstr "Yanlış Rotayı Seçtiniz!"
+
+#: inc/WBTM_Translations.php:222
+msgid "Please select Starting Point !"
+msgstr "Lütfen Başlangıç Noktasını seçin!"
+
+#: inc/WBTM_Translations.php:228
+msgid "Schedule"
+msgstr "Takvim"
+
+#: inc/WBTM_Translations.php:234
+msgid "Coach Type"
+msgstr "Koç Türü"
+
+#: inc/WBTM_Translations.php:246 inc/WBTM_Translations.php:252
+msgid "Seat"
+msgstr "Koltuk"
+
+#: inc/WBTM_Translations.php:258
+msgid "Name"
+msgstr "İsim"
+
+#: inc/WBTM_Translations.php:264 mp_global/class/WBTM_Select_Icon_image.php:110
+#: mp_global/class/WBTM_Select_Icon_image.php:136
+#: mp_global/class/WBTM_Select_Icon_image.php:163
+msgid "Image"
+msgstr "Görüntü"
+
+#: inc/WBTM_Translations.php:270
+msgid "Quantity"
+msgstr "Miktar"
+
+#: inc/WBTM_Translations.php:276
+msgid "Total Quantity"
+msgstr "Toplam Miktar"
+
+#: inc/WBTM_Translations.php:282
+msgid "Price"
+msgstr "Fiyat"
+
+#: inc/WBTM_Translations.php:288
+msgid "Fare"
+msgstr "Ücret"
+
+#: inc/WBTM_Translations.php:294
+msgid "Total"
+msgstr "Toplam"
+
+#: inc/WBTM_Translations.php:300
+msgid "Ticket Sub total"
+msgstr "Bilet Ara Toplamı"
+
+#: inc/WBTM_Translations.php:306
+msgid "Order Total"
+msgstr "Sipariş Toplamı"
+
+#: inc/WBTM_Translations.php:312
+msgid "Passenger Capacity"
+msgstr "Yolcu Kapasitesi"
+
+#: inc/WBTM_Translations.php:330
+msgid "Extra Service Sub total"
+msgstr "Ekstra Hizmet Ara Toplamı"
+
+#: inc/WBTM_Translations.php:336
+msgid "Adult"
+msgstr "Yetişkin"
+
+#: inc/WBTM_Translations.php:342
+msgid "Child"
+msgstr "Çocuk"
+
+#: inc/WBTM_Translations.php:348
+msgid "Infant"
+msgstr "Bebek"
+
+#: inc/WBTM_Translations.php:360
+msgid "Seats Available"
+msgstr "Mevcut Koltuklar"
+
+#: inc/WBTM_Translations.php:366
+msgid "Duration :"
+msgstr "Süre :"
+
+#: inc/WBTM_Translations.php:372
+msgid "View Seats"
+msgstr "Koltukları Görüntüle"
+
+#: inc/WBTM_Translations.php:378
+msgid "Close Seat"
+msgstr "Yakın Koltuk"
+
+#: inc/WBTM_Translations.php:384
+msgid "Book Now"
+msgstr "Şimdi Rezervasyon Yapın"
+
+#: inc/WBTM_Translations.php:390
+msgid "This seat is already reserved."
+msgstr "Bu koltuk zaten rezerve edilmiştir."
+
+#: inc/WBTM_Translations.php:397
+msgid "Seat Details"
+msgstr "Koltuk Detayları"
+
+#: inc/WBTM_Translations.php:403
+msgid "Seat Selection"
+msgstr "Koltuk Seçimi"
+
+#: inc/WBTM_Translations.php:410
+msgid "Passenger Details"
+msgstr "Yolcu Detayları"
+
+#: inc/WBTM_Translations.php:423
+msgid "Reset"
+msgstr "Sıfırla"
+
+#: inc/WBTM_Translations.php:429
+msgid "Mobile Number"
+msgstr "Cep numarası"
+
+#: inc/WBTM_Translations.php:435
+msgid "Email"
+msgstr "E-posta"
+
+#: inc/WBTM_Translations.php:441
+msgid "Gender"
+msgstr "Cinsiyet"
+
+#: inc/WBTM_Translations.php:448
+msgid "Booking Date"
+msgstr "Rezervasyon Tarihi"
+
+#: inc/WBTM_Translations.php:454
+msgid "Booking ID"
+msgstr "Rezervasyon Kimliği"
+
+#: inc/WBTM_Translations.php:460
+msgid "Booking Status"
+msgstr "Rezervasyon Durumu"
+
+#: inc/WBTM_Translations.php:467
+msgid "Departure Time"
+msgstr "Kalkış Saati"
+
+#: inc/WBTM_Translations.php:473
+msgid "Arrival Time"
+msgstr "Varış Saati"
+
+#: inc/WBTM_Translations.php:479
+msgid "Route Details"
+msgstr "Rota Detayları"
+
+#: inc/WBTM_Translations.php:486
+msgid "Payment Status"
+msgstr "Ödeme Durumu"
+
+#: inc/WBTM_Translations.php:492
+msgid "Transaction ID"
+msgstr "İşlem Kimliği"
+
+#: inc/WBTM_Translations.php:499
+msgid "Booking Successful!"
+msgstr "Rezervasyon Başarılı!"
+
+#: inc/WBTM_Translations.php:505
+msgid "Booking Failed!"
+msgstr "Rezervasyon Başarısız!"
+
+#: inc/WBTM_Translations.php:511
+msgid "Selected seat(s) no longer available!"
+msgstr "Seçili koltuk(lar) artık mevcut değil!"
+
+#: inc/WBTM_Translations.php:518
+msgid "Proceed"
+msgstr "İlerlemek"
+
+#: inc/WBTM_Translations.php:524
+msgid "Cancel"
+msgstr "İptal etmek"
+
+#: inc/WBTM_Translations.php:530
+msgid "Print Ticket"
+msgstr "Bilet Yazdır"
+
+#: inc/WBTM_Translations.php:537
+msgid "Terms & Conditions"
+msgstr "Şartlar ve Koşullar"
+
+#: inc/WBTM_Translations.php:543
+msgid "Note"
+msgstr "Not"
+
+#: inc/WBTM_Translations.php:550
+msgid "This field is required"
+msgstr "Bu alan gereklidir"
+
+#: inc/WBTM_Translations.php:556
+msgid "Please enter a valid email address"
+msgstr "Geçerli bir e"
+
+#: inc/WBTM_Translations.php:562
+msgid "Please enter a valid phone number"
+msgstr "Lütfen geçerli bir telefon numarası girin"
+
+#: inc/WBTM_Translations.php:569
+msgid "Ticket Confirmed"
+msgstr "Bilet Onaylandı"
+
+#: inc/WBTM_Translations.php:575
+msgid "Ticket Pending"
+msgstr "Bilet Bekliyor"
+
+#: inc/WBTM_Translations.php:581
+msgid "Ticket Cancelled"
+msgstr "Bilet İptal Edildi"
+
+#: inc/WBTM_Translations.php:588
+msgid "Passenger Name"
+msgstr "Yolcu Adı"
+
+#: inc/WBTM_Translations.php:594
+msgid "Age"
+msgstr "Yaş"
+
+#: inc/WBTM_Translations.php:600
+msgid "NID/Passport"
+msgstr "NID/Pasaport"
+
+#: inc/WBTM_Translations.php:619
+msgid "Journey Time"
+msgstr "Yolculuk Süresi"
+
+#: inc/WBTM_Translations.php:625
+msgid "Distance"
+msgstr "Mesafe"
+
+#: inc/WBTM_Translations.php:632
+msgid "Seat Number"
+msgstr "Koltuk Numarası"
+
+#: inc/WBTM_Translations.php:638
+msgid "Seat Status"
+msgstr "Koltuk Durumu"
+
+#: inc/WBTM_Translations.php:645
+msgid "Tax"
+msgstr "Vergi"
+
+#: inc/WBTM_Translations.php:651
+msgid "Discount"
+msgstr "İndirim"
+
+#: inc/WBTM_Translations.php:657
+msgid "Grand Total"
+msgstr "Genel Toplam"
+
+#: inc/WBTM_Translations.php:664
+msgid "Payment Pending"
+msgstr "Ödeme Bekleniyor"
+
+#: inc/WBTM_Translations.php:670
+msgid "Payment Complete"
+msgstr "Ödeme Tamamlandı"
+
+#: inc/WBTM_Translations.php:676
+msgid "Payment Failed"
+msgstr "Ödeme Başarısız Oldu"
+
+#: inc/WBTM_Woocommerce.php:166
+msgid "Booking Details "
+msgstr "Rezervasyon Detayları"
+
+#: inc/WBTM_Woocommerce.php:853
+msgid "Ticket Information"
+msgstr "Bilet Bilgileri"
+
+#: mp_global/class/WBTM_Custom_Layout.php:39
+#: mp_global/class/WBTM_Custom_Layout.php:179
+#: mp_global/class/WBTM_Custom_Layout.php:180
+#: mp_global/class/WBTM_Custom_Layout.php:266
+msgid "Load More"
+msgstr "Daha Fazlasını Yükle"
+
+#: mp_global/class/WBTM_Custom_Layout.php:50
+#: mp_global/class/WBTM_Custom_Layout.php:277
+msgid "GoTO Previous Page"
+msgstr "Önceki Sayfaya Git"
+
+#: mp_global/class/WBTM_Custom_Layout.php:70
+#: mp_global/class/WBTM_Custom_Layout.php:297
+msgid "GoTO Next Page"
+msgstr "Sonraki Sayfaya Git"
+
+#: mp_global/class/WBTM_Custom_Layout.php:179
+msgid "Less More"
+msgstr "Daha Az Daha Fazla"
+
+#: mp_global/class/WBTM_Custom_Layout.php:219
+msgid "Please select"
+msgstr "Lütfen seçin"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "View All"
+msgstr "Tümünü Görüntüle"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "Images"
+msgstr "Görüntüler"
+
+#: mp_global/class/WBTM_Global_Function.php:223
+#: mp_global/class/WBTM_Global_Function.php:1045
+msgid "Lifetime"
+msgstr "Ömür boyu"
+
+#: mp_global/class/WBTM_Global_Function.php:227
+#: mp_global/class/WBTM_Global_Function.php:1049
+msgid "Expired"
+msgstr "Günü geçmiş"
+
+#: mp_global/class/WBTM_Global_Function.php:487
+msgid "Monday"
+msgstr "Pazartesi"
+
+#: mp_global/class/WBTM_Global_Function.php:488
+msgid "Tuesday"
+msgstr "Salı"
+
+#: mp_global/class/WBTM_Global_Function.php:489
+msgid "Wednesday"
+msgstr "Çarşamba"
+
+#: mp_global/class/WBTM_Global_Function.php:490
+msgid "Thursday"
+msgstr "Perşembe"
+
+#: mp_global/class/WBTM_Global_Function.php:491
+msgid "Friday"
+msgstr "Cuma"
+
+#: mp_global/class/WBTM_Global_Function.php:492
+msgid "Saturday"
+msgstr "Cumartesi"
+
+#: mp_global/class/WBTM_Global_Function.php:493
+msgid "Sunday"
+msgstr "Pazar"
+
+#: mp_global/class/WBTM_Global_Function.php:642
+#: mp_global/class/WBTM_Global_Function.php:668
+#: mp_global/class/WBTM_Global_Function.php:1243
+#: mp_global/class/WBTM_Global_Function.php:1269
+msgid "An error occurred, please try again."
+msgstr "Bir hata oluştu, lütfen tekrar deneyin."
+
+#: mp_global/class/WBTM_Global_Function.php:650
+#: mp_global/class/WBTM_Global_Function.php:1251
+msgid "Your license key has been disabled."
+msgstr "Lisans anahtarınız devre dışı bırakıldı."
+
+#: mp_global/class/WBTM_Global_Function.php:653
+#: mp_global/class/WBTM_Global_Function.php:1254
+msgid "Missing license."
+msgstr "Ehliyet eksik."
+
+#: mp_global/class/WBTM_Global_Function.php:656
+#: mp_global/class/WBTM_Global_Function.php:1257
+msgid "Invalid license."
+msgstr "Geçersiz lisans."
+
+#: mp_global/class/WBTM_Global_Function.php:659
+#: mp_global/class/WBTM_Global_Function.php:1260
+msgid "Your license is not active for this URL."
+msgstr "Lisansınız bu URL için aktif değil."
+
+#: mp_global/class/WBTM_Global_Function.php:662
+#: mp_global/class/WBTM_Global_Function.php:1263
+msgid "This appears to be an invalid license key for ."
+msgstr "Bu, için geçersiz bir lisans anahtarı gibi görünüyor."
+
+#: mp_global/class/WBTM_Global_Function.php:665
+#: mp_global/class/WBTM_Global_Function.php:1266
+msgid "Your license key has reached its activation limit."
+msgstr "Lisans anahtarınız aktivasyon sınırına ulaştı."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Success, License Key is valid for the plugin"
+msgstr "Başarılı, Lisans Anahtarı eklenti için geçerli"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Your Order id is"
+msgstr "Sipariş kimliğiniz"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Validity of this licenses is"
+msgstr "Bu lisansın geçerliliği"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:28
+#: mp_global/class/WBTM_Select_Icon_image.php:154
+msgid "Remove Icon"
+msgstr "Simgeyi Kaldır"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:47
+msgid "Select Icon"
+msgstr "Simge Seç"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:49
+msgid "Icon/class name...."
+msgstr "Simge/sınıf adı...."
+
+#: mp_global/class/WBTM_Select_Icon_image.php:65
+msgid "All Icon"
+msgstr "Tüm Simgeler"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:158
+msgid "Remove Image"
+msgstr "Görüntüyü Kaldır"
+
+#: templates/layout/search_result.php:121
+#, php-format
+msgctxt "Duration format (hours and minutes)"
+msgid "%d H %d M"
+msgstr "%d H %d M"

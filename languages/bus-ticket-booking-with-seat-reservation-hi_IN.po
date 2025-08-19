@@ -1,0 +1,3058 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the same license as the Bus Ticket Booking with Seat Reservation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.4.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-"
+"booking-with-seat-reservation\n"
+"Last-Translator: \n"
+"Language-Team: Hindi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-19T02:32:51+02:00\n"
+"PO-Revision-Date: 2025-08-19 00:45+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+"Language: hi_IN\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.30"
+
+#. Plugin Name of the plugin
+#: woocommerce-bus.php
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "सीट आरक्षण के साथ बस टिकट बुकिंग"
+
+#. Plugin URI of the plugin
+#: woocommerce-bus.php
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Description of the plugin
+#: woocommerce-bus.php
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr "वर्डप्रेस और वूकॉमर्स के लिए एक संपूर्ण बस टिकटिंग प्रणाली"
+
+#. Author of the plugin
+#: woocommerce-bus.php
+msgid "MagePeople Team"
+msgstr "मैजपीपल टीम"
+
+#. Author URI of the plugin
+#: woocommerce-bus.php
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/settings/WBTM_Date_Settings.php:35 admin/WBTM_Settings.php:52
+msgid "Date Settings"
+msgstr "दिनांक सेटिंग्स"
+
+#: admin/settings/WBTM_Date_Settings.php:36
+msgid ""
+"Bus date settings will help to operation a bus in a particular or repeated "
+"date."
+msgstr ""
+"बस तिथि सेटिंग किसी विशेष या दोहराई गई तिथि में बस को संचालित करने में मदद "
+"करेगी।"
+
+#: admin/settings/WBTM_Date_Settings.php:41
+msgid "Date Information"
+msgstr "तिथि की जानकारी"
+
+#: admin/settings/WBTM_Date_Settings.php:43
+msgid "Here you can set bus seat booking date."
+msgstr "यहां आप बस सीट बुकिंग की तारीख निर्धारित कर सकते हैं।"
+
+#: admin/settings/WBTM_Date_Settings.php:49
+msgid "Bus Operation Date Type"
+msgstr "बस संचालन तिथि प्रकार"
+
+#: admin/settings/WBTM_Date_Settings.php:57
+#: admin/settings/WBTM_Seat_Configuration.php:48
+#: admin/settings/WBTM_Seat_Configuration.php:114
+msgid "Please select ..."
+msgstr "कृपया चयन कीजिए ..."
+
+#: admin/settings/WBTM_Date_Settings.php:58
+msgid "Particular"
+msgstr "विशिष्ट"
+
+#: admin/settings/WBTM_Date_Settings.php:59
+msgid "Repeated"
+msgstr "दोहराया गया"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+#: admin/settings/WBTM_Date_Settings.php:69
+msgid "Particular Dates"
+msgstr "विशेष तिथियां"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Add New Particular date"
+msgstr "नई विशेष तिथि जोड़ें"
+
+#: admin/settings/WBTM_Date_Settings.php:100
+msgid "Repeated Start Date"
+msgstr "दोहराई गई आरंभ तिथि"
+
+#: admin/settings/WBTM_Date_Settings.php:102
+msgid "Select repeated start date."
+msgstr "दोहराई गई आरंभ तिथि का चयन करें."
+
+#: admin/settings/WBTM_Date_Settings.php:114
+msgid "Repeated End Date"
+msgstr "दोहराया गया समाप्ति तिथि"
+
+#: admin/settings/WBTM_Date_Settings.php:116
+msgid "Select repeated end date."
+msgstr "दोहराई गई समाप्ति तिथि का चयन करें."
+
+#: admin/settings/WBTM_Date_Settings.php:128
+msgid "Repeated after"
+msgstr "के बाद दोहराया गया"
+
+#: admin/settings/WBTM_Date_Settings.php:130
+msgid "Set repeated date step count."
+msgstr "दोहराई गई तिथि चरण गणना सेट करें."
+
+#: admin/settings/WBTM_Date_Settings.php:139
+msgid "Maximum advanced day for booking"
+msgstr "बुकिंग के लिए अधिकतम अग्रिम दिन"
+
+#: admin/settings/WBTM_Date_Settings.php:141
+msgid "Set maximum advanced day for booking."
+msgstr "बुकिंग के लिए अधिकतम अग्रिम दिन निर्धारित करें।"
+
+#: admin/settings/WBTM_Date_Settings.php:150
+msgid "Off Day"
+msgstr "छुट्टी का दिन"
+
+#: admin/settings/WBTM_Date_Settings.php:152
+msgid "Select days for off day."
+msgstr "छुट्टी के लिए दिन चुनें."
+
+#: admin/settings/WBTM_Date_Settings.php:167
+msgid "Off Dates"
+msgstr "ऑफ डेट्स"
+
+#: admin/settings/WBTM_Date_Settings.php:169
+msgid "Select dates for off day."
+msgstr "छुट्टी के लिए तारीखें चुनें."
+
+#: admin/settings/WBTM_Date_Settings.php:188
+msgid "Add New Off date"
+msgstr "नई समाप्ति तिथि जोड़ें"
+
+#: admin/settings/WBTM_Date_Settings.php:201
+msgid "Off Dates in Range"
+msgstr "सीमा में बंद तिथियां"
+
+#: admin/settings/WBTM_Date_Settings.php:203
+msgid "Select date range for off day."
+msgstr "अवकाश के दिन के लिए तिथि सीमा का चयन करें."
+
+#: admin/settings/WBTM_Date_Settings.php:220
+msgid "Add New Off date range"
+msgstr "नई बंद तिथि सीमा जोड़ें"
+
+#: admin/settings/WBTM_Extra_Service.php:23 inc/WBTM_Translations.php:324
+msgid "Extra Services"
+msgstr "अतिरिक्त सेवाएँ"
+
+#: admin/settings/WBTM_Extra_Service.php:24
+msgid "Add Extra Services for the passanger with bus seat reservation"
+msgstr "बस सीट आरक्षण के साथ यात्री के लिए अतिरिक्त सेवाएं जोड़ें"
+
+#: admin/settings/WBTM_Extra_Service.php:30
+msgid "Extra service"
+msgstr "अतिरिक्त सेवा"
+
+#: admin/settings/WBTM_Extra_Service.php:32
+msgid "Here you can add extra services. Also can be on/off extra service"
+msgstr ""
+"यहाँ आप अतिरिक्त सेवाएँ जोड़ सकते हैं। अतिरिक्त सेवा को चालू/बंद भी किया जा "
+"सकता है।"
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Show/Hide Extra Service"
+msgstr "अतिरिक्त सेवा दिखाएँ/छिपाएँ"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Service Name"
+msgstr "सेवा का नाम"
+
+#: admin/settings/WBTM_Extra_Service.php:55
+msgid "Service Price"
+msgstr "सेवा मूल्य"
+
+#: admin/settings/WBTM_Extra_Service.php:56
+msgid "Available Qty"
+msgstr "उपलब्ध मात्रा"
+
+#: admin/settings/WBTM_Extra_Service.php:57
+msgid "Qty Box Type"
+msgstr "मात्रा बॉक्स प्रकार"
+
+#: admin/settings/WBTM_Extra_Service.php:58 admin/WBTM_Global_settings.php:541
+#: inc/WBTM_Translations.php:354
+msgid "Action"
+msgstr "कार्रवाई"
+
+#: admin/settings/WBTM_Extra_Service.php:72
+msgid "Add Extra New Service"
+msgstr "अतिरिक्त नई सेवा जोड़ें"
+
+#: admin/settings/WBTM_Extra_Service.php:109
+msgid "Input Box"
+msgstr "इनपुट बॉक्स"
+
+#: admin/settings/WBTM_Extra_Service.php:110
+msgid "Dropdown List"
+msgstr "ड्रॉप डाउन सूची"
+
+#: admin/settings/WBTM_Pricing_Routing.php:61
+msgid "Price And Routing Settings"
+msgstr "मूल्य और रूटिंग सेटिंग्स"
+
+#: admin/settings/WBTM_Pricing_Routing.php:62
+msgid "Here you can configure Price And Routing for a bus."
+msgstr "यहां आप किसी बस के लिए मूल्य और रूटिंग कॉन्फ़िगर कर सकते हैं।"
+
+#: admin/settings/WBTM_Pricing_Routing.php:66
+msgid "GTFS Export Ready!"
+msgstr "GTFS निर्यात तैयार!"
+
+#: admin/settings/WBTM_Pricing_Routing.php:67
+msgid ""
+"Add GPS coordinates to your bus stops to enable Google Transit integration. "
+"This allows your routes to appear in Google Maps, Apple Maps, and other "
+"transit apps."
+msgstr ""
+"Google ट्रांज़िट एकीकरण सक्षम करने के लिए अपने बस स्टॉप पर GPS निर्देशांक "
+"जोड़ें। इससे आपके मार्ग Google मैप्स, Apple मैप्स और अन्य ट्रांज़िट ऐप्स में "
+"दिखाई देंगे।"
+
+#: admin/settings/WBTM_Pricing_Routing.php:69
+msgid "Export GTFS Feed"
+msgstr "GTFS फ़ीड निर्यात करें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:77
+msgid "Boarding and Dropping Settings"
+msgstr "बोर्डिंग और ड्रॉपिंग सेटिंग्स"
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Add New Stops"
+msgstr "नए स्टॉप जोड़ें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:110
+msgid "Pricing Settings"
+msgstr "मूल्य निर्धारण सेटिंग्स"
+
+#: admin/settings/WBTM_Pricing_Routing.php:230
+msgid "Add Stop"
+msgstr "स्टॉप जोड़ें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:254
+msgid "Stop : "
+msgstr "रुकना : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:256
+msgid "Select bus stop"
+msgstr "बस स्टॉप चुनें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:263
+msgid "Time : "
+msgstr "समय : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:269
+msgid "Type : "
+msgstr "प्रकार : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:272
+msgid "Select place type"
+msgstr "स्थान प्रकार चुनें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:273
+msgid "Boarding "
+msgstr "बोर्डिंग"
+
+#: admin/settings/WBTM_Pricing_Routing.php:274
+msgid "Dropping "
+msgstr "गिराना"
+
+#: admin/settings/WBTM_Pricing_Routing.php:275
+msgid "Boarding & Dropping"
+msgstr "बोर्डिंग और ड्रॉपिंग"
+
+#: admin/settings/WBTM_Pricing_Routing.php:285
+msgid "Next Day Dropping: "
+msgstr "अगले दिन ड्रॉपिंग:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:297
+msgid "GTFS Coordinates (for Google Transit)"
+msgstr "GTFS निर्देशांक (Google ट्रांज़िट के लिए)"
+
+#: admin/settings/WBTM_Pricing_Routing.php:301
+msgid ""
+"Add GPS coordinates for this stop to enable Google Maps integration. You can "
+"find coordinates using Google Maps or GPS tools."
+msgstr ""
+"Google मानचित्र एकीकरण सक्षम करने के लिए इस स्टॉप के लिए GPS निर्देशांक "
+"जोड़ें। आप Google मानचित्र या GPS टूल का उपयोग करके निर्देशांक ढूंढ सकते हैं।"
+
+#: admin/settings/WBTM_Pricing_Routing.php:307
+msgid "Latitude:"
+msgstr "अक्षांश:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:323
+msgid "Longitude:"
+msgstr "देशांतर:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:339
+msgid "Example: New York City = Lat: 40.7128, Lon: -74.0060"
+msgstr "उदाहरण: न्यूयॉर्क शहर = अक्षांश: 40.7128, देशांतर: -74.0060"
+
+#: admin/settings/WBTM_Pricing_Routing.php:343
+msgid "Get from Map"
+msgstr "मानचित्र से प्राप्त करें"
+
+#: admin/settings/WBTM_Pricing_Routing.php:346
+msgid "Validate"
+msgstr "मान्य"
+
+#: admin/settings/WBTM_Pricing_Routing.php:405 inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr "बोर्डिंग"
+
+#: admin/settings/WBTM_Pricing_Routing.php:409 inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr "छोड़ने"
+
+#: admin/settings/WBTM_Pricing_Routing.php:413
+msgid "Adult Price"
+msgstr "वयस्क मूल्य"
+
+#: admin/settings/WBTM_Pricing_Routing.php:416
+msgid "Child Price"
+msgstr "बच्चे की कीमत"
+
+#: admin/settings/WBTM_Pricing_Routing.php:417
+msgid "Infant Price"
+msgstr "शिशु मूल्य"
+
+#: admin/settings/WBTM_Pricing_Routing.php:458
+msgid "Please Create Bus route ."
+msgstr "कृपया बस मार्ग बनाएं."
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Seat Configuration"
+msgstr "सीट विन्यास"
+
+#: admin/settings/WBTM_Seat_Configuration.php:27
+msgid "Bus seat configuration. Plan your bus seat."
+msgstr "बस सीट का विन्यास। अपनी बस सीट की योजना बनाएँ।"
+
+#: admin/settings/WBTM_Seat_Configuration.php:34
+#: admin/settings/WBTM_Translation_Settings.php:53
+msgid "Seat Information"
+msgstr "सीट की जानकारी"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Here you can plan seat of the bus."
+msgstr "यहां आप बस की सीट की योजना बना सकते हैं।"
+
+#: admin/settings/WBTM_Seat_Configuration.php:42 inc/WBTM_Translations.php:240
+msgid "Seat Type"
+msgstr "सीट का प्रकार"
+
+#: admin/settings/WBTM_Seat_Configuration.php:49
+msgid "Seat Plan"
+msgstr "सीट योजना"
+
+#: admin/settings/WBTM_Seat_Configuration.php:50
+msgid "Without Seat Plan"
+msgstr "बिना सीट प्लान के"
+
+#: admin/settings/WBTM_Seat_Configuration.php:58
+msgid "Total Seat"
+msgstr "कुल सीट"
+
+#: admin/settings/WBTM_Seat_Configuration.php:91
+msgid "Lower Deck"
+msgstr "निचला डेक"
+
+#: admin/settings/WBTM_Seat_Configuration.php:92
+msgid "Lower deck seat plan"
+msgstr "निचले डेक की सीट योजना"
+
+#: admin/settings/WBTM_Seat_Configuration.php:101
+msgid "Show Upper Deck"
+msgstr "ऊपरी डेक दिखाएँ"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103
+msgid "Turn On or Off upper deck seat plan"
+msgstr "ऊपरी डेक सीट योजना को चालू या बंद करें"
+
+#: admin/settings/WBTM_Seat_Configuration.php:111
+msgid "Driver Position"
+msgstr "चालक पद"
+
+#: admin/settings/WBTM_Seat_Configuration.php:115
+msgid "Left"
+msgstr "बाएं"
+
+#: admin/settings/WBTM_Seat_Configuration.php:116
+msgid "Right"
+msgstr "सही"
+
+#: admin/settings/WBTM_Seat_Configuration.php:123
+msgid "Seat Rows"
+msgstr "सीट पंक्तियाँ"
+
+#: admin/settings/WBTM_Seat_Configuration.php:133
+msgid "Seat Columns"
+msgstr "सीट कॉलम"
+
+#: admin/settings/WBTM_Seat_Configuration.php:139
+msgid "Generate Bus Seat"
+msgstr "बस सीट उत्पन्न करें"
+
+#: admin/settings/WBTM_Seat_Configuration.php:143
+#: admin/settings/WBTM_Seat_Configuration.php:210
+msgid "Bus Front"
+msgstr "बस के आगे"
+
+#: admin/settings/WBTM_Seat_Configuration.php:153
+msgid "Enable Rotation"
+msgstr "रोटेशन सक्षम करें"
+
+#: admin/settings/WBTM_Seat_Configuration.php:155
+msgid "Enable seat rotation for individual seats"
+msgstr "अलग-अलग सीटों के लिए सीट रोटेशन सक्षम करें"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176 inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr "ऊपरी डेक"
+
+#: admin/settings/WBTM_Seat_Configuration.php:177
+msgid "You can make Upper Deck seat plan"
+msgstr "आप ऊपरी डेक सीट योजना बना सकते हैं"
+
+#: admin/settings/WBTM_Seat_Configuration.php:184
+msgid "Seat Rows : "
+msgstr "सीट पंक्तियाँ:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:193
+msgid "Seat Columns : "
+msgstr "सीट कॉलम:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:201
+msgid "Price Increase : "
+msgstr "मूल्य वृद्धि :"
+
+#: admin/settings/WBTM_Seat_Configuration.php:206
+msgid "Create seat Plan"
+msgstr "सीट योजना बनाएं"
+
+#: admin/settings/WBTM_Seat_Configuration.php:240
+msgid "Add New Row"
+msgstr "नई पंक्ति जोड़ें"
+
+#: admin/settings/WBTM_Seat_Configuration.php:266
+msgid "Blank"
+msgstr "खाली"
+
+#: admin/settings/WBTM_Seat_Configuration.php:275
+msgid "Rotate Seat"
+msgstr "सीट घुमाएँ"
+
+#: admin/settings/WBTM_Settings_General.php:19
+msgid "General Settings"
+msgstr "सामान्य सेटिंग्स"
+
+#: admin/settings/WBTM_Settings_General.php:20
+msgid "Bus General Settings"
+msgstr "बस सामान्य सेटिंग्स"
+
+#: admin/settings/WBTM_Settings_General.php:25
+#: admin/settings/WBTM_Translation_Settings.php:48
+msgid "Bus Information"
+msgstr "बस सूचना"
+
+#: admin/settings/WBTM_Settings_General.php:27
+msgid "Here you can set bus number, category and seat reservation on/off"
+msgstr "यहां आप बस नंबर, श्रेणी और सीट आरक्षण को चालू/बंद कर सकते हैं"
+
+#: admin/settings/WBTM_Settings_General.php:36
+msgid "Bus no"
+msgstr "बस नं."
+
+#: admin/settings/WBTM_Settings_General.php:63
+msgid "Reservation on/off"
+msgstr "आरक्षण चालू/बंद"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:19
+msgid "Pickup And Drop-Off Point Settings"
+msgstr "पिकअप और ड्रॉप-ऑफ पॉइंट सेटिंग्स"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:20
+msgid "Here you can set bus pick up and drop off point settings."
+msgstr "यहां आप बस पिक-अप और ड्रॉप-ऑफ पॉइंट सेटिंग सेट कर सकते हैं।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:41
+msgid "Pick up settings"
+msgstr "सेटिंग्स उठाओ"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:43
+msgid "Here you can set pickup location"
+msgstr "यहां आप पिकअप स्थान सेट कर सकते हैं"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:50
+msgid "On/Off Pickup Point"
+msgstr "चालू/बंद पिकअप बिंदु"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "Boarding point Required?"
+msgstr "बोर्डिंग पॉइंट आवश्यक है?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:66
+msgid "Turn On or Off Boarding point Required?"
+msgstr "बोर्डिंग पॉइंट चालू या बंद करना आवश्यक है?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:75
+#: inc/WBTM_Translations.php:607
+msgid "Boarding Point"
+msgstr "बोर्डिंग पॉइंट"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:76
+msgid "Pickup Info"
+msgstr "पिकअप जानकारी"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:91
+#: admin/settings/WBTM_Settings_Pickup_Point.php:247
+msgid "Add More Point"
+msgstr "अधिक बिंदु जोड़ें"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:102
+msgid ""
+"You have no Pickup Point . Please add Pickup Point and save ,then you can "
+"edit pickup point."
+msgstr ""
+"आपके पास कोई पिकअप पॉइंट नहीं है। कृपया पिकअप पॉइंट जोड़ें और सेव करें, फिर "
+"आप पिकअप पॉइंट एडिट कर सकते हैं।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:105
+msgid ""
+"You have no Bus route . Please add Price and Route and save ,then you can "
+"edit pickup point."
+msgstr ""
+"आपके पास कोई बस रूट नहीं है। कृपया मूल्य और रूट जोड़ें और सेव करें, फिर आप "
+"पिकअप पॉइंट संपादित कर सकते हैं।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:143
+msgid "Add Pickup Point"
+msgstr "पिकअप पॉइंट जोड़ें"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:197
+msgid "Drop-off settings"
+msgstr "ड्रॉप-ऑफ सेटिंग्स"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:199
+msgid "Here you can set drop-off location."
+msgstr "यहां आप ड्रॉप-ऑफ स्थान निर्धारित कर सकते हैं।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:205
+msgid "Drop-Off Point Settings"
+msgstr "ड्रॉप-ऑफ पॉइंट सेटिंग्स"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:221
+msgid "Dropping point Required?"
+msgstr "ड्रॉपिंग पॉइंट आवश्यक है?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:222
+msgid "Turn On or Off Dropping point Required?"
+msgstr "ड्रॉपिंग पॉइंट चालू या बंद करना आवश्यक है?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:231
+#: inc/WBTM_Translations.php:613
+msgid "Dropping Point"
+msgstr "छोड़ने के बिंदु"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:232
+msgid "Drop-Off Info"
+msgstr "ड्रॉप-ऑफ जानकारी"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:258
+msgid ""
+"You have no Drop-Off Point. Please add Drop-Off Point from left sidebar menu."
+msgstr ""
+"आपके पास कोई ड्रॉप-ऑफ़ पॉइंट नहीं है। कृपया बाएँ साइडबार मेनू से ड्रॉप-ऑफ़ "
+"पॉइंट जोड़ें।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:261
+msgid ""
+"You have no Bus route. Please add Price and Route and save ,then you can "
+"edit Drop-Off point."
+msgstr ""
+"आपके पास कोई बस रूट नहीं है। कृपया किराया और रूट डालकर सेव करें, फिर आप "
+"ड्रॉप-ऑफ़ पॉइंट संपादित कर सकते हैं।"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:297
+msgid "Add Drop-Off Point"
+msgstr "ड्रॉप-ऑफ पॉइंट जोड़ें"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "कर विन्यास"
+
+#: admin/settings/WBTM_Tax_Settings.php:19
+msgid "Bus tax Configuration settings."
+msgstr "बस कर कॉन्फ़िगरेशन सेटिंग्स."
+
+#: admin/settings/WBTM_Tax_Settings.php:28
+msgid "Tax Settings Information"
+msgstr "कर सेटिंग जानकारी"
+
+#: admin/settings/WBTM_Tax_Settings.php:30
+msgid "Here you can configure tax settings."
+msgstr "यहां आप कर सेटिंग कॉन्फ़िगर कर सकते हैं."
+
+#: admin/settings/WBTM_Tax_Settings.php:38
+msgid "Tax status"
+msgstr "कर स्थिति"
+
+#: admin/settings/WBTM_Tax_Settings.php:41
+msgid "Select tax status type."
+msgstr "कर स्थिति प्रकार का चयन करें."
+
+#: admin/settings/WBTM_Tax_Settings.php:48
+msgid "Taxable"
+msgstr "कर योग्य"
+
+#: admin/settings/WBTM_Tax_Settings.php:51
+msgid "Shipping only"
+msgstr "केवल शिपिंग"
+
+#: admin/settings/WBTM_Tax_Settings.php:54
+msgid "None"
+msgstr "कोई नहीं"
+
+#: admin/settings/WBTM_Tax_Settings.php:63
+msgid "Tax class"
+msgstr "कर वर्ग"
+
+#: admin/settings/WBTM_Tax_Settings.php:71
+msgid "Standard"
+msgstr "मानक"
+
+#: admin/settings/WBTM_Tax_Settings.php:86
+msgid "Tax not active. Please add Tax settings from woocommerce."
+msgstr "टैक्स सक्रिय नहीं है। कृपया woocommerce से टैक्स सेटिंग जोड़ें।"
+
+#: admin/settings/WBTM_Translation_Settings.php:17
+msgid "Translation Settings"
+msgstr "अनुवाद सेटिंग्स"
+
+#: admin/settings/WBTM_Translation_Settings.php:18
+msgid "Translations"
+msgstr "अनुवाद"
+
+#: admin/settings/WBTM_Translation_Settings.php:33
+msgid "General Labels"
+msgstr "सामान्य लेबल"
+
+#: admin/settings/WBTM_Translation_Settings.php:38
+msgid "Booking Labels"
+msgstr "बुकिंग लेबल"
+
+#: admin/settings/WBTM_Translation_Settings.php:43
+#: inc/WBTM_Translations.php:318
+msgid "Passenger Information"
+msgstr "यात्री सूचना"
+
+#: admin/settings/WBTM_Translation_Settings.php:58
+msgid "Button Labels"
+msgstr "बटन लेबल"
+
+#: admin/settings/WBTM_Translation_Settings.php:63
+msgid "Error Messages"
+msgstr "त्रुटि संदेश"
+
+#: admin/settings/WBTM_Translation_Settings.php:68
+msgid "Ticket Status"
+msgstr "टिकट की स्थिति"
+
+#: admin/settings/WBTM_Translation_Settings.php:73
+msgid "Passenger Form"
+msgstr "यात्री प्रपत्र"
+
+#: admin/settings/WBTM_Translation_Settings.php:78
+msgid "Journey Information"
+msgstr "यात्रा की जानकारी"
+
+#: admin/settings/WBTM_Translation_Settings.php:83
+msgid "Price Information"
+msgstr "मूल्य जानकारी"
+
+#: admin/settings/WBTM_Translation_Settings.php:193
+msgid "Bus Ticket Booking Translations"
+msgstr "बस टिकट बुकिंग अनुवाद"
+
+#: admin/settings/WBTM_Translation_Settings.php:228
+#, php-format
+msgid "Default: %s"
+msgstr "डिफ़ॉल्ट: %s"
+
+#: admin/settings/WBTM_Translation_Settings.php:240
+msgid "Save Changes"
+msgstr "परिवर्तनों को सुरक्षित करें"
+
+#: admin/WBTM_Analytics_Dashboard.php:16
+msgid "Analytics Dashboard"
+msgstr "एनालिटिक्स डैशबोर्ड"
+
+#: admin/WBTM_Analytics_Dashboard.php:17
+msgid "Analytics"
+msgstr "एनालिटिक्स"
+
+#: admin/WBTM_Analytics_Dashboard.php:231
+msgid "Bus Booking Analytics Dashboard"
+msgstr "बस बुकिंग एनालिटिक्स डैशबोर्ड"
+
+#: admin/WBTM_Analytics_Dashboard.php:241
+msgid "Total Bookings"
+msgstr "कुल बुकिंग"
+
+#: admin/WBTM_Analytics_Dashboard.php:251
+msgid "Total Revenue"
+msgstr "कुल मुनाफा"
+
+#: admin/WBTM_Analytics_Dashboard.php:261
+msgid "Total Seats Booked"
+msgstr "कुल बुक की गई सीटें"
+
+#: admin/WBTM_Analytics_Dashboard.php:269
+msgid "Popular Routes"
+msgstr "लोकप्रिय मार्ग"
+
+#: admin/WBTM_Analytics_Dashboard.php:274
+msgid "Monthly Revenue"
+msgstr "मासिक राजस्व"
+
+#: admin/WBTM_Analytics_Dashboard.php:281
+msgid "Advanced Analytics"
+msgstr "उन्नत विश्लेषण"
+
+#: admin/WBTM_Analytics_Dashboard.php:286
+msgid "Peak Booking Hours"
+msgstr "पीक बुकिंग घंटे"
+
+#: admin/WBTM_Analytics_Dashboard.php:292
+msgid "Weekly Booking Pattern"
+msgstr "साप्ताहिक बुकिंग पैटर्न"
+
+#: admin/WBTM_Analytics_Dashboard.php:298
+msgid "Ticket Type Distribution"
+msgstr "टिकट प्रकार वितरण"
+
+#: admin/WBTM_Analytics_Dashboard.php:304
+msgid "Bus Type Performance"
+msgstr "बस प्रकार प्रदर्शन"
+
+#: admin/WBTM_Analytics_Dashboard.php:312
+msgid "Return Customer Rate"
+msgstr "वापसी ग्राहक दर"
+
+#: admin/WBTM_Analytics_Dashboard.php:324
+msgid "Average Occupancy Rate"
+msgstr "औसत अधिभोग दर"
+
+#: admin/WBTM_Bus_Import.php:20 admin/WBTM_Bus_Import.php:21
+#: admin/WBTM_Bus_Import.php:46 admin/WBTM_Bus_Import.php:116
+msgid "Import Buses"
+msgstr "आयातित बसें"
+
+#: admin/WBTM_Bus_Import.php:53
+#, php-format
+msgid "%s bus imported successfully."
+msgid_plural "%s buses imported successfully."
+msgstr[0] "%s बस सफलतापूर्वक आयातित."
+msgstr[1] "%s बसें सफलतापूर्वक आयातित."
+
+#: admin/WBTM_Bus_Import.php:60
+#, php-format
+msgid "%s bus failed to import."
+msgid_plural "%s buses failed to import."
+msgstr[0] "%s बस आयात करने में विफल."
+msgstr[1] "%s बसें आयात करने में विफल रहीं."
+
+#: admin/WBTM_Bus_Import.php:71
+msgid "Import Buses from CSV"
+msgstr "CSV से बसें आयात करें"
+
+#: admin/WBTM_Bus_Import.php:72
+msgid ""
+"Upload a CSV file to import multiple buses at once. This will allow you to "
+"create all your buses in a single operation instead of adding them one by "
+"one."
+msgstr ""
+"एक साथ कई बसों को आयात करने के लिए एक CSV फ़ाइल अपलोड करें। इससे आप अपनी सभी "
+"बसों को एक-एक करके जोड़ने के बजाय एक ही बार में बना पाएँगे।"
+
+#: admin/WBTM_Bus_Import.php:80
+msgid "Choose CSV File"
+msgstr "CSV फ़ाइल चुनें"
+
+#: admin/WBTM_Bus_Import.php:84
+msgid "Select a CSV file with your bus data."
+msgstr "अपने बस डेटा के साथ एक CSV फ़ाइल का चयन करें."
+
+#: admin/WBTM_Bus_Import.php:89
+msgid "CSV Format"
+msgstr "सीएसवी प्रारूप"
+
+#: admin/WBTM_Bus_Import.php:92
+msgid "Your CSV file should include the following columns:"
+msgstr "आपकी CSV फ़ाइल में निम्नलिखित कॉलम शामिल होने चाहिए:"
+
+#: admin/WBTM_Bus_Import.php:94
+msgid "Bus name (required)"
+msgstr "बस का नाम (आवश्यक)"
+
+#: admin/WBTM_Bus_Import.php:95
+msgid "Bus number (required)"
+msgstr "बस संख्या (आवश्यक)"
+
+#: admin/WBTM_Bus_Import.php:96
+msgid "Bus category (AC/Non AC)"
+msgstr "बस श्रेणी (एसी/नॉन एसी)"
+
+#: admin/WBTM_Bus_Import.php:97
+msgid "Seat type configuration (wbtm_seat_plan)"
+msgstr "सीट प्रकार विन्यास (wbtm_seat_plan)"
+
+#: admin/WBTM_Bus_Import.php:98
+msgid "Driver seat position (driver_left/driver_right)"
+msgstr "चालक की सीट की स्थिति (driver_left/driver_right)"
+
+#: admin/WBTM_Bus_Import.php:99
+msgid "Number of seat rows"
+msgstr "सीट पंक्तियों की संख्या"
+
+#: admin/WBTM_Bus_Import.php:100
+msgid "Number of seat columns"
+msgstr "सीट स्तंभों की संख्या"
+
+#: admin/WBTM_Bus_Import.php:101
+msgid "Total number of seats"
+msgstr "कुल सीटों की संख्या"
+
+#: admin/WBTM_Bus_Import.php:102
+msgid "Has upper deck (yes/no)"
+msgstr "ऊपरी डेक है (हाँ/नहीं)"
+
+#: admin/WBTM_Bus_Import.php:103
+msgid "Starting point of route (comma separated for multiple routes)"
+msgstr ""
+"मार्ग का प्रारंभिक बिंदु (एकाधिक मार्गों के लिए अल्पविराम से अलग किया गया)"
+
+#: admin/WBTM_Bus_Import.php:104
+msgid "End point of route (comma separated for multiple routes)"
+msgstr "मार्ग का अंतिम बिंदु (एकाधिक मार्गों के लिए अल्पविराम से अलग किया गया)"
+
+#: admin/WBTM_Bus_Import.php:105
+msgid "Boarding points (comma separated)"
+msgstr "बोर्डिंग पॉइंट (अल्पविराम से अलग)"
+
+#: admin/WBTM_Bus_Import.php:106
+msgid "Dropping points (comma separated)"
+msgstr "ड्रॉपिंग पॉइंट्स (अल्पविराम से अलग)"
+
+#: admin/WBTM_Bus_Import.php:107
+msgid "Start date (YYYY-MM-DD)"
+msgstr "आरंभ तिथि (वर्ष-माह-दिन)"
+
+#: admin/WBTM_Bus_Import.php:108
+msgid "End date (YYYY-MM-DD)"
+msgstr "समाप्ति तिथि (वर्ष-माह-दिन)"
+
+#: admin/WBTM_Bus_Import.php:109
+msgid "Price data in format: from|to|price,from|to|price"
+msgstr "मूल्य डेटा प्रारूप में: से|तक|मूल्य,से|तक|मूल्य"
+
+#: admin/WBTM_Bus_Import.php:117
+msgid "Download Sample CSV"
+msgstr "नमूना CSV डाउनलोड करें"
+
+#: admin/WBTM_Bus_Import.php:123
+msgid "Import Instructions"
+msgstr "आयात निर्देश"
+
+#: admin/WBTM_Bus_Import.php:125
+msgid "Download the sample CSV file to see the required format."
+msgstr "आवश्यक प्रारूप देखने के लिए नमूना CSV फ़ाइल डाउनलोड करें।"
+
+#: admin/WBTM_Bus_Import.php:126
+msgid "Fill in your bus data following the same format."
+msgstr "उसी प्रारूप का पालन करते हुए अपना बस डेटा भरें।"
+
+#: admin/WBTM_Bus_Import.php:127
+msgid "Upload your CSV file using the form above."
+msgstr "उपरोक्त फ़ॉर्म का उपयोग करके अपनी CSV फ़ाइल अपलोड करें."
+
+#: admin/WBTM_Bus_Import.php:128
+msgid "Review the import results and check your buses."
+msgstr "आयात परिणामों की समीक्षा करें और अपनी बसों की जांच करें।"
+
+#: admin/WBTM_Bus_Import.php:132
+msgid "Important Notes:"
+msgstr "महत्वपूर्ण नोट्स:"
+
+#: admin/WBTM_Bus_Import.php:134
+msgid "Make sure your CSV file is properly formatted with the correct columns."
+msgstr ""
+"सुनिश्चित करें कि आपकी CSV फ़ाइल सही कॉलम के साथ उचित रूप से स्वरूपित है।"
+
+#: admin/WBTM_Bus_Import.php:135
+msgid "Bus names and numbers must be unique."
+msgstr "बस का नाम और नंबर अद्वितीय होना चाहिए।"
+
+#: admin/WBTM_Bus_Import.php:136
+msgid ""
+"For complex seat arrangements, you may need to edit the buses after import."
+msgstr ""
+"जटिल सीट व्यवस्था के लिए, आपको आयात के बाद बसों को संपादित करने की आवश्यकता "
+"हो सकती है।"
+
+#: admin/WBTM_Bus_Import.php:137
+msgid "The import process may take some time depending on the number of buses."
+msgstr "बसों की संख्या के आधार पर आयात प्रक्रिया में कुछ समय लग सकता है।"
+
+#: admin/WBTM_Bus_Import.php:163
+msgid "Security check failed. Please try again."
+msgstr "सुरक्षा जाँच विफल. कृपया पुनः प्रयास करें."
+
+#: admin/WBTM_Bus_Import.php:168
+msgid "You do not have sufficient permissions to import data."
+msgstr "आपके पास डेटा आयात करने के लिए पर्याप्त अनुमतियाँ नहीं हैं."
+
+#: admin/WBTM_Bus_Import.php:173
+msgid "No file uploaded or upload error."
+msgstr "कोई फ़ाइल अपलोड नहीं हुई या अपलोड त्रुटि हुई."
+
+#: admin/WBTM_Bus_Import.php:180
+msgid "Invalid file type. Please upload a CSV file."
+msgstr "फ़ाइल प्रकार अमान्य है. कृपया CSV फ़ाइल अपलोड करें."
+
+#: admin/WBTM_Bus_Import.php:209
+msgid "Could not open the file."
+msgstr "फ़ाइल नहीं खोली जा सकी."
+
+#: admin/WBTM_Bus_Import.php:217
+msgid "Could not read CSV headers."
+msgstr "CSV हेडर नहीं पढ़ा जा सका."
+
+#: admin/WBTM_Bus_Import.php:230
+#, php-format
+msgid "Required column \"%s\" is missing."
+msgstr "आवश्यक स्तंभ \"%s\" अनुपलब्ध है."
+
+#: admin/WBTM_CPT.php:30 admin/WBTM_Taxonomy.php:20
+msgid "All"
+msgstr "सभी"
+
+#: admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32 admin/WBTM_Taxonomy.php:24
+#: admin/WBTM_Taxonomy.php:78 admin/WBTM_Taxonomy.php:114
+msgid "Add New"
+msgstr "नया जोड़ो"
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "नया"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "संपादन करना"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "अद्यतन"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "देखना"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr "खोज"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "नहीं मिला"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "ट्रैश में नहीं मिला"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "फ़ीचर छवि"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "तय करना"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "फीचर्ड चित्र"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "निकालना"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "के रूप में उपयोग"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "में सम्मिलित करें"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "इस पर अपलोड किया गया"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr " सूची"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr "सूची नेविगेशन"
+
+#: admin/WBTM_CPT.php:49 inc/WBTM_Translations.php:417
+msgid "Filter"
+msgstr "फ़िल्टर"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "सूची"
+
+#: admin/WBTM_CPT.php:77
+msgid "Bus Attendee"
+msgstr "बस में उपस्थित व्यक्ति"
+
+#: admin/WBTM_CPT.php:101
+msgid "Coach no"
+msgstr "कोच नं."
+
+#: admin/WBTM_CPT.php:102 admin/WBTM_Global_settings.php:536
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21
+msgid "Type"
+msgstr "प्रकार"
+
+#: admin/WBTM_CPT.php:104
+msgid "Added by"
+msgstr "द्वारा जोड़ा गया"
+
+#: admin/WBTM_CPT.php:110
+msgid "Seal Plan"
+msgstr "सील योजना"
+
+#: admin/WBTM_CPT.php:110
+msgid "Without Seal Plan"
+msgstr "बिना सील योजना"
+
+#: admin/WBTM_Global_settings.php:26
+msgid " Settings"
+msgstr "सेटिंग्स"
+
+#: admin/WBTM_Global_settings.php:70
+msgid "Settings"
+msgstr "सेटिंग्स"
+
+#: admin/WBTM_Global_settings.php:74
+msgid "Global Settings"
+msgstr "वैश्विक सेटिंग्स"
+
+#: admin/WBTM_Global_settings.php:85
+msgid "Slider Settings"
+msgstr "स्लाइडर सेटिंग्स"
+
+#: admin/WBTM_Global_settings.php:89
+msgid "Style Settings"
+msgstr "शैली सेटिंग्स"
+
+#: admin/WBTM_Global_settings.php:93 admin/WBTM_Global_settings.php:504
+msgid "Custom CSS"
+msgstr "कस्टम सीएसएस"
+
+#: admin/WBTM_Global_settings.php:97 admin/WBTM_Global_settings.php:517
+msgid "Mage-People License"
+msgstr "जादूगर-लोग लाइसेंस"
+
+#: admin/WBTM_Global_settings.php:111
+msgid "Seat Booked Status"
+msgstr "सीट बुक की स्थिति"
+
+#: admin/WBTM_Global_settings.php:112
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr "कृपया चुनें कि कब और किस ऑर्डर स्थिति में सीट बुक/कम की जाएगी।"
+
+#: admin/WBTM_Global_settings.php:119
+msgid "On Hold"
+msgstr "होल्ड पर"
+
+#: admin/WBTM_Global_settings.php:120
+msgid "Pending"
+msgstr "लंबित"
+
+#: admin/WBTM_Global_settings.php:121
+msgid "Processing"
+msgstr "प्रसंस्करण"
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Completed"
+msgstr "पुरा होना।"
+
+#: admin/WBTM_Global_settings.php:127 admin/WBTM_Global_settings.php:131
+msgid "Label"
+msgstr "लेबल"
+
+#: admin/WBTM_Global_settings.php:128
+msgid ""
+"If you like to change the label in the dashboard menu, you can change it "
+"here."
+msgstr ""
+"यदि आप डैशबोर्ड मेनू में लेबल बदलना चाहते हैं, तो आप इसे यहां बदल सकते हैं।"
+
+#: admin/WBTM_Global_settings.php:135 admin/WBTM_Global_settings.php:139
+msgid "Slug"
+msgstr "काउंटर"
+
+#: admin/WBTM_Global_settings.php:136
+msgid ""
+"Please enter the slug name you want. Remember, after changing this slug; you "
+"need to flush permalink; go to"
+msgstr ""
+"कृपया अपना मनचाहा स्लग नाम डालें। याद रखें, इस स्लग को बदलने के बाद, आपको "
+"पर्मालिंक हटाना होगा; यहाँ जाएँ"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "Settings-> Permalinks"
+msgstr "सेटिंग्स-> पर्मालिंक्स"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "hit the Save Settings button."
+msgstr "सेटिंग्स सहेजें बटन दबाएं."
+
+#: admin/WBTM_Global_settings.php:143
+#: mp_global/class/WBTM_Select_Icon_image.php:33
+#: mp_global/class/WBTM_Select_Icon_image.php:165
+msgid "Icon"
+msgstr "आइकन"
+
+#: admin/WBTM_Global_settings.php:144
+msgid ""
+"If you want to change the  icon in the dashboard menu, you can change it "
+"from here, and the Dashboard icon only supports the Dashicons, So please go "
+"to "
+msgstr ""
+"यदि आप डैशबोर्ड मेनू में आइकन बदलना चाहते हैं, तो आप इसे यहां से बदल सकते "
+"हैं, और डैशबोर्ड आइकन केवल डैशिकॉन का समर्थन करता है, इसलिए कृपया यहां जाएं"
+
+#: admin/WBTM_Global_settings.php:144
+msgid "Dashicons Library."
+msgstr "डैशिकॉन्स लाइब्रेरी."
+
+#: admin/WBTM_Global_settings.php:144
+msgid "and copy your icon code and paste it here."
+msgstr "और अपना आइकन कोड कॉपी करें और इसे यहां पेस्ट करें।"
+
+#: admin/WBTM_Global_settings.php:150
+msgid "Show return Date Search"
+msgstr "वापसी तिथि खोजें दिखाएँ"
+
+#: admin/WBTM_Global_settings.php:151
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"यदि आप खोज में रिटर्न फ़ील्ड नहीं दिखाना चाहते हैं, तो इसे अक्षम करें। "
+"डिफ़ॉल्ट रूप से सक्षम करें"
+
+#: admin/WBTM_Global_settings.php:155
+msgid "Disable"
+msgstr "अक्षम करना"
+
+#: admin/WBTM_Global_settings.php:156
+msgid "Enable"
+msgstr "सक्षम"
+
+#: admin/WBTM_Global_settings.php:161
+msgid "Ticket sale off after date"
+msgstr "तिथि के बाद टिकट बिक्री बंद"
+
+#: admin/WBTM_Global_settings.php:162
+msgid ""
+"Please select Seat sale off after date . if you dont want to off sale then "
+"it will be blank"
+msgstr ""
+"कृपया तिथि के बाद सीट बिक्री बंद का चयन करें। यदि आप बिक्री बंद नहीं करना "
+"चाहते हैं तो यह रिक्त होगा"
+
+#: admin/WBTM_Global_settings.php:170
+msgid "Maximum advanced day Sale"
+msgstr "अधिकतम अग्रिम दिन बिक्री"
+
+#: admin/WBTM_Global_settings.php:171
+msgid ""
+"Please select Maximum advanced day Ticket Sale . if you dont want to off "
+"sale then it will be blank"
+msgstr ""
+"कृपया अधिकतम अग्रिम दिन टिकट बिक्री का चयन करें। यदि आप ऑफ-सेल नहीं करना "
+"चाहते हैं तो यह रिक्त होगा"
+
+#: admin/WBTM_Global_settings.php:178
+msgid "Buffer Time"
+msgstr "बफर समय"
+
+#: admin/WBTM_Global_settings.php:179
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr "कृपया यहाँ कार बफ़र समय (मिनट में) दर्ज करें। डिफ़ॉल्ट रूप से यह 0 है।"
+
+#: admin/WBTM_Global_settings.php:182
+msgid "Ex:50"
+msgstr "उदाहरण:50"
+
+#: admin/WBTM_Global_settings.php:186
+msgid "Show/hide view seats button"
+msgstr "सीटें देखें बटन दिखाएँ/छिपाएँ"
+
+#: admin/WBTM_Global_settings.php:187
+msgid ""
+"If you want to hide view seats button from search list, if registration off."
+msgstr ""
+"यदि आप खोज सूची से सीटें देखें बटन को छिपाना चाहते हैं, तो पंजीकरण बंद करें।"
+
+#: admin/WBTM_Global_settings.php:191
+msgid "Show"
+msgstr "दिखाओ"
+
+#: admin/WBTM_Global_settings.php:192
+msgid "Hide"
+msgstr "छिपाना"
+
+#: admin/WBTM_Global_settings.php:197
+msgid "Active Redirect page"
+msgstr "सक्रिय रीडायरेक्ट पृष्ठ"
+
+#: admin/WBTM_Global_settings.php:198
+msgid "If you want to Active Redirect page,please select on"
+msgstr "यदि आप पृष्ठ को सक्रिय रीडायरेक्ट करना चाहते हैं, तो कृपया चुनें"
+
+#: admin/WBTM_Global_settings.php:202 admin/WBTM_Global_settings.php:220
+#: admin/WBTM_Global_settings.php:231 admin/WBTM_Global_settings.php:325
+#: admin/WBTM_Global_settings.php:347 admin/WBTM_Global_settings.php:371
+#: admin/WBTM_Global_settings.php:382
+msgid "ON"
+msgstr "पर"
+
+#: admin/WBTM_Global_settings.php:203 admin/WBTM_Global_settings.php:221
+#: admin/WBTM_Global_settings.php:232
+msgid "OFF"
+msgstr "बंद"
+
+#: admin/WBTM_Global_settings.php:208
+msgid "Search result page"
+msgstr "खोज परिणाम पृष्ठ"
+
+#: admin/WBTM_Global_settings.php:209
+msgid "If you want to redirect Search result page , please select below page"
+msgstr ""
+"यदि आप खोज परिणाम पृष्ठ को पुनर्निर्देशित करना चाहते हैं, तो कृपया नीचे दिए "
+"गए पृष्ठ का चयन करें"
+
+#: admin/WBTM_Global_settings.php:215
+msgid "Turn order status processing to completed automatically"
+msgstr "ऑर्डर स्थिति प्रसंस्करण को स्वचालित रूप से पूर्ण करें"
+
+#: admin/WBTM_Global_settings.php:216
+msgid ""
+"If you want to make woocommerce processing status to completed automatically "
+"select ON"
+msgstr ""
+"यदि आप वूकॉमर्स प्रसंस्करण स्थिति को स्वचालित रूप से पूर्ण करना चाहते हैं तो "
+"ON चुनें"
+
+#: admin/WBTM_Global_settings.php:226
+msgid "Redirect to checkout after booking"
+msgstr "बुकिंग के बाद चेकआउट पर रीडायरेक्ट करें"
+
+#: admin/WBTM_Global_settings.php:227
+msgid ""
+"If you want to redirect users directly to checkout after booking instead of "
+"showing the cart notice, select ON"
+msgstr ""
+"यदि आप बुकिंग के बाद उपयोगकर्ताओं को कार्ट नोटिस दिखाने के बजाय सीधे चेकआउट "
+"पर रीडायरेक्ट करना चाहते हैं, तो ON चुनें"
+
+#: admin/WBTM_Global_settings.php:239
+msgid "Disable Block/Gutenberg Editor"
+msgstr "ब्लॉक/गुटेनबर्ग संपादक अक्षम करें"
+
+#: admin/WBTM_Global_settings.php:240
+msgid ""
+"If you want to disable WordPress's new Block/Gutenberg editor, please select "
+"Yes."
+msgstr ""
+"यदि आप वर्डप्रेस के नए ब्लॉक/गुटेनबर्ग संपादक को अक्षम करना चाहते हैं, तो "
+"कृपया हाँ चुनें।"
+
+#: admin/WBTM_Global_settings.php:244 admin/WBTM_Status.php:22
+msgid "Yes"
+msgstr "हाँ"
+
+#: admin/WBTM_Global_settings.php:245 admin/WBTM_Status.php:22
+msgid "No"
+msgstr "नहीं"
+
+#: admin/WBTM_Global_settings.php:250
+msgid "Date Picker Format"
+msgstr "दिनांक चयनकर्ता प्रारूप"
+
+#: admin/WBTM_Global_settings.php:251
+msgid ""
+"If you want to change Date Picker Format, please select format. Default  is "
+"D d M , yy."
+msgstr ""
+"यदि आप दिनांक चयनकर्ता प्रारूप बदलना चाहते हैं, तो कृपया प्रारूप चुनें। "
+"डिफ़ॉल्ट D d M , yy है।"
+
+#: admin/WBTM_Global_settings.php:271
+msgid "Short Date  Format"
+msgstr "लघु तिथि प्रारूप"
+
+#: admin/WBTM_Global_settings.php:272
+msgid ""
+"If you want to change Short Date  Format, please select format. Default  is "
+"M , Y."
+msgstr ""
+"यदि आप लघु दिनांक प्रारूप बदलना चाहते हैं, तो कृपया प्रारूप चुनें। डिफ़ॉल्ट "
+"M, Y है।"
+
+#: admin/WBTM_Global_settings.php:298
+msgid "Slider Type"
+msgstr "स्लाइडर प्रकार"
+
+#: admin/WBTM_Global_settings.php:299
+msgid "Please Select Slider Type Default Slider"
+msgstr "कृपया स्लाइडर प्रकार डिफ़ॉल्ट स्लाइडर चुनें"
+
+#: admin/WBTM_Global_settings.php:303
+msgid "Slider"
+msgstr "स्लाइडर"
+
+#: admin/WBTM_Global_settings.php:304
+msgid "Post Thumbnail"
+msgstr "पोस्ट थंबनेल"
+
+#: admin/WBTM_Global_settings.php:309
+msgid "Slider Style"
+msgstr "स्लाइडर शैली"
+
+#: admin/WBTM_Global_settings.php:310
+msgid "Please Select Slider Style Default Style One"
+msgstr "कृपया स्लाइडर शैली डिफ़ॉल्ट शैली एक का चयन करें"
+
+#: admin/WBTM_Global_settings.php:314
+msgid "Style One"
+msgstr "स्टाइल वन"
+
+#: admin/WBTM_Global_settings.php:315
+msgid "Style Two"
+msgstr "शैली दो"
+
+#: admin/WBTM_Global_settings.php:320
+msgid "Slider Indicator Visible?"
+msgstr "स्लाइडर संकेतक दिखाई दे रहा है?"
+
+#: admin/WBTM_Global_settings.php:321
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr "कृपया चुनें: स्लाइडर संकेतक दिखाई दे रहा है या नहीं? डिफ़ॉल्ट चालू"
+
+#: admin/WBTM_Global_settings.php:326 admin/WBTM_Global_settings.php:348
+#: admin/WBTM_Global_settings.php:372 admin/WBTM_Global_settings.php:383
+msgid "Off"
+msgstr "बंद"
+
+#: admin/WBTM_Global_settings.php:331
+msgid "Slider Indicator Type"
+msgstr "स्लाइडर संकेतक प्रकार"
+
+#: admin/WBTM_Global_settings.php:332
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "कृपया स्लाइडर संकेतक प्रकार डिफ़ॉल्ट आइकन चुनें"
+
+#: admin/WBTM_Global_settings.php:336
+msgid "Icon Indicator"
+msgstr "चिह्न संकेतक"
+
+#: admin/WBTM_Global_settings.php:337
+msgid "image Indicator"
+msgstr "छवि संकेतक"
+
+#: admin/WBTM_Global_settings.php:342
+msgid "Slider Showcase Visible?"
+msgstr "स्लाइडर शोकेस दृश्यमान है?"
+
+#: admin/WBTM_Global_settings.php:343
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr "कृपया चुनें स्लाइडर शोकेस दिखाई दे रहा है या नहीं? डिफ़ॉल्ट चालू"
+
+#: admin/WBTM_Global_settings.php:353
+msgid "Slider Showcase Position"
+msgstr "स्लाइडर शोकेस स्थिति"
+
+#: admin/WBTM_Global_settings.php:354
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "कृपया स्लाइडर शोकेस स्थिति डिफ़ॉल्ट दाईं ओर चुनें"
+
+#: admin/WBTM_Global_settings.php:358
+msgid "At Top Position"
+msgstr "शीर्ष स्थान पर"
+
+#: admin/WBTM_Global_settings.php:359
+msgid "At Right Position"
+msgstr "सही स्थिति पर"
+
+#: admin/WBTM_Global_settings.php:360
+msgid "At Bottom Position"
+msgstr "सबसे निचले स्थान पर"
+
+#: admin/WBTM_Global_settings.php:361
+msgid "At Left Position"
+msgstr "बाईं स्थिति पर"
+
+#: admin/WBTM_Global_settings.php:366
+msgid "Slider Popup Image Indicator"
+msgstr "स्लाइडर पॉपअप छवि संकेतक"
+
+#: admin/WBTM_Global_settings.php:367
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr "कृपया स्लाइडर पॉपअप संकेतक छवि चालू या बंद चुनें? डिफ़ॉल्ट चालू"
+
+#: admin/WBTM_Global_settings.php:377
+msgid "Slider Popup Icon Indicator"
+msgstr "स्लाइडर पॉपअप आइकन संकेतक"
+
+#: admin/WBTM_Global_settings.php:378
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr "कृपया स्लाइडर पॉपअप संकेतक आइकन चालू या बंद चुनें? डिफ़ॉल्ट चालू"
+
+#: admin/WBTM_Global_settings.php:390
+msgid "Theme Color"
+msgstr "थीम का रंग"
+
+#: admin/WBTM_Global_settings.php:391
+msgid "Select Default Theme Color"
+msgstr "डिफ़ॉल्ट थीम रंग चुनें"
+
+#: admin/WBTM_Global_settings.php:397
+msgid "Theme Alternate Color"
+msgstr "थीम वैकल्पिक रंग"
+
+#: admin/WBTM_Global_settings.php:398
+msgid ""
+"Select Default Theme Alternate  Color that means, if background theme color "
+"then it will be text color."
+msgstr ""
+"डिफ़ॉल्ट थीम वैकल्पिक रंग का चयन करें, अर्थात यदि पृष्ठभूमि थीम रंग है तो यह "
+"पाठ रंग होगा।"
+
+#: admin/WBTM_Global_settings.php:404
+msgid "Default Text Color"
+msgstr "डिफ़ॉल्ट पाठ रंग"
+
+#: admin/WBTM_Global_settings.php:405
+msgid "Select Default Text  Color."
+msgstr "डिफ़ॉल्ट टेक्स्ट रंग का चयन करें."
+
+#: admin/WBTM_Global_settings.php:411
+msgid "Default Font Size"
+msgstr "डिफ़ॉल्ट फ़ॉन्ट आकार"
+
+#: admin/WBTM_Global_settings.php:412
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "डिफ़ॉल्ट फ़ॉन्ट आकार (PX इकाई में) टाइप करें."
+
+#: admin/WBTM_Global_settings.php:418
+msgid "Font Size h1 Title"
+msgstr "फ़ॉन्ट आकार h1 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:419
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार मुख्य शीर्षक (PX इकाई में) टाइप करें।"
+
+#: admin/WBTM_Global_settings.php:425
+msgid "Font Size h2 Title"
+msgstr "फ़ॉन्ट आकार h2 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:426
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार h2 शीर्षक टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:432
+msgid "Font Size h3 Title"
+msgstr "फ़ॉन्ट आकार h3 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:433
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार h3 शीर्षक टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:439
+msgid "Font Size h4 Title"
+msgstr "फ़ॉन्ट आकार h4 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:440
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार h4 शीर्षक टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:446
+msgid "Font Size h5 Title"
+msgstr "फ़ॉन्ट आकार h5 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:447
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार h5 शीर्षक टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:453
+msgid "Font Size h6 Title"
+msgstr "फ़ॉन्ट आकार h6 शीर्षक"
+
+#: admin/WBTM_Global_settings.php:454
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "फ़ॉन्ट आकार h6 शीर्षक टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:460
+msgid "Button Font Size "
+msgstr "बटन फ़ॉन्ट आकार"
+
+#: admin/WBTM_Global_settings.php:461
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "फ़ॉन्ट आकार बटन टाइप करें (PX इकाई में)।"
+
+#: admin/WBTM_Global_settings.php:467
+msgid "Button Text Color"
+msgstr "बटन पाठ का रंग"
+
+#: admin/WBTM_Global_settings.php:468
+msgid "Select Button Text  Color."
+msgstr "बटन टेक्स्ट रंग का चयन करें."
+
+#: admin/WBTM_Global_settings.php:474
+msgid "Button Background Color"
+msgstr "बटन पृष्ठभूमि रंग"
+
+#: admin/WBTM_Global_settings.php:475
+msgid "Select Button Background  Color."
+msgstr "बटन पृष्ठभूमि रंग का चयन करें."
+
+#: admin/WBTM_Global_settings.php:481
+msgid "Label Font Size "
+msgstr "लेबल फ़ॉन्ट आकार"
+
+#: admin/WBTM_Global_settings.php:482
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "फ़ॉन्ट आकार लेबल टाइप करें (PX इकाई में)."
+
+#: admin/WBTM_Global_settings.php:488
+msgid "Warning Color"
+msgstr "चेतावनी रंग"
+
+#: admin/WBTM_Global_settings.php:489
+msgid "Select Warning  Color."
+msgstr "चेतावनी रंग का चयन करें."
+
+#: admin/WBTM_Global_settings.php:495
+msgid "Section Background color"
+msgstr "अनुभाग पृष्ठभूमि रंग"
+
+#: admin/WBTM_Global_settings.php:496
+msgid "Select Background  Color."
+msgstr "पृष्ठभूमि रंग का चयन करें."
+
+#: admin/WBTM_Global_settings.php:505
+msgid "Write Your Custom CSS Code Here"
+msgstr "अपना कस्टम CSS कोड यहां लिखें"
+
+#: admin/WBTM_Global_settings.php:520
+msgid ""
+"Thanking you for using our Mage-People plugin. Our some plugin  free and no "
+"license is required. We have some Additional addon to enhance feature of "
+"this plugin functionality. If you have any addon you need to enter a valid "
+"license for that plugin below."
+msgstr ""
+"हमारे Mage-People प्लगइन का उपयोग करने के लिए धन्यवाद। हमारे कुछ प्लगइन "
+"मुफ़्त हैं और इनके लिए किसी लाइसेंस की आवश्यकता नहीं है। इस प्लगइन की "
+"कार्यक्षमता बढ़ाने के लिए हमारे पास कुछ अतिरिक्त ऐड-ऑन भी हैं। अगर आपके पास "
+"कोई ऐड-ऑन है, तो आपको नीचे उस प्लगइन के लिए एक वैध लाइसेंस दर्ज करना होगा।"
+
+#: admin/WBTM_Global_settings.php:535
+msgid "Plugin Name"
+msgstr "प्लगइन का नाम"
+
+#: admin/WBTM_Global_settings.php:537
+msgid "Order No"
+msgstr "आदेश संख्या"
+
+#: admin/WBTM_Global_settings.php:538
+msgid "Expire on"
+msgstr "पर समाप्त होना"
+
+#: admin/WBTM_Global_settings.php:539
+msgid "License Key"
+msgstr "लाइसेंस कुंजी"
+
+#: admin/WBTM_Global_settings.php:540 admin/WBTM_Status.php:17
+msgid "Status"
+msgstr "स्थिति"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "मुक्त"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "असीमित"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "कोई ज़रुरत नहीं है"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "सक्रिय"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
+#: admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "शीघ्र व्यवस्थित"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:194
+#: inc/WBTM_Functions.php:456
+msgid "Bus"
+msgstr "बस"
+
+#: admin/WBTM_Quick_Setup.php:121 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "स्वागत"
+
+#: admin/WBTM_Quick_Setup.php:128
+msgid "General"
+msgstr "सामान्य"
+
+#: admin/WBTM_Quick_Setup.php:135
+msgid "Done"
+msgstr "हो गया"
+
+#: admin/WBTM_Quick_Setup.php:148
+msgid "Previous"
+msgstr "पहले का"
+
+#: admin/WBTM_Quick_Setup.php:152
+msgid "Next"
+msgstr "अगला"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "वूकॉमर्स प्लगइन के लिए सीट आरक्षण के साथ बस बुकिंग"
+
+#: admin/WBTM_Quick_Setup.php:167
+msgid ""
+"Bus Booking with Seat Reservation Plugin for WooCommerce for your site, "
+"Please go step by step and choose some options to get started."
+msgstr ""
+"अपनी साइट के लिए WooCommerce हेतु सीट आरक्षण प्लगइन के साथ बस बुकिंग, कृपया "
+"चरण दर चरण आगे बढ़ें और आरंभ करने के लिए कुछ विकल्प चुनें।"
+
+#: admin/WBTM_Quick_Setup.php:171
+msgid "Woocommerce already installed and activated"
+msgstr "Woocommerce पहले से ही स्थापित और सक्रिय है"
+
+#: admin/WBTM_Quick_Setup.php:174
+msgid "Woocommerce need to install and active"
+msgstr "Woocommerce को स्थापित और सक्रिय करने की आवश्यकता है"
+
+#: admin/WBTM_Quick_Setup.php:177
+msgid "Woocommerce already install , please activate it"
+msgstr "Woocommerce पहले से ही इंस्टॉल है, कृपया इसे सक्रिय करें"
+
+#: admin/WBTM_Quick_Setup.php:185
+msgid "Install & Active Now"
+msgstr "अभी इंस्टॉल करें और सक्रिय करें"
+
+#: admin/WBTM_Quick_Setup.php:187
+msgid "Active Now"
+msgstr "अभी सक्रिय"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "General settings"
+msgstr "सामान्य सेटिंग्स"
+
+#: admin/WBTM_Quick_Setup.php:200
+msgid "Choose some general option."
+msgstr "कुछ सामान्य विकल्प चुनें."
+
+#: admin/WBTM_Quick_Setup.php:203
+msgid "Bus Label:"
+msgstr "बस लेबल:"
+
+#: admin/WBTM_Quick_Setup.php:208
+msgid "It will change the Bus post type label on the entire plugin."
+msgstr "यह संपूर्ण प्लगइन पर बस पोस्ट प्रकार लेबल को बदल देगा।"
+
+#: admin/WBTM_Quick_Setup.php:212
+msgid "Bus Slug:"
+msgstr "बस स्लग:"
+
+#: admin/WBTM_Quick_Setup.php:217
+msgid ""
+"It will change the Bus slug on the entire plugin. Remember after changing "
+"this slug you need to flush permalinks. Just go to Settings->Permalinks hit "
+"the Save Settings button"
+msgstr ""
+"यह पूरे प्लगइन पर बस स्लग बदल देगा। याद रखें, इस स्लग को बदलने के बाद आपको "
+"पर्मालिंक्स को फ्लश करना होगा। बस सेटिंग्स-> पर्मालिंक्स में जाकर सेव "
+"सेटिंग्स बटन दबाएँ।"
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "Finalize Setup"
+msgstr "सेटअप को अंतिम रूप दें"
+
+#: admin/WBTM_Quick_Setup.php:228
+msgid ""
+"You are about to Finish & Save Bus Booking with Seat Reservation For "
+"Woocommerce Plugin setup process"
+msgstr ""
+"आप वूकॉमर्स प्लगइन सेटअप प्रक्रिया के लिए सीट आरक्षण के साथ बस बुकिंग समाप्त "
+"और सहेजने वाले हैं"
+
+#: admin/WBTM_Quick_Setup.php:230
+msgid "Finish & Save"
+msgstr "समाप्त करें और सहेजें"
+
+#: admin/WBTM_Settings.php:20
+msgid " Information Settings : "
+msgstr "सूचना सेटिंग्स:"
+
+#: admin/WBTM_Settings.php:36
+msgid "General Info"
+msgstr "सामान्य जानकारी"
+
+#: admin/WBTM_Settings.php:39
+msgid "Seat Configure"
+msgstr "सीट कॉन्फ़िगर करें"
+
+#: admin/WBTM_Settings.php:42
+msgid "Pricing & Route"
+msgstr "मूल्य निर्धारण और मार्ग"
+
+#: admin/WBTM_Settings.php:48
+msgid "Pickup/Drop-Off Point"
+msgstr "पिकअप/ड्रॉप-ऑफ पॉइंट"
+
+#: admin/WBTM_Settings.php:55
+msgid "Tax Configure"
+msgstr "कर कॉन्फ़िगर करें"
+
+#: admin/WBTM_Settings.php:59
+msgid "Partial Payment"
+msgstr "आंशिक भुगतान"
+
+#: admin/WBTM_Settings.php:67
+msgid "Partial Payment Settings : "
+msgstr "आंशिक भुगतान सेटिंग्स:"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please add your unique bus id"
+msgstr "कृपया अपनी विशिष्ट बस आईडी जोड़ें"
+
+#: admin/WBTM_Settings.php:80
+msgid "Please add your bus category"
+msgstr "कृपया अपनी बस श्रेणी जोड़ें"
+
+#: admin/WBTM_Settings.php:81
+msgid "Turn on or off, bus seat registration"
+msgstr "बस सीट पंजीकरण चालू या बंद करें"
+
+#: admin/WBTM_Settings.php:82
+msgid ""
+"By default Registration is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"डिफ़ॉल्ट रूप से पंजीकरण चालू रहता है, लेकिन आप इस विकल्प को स्विच करके इसे "
+"बंद रख सकते हैं"
+
+#: admin/WBTM_Settings.php:83
+msgid ""
+"By default Boarding Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"डिफ़ॉल्ट रूप से बोर्डिंग समय चालू रहता है, लेकिन आप इस विकल्प को स्विच करके "
+"इसे बंद रख सकते हैं"
+
+#: admin/WBTM_Settings.php:84
+msgid ""
+"By default Dropping Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"डिफ़ॉल्ट रूप से ड्रॉपिंग टाइम चालू रहता है, लेकिन आप इस विकल्प को स्विच करके "
+"इसे बंद रख सकते हैं"
+
+#: admin/WBTM_Settings.php:85
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr "कृपया अपनी बस सीट का प्रकार चुनें। डिफ़ॉल्ट बिना सीट प्लान के"
+
+#: admin/WBTM_Settings.php:86
+msgid "Please Type your bus total seat."
+msgstr "कृपया अपनी बस की कुल सीट संख्या लिखें।"
+
+#: admin/WBTM_Settings.php:87
+msgid "Select Particular Date or Repeated Date."
+msgstr "विशेष तिथि या दोहराई गई तिथि का चयन करें."
+
+#: admin/WBTM_Settings.php:88
+msgid "Here you can set bus route for stopage and dropping"
+msgstr "यहां आप बस स्टॉपेज और ड्रॉपिंग के लिए रूट सेट कर सकते हैं"
+
+#: admin/WBTM_Settings.php:89
+msgid ""
+"Please configure bus route price. Before price setting must be complete "
+"route configuration ."
+msgstr ""
+"कृपया बस रूट मूल्य कॉन्फ़िगर करें। मूल्य निर्धारित करने से पहले रूट "
+"कॉन्फ़िगरेशन पूरा करना आवश्यक है।"
+
+#: admin/WBTM_Settings.php:90
+msgid "Turn On or Off Extra service."
+msgstr "अतिरिक्त सेवा चालू या बंद करें."
+
+#: admin/WBTM_Settings.php:91
+msgid "Turn On or Off pickup point."
+msgstr "पिकअप पॉइंट चालू या बंद करें."
+
+#: admin/WBTM_Settings.php:92
+msgid "Turn On or Off drop-off point."
+msgstr "ड्रॉप-ऑफ बिंदु चालू या बंद करें."
+
+#: admin/WBTM_Settings.php:93
+msgid ""
+"To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr ""
+"कोई भी नया कर वर्ग जोड़ने के लिए, कृपया WooCommerce -> सेटिंग्स -> कर "
+"क्षेत्र पर जाएं"
+
+#: admin/WBTM_Settings.php:95
+msgid "Please upload images for gallery"
+msgstr "कृपया गैलरी के लिए चित्र अपलोड करें"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">स्थिति</span>"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Woocommerce पर्यावरण स्थिति के लिए"
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "वर्डप्रेस संस्करण:"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "वूकॉमर्स स्थापित:"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "वूकॉमर्स संस्करण:"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "नाम : "
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "मेल पता : "
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr " प्रकार"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22
+#: admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:111
+msgid "Parent"
+msgstr "माता-पिता"
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "प्रकार:"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
+#: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr "पिक अप बिंदु"
+
+#: admin/WBTM_Taxonomy.php:74 admin/WBTM_Taxonomy.php:110
+msgid "Allx "
+msgstr "ऑलएक्स"
+
+#: admin/WBTM_Taxonomy.php:107 admin/WBTM_Taxonomy.php:111
+#: admin/WBTM_Taxonomy.php:114 inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr "ड्रॉप-ऑफ पॉइंट"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "WBTM में आपका स्वागत है"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "प्रो"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "सीट आरक्षण के साथ बस टिकट बुकिंग में आपका स्वागत है"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "आयात"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "ज्ञानधार"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "डमी सामग्री कैसे आयात करें"
+
+#: admin/WBTM_Welcome.php:30
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"कृपया अपनी वेबसाइट पर डमी इवेंट डेटा आयात करने के लिए नीचे दी गई प्रक्रिया "
+"का पालन करें।"
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "स्टेप 1:"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "श्रेणी.xml"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "सामग्री.xml"
+
+#: admin/WBTM_Welcome.php:46
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"या, आप XML फ़ाइलों को ज़िप रूप में डाउनलोड कर सकते हैं और इसे अपने कंप्यूटर "
+"निर्देशिका में निकाल सकते हैं।"
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "XML फ़ाइलों का ज़िप डाउनलोड करें"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "चरण दो:"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "XML फ़ाइल डाउनलोड करने के बाद, यहां जाएं:"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "उपकरण -> आयात"
+
+#: admin/WBTM_Welcome.php:58
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"इस पृष्ठ के नीचे एक वर्डप्रेस इम्पोर्ट विकल्प है। अगर आपने इसे पहले ही सक्षम "
+"कर लिया है, तो आप \"रन इम्पोर्ट\" देख सकते हैं। अगर नहीं, तो \"इंस्टॉल नाउ\" "
+"लिंक पर क्लिक करें। इसके बाद \"रन इम्पोर्टर\" पर क्लिक करें और पहले डाउनलोड "
+"की गई XML फ़ाइल चुनें।"
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "चरण-3:"
+
+#: admin/WBTM_Welcome.php:66
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"अब ड्रॉपडाउन से अपनी वेबसाइट के उपयोगकर्ता को सामग्री असाइन करने के लिए "
+"चुनें, और डाउनलोड अटैचमेंट बॉक्स पर टिक करें और प्रक्रिया चलाएँ। कुछ मिनट "
+"बाद आपको सफलता का संदेश दिखाई देगा। सब हो गया! मज़े करें।"
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "वीडियो ट्यूटोरियल"
+
+#: admin/WBTM_Welcome.php:76
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr ""
+"सीट आरक्षण प्लगइन के साथ बस टिकट बुकिंग के दस्तावेज़ीकरण में आपका स्वागत है"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "खरीदारी के समर्थक"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "प्लगइन कैसे स्थापित करें?"
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr ""
+"कृपया यह जानने के लिए वीडियो देखें कि आप प्लगइन कैसे स्थापित कर सकते हैं।"
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "नई बस कैसे जोड़ें?"
+
+#: admin/WBTM_Welcome.php:89
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"प्लगइन इंस्टॉल करने के बाद, आप एक नई बस जोड़ सकते हैं। यह कैसे करें, यह "
+"जानने के लिए कृपया वीडियो देखें:"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "बस टिकट कैसे बुक करें?"
+
+#: admin/WBTM_Welcome.php:96
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr ""
+"इस वीडियो में आप जान सकते हैं कि बस टिकट बुक करने के लिए ऑर्डर देना कितना "
+"आसान है:"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "पीडीएफ टिकट कैसे सेटअप करें?"
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "पीडीएफ टिकट सेटअप करने का तरीका जानने के लिए कृपया वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "ईमेल कैसे सेटअप करें?"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "ईमेल सेटअप करने का तरीका जानने के लिए कृपया वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "बस टिकट की कीमत कैसे निर्धारित करें?"
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr ""
+"बस टिकट की कीमत कैसे निर्धारित करें, यह जानने के लिए कृपया यह वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "विशिष्ट दिन पर बस कैसे सेट करें?"
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr "कृपया यह वीडियो देखें कि किसी विशेष दिन के लिए बस कैसे सेट करें।"
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "बस बुकिंग बफर समय कैसे सेट करें?"
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr ""
+"बफर समय पर बस बुकिंग कैसे सेट करें, यह जानने के लिए कृपया यह वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "एडमिन पैनल से टिकट कैसे प्राप्त करें?"
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr ""
+"एडमिन पैनल से टिकट कैसे प्राप्त करें, यह जानने के लिए कृपया यह वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "यात्री सूची को CSV में कैसे निर्यात करें?"
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr ""
+"यात्री सूची को CSV में निर्यात करने का तरीका जानने के लिए कृपया यह वीडियो "
+"देखें।"
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr "दो दरवाजे और चार कॉलम वाली सीट योजना कैसे बनाएं?"
+
+#: admin/WBTM_Welcome.php:153
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"दो दरवाजे और चार कॉलम वाली सीट योजना बनाने का तरीका जानने के लिए कृपया यह "
+"वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "तीन कॉलम सीट योजना कैसे बनाएं?"
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr "तीन कॉलम सीट योजना बनाने का तरीका जानने के लिए कृपया यह वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "बस बुकिंग कैसे करें?"
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr "बस बुकिंग कैसे करें, यह जानने के लिए कृपया यह वीडियो देखें।"
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "प्रो संस्करण कैसे खरीदें?"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "सीट आरक्षण प्रो के साथ बस टिकट बुकिंग"
+
+#: admin/WBTM_Welcome.php:179
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr "सीट आरक्षण प्लगइन के साथ बस टिकट बुकिंग के साथ शामिल शॉर्टकोड:"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "लघु कूट संख्या"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "पैरामीटर"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "विवरण"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "बिल्ली"
+
+#: admin/WBTM_Welcome.php:193
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"डिफ़ॉल्ट रूप से सभी बसें दिखाई जाती हैं, लेकिन यदि आप किसी विशेष श्रेणी की "
+"बस सूची दिखाना चाहते हैं, तो आप इस विशेषता का उपयोग कर सकते हैं, बस इसके साथ "
+"श्रेणी आईडी डालें। उदाहरण:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "दिखाओ"
+
+#: admin/WBTM_Welcome.php:201
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"डिफ़ॉल्ट रूप से प्रति पृष्ठ 20 बसें दिखाई जा रही हैं। यदि आप इसे बदलना चाहते "
+"हैं और सीमा निर्धारित करना चाहते हैं, तो सीमा संख्या दर्ज करें। उदाहरण:"
+
+#: admin/WBTM_Welcome.php:210
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"यह शॉर्टकोड टिकट बनाने का फ़ॉर्म दिखाएगा। उपयोगकर्ता को अपना टिकट पिन बॉक्स "
+"में डालना होगा और एंटर बटन दबाना होगा, फिर टिकट दिखाई देगा। केवल लॉगिन करने "
+"वाले उपयोगकर्ता ही इस पृष्ठ को देख सकते हैं।"
+
+#: admin/WBTM_Welcome.php:217
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"यह शॉर्टकोड खोज फ़ॉर्म प्रदर्शित करेगा जैसे यदि आप होमपेज या किसी भी पेज में "
+"कहीं भी एक खोज बॉक्स दिखाना चाहते हैं तो बस इस शॉर्टकोड को वहां डालें, यह बस "
+"खोज फ़ॉर्म प्रिंट करेगा।"
+
+#: admin/WBTM_Welcome.php:224
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"यह शॉर्टकोड बस खोज फ़ॉर्म भी प्रिंट करेगा लेकिन यह खोज फ़ॉर्म के नीचे उसी "
+"पृष्ठ पर खोज परिणाम भी दिखाएगा।"
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "टिकट"
+
+#: inc/WBTM_GTFS_Export.php:60 inc/WBTM_GTFS_Export.php:61
+#: inc/WBTM_GTFS_Export.php:71
+msgid "GTFS Export"
+msgstr "जीटीएफ़एस निर्यात"
+
+#: inc/WBTM_GTFS_Export.php:72
+msgid ""
+"Export your bus data to GTFS format for Google Transit and other transit "
+"applications."
+msgstr ""
+"Google ट्रांज़िट और अन्य ट्रांज़िट अनुप्रयोगों के लिए अपने बस डेटा को GTFS "
+"प्रारूप में निर्यात करें."
+
+#: inc/WBTM_GTFS_Export.php:79
+msgid "Agency Name"
+msgstr "एजेंसी का नाम"
+
+#: inc/WBTM_GTFS_Export.php:83
+msgid "The name of your transit agency"
+msgstr "आपकी परिवहन एजेंसी का नाम"
+
+#: inc/WBTM_GTFS_Export.php:88
+msgid "Agency URL"
+msgstr "एजेंसी यूआरएल"
+
+#: inc/WBTM_GTFS_Export.php:92
+msgid "Your agency website URL"
+msgstr "आपकी एजेंसी की वेबसाइट का URL"
+
+#: inc/WBTM_GTFS_Export.php:97
+msgid "Agency Timezone"
+msgstr "एजेंसी समय क्षेत्र"
+
+#: inc/WBTM_GTFS_Export.php:109
+msgid "Timezone for your bus operations"
+msgstr "आपके बस संचालन के लिए समय क्षेत्र"
+
+#: inc/WBTM_GTFS_Export.php:114
+msgid "Export Date Range"
+msgstr "निर्यात तिथि सीमा"
+
+#: inc/WBTM_GTFS_Export.php:118
+msgid "to"
+msgstr "को"
+
+#: inc/WBTM_GTFS_Export.php:120
+msgid "Date range for schedule export (recommended: 30-90 days)"
+msgstr "शेड्यूल निर्यात के लिए तिथि सीमा (अनुशंसित: 30-90 दिन)"
+
+#: inc/WBTM_GTFS_Export.php:125
+msgid "Select Buses"
+msgstr "चुनिंदा बसें"
+
+#: inc/WBTM_GTFS_Export.php:138
+msgid "Select All"
+msgstr "सबका चयन करें"
+
+#: inc/WBTM_GTFS_Export.php:147
+msgid "Select which buses to include in the GTFS export"
+msgstr "चुनें कि GTFS निर्यात में कौन सी बसें शामिल करनी हैं"
+
+#: inc/WBTM_GTFS_Export.php:153
+msgid "Export GTFS"
+msgstr "GTFS निर्यात करें"
+
+#: inc/WBTM_GTFS_Export.php:158
+msgid "Export Progress"
+msgstr "निर्यात प्रगति"
+
+#: inc/WBTM_GTFS_Export.php:162
+msgid "Preparing export..."
+msgstr "निर्यात की तैयारी..."
+
+#: inc/WBTM_GTFS_Export.php:166
+msgid "Export Complete"
+msgstr "निर्यात पूर्ण"
+
+#: inc/WBTM_GTFS_Export.php:168
+msgid "Download GTFS Feed"
+msgstr "GTFS फ़ीड डाउनलोड करें"
+
+#: inc/WBTM_GTFS_Export.php:189
+msgid "Please select at least one bus to export."
+msgstr "कृपया निर्यात करने के लिए कम से कम एक बस का चयन करें."
+
+#: inc/WBTM_GTFS_Export.php:224
+msgid "Export failed. Please try again."
+msgstr "निर्यात विफल. कृपया पुनः प्रयास करें."
+
+#: inc/WBTM_GTFS_Export.php:237 inc/WBTM_GTFS_Validator.php:534
+msgid "Security check failed"
+msgstr "सुरक्षा जांच विफल"
+
+#: inc/WBTM_GTFS_Export.php:242 inc/WBTM_GTFS_Validator.php:538
+msgid "Insufficient permissions"
+msgstr "अपर्याप्त अनुमतियाँ"
+
+#: inc/WBTM_GTFS_Export.php:269
+msgid "GTFS feed exported successfully!"
+msgstr "GTFS फ़ीड सफलतापूर्वक निर्यात किया गया!"
+
+#: inc/WBTM_GTFS_Export.php:274
+msgid "Failed to generate GTFS feed"
+msgstr "GTFS फ़ीड जनरेट करने में विफल"
+
+#: inc/WBTM_GTFS_Export.php:280
+#, php-format
+msgid "Export error: %s"
+msgstr "निर्यात त्रुटि: %s"
+
+#: inc/WBTM_GTFS_Validator.php:56
+msgid "GTFS feed file not found"
+msgstr "GTFS फ़ीड फ़ाइल नहीं मिली"
+
+#: inc/WBTM_GTFS_Validator.php:63
+msgid "Could not extract GTFS feed"
+msgstr "GTFS फ़ीड निकाला नहीं जा सका"
+
+#: inc/WBTM_GTFS_Validator.php:88
+#, php-format
+msgid "Validation error: %s"
+msgstr "सत्यापन त्रुटि: %s"
+
+#: inc/WBTM_GTFS_Validator.php:116
+#, php-format
+msgid "Required file missing: %s"
+msgstr "आवश्यक फ़ाइल अनुपलब्ध: %s"
+
+#: inc/WBTM_GTFS_Validator.php:126
+#, php-format
+msgid "Unknown file found: %s"
+msgstr "अज्ञात फ़ाइल मिली: %s"
+
+#: inc/WBTM_GTFS_Validator.php:139
+msgid "agency.txt is empty or invalid"
+msgstr "agency.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:149
+#, php-format
+msgid "Invalid timezone in agency.txt row %d: %s"
+msgstr "agency.txt पंक्ति %d: %s में अमान्य समयक्षेत्र"
+
+#: inc/WBTM_GTFS_Validator.php:153
+#, php-format
+msgid "Invalid URL in agency.txt row %d: %s"
+msgstr "agency.txt पंक्ति %d में अमान्य URL: %s"
+
+#: inc/WBTM_GTFS_Validator.php:166
+msgid "stops.txt is empty or invalid"
+msgstr "stops.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:178
+#, php-format
+msgid "Duplicate stop_id in stops.txt: %s"
+msgstr "stops.txt में डुप्लिकेट stop_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:187
+#, php-format
+msgid "Invalid latitude in stops.txt row %d: %s"
+msgstr "stops.txt पंक्ति %d में अमान्य अक्षांश: %s"
+
+#: inc/WBTM_GTFS_Validator.php:194
+#, php-format
+msgid "Invalid longitude in stops.txt row %d: %s"
+msgstr "stops.txt पंक्ति %d में अमान्य देशांतर: %s"
+
+#: inc/WBTM_GTFS_Validator.php:201
+#, php-format
+msgid "Stop at coordinates (0,0) in stops.txt row %d - please verify location"
+msgstr ""
+"stops.txt पंक्ति %d में निर्देशांक (0,0) पर रुकें - कृपया स्थान सत्यापित करें"
+
+#: inc/WBTM_GTFS_Validator.php:215
+msgid "routes.txt is empty or invalid"
+msgstr "routes.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:227
+#, php-format
+msgid "Duplicate route_id in routes.txt: %s"
+msgstr "routes.txt में डुप्लिकेट route_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:236
+#, php-format
+msgid "Invalid route_type in routes.txt row %d: %s"
+msgstr "routes.txt पंक्ति %d: %s में रूट_प्रकार अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:242
+#, php-format
+msgid ""
+"Either route_short_name or route_long_name must be provided in routes.txt "
+"row %d"
+msgstr ""
+"routes.txt पंक्ति %d में या तो route_short_name या route_long_name प्रदान "
+"किया जाना चाहिए"
+
+#: inc/WBTM_GTFS_Validator.php:255
+msgid "trips.txt is empty or invalid"
+msgstr "trips.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:267
+#, php-format
+msgid "Duplicate trip_id in trips.txt: %s"
+msgstr "trips.txt में डुप्लिकेट trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:274
+#, php-format
+msgid "Invalid direction_id in trips.txt row %d: %s"
+msgstr "trips.txt पंक्ति %d: %s में direction_id अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:279
+#, php-format
+msgid "Invalid wheelchair_accessible in trips.txt row %d: %s"
+msgstr "trips.txt पंक्ति %d: %s में अमान्य wheelchair_accessible"
+
+#: inc/WBTM_GTFS_Validator.php:284
+#, php-format
+msgid "Invalid bikes_allowed in trips.txt row %d: %s"
+msgstr "trips.txt पंक्ति %d: %s में bikes_allowed अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:297
+msgid "stop_times.txt is empty or invalid"
+msgstr "stop_times.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:316
+#, php-format
+msgid "Invalid arrival_time format in stop_times.txt row %d: %s"
+msgstr "stop_times.txt पंक्ति %d: %s में आगमन_समय प्रारूप अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:320
+#, php-format
+msgid "Invalid departure_time format in stop_times.txt row %d: %s"
+msgstr "stop_times.txt पंक्ति %d: %s में प्रस्थान_समय प्रारूप अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:325
+#, php-format
+msgid "Invalid pickup_type in stop_times.txt row %d: %s"
+msgstr "stop_times.txt पंक्ति %d: %s में पिकअप_प्रकार अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:329
+#, php-format
+msgid "Invalid drop_off_type in stop_times.txt row %d: %s"
+msgstr "stop_times.txt पंक्ति %d: %s में drop_off_type अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:337
+#, php-format
+msgid "Duplicate stop_sequence values for trip_id: %s"
+msgstr "trip_id के लिए डुप्लिकेट stop_sequence मान: %s"
+
+#: inc/WBTM_GTFS_Validator.php:344
+#, php-format
+msgid "Stop sequences not in order for trip_id: %s"
+msgstr "ट्रिप_आईडी: %s के लिए स्टॉप अनुक्रम क्रम में नहीं हैं"
+
+#: inc/WBTM_GTFS_Validator.php:354
+msgid "Either calendar.txt or calendar_dates.txt must be provided"
+msgstr "calendar.txt या calendar_dates.txt प्रदान किया जाना चाहिए"
+
+#: inc/WBTM_GTFS_Validator.php:372
+msgid "calendar.txt is empty or invalid"
+msgstr "calendar.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:384
+#, php-format
+msgid "Invalid %s value in calendar.txt row %d: %s"
+msgstr "कैलेंडर.txt की पंक्ति %d में अमान्य %s मान: %s"
+
+#: inc/WBTM_GTFS_Validator.php:390
+#, php-format
+msgid "Invalid start_date format in calendar.txt row %d: %s"
+msgstr "calendar.txt पंक्ति %d: %s में अमान्य प्रारंभ_तिथि प्रारूप"
+
+#: inc/WBTM_GTFS_Validator.php:394
+#, php-format
+msgid "Invalid end_date format in calendar.txt row %d: %s"
+msgstr "calendar.txt पंक्ति %d: %s में end_date प्रारूप अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:400
+#, php-format
+msgid "end_date must be after start_date in calendar.txt row %d"
+msgstr "end_date calendar.txt पंक्ति %d में start_date के बाद होनी चाहिए"
+
+#: inc/WBTM_GTFS_Validator.php:411
+msgid "calendar_dates.txt is empty or invalid"
+msgstr "calendar_dates.txt रिक्त या अमान्य है"
+
+#: inc/WBTM_GTFS_Validator.php:421
+#, php-format
+msgid "Invalid date format in calendar_dates.txt row %d: %s"
+msgstr "calendar_dates.txt पंक्ति %d में अमान्य दिनांक स्वरूप: %s"
+
+#: inc/WBTM_GTFS_Validator.php:426
+#, php-format
+msgid "Invalid exception_type in calendar_dates.txt row %d: %s"
+msgstr "calendar_dates.txt पंक्ति %d: %s में अमान्य अपवाद_प्रकार"
+
+#: inc/WBTM_GTFS_Validator.php:470
+#, php-format
+msgid "Required field missing in %s: %s"
+msgstr "%s में आवश्यक फ़ील्ड अनुपलब्ध: %s"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr "यात्रा तिथि"
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr "वापसी तिथि (वैकल्पिक)"
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr "तारीख"
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr "आर्डर की तारीख"
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr "टिकट खरीदें"
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr "से"
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr "को"
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr "कृपया चयन कीजिए"
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr "प्रारंभ विंदु"
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr "उठाना"
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr "बाहर निकलना"
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr "नत्थी करना"
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr "बस का प्रकार"
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr "बस ऑपरेटर"
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr "सहभागी आईडी"
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr "यात्री प्रकार"
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr "आदेश की स्थिति"
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr "भुगतान विधि"
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr "वापसी की यात्रा"
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr "पहले से ही कार्ट में जोड़ा गया!"
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr "कोई बस नहीं मिली!"
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr "कोई टिकट नहीं मिला!"
+
+#: inc/WBTM_Translations.php:186
+msgid "No Seat Plan Available !"
+msgstr "कोई सीट योजना उपलब्ध नहीं है!"
+
+#: inc/WBTM_Translations.php:192
+msgid "No Seat Available !!"
+msgstr "कोई सीट उपलब्ध नहीं है!!"
+
+#: inc/WBTM_Translations.php:198
+msgid "This bus Now Closed."
+msgstr "यह बस अब बंद है।"
+
+#: inc/WBTM_Translations.php:204
+msgid "Available Seat"
+msgstr "उपलब्ध सीट"
+
+#: inc/WBTM_Translations.php:210
+msgid "Already Sold"
+msgstr "पहले से ही बेच दिया"
+
+#: inc/WBTM_Translations.php:216
+msgid "You select Wrong Route !"
+msgstr "आपने गलत मार्ग चुना है!"
+
+#: inc/WBTM_Translations.php:222
+msgid "Please select Starting Point !"
+msgstr "कृपया प्रारंभिक बिंदु का चयन करें!"
+
+#: inc/WBTM_Translations.php:228
+msgid "Schedule"
+msgstr "अनुसूची"
+
+#: inc/WBTM_Translations.php:234
+msgid "Coach Type"
+msgstr "कोच का प्रकार"
+
+#: inc/WBTM_Translations.php:246 inc/WBTM_Translations.php:252
+msgid "Seat"
+msgstr "सीट"
+
+#: inc/WBTM_Translations.php:258
+msgid "Name"
+msgstr "नाम"
+
+#: inc/WBTM_Translations.php:264 mp_global/class/WBTM_Select_Icon_image.php:110
+#: mp_global/class/WBTM_Select_Icon_image.php:136
+#: mp_global/class/WBTM_Select_Icon_image.php:163
+msgid "Image"
+msgstr "छवि"
+
+#: inc/WBTM_Translations.php:270
+msgid "Quantity"
+msgstr "मात्रा"
+
+#: inc/WBTM_Translations.php:276
+msgid "Total Quantity"
+msgstr "कुल मात्रा"
+
+#: inc/WBTM_Translations.php:282
+msgid "Price"
+msgstr "कीमत"
+
+#: inc/WBTM_Translations.php:288
+msgid "Fare"
+msgstr "किराया"
+
+#: inc/WBTM_Translations.php:294
+msgid "Total"
+msgstr "कुल"
+
+#: inc/WBTM_Translations.php:300
+msgid "Ticket Sub total"
+msgstr "टिकट उप-योग"
+
+#: inc/WBTM_Translations.php:306
+msgid "Order Total"
+msgstr "कुल आर्डर"
+
+#: inc/WBTM_Translations.php:312
+msgid "Passenger Capacity"
+msgstr "यात्री क्षमता"
+
+#: inc/WBTM_Translations.php:330
+msgid "Extra Service Sub total"
+msgstr "अतिरिक्त सेवा उप-योग"
+
+#: inc/WBTM_Translations.php:336
+msgid "Adult"
+msgstr "वयस्क"
+
+#: inc/WBTM_Translations.php:342
+msgid "Child"
+msgstr "बच्चा"
+
+#: inc/WBTM_Translations.php:348
+msgid "Infant"
+msgstr "शिशु"
+
+#: inc/WBTM_Translations.php:360
+msgid "Seats Available"
+msgstr "उपलब्ध सीटें"
+
+#: inc/WBTM_Translations.php:366
+msgid "Duration :"
+msgstr "अवधि :"
+
+#: inc/WBTM_Translations.php:372
+msgid "View Seats"
+msgstr "सीटें देखें"
+
+#: inc/WBTM_Translations.php:378
+msgid "Close Seat"
+msgstr "सीट बंद करें"
+
+#: inc/WBTM_Translations.php:384
+msgid "Book Now"
+msgstr "अभी बुक करें"
+
+#: inc/WBTM_Translations.php:390
+msgid "This seat is already reserved."
+msgstr "यह सीट पहले से ही आरक्षित है।"
+
+#: inc/WBTM_Translations.php:397
+msgid "Seat Details"
+msgstr "सीट विवरण"
+
+#: inc/WBTM_Translations.php:403
+msgid "Seat Selection"
+msgstr "सीट चयन"
+
+#: inc/WBTM_Translations.php:410
+msgid "Passenger Details"
+msgstr "यात्री विवरण"
+
+#: inc/WBTM_Translations.php:423
+msgid "Reset"
+msgstr "रीसेट करें"
+
+#: inc/WBTM_Translations.php:429
+msgid "Mobile Number"
+msgstr "मोबाइल नंबर"
+
+#: inc/WBTM_Translations.php:435
+msgid "Email"
+msgstr "ईमेल"
+
+#: inc/WBTM_Translations.php:441
+msgid "Gender"
+msgstr "लिंग"
+
+#: inc/WBTM_Translations.php:448
+msgid "Booking Date"
+msgstr "बुकिंग तिथि"
+
+#: inc/WBTM_Translations.php:454
+msgid "Booking ID"
+msgstr "बुकिंग आईडी"
+
+#: inc/WBTM_Translations.php:460
+msgid "Booking Status"
+msgstr "बुकिंग स्थिति"
+
+#: inc/WBTM_Translations.php:467
+msgid "Departure Time"
+msgstr "प्रस्थान समय"
+
+#: inc/WBTM_Translations.php:473
+msgid "Arrival Time"
+msgstr "आगमन समय"
+
+#: inc/WBTM_Translations.php:479
+msgid "Route Details"
+msgstr "मार्ग विवरण"
+
+#: inc/WBTM_Translations.php:486
+msgid "Payment Status"
+msgstr "भुगतान स्थिति"
+
+#: inc/WBTM_Translations.php:492
+msgid "Transaction ID"
+msgstr "लेनदेन आईडी"
+
+#: inc/WBTM_Translations.php:499
+msgid "Booking Successful!"
+msgstr "बुकिंग सफल!"
+
+#: inc/WBTM_Translations.php:505
+msgid "Booking Failed!"
+msgstr "बुकिंग विफल!"
+
+#: inc/WBTM_Translations.php:511
+msgid "Selected seat(s) no longer available!"
+msgstr "चयनित सीट(सीटें) अब उपलब्ध नहीं हैं!"
+
+#: inc/WBTM_Translations.php:518
+msgid "Proceed"
+msgstr "आगे बढ़ना"
+
+#: inc/WBTM_Translations.php:524
+msgid "Cancel"
+msgstr "रद्द करना"
+
+#: inc/WBTM_Translations.php:530
+msgid "Print Ticket"
+msgstr "टिकट प्रिंट करें"
+
+#: inc/WBTM_Translations.php:537
+msgid "Terms & Conditions"
+msgstr "नियम एवं शर्तें"
+
+#: inc/WBTM_Translations.php:543
+msgid "Note"
+msgstr "टिप्पणी"
+
+#: inc/WBTM_Translations.php:550
+msgid "This field is required"
+msgstr "यह फ़ील्ड आवश्यक है"
+
+#: inc/WBTM_Translations.php:556
+msgid "Please enter a valid email address"
+msgstr "कृपया एक मान्य ईमेल पता प्रविष्ट करें"
+
+#: inc/WBTM_Translations.php:562
+msgid "Please enter a valid phone number"
+msgstr "एक मान्य दूरभाष क्रमांक दर्ज करे"
+
+#: inc/WBTM_Translations.php:569
+msgid "Ticket Confirmed"
+msgstr "टिकट कन्फर्म"
+
+#: inc/WBTM_Translations.php:575
+msgid "Ticket Pending"
+msgstr "टिकट लंबित"
+
+#: inc/WBTM_Translations.php:581
+msgid "Ticket Cancelled"
+msgstr "टिकट रद्द"
+
+#: inc/WBTM_Translations.php:588
+msgid "Passenger Name"
+msgstr "यात्री का नाम"
+
+#: inc/WBTM_Translations.php:594
+msgid "Age"
+msgstr "आयु"
+
+#: inc/WBTM_Translations.php:600
+msgid "NID/Passport"
+msgstr "एनआईडी/पासपोर्ट"
+
+#: inc/WBTM_Translations.php:619
+msgid "Journey Time"
+msgstr "यात्रा समय"
+
+#: inc/WBTM_Translations.php:625
+msgid "Distance"
+msgstr "दूरी"
+
+#: inc/WBTM_Translations.php:632
+msgid "Seat Number"
+msgstr "सीट संख्या"
+
+#: inc/WBTM_Translations.php:638
+msgid "Seat Status"
+msgstr "सीट की स्थिति"
+
+#: inc/WBTM_Translations.php:645
+msgid "Tax"
+msgstr "कर"
+
+#: inc/WBTM_Translations.php:651
+msgid "Discount"
+msgstr "छूट"
+
+#: inc/WBTM_Translations.php:657
+msgid "Grand Total"
+msgstr "कुल योग"
+
+#: inc/WBTM_Translations.php:664
+msgid "Payment Pending"
+msgstr "भुगतान लंबित"
+
+#: inc/WBTM_Translations.php:670
+msgid "Payment Complete"
+msgstr "भुगतान पूर्ण"
+
+#: inc/WBTM_Translations.php:676
+msgid "Payment Failed"
+msgstr "भुगतान विफल रही"
+
+#: inc/WBTM_Woocommerce.php:166
+msgid "Booking Details "
+msgstr "बुकिंग विवरण"
+
+#: inc/WBTM_Woocommerce.php:853
+msgid "Ticket Information"
+msgstr "टिकट जानकारी"
+
+#: mp_global/class/WBTM_Custom_Layout.php:39
+#: mp_global/class/WBTM_Custom_Layout.php:179
+#: mp_global/class/WBTM_Custom_Layout.php:180
+#: mp_global/class/WBTM_Custom_Layout.php:266
+msgid "Load More"
+msgstr "और लोड करें"
+
+#: mp_global/class/WBTM_Custom_Layout.php:50
+#: mp_global/class/WBTM_Custom_Layout.php:277
+msgid "GoTO Previous Page"
+msgstr "पिछले पृष्ठ पर जाएं"
+
+#: mp_global/class/WBTM_Custom_Layout.php:70
+#: mp_global/class/WBTM_Custom_Layout.php:297
+msgid "GoTO Next Page"
+msgstr "अगले पृष्ठ पर जाएँ"
+
+#: mp_global/class/WBTM_Custom_Layout.php:179
+msgid "Less More"
+msgstr "कम अधिक"
+
+#: mp_global/class/WBTM_Custom_Layout.php:219
+msgid "Please select"
+msgstr "कृपया चयन कीजिए"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "View All"
+msgstr "सभी को देखें"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "Images"
+msgstr "इमेजिस"
+
+#: mp_global/class/WBTM_Global_Function.php:223
+#: mp_global/class/WBTM_Global_Function.php:1045
+msgid "Lifetime"
+msgstr "जीवनभर"
+
+#: mp_global/class/WBTM_Global_Function.php:227
+#: mp_global/class/WBTM_Global_Function.php:1049
+msgid "Expired"
+msgstr "खत्म हो चुका"
+
+#: mp_global/class/WBTM_Global_Function.php:487
+msgid "Monday"
+msgstr "सोमवार"
+
+#: mp_global/class/WBTM_Global_Function.php:488
+msgid "Tuesday"
+msgstr "मंगलवार"
+
+#: mp_global/class/WBTM_Global_Function.php:489
+msgid "Wednesday"
+msgstr "बुधवार"
+
+#: mp_global/class/WBTM_Global_Function.php:490
+msgid "Thursday"
+msgstr "गुरुवार"
+
+#: mp_global/class/WBTM_Global_Function.php:491
+msgid "Friday"
+msgstr "शुक्रवार"
+
+#: mp_global/class/WBTM_Global_Function.php:492
+msgid "Saturday"
+msgstr "शनिवार"
+
+#: mp_global/class/WBTM_Global_Function.php:493
+msgid "Sunday"
+msgstr "रविवार"
+
+#: mp_global/class/WBTM_Global_Function.php:642
+#: mp_global/class/WBTM_Global_Function.php:668
+#: mp_global/class/WBTM_Global_Function.php:1243
+#: mp_global/class/WBTM_Global_Function.php:1269
+msgid "An error occurred, please try again."
+msgstr "एक त्रुटि हुई थी। कृपया दोबारा प्रयास करें।"
+
+#: mp_global/class/WBTM_Global_Function.php:650
+#: mp_global/class/WBTM_Global_Function.php:1251
+msgid "Your license key has been disabled."
+msgstr "आपकी लाइसेंस कुंजी अक्षम कर दी गई है."
+
+#: mp_global/class/WBTM_Global_Function.php:653
+#: mp_global/class/WBTM_Global_Function.php:1254
+msgid "Missing license."
+msgstr "लाइसेंस गुम."
+
+#: mp_global/class/WBTM_Global_Function.php:656
+#: mp_global/class/WBTM_Global_Function.php:1257
+msgid "Invalid license."
+msgstr "अमान्य लाइसेंस."
+
+#: mp_global/class/WBTM_Global_Function.php:659
+#: mp_global/class/WBTM_Global_Function.php:1260
+msgid "Your license is not active for this URL."
+msgstr "इस URL के लिए आपका लाइसेंस सक्रिय नहीं है."
+
+#: mp_global/class/WBTM_Global_Function.php:662
+#: mp_global/class/WBTM_Global_Function.php:1263
+msgid "This appears to be an invalid license key for ."
+msgstr "यह एक अवैध लाइसेंस कुंजी प्रतीत होती है।"
+
+#: mp_global/class/WBTM_Global_Function.php:665
+#: mp_global/class/WBTM_Global_Function.php:1266
+msgid "Your license key has reached its activation limit."
+msgstr "आपकी लाइसेंस कुंजी अपनी सक्रियण सीमा तक पहुँच गई है."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Success, License Key is valid for the plugin"
+msgstr "सफल, लाइसेंस कुंजी प्लगइन के लिए मान्य है"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Your Order id is"
+msgstr "आपका ऑर्डर आईडी है"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Validity of this licenses is"
+msgstr "इस लाइसेंस की वैधता है"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:28
+#: mp_global/class/WBTM_Select_Icon_image.php:154
+msgid "Remove Icon"
+msgstr "आइकन हटाएँ"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:47
+msgid "Select Icon"
+msgstr "आइकन चुनें"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:49
+msgid "Icon/class name...."
+msgstr "आइकन/क्लास का नाम...."
+
+#: mp_global/class/WBTM_Select_Icon_image.php:65
+msgid "All Icon"
+msgstr "सभी चिह्न"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:158
+msgid "Remove Image"
+msgstr "छवि हटाएँ"
+
+#: templates/layout/search_result.php:121
+#, php-format
+msgctxt "Duration format (hours and minutes)"
+msgid "%d H %d M"
+msgstr "%d एच %d एम"

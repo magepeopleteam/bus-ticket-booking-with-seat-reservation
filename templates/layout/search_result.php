@@ -117,6 +117,7 @@ if (sizeof($bus_ids) > 0) {
 
             $duration_hours = floor($duration_seconds / 3600);
             $duration_minutes = floor(($duration_seconds % 3600) / 60);
+            /* translators: %d: hours, %d: minutes */
             $duration_formatted = sprintf(
                 _x('%d H %d M', 'Duration format (hours and minutes)', 'bus-ticket-booking-with-seat-reservation'),
                 $duration_hours,

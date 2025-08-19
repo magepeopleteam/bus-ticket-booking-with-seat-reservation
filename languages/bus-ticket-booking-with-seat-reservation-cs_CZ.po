@@ -1,0 +1,3089 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the same license as the Bus Ticket Booking with Seat Reservation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.4.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-"
+"booking-with-seat-reservation\n"
+"Last-Translator: \n"
+"Language-Team: Czech\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-19T02:32:51+02:00\n"
+"PO-Revision-Date: 2025-08-19 00:46+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+"Language: cs_CZ\n"
+"Plural-Forms: nplurals=3; plural=( n == 1 ) ? 0 : ( n >= 2 && n <= 4 ) ? 1 : "
+"2;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.30"
+
+#. Plugin Name of the plugin
+#: woocommerce-bus.php
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "Rezervace autobusových jízdenek s rezervací místa"
+
+#. Plugin URI of the plugin
+#: woocommerce-bus.php
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Description of the plugin
+#: woocommerce-bus.php
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr ""
+"Kompletní systém pro prodej autobusových jízdenek pro WordPress a WooCommerce"
+
+#. Author of the plugin
+#: woocommerce-bus.php
+msgid "MagePeople Team"
+msgstr "Tým MagePeople"
+
+#. Author URI of the plugin
+#: woocommerce-bus.php
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/settings/WBTM_Date_Settings.php:35 admin/WBTM_Settings.php:52
+msgid "Date Settings"
+msgstr "Nastavení data"
+
+#: admin/settings/WBTM_Date_Settings.php:36
+msgid ""
+"Bus date settings will help to operation a bus in a particular or repeated "
+"date."
+msgstr ""
+"Nastavení data autobusu pomůže s provozem autobusu v konkrétní nebo "
+"opakovaný den."
+
+#: admin/settings/WBTM_Date_Settings.php:41
+msgid "Date Information"
+msgstr "Informace o datu"
+
+#: admin/settings/WBTM_Date_Settings.php:43
+msgid "Here you can set bus seat booking date."
+msgstr "Zde si můžete nastavit datum rezervace místa v autobuse."
+
+#: admin/settings/WBTM_Date_Settings.php:49
+msgid "Bus Operation Date Type"
+msgstr "Typ data provozu autobusu"
+
+#: admin/settings/WBTM_Date_Settings.php:57
+#: admin/settings/WBTM_Seat_Configuration.php:48
+#: admin/settings/WBTM_Seat_Configuration.php:114
+msgid "Please select ..."
+msgstr "Vyberte prosím..."
+
+#: admin/settings/WBTM_Date_Settings.php:58
+msgid "Particular"
+msgstr "Konkrétní"
+
+#: admin/settings/WBTM_Date_Settings.php:59
+msgid "Repeated"
+msgstr "Opakované"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+#: admin/settings/WBTM_Date_Settings.php:69
+msgid "Particular Dates"
+msgstr "Konkrétní data"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Add New Particular date"
+msgstr "Přidat nové konkrétní datum"
+
+#: admin/settings/WBTM_Date_Settings.php:100
+msgid "Repeated Start Date"
+msgstr "Opakované datum zahájení"
+
+#: admin/settings/WBTM_Date_Settings.php:102
+msgid "Select repeated start date."
+msgstr "Vyberte opakované datum zahájení."
+
+#: admin/settings/WBTM_Date_Settings.php:114
+msgid "Repeated End Date"
+msgstr "Opakované datum ukončení"
+
+#: admin/settings/WBTM_Date_Settings.php:116
+msgid "Select repeated end date."
+msgstr "Vyberte opakované datum ukončení."
+
+#: admin/settings/WBTM_Date_Settings.php:128
+msgid "Repeated after"
+msgstr "Opakováno po"
+
+#: admin/settings/WBTM_Date_Settings.php:130
+msgid "Set repeated date step count."
+msgstr "Nastavení počtu kroků pro opakované datum."
+
+#: admin/settings/WBTM_Date_Settings.php:139
+msgid "Maximum advanced day for booking"
+msgstr "Maximální den předem pro rezervaci"
+
+#: admin/settings/WBTM_Date_Settings.php:141
+msgid "Set maximum advanced day for booking."
+msgstr "Nastavte maximální den předem pro rezervaci."
+
+#: admin/settings/WBTM_Date_Settings.php:150
+msgid "Off Day"
+msgstr "Volný den"
+
+#: admin/settings/WBTM_Date_Settings.php:152
+msgid "Select days for off day."
+msgstr "Vyberte dny volna."
+
+#: admin/settings/WBTM_Date_Settings.php:167
+msgid "Off Dates"
+msgstr "Volná data"
+
+#: admin/settings/WBTM_Date_Settings.php:169
+msgid "Select dates for off day."
+msgstr "Vyberte data pro den volna."
+
+#: admin/settings/WBTM_Date_Settings.php:188
+msgid "Add New Off date"
+msgstr "Přidat nové datum ukončení"
+
+#: admin/settings/WBTM_Date_Settings.php:201
+msgid "Off Dates in Range"
+msgstr "Datum ukončení v rozsahu"
+
+#: admin/settings/WBTM_Date_Settings.php:203
+msgid "Select date range for off day."
+msgstr "Vyberte rozsah dat pro den volna."
+
+#: admin/settings/WBTM_Date_Settings.php:220
+msgid "Add New Off date range"
+msgstr "Přidat nové období mimo sezónu"
+
+#: admin/settings/WBTM_Extra_Service.php:23 inc/WBTM_Translations.php:324
+msgid "Extra Services"
+msgstr "Doplňkové služby"
+
+#: admin/settings/WBTM_Extra_Service.php:24
+msgid "Add Extra Services for the passanger with bus seat reservation"
+msgstr "Přidat doplňkové služby pro cestující s rezervací místa v autobuse"
+
+#: admin/settings/WBTM_Extra_Service.php:30
+msgid "Extra service"
+msgstr "Dodatečná služba"
+
+#: admin/settings/WBTM_Extra_Service.php:32
+msgid "Here you can add extra services. Also can be on/off extra service"
+msgstr ""
+"Zde si můžete přidat další služby. Také si můžete další služby "
+"zapnout/vypnout."
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Show/Hide Extra Service"
+msgstr "Zobrazit/Skrýt doplňkovou službu"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Service Name"
+msgstr "Název služby"
+
+#: admin/settings/WBTM_Extra_Service.php:55
+msgid "Service Price"
+msgstr "Cena služby"
+
+#: admin/settings/WBTM_Extra_Service.php:56
+msgid "Available Qty"
+msgstr "Dostupné množství"
+
+#: admin/settings/WBTM_Extra_Service.php:57
+msgid "Qty Box Type"
+msgstr "Množství Typ krabice"
+
+#: admin/settings/WBTM_Extra_Service.php:58 admin/WBTM_Global_settings.php:541
+#: inc/WBTM_Translations.php:354
+msgid "Action"
+msgstr "Akce"
+
+#: admin/settings/WBTM_Extra_Service.php:72
+msgid "Add Extra New Service"
+msgstr "Přidat další novou službu"
+
+#: admin/settings/WBTM_Extra_Service.php:109
+msgid "Input Box"
+msgstr "Vstupní pole"
+
+#: admin/settings/WBTM_Extra_Service.php:110
+msgid "Dropdown List"
+msgstr "Rozbalovací seznam"
+
+#: admin/settings/WBTM_Pricing_Routing.php:61
+msgid "Price And Routing Settings"
+msgstr "Nastavení ceny a směrování"
+
+#: admin/settings/WBTM_Pricing_Routing.php:62
+msgid "Here you can configure Price And Routing for a bus."
+msgstr "Zde můžete nakonfigurovat cenu a trasu pro autobus."
+
+#: admin/settings/WBTM_Pricing_Routing.php:66
+msgid "GTFS Export Ready!"
+msgstr "Export GTFS připraven!"
+
+#: admin/settings/WBTM_Pricing_Routing.php:67
+msgid ""
+"Add GPS coordinates to your bus stops to enable Google Transit integration. "
+"This allows your routes to appear in Google Maps, Apple Maps, and other "
+"transit apps."
+msgstr ""
+"Přidejte GPS souřadnice k autobusovým zastávkám, abyste umožnili integraci s "
+"Google Transit. Vaše trasy se tak budou zobrazovat v Mapách Google, Apple "
+"Maps a dalších aplikacích pro dopravu."
+
+#: admin/settings/WBTM_Pricing_Routing.php:69
+msgid "Export GTFS Feed"
+msgstr "Exportovat GTFS kanál"
+
+#: admin/settings/WBTM_Pricing_Routing.php:77
+msgid "Boarding and Dropping Settings"
+msgstr "Nastavení nástupu a výstupu"
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Add New Stops"
+msgstr "Přidat nové zastávky"
+
+#: admin/settings/WBTM_Pricing_Routing.php:110
+msgid "Pricing Settings"
+msgstr "Nastavení cen"
+
+#: admin/settings/WBTM_Pricing_Routing.php:230
+msgid "Add Stop"
+msgstr "Přidat zastávku"
+
+#: admin/settings/WBTM_Pricing_Routing.php:254
+msgid "Stop : "
+msgstr "Zastavit:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:256
+msgid "Select bus stop"
+msgstr "Vyberte autobusovou zastávku"
+
+#: admin/settings/WBTM_Pricing_Routing.php:263
+msgid "Time : "
+msgstr "Čas:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:269
+msgid "Type : "
+msgstr "Typ:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:272
+msgid "Select place type"
+msgstr "Vyberte typ místa"
+
+#: admin/settings/WBTM_Pricing_Routing.php:273
+msgid "Boarding "
+msgstr "Nástup na palubu"
+
+#: admin/settings/WBTM_Pricing_Routing.php:274
+msgid "Dropping "
+msgstr "Padání"
+
+#: admin/settings/WBTM_Pricing_Routing.php:275
+msgid "Boarding & Dropping"
+msgstr "Nástup a výstup"
+
+#: admin/settings/WBTM_Pricing_Routing.php:285
+msgid "Next Day Dropping: "
+msgstr "Odevzdání následující den:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:297
+msgid "GTFS Coordinates (for Google Transit)"
+msgstr "Souřadnice GTFS (pro Google Transit)"
+
+#: admin/settings/WBTM_Pricing_Routing.php:301
+msgid ""
+"Add GPS coordinates for this stop to enable Google Maps integration. You can "
+"find coordinates using Google Maps or GPS tools."
+msgstr ""
+"Pro aktivaci integrace s Google Maps přidejte GPS souřadnice této zastávky. "
+"Souřadnice můžete najít pomocí Google Maps nebo GPS nástrojů."
+
+#: admin/settings/WBTM_Pricing_Routing.php:307
+msgid "Latitude:"
+msgstr "Zeměpisná šířka:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:323
+msgid "Longitude:"
+msgstr "Zeměpisná délka:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:339
+msgid "Example: New York City = Lat: 40.7128, Lon: -74.0060"
+msgstr ""
+"Příklad: New York City = zeměpisná šířka: 40,7128, zeměpisná délka: -74,0060"
+
+#: admin/settings/WBTM_Pricing_Routing.php:343
+msgid "Get from Map"
+msgstr "Získat z mapy"
+
+#: admin/settings/WBTM_Pricing_Routing.php:346
+msgid "Validate"
+msgstr "Ověřit"
+
+#: admin/settings/WBTM_Pricing_Routing.php:405 inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr "Nástup na palubu"
+
+#: admin/settings/WBTM_Pricing_Routing.php:409 inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr "Padání"
+
+#: admin/settings/WBTM_Pricing_Routing.php:413
+msgid "Adult Price"
+msgstr "Cena pro dospělé"
+
+#: admin/settings/WBTM_Pricing_Routing.php:416
+msgid "Child Price"
+msgstr "Cena pro děti"
+
+#: admin/settings/WBTM_Pricing_Routing.php:417
+msgid "Infant Price"
+msgstr "Cena pro kojence"
+
+#: admin/settings/WBTM_Pricing_Routing.php:458
+msgid "Please Create Bus route ."
+msgstr "Prosím, vytvořte trasu autobusu."
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Seat Configuration"
+msgstr "Konfigurace sedadla"
+
+#: admin/settings/WBTM_Seat_Configuration.php:27
+msgid "Bus seat configuration. Plan your bus seat."
+msgstr "Konfigurace sedadel v autobuse. Naplánujte si sedadlo v autobuse."
+
+#: admin/settings/WBTM_Seat_Configuration.php:34
+#: admin/settings/WBTM_Translation_Settings.php:53
+msgid "Seat Information"
+msgstr "Informace o sedadle"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Here you can plan seat of the bus."
+msgstr "Zde si můžete naplánovat sedadlo v autobuse."
+
+#: admin/settings/WBTM_Seat_Configuration.php:42 inc/WBTM_Translations.php:240
+msgid "Seat Type"
+msgstr "Typ sedadla"
+
+#: admin/settings/WBTM_Seat_Configuration.php:49
+msgid "Seat Plan"
+msgstr "Plán sedadel"
+
+#: admin/settings/WBTM_Seat_Configuration.php:50
+msgid "Without Seat Plan"
+msgstr "Bez plánu sedadel"
+
+#: admin/settings/WBTM_Seat_Configuration.php:58
+msgid "Total Seat"
+msgstr "Celkový počet míst k sezení"
+
+#: admin/settings/WBTM_Seat_Configuration.php:91
+msgid "Lower Deck"
+msgstr "Dolní paluba"
+
+#: admin/settings/WBTM_Seat_Configuration.php:92
+msgid "Lower deck seat plan"
+msgstr "Plán sedadel v dolní palubě"
+
+#: admin/settings/WBTM_Seat_Configuration.php:101
+msgid "Show Upper Deck"
+msgstr "Zobrazit horní palubu"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103
+msgid "Turn On or Off upper deck seat plan"
+msgstr "Zapnout nebo vypnout plán sedadel na horní palubě"
+
+#: admin/settings/WBTM_Seat_Configuration.php:111
+msgid "Driver Position"
+msgstr "Pozice řidiče"
+
+#: admin/settings/WBTM_Seat_Configuration.php:115
+msgid "Left"
+msgstr "Vlevo"
+
+#: admin/settings/WBTM_Seat_Configuration.php:116
+msgid "Right"
+msgstr "Právo"
+
+#: admin/settings/WBTM_Seat_Configuration.php:123
+msgid "Seat Rows"
+msgstr "Řady sedadel"
+
+#: admin/settings/WBTM_Seat_Configuration.php:133
+msgid "Seat Columns"
+msgstr "Sloupky sedadel"
+
+#: admin/settings/WBTM_Seat_Configuration.php:139
+msgid "Generate Bus Seat"
+msgstr "Generovat sedadlo v autobuse"
+
+#: admin/settings/WBTM_Seat_Configuration.php:143
+#: admin/settings/WBTM_Seat_Configuration.php:210
+msgid "Bus Front"
+msgstr "Přední část autobusu"
+
+#: admin/settings/WBTM_Seat_Configuration.php:153
+msgid "Enable Rotation"
+msgstr "Povolit rotaci"
+
+#: admin/settings/WBTM_Seat_Configuration.php:155
+msgid "Enable seat rotation for individual seats"
+msgstr "Povolit otáčení sedadel pro jednotlivá sedadla"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176 inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr "Horní paluba"
+
+#: admin/settings/WBTM_Seat_Configuration.php:177
+msgid "You can make Upper Deck seat plan"
+msgstr "Můžete si vytvořit plán sedadel na horní palubě"
+
+#: admin/settings/WBTM_Seat_Configuration.php:184
+msgid "Seat Rows : "
+msgstr "Řady sedadel:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:193
+msgid "Seat Columns : "
+msgstr "Sloupky sedadel:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:201
+msgid "Price Increase : "
+msgstr "Zvýšení ceny:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:206
+msgid "Create seat Plan"
+msgstr "Vytvořit plán sedadel"
+
+#: admin/settings/WBTM_Seat_Configuration.php:240
+msgid "Add New Row"
+msgstr "Přidat nový řádek"
+
+#: admin/settings/WBTM_Seat_Configuration.php:266
+msgid "Blank"
+msgstr "Prázdný"
+
+#: admin/settings/WBTM_Seat_Configuration.php:275
+msgid "Rotate Seat"
+msgstr "Otočit sedadlo"
+
+#: admin/settings/WBTM_Settings_General.php:19
+msgid "General Settings"
+msgstr "Obecná nastavení"
+
+#: admin/settings/WBTM_Settings_General.php:20
+msgid "Bus General Settings"
+msgstr "Obecná nastavení sběrnice"
+
+#: admin/settings/WBTM_Settings_General.php:25
+#: admin/settings/WBTM_Translation_Settings.php:48
+msgid "Bus Information"
+msgstr "Informace o autobusech"
+
+#: admin/settings/WBTM_Settings_General.php:27
+msgid "Here you can set bus number, category and seat reservation on/off"
+msgstr "Zde si můžete nastavit číslo autobusu, kategorii a rezervaci sedadla"
+
+#: admin/settings/WBTM_Settings_General.php:36
+msgid "Bus no"
+msgstr "Číslo autobusu"
+
+#: admin/settings/WBTM_Settings_General.php:63
+msgid "Reservation on/off"
+msgstr "Rezervace zapnuta/vypnuta"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:19
+msgid "Pickup And Drop-Off Point Settings"
+msgstr "Nastavení místa vyzvednutí a odevzdání"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:20
+msgid "Here you can set bus pick up and drop off point settings."
+msgstr "Zde si můžete nastavit místa nástupu a výstupu autobusu."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:41
+msgid "Pick up settings"
+msgstr "Nastavení vyzvednutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:43
+msgid "Here you can set pickup location"
+msgstr "Zde si můžete nastavit místo vyzvednutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:50
+msgid "On/Off Pickup Point"
+msgstr "Místo vyzvednutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "Boarding point Required?"
+msgstr "Nástupní místo Požadováno?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:66
+msgid "Turn On or Off Boarding point Required?"
+msgstr "Je vyžadováno zapnutí nebo vypnutí nástupního místa?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:75
+#: inc/WBTM_Translations.php:607
+msgid "Boarding Point"
+msgstr "Nástupní místo"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:76
+msgid "Pickup Info"
+msgstr "Informace o vyzvednutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:91
+#: admin/settings/WBTM_Settings_Pickup_Point.php:247
+msgid "Add More Point"
+msgstr "Přidat další bod"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:102
+msgid ""
+"You have no Pickup Point . Please add Pickup Point and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Nemáte žádné místo vyzvednutí. Přidejte prosím místo vyzvednutí a uložte jej,"
+" poté jej můžete upravit."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:105
+msgid ""
+"You have no Bus route . Please add Price and Route and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Nemáte trasu autobusu. Zadejte prosím cenu a trasu a uložte je, poté můžete "
+"upravit místo vyzvednutí."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:143
+msgid "Add Pickup Point"
+msgstr "Přidat místo vyzvednutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:197
+msgid "Drop-off settings"
+msgstr "Nastavení odevzdání"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:199
+msgid "Here you can set drop-off location."
+msgstr "Zde si můžete nastavit místo odbavení."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:205
+msgid "Drop-Off Point Settings"
+msgstr "Nastavení místa odevzdání"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:221
+msgid "Dropping point Required?"
+msgstr "Bod skápnutí Požadován?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:222
+msgid "Turn On or Off Dropping point Required?"
+msgstr "Je nutné zapnout nebo vypnout bod skápnutí?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:231
+#: inc/WBTM_Translations.php:613
+msgid "Dropping Point"
+msgstr "Bod skápnutí"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:232
+msgid "Drop-Off Info"
+msgstr "Informace o odevzdání"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:258
+msgid ""
+"You have no Drop-Off Point. Please add Drop-Off Point from left sidebar menu."
+msgstr ""
+"Nemáte žádné místo odevzdání. Přidejte prosím místo odevzdání z nabídky "
+"vlevo."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:261
+msgid ""
+"You have no Bus route. Please add Price and Route and save ,then you can "
+"edit Drop-Off point."
+msgstr ""
+"Nemáte trasu autobusu. Zadejte prosím cenu a trasu a uložte je, poté můžete "
+"upravit místo vysazení."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:297
+msgid "Add Drop-Off Point"
+msgstr "Přidat místo odbavení"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "Konfigurace daně"
+
+#: admin/settings/WBTM_Tax_Settings.php:19
+msgid "Bus tax Configuration settings."
+msgstr "Nastavení konfigurace autobusové daně."
+
+#: admin/settings/WBTM_Tax_Settings.php:28
+msgid "Tax Settings Information"
+msgstr "Informace o nastavení daní"
+
+#: admin/settings/WBTM_Tax_Settings.php:30
+msgid "Here you can configure tax settings."
+msgstr "Zde můžete nakonfigurovat nastavení daní."
+
+#: admin/settings/WBTM_Tax_Settings.php:38
+msgid "Tax status"
+msgstr "Daňový status"
+
+#: admin/settings/WBTM_Tax_Settings.php:41
+msgid "Select tax status type."
+msgstr "Vyberte typ daňového statusu."
+
+#: admin/settings/WBTM_Tax_Settings.php:48
+msgid "Taxable"
+msgstr "Zdanitelný"
+
+#: admin/settings/WBTM_Tax_Settings.php:51
+msgid "Shipping only"
+msgstr "Pouze doprava"
+
+#: admin/settings/WBTM_Tax_Settings.php:54
+msgid "None"
+msgstr "Žádný"
+
+#: admin/settings/WBTM_Tax_Settings.php:63
+msgid "Tax class"
+msgstr "Daňová třída"
+
+#: admin/settings/WBTM_Tax_Settings.php:71
+msgid "Standard"
+msgstr "Norma"
+
+#: admin/settings/WBTM_Tax_Settings.php:86
+msgid "Tax not active. Please add Tax settings from woocommerce."
+msgstr "Daň není aktivní. Prosím, přidejte nastavení daní z WooCommerce."
+
+#: admin/settings/WBTM_Translation_Settings.php:17
+msgid "Translation Settings"
+msgstr "Nastavení překladu"
+
+#: admin/settings/WBTM_Translation_Settings.php:18
+msgid "Translations"
+msgstr "Překlady"
+
+#: admin/settings/WBTM_Translation_Settings.php:33
+msgid "General Labels"
+msgstr "Obecné štítky"
+
+#: admin/settings/WBTM_Translation_Settings.php:38
+msgid "Booking Labels"
+msgstr "Štítky rezervací"
+
+#: admin/settings/WBTM_Translation_Settings.php:43
+#: inc/WBTM_Translations.php:318
+msgid "Passenger Information"
+msgstr "Informace pro cestující"
+
+#: admin/settings/WBTM_Translation_Settings.php:58
+msgid "Button Labels"
+msgstr "Štítky tlačítek"
+
+#: admin/settings/WBTM_Translation_Settings.php:63
+msgid "Error Messages"
+msgstr "Chybové zprávy"
+
+#: admin/settings/WBTM_Translation_Settings.php:68
+msgid "Ticket Status"
+msgstr "Stav ticketu"
+
+#: admin/settings/WBTM_Translation_Settings.php:73
+msgid "Passenger Form"
+msgstr "Formulář pro cestujícího"
+
+#: admin/settings/WBTM_Translation_Settings.php:78
+msgid "Journey Information"
+msgstr "Informace o cestě"
+
+#: admin/settings/WBTM_Translation_Settings.php:83
+msgid "Price Information"
+msgstr "Informace o cenách"
+
+#: admin/settings/WBTM_Translation_Settings.php:193
+msgid "Bus Ticket Booking Translations"
+msgstr "Překlady rezervací autobusových jízdenek"
+
+#: admin/settings/WBTM_Translation_Settings.php:228
+#, php-format
+msgid "Default: %s"
+msgstr "Výchozí: %s"
+
+#: admin/settings/WBTM_Translation_Settings.php:240
+msgid "Save Changes"
+msgstr "Uložit změny"
+
+#: admin/WBTM_Analytics_Dashboard.php:16
+msgid "Analytics Dashboard"
+msgstr "Analytický řídicí panel"
+
+#: admin/WBTM_Analytics_Dashboard.php:17
+msgid "Analytics"
+msgstr "Analytika"
+
+#: admin/WBTM_Analytics_Dashboard.php:231
+msgid "Bus Booking Analytics Dashboard"
+msgstr "Dashboard analýzy rezervací autobusů"
+
+#: admin/WBTM_Analytics_Dashboard.php:241
+msgid "Total Bookings"
+msgstr "Celkový počet rezervací"
+
+#: admin/WBTM_Analytics_Dashboard.php:251
+msgid "Total Revenue"
+msgstr "Celkové tržby"
+
+#: admin/WBTM_Analytics_Dashboard.php:261
+msgid "Total Seats Booked"
+msgstr "Celkový počet rezervovaných míst"
+
+#: admin/WBTM_Analytics_Dashboard.php:269
+msgid "Popular Routes"
+msgstr "Oblíbené trasy"
+
+#: admin/WBTM_Analytics_Dashboard.php:274
+msgid "Monthly Revenue"
+msgstr "Měsíční příjem"
+
+#: admin/WBTM_Analytics_Dashboard.php:281
+msgid "Advanced Analytics"
+msgstr "Pokročilá analytika"
+
+#: admin/WBTM_Analytics_Dashboard.php:286
+msgid "Peak Booking Hours"
+msgstr "Špičkové rezervační hodiny"
+
+#: admin/WBTM_Analytics_Dashboard.php:292
+msgid "Weekly Booking Pattern"
+msgstr "Týdenní vzorec rezervací"
+
+#: admin/WBTM_Analytics_Dashboard.php:298
+msgid "Ticket Type Distribution"
+msgstr "Distribuce typů vstupenek"
+
+#: admin/WBTM_Analytics_Dashboard.php:304
+msgid "Bus Type Performance"
+msgstr "Výkon typu sběrnice"
+
+#: admin/WBTM_Analytics_Dashboard.php:312
+msgid "Return Customer Rate"
+msgstr "Míra vracejících se zákazníků"
+
+#: admin/WBTM_Analytics_Dashboard.php:324
+msgid "Average Occupancy Rate"
+msgstr "Průměrná obsazenost"
+
+#: admin/WBTM_Bus_Import.php:20 admin/WBTM_Bus_Import.php:21
+#: admin/WBTM_Bus_Import.php:46 admin/WBTM_Bus_Import.php:116
+msgid "Import Buses"
+msgstr "Dovoz autobusů"
+
+#: admin/WBTM_Bus_Import.php:53
+#, php-format
+msgid "%s bus imported successfully."
+msgid_plural "%s buses imported successfully."
+msgstr[0] "%s sběrnice úspěšně importována."
+msgstr[1] "%s autobusů bylo úspěšně importováno."
+msgstr[2] ""
+
+#: admin/WBTM_Bus_Import.php:60
+#, php-format
+msgid "%s bus failed to import."
+msgid_plural "%s buses failed to import."
+msgstr[0] "Import sběrnice %s se nezdařil."
+msgstr[1] "%s autobusů se nepodařilo importovat."
+msgstr[2] ""
+
+#: admin/WBTM_Bus_Import.php:71
+msgid "Import Buses from CSV"
+msgstr "Import autobusů z CSV"
+
+#: admin/WBTM_Bus_Import.php:72
+msgid ""
+"Upload a CSV file to import multiple buses at once. This will allow you to "
+"create all your buses in a single operation instead of adding them one by "
+"one."
+msgstr ""
+"Nahrajte soubor CSV pro import více autobusů najednou. To vám umožní "
+"vytvořit všechny autobusy najednou, místo abyste je přidávali jeden po "
+"druhém."
+
+#: admin/WBTM_Bus_Import.php:80
+msgid "Choose CSV File"
+msgstr "Vyberte soubor CSV"
+
+#: admin/WBTM_Bus_Import.php:84
+msgid "Select a CSV file with your bus data."
+msgstr "Vyberte soubor CSV s daty o sběrnici."
+
+#: admin/WBTM_Bus_Import.php:89
+msgid "CSV Format"
+msgstr "Formát CSV"
+
+#: admin/WBTM_Bus_Import.php:92
+msgid "Your CSV file should include the following columns:"
+msgstr "Váš soubor CSV by měl obsahovat následující sloupce:"
+
+#: admin/WBTM_Bus_Import.php:94
+msgid "Bus name (required)"
+msgstr "Název autobusu (povinné)"
+
+#: admin/WBTM_Bus_Import.php:95
+msgid "Bus number (required)"
+msgstr "Číslo autobusu (povinné)"
+
+#: admin/WBTM_Bus_Import.php:96
+msgid "Bus category (AC/Non AC)"
+msgstr "Kategorie autobusu (s klimatizací/bez klimatizace)"
+
+#: admin/WBTM_Bus_Import.php:97
+msgid "Seat type configuration (wbtm_seat_plan)"
+msgstr "Konfigurace typu sedadla (wbtm_seat_plan)"
+
+#: admin/WBTM_Bus_Import.php:98
+msgid "Driver seat position (driver_left/driver_right)"
+msgstr "Poloha sedadla řidiče (řidič vlevo/řidič vpravo)"
+
+#: admin/WBTM_Bus_Import.php:99
+msgid "Number of seat rows"
+msgstr "Počet řad sedadel"
+
+#: admin/WBTM_Bus_Import.php:100
+msgid "Number of seat columns"
+msgstr "Počet sloupků sedadel"
+
+#: admin/WBTM_Bus_Import.php:101
+msgid "Total number of seats"
+msgstr "Celkový počet sedadel"
+
+#: admin/WBTM_Bus_Import.php:102
+msgid "Has upper deck (yes/no)"
+msgstr "Má horní palubu (ano/ne)"
+
+#: admin/WBTM_Bus_Import.php:103
+msgid "Starting point of route (comma separated for multiple routes)"
+msgstr "Výchozí bod trasy (více tras odděleno čárkou)"
+
+#: admin/WBTM_Bus_Import.php:104
+msgid "End point of route (comma separated for multiple routes)"
+msgstr "Koncový bod trasy (více tras odděleno čárkou)"
+
+#: admin/WBTM_Bus_Import.php:105
+msgid "Boarding points (comma separated)"
+msgstr "Nástupní místa (oddělená čárkou)"
+
+#: admin/WBTM_Bus_Import.php:106
+msgid "Dropping points (comma separated)"
+msgstr "Body skápnutí (oddělené čárkou)"
+
+#: admin/WBTM_Bus_Import.php:107
+msgid "Start date (YYYY-MM-DD)"
+msgstr "Datum zahájení (RRRR-MM-DD)"
+
+#: admin/WBTM_Bus_Import.php:108
+msgid "End date (YYYY-MM-DD)"
+msgstr "Datum ukončení (RRRR-MM-DD)"
+
+#: admin/WBTM_Bus_Import.php:109
+msgid "Price data in format: from|to|price,from|to|price"
+msgstr "Údaje o cenách ve formátu: od|do|cena,od|do|cena"
+
+#: admin/WBTM_Bus_Import.php:117
+msgid "Download Sample CSV"
+msgstr "Stáhnout vzorový CSV"
+
+#: admin/WBTM_Bus_Import.php:123
+msgid "Import Instructions"
+msgstr "Pokyny k importu"
+
+#: admin/WBTM_Bus_Import.php:125
+msgid "Download the sample CSV file to see the required format."
+msgstr "Stáhněte si vzorový soubor CSV a podívejte se na požadovaný formát."
+
+#: admin/WBTM_Bus_Import.php:126
+msgid "Fill in your bus data following the same format."
+msgstr "Vyplňte údaje o sběrnici ve stejném formátu."
+
+#: admin/WBTM_Bus_Import.php:127
+msgid "Upload your CSV file using the form above."
+msgstr "Nahrajte soubor CSV pomocí výše uvedeného formuláře."
+
+#: admin/WBTM_Bus_Import.php:128
+msgid "Review the import results and check your buses."
+msgstr "Zkontrolujte výsledky importu a sběrnice."
+
+#: admin/WBTM_Bus_Import.php:132
+msgid "Important Notes:"
+msgstr "Důležité poznámky:"
+
+#: admin/WBTM_Bus_Import.php:134
+msgid "Make sure your CSV file is properly formatted with the correct columns."
+msgstr ""
+"Ujistěte se, že je váš soubor CSV správně naformátován a obsahuje správné "
+"sloupce."
+
+#: admin/WBTM_Bus_Import.php:135
+msgid "Bus names and numbers must be unique."
+msgstr "Názvy a čísla autobusů musí být jedinečné."
+
+#: admin/WBTM_Bus_Import.php:136
+msgid ""
+"For complex seat arrangements, you may need to edit the buses after import."
+msgstr ""
+"U složitých uspořádání sedadel může být nutné autobusy po importu upravit."
+
+#: admin/WBTM_Bus_Import.php:137
+msgid "The import process may take some time depending on the number of buses."
+msgstr "Proces importu může trvat nějakou dobu v závislosti na počtu autobusů."
+
+#: admin/WBTM_Bus_Import.php:163
+msgid "Security check failed. Please try again."
+msgstr "Bezpečnostní kontrola selhala. Zkuste to prosím znovu."
+
+#: admin/WBTM_Bus_Import.php:168
+msgid "You do not have sufficient permissions to import data."
+msgstr "Nemáte dostatečná oprávnění k importu dat."
+
+#: admin/WBTM_Bus_Import.php:173
+msgid "No file uploaded or upload error."
+msgstr "Nebyl nahrán žádný soubor nebo došlo k chybě při nahrávání."
+
+#: admin/WBTM_Bus_Import.php:180
+msgid "Invalid file type. Please upload a CSV file."
+msgstr "Neplatný typ souboru. Nahrajte prosím soubor CSV."
+
+#: admin/WBTM_Bus_Import.php:209
+msgid "Could not open the file."
+msgstr "Soubor se nepodařilo otevřít."
+
+#: admin/WBTM_Bus_Import.php:217
+msgid "Could not read CSV headers."
+msgstr "Nelze přečíst záhlaví CSV."
+
+#: admin/WBTM_Bus_Import.php:230
+#, php-format
+msgid "Required column \"%s\" is missing."
+msgstr "Chybí povinný sloupec „%s“."
+
+#: admin/WBTM_CPT.php:30 admin/WBTM_Taxonomy.php:20
+msgid "All"
+msgstr "Vše"
+
+#: admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32 admin/WBTM_Taxonomy.php:24
+#: admin/WBTM_Taxonomy.php:78 admin/WBTM_Taxonomy.php:114
+msgid "Add New"
+msgstr "Přidat nové"
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "Nový"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "Upravit"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "Pohled"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr "Vyhledávání"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "Nenalezeno"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "Nenalezeno v koši"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "Obrázek prvku"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "Soubor"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "vybraný obrázek"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "Odstranit"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "Použít jako"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "Vložit do"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "Nahráno sem"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr "seznam"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr "navigace v seznamu"
+
+#: admin/WBTM_CPT.php:49 inc/WBTM_Translations.php:417
+msgid "Filter"
+msgstr "Filtr"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "seznam"
+
+#: admin/WBTM_CPT.php:77
+msgid "Bus Attendee"
+msgstr "Účastník autobusu"
+
+#: admin/WBTM_CPT.php:101
+msgid "Coach no"
+msgstr "Trenér č."
+
+#: admin/WBTM_CPT.php:102 admin/WBTM_Global_settings.php:536
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21
+msgid "Type"
+msgstr "Typ"
+
+#: admin/WBTM_CPT.php:104
+msgid "Added by"
+msgstr "Přidáno uživatelem"
+
+#: admin/WBTM_CPT.php:110
+msgid "Seal Plan"
+msgstr "Plán těsnění"
+
+#: admin/WBTM_CPT.php:110
+msgid "Without Seal Plan"
+msgstr "Plán bez pečeti"
+
+#: admin/WBTM_Global_settings.php:26
+msgid " Settings"
+msgstr "Nastavení"
+
+#: admin/WBTM_Global_settings.php:70
+msgid "Settings"
+msgstr "Nastavení"
+
+#: admin/WBTM_Global_settings.php:74
+msgid "Global Settings"
+msgstr "Globální nastavení"
+
+#: admin/WBTM_Global_settings.php:85
+msgid "Slider Settings"
+msgstr "Nastavení posuvníku"
+
+#: admin/WBTM_Global_settings.php:89
+msgid "Style Settings"
+msgstr "Nastavení stylu"
+
+#: admin/WBTM_Global_settings.php:93 admin/WBTM_Global_settings.php:504
+msgid "Custom CSS"
+msgstr "Vlastní CSS"
+
+#: admin/WBTM_Global_settings.php:97 admin/WBTM_Global_settings.php:517
+msgid "Mage-People License"
+msgstr "Licence Mage-People"
+
+#: admin/WBTM_Global_settings.php:111
+msgid "Seat Booked Status"
+msgstr "Stav rezervace místa"
+
+#: admin/WBTM_Global_settings.php:112
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr ""
+"Vyberte prosím, kdy a v jakém stavu objednávky bude místo "
+"rezervováno/zlevněno."
+
+#: admin/WBTM_Global_settings.php:119
+msgid "On Hold"
+msgstr "Pozastaveno"
+
+#: admin/WBTM_Global_settings.php:120
+msgid "Pending"
+msgstr "Čeká na vyřízení"
+
+#: admin/WBTM_Global_settings.php:121
+msgid "Processing"
+msgstr "Zpracování"
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Completed"
+msgstr "Dokončeno"
+
+#: admin/WBTM_Global_settings.php:127 admin/WBTM_Global_settings.php:131
+msgid "Label"
+msgstr "Označení"
+
+#: admin/WBTM_Global_settings.php:128
+msgid ""
+"If you like to change the label in the dashboard menu, you can change it "
+"here."
+msgstr ""
+"Pokud chcete změnit popisek v nabídce řídicího panelu, můžete to udělat zde."
+
+#: admin/WBTM_Global_settings.php:135 admin/WBTM_Global_settings.php:139
+msgid "Slug"
+msgstr "Slimák"
+
+#: admin/WBTM_Global_settings.php:136
+msgid ""
+"Please enter the slug name you want. Remember, after changing this slug; you "
+"need to flush permalink; go to"
+msgstr ""
+"Zadejte prosím požadovaný název slugu. Nezapomeňte, že po změně tohoto slugu "
+"je třeba vyprázdnit permalink; přejděte na"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "Settings-> Permalinks"
+msgstr "Nastavení-> Trvalé odkazy"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "hit the Save Settings button."
+msgstr "stiskněte tlačítko Uložit nastavení."
+
+#: admin/WBTM_Global_settings.php:143
+#: mp_global/class/WBTM_Select_Icon_image.php:33
+#: mp_global/class/WBTM_Select_Icon_image.php:165
+msgid "Icon"
+msgstr "Ikona"
+
+#: admin/WBTM_Global_settings.php:144
+msgid ""
+"If you want to change the  icon in the dashboard menu, you can change it "
+"from here, and the Dashboard icon only supports the Dashicons, So please go "
+"to "
+msgstr ""
+"Pokud chcete změnit ikonu v nabídce řídicího panelu, můžete ji změnit zde. "
+"Ikona řídicího panelu podporuje pouze ikony Dashboard, proto prosím přejděte "
+"na"
+
+#: admin/WBTM_Global_settings.php:144
+msgid "Dashicons Library."
+msgstr "Knihovna Dashicons."
+
+#: admin/WBTM_Global_settings.php:144
+msgid "and copy your icon code and paste it here."
+msgstr "a zkopírujte kód ikony a vložte ho sem."
+
+#: admin/WBTM_Global_settings.php:150
+msgid "Show return Date Search"
+msgstr "Zobrazit datum vrácení"
+
+#: admin/WBTM_Global_settings.php:151
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"Zakažte, pokud nechcete ve vyhledávání zobrazovat pole pro návrat. Ve "
+"výchozím nastavení povolte."
+
+#: admin/WBTM_Global_settings.php:155
+msgid "Disable"
+msgstr "Zakázat"
+
+#: admin/WBTM_Global_settings.php:156
+msgid "Enable"
+msgstr "Umožnit"
+
+#: admin/WBTM_Global_settings.php:161
+msgid "Ticket sale off after date"
+msgstr "Prodej vstupenek ukončen po datu"
+
+#: admin/WBTM_Global_settings.php:162
+msgid ""
+"Please select Seat sale off after date . if you dont want to off sale then "
+"it will be blank"
+msgstr ""
+"Vyberte prosím datum ukončení prodeje sedadel. Pokud nechcete ukončit prodej,"
+" bude toto pole prázdné."
+
+#: admin/WBTM_Global_settings.php:170
+msgid "Maximum advanced day Sale"
+msgstr "Maximální denní výprodej"
+
+#: admin/WBTM_Global_settings.php:171
+msgid ""
+"Please select Maximum advanced day Ticket Sale . if you dont want to off "
+"sale then it will be blank"
+msgstr ""
+"Vyberte prosím možnost Maximální předprodej denních vstupenek. Pokud "
+"nechcete ukončit prodej, bude toto pole prázdné."
+
+#: admin/WBTM_Global_settings.php:178
+msgid "Buffer Time"
+msgstr "Čas vyrovnávací paměti"
+
+#: admin/WBTM_Global_settings.php:179
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr "Zde zadejte čas mezipaměti vozidla v minutách. Výchozí nastavení je 0."
+
+#: admin/WBTM_Global_settings.php:182
+msgid "Ex:50"
+msgstr "Např.: 50"
+
+#: admin/WBTM_Global_settings.php:186
+msgid "Show/hide view seats button"
+msgstr "Tlačítko Zobrazit/skrýt zobrazení sedadel"
+
+#: admin/WBTM_Global_settings.php:187
+msgid ""
+"If you want to hide view seats button from search list, if registration off."
+msgstr ""
+"Pokud chcete skrýt tlačítko zobrazení sedadel ze seznamu vyhledávání, pokud "
+"je registrace vypnutá."
+
+#: admin/WBTM_Global_settings.php:191
+msgid "Show"
+msgstr "Show"
+
+#: admin/WBTM_Global_settings.php:192
+msgid "Hide"
+msgstr "Skrýt"
+
+#: admin/WBTM_Global_settings.php:197
+msgid "Active Redirect page"
+msgstr "Stránka aktivního přesměrování"
+
+#: admin/WBTM_Global_settings.php:198
+msgid "If you want to Active Redirect page,please select on"
+msgstr "Pokud chcete stránku s aktivním přesměrováním, vyberte prosím"
+
+#: admin/WBTM_Global_settings.php:202 admin/WBTM_Global_settings.php:220
+#: admin/WBTM_Global_settings.php:231 admin/WBTM_Global_settings.php:325
+#: admin/WBTM_Global_settings.php:347 admin/WBTM_Global_settings.php:371
+#: admin/WBTM_Global_settings.php:382
+msgid "ON"
+msgstr "NA"
+
+#: admin/WBTM_Global_settings.php:203 admin/WBTM_Global_settings.php:221
+#: admin/WBTM_Global_settings.php:232
+msgid "OFF"
+msgstr "VYPNUTO"
+
+#: admin/WBTM_Global_settings.php:208
+msgid "Search result page"
+msgstr "Stránka s výsledky vyhledávání"
+
+#: admin/WBTM_Global_settings.php:209
+msgid "If you want to redirect Search result page , please select below page"
+msgstr ""
+"Pokud chcete přesměrovat stránku s výsledky vyhledávání, vyberte prosím níže "
+"uvedenou stránku."
+
+#: admin/WBTM_Global_settings.php:215
+msgid "Turn order status processing to completed automatically"
+msgstr "Automaticky nastavit zpracování stavu objednávky na dokončeno"
+
+#: admin/WBTM_Global_settings.php:216
+msgid ""
+"If you want to make woocommerce processing status to completed automatically "
+"select ON"
+msgstr ""
+"Pokud chcete, aby se stav zpracování WooCommerce automaticky dokončil, "
+"vyberte ZAPNUTO."
+
+#: admin/WBTM_Global_settings.php:226
+msgid "Redirect to checkout after booking"
+msgstr "Přesměrování k pokladně po rezervaci"
+
+#: admin/WBTM_Global_settings.php:227
+msgid ""
+"If you want to redirect users directly to checkout after booking instead of "
+"showing the cart notice, select ON"
+msgstr ""
+"Pokud chcete uživatele po rezervaci přesměrovat přímo k pokladně, místo aby "
+"se zobrazovalo oznámení o košíku, vyberte ZAPNUTO."
+
+#: admin/WBTM_Global_settings.php:239
+msgid "Disable Block/Gutenberg Editor"
+msgstr "Zakázat blokový/Gutenberg editor"
+
+#: admin/WBTM_Global_settings.php:240
+msgid ""
+"If you want to disable WordPress's new Block/Gutenberg editor, please select "
+"Yes."
+msgstr ""
+"Pokud chcete zakázat nový editor Block/Gutenberg ve WordPressu, vyberte Ano."
+
+#: admin/WBTM_Global_settings.php:244 admin/WBTM_Status.php:22
+msgid "Yes"
+msgstr "Ano"
+
+#: admin/WBTM_Global_settings.php:245 admin/WBTM_Status.php:22
+msgid "No"
+msgstr "Žádný"
+
+#: admin/WBTM_Global_settings.php:250
+msgid "Date Picker Format"
+msgstr "Formát výběru data"
+
+#: admin/WBTM_Global_settings.php:251
+msgid ""
+"If you want to change Date Picker Format, please select format. Default  is "
+"D d M , yy."
+msgstr ""
+"Pokud chcete změnit formát výběru data, vyberte prosím formát. Výchozí "
+"nastavení je D d M , rr."
+
+#: admin/WBTM_Global_settings.php:271
+msgid "Short Date  Format"
+msgstr "Krátký formát data"
+
+#: admin/WBTM_Global_settings.php:272
+msgid ""
+"If you want to change Short Date  Format, please select format. Default  is "
+"M , Y."
+msgstr ""
+"Pokud chcete změnit zkrácený formát data, vyberte formát. Výchozí hodnota je "
+"M, R."
+
+#: admin/WBTM_Global_settings.php:298
+msgid "Slider Type"
+msgstr "Typ posuvníku"
+
+#: admin/WBTM_Global_settings.php:299
+msgid "Please Select Slider Type Default Slider"
+msgstr "Vyberte typ posuvníku Výchozí posuvník"
+
+#: admin/WBTM_Global_settings.php:303
+msgid "Slider"
+msgstr "Posuvník"
+
+#: admin/WBTM_Global_settings.php:304
+msgid "Post Thumbnail"
+msgstr "Náhled příspěvku"
+
+#: admin/WBTM_Global_settings.php:309
+msgid "Slider Style"
+msgstr "Styl posuvníku"
+
+#: admin/WBTM_Global_settings.php:310
+msgid "Please Select Slider Style Default Style One"
+msgstr "Vyberte styl posuvníku Výchozí styl jedna"
+
+#: admin/WBTM_Global_settings.php:314
+msgid "Style One"
+msgstr "Styl jedna"
+
+#: admin/WBTM_Global_settings.php:315
+msgid "Style Two"
+msgstr "Styl dva"
+
+#: admin/WBTM_Global_settings.php:320
+msgid "Slider Indicator Visible?"
+msgstr "Je indikátor posuvníku viditelný?"
+
+#: admin/WBTM_Global_settings.php:321
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr ""
+"Vyberte prosím, zda je indikátor posuvníku viditelný, nebo ne? Výchozí "
+"nastavení je zapnuté."
+
+#: admin/WBTM_Global_settings.php:326 admin/WBTM_Global_settings.php:348
+#: admin/WBTM_Global_settings.php:372 admin/WBTM_Global_settings.php:383
+msgid "Off"
+msgstr "Vypnuto"
+
+#: admin/WBTM_Global_settings.php:331
+msgid "Slider Indicator Type"
+msgstr "Typ indikátoru s posuvníkem"
+
+#: admin/WBTM_Global_settings.php:332
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "Vyberte prosím typ indikátoru posuvníku Výchozí ikona"
+
+#: admin/WBTM_Global_settings.php:336
+msgid "Icon Indicator"
+msgstr "Ikona indikátoru"
+
+#: admin/WBTM_Global_settings.php:337
+msgid "image Indicator"
+msgstr "indikátor obrazu"
+
+#: admin/WBTM_Global_settings.php:342
+msgid "Slider Showcase Visible?"
+msgstr "Je prezentace sliderů viditelná?"
+
+#: admin/WBTM_Global_settings.php:343
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr ""
+"Vyberte prosím, zda je prezentace sliderů viditelná, nebo ne? Výchozí "
+"nastavení je zapnuté."
+
+#: admin/WBTM_Global_settings.php:353
+msgid "Slider Showcase Position"
+msgstr "Pozice prezentace slideru"
+
+#: admin/WBTM_Global_settings.php:354
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "Vyberte prosím pozici posuvníku Výchozí vpravo"
+
+#: admin/WBTM_Global_settings.php:358
+msgid "At Top Position"
+msgstr "Na nejvyšší pozici"
+
+#: admin/WBTM_Global_settings.php:359
+msgid "At Right Position"
+msgstr "Ve správné pozici"
+
+#: admin/WBTM_Global_settings.php:360
+msgid "At Bottom Position"
+msgstr "V dolní pozici"
+
+#: admin/WBTM_Global_settings.php:361
+msgid "At Left Position"
+msgstr "V levé pozici"
+
+#: admin/WBTM_Global_settings.php:366
+msgid "Slider Popup Image Indicator"
+msgstr "Indikátor vyskakovacího obrázku v posuvníku"
+
+#: admin/WBTM_Global_settings.php:367
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr ""
+"Vyberte prosím, zda má být indikátor vyskakovacího okna posuvníku zapnutý "
+"nebo vypnutý? Výchozí nastavení je zapnuté."
+
+#: admin/WBTM_Global_settings.php:377
+msgid "Slider Popup Icon Indicator"
+msgstr "Indikátor ikony vyskakovacího okna posuvníku"
+
+#: admin/WBTM_Global_settings.php:378
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr ""
+"Vyberte prosím ikonu indikátoru vyskakovacího okna posuvníku, zda je zapnutá "
+"nebo vypnutá? Výchozí nastavení je zapnuté."
+
+#: admin/WBTM_Global_settings.php:390
+msgid "Theme Color"
+msgstr "Barva motivu"
+
+#: admin/WBTM_Global_settings.php:391
+msgid "Select Default Theme Color"
+msgstr "Vyberte výchozí barvu motivu"
+
+#: admin/WBTM_Global_settings.php:397
+msgid "Theme Alternate Color"
+msgstr "Alternativní barva motivu"
+
+#: admin/WBTM_Global_settings.php:398
+msgid ""
+"Select Default Theme Alternate  Color that means, if background theme color "
+"then it will be text color."
+msgstr ""
+"Vyberte možnost Výchozí alternativní barva motivu, což znamená, že pokud je "
+"motivem barva pozadí, bude to barva textu."
+
+#: admin/WBTM_Global_settings.php:404
+msgid "Default Text Color"
+msgstr "Výchozí barva textu"
+
+#: admin/WBTM_Global_settings.php:405
+msgid "Select Default Text  Color."
+msgstr "Vyberte Výchozí barvu textu."
+
+#: admin/WBTM_Global_settings.php:411
+msgid "Default Font Size"
+msgstr "Výchozí velikost písma"
+
+#: admin/WBTM_Global_settings.php:412
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "Zadejte Výchozí velikost písma (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:418
+msgid "Font Size h1 Title"
+msgstr "Velikost písma h1 Název"
+
+#: admin/WBTM_Global_settings.php:419
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "Typ Velikost písma Hlavní název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:425
+msgid "Font Size h2 Title"
+msgstr "Velikost písma h2 Název"
+
+#: admin/WBTM_Global_settings.php:426
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "Velikost písma typu h2 Název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:432
+msgid "Font Size h3 Title"
+msgstr "Velikost písma h3 Název"
+
+#: admin/WBTM_Global_settings.php:433
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "Typ Velikost písma h3 Název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:439
+msgid "Font Size h4 Title"
+msgstr "Velikost písma h4 Název"
+
+#: admin/WBTM_Global_settings.php:440
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "Typ Velikost písma h4 Název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:446
+msgid "Font Size h5 Title"
+msgstr "Velikost písma h5 Název"
+
+#: admin/WBTM_Global_settings.php:447
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "Velikost písma typu h5 Název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:453
+msgid "Font Size h6 Title"
+msgstr "Velikost písma h6 Název"
+
+#: admin/WBTM_Global_settings.php:454
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "Velikost písma typu h6 Název (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:460
+msgid "Button Font Size "
+msgstr "Velikost písma tlačítka"
+
+#: admin/WBTM_Global_settings.php:461
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "Tlačítko Velikost písma (v jednotce PX)."
+
+#: admin/WBTM_Global_settings.php:467
+msgid "Button Text Color"
+msgstr "Barva textu tlačítka"
+
+#: admin/WBTM_Global_settings.php:468
+msgid "Select Button Text  Color."
+msgstr "Vyberte barvu textu tlačítka."
+
+#: admin/WBTM_Global_settings.php:474
+msgid "Button Background Color"
+msgstr "Barva pozadí tlačítka"
+
+#: admin/WBTM_Global_settings.php:475
+msgid "Select Button Background  Color."
+msgstr "Vyberte barvu pozadí tlačítka."
+
+#: admin/WBTM_Global_settings.php:481
+msgid "Label Font Size "
+msgstr "Velikost písma štítku"
+
+#: admin/WBTM_Global_settings.php:482
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "Typ Velikost písma Popisek (v jednotkách PX)."
+
+#: admin/WBTM_Global_settings.php:488
+msgid "Warning Color"
+msgstr "Barva varování"
+
+#: admin/WBTM_Global_settings.php:489
+msgid "Select Warning  Color."
+msgstr "Vyberte barvu varování."
+
+#: admin/WBTM_Global_settings.php:495
+msgid "Section Background color"
+msgstr "Barva pozadí sekce"
+
+#: admin/WBTM_Global_settings.php:496
+msgid "Select Background  Color."
+msgstr "Vyberte Barvu pozadí."
+
+#: admin/WBTM_Global_settings.php:505
+msgid "Write Your Custom CSS Code Here"
+msgstr "Sem napište svůj vlastní CSS kód"
+
+#: admin/WBTM_Global_settings.php:520
+msgid ""
+"Thanking you for using our Mage-People plugin. Our some plugin  free and no "
+"license is required. We have some Additional addon to enhance feature of "
+"this plugin functionality. If you have any addon you need to enter a valid "
+"license for that plugin below."
+msgstr ""
+"Děkujeme, že používáte náš plugin Mage-People. Některé pluginy jsou zdarma a "
+"nevyžadují žádnou licenci. Máme pro vás několik doplňků, které vylepšují "
+"funkčnost tohoto pluginu. Pokud máte nějaký doplněk, musíte níže zadat "
+"platnou licenci pro daný plugin."
+
+#: admin/WBTM_Global_settings.php:535
+msgid "Plugin Name"
+msgstr "Název pluginu"
+
+#: admin/WBTM_Global_settings.php:537
+msgid "Order No"
+msgstr "Číslo objednávky"
+
+#: admin/WBTM_Global_settings.php:538
+msgid "Expire on"
+msgstr "Platnost vyprší"
+
+#: admin/WBTM_Global_settings.php:539
+msgid "License Key"
+msgstr "Licenční klíč"
+
+#: admin/WBTM_Global_settings.php:540 admin/WBTM_Status.php:17
+msgid "Status"
+msgstr "Postavení"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "Uvolnit"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "Neomezený"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "Není třeba"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "Aktivní"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
+#: admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "Rychlé nastavení"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:194
+#: inc/WBTM_Functions.php:456
+msgid "Bus"
+msgstr "Autobus"
+
+#: admin/WBTM_Quick_Setup.php:121 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "Vítejte"
+
+#: admin/WBTM_Quick_Setup.php:128
+msgid "General"
+msgstr "Generál"
+
+#: admin/WBTM_Quick_Setup.php:135
+msgid "Done"
+msgstr "Hotovo"
+
+#: admin/WBTM_Quick_Setup.php:148
+msgid "Previous"
+msgstr "Předchozí"
+
+#: admin/WBTM_Quick_Setup.php:152
+msgid "Next"
+msgstr "Další"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "Rezervace autobusu s rezervací sedadel pro plugin Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:167
+msgid ""
+"Bus Booking with Seat Reservation Plugin for WooCommerce for your site, "
+"Please go step by step and choose some options to get started."
+msgstr ""
+"Rezervace autobusu s pluginem pro rezervaci sedadel pro WooCommerce pro váš "
+"web. Pro začátek prosím postupujte krok za krokem a vyberte si několik "
+"možností."
+
+#: admin/WBTM_Quick_Setup.php:171
+msgid "Woocommerce already installed and activated"
+msgstr "Woocommerce je již nainstalován a aktivován"
+
+#: admin/WBTM_Quick_Setup.php:174
+msgid "Woocommerce need to install and active"
+msgstr "WooCommerce je potřeba nainstalovat a aktivovat"
+
+#: admin/WBTM_Quick_Setup.php:177
+msgid "Woocommerce already install , please activate it"
+msgstr "WooCommerce je již nainstalován, prosím aktivujte jej."
+
+#: admin/WBTM_Quick_Setup.php:185
+msgid "Install & Active Now"
+msgstr "Nainstalovat a aktivovat nyní"
+
+#: admin/WBTM_Quick_Setup.php:187
+msgid "Active Now"
+msgstr "Nyní aktivní"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "General settings"
+msgstr "Obecná nastavení"
+
+#: admin/WBTM_Quick_Setup.php:200
+msgid "Choose some general option."
+msgstr "Vyberte nějakou obecnou možnost."
+
+#: admin/WBTM_Quick_Setup.php:203
+msgid "Bus Label:"
+msgstr "Označení autobusu:"
+
+#: admin/WBTM_Quick_Setup.php:208
+msgid "It will change the Bus post type label on the entire plugin."
+msgstr "Změní se tím typ popisku příspěvku Autobus v celém pluginu."
+
+#: admin/WBTM_Quick_Setup.php:212
+msgid "Bus Slug:"
+msgstr "Autobusový slimák:"
+
+#: admin/WBTM_Quick_Setup.php:217
+msgid ""
+"It will change the Bus slug on the entire plugin. Remember after changing "
+"this slug you need to flush permalinks. Just go to Settings->Permalinks hit "
+"the Save Settings button"
+msgstr ""
+"Změní se tím Bus slug v celém pluginu. Nezapomeňte, že po změně tohoto slugu "
+"je třeba vyprázdnit permalink. Stačí přejít do Nastavení->Permalinks a "
+"stisknout tlačítko Uložit nastavení."
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "Finalize Setup"
+msgstr "Dokončit nastavení"
+
+#: admin/WBTM_Quick_Setup.php:228
+msgid ""
+"You are about to Finish & Save Bus Booking with Seat Reservation For "
+"Woocommerce Plugin setup process"
+msgstr ""
+"Chystáte se dokončit a uložit proces nastavení pluginu pro rezervaci "
+"autobusu s rezervací sedadel pro Woocommerce."
+
+#: admin/WBTM_Quick_Setup.php:230
+msgid "Finish & Save"
+msgstr "Dokončit a uložit"
+
+#: admin/WBTM_Settings.php:20
+msgid " Information Settings : "
+msgstr "Nastavení informací:"
+
+#: admin/WBTM_Settings.php:36
+msgid "General Info"
+msgstr "Obecné informace"
+
+#: admin/WBTM_Settings.php:39
+msgid "Seat Configure"
+msgstr "Konfigurace sedadla"
+
+#: admin/WBTM_Settings.php:42
+msgid "Pricing & Route"
+msgstr "Ceny a trasy"
+
+#: admin/WBTM_Settings.php:48
+msgid "Pickup/Drop-Off Point"
+msgstr "Místo vyzvednutí/odevzdání"
+
+#: admin/WBTM_Settings.php:55
+msgid "Tax Configure"
+msgstr "Konfigurace daně"
+
+#: admin/WBTM_Settings.php:59
+msgid "Partial Payment"
+msgstr "Částečná platba"
+
+#: admin/WBTM_Settings.php:67
+msgid "Partial Payment Settings : "
+msgstr "Nastavení částečné platby:"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please add your unique bus id"
+msgstr "Prosím, přidejte své jedinečné ID autobusu"
+
+#: admin/WBTM_Settings.php:80
+msgid "Please add your bus category"
+msgstr "Prosím, přidejte kategorii autobusu"
+
+#: admin/WBTM_Settings.php:81
+msgid "Turn on or off, bus seat registration"
+msgstr "Zapnutí nebo vypnutí registrace sedadel v autobuse"
+
+#: admin/WBTM_Settings.php:82
+msgid ""
+"By default Registration is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Ve výchozím nastavení je registrace ZAPNUTA, ale můžete ji nechat vypnutou "
+"přepnutím této možnosti."
+
+#: admin/WBTM_Settings.php:83
+msgid ""
+"By default Boarding Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Ve výchozím nastavení je čas nástupu zapnutý, ale můžete ho nechat vypnutý "
+"přepnutím této možnosti."
+
+#: admin/WBTM_Settings.php:84
+msgid ""
+"By default Dropping Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Ve výchozím nastavení je doba odhazování zapnutá, ale můžete ji vypnout "
+"přepnutím této možnosti."
+
+#: admin/WBTM_Settings.php:85
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr "Vyberte si prosím typ sedadla v autobuse. Výchozí Bez plánu sedadel"
+
+#: admin/WBTM_Settings.php:86
+msgid "Please Type your bus total seat."
+msgstr "Zadejte prosím celkový počet míst k sezení ve vašem autobuse."
+
+#: admin/WBTM_Settings.php:87
+msgid "Select Particular Date or Repeated Date."
+msgstr "Vyberte možnost Konkrétní datum nebo Opakované datum."
+
+#: admin/WBTM_Settings.php:88
+msgid "Here you can set bus route for stopage and dropping"
+msgstr "Zde si můžete nastavit trasu autobusu pro zastávky a vysazení"
+
+#: admin/WBTM_Settings.php:89
+msgid ""
+"Please configure bus route price. Before price setting must be complete "
+"route configuration ."
+msgstr ""
+"Nakonfigurujte prosím cenu autobusové trasy. Před nastavením ceny je nutné "
+"dokončit konfiguraci trasy."
+
+#: admin/WBTM_Settings.php:90
+msgid "Turn On or Off Extra service."
+msgstr "Zapněte nebo vypněte službu Extra."
+
+#: admin/WBTM_Settings.php:91
+msgid "Turn On or Off pickup point."
+msgstr "Zapnout nebo vypnout místo vyzvednutí."
+
+#: admin/WBTM_Settings.php:92
+msgid "Turn On or Off drop-off point."
+msgstr "Zapnout nebo vypnout místo odbavení."
+
+#: admin/WBTM_Settings.php:93
+msgid ""
+"To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr ""
+"Chcete-li přidat novou daňovou třídu, přejděte do WooCommerce -> Nastavení ->"
+" Daňová oblast"
+
+#: admin/WBTM_Settings.php:95
+msgid "Please upload images for gallery"
+msgstr "Prosím nahrajte obrázky do galerie"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">Postavení</span>"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Pro stav prostředí Woocommerce"
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "Verze WordPressu:"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "Nainstalovaný WooCommerce:"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "Verze Woocommerce:"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "Jméno:"
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "E-mailová adresa:"
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr "Typ"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22
+#: admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:111
+msgid "Parent"
+msgstr "Rodič"
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "Typ:"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
+#: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr "Místo vyzvednutí"
+
+#: admin/WBTM_Taxonomy.php:74 admin/WBTM_Taxonomy.php:110
+msgid "Allx "
+msgstr "Všechno"
+
+#: admin/WBTM_Taxonomy.php:107 admin/WBTM_Taxonomy.php:111
+#: admin/WBTM_Taxonomy.php:114 inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr "Místo odevzdání"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "Vítejte na WBTM"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "PROFESIONÁLNÍ"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "Vítejte v sekci Rezervace autobusových jízdenek s rezervací míst"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "Importovat"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "Znalostní báze"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "Jak importovat fiktivní obsah"
+
+#: admin/WBTM_Welcome.php:30
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"Pro import dat fiktivních událostí na váš web prosím postupujte podle níže "
+"uvedeného postupu."
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "Krok 1:"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "kategorie.xml"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "obsah.xml"
+
+#: admin/WBTM_Welcome.php:46
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"Nebo si můžete stáhnout soubory XML ve formátu zip a rozbalit je do adresáře "
+"vašeho počítače."
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "Stáhněte si ZIP soubor XML"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "Krok 2:"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "Po stažení souboru XML přejděte na:"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "Nástroje -> Import"
+
+#: admin/WBTM_Welcome.php:58
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"Ve spodní části této stránky se nachází možnost importu z WordPressu. Pokud "
+"jste ji již povolili, uvidíte možnost Spustit import. Pokud ne, klikněte na "
+"odkaz Nainstalovat. Poté klikněte na Spustit import a vyberte soubor XML, "
+"který jste si dříve stáhli."
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "Krok 3:"
+
+#: admin/WBTM_Welcome.php:66
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"Nyní vyberte uživatele vašeho webu, kterému chcete přiřadit obsah z "
+"rozbalovací nabídky, zaškrtněte políčko Stáhnout přílohu a spusťte proces. "
+"Po několika minutách se zobrazí zpráva o úspěchu. Hotovo! Bavte se."
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "Video tutoriál"
+
+#: admin/WBTM_Welcome.php:76
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr ""
+"Vítejte v dokumentaci k rezervaci autobusových jízdenek s pluginem pro "
+"rezervaci míst"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "KOUPIT PRO"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "Jak nainstalovat plugin?"
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr ""
+"Podívejte se prosím na video, kde se dozvíte, jak si plugin nainstalovat."
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "Jak přidat nový autobus?"
+
+#: admin/WBTM_Welcome.php:89
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"Po instalaci pluginu můžete přidat nový autobus. Podívejte se na video, kde "
+"se dozvíte, jak to udělat:"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "Jak si rezervovat jízdenku na autobus?"
+
+#: admin/WBTM_Welcome.php:96
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr "V tomto videu se dozvíte, jak snadno si objednat jízdenku na autobus:"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "Jak nastavit PDF jízdenku?"
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "Podívejte se na video, kde se dozvíte, jak nastavit PDF jízdenku."
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "Jak nastavit e-mail?"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "Podívejte se prosím na video, kde se dozvíte, jak nastavit e-mail."
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "Jak nastavit cenu jízdenky v autobuse?"
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr ""
+"Podívejte se na toto video a dozvíte se, jak nastavit cenu jízdenky v "
+"autobuse."
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "Jak nastavit autobus na konkrétní den?"
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr ""
+"Podívejte se prosím na toto video a dozvíte se, jak nastavit autobus na "
+"konkrétní den."
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "Jak nastavit časový limit pro rezervaci autobusu?"
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr ""
+"Podívejte se prosím na toto video a dozvíte se, jak nastavit rezervaci "
+"autobusu v časovém rezervním čase."
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "Jak získat tiket z administračního panelu?"
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr ""
+"Podívejte se prosím na toto video a dozvíte se, jak získat tiket z "
+"administrátorského panelu."
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "Jak exportovat seznam cestujících do CSV?"
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr ""
+"Podívejte se prosím na toto video a dozvíte se, jak exportovat seznam "
+"cestujících do formátu CSV."
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr "Jak vytvořit plán sedadel se dvěma dveřmi a čtyřmi sloupky?"
+
+#: admin/WBTM_Welcome.php:153
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"Podívejte se na toto video a dozvíte se, jak vytvořit plán sedadel se dvěma "
+"dveřmi a čtyřmi sloupy."
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "Jak vytvořit plán sedadel se třemi sloupci?"
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr ""
+"Podívejte se na toto video a dozvíte se, jak vytvořit plán sedadel se třemi "
+"sloupci."
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "Jak si rezervovat autobus?"
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr ""
+"Podívejte se prosím na toto video a dozvíte se, jak si rezervovat autobus."
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "Jak koupit PRO verzi?"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "Rezervace autobusových jízdenek s Seat Reservation PRO"
+
+#: admin/WBTM_Welcome.php:179
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr ""
+"Krátké kódy zahrnuté v pluginu pro rezervaci autobusových jízdenek s "
+"rezervací sedadel:"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "Krátký kód"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "Parametr"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "Popis"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "kočka"
+
+#: admin/WBTM_Welcome.php:193
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"Ve výchozím nastavení se zobrazují všechny sběrnice, ale pokud chcete "
+"zobrazit seznam sběrnic konkrétní kategorie, můžete použít tento atribut, "
+"stačí zadat ID kategorie. Příklad:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "show"
+
+#: admin/WBTM_Welcome.php:201
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"Ve výchozím nastavení se zobrazuje 20 sběrnic na stránku. Pokud chcete toto "
+"nastavení změnit a nastavit limit, zadejte počet sběrnic. Příklad:"
+
+#: admin/WBTM_Welcome.php:210
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"Tento krátký kód zobrazí formulář pro vytvoření tiketu. Uživatel musí vložit "
+"PIN kód tiketu do pole a stisknout tlačítko Enter, poté se tiketu zobrazí. "
+"Tuto stránku mohou zobrazit pouze přihlášení uživatelé."
+
+#: admin/WBTM_Welcome.php:217
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"Tento krátký kód zobrazí vyhledávací formulář, například pokud chcete "
+"zobrazit vyhledávací pole někde na domovské stránce nebo na jakékoli stránce,"
+" stačí tam tento krátký kód vložit a zobrazí se formulář pro vyhledávání "
+"autobusů."
+
+#: admin/WBTM_Welcome.php:224
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"Tento krátký kód také vytiskne formulář pro vyhledávání autobusů, ale "
+"výsledek vyhledávání se zobrazí na stejné stránce, pod vyhledávacím "
+"formulářem."
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "Lístek"
+
+#: inc/WBTM_GTFS_Export.php:60 inc/WBTM_GTFS_Export.php:61
+#: inc/WBTM_GTFS_Export.php:71
+msgid "GTFS Export"
+msgstr "Export GTFS"
+
+#: inc/WBTM_GTFS_Export.php:72
+msgid ""
+"Export your bus data to GTFS format for Google Transit and other transit "
+"applications."
+msgstr ""
+"Exportujte data o autobusech do formátu GTFS pro Google Transit a další "
+"aplikace pro dopravu."
+
+#: inc/WBTM_GTFS_Export.php:79
+msgid "Agency Name"
+msgstr "Název agentury"
+
+#: inc/WBTM_GTFS_Export.php:83
+msgid "The name of your transit agency"
+msgstr "Název vaší dopravní společnosti"
+
+#: inc/WBTM_GTFS_Export.php:88
+msgid "Agency URL"
+msgstr "URL agentury"
+
+#: inc/WBTM_GTFS_Export.php:92
+msgid "Your agency website URL"
+msgstr "URL adresa webových stránek vaší agentury"
+
+#: inc/WBTM_GTFS_Export.php:97
+msgid "Agency Timezone"
+msgstr "Časové pásmo agentury"
+
+#: inc/WBTM_GTFS_Export.php:109
+msgid "Timezone for your bus operations"
+msgstr "Časové pásmo pro váš autobusový provoz"
+
+#: inc/WBTM_GTFS_Export.php:114
+msgid "Export Date Range"
+msgstr "Rozsah dat exportu"
+
+#: inc/WBTM_GTFS_Export.php:118
+msgid "to"
+msgstr "na"
+
+#: inc/WBTM_GTFS_Export.php:120
+msgid "Date range for schedule export (recommended: 30-90 days)"
+msgstr "Rozsah dat pro export plánu (doporučeno: 30–90 dní)"
+
+#: inc/WBTM_GTFS_Export.php:125
+msgid "Select Buses"
+msgstr "Vyberte autobusy"
+
+#: inc/WBTM_GTFS_Export.php:138
+msgid "Select All"
+msgstr "Vybrat vše"
+
+#: inc/WBTM_GTFS_Export.php:147
+msgid "Select which buses to include in the GTFS export"
+msgstr "Vyberte, které autobusy chcete zahrnout do exportu GTFS"
+
+#: inc/WBTM_GTFS_Export.php:153
+msgid "Export GTFS"
+msgstr "Export GTFS"
+
+#: inc/WBTM_GTFS_Export.php:158
+msgid "Export Progress"
+msgstr "Průběh exportu"
+
+#: inc/WBTM_GTFS_Export.php:162
+msgid "Preparing export..."
+msgstr "Příprava exportu..."
+
+#: inc/WBTM_GTFS_Export.php:166
+msgid "Export Complete"
+msgstr "Export dokončen"
+
+#: inc/WBTM_GTFS_Export.php:168
+msgid "Download GTFS Feed"
+msgstr "Stáhnout GTFS feed"
+
+#: inc/WBTM_GTFS_Export.php:189
+msgid "Please select at least one bus to export."
+msgstr "Vyberte prosím alespoň jeden autobus k exportu."
+
+#: inc/WBTM_GTFS_Export.php:224
+msgid "Export failed. Please try again."
+msgstr "Export se nezdařil. Zkuste to prosím znovu."
+
+#: inc/WBTM_GTFS_Export.php:237 inc/WBTM_GTFS_Validator.php:534
+msgid "Security check failed"
+msgstr "Bezpečnostní kontrola selhala"
+
+#: inc/WBTM_GTFS_Export.php:242 inc/WBTM_GTFS_Validator.php:538
+msgid "Insufficient permissions"
+msgstr "Nedostatečná oprávnění"
+
+#: inc/WBTM_GTFS_Export.php:269
+msgid "GTFS feed exported successfully!"
+msgstr "GTFS feed byl úspěšně exportován!"
+
+#: inc/WBTM_GTFS_Export.php:274
+msgid "Failed to generate GTFS feed"
+msgstr "Nepodařilo se vygenerovat GTFS feed"
+
+#: inc/WBTM_GTFS_Export.php:280
+#, php-format
+msgid "Export error: %s"
+msgstr "Chyba exportu: %s"
+
+#: inc/WBTM_GTFS_Validator.php:56
+msgid "GTFS feed file not found"
+msgstr "Soubor GTFS feedu nebyl nalezen"
+
+#: inc/WBTM_GTFS_Validator.php:63
+msgid "Could not extract GTFS feed"
+msgstr "Nelze extrahovat GTFS feed"
+
+#: inc/WBTM_GTFS_Validator.php:88
+#, php-format
+msgid "Validation error: %s"
+msgstr "Chyba ověření: %s"
+
+#: inc/WBTM_GTFS_Validator.php:116
+#, php-format
+msgid "Required file missing: %s"
+msgstr "Chybí požadovaný soubor: %s"
+
+#: inc/WBTM_GTFS_Validator.php:126
+#, php-format
+msgid "Unknown file found: %s"
+msgstr "Nalezen neznámý soubor: %s"
+
+#: inc/WBTM_GTFS_Validator.php:139
+msgid "agency.txt is empty or invalid"
+msgstr "Soubor agency.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:149
+#, php-format
+msgid "Invalid timezone in agency.txt row %d: %s"
+msgstr "Neplatné časové pásmo v souboru agency.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:153
+#, php-format
+msgid "Invalid URL in agency.txt row %d: %s"
+msgstr "Neplatná URL adresa v souboru agency.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:166
+msgid "stops.txt is empty or invalid"
+msgstr "Soubor stops.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:178
+#, php-format
+msgid "Duplicate stop_id in stops.txt: %s"
+msgstr "Duplicitní stop_id v souboru stops.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:187
+#, php-format
+msgid "Invalid latitude in stops.txt row %d: %s"
+msgstr "Neplatná zeměpisná šířka v souboru stops.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:194
+#, php-format
+msgid "Invalid longitude in stops.txt row %d: %s"
+msgstr "Neplatná zeměpisná délka v souboru stops.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:201
+#, php-format
+msgid "Stop at coordinates (0,0) in stops.txt row %d - please verify location"
+msgstr ""
+"Zastavte na souřadnicích (0,0) v souboru stops.txt, řádek %d - ověřte prosím "
+"polohu"
+
+#: inc/WBTM_GTFS_Validator.php:215
+msgid "routes.txt is empty or invalid"
+msgstr "Soubor routes.txt je prázdný nebo neplatný"
+
+#: inc/WBTM_GTFS_Validator.php:227
+#, php-format
+msgid "Duplicate route_id in routes.txt: %s"
+msgstr "Duplicitní route_id v souboru routes.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:236
+#, php-format
+msgid "Invalid route_type in routes.txt row %d: %s"
+msgstr "Neplatný typ_route v souboru routes.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:242
+#, php-format
+msgid ""
+"Either route_short_name or route_long_name must be provided in routes.txt "
+"row %d"
+msgstr ""
+"V souboru routes.txt, řádek %d, musí být uveden buď route_short_name, nebo "
+"route_long_name."
+
+#: inc/WBTM_GTFS_Validator.php:255
+msgid "trips.txt is empty or invalid"
+msgstr "Soubor trips.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:267
+#, php-format
+msgid "Duplicate trip_id in trips.txt: %s"
+msgstr "Duplicitní trip_id v souboru trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:274
+#, php-format
+msgid "Invalid direction_id in trips.txt row %d: %s"
+msgstr "Neplatné direction_id v souboru trips.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:279
+#, php-format
+msgid "Invalid wheelchair_accessible in trips.txt row %d: %s"
+msgstr ""
+"Neplatný atribut wheelchair_accessible v souboru trips.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:284
+#, php-format
+msgid "Invalid bikes_allowed in trips.txt row %d: %s"
+msgstr "Neplatná hodnota bikes_allowed v souboru trips.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:297
+msgid "stop_times.txt is empty or invalid"
+msgstr "Soubor stop_times.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:316
+#, php-format
+msgid "Invalid arrival_time format in stop_times.txt row %d: %s"
+msgstr "Neplatný formát času příjezdu v souboru stop_times.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:320
+#, php-format
+msgid "Invalid departure_time format in stop_times.txt row %d: %s"
+msgstr "Neplatný formát času odjezdu v souboru stop_times.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:325
+#, php-format
+msgid "Invalid pickup_type in stop_times.txt row %d: %s"
+msgstr "Neplatný typ vyzvednutí v souboru stop_times.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:329
+#, php-format
+msgid "Invalid drop_off_type in stop_times.txt row %d: %s"
+msgstr "Neplatný typ_drop_off_type v souboru stop_times.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:337
+#, php-format
+msgid "Duplicate stop_sequence values for trip_id: %s"
+msgstr "Duplicitní hodnoty stop_sequence pro trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:344
+#, php-format
+msgid "Stop sequences not in order for trip_id: %s"
+msgstr "Zastavovací sekvence nejsou v pořadí pro trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:354
+msgid "Either calendar.txt or calendar_dates.txt must be provided"
+msgstr ""
+"Je nutné zadat buď soubor calendar.txt, nebo soubor calendar_dates.txt."
+
+#: inc/WBTM_GTFS_Validator.php:372
+msgid "calendar.txt is empty or invalid"
+msgstr "Soubor calendar.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:384
+#, php-format
+msgid "Invalid %s value in calendar.txt row %d: %s"
+msgstr "Neplatná hodnota %s v řádku %d souboru calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:390
+#, php-format
+msgid "Invalid start_date format in calendar.txt row %d: %s"
+msgstr "Neplatný formát data zahájení v řádku %d souboru calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:394
+#, php-format
+msgid "Invalid end_date format in calendar.txt row %d: %s"
+msgstr "Neplatný formát data ukončení v řádku %d souboru calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:400
+#, php-format
+msgid "end_date must be after start_date in calendar.txt row %d"
+msgstr "end_date musí být po start_date v souboru calendar.txt řádek %d"
+
+#: inc/WBTM_GTFS_Validator.php:411
+msgid "calendar_dates.txt is empty or invalid"
+msgstr "Soubor calendar_dates.txt je prázdný nebo neplatný."
+
+#: inc/WBTM_GTFS_Validator.php:421
+#, php-format
+msgid "Invalid date format in calendar_dates.txt row %d: %s"
+msgstr "Neplatný formát data v souboru calendar_dates.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:426
+#, php-format
+msgid "Invalid exception_type in calendar_dates.txt row %d: %s"
+msgstr "Neplatný typ_výjimky v souboru calendar_dates.txt, řádek %d: %s"
+
+#: inc/WBTM_GTFS_Validator.php:470
+#, php-format
+msgid "Required field missing in %s: %s"
+msgstr "V %s chybí povinné pole: %s"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr "Datum cesty"
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr "Datum vrácení (volitelné)"
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr "Datum"
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr "Datum objednávky"
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr "KOUPIT VSTUPENKU"
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr "Z"
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr "Na"
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr "Prosím vyberte"
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr "Výchozí body"
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr "Vyzvednutí"
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr "Odevzdání"
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr "KOLÍK"
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr "Typ sběrnice"
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr "Provozovatel autobusu"
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr "ID účastníka"
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr "Typ cestujícího"
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr "Stav objednávky"
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr "Způsob platby"
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr "Zpáteční cesta"
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr "Již přidáno do košíku!"
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr "Nenalezen žádný autobus!"
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr "Nenalezen žádný lístek!"
+
+#: inc/WBTM_Translations.php:186
+msgid "No Seat Plan Available !"
+msgstr "Žádný plán sedadel k dispozici!"
+
+#: inc/WBTM_Translations.php:192
+msgid "No Seat Available !!"
+msgstr "Není k dispozici žádné místo!!"
+
+#: inc/WBTM_Translations.php:198
+msgid "This bus Now Closed."
+msgstr "Tento autobus je nyní uzavřen."
+
+#: inc/WBTM_Translations.php:204
+msgid "Available Seat"
+msgstr "Volné místo"
+
+#: inc/WBTM_Translations.php:210
+msgid "Already Sold"
+msgstr "Již prodáno"
+
+#: inc/WBTM_Translations.php:216
+msgid "You select Wrong Route !"
+msgstr "Zvolili jste špatnou trasu!"
+
+#: inc/WBTM_Translations.php:222
+msgid "Please select Starting Point !"
+msgstr "Prosím, vyberte výchozí bod!"
+
+#: inc/WBTM_Translations.php:228
+msgid "Schedule"
+msgstr "Naplánovat"
+
+#: inc/WBTM_Translations.php:234
+msgid "Coach Type"
+msgstr "Typ trenéra"
+
+#: inc/WBTM_Translations.php:246 inc/WBTM_Translations.php:252
+msgid "Seat"
+msgstr "Sedadlo"
+
+#: inc/WBTM_Translations.php:258
+msgid "Name"
+msgstr "Jméno"
+
+#: inc/WBTM_Translations.php:264 mp_global/class/WBTM_Select_Icon_image.php:110
+#: mp_global/class/WBTM_Select_Icon_image.php:136
+#: mp_global/class/WBTM_Select_Icon_image.php:163
+msgid "Image"
+msgstr "Obraz"
+
+#: inc/WBTM_Translations.php:270
+msgid "Quantity"
+msgstr "Množství"
+
+#: inc/WBTM_Translations.php:276
+msgid "Total Quantity"
+msgstr "Celkové množství"
+
+#: inc/WBTM_Translations.php:282
+msgid "Price"
+msgstr "Cena"
+
+#: inc/WBTM_Translations.php:288
+msgid "Fare"
+msgstr "Jízdné"
+
+#: inc/WBTM_Translations.php:294
+msgid "Total"
+msgstr "Celkový"
+
+#: inc/WBTM_Translations.php:300
+msgid "Ticket Sub total"
+msgstr "Mezisoučet lístku"
+
+#: inc/WBTM_Translations.php:306
+msgid "Order Total"
+msgstr "Celkem objednávky"
+
+#: inc/WBTM_Translations.php:312
+msgid "Passenger Capacity"
+msgstr "Kapacita pro cestující"
+
+#: inc/WBTM_Translations.php:330
+msgid "Extra Service Sub total"
+msgstr "Mezisoučet za doplňkové služby"
+
+#: inc/WBTM_Translations.php:336
+msgid "Adult"
+msgstr "Dospělý"
+
+#: inc/WBTM_Translations.php:342
+msgid "Child"
+msgstr "Dítě"
+
+#: inc/WBTM_Translations.php:348
+msgid "Infant"
+msgstr "Kojenec"
+
+#: inc/WBTM_Translations.php:360
+msgid "Seats Available"
+msgstr "Volná místa"
+
+#: inc/WBTM_Translations.php:366
+msgid "Duration :"
+msgstr "Trvání:"
+
+#: inc/WBTM_Translations.php:372
+msgid "View Seats"
+msgstr "Zobrazit sedadla"
+
+#: inc/WBTM_Translations.php:378
+msgid "Close Seat"
+msgstr "Zavřít sedadlo"
+
+#: inc/WBTM_Translations.php:384
+msgid "Book Now"
+msgstr "Rezervovat nyní"
+
+#: inc/WBTM_Translations.php:390
+msgid "This seat is already reserved."
+msgstr "Toto místo je již rezervováno."
+
+#: inc/WBTM_Translations.php:397
+msgid "Seat Details"
+msgstr "Detaily sedadla"
+
+#: inc/WBTM_Translations.php:403
+msgid "Seat Selection"
+msgstr "Výběr sedadla"
+
+#: inc/WBTM_Translations.php:410
+msgid "Passenger Details"
+msgstr "Údaje o cestujících"
+
+#: inc/WBTM_Translations.php:423
+msgid "Reset"
+msgstr "Obnovit"
+
+#: inc/WBTM_Translations.php:429
+msgid "Mobile Number"
+msgstr "Mobilní číslo"
+
+#: inc/WBTM_Translations.php:435
+msgid "Email"
+msgstr "E-mail"
+
+#: inc/WBTM_Translations.php:441
+msgid "Gender"
+msgstr "Pohlaví"
+
+#: inc/WBTM_Translations.php:448
+msgid "Booking Date"
+msgstr "Datum rezervace"
+
+#: inc/WBTM_Translations.php:454
+msgid "Booking ID"
+msgstr "ID rezervace"
+
+#: inc/WBTM_Translations.php:460
+msgid "Booking Status"
+msgstr "Stav rezervace"
+
+#: inc/WBTM_Translations.php:467
+msgid "Departure Time"
+msgstr "Čas odjezdu"
+
+#: inc/WBTM_Translations.php:473
+msgid "Arrival Time"
+msgstr "Čas příjezdu"
+
+#: inc/WBTM_Translations.php:479
+msgid "Route Details"
+msgstr "Podrobnosti o trase"
+
+#: inc/WBTM_Translations.php:486
+msgid "Payment Status"
+msgstr "Stav platby"
+
+#: inc/WBTM_Translations.php:492
+msgid "Transaction ID"
+msgstr "ID transakce"
+
+#: inc/WBTM_Translations.php:499
+msgid "Booking Successful!"
+msgstr "Rezervace úspěšná!"
+
+#: inc/WBTM_Translations.php:505
+msgid "Booking Failed!"
+msgstr "Rezervace se nezdařila!"
+
+#: inc/WBTM_Translations.php:511
+msgid "Selected seat(s) no longer available!"
+msgstr "Vybrané sedadlo (sedadla) již není k dispozici!"
+
+#: inc/WBTM_Translations.php:518
+msgid "Proceed"
+msgstr "Pokračovat"
+
+#: inc/WBTM_Translations.php:524
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: inc/WBTM_Translations.php:530
+msgid "Print Ticket"
+msgstr "Vytisknout lístek"
+
+#: inc/WBTM_Translations.php:537
+msgid "Terms & Conditions"
+msgstr "Obchodní podmínky"
+
+#: inc/WBTM_Translations.php:543
+msgid "Note"
+msgstr "Poznámka"
+
+#: inc/WBTM_Translations.php:550
+msgid "This field is required"
+msgstr "Toto pole je povinné"
+
+#: inc/WBTM_Translations.php:556
+msgid "Please enter a valid email address"
+msgstr "Zadejte prosím platnou e-mailovou adresu"
+
+#: inc/WBTM_Translations.php:562
+msgid "Please enter a valid phone number"
+msgstr "Zadejte prosím platné telefonní číslo"
+
+#: inc/WBTM_Translations.php:569
+msgid "Ticket Confirmed"
+msgstr "Jízdenka potvrzena"
+
+#: inc/WBTM_Translations.php:575
+msgid "Ticket Pending"
+msgstr "Tiket čeká na vyřízení"
+
+#: inc/WBTM_Translations.php:581
+msgid "Ticket Cancelled"
+msgstr "Jízdenka zrušena"
+
+#: inc/WBTM_Translations.php:588
+msgid "Passenger Name"
+msgstr "Jméno cestujícího"
+
+#: inc/WBTM_Translations.php:594
+msgid "Age"
+msgstr "Stáří"
+
+#: inc/WBTM_Translations.php:600
+msgid "NID/Passport"
+msgstr "NID/cestovní pas"
+
+#: inc/WBTM_Translations.php:619
+msgid "Journey Time"
+msgstr "Doba cesty"
+
+#: inc/WBTM_Translations.php:625
+msgid "Distance"
+msgstr "Vzdálenost"
+
+#: inc/WBTM_Translations.php:632
+msgid "Seat Number"
+msgstr "Číslo sedadla"
+
+#: inc/WBTM_Translations.php:638
+msgid "Seat Status"
+msgstr "Stav sedadla"
+
+#: inc/WBTM_Translations.php:645
+msgid "Tax"
+msgstr "Daň"
+
+#: inc/WBTM_Translations.php:651
+msgid "Discount"
+msgstr "Sleva"
+
+#: inc/WBTM_Translations.php:657
+msgid "Grand Total"
+msgstr "Celkový součet"
+
+#: inc/WBTM_Translations.php:664
+msgid "Payment Pending"
+msgstr "Platba čeká na vyřízení"
+
+#: inc/WBTM_Translations.php:670
+msgid "Payment Complete"
+msgstr "Platba dokončena"
+
+#: inc/WBTM_Translations.php:676
+msgid "Payment Failed"
+msgstr "Platba selhala"
+
+#: inc/WBTM_Woocommerce.php:166
+msgid "Booking Details "
+msgstr "Podrobnosti o rezervaci"
+
+#: inc/WBTM_Woocommerce.php:853
+msgid "Ticket Information"
+msgstr "Informace o vstupenkách"
+
+#: mp_global/class/WBTM_Custom_Layout.php:39
+#: mp_global/class/WBTM_Custom_Layout.php:179
+#: mp_global/class/WBTM_Custom_Layout.php:180
+#: mp_global/class/WBTM_Custom_Layout.php:266
+msgid "Load More"
+msgstr "Načíst více"
+
+#: mp_global/class/WBTM_Custom_Layout.php:50
+#: mp_global/class/WBTM_Custom_Layout.php:277
+msgid "GoTO Previous Page"
+msgstr "Přejít na předchozí stránku"
+
+#: mp_global/class/WBTM_Custom_Layout.php:70
+#: mp_global/class/WBTM_Custom_Layout.php:297
+msgid "GoTO Next Page"
+msgstr "Přejít na další stránku"
+
+#: mp_global/class/WBTM_Custom_Layout.php:179
+msgid "Less More"
+msgstr "Méně Více"
+
+#: mp_global/class/WBTM_Custom_Layout.php:219
+msgid "Please select"
+msgstr "Vyberte prosím"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "View All"
+msgstr "Zobrazit vše"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "Images"
+msgstr "Obrázky"
+
+#: mp_global/class/WBTM_Global_Function.php:223
+#: mp_global/class/WBTM_Global_Function.php:1045
+msgid "Lifetime"
+msgstr "Doživotní"
+
+#: mp_global/class/WBTM_Global_Function.php:227
+#: mp_global/class/WBTM_Global_Function.php:1049
+msgid "Expired"
+msgstr "Platnost vypršela"
+
+#: mp_global/class/WBTM_Global_Function.php:487
+msgid "Monday"
+msgstr "pondělí"
+
+#: mp_global/class/WBTM_Global_Function.php:488
+msgid "Tuesday"
+msgstr "úterý"
+
+#: mp_global/class/WBTM_Global_Function.php:489
+msgid "Wednesday"
+msgstr "středa"
+
+#: mp_global/class/WBTM_Global_Function.php:490
+msgid "Thursday"
+msgstr "čtvrtek"
+
+#: mp_global/class/WBTM_Global_Function.php:491
+msgid "Friday"
+msgstr "pátek"
+
+#: mp_global/class/WBTM_Global_Function.php:492
+msgid "Saturday"
+msgstr "sobota"
+
+#: mp_global/class/WBTM_Global_Function.php:493
+msgid "Sunday"
+msgstr "neděle"
+
+#: mp_global/class/WBTM_Global_Function.php:642
+#: mp_global/class/WBTM_Global_Function.php:668
+#: mp_global/class/WBTM_Global_Function.php:1243
+#: mp_global/class/WBTM_Global_Function.php:1269
+msgid "An error occurred, please try again."
+msgstr "Došlo k chybě, zkuste to prosím znovu."
+
+#: mp_global/class/WBTM_Global_Function.php:650
+#: mp_global/class/WBTM_Global_Function.php:1251
+msgid "Your license key has been disabled."
+msgstr "Váš licenční klíč byl deaktivován."
+
+#: mp_global/class/WBTM_Global_Function.php:653
+#: mp_global/class/WBTM_Global_Function.php:1254
+msgid "Missing license."
+msgstr "Chybějící licence."
+
+#: mp_global/class/WBTM_Global_Function.php:656
+#: mp_global/class/WBTM_Global_Function.php:1257
+msgid "Invalid license."
+msgstr "Neplatná licence."
+
+#: mp_global/class/WBTM_Global_Function.php:659
+#: mp_global/class/WBTM_Global_Function.php:1260
+msgid "Your license is not active for this URL."
+msgstr "Vaše licence pro tuto URL není aktivní."
+
+#: mp_global/class/WBTM_Global_Function.php:662
+#: mp_global/class/WBTM_Global_Function.php:1263
+msgid "This appears to be an invalid license key for ."
+msgstr "Zdá se, že se jedná o neplatný licenční klíč pro ."
+
+#: mp_global/class/WBTM_Global_Function.php:665
+#: mp_global/class/WBTM_Global_Function.php:1266
+msgid "Your license key has reached its activation limit."
+msgstr "Váš licenční klíč dosáhl svého aktivačního limitu."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Success, License Key is valid for the plugin"
+msgstr "Úspěšně, licenční klíč je platný pro plugin."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Your Order id is"
+msgstr "ID vaší objednávky je"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Validity of this licenses is"
+msgstr "Platnost této licence je"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:28
+#: mp_global/class/WBTM_Select_Icon_image.php:154
+msgid "Remove Icon"
+msgstr "Odebrat ikonu"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:47
+msgid "Select Icon"
+msgstr "Vyberte ikonu"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:49
+msgid "Icon/class name...."
+msgstr "Ikona/název třídy...."
+
+#: mp_global/class/WBTM_Select_Icon_image.php:65
+msgid "All Icon"
+msgstr "Ikona všeho"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:158
+msgid "Remove Image"
+msgstr "Odebrat obrázek"
+
+#: templates/layout/search_result.php:121
+#, php-format
+msgctxt "Duration format (hours and minutes)"
+msgid "%d H %d M"
+msgstr "%d H %d M"

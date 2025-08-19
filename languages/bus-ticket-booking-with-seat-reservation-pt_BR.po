@@ -1,0 +1,3086 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the same license as the Bus Ticket Booking with Seat Reservation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.4.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-"
+"booking-with-seat-reservation\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese (Brazil)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-19T02:32:51+02:00\n"
+"PO-Revision-Date: 2025-08-19 00:54+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.30"
+
+#. Plugin Name of the plugin
+#: woocommerce-bus.php
+msgid "Bus Ticket Booking with Seat Reservation"
+msgstr "Reserva de passagens de ônibus com reserva de assento"
+
+#. Plugin URI of the plugin
+#: woocommerce-bus.php
+msgid "http://mage-people.com"
+msgstr "http://mage-people.com"
+
+#. Description of the plugin
+#: woocommerce-bus.php
+msgid "A Complete Bus Ticketing System for WordPress & WooCommerce"
+msgstr ""
+"Um sistema completo de bilhetagem de ônibus para WordPress e WooCommerce"
+
+#. Author of the plugin
+#: woocommerce-bus.php
+msgid "MagePeople Team"
+msgstr "Equipe MagePeople"
+
+#. Author URI of the plugin
+#: woocommerce-bus.php
+msgid "http://www.mage-people.com/"
+msgstr "http://www.mage-people.com/"
+
+#: admin/settings/WBTM_Date_Settings.php:35 admin/WBTM_Settings.php:52
+msgid "Date Settings"
+msgstr "Configurações de data"
+
+#: admin/settings/WBTM_Date_Settings.php:36
+msgid ""
+"Bus date settings will help to operation a bus in a particular or repeated "
+"date."
+msgstr ""
+"As configurações de data do ônibus ajudarão a operar um ônibus em uma data "
+"específica ou repetida."
+
+#: admin/settings/WBTM_Date_Settings.php:41
+msgid "Date Information"
+msgstr "Informações de data"
+
+#: admin/settings/WBTM_Date_Settings.php:43
+msgid "Here you can set bus seat booking date."
+msgstr "Aqui você pode definir a data de reserva do assento do ônibus."
+
+#: admin/settings/WBTM_Date_Settings.php:49
+msgid "Bus Operation Date Type"
+msgstr "Tipo de data de operação do ônibus"
+
+#: admin/settings/WBTM_Date_Settings.php:57
+#: admin/settings/WBTM_Seat_Configuration.php:48
+#: admin/settings/WBTM_Seat_Configuration.php:114
+msgid "Please select ..."
+msgstr "Por favor selecione..."
+
+#: admin/settings/WBTM_Date_Settings.php:58
+msgid "Particular"
+msgstr "Especial"
+
+#: admin/settings/WBTM_Date_Settings.php:59
+msgid "Repeated"
+msgstr "Repetido"
+
+#: admin/settings/WBTM_Date_Settings.php:67
+#: admin/settings/WBTM_Date_Settings.php:69
+msgid "Particular Dates"
+msgstr "Datas Específicas"
+
+#: admin/settings/WBTM_Date_Settings.php:86
+msgid "Add New Particular date"
+msgstr "Adicionar nova data específica"
+
+#: admin/settings/WBTM_Date_Settings.php:100
+msgid "Repeated Start Date"
+msgstr "Data de início repetida"
+
+#: admin/settings/WBTM_Date_Settings.php:102
+msgid "Select repeated start date."
+msgstr "Selecione uma data de início repetida."
+
+#: admin/settings/WBTM_Date_Settings.php:114
+msgid "Repeated End Date"
+msgstr "Data de término repetida"
+
+#: admin/settings/WBTM_Date_Settings.php:116
+msgid "Select repeated end date."
+msgstr "Selecione uma data final repetida."
+
+#: admin/settings/WBTM_Date_Settings.php:128
+msgid "Repeated after"
+msgstr "Repetido depois"
+
+#: admin/settings/WBTM_Date_Settings.php:130
+msgid "Set repeated date step count."
+msgstr "Definir contagem de passos de data repetida."
+
+#: admin/settings/WBTM_Date_Settings.php:139
+msgid "Maximum advanced day for booking"
+msgstr "Antecedência máxima para reserva"
+
+#: admin/settings/WBTM_Date_Settings.php:141
+msgid "Set maximum advanced day for booking."
+msgstr "Defina um dia de antecedência máximo para reserva."
+
+#: admin/settings/WBTM_Date_Settings.php:150
+msgid "Off Day"
+msgstr "Dia de folga"
+
+#: admin/settings/WBTM_Date_Settings.php:152
+msgid "Select days for off day."
+msgstr "Selecione dias para folga."
+
+#: admin/settings/WBTM_Date_Settings.php:167
+msgid "Off Dates"
+msgstr "Datas de folga"
+
+#: admin/settings/WBTM_Date_Settings.php:169
+msgid "Select dates for off day."
+msgstr "Selecione datas para dias de folga."
+
+#: admin/settings/WBTM_Date_Settings.php:188
+msgid "Add New Off date"
+msgstr "Adicionar nova data de desativação"
+
+#: admin/settings/WBTM_Date_Settings.php:201
+msgid "Off Dates in Range"
+msgstr "Datas fora do intervalo"
+
+#: admin/settings/WBTM_Date_Settings.php:203
+msgid "Select date range for off day."
+msgstr "Selecione o intervalo de datas para o dia de folga."
+
+#: admin/settings/WBTM_Date_Settings.php:220
+msgid "Add New Off date range"
+msgstr "Adicionar novo intervalo de datas"
+
+#: admin/settings/WBTM_Extra_Service.php:23 inc/WBTM_Translations.php:324
+msgid "Extra Services"
+msgstr "Serviços extras"
+
+#: admin/settings/WBTM_Extra_Service.php:24
+msgid "Add Extra Services for the passanger with bus seat reservation"
+msgstr ""
+"Adicionar serviços extras para o passageiro com reserva de assento no ônibus"
+
+#: admin/settings/WBTM_Extra_Service.php:30
+msgid "Extra service"
+msgstr "Serviço extra"
+
+#: admin/settings/WBTM_Extra_Service.php:32
+msgid "Here you can add extra services. Also can be on/off extra service"
+msgstr ""
+"Aqui você pode adicionar serviços extras. Também pode ativar/desativar "
+"serviços extras."
+
+#: admin/settings/WBTM_Extra_Service.php:38
+msgid "Show/Hide Extra Service"
+msgstr "Mostrar/Ocultar Serviço Extra"
+
+#: admin/settings/WBTM_Extra_Service.php:54
+msgid "Service Name"
+msgstr "Nome do serviço"
+
+#: admin/settings/WBTM_Extra_Service.php:55
+msgid "Service Price"
+msgstr "Preço do serviço"
+
+#: admin/settings/WBTM_Extra_Service.php:56
+msgid "Available Qty"
+msgstr "Qtd. disponível"
+
+#: admin/settings/WBTM_Extra_Service.php:57
+msgid "Qty Box Type"
+msgstr "Qtd. Tipo de caixa"
+
+#: admin/settings/WBTM_Extra_Service.php:58 admin/WBTM_Global_settings.php:541
+#: inc/WBTM_Translations.php:354
+msgid "Action"
+msgstr "Ação"
+
+#: admin/settings/WBTM_Extra_Service.php:72
+msgid "Add Extra New Service"
+msgstr "Adicionar novo serviço extra"
+
+#: admin/settings/WBTM_Extra_Service.php:109
+msgid "Input Box"
+msgstr "Caixa de entrada"
+
+#: admin/settings/WBTM_Extra_Service.php:110
+msgid "Dropdown List"
+msgstr "Lista suspensa"
+
+#: admin/settings/WBTM_Pricing_Routing.php:61
+msgid "Price And Routing Settings"
+msgstr "Configurações de preço e roteamento"
+
+#: admin/settings/WBTM_Pricing_Routing.php:62
+msgid "Here you can configure Price And Routing for a bus."
+msgstr "Aqui você pode configurar preço e roteamento para um ônibus."
+
+#: admin/settings/WBTM_Pricing_Routing.php:66
+msgid "GTFS Export Ready!"
+msgstr "Pronto para exportação GTFS!"
+
+#: admin/settings/WBTM_Pricing_Routing.php:67
+msgid ""
+"Add GPS coordinates to your bus stops to enable Google Transit integration. "
+"This allows your routes to appear in Google Maps, Apple Maps, and other "
+"transit apps."
+msgstr ""
+"Adicione coordenadas de GPS aos seus pontos de ônibus para habilitar a "
+"integração com o Google Transit. Isso permite que suas rotas apareçam no "
+"Google Maps, Apple Maps e outros aplicativos de transporte público."
+
+#: admin/settings/WBTM_Pricing_Routing.php:69
+msgid "Export GTFS Feed"
+msgstr "Exportar Feed GTFS"
+
+#: admin/settings/WBTM_Pricing_Routing.php:77
+msgid "Boarding and Dropping Settings"
+msgstr "Configurações de embarque e desembarque"
+
+#: admin/settings/WBTM_Pricing_Routing.php:94
+msgid "Add New Stops"
+msgstr "Adicionar novas paradas"
+
+#: admin/settings/WBTM_Pricing_Routing.php:110
+msgid "Pricing Settings"
+msgstr "Configurações de preços"
+
+#: admin/settings/WBTM_Pricing_Routing.php:230
+msgid "Add Stop"
+msgstr "Adicionar Parada"
+
+#: admin/settings/WBTM_Pricing_Routing.php:254
+msgid "Stop : "
+msgstr "Parar : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:256
+msgid "Select bus stop"
+msgstr "Selecione o ponto de ônibus"
+
+#: admin/settings/WBTM_Pricing_Routing.php:263
+msgid "Time : "
+msgstr "Tempo : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:269
+msgid "Type : "
+msgstr "Tipo : "
+
+#: admin/settings/WBTM_Pricing_Routing.php:272
+msgid "Select place type"
+msgstr "Selecione o tipo de local"
+
+#: admin/settings/WBTM_Pricing_Routing.php:273
+msgid "Boarding "
+msgstr "Embarque"
+
+#: admin/settings/WBTM_Pricing_Routing.php:274
+msgid "Dropping "
+msgstr "Deixando cair"
+
+#: admin/settings/WBTM_Pricing_Routing.php:275
+msgid "Boarding & Dropping"
+msgstr "Embarque e desembarque"
+
+#: admin/settings/WBTM_Pricing_Routing.php:285
+msgid "Next Day Dropping: "
+msgstr "Entrega no dia seguinte:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:297
+msgid "GTFS Coordinates (for Google Transit)"
+msgstr "Coordenadas GTFS (para Google Transit)"
+
+#: admin/settings/WBTM_Pricing_Routing.php:301
+msgid ""
+"Add GPS coordinates for this stop to enable Google Maps integration. You can "
+"find coordinates using Google Maps or GPS tools."
+msgstr ""
+"Adicione as coordenadas de GPS desta parada para habilitar a integração com "
+"o Google Maps. Você pode encontrar as coordenadas usando o Google Maps ou "
+"ferramentas de GPS."
+
+#: admin/settings/WBTM_Pricing_Routing.php:307
+msgid "Latitude:"
+msgstr "Latitude:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:323
+msgid "Longitude:"
+msgstr "Longitude:"
+
+#: admin/settings/WBTM_Pricing_Routing.php:339
+msgid "Example: New York City = Lat: 40.7128, Lon: -74.0060"
+msgstr "Exemplo: Nova York = Lat: 40.7128, Lon: -74.0060"
+
+#: admin/settings/WBTM_Pricing_Routing.php:343
+msgid "Get from Map"
+msgstr "Obter do mapa"
+
+#: admin/settings/WBTM_Pricing_Routing.php:346
+msgid "Validate"
+msgstr "Validar"
+
+#: admin/settings/WBTM_Pricing_Routing.php:405 inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr "Embarque"
+
+#: admin/settings/WBTM_Pricing_Routing.php:409 inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr "Deixando cair"
+
+#: admin/settings/WBTM_Pricing_Routing.php:413
+msgid "Adult Price"
+msgstr "Preço para adultos"
+
+#: admin/settings/WBTM_Pricing_Routing.php:416
+msgid "Child Price"
+msgstr "Preço da Criança"
+
+#: admin/settings/WBTM_Pricing_Routing.php:417
+msgid "Infant Price"
+msgstr "Preço Infantil"
+
+#: admin/settings/WBTM_Pricing_Routing.php:458
+msgid "Please Create Bus route ."
+msgstr "Por favor, crie uma rota de ônibus."
+
+#: admin/settings/WBTM_Seat_Configuration.php:26
+msgid "Seat Configuration"
+msgstr "Configuração do assento"
+
+#: admin/settings/WBTM_Seat_Configuration.php:27
+msgid "Bus seat configuration. Plan your bus seat."
+msgstr "Configuração dos assentos do ônibus. Planeje seu assento no ônibus."
+
+#: admin/settings/WBTM_Seat_Configuration.php:34
+#: admin/settings/WBTM_Translation_Settings.php:53
+msgid "Seat Information"
+msgstr "Informações sobre os assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:36
+msgid "Here you can plan seat of the bus."
+msgstr "Aqui você pode planejar o assento do ônibus."
+
+#: admin/settings/WBTM_Seat_Configuration.php:42 inc/WBTM_Translations.php:240
+msgid "Seat Type"
+msgstr "Tipo de assento"
+
+#: admin/settings/WBTM_Seat_Configuration.php:49
+msgid "Seat Plan"
+msgstr "Planta de assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:50
+msgid "Without Seat Plan"
+msgstr "Sem plano de assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:58
+msgid "Total Seat"
+msgstr "Total de assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:91
+msgid "Lower Deck"
+msgstr "Convés inferior"
+
+#: admin/settings/WBTM_Seat_Configuration.php:92
+msgid "Lower deck seat plan"
+msgstr "Planta dos assentos do convés inferior"
+
+#: admin/settings/WBTM_Seat_Configuration.php:101
+msgid "Show Upper Deck"
+msgstr "Mostrar convés superior"
+
+#: admin/settings/WBTM_Seat_Configuration.php:103
+msgid "Turn On or Off upper deck seat plan"
+msgstr "Ativar ou desativar o plano de assentos do convés superior"
+
+#: admin/settings/WBTM_Seat_Configuration.php:111
+msgid "Driver Position"
+msgstr "Posição do motorista"
+
+#: admin/settings/WBTM_Seat_Configuration.php:115
+msgid "Left"
+msgstr "Esquerda"
+
+#: admin/settings/WBTM_Seat_Configuration.php:116
+msgid "Right"
+msgstr "Certo"
+
+#: admin/settings/WBTM_Seat_Configuration.php:123
+msgid "Seat Rows"
+msgstr "Fileiras de assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:133
+msgid "Seat Columns"
+msgstr "Colunas de assento"
+
+#: admin/settings/WBTM_Seat_Configuration.php:139
+msgid "Generate Bus Seat"
+msgstr "Gerar assento de ônibus"
+
+#: admin/settings/WBTM_Seat_Configuration.php:143
+#: admin/settings/WBTM_Seat_Configuration.php:210
+msgid "Bus Front"
+msgstr "Frente de ônibus"
+
+#: admin/settings/WBTM_Seat_Configuration.php:153
+msgid "Enable Rotation"
+msgstr "Habilitar rotação"
+
+#: admin/settings/WBTM_Seat_Configuration.php:155
+msgid "Enable seat rotation for individual seats"
+msgstr "Habilitar rotação de assentos para assentos individuais"
+
+#: admin/settings/WBTM_Seat_Configuration.php:176 inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr "Convés superior"
+
+#: admin/settings/WBTM_Seat_Configuration.php:177
+msgid "You can make Upper Deck seat plan"
+msgstr "Você pode fazer um plano de assentos no Upper Deck"
+
+#: admin/settings/WBTM_Seat_Configuration.php:184
+msgid "Seat Rows : "
+msgstr "Fileiras de assentos:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:193
+msgid "Seat Columns : "
+msgstr "Colunas de assento:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:201
+msgid "Price Increase : "
+msgstr "Aumento de preço:"
+
+#: admin/settings/WBTM_Seat_Configuration.php:206
+msgid "Create seat Plan"
+msgstr "Criar plano de assentos"
+
+#: admin/settings/WBTM_Seat_Configuration.php:240
+msgid "Add New Row"
+msgstr "Adicionar nova linha"
+
+#: admin/settings/WBTM_Seat_Configuration.php:266
+msgid "Blank"
+msgstr "Em branco"
+
+#: admin/settings/WBTM_Seat_Configuration.php:275
+msgid "Rotate Seat"
+msgstr "Girar assento"
+
+#: admin/settings/WBTM_Settings_General.php:19
+msgid "General Settings"
+msgstr "Configurações gerais"
+
+#: admin/settings/WBTM_Settings_General.php:20
+msgid "Bus General Settings"
+msgstr "Configurações gerais do ônibus"
+
+#: admin/settings/WBTM_Settings_General.php:25
+#: admin/settings/WBTM_Translation_Settings.php:48
+msgid "Bus Information"
+msgstr "Informações de ônibus"
+
+#: admin/settings/WBTM_Settings_General.php:27
+msgid "Here you can set bus number, category and seat reservation on/off"
+msgstr ""
+"Aqui você pode definir o número do ônibus, categoria e reserva de assento "
+"ligado/desligado"
+
+#: admin/settings/WBTM_Settings_General.php:36
+msgid "Bus no"
+msgstr "Ônibus nº"
+
+#: admin/settings/WBTM_Settings_General.php:63
+msgid "Reservation on/off"
+msgstr "Reserva ligada/desligada"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:19
+msgid "Pickup And Drop-Off Point Settings"
+msgstr "Configurações de ponto de coleta e entrega"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:20
+msgid "Here you can set bus pick up and drop off point settings."
+msgstr ""
+"Aqui você pode definir as configurações dos pontos de embarque e desembarque "
+"do ônibus."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:41
+msgid "Pick up settings"
+msgstr "Configurações de coleta"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:43
+msgid "Here you can set pickup location"
+msgstr "Aqui você pode definir o local de coleta"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:50
+msgid "On/Off Pickup Point"
+msgstr "Ponto de coleta ligado/desligado"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:65
+msgid "Boarding point Required?"
+msgstr "Ponto de embarque obrigatório?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:66
+msgid "Turn On or Off Boarding point Required?"
+msgstr "Ativar ou desativar ponto de embarque necessário?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:75
+#: inc/WBTM_Translations.php:607
+msgid "Boarding Point"
+msgstr "Ponto de embarque"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:76
+msgid "Pickup Info"
+msgstr "Informações de retirada"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:91
+#: admin/settings/WBTM_Settings_Pickup_Point.php:247
+msgid "Add More Point"
+msgstr "Adicionar mais pontos"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:102
+msgid ""
+"You have no Pickup Point . Please add Pickup Point and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Você não possui um Ponto de Coleta. Adicione um Ponto de Coleta e salve. "
+"Depois, você poderá editá-lo."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:105
+msgid ""
+"You have no Bus route . Please add Price and Route and save ,then you can "
+"edit pickup point."
+msgstr ""
+"Você não possui uma rota de ônibus. Adicione o preço e a rota e salve. "
+"Depois, você poderá editar o ponto de embarque."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:143
+msgid "Add Pickup Point"
+msgstr "Adicionar ponto de coleta"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:197
+msgid "Drop-off settings"
+msgstr "Configurações de entrega"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:199
+msgid "Here you can set drop-off location."
+msgstr "Aqui você pode definir o local de entrega."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:205
+msgid "Drop-Off Point Settings"
+msgstr "Configurações do ponto de entrega"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:221
+msgid "Dropping point Required?"
+msgstr "Ponto de gota necessário?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:222
+msgid "Turn On or Off Dropping point Required?"
+msgstr "Ativar ou desativar o ponto de queda necessário?"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:231
+#: inc/WBTM_Translations.php:613
+msgid "Dropping Point"
+msgstr "Ponto de queda"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:232
+msgid "Drop-Off Info"
+msgstr "Informações de entrega"
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:258
+msgid ""
+"You have no Drop-Off Point. Please add Drop-Off Point from left sidebar menu."
+msgstr ""
+"Você não possui um Ponto de Entrega. Adicione um Ponto de Entrega no menu da "
+"barra lateral esquerda."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:261
+msgid ""
+"You have no Bus route. Please add Price and Route and save ,then you can "
+"edit Drop-Off point."
+msgstr ""
+"Você não possui uma rota de ônibus. Adicione o preço e a rota e salve. "
+"Depois, você poderá editar o ponto de desembarque."
+
+#: admin/settings/WBTM_Settings_Pickup_Point.php:297
+msgid "Add Drop-Off Point"
+msgstr "Adicionar ponto de entrega"
+
+#: admin/settings/WBTM_Tax_Settings.php:18
+msgid "Tax Configuration"
+msgstr "Configuração de impostos"
+
+#: admin/settings/WBTM_Tax_Settings.php:19
+msgid "Bus tax Configuration settings."
+msgstr "Definições de configuração do imposto de ônibus."
+
+#: admin/settings/WBTM_Tax_Settings.php:28
+msgid "Tax Settings Information"
+msgstr "Informações sobre configurações de impostos"
+
+#: admin/settings/WBTM_Tax_Settings.php:30
+msgid "Here you can configure tax settings."
+msgstr "Aqui você pode configurar as configurações de impostos."
+
+#: admin/settings/WBTM_Tax_Settings.php:38
+msgid "Tax status"
+msgstr "Situação fiscal"
+
+#: admin/settings/WBTM_Tax_Settings.php:41
+msgid "Select tax status type."
+msgstr "Selecione o tipo de status tributário."
+
+#: admin/settings/WBTM_Tax_Settings.php:48
+msgid "Taxable"
+msgstr "Tributável"
+
+#: admin/settings/WBTM_Tax_Settings.php:51
+msgid "Shipping only"
+msgstr "Somente envio"
+
+#: admin/settings/WBTM_Tax_Settings.php:54
+msgid "None"
+msgstr "Nenhum"
+
+#: admin/settings/WBTM_Tax_Settings.php:63
+msgid "Tax class"
+msgstr "Classe de imposto"
+
+#: admin/settings/WBTM_Tax_Settings.php:71
+msgid "Standard"
+msgstr "Padrão"
+
+#: admin/settings/WBTM_Tax_Settings.php:86
+msgid "Tax not active. Please add Tax settings from woocommerce."
+msgstr "Imposto inativo. Adicione as configurações de imposto do WooCommerce."
+
+#: admin/settings/WBTM_Translation_Settings.php:17
+msgid "Translation Settings"
+msgstr "Configurações de tradução"
+
+#: admin/settings/WBTM_Translation_Settings.php:18
+msgid "Translations"
+msgstr "Traduções"
+
+#: admin/settings/WBTM_Translation_Settings.php:33
+msgid "General Labels"
+msgstr "Etiquetas Gerais"
+
+#: admin/settings/WBTM_Translation_Settings.php:38
+msgid "Booking Labels"
+msgstr "Etiquetas de reserva"
+
+#: admin/settings/WBTM_Translation_Settings.php:43
+#: inc/WBTM_Translations.php:318
+msgid "Passenger Information"
+msgstr "Informações para passageiros"
+
+#: admin/settings/WBTM_Translation_Settings.php:58
+msgid "Button Labels"
+msgstr "Etiquetas de botões"
+
+#: admin/settings/WBTM_Translation_Settings.php:63
+msgid "Error Messages"
+msgstr "Mensagens de erro"
+
+#: admin/settings/WBTM_Translation_Settings.php:68
+msgid "Ticket Status"
+msgstr "Status do tíquete"
+
+#: admin/settings/WBTM_Translation_Settings.php:73
+msgid "Passenger Form"
+msgstr "Formulário de Passageiro"
+
+#: admin/settings/WBTM_Translation_Settings.php:78
+msgid "Journey Information"
+msgstr "Informações da viagem"
+
+#: admin/settings/WBTM_Translation_Settings.php:83
+msgid "Price Information"
+msgstr "Informações sobre preços"
+
+#: admin/settings/WBTM_Translation_Settings.php:193
+msgid "Bus Ticket Booking Translations"
+msgstr "Traduções de reservas de passagens de ônibus"
+
+#: admin/settings/WBTM_Translation_Settings.php:228
+#, php-format
+msgid "Default: %s"
+msgstr "Padrão: %s"
+
+#: admin/settings/WBTM_Translation_Settings.php:240
+msgid "Save Changes"
+msgstr "Salvar alterações"
+
+#: admin/WBTM_Analytics_Dashboard.php:16
+msgid "Analytics Dashboard"
+msgstr "Painel de análise"
+
+#: admin/WBTM_Analytics_Dashboard.php:17
+msgid "Analytics"
+msgstr "Análise"
+
+#: admin/WBTM_Analytics_Dashboard.php:231
+msgid "Bus Booking Analytics Dashboard"
+msgstr "Painel de análise de reservas de ônibus"
+
+#: admin/WBTM_Analytics_Dashboard.php:241
+msgid "Total Bookings"
+msgstr "Total de reservas"
+
+#: admin/WBTM_Analytics_Dashboard.php:251
+msgid "Total Revenue"
+msgstr "Receita Total"
+
+#: admin/WBTM_Analytics_Dashboard.php:261
+msgid "Total Seats Booked"
+msgstr "Total de assentos reservados"
+
+#: admin/WBTM_Analytics_Dashboard.php:269
+msgid "Popular Routes"
+msgstr "Rotas populares"
+
+#: admin/WBTM_Analytics_Dashboard.php:274
+msgid "Monthly Revenue"
+msgstr "Receita Mensal"
+
+#: admin/WBTM_Analytics_Dashboard.php:281
+msgid "Advanced Analytics"
+msgstr "Análise avançada"
+
+#: admin/WBTM_Analytics_Dashboard.php:286
+msgid "Peak Booking Hours"
+msgstr "Horários de pico de reserva"
+
+#: admin/WBTM_Analytics_Dashboard.php:292
+msgid "Weekly Booking Pattern"
+msgstr "Padrão de reserva semanal"
+
+#: admin/WBTM_Analytics_Dashboard.php:298
+msgid "Ticket Type Distribution"
+msgstr "Distribuição de Tipos de Bilhetes"
+
+#: admin/WBTM_Analytics_Dashboard.php:304
+msgid "Bus Type Performance"
+msgstr "Desempenho do tipo de ônibus"
+
+#: admin/WBTM_Analytics_Dashboard.php:312
+msgid "Return Customer Rate"
+msgstr "Taxa de retorno do cliente"
+
+#: admin/WBTM_Analytics_Dashboard.php:324
+msgid "Average Occupancy Rate"
+msgstr "Taxa média de ocupação"
+
+#: admin/WBTM_Bus_Import.php:20 admin/WBTM_Bus_Import.php:21
+#: admin/WBTM_Bus_Import.php:46 admin/WBTM_Bus_Import.php:116
+msgid "Import Buses"
+msgstr "Ônibus de importação"
+
+#: admin/WBTM_Bus_Import.php:53
+#, php-format
+msgid "%s bus imported successfully."
+msgid_plural "%s buses imported successfully."
+msgstr[0] "Barramento %s importado com sucesso."
+msgstr[1] "%s ônibus importados com sucesso."
+
+#: admin/WBTM_Bus_Import.php:60
+#, php-format
+msgid "%s bus failed to import."
+msgid_plural "%s buses failed to import."
+msgstr[0] "Falha na importação do barramento %s."
+msgstr[1] "Falha na importação de %s ônibus."
+
+#: admin/WBTM_Bus_Import.php:71
+msgid "Import Buses from CSV"
+msgstr "Importar ônibus de CSV"
+
+#: admin/WBTM_Bus_Import.php:72
+msgid ""
+"Upload a CSV file to import multiple buses at once. This will allow you to "
+"create all your buses in a single operation instead of adding them one by "
+"one."
+msgstr ""
+"Carregue um arquivo CSV para importar vários ônibus de uma só vez. Isso "
+"permitirá que você crie todos os seus ônibus em uma única operação, em vez "
+"de adicioná-los um por um."
+
+#: admin/WBTM_Bus_Import.php:80
+msgid "Choose CSV File"
+msgstr "Escolha o arquivo CSV"
+
+#: admin/WBTM_Bus_Import.php:84
+msgid "Select a CSV file with your bus data."
+msgstr "Selecione um arquivo CSV com os dados do seu ônibus."
+
+#: admin/WBTM_Bus_Import.php:89
+msgid "CSV Format"
+msgstr "Formato CSV"
+
+#: admin/WBTM_Bus_Import.php:92
+msgid "Your CSV file should include the following columns:"
+msgstr "Seu arquivo CSV deve incluir as seguintes colunas:"
+
+#: admin/WBTM_Bus_Import.php:94
+msgid "Bus name (required)"
+msgstr "Nome do ônibus (obrigatório)"
+
+#: admin/WBTM_Bus_Import.php:95
+msgid "Bus number (required)"
+msgstr "Número do ônibus (obrigatório)"
+
+#: admin/WBTM_Bus_Import.php:96
+msgid "Bus category (AC/Non AC)"
+msgstr "Categoria de ônibus (AC/Não AC)"
+
+#: admin/WBTM_Bus_Import.php:97
+msgid "Seat type configuration (wbtm_seat_plan)"
+msgstr "Configuração do tipo de assento (wbtm_seat_plan)"
+
+#: admin/WBTM_Bus_Import.php:98
+msgid "Driver seat position (driver_left/driver_right)"
+msgstr "Posição do banco do motorista (motorista_esquerda/motorista_direita)"
+
+#: admin/WBTM_Bus_Import.php:99
+msgid "Number of seat rows"
+msgstr "Número de fileiras de assentos"
+
+#: admin/WBTM_Bus_Import.php:100
+msgid "Number of seat columns"
+msgstr "Número de colunas de assento"
+
+#: admin/WBTM_Bus_Import.php:101
+msgid "Total number of seats"
+msgstr "Número total de assentos"
+
+#: admin/WBTM_Bus_Import.php:102
+msgid "Has upper deck (yes/no)"
+msgstr "Tem convés superior (sim/não)"
+
+#: admin/WBTM_Bus_Import.php:103
+msgid "Starting point of route (comma separated for multiple routes)"
+msgstr "Ponto de partida da rota (separados por vírgula para rotas múltiplas)"
+
+#: admin/WBTM_Bus_Import.php:104
+msgid "End point of route (comma separated for multiple routes)"
+msgstr "Ponto final da rota (separados por vírgula para rotas múltiplas)"
+
+#: admin/WBTM_Bus_Import.php:105
+msgid "Boarding points (comma separated)"
+msgstr "Pontos de embarque (separados por vírgula)"
+
+#: admin/WBTM_Bus_Import.php:106
+msgid "Dropping points (comma separated)"
+msgstr "Pontos de queda (separados por vírgula)"
+
+#: admin/WBTM_Bus_Import.php:107
+msgid "Start date (YYYY-MM-DD)"
+msgstr "Data de início (AAAA-MM-DD)"
+
+#: admin/WBTM_Bus_Import.php:108
+msgid "End date (YYYY-MM-DD)"
+msgstr "Data de término (AAAA-MM-DD)"
+
+#: admin/WBTM_Bus_Import.php:109
+msgid "Price data in format: from|to|price,from|to|price"
+msgstr "Dados de preço no formato: de|para|preço, de|para|preço"
+
+#: admin/WBTM_Bus_Import.php:117
+msgid "Download Sample CSV"
+msgstr "Baixar exemplo CSV"
+
+#: admin/WBTM_Bus_Import.php:123
+msgid "Import Instructions"
+msgstr "Instruções de importação"
+
+#: admin/WBTM_Bus_Import.php:125
+msgid "Download the sample CSV file to see the required format."
+msgstr "Baixe o arquivo CSV de amostra para ver o formato necessário."
+
+#: admin/WBTM_Bus_Import.php:126
+msgid "Fill in your bus data following the same format."
+msgstr "Preencha os dados do seu ônibus seguindo o mesmo formato."
+
+#: admin/WBTM_Bus_Import.php:127
+msgid "Upload your CSV file using the form above."
+msgstr "Carregue seu arquivo CSV usando o formulário acima."
+
+#: admin/WBTM_Bus_Import.php:128
+msgid "Review the import results and check your buses."
+msgstr "Revise os resultados da importação e verifique seus ônibus."
+
+#: admin/WBTM_Bus_Import.php:132
+msgid "Important Notes:"
+msgstr "Observações importantes:"
+
+#: admin/WBTM_Bus_Import.php:134
+msgid "Make sure your CSV file is properly formatted with the correct columns."
+msgstr ""
+"Certifique-se de que seu arquivo CSV esteja formatado corretamente com as "
+"colunas corretas."
+
+#: admin/WBTM_Bus_Import.php:135
+msgid "Bus names and numbers must be unique."
+msgstr "Os nomes e números dos ônibus devem ser exclusivos."
+
+#: admin/WBTM_Bus_Import.php:136
+msgid ""
+"For complex seat arrangements, you may need to edit the buses after import."
+msgstr ""
+"Para arranjos de assentos complexos, pode ser necessário editar os ônibus "
+"após a importação."
+
+#: admin/WBTM_Bus_Import.php:137
+msgid "The import process may take some time depending on the number of buses."
+msgstr ""
+"O processo de importação pode levar algum tempo dependendo do número de "
+"ônibus."
+
+#: admin/WBTM_Bus_Import.php:163
+msgid "Security check failed. Please try again."
+msgstr "Falha na verificação de segurança. Tente novamente."
+
+#: admin/WBTM_Bus_Import.php:168
+msgid "You do not have sufficient permissions to import data."
+msgstr "Você não tem permissões suficientes para importar dados."
+
+#: admin/WBTM_Bus_Import.php:173
+msgid "No file uploaded or upload error."
+msgstr "Nenhum arquivo carregado ou erro de carregamento."
+
+#: admin/WBTM_Bus_Import.php:180
+msgid "Invalid file type. Please upload a CSV file."
+msgstr "Tipo de arquivo inválido. Envie um arquivo CSV."
+
+#: admin/WBTM_Bus_Import.php:209
+msgid "Could not open the file."
+msgstr "Não foi possível abrir o arquivo."
+
+#: admin/WBTM_Bus_Import.php:217
+msgid "Could not read CSV headers."
+msgstr "Não foi possível ler os cabeçalhos CSV."
+
+#: admin/WBTM_Bus_Import.php:230
+#, php-format
+msgid "Required column \"%s\" is missing."
+msgstr "A coluna obrigatória \"%s\" está faltando."
+
+#: admin/WBTM_CPT.php:30 admin/WBTM_Taxonomy.php:20
+msgid "All"
+msgstr "Todos"
+
+#: admin/WBTM_CPT.php:31 admin/WBTM_CPT.php:32 admin/WBTM_Taxonomy.php:24
+#: admin/WBTM_Taxonomy.php:78 admin/WBTM_Taxonomy.php:114
+msgid "Add New"
+msgstr "Adicionar novo"
+
+#: admin/WBTM_CPT.php:33
+msgid "New"
+msgstr "Novo"
+
+#: admin/WBTM_CPT.php:34
+msgid "Edit"
+msgstr "Editar"
+
+#: admin/WBTM_CPT.php:35
+msgid "Update"
+msgstr "Atualizar"
+
+#: admin/WBTM_CPT.php:36 admin/WBTM_CPT.php:37
+msgid "View"
+msgstr "Visualizar"
+
+#: admin/WBTM_CPT.php:38 inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr "Procurar"
+
+#: admin/WBTM_CPT.php:39
+msgid "Not found"
+msgstr "Não encontrado"
+
+#: admin/WBTM_CPT.php:40
+msgid "Not found in Trash"
+msgstr "Não encontrado na Lixeira"
+
+#: admin/WBTM_CPT.php:41
+msgid "Feature Image"
+msgstr "Imagem em destaque"
+
+#: admin/WBTM_CPT.php:42
+msgid "Set"
+msgstr "Definir"
+
+#: admin/WBTM_CPT.php:42 admin/WBTM_CPT.php:43 admin/WBTM_CPT.php:44
+msgid "featured image"
+msgstr "imagem em destaque"
+
+#: admin/WBTM_CPT.php:43
+msgid "Remove"
+msgstr "Remover"
+
+#: admin/WBTM_CPT.php:44
+msgid "Use as"
+msgstr "Usar como"
+
+#: admin/WBTM_CPT.php:45
+msgid "Insert into"
+msgstr "Inserir em"
+
+#: admin/WBTM_CPT.php:46
+msgid "Uploaded to this"
+msgstr "Enviado para isto"
+
+#: admin/WBTM_CPT.php:47
+msgid " list"
+msgstr " lista"
+
+#: admin/WBTM_CPT.php:48
+msgid " list navigation"
+msgstr "navegação de lista"
+
+#: admin/WBTM_CPT.php:49 inc/WBTM_Translations.php:417
+msgid "Filter"
+msgstr "Filtro"
+
+#: admin/WBTM_CPT.php:49
+msgid "list"
+msgstr "lista"
+
+#: admin/WBTM_CPT.php:77
+msgid "Bus Attendee"
+msgstr "Participante do ônibus"
+
+#: admin/WBTM_CPT.php:101
+msgid "Coach no"
+msgstr "Treinador nº"
+
+#: admin/WBTM_CPT.php:102 admin/WBTM_Global_settings.php:536
+#: admin/WBTM_Taxonomy.php:20 admin/WBTM_Taxonomy.php:21
+msgid "Type"
+msgstr "Tipo"
+
+#: admin/WBTM_CPT.php:104
+msgid "Added by"
+msgstr "Adicionado por"
+
+#: admin/WBTM_CPT.php:110
+msgid "Seal Plan"
+msgstr "Plano de Selo"
+
+#: admin/WBTM_CPT.php:110
+msgid "Without Seal Plan"
+msgstr "Sem Plano de Selo"
+
+#: admin/WBTM_Global_settings.php:26
+msgid " Settings"
+msgstr " Configurações"
+
+#: admin/WBTM_Global_settings.php:70
+msgid "Settings"
+msgstr "Configurações"
+
+#: admin/WBTM_Global_settings.php:74
+msgid "Global Settings"
+msgstr "Configurações globais"
+
+#: admin/WBTM_Global_settings.php:85
+msgid "Slider Settings"
+msgstr "Configurações do controle deslizante"
+
+#: admin/WBTM_Global_settings.php:89
+msgid "Style Settings"
+msgstr "Configurações de estilo"
+
+#: admin/WBTM_Global_settings.php:93 admin/WBTM_Global_settings.php:504
+msgid "Custom CSS"
+msgstr "CSS personalizado"
+
+#: admin/WBTM_Global_settings.php:97 admin/WBTM_Global_settings.php:517
+msgid "Mage-People License"
+msgstr "Licença de Mago-Pessoas"
+
+#: admin/WBTM_Global_settings.php:111
+msgid "Seat Booked Status"
+msgstr "Status do assento reservado"
+
+#: admin/WBTM_Global_settings.php:112
+msgid "Please Select when and which order status Seat Will be Booked/Reduced."
+msgstr ""
+"Selecione quando e em qual status do pedido o assento será "
+"reservado/reduzido."
+
+#: admin/WBTM_Global_settings.php:119
+msgid "On Hold"
+msgstr "Em espera"
+
+#: admin/WBTM_Global_settings.php:120
+msgid "Pending"
+msgstr "Pendente"
+
+#: admin/WBTM_Global_settings.php:121
+msgid "Processing"
+msgstr "Processamento"
+
+#: admin/WBTM_Global_settings.php:122
+msgid "Completed"
+msgstr "Concluído"
+
+#: admin/WBTM_Global_settings.php:127 admin/WBTM_Global_settings.php:131
+msgid "Label"
+msgstr "Rótulo"
+
+#: admin/WBTM_Global_settings.php:128
+msgid ""
+"If you like to change the label in the dashboard menu, you can change it "
+"here."
+msgstr ""
+"Se quiser alterar o rótulo no menu do painel, você pode alterá-lo aqui."
+
+#: admin/WBTM_Global_settings.php:135 admin/WBTM_Global_settings.php:139
+msgid "Slug"
+msgstr "Lesma"
+
+#: admin/WBTM_Global_settings.php:136
+msgid ""
+"Please enter the slug name you want. Remember, after changing this slug; you "
+"need to flush permalink; go to"
+msgstr ""
+"Por favor, insira o nome do slug desejado. Lembre-se, após alterar este slug,"
+" você precisa limpar o permalink; vá para"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "Settings-> Permalinks"
+msgstr "Configurações-> Links permanentes"
+
+#: admin/WBTM_Global_settings.php:136
+msgid "hit the Save Settings button."
+msgstr "clique no botão Salvar configurações."
+
+#: admin/WBTM_Global_settings.php:143
+#: mp_global/class/WBTM_Select_Icon_image.php:33
+#: mp_global/class/WBTM_Select_Icon_image.php:165
+msgid "Icon"
+msgstr "Ícone"
+
+#: admin/WBTM_Global_settings.php:144
+msgid ""
+"If you want to change the  icon in the dashboard menu, you can change it "
+"from here, and the Dashboard icon only supports the Dashicons, So please go "
+"to "
+msgstr ""
+"Se você quiser alterar o ícone no menu do painel, você pode alterá-lo aqui, "
+"e o ícone do painel suporta apenas os ícones do painel, então vá para"
+
+#: admin/WBTM_Global_settings.php:144
+msgid "Dashicons Library."
+msgstr "Biblioteca Dashicons."
+
+#: admin/WBTM_Global_settings.php:144
+msgid "and copy your icon code and paste it here."
+msgstr "e copie o código do seu ícone e cole aqui."
+
+#: admin/WBTM_Global_settings.php:150
+msgid "Show return Date Search"
+msgstr "Mostrar data de retorno Pesquisar"
+
+#: admin/WBTM_Global_settings.php:151
+msgid ""
+"Disable if you don't want to show return field in search. By default Enable"
+msgstr ""
+"Desabilite se não quiser mostrar o campo de retorno na pesquisa. Por padrão, "
+"habilitar"
+
+#: admin/WBTM_Global_settings.php:155
+msgid "Disable"
+msgstr "Desabilitar"
+
+#: admin/WBTM_Global_settings.php:156
+msgid "Enable"
+msgstr "Habilitar"
+
+#: admin/WBTM_Global_settings.php:161
+msgid "Ticket sale off after date"
+msgstr "Venda de ingressos encerrada após a data"
+
+#: admin/WBTM_Global_settings.php:162
+msgid ""
+"Please select Seat sale off after date . if you dont want to off sale then "
+"it will be blank"
+msgstr ""
+"Selecione a venda de assentos após a data. Se você não quiser encerrar a "
+"venda, o campo ficará em branco."
+
+#: admin/WBTM_Global_settings.php:170
+msgid "Maximum advanced day Sale"
+msgstr "Venda máxima antecipada do dia"
+
+#: admin/WBTM_Global_settings.php:171
+msgid ""
+"Please select Maximum advanced day Ticket Sale . if you dont want to off "
+"sale then it will be blank"
+msgstr ""
+"Selecione Venda de ingressos com antecedência máxima. Se você não quiser "
+"encerrar a venda, o campo ficará em branco."
+
+#: admin/WBTM_Global_settings.php:178
+msgid "Buffer Time"
+msgstr "Tempo de buffer"
+
+#: admin/WBTM_Global_settings.php:179
+msgid "Please enter here car buffer time in minute. By default is 0"
+msgstr "Insira aqui o tempo de buffer do carro em minutos. O padrão é 0."
+
+#: admin/WBTM_Global_settings.php:182
+msgid "Ex:50"
+msgstr "Exemplo: 50"
+
+#: admin/WBTM_Global_settings.php:186
+msgid "Show/hide view seats button"
+msgstr "Botão Mostrar/Ocultar assentos de visualização"
+
+#: admin/WBTM_Global_settings.php:187
+msgid ""
+"If you want to hide view seats button from search list, if registration off."
+msgstr ""
+"Se você quiser ocultar o botão de visualização de assentos da lista de "
+"pesquisa, desative o registro."
+
+#: admin/WBTM_Global_settings.php:191
+msgid "Show"
+msgstr "Mostrar"
+
+#: admin/WBTM_Global_settings.php:192
+msgid "Hide"
+msgstr "Esconder"
+
+#: admin/WBTM_Global_settings.php:197
+msgid "Active Redirect page"
+msgstr "Página de redirecionamento ativo"
+
+#: admin/WBTM_Global_settings.php:198
+msgid "If you want to Active Redirect page,please select on"
+msgstr "Se você deseja a página de redirecionamento ativo, selecione em"
+
+#: admin/WBTM_Global_settings.php:202 admin/WBTM_Global_settings.php:220
+#: admin/WBTM_Global_settings.php:231 admin/WBTM_Global_settings.php:325
+#: admin/WBTM_Global_settings.php:347 admin/WBTM_Global_settings.php:371
+#: admin/WBTM_Global_settings.php:382
+msgid "ON"
+msgstr "SOBRE"
+
+#: admin/WBTM_Global_settings.php:203 admin/WBTM_Global_settings.php:221
+#: admin/WBTM_Global_settings.php:232
+msgid "OFF"
+msgstr "DESLIGADO"
+
+#: admin/WBTM_Global_settings.php:208
+msgid "Search result page"
+msgstr "Página de resultados da pesquisa"
+
+#: admin/WBTM_Global_settings.php:209
+msgid "If you want to redirect Search result page , please select below page"
+msgstr ""
+"Se você deseja redirecionar a página de resultados da pesquisa, selecione a "
+"página abaixo"
+
+#: admin/WBTM_Global_settings.php:215
+msgid "Turn order status processing to completed automatically"
+msgstr "Alterar o status do pedido para concluído automaticamente"
+
+#: admin/WBTM_Global_settings.php:216
+msgid ""
+"If you want to make woocommerce processing status to completed automatically "
+"select ON"
+msgstr ""
+"Se você quiser que o status do processamento do WooCommerce seja concluído "
+"automaticamente, selecione LIGADO"
+
+#: admin/WBTM_Global_settings.php:226
+msgid "Redirect to checkout after booking"
+msgstr "Redirecionar para a finalização da compra após a reserva"
+
+#: admin/WBTM_Global_settings.php:227
+msgid ""
+"If you want to redirect users directly to checkout after booking instead of "
+"showing the cart notice, select ON"
+msgstr ""
+"Se você quiser redirecionar os usuários diretamente para a finalização da "
+"compra após a reserva, em vez de mostrar o aviso do carrinho, selecione "
+"LIGADO"
+
+#: admin/WBTM_Global_settings.php:239
+msgid "Disable Block/Gutenberg Editor"
+msgstr "Desativar editor de bloco/Gutenberg"
+
+#: admin/WBTM_Global_settings.php:240
+msgid ""
+"If you want to disable WordPress's new Block/Gutenberg editor, please select "
+"Yes."
+msgstr ""
+"Se você quiser desabilitar o novo editor de blocos/Gutenberg do WordPress, "
+"selecione Sim."
+
+#: admin/WBTM_Global_settings.php:244 admin/WBTM_Status.php:22
+msgid "Yes"
+msgstr "Sim"
+
+#: admin/WBTM_Global_settings.php:245 admin/WBTM_Status.php:22
+msgid "No"
+msgstr "Não"
+
+#: admin/WBTM_Global_settings.php:250
+msgid "Date Picker Format"
+msgstr "Formato do seletor de data"
+
+#: admin/WBTM_Global_settings.php:251
+msgid ""
+"If you want to change Date Picker Format, please select format. Default  is "
+"D d M , yy."
+msgstr ""
+"Se desejar alterar o formato do Seletor de Data, selecione o formato. O "
+"padrão é D d M , aa."
+
+#: admin/WBTM_Global_settings.php:271
+msgid "Short Date  Format"
+msgstr "Formato de data abreviada"
+
+#: admin/WBTM_Global_settings.php:272
+msgid ""
+"If you want to change Short Date  Format, please select format. Default  is "
+"M , Y."
+msgstr ""
+"Se desejar alterar o Formato de Data Abreviada, selecione o formato. O "
+"padrão é M, Y."
+
+#: admin/WBTM_Global_settings.php:298
+msgid "Slider Type"
+msgstr "Tipo de controle deslizante"
+
+#: admin/WBTM_Global_settings.php:299
+msgid "Please Select Slider Type Default Slider"
+msgstr "Selecione o tipo de controle deslizante Controle deslizante padrão"
+
+#: admin/WBTM_Global_settings.php:303
+msgid "Slider"
+msgstr "Controle deslizante"
+
+#: admin/WBTM_Global_settings.php:304
+msgid "Post Thumbnail"
+msgstr "Miniatura da postagem"
+
+#: admin/WBTM_Global_settings.php:309
+msgid "Slider Style"
+msgstr "Estilo de controle deslizante"
+
+#: admin/WBTM_Global_settings.php:310
+msgid "Please Select Slider Style Default Style One"
+msgstr "Selecione o estilo do controle deslizante Estilo padrão um"
+
+#: admin/WBTM_Global_settings.php:314
+msgid "Style One"
+msgstr "Estilo Um"
+
+#: admin/WBTM_Global_settings.php:315
+msgid "Style Two"
+msgstr "Estilo Dois"
+
+#: admin/WBTM_Global_settings.php:320
+msgid "Slider Indicator Visible?"
+msgstr "Indicador deslizante visível?"
+
+#: admin/WBTM_Global_settings.php:321
+msgid "Please Select Slider Indicator Visible or Not? Default ON"
+msgstr "Selecione o indicador deslizante visível ou não? Padrão LIGADO"
+
+#: admin/WBTM_Global_settings.php:326 admin/WBTM_Global_settings.php:348
+#: admin/WBTM_Global_settings.php:372 admin/WBTM_Global_settings.php:383
+msgid "Off"
+msgstr "Desligado"
+
+#: admin/WBTM_Global_settings.php:331
+msgid "Slider Indicator Type"
+msgstr "Tipo de indicador deslizante"
+
+#: admin/WBTM_Global_settings.php:332
+msgid "Please Select Slider Indicator Type Default Icon"
+msgstr "Selecione o tipo de indicador do controle deslizante Ícone padrão"
+
+#: admin/WBTM_Global_settings.php:336
+msgid "Icon Indicator"
+msgstr "Indicador de ícone"
+
+#: admin/WBTM_Global_settings.php:337
+msgid "image Indicator"
+msgstr "Indicador de imagem"
+
+#: admin/WBTM_Global_settings.php:342
+msgid "Slider Showcase Visible?"
+msgstr "Apresentação do controle deslizante visível?"
+
+#: admin/WBTM_Global_settings.php:343
+msgid "Please Select Slider Showcase Visible or Not? Default ON"
+msgstr "Selecione a opção \"Visualizar\" ou \"Não\"? Padrão LIGADO"
+
+#: admin/WBTM_Global_settings.php:353
+msgid "Slider Showcase Position"
+msgstr "Posição da vitrine do controle deslizante"
+
+#: admin/WBTM_Global_settings.php:354
+msgid "Please Select Slider Showcase Position Default Right"
+msgstr "Selecione a posição padrão da vitrine do controle deslizante à direita"
+
+#: admin/WBTM_Global_settings.php:358
+msgid "At Top Position"
+msgstr "Na posição superior"
+
+#: admin/WBTM_Global_settings.php:359
+msgid "At Right Position"
+msgstr "Na posição correta"
+
+#: admin/WBTM_Global_settings.php:360
+msgid "At Bottom Position"
+msgstr "Na posição inferior"
+
+#: admin/WBTM_Global_settings.php:361
+msgid "At Left Position"
+msgstr "Na posição esquerda"
+
+#: admin/WBTM_Global_settings.php:366
+msgid "Slider Popup Image Indicator"
+msgstr "Indicador de imagem pop-up do controle deslizante"
+
+#: admin/WBTM_Global_settings.php:367
+msgid "Please Select Slider Popup Indicator Image ON or Off? Default ON"
+msgstr ""
+"Selecione a imagem do indicador pop-up do controle deslizante LIGADO ou "
+"DESLIGADO? Padrão LIGADO"
+
+#: admin/WBTM_Global_settings.php:377
+msgid "Slider Popup Icon Indicator"
+msgstr "Indicador de ícone pop-up do controle deslizante"
+
+#: admin/WBTM_Global_settings.php:378
+msgid "Please Select Slider Popup Indicator Icon ON or Off? Default ON"
+msgstr ""
+"Selecione o ícone indicador pop-up do controle deslizante: LIGADO ou "
+"DESLIGADO? Padrão: LIGADO"
+
+#: admin/WBTM_Global_settings.php:390
+msgid "Theme Color"
+msgstr "Cor do tema"
+
+#: admin/WBTM_Global_settings.php:391
+msgid "Select Default Theme Color"
+msgstr "Selecione a cor do tema padrão"
+
+#: admin/WBTM_Global_settings.php:397
+msgid "Theme Alternate Color"
+msgstr "Tema Cor Alternativa"
+
+#: admin/WBTM_Global_settings.php:398
+msgid ""
+"Select Default Theme Alternate  Color that means, if background theme color "
+"then it will be text color."
+msgstr ""
+"Selecione a cor alternativa do tema padrão, o que significa que, se a cor do "
+"tema de fundo for a cor do texto, ela será a cor do tema."
+
+#: admin/WBTM_Global_settings.php:404
+msgid "Default Text Color"
+msgstr "Cor de texto padrão"
+
+#: admin/WBTM_Global_settings.php:405
+msgid "Select Default Text  Color."
+msgstr "Selecione Cor de texto padrão."
+
+#: admin/WBTM_Global_settings.php:411
+msgid "Default Font Size"
+msgstr "Tamanho de fonte padrão"
+
+#: admin/WBTM_Global_settings.php:412
+msgid "Type Default Font Size(in PX Unit)."
+msgstr "Digite o tamanho padrão da fonte (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:418
+msgid "Font Size h1 Title"
+msgstr "Tamanho da fonte h1 Título"
+
+#: admin/WBTM_Global_settings.php:419
+msgid "Type Font Size Main Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte Título principal (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:425
+msgid "Font Size h2 Title"
+msgstr "Tamanho da fonte h2 Título"
+
+#: admin/WBTM_Global_settings.php:426
+msgid "Type Font Size h2 Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte h2 Título (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:432
+msgid "Font Size h3 Title"
+msgstr "Tamanho da fonte h3 Título"
+
+#: admin/WBTM_Global_settings.php:433
+msgid "Type Font Size h3 Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte h3 Título (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:439
+msgid "Font Size h4 Title"
+msgstr "Tamanho da fonte h4 Título"
+
+#: admin/WBTM_Global_settings.php:440
+msgid "Type Font Size h4 Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte h4 Título (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:446
+msgid "Font Size h5 Title"
+msgstr "Tamanho da fonte h5 Título"
+
+#: admin/WBTM_Global_settings.php:447
+msgid "Type Font Size h5 Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte h5 Título (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:453
+msgid "Font Size h6 Title"
+msgstr "Tamanho da fonte h6 Título"
+
+#: admin/WBTM_Global_settings.php:454
+msgid "Type Font Size h6 Title(in PX Unit)."
+msgstr "Tipo Tamanho da fonte h6 Título (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:460
+msgid "Button Font Size "
+msgstr "Tamanho da fonte do botão"
+
+#: admin/WBTM_Global_settings.php:461
+msgid "Type Font Size Button(in PX Unit)."
+msgstr "Digite o tamanho da fonte do botão (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:467
+msgid "Button Text Color"
+msgstr "Cor do texto do botão"
+
+#: admin/WBTM_Global_settings.php:468
+msgid "Select Button Text  Color."
+msgstr "Selecione a cor do texto do botão."
+
+#: admin/WBTM_Global_settings.php:474
+msgid "Button Background Color"
+msgstr "Cor de fundo do botão"
+
+#: admin/WBTM_Global_settings.php:475
+msgid "Select Button Background  Color."
+msgstr "Selecione a cor de fundo do botão."
+
+#: admin/WBTM_Global_settings.php:481
+msgid "Label Font Size "
+msgstr "Tamanho da fonte do rótulo"
+
+#: admin/WBTM_Global_settings.php:482
+msgid "Type Font Size Label(in PX Unit)."
+msgstr "Digite o rótulo do tamanho da fonte (em unidades PX)."
+
+#: admin/WBTM_Global_settings.php:488
+msgid "Warning Color"
+msgstr "Cor de advertência"
+
+#: admin/WBTM_Global_settings.php:489
+msgid "Select Warning  Color."
+msgstr "Selecione a cor do aviso."
+
+#: admin/WBTM_Global_settings.php:495
+msgid "Section Background color"
+msgstr "Cor de fundo da seção"
+
+#: admin/WBTM_Global_settings.php:496
+msgid "Select Background  Color."
+msgstr "Selecione Cor de fundo."
+
+#: admin/WBTM_Global_settings.php:505
+msgid "Write Your Custom CSS Code Here"
+msgstr "Escreva seu código CSS personalizado aqui"
+
+#: admin/WBTM_Global_settings.php:520
+msgid ""
+"Thanking you for using our Mage-People plugin. Our some plugin  free and no "
+"license is required. We have some Additional addon to enhance feature of "
+"this plugin functionality. If you have any addon you need to enter a valid "
+"license for that plugin below."
+msgstr ""
+"Agradecemos por usar nosso plugin Mage-People. Alguns de nossos plugins são "
+"gratuitos e não exigem licença. Temos alguns complementos adicionais para "
+"aprimorar a funcionalidade deste plugin. Se você tiver algum complemento, "
+"precisará inserir uma licença válida para ele abaixo."
+
+#: admin/WBTM_Global_settings.php:535
+msgid "Plugin Name"
+msgstr "Nome do plugin"
+
+#: admin/WBTM_Global_settings.php:537
+msgid "Order No"
+msgstr "Nº do pedido"
+
+#: admin/WBTM_Global_settings.php:538
+msgid "Expire on"
+msgstr "Expira em"
+
+#: admin/WBTM_Global_settings.php:539
+msgid "License Key"
+msgstr "Chave de licença"
+
+#: admin/WBTM_Global_settings.php:540 admin/WBTM_Status.php:17
+msgid "Status"
+msgstr "Status"
+
+#: admin/WBTM_License.php:18
+msgid "Free"
+msgstr "Livre"
+
+#: admin/WBTM_License.php:20
+msgid "Unlimited"
+msgstr "Ilimitado"
+
+#: admin/WBTM_License.php:21
+msgid "No Need"
+msgstr "Não há necessidade"
+
+#: admin/WBTM_License.php:22
+msgid "Active"
+msgstr "Ativo"
+
+#: admin/WBTM_Quick_Setup.php:17 admin/WBTM_Quick_Setup.php:18
+#: admin/WBTM_Quick_Setup.php:22
+msgid "Quick Setup"
+msgstr "Configuração rápida"
+
+#: admin/WBTM_Quick_Setup.php:21 admin/WBTM_Quick_Setup.php:194
+#: inc/WBTM_Functions.php:456
+msgid "Bus"
+msgstr "Ônibus"
+
+#: admin/WBTM_Quick_Setup.php:121 admin/WBTM_Welcome.php:14
+msgid "Welcome"
+msgstr "Bem-vindo"
+
+#: admin/WBTM_Quick_Setup.php:128
+msgid "General"
+msgstr "Em geral"
+
+#: admin/WBTM_Quick_Setup.php:135
+msgid "Done"
+msgstr "Feito"
+
+#: admin/WBTM_Quick_Setup.php:148
+msgid "Previous"
+msgstr "Anterior"
+
+#: admin/WBTM_Quick_Setup.php:152
+msgid "Next"
+msgstr "Próximo"
+
+#: admin/WBTM_Quick_Setup.php:166
+msgid "Bus Booking with Seat Reservation For Woocommerce Plugin"
+msgstr "Reserva de ônibus com reserva de assento para plugin Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:167
+msgid ""
+"Bus Booking with Seat Reservation Plugin for WooCommerce for your site, "
+"Please go step by step and choose some options to get started."
+msgstr ""
+"Reserva de ônibus com plugin de reserva de assentos para WooCommerce para "
+"seu site. Siga passo a passo e escolha algumas opções para começar."
+
+#: admin/WBTM_Quick_Setup.php:171
+msgid "Woocommerce already installed and activated"
+msgstr "Woocommerce já instalado e ativado"
+
+#: admin/WBTM_Quick_Setup.php:174
+msgid "Woocommerce need to install and active"
+msgstr "O Woocommerce precisa ser instalado e ativado"
+
+#: admin/WBTM_Quick_Setup.php:177
+msgid "Woocommerce already install , please activate it"
+msgstr "O Woocommerce já está instalado, por favor ative-o"
+
+#: admin/WBTM_Quick_Setup.php:185
+msgid "Install & Active Now"
+msgstr "Instalar e ativar agora"
+
+#: admin/WBTM_Quick_Setup.php:187
+msgid "Active Now"
+msgstr "Ativo agora"
+
+#: admin/WBTM_Quick_Setup.php:199
+msgid "General settings"
+msgstr "Configurações gerais"
+
+#: admin/WBTM_Quick_Setup.php:200
+msgid "Choose some general option."
+msgstr "Escolha alguma opção geral."
+
+#: admin/WBTM_Quick_Setup.php:203
+msgid "Bus Label:"
+msgstr "Etiqueta do ônibus:"
+
+#: admin/WBTM_Quick_Setup.php:208
+msgid "It will change the Bus post type label on the entire plugin."
+msgstr "Isso mudará o rótulo do tipo de postagem de ônibus em todo o plugin."
+
+#: admin/WBTM_Quick_Setup.php:212
+msgid "Bus Slug:"
+msgstr "Bus Slug:"
+
+#: admin/WBTM_Quick_Setup.php:217
+msgid ""
+"It will change the Bus slug on the entire plugin. Remember after changing "
+"this slug you need to flush permalinks. Just go to Settings->Permalinks hit "
+"the Save Settings button"
+msgstr ""
+"Isso mudará o slug do barramento em todo o plugin. Lembre-se de que, após "
+"alterar este slug, você precisa limpar os permalinks. Basta ir em "
+"Configurações -> Permalinks e clicar no botão Salvar Configurações."
+
+#: admin/WBTM_Quick_Setup.php:227
+msgid "Finalize Setup"
+msgstr "Finalizar configuração"
+
+#: admin/WBTM_Quick_Setup.php:228
+msgid ""
+"You are about to Finish & Save Bus Booking with Seat Reservation For "
+"Woocommerce Plugin setup process"
+msgstr ""
+"Você está prestes a finalizar e salvar a reserva de ônibus com o processo de "
+"configuração do plugin Reserva de Assentos para Woocommerce"
+
+#: admin/WBTM_Quick_Setup.php:230
+msgid "Finish & Save"
+msgstr "Concluir e salvar"
+
+#: admin/WBTM_Settings.php:20
+msgid " Information Settings : "
+msgstr "Configurações de informações:"
+
+#: admin/WBTM_Settings.php:36
+msgid "General Info"
+msgstr "Informações gerais"
+
+#: admin/WBTM_Settings.php:39
+msgid "Seat Configure"
+msgstr "Configuração do assento"
+
+#: admin/WBTM_Settings.php:42
+msgid "Pricing & Route"
+msgstr "Preços e Rota"
+
+#: admin/WBTM_Settings.php:48
+msgid "Pickup/Drop-Off Point"
+msgstr "Ponto de coleta/entrega"
+
+#: admin/WBTM_Settings.php:55
+msgid "Tax Configure"
+msgstr "Configurar imposto"
+
+#: admin/WBTM_Settings.php:59
+msgid "Partial Payment"
+msgstr "Pagamento Parcial"
+
+#: admin/WBTM_Settings.php:67
+msgid "Partial Payment Settings : "
+msgstr "Configurações de pagamento parcial:"
+
+#: admin/WBTM_Settings.php:79
+msgid "Please add your unique bus id"
+msgstr "Por favor, adicione seu ID de ônibus exclusivo"
+
+#: admin/WBTM_Settings.php:80
+msgid "Please add your bus category"
+msgstr "Por favor, adicione sua categoria de ônibus"
+
+#: admin/WBTM_Settings.php:81
+msgid "Turn on or off, bus seat registration"
+msgstr "Ligar ou desligar o registro do assento do ônibus"
+
+#: admin/WBTM_Settings.php:82
+msgid ""
+"By default Registration is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Por padrão, o registro está LIGADO, mas você pode mantê-lo desativado "
+"alternando esta opção"
+
+#: admin/WBTM_Settings.php:83
+msgid ""
+"By default Boarding Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Por padrão, o horário de embarque está LIGADO, mas você pode mantê-lo "
+"desativado ativando esta opção"
+
+#: admin/WBTM_Settings.php:84
+msgid ""
+"By default Dropping Time is ON but you can keep it off by switching this "
+"option"
+msgstr ""
+"Por padrão, o Dropping Time está LIGADO, mas você pode mantê-lo desligado "
+"alternando esta opção"
+
+#: admin/WBTM_Settings.php:85
+msgid "Please select your bus seat type . Default Without Seat Plan"
+msgstr "Selecione o tipo de assento do seu ônibus. Plano padrão sem assentos"
+
+#: admin/WBTM_Settings.php:86
+msgid "Please Type your bus total seat."
+msgstr "Por favor, digite o número total de assentos no seu ônibus."
+
+#: admin/WBTM_Settings.php:87
+msgid "Select Particular Date or Repeated Date."
+msgstr "Selecione Data específica ou Data repetida."
+
+#: admin/WBTM_Settings.php:88
+msgid "Here you can set bus route for stopage and dropping"
+msgstr "Aqui você pode definir a rota do ônibus para parada e desembarque"
+
+#: admin/WBTM_Settings.php:89
+msgid ""
+"Please configure bus route price. Before price setting must be complete "
+"route configuration ."
+msgstr ""
+"Configure o preço da rota de ônibus. Antes de definir o preço, é necessário "
+"concluir a configuração da rota."
+
+#: admin/WBTM_Settings.php:90
+msgid "Turn On or Off Extra service."
+msgstr "Ativar ou desativar serviço extra."
+
+#: admin/WBTM_Settings.php:91
+msgid "Turn On or Off pickup point."
+msgstr "Ligar ou desligar o ponto de coleta."
+
+#: admin/WBTM_Settings.php:92
+msgid "Turn On or Off drop-off point."
+msgstr "Ativar ou desativar ponto de entrega."
+
+#: admin/WBTM_Settings.php:93
+msgid ""
+"To add any new tax class , Please go to WooCommerce ->Settings->Tax Area"
+msgstr ""
+"Para adicionar qualquer nova classe de imposto, acesse WooCommerce ->"
+"Configurações->Área de Imposto"
+
+#: admin/WBTM_Settings.php:95
+msgid "Please upload images for gallery"
+msgstr "Por favor, carregue imagens para a galeria"
+
+#: admin/WBTM_Status.php:17
+msgid "<span style=\"color:yellow\">Status</span>"
+msgstr "<span style=\"color:yellow\">Status</span>"
+
+#: admin/WBTM_Status.php:33
+msgid "For Woocommerce Environment Status"
+msgstr "Para status do ambiente Woocommerce"
+
+#: admin/WBTM_Status.php:38
+msgid "WordPress Version : "
+msgstr "Versão do WordPress:"
+
+#: admin/WBTM_Status.php:44
+msgid "Woocommerce Installed : "
+msgstr "Woocommerce instalado:"
+
+#: admin/WBTM_Status.php:51
+msgid "Woocommerce Version : "
+msgstr "Versão do Woocommerce:"
+
+#: admin/WBTM_Status.php:57
+msgid "Name : "
+msgstr "Nome : "
+
+#: admin/WBTM_Status.php:63
+msgid "Email Address : "
+msgstr "Endereço de email : "
+
+#: admin/WBTM_Taxonomy.php:17
+msgid " Type"
+msgstr " Tipo"
+
+#: admin/WBTM_Taxonomy.php:21 admin/WBTM_Taxonomy.php:22
+#: admin/WBTM_Taxonomy.php:75 admin/WBTM_Taxonomy.php:111
+msgid "Parent"
+msgstr "Pais"
+
+#: admin/WBTM_Taxonomy.php:22
+msgid "Type:"
+msgstr "Tipo:"
+
+#: admin/WBTM_Taxonomy.php:71 admin/WBTM_Taxonomy.php:75
+#: admin/WBTM_Taxonomy.php:78 inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr "Ponto de coleta"
+
+#: admin/WBTM_Taxonomy.php:74 admin/WBTM_Taxonomy.php:110
+msgid "Allx "
+msgstr "Allx"
+
+#: admin/WBTM_Taxonomy.php:107 admin/WBTM_Taxonomy.php:111
+#: admin/WBTM_Taxonomy.php:114 inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr "Ponto de entrega"
+
+#: admin/WBTM_Welcome.php:14
+msgid "Welcome to WBTM"
+msgstr "Bem-vindo à WBTM"
+
+#: admin/WBTM_Welcome.php:17
+msgid "PRO"
+msgstr "PRÓ"
+
+#: admin/WBTM_Welcome.php:22
+msgid "Welcome to Bus Ticket Booking with Seat Reservation"
+msgstr "Bem-vindo à Reserva de Passagens de Ônibus com Reserva de Assento"
+
+#: admin/WBTM_Welcome.php:24
+msgid "Import"
+msgstr "Importar"
+
+#: admin/WBTM_Welcome.php:25
+msgid "Knowledge Base"
+msgstr "Base de conhecimento"
+
+#: admin/WBTM_Welcome.php:29
+msgid "How to Import Dummy Content"
+msgstr "Como importar conteúdo fictício"
+
+#: admin/WBTM_Welcome.php:30
+msgid ""
+"Please follow the below process to import dummy event data to your website."
+msgstr ""
+"Siga o processo abaixo para importar dados de eventos fictícios para seu "
+"site."
+
+#: admin/WBTM_Welcome.php:34
+msgid "Step-1:"
+msgstr "Passo 1:"
+
+#: admin/WBTM_Welcome.php:40
+msgid "category.xml"
+msgstr "categoria.xml"
+
+#: admin/WBTM_Welcome.php:43
+msgid "content.xml"
+msgstr "conteúdo.xml"
+
+#: admin/WBTM_Welcome.php:46
+msgid ""
+"Or, you may download the XML files zip and extract it to your computer "
+"directory."
+msgstr ""
+"Ou você pode baixar os arquivos XML zip e extraí-los para o diretório do seu "
+"computador."
+
+#: admin/WBTM_Welcome.php:47
+msgid "Download the Zip of XML Files"
+msgstr "Baixe o Zip dos Arquivos XML"
+
+#: admin/WBTM_Welcome.php:52
+msgid "Step-2:"
+msgstr "Passo 2:"
+
+#: admin/WBTM_Welcome.php:55
+msgid "After Download the XML file, Go to:"
+msgstr "Após baixar o arquivo XML, acesse:"
+
+#: admin/WBTM_Welcome.php:56
+msgid "Tools -> Import"
+msgstr "Ferramentas -> Importar"
+
+#: admin/WBTM_Welcome.php:58
+msgid ""
+"In the bottom of this page there is a WordPress import option. If you have "
+"already enabled this, you can see Run Import. If not, click on the Install "
+"Now link. After that click on Run Importer and select the XML file you "
+"downlaoded earlier."
+msgstr ""
+"Na parte inferior desta página, há uma opção de importação do WordPress. Se "
+"você já a ativou, poderá ver a opção \"Executar Importação\". Caso contrário,"
+" clique no link \"Instalar Agora\". Em seguida, clique em \"Executar "
+"Importador\" e selecione o arquivo XML que você baixou anteriormente."
+
+#: admin/WBTM_Welcome.php:63
+msgid "Step-3:"
+msgstr "Etapa 3:"
+
+#: admin/WBTM_Welcome.php:66
+msgid ""
+"Now select the user of your website to assign the contents from the dropdown,"
+" and tick on the Download Attachemnt tick box & Run the Process. After a few "
+"minute you will see the Success message. All Done! Have Fun."
+msgstr ""
+"Agora, selecione o usuário do seu site para atribuir o conteúdo no menu "
+"suspenso, marque a caixa de seleção \"Baixar anexo\" e execute o processo. "
+"Após alguns minutos, você verá a mensagem de sucesso. Pronto! Divirta-se."
+
+#: admin/WBTM_Welcome.php:70
+msgid "Video Tutorial"
+msgstr "Tutorial em vídeo"
+
+#: admin/WBTM_Welcome.php:76
+msgid ""
+"Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin"
+msgstr ""
+"Bem-vindo à documentação de reserva de passagens de ônibus com plugin de "
+"reserva de assentos"
+
+#: admin/WBTM_Welcome.php:77 admin/WBTM_Welcome.php:175
+msgid "BUY PRO"
+msgstr "COMPRE PRO"
+
+#: admin/WBTM_Welcome.php:80
+msgid "How to install the plugin?"
+msgstr "Como instalar o plugin?"
+
+#: admin/WBTM_Welcome.php:82
+msgid "Please watch the video to know how you can install the plugin."
+msgstr "Assista ao vídeo para saber como instalar o plugin."
+
+#: admin/WBTM_Welcome.php:87
+msgid "How to add a New Bus?"
+msgstr "Como adicionar um novo ônibus?"
+
+#: admin/WBTM_Welcome.php:89
+msgid ""
+"After install the plugin you can add a new bus. Please watch the video to "
+"know how you can do it:"
+msgstr ""
+"Após instalar o plugin, você pode adicionar um novo barramento. Assista ao "
+"vídeo para saber como fazer isso:"
+
+#: admin/WBTM_Welcome.php:94
+msgid "How to book a bus ticket?"
+msgstr "Como reservar uma passagem de ônibus?"
+
+#: admin/WBTM_Welcome.php:96
+msgid ""
+"In this video you can know how easy to place a order to book a bus ticket:"
+msgstr ""
+"Neste vídeo você pode saber como é fácil fazer um pedido para reservar uma "
+"passagem de ônibus:"
+
+#: admin/WBTM_Welcome.php:101
+msgid "How to setup PDF ticket?"
+msgstr "Como configurar um ticket em PDF?"
+
+#: admin/WBTM_Welcome.php:104
+msgid "Please watch the video to know how to setup PDF ticket."
+msgstr "Assista ao vídeo para saber como configurar um tíquete em PDF."
+
+#: admin/WBTM_Welcome.php:109
+msgid "How to setup email?"
+msgstr "Como configurar o e-mail?"
+
+#: admin/WBTM_Welcome.php:111
+msgid "Please watch the video to know how to setup Email."
+msgstr "Assista ao vídeo para saber como configurar o e-mail."
+
+#: admin/WBTM_Welcome.php:116
+msgid "How to set bus on ticket price?"
+msgstr "Como definir o preço da passagem de ônibus?"
+
+#: admin/WBTM_Welcome.php:118
+msgid "Please watch this video to know how to set bus on ticket price."
+msgstr ""
+"Assista a este vídeo para saber como definir o preço da passagem de ônibus."
+
+#: admin/WBTM_Welcome.php:123
+msgid "How to set bus on specific day?"
+msgstr "Como definir o ônibus para um dia específico?"
+
+#: admin/WBTM_Welcome.php:125
+msgid "Please watch this video to know how to set bus on specific day."
+msgstr ""
+"Assista a este vídeo para saber como definir o horário do ônibus em um dia "
+"específico."
+
+#: admin/WBTM_Welcome.php:130
+msgid "How to set bus booking buffer time?"
+msgstr "Como definir o tempo de espera para reserva de ônibus?"
+
+#: admin/WBTM_Welcome.php:132
+msgid "Please watch this video to know how to set bus booking on buffer time."
+msgstr ""
+"Assista a este vídeo para saber como definir a reserva de ônibus no horário "
+"de buffer."
+
+#: admin/WBTM_Welcome.php:137
+msgid "How to get ticket from admin panel?"
+msgstr "Como obter um tíquete pelo painel de administração?"
+
+#: admin/WBTM_Welcome.php:139
+msgid "Please watch this video to know how to get ticket from admin panel."
+msgstr ""
+"Assista a este vídeo para saber como obter um tíquete no painel de "
+"administração."
+
+#: admin/WBTM_Welcome.php:144
+msgid "How to export passenger list in CSV?"
+msgstr "Como exportar a lista de passageiros em CSV?"
+
+#: admin/WBTM_Welcome.php:146
+msgid "Please watch this video to know how to export passenger list in CSV."
+msgstr ""
+"Assista a este vídeo para saber como exportar a lista de passageiros em CSV."
+
+#: admin/WBTM_Welcome.php:151
+msgid "How to create two door and four column seat plan?"
+msgstr "Como criar uma planta de assentos de duas portas e quatro colunas?"
+
+#: admin/WBTM_Welcome.php:153
+msgid ""
+"Please watch this video to know how to create two door and four column seat "
+"plan."
+msgstr ""
+"Assista a este vídeo para saber como criar um plano de assentos com duas "
+"portas e quatro colunas."
+
+#: admin/WBTM_Welcome.php:158
+msgid "How to create three column seat plan?"
+msgstr "Como criar um plano de assentos de três colunas?"
+
+#: admin/WBTM_Welcome.php:160
+msgid "Please watch this video to know how to create three column seat plan."
+msgstr ""
+"Assista a este vídeo para saber como criar um plano de assentos de três "
+"colunas."
+
+#: admin/WBTM_Welcome.php:165
+msgid "How to booking bus?"
+msgstr "Como reservar ônibus?"
+
+#: admin/WBTM_Welcome.php:167
+msgid "Please watch this video to know how to booking bus."
+msgstr "Assista a este vídeo para saber como reservar um ônibus."
+
+#: admin/WBTM_Welcome.php:172
+msgid "How to buy PRO version?"
+msgstr "Como comprar a versão PRO?"
+
+#: admin/WBTM_Welcome.php:174
+msgid "Bus Ticket Booking with Seat Reservation PRO"
+msgstr "Reserva de passagens de ônibus com a Seat Reservation PRO"
+
+#: admin/WBTM_Welcome.php:179
+msgid ""
+"Shortcodes included with Bus Ticket Booking with Seat Reservation Plugin:"
+msgstr ""
+"Códigos de acesso incluídos na reserva de passagens de ônibus com plugin de "
+"reserva de assentos:"
+
+#: admin/WBTM_Welcome.php:182
+msgid "Shortcode"
+msgstr "Código curto"
+
+#: admin/WBTM_Welcome.php:183
+msgid "Parameter"
+msgstr "Parâmetro"
+
+#: admin/WBTM_Welcome.php:184
+msgid "Description"
+msgstr "Descrição"
+
+#: admin/WBTM_Welcome.php:191
+msgid "cat"
+msgstr "gato"
+
+#: admin/WBTM_Welcome.php:193
+msgid ""
+"By default showing all bus, but if you want to show bus list of a particular "
+"category you can use this attribute, just put the category id with this. "
+"Example:"
+msgstr ""
+"Por padrão, mostra todos os ônibus, mas se você quiser mostrar uma lista de "
+"ônibus de uma categoria específica, pode usar este atributo, bastando "
+"inserir o ID da categoria. Exemplo:"
+
+#: admin/WBTM_Welcome.php:199
+msgid "show"
+msgstr "mostrar"
+
+#: admin/WBTM_Welcome.php:201
+msgid ""
+"By default showing 20 bus per page. If you want to change it and set limit "
+"input the limit number. example:"
+msgstr ""
+"Por padrão, são exibidos 20 ônibus por página. Se você quiser alterar e "
+"definir um limite, insira o número limite. Exemplo:"
+
+#: admin/WBTM_Welcome.php:210
+msgid ""
+"This shortcode will show the Create Ticket form. A user needs to put their "
+"ticket pin into the box and hit the enter button then the ticket will appear."
+" Only login users can view this page."
+msgstr ""
+"Este shortcode exibirá o formulário de criação de ticket. O usuário precisa "
+"inserir o PIN do ticket no campo e clicar em Enter para que o ticket apareça."
+" Somente usuários logados podem visualizar esta página."
+
+#: admin/WBTM_Welcome.php:217
+msgid ""
+"This shortcode will display the search form like if you want to show a "
+"search box into somewhere in the homepage or any page then just put this "
+"shortcode there it will print the bus search form."
+msgstr ""
+"Este shortcode exibirá o formulário de pesquisa como se você quisesse "
+"mostrar uma caixa de pesquisa em algum lugar na página inicial ou em "
+"qualquer página. Basta colocar este shortcode lá e ele imprimirá o "
+"formulário de pesquisa de ônibus."
+
+#: admin/WBTM_Welcome.php:224
+msgid ""
+"This shortcode will also print a bus search form but it will also show the "
+"search result on the same page, below of the search form."
+msgstr ""
+"Este shortcode também imprimirá um formulário de pesquisa de ônibus, mas "
+"também mostrará o resultado da pesquisa na mesma página, abaixo do "
+"formulário de pesquisa."
+
+#: inc/class-functions.php:11 inc/class-functions.php:29
+msgid "Ticket"
+msgstr "Bilhete"
+
+#: inc/WBTM_GTFS_Export.php:60 inc/WBTM_GTFS_Export.php:61
+#: inc/WBTM_GTFS_Export.php:71
+msgid "GTFS Export"
+msgstr "Exportação GTFS"
+
+#: inc/WBTM_GTFS_Export.php:72
+msgid ""
+"Export your bus data to GTFS format for Google Transit and other transit "
+"applications."
+msgstr ""
+"Exporte os dados do seu ônibus para o formato GTFS para o Google Transit e "
+"outros aplicativos de transporte público."
+
+#: inc/WBTM_GTFS_Export.php:79
+msgid "Agency Name"
+msgstr "Nome da agência"
+
+#: inc/WBTM_GTFS_Export.php:83
+msgid "The name of your transit agency"
+msgstr "O nome da sua agência de trânsito"
+
+#: inc/WBTM_GTFS_Export.php:88
+msgid "Agency URL"
+msgstr "URL da agência"
+
+#: inc/WBTM_GTFS_Export.php:92
+msgid "Your agency website URL"
+msgstr "URL do site da sua agência"
+
+#: inc/WBTM_GTFS_Export.php:97
+msgid "Agency Timezone"
+msgstr "Fuso horário da agência"
+
+#: inc/WBTM_GTFS_Export.php:109
+msgid "Timezone for your bus operations"
+msgstr "Fuso horário para suas operações de ônibus"
+
+#: inc/WBTM_GTFS_Export.php:114
+msgid "Export Date Range"
+msgstr "Intervalo de datas de exportação"
+
+#: inc/WBTM_GTFS_Export.php:118
+msgid "to"
+msgstr "para"
+
+#: inc/WBTM_GTFS_Export.php:120
+msgid "Date range for schedule export (recommended: 30-90 days)"
+msgstr ""
+"Intervalo de datas para exportação programada (recomendado: 30-90 dias)"
+
+#: inc/WBTM_GTFS_Export.php:125
+msgid "Select Buses"
+msgstr "Selecione ônibus"
+
+#: inc/WBTM_GTFS_Export.php:138
+msgid "Select All"
+msgstr "Selecionar tudo"
+
+#: inc/WBTM_GTFS_Export.php:147
+msgid "Select which buses to include in the GTFS export"
+msgstr "Selecione quais ônibus incluir na exportação GTFS"
+
+#: inc/WBTM_GTFS_Export.php:153
+msgid "Export GTFS"
+msgstr "Exportar GTFS"
+
+#: inc/WBTM_GTFS_Export.php:158
+msgid "Export Progress"
+msgstr "Progresso da Exportação"
+
+#: inc/WBTM_GTFS_Export.php:162
+msgid "Preparing export..."
+msgstr "Preparando exportação..."
+
+#: inc/WBTM_GTFS_Export.php:166
+msgid "Export Complete"
+msgstr "Exportação concluída"
+
+#: inc/WBTM_GTFS_Export.php:168
+msgid "Download GTFS Feed"
+msgstr "Baixar Feed GTFS"
+
+#: inc/WBTM_GTFS_Export.php:189
+msgid "Please select at least one bus to export."
+msgstr "Selecione pelo menos um ônibus para exportar."
+
+#: inc/WBTM_GTFS_Export.php:224
+msgid "Export failed. Please try again."
+msgstr "Falha na exportação. Tente novamente."
+
+#: inc/WBTM_GTFS_Export.php:237 inc/WBTM_GTFS_Validator.php:534
+msgid "Security check failed"
+msgstr "Falha na verificação de segurança"
+
+#: inc/WBTM_GTFS_Export.php:242 inc/WBTM_GTFS_Validator.php:538
+msgid "Insufficient permissions"
+msgstr "Permissões insuficientes"
+
+#: inc/WBTM_GTFS_Export.php:269
+msgid "GTFS feed exported successfully!"
+msgstr "Feed GTFS exportado com sucesso!"
+
+#: inc/WBTM_GTFS_Export.php:274
+msgid "Failed to generate GTFS feed"
+msgstr "Falha ao gerar feed GTFS"
+
+#: inc/WBTM_GTFS_Export.php:280
+#, php-format
+msgid "Export error: %s"
+msgstr "Erro de exportação: %s"
+
+#: inc/WBTM_GTFS_Validator.php:56
+msgid "GTFS feed file not found"
+msgstr "Arquivo de feed GTFS não encontrado"
+
+#: inc/WBTM_GTFS_Validator.php:63
+msgid "Could not extract GTFS feed"
+msgstr "Não foi possível extrair o feed GTFS"
+
+#: inc/WBTM_GTFS_Validator.php:88
+#, php-format
+msgid "Validation error: %s"
+msgstr "Erro de validação: %s"
+
+#: inc/WBTM_GTFS_Validator.php:116
+#, php-format
+msgid "Required file missing: %s"
+msgstr "Arquivo necessário ausente: %s"
+
+#: inc/WBTM_GTFS_Validator.php:126
+#, php-format
+msgid "Unknown file found: %s"
+msgstr "Arquivo desconhecido encontrado: %s"
+
+#: inc/WBTM_GTFS_Validator.php:139
+msgid "agency.txt is empty or invalid"
+msgstr "agency.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:149
+#, php-format
+msgid "Invalid timezone in agency.txt row %d: %s"
+msgstr "Fuso horário inválido na linha %d do agency.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:153
+#, php-format
+msgid "Invalid URL in agency.txt row %d: %s"
+msgstr "URL inválida na linha %d do agency.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:166
+msgid "stops.txt is empty or invalid"
+msgstr "stops.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:178
+#, php-format
+msgid "Duplicate stop_id in stops.txt: %s"
+msgstr "Stop_id duplicado em stops.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:187
+#, php-format
+msgid "Invalid latitude in stops.txt row %d: %s"
+msgstr "Latitude inválida na linha %d do stops.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:194
+#, php-format
+msgid "Invalid longitude in stops.txt row %d: %s"
+msgstr "Longitude inválida na linha %d do stops.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:201
+#, php-format
+msgid "Stop at coordinates (0,0) in stops.txt row %d - please verify location"
+msgstr ""
+"Pare nas coordenadas (0,0) na linha %d do stops.txt - verifique a localização"
+
+#: inc/WBTM_GTFS_Validator.php:215
+msgid "routes.txt is empty or invalid"
+msgstr "routes.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:227
+#, php-format
+msgid "Duplicate route_id in routes.txt: %s"
+msgstr "Route_id duplicado em routes.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:236
+#, php-format
+msgid "Invalid route_type in routes.txt row %d: %s"
+msgstr "Tipo de rota inválido na linha %d do routes.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:242
+#, php-format
+msgid ""
+"Either route_short_name or route_long_name must be provided in routes.txt "
+"row %d"
+msgstr ""
+"O route_short_name ou o route_long_name devem ser fornecidos na linha %d do "
+"routes.txt"
+
+#: inc/WBTM_GTFS_Validator.php:255
+msgid "trips.txt is empty or invalid"
+msgstr "trips.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:267
+#, php-format
+msgid "Duplicate trip_id in trips.txt: %s"
+msgstr "Trip_id duplicado em trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:274
+#, php-format
+msgid "Invalid direction_id in trips.txt row %d: %s"
+msgstr "Direction_id inválido na linha %d do trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:279
+#, php-format
+msgid "Invalid wheelchair_accessible in trips.txt row %d: %s"
+msgstr "Acessível para cadeira de rodas inválido na linha %d do trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:284
+#, php-format
+msgid "Invalid bikes_allowed in trips.txt row %d: %s"
+msgstr "Bicicletas inválidas permitidas na linha %d do trips.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:297
+msgid "stop_times.txt is empty or invalid"
+msgstr "stop_times.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:316
+#, php-format
+msgid "Invalid arrival_time format in stop_times.txt row %d: %s"
+msgstr "Formato de arrival_time inválido na linha %d do stop_times.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:320
+#, php-format
+msgid "Invalid departure_time format in stop_times.txt row %d: %s"
+msgstr "Formato de departure_time inválido na linha %d do stop_times.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:325
+#, php-format
+msgid "Invalid pickup_type in stop_times.txt row %d: %s"
+msgstr "Pickup_type inválido na linha %d do stop_times.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:329
+#, php-format
+msgid "Invalid drop_off_type in stop_times.txt row %d: %s"
+msgstr "drop_off_type inválido na linha %d do stop_times.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:337
+#, php-format
+msgid "Duplicate stop_sequence values for trip_id: %s"
+msgstr "Valores duplicados de stop_sequence para trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:344
+#, php-format
+msgid "Stop sequences not in order for trip_id: %s"
+msgstr "Sequências de parada não estão em ordem para trip_id: %s"
+
+#: inc/WBTM_GTFS_Validator.php:354
+msgid "Either calendar.txt or calendar_dates.txt must be provided"
+msgstr "É necessário fornecer calendar.txt ou calendar_dates.txt"
+
+#: inc/WBTM_GTFS_Validator.php:372
+msgid "calendar.txt is empty or invalid"
+msgstr "calendar.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:384
+#, php-format
+msgid "Invalid %s value in calendar.txt row %d: %s"
+msgstr "Valor %s inválido na linha %d do calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:390
+#, php-format
+msgid "Invalid start_date format in calendar.txt row %d: %s"
+msgstr "Formato de data de início inválido na linha %d do calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:394
+#, php-format
+msgid "Invalid end_date format in calendar.txt row %d: %s"
+msgstr "Formato de data de término inválido na linha %d do calendar.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:400
+#, php-format
+msgid "end_date must be after start_date in calendar.txt row %d"
+msgstr "end_date deve ser posterior a start_date na linha %d do calendar.txt"
+
+#: inc/WBTM_GTFS_Validator.php:411
+msgid "calendar_dates.txt is empty or invalid"
+msgstr "calendar_dates.txt está vazio ou é inválido"
+
+#: inc/WBTM_GTFS_Validator.php:421
+#, php-format
+msgid "Invalid date format in calendar_dates.txt row %d: %s"
+msgstr "Formato de data inválido na linha %d do calendar_dates.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:426
+#, php-format
+msgid "Invalid exception_type in calendar_dates.txt row %d: %s"
+msgstr "Tipo de exceção inválido na linha %d do calendar_dates.txt: %s"
+
+#: inc/WBTM_GTFS_Validator.php:470
+#, php-format
+msgid "Required field missing in %s: %s"
+msgstr "Campo obrigatório ausente em %s: %s"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr "Data da viagem"
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr "Data de retorno (opcional)"
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr "Data"
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr "Data do pedido"
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr "COMPRAR INGRESSO"
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr "De"
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr "Para"
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr "Por favor selecione"
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr "Pontos de partida"
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr "Escolher"
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr "Entrega"
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr "ALFINETE"
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr "Tipo de ônibus"
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr "Operador de ônibus"
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr "ID do participante"
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr "Tipo de passageiro"
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr "Status do pedido"
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr "Método de pagamento"
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr "Viagem de volta"
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr "Já adicionado ao carrinho!"
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr "Nenhum ônibus encontrado!"
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr "Nenhum ingresso encontrado!"
+
+#: inc/WBTM_Translations.php:186
+msgid "No Seat Plan Available !"
+msgstr "Nenhum plano de assentos disponível!"
+
+#: inc/WBTM_Translations.php:192
+msgid "No Seat Available !!"
+msgstr "Nenhum assento disponível!!"
+
+#: inc/WBTM_Translations.php:198
+msgid "This bus Now Closed."
+msgstr "Este ônibus agora está fechado."
+
+#: inc/WBTM_Translations.php:204
+msgid "Available Seat"
+msgstr "Assento disponível"
+
+#: inc/WBTM_Translations.php:210
+msgid "Already Sold"
+msgstr "Já vendido"
+
+#: inc/WBTM_Translations.php:216
+msgid "You select Wrong Route !"
+msgstr "Você selecionou a rota errada!"
+
+#: inc/WBTM_Translations.php:222
+msgid "Please select Starting Point !"
+msgstr "Selecione o ponto de partida!"
+
+#: inc/WBTM_Translations.php:228
+msgid "Schedule"
+msgstr "Agendar"
+
+#: inc/WBTM_Translations.php:234
+msgid "Coach Type"
+msgstr "Tipo de treinador"
+
+#: inc/WBTM_Translations.php:246 inc/WBTM_Translations.php:252
+msgid "Seat"
+msgstr "Assento"
+
+#: inc/WBTM_Translations.php:258
+msgid "Name"
+msgstr "Nome"
+
+#: inc/WBTM_Translations.php:264 mp_global/class/WBTM_Select_Icon_image.php:110
+#: mp_global/class/WBTM_Select_Icon_image.php:136
+#: mp_global/class/WBTM_Select_Icon_image.php:163
+msgid "Image"
+msgstr "Imagem"
+
+#: inc/WBTM_Translations.php:270
+msgid "Quantity"
+msgstr "Quantidade"
+
+#: inc/WBTM_Translations.php:276
+msgid "Total Quantity"
+msgstr "Quantidade total"
+
+#: inc/WBTM_Translations.php:282
+msgid "Price"
+msgstr "Preço"
+
+#: inc/WBTM_Translations.php:288
+msgid "Fare"
+msgstr "Tarifa"
+
+#: inc/WBTM_Translations.php:294
+msgid "Total"
+msgstr "Total"
+
+#: inc/WBTM_Translations.php:300
+msgid "Ticket Sub total"
+msgstr "Subtotal do bilhete"
+
+#: inc/WBTM_Translations.php:306
+msgid "Order Total"
+msgstr "Total do pedido"
+
+#: inc/WBTM_Translations.php:312
+msgid "Passenger Capacity"
+msgstr "Capacidade de passageiros"
+
+#: inc/WBTM_Translations.php:330
+msgid "Extra Service Sub total"
+msgstr "Subtotal do serviço extra"
+
+#: inc/WBTM_Translations.php:336
+msgid "Adult"
+msgstr "Adulto"
+
+#: inc/WBTM_Translations.php:342
+msgid "Child"
+msgstr "Criança"
+
+#: inc/WBTM_Translations.php:348
+msgid "Infant"
+msgstr "Infantil"
+
+#: inc/WBTM_Translations.php:360
+msgid "Seats Available"
+msgstr "Assentos disponíveis"
+
+#: inc/WBTM_Translations.php:366
+msgid "Duration :"
+msgstr "Duração:"
+
+#: inc/WBTM_Translations.php:372
+msgid "View Seats"
+msgstr "Ver assentos"
+
+#: inc/WBTM_Translations.php:378
+msgid "Close Seat"
+msgstr "Fechar assento"
+
+#: inc/WBTM_Translations.php:384
+msgid "Book Now"
+msgstr "Reserve agora"
+
+#: inc/WBTM_Translations.php:390
+msgid "This seat is already reserved."
+msgstr "Este assento já está reservado."
+
+#: inc/WBTM_Translations.php:397
+msgid "Seat Details"
+msgstr "Detalhes do assento"
+
+#: inc/WBTM_Translations.php:403
+msgid "Seat Selection"
+msgstr "Seleção de assentos"
+
+#: inc/WBTM_Translations.php:410
+msgid "Passenger Details"
+msgstr "Detalhes do passageiro"
+
+#: inc/WBTM_Translations.php:423
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: inc/WBTM_Translations.php:429
+msgid "Mobile Number"
+msgstr "Número de telemóvel"
+
+#: inc/WBTM_Translations.php:435
+msgid "Email"
+msgstr "E-mail"
+
+#: inc/WBTM_Translations.php:441
+msgid "Gender"
+msgstr "Gênero"
+
+#: inc/WBTM_Translations.php:448
+msgid "Booking Date"
+msgstr "Data da reserva"
+
+#: inc/WBTM_Translations.php:454
+msgid "Booking ID"
+msgstr "ID da reserva"
+
+#: inc/WBTM_Translations.php:460
+msgid "Booking Status"
+msgstr "Status da reserva"
+
+#: inc/WBTM_Translations.php:467
+msgid "Departure Time"
+msgstr "Hora de partida"
+
+#: inc/WBTM_Translations.php:473
+msgid "Arrival Time"
+msgstr "Hora de chegada"
+
+#: inc/WBTM_Translations.php:479
+msgid "Route Details"
+msgstr "Detalhes da rota"
+
+#: inc/WBTM_Translations.php:486
+msgid "Payment Status"
+msgstr "Status do pagamento"
+
+#: inc/WBTM_Translations.php:492
+msgid "Transaction ID"
+msgstr "ID da transação"
+
+#: inc/WBTM_Translations.php:499
+msgid "Booking Successful!"
+msgstr "Reserva efetuada com sucesso!"
+
+#: inc/WBTM_Translations.php:505
+msgid "Booking Failed!"
+msgstr "Falha na reserva!"
+
+#: inc/WBTM_Translations.php:511
+msgid "Selected seat(s) no longer available!"
+msgstr "Os assentos selecionados não estão mais disponíveis!"
+
+#: inc/WBTM_Translations.php:518
+msgid "Proceed"
+msgstr "Prosseguir"
+
+#: inc/WBTM_Translations.php:524
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: inc/WBTM_Translations.php:530
+msgid "Print Ticket"
+msgstr "Imprimir bilhete"
+
+#: inc/WBTM_Translations.php:537
+msgid "Terms & Conditions"
+msgstr "Termos e Condições"
+
+#: inc/WBTM_Translations.php:543
+msgid "Note"
+msgstr "Observação"
+
+#: inc/WBTM_Translations.php:550
+msgid "This field is required"
+msgstr "Este campo é obrigatório"
+
+#: inc/WBTM_Translations.php:556
+msgid "Please enter a valid email address"
+msgstr "Por favor, insira um endereço de e-mail válido"
+
+#: inc/WBTM_Translations.php:562
+msgid "Please enter a valid phone number"
+msgstr "Por favor, insira um número de telefone válido"
+
+#: inc/WBTM_Translations.php:569
+msgid "Ticket Confirmed"
+msgstr "Ingresso Confirmado"
+
+#: inc/WBTM_Translations.php:575
+msgid "Ticket Pending"
+msgstr "Bilhete Pendente"
+
+#: inc/WBTM_Translations.php:581
+msgid "Ticket Cancelled"
+msgstr "Bilhete cancelado"
+
+#: inc/WBTM_Translations.php:588
+msgid "Passenger Name"
+msgstr "Nome do passageiro"
+
+#: inc/WBTM_Translations.php:594
+msgid "Age"
+msgstr "Idade"
+
+#: inc/WBTM_Translations.php:600
+msgid "NID/Passport"
+msgstr "NID/Passaporte"
+
+#: inc/WBTM_Translations.php:619
+msgid "Journey Time"
+msgstr "Tempo de viagem"
+
+#: inc/WBTM_Translations.php:625
+msgid "Distance"
+msgstr "Distância"
+
+#: inc/WBTM_Translations.php:632
+msgid "Seat Number"
+msgstr "Número do assento"
+
+#: inc/WBTM_Translations.php:638
+msgid "Seat Status"
+msgstr "Status do assento"
+
+#: inc/WBTM_Translations.php:645
+msgid "Tax"
+msgstr "Imposto"
+
+#: inc/WBTM_Translations.php:651
+msgid "Discount"
+msgstr "Desconto"
+
+#: inc/WBTM_Translations.php:657
+msgid "Grand Total"
+msgstr "Total geral"
+
+#: inc/WBTM_Translations.php:664
+msgid "Payment Pending"
+msgstr "Pagamento Pendente"
+
+#: inc/WBTM_Translations.php:670
+msgid "Payment Complete"
+msgstr "Pagamento concluído"
+
+#: inc/WBTM_Translations.php:676
+msgid "Payment Failed"
+msgstr "Falha no pagamento"
+
+#: inc/WBTM_Woocommerce.php:166
+msgid "Booking Details "
+msgstr "Detalhes da reserva"
+
+#: inc/WBTM_Woocommerce.php:853
+msgid "Ticket Information"
+msgstr "Informações sobre ingressos"
+
+#: mp_global/class/WBTM_Custom_Layout.php:39
+#: mp_global/class/WBTM_Custom_Layout.php:179
+#: mp_global/class/WBTM_Custom_Layout.php:180
+#: mp_global/class/WBTM_Custom_Layout.php:266
+msgid "Load More"
+msgstr "Carregar mais"
+
+#: mp_global/class/WBTM_Custom_Layout.php:50
+#: mp_global/class/WBTM_Custom_Layout.php:277
+msgid "GoTO Previous Page"
+msgstr "Ir para a página anterior"
+
+#: mp_global/class/WBTM_Custom_Layout.php:70
+#: mp_global/class/WBTM_Custom_Layout.php:297
+msgid "GoTO Next Page"
+msgstr "Ir para a próxima página"
+
+#: mp_global/class/WBTM_Custom_Layout.php:179
+msgid "Less More"
+msgstr "Menos Mais"
+
+#: mp_global/class/WBTM_Custom_Layout.php:219
+msgid "Please select"
+msgstr "Por favor selecione"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "View All"
+msgstr "Ver tudo"
+
+#: mp_global/class/WBTM_Custom_Slider.php:60
+msgid "Images"
+msgstr "Imagens"
+
+#: mp_global/class/WBTM_Global_Function.php:223
+#: mp_global/class/WBTM_Global_Function.php:1045
+msgid "Lifetime"
+msgstr "Vida"
+
+#: mp_global/class/WBTM_Global_Function.php:227
+#: mp_global/class/WBTM_Global_Function.php:1049
+msgid "Expired"
+msgstr "Expirado"
+
+#: mp_global/class/WBTM_Global_Function.php:487
+msgid "Monday"
+msgstr "Segunda-feira"
+
+#: mp_global/class/WBTM_Global_Function.php:488
+msgid "Tuesday"
+msgstr "Terça-feira"
+
+#: mp_global/class/WBTM_Global_Function.php:489
+msgid "Wednesday"
+msgstr "Quarta-feira"
+
+#: mp_global/class/WBTM_Global_Function.php:490
+msgid "Thursday"
+msgstr "Quinta-feira"
+
+#: mp_global/class/WBTM_Global_Function.php:491
+msgid "Friday"
+msgstr "Sexta-feira"
+
+#: mp_global/class/WBTM_Global_Function.php:492
+msgid "Saturday"
+msgstr "Sábado"
+
+#: mp_global/class/WBTM_Global_Function.php:493
+msgid "Sunday"
+msgstr "Domingo"
+
+#: mp_global/class/WBTM_Global_Function.php:642
+#: mp_global/class/WBTM_Global_Function.php:668
+#: mp_global/class/WBTM_Global_Function.php:1243
+#: mp_global/class/WBTM_Global_Function.php:1269
+msgid "An error occurred, please try again."
+msgstr "Ocorreu um erro, tente novamente."
+
+#: mp_global/class/WBTM_Global_Function.php:650
+#: mp_global/class/WBTM_Global_Function.php:1251
+msgid "Your license key has been disabled."
+msgstr "Sua chave de licença foi desativada."
+
+#: mp_global/class/WBTM_Global_Function.php:653
+#: mp_global/class/WBTM_Global_Function.php:1254
+msgid "Missing license."
+msgstr "Licença faltando."
+
+#: mp_global/class/WBTM_Global_Function.php:656
+#: mp_global/class/WBTM_Global_Function.php:1257
+msgid "Invalid license."
+msgstr "Licença inválida."
+
+#: mp_global/class/WBTM_Global_Function.php:659
+#: mp_global/class/WBTM_Global_Function.php:1260
+msgid "Your license is not active for this URL."
+msgstr "Sua licença não está ativa para este URL."
+
+#: mp_global/class/WBTM_Global_Function.php:662
+#: mp_global/class/WBTM_Global_Function.php:1263
+msgid "This appears to be an invalid license key for ."
+msgstr "Esta parece ser uma chave de licença inválida para ."
+
+#: mp_global/class/WBTM_Global_Function.php:665
+#: mp_global/class/WBTM_Global_Function.php:1266
+msgid "Your license key has reached its activation limit."
+msgstr "Sua chave de licença atingiu seu limite de ativação."
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Success, License Key is valid for the plugin"
+msgstr "Sucesso, a chave de licença é válida para o plugin"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Your Order id is"
+msgstr "O ID do seu pedido é"
+
+#: mp_global/class/WBTM_Global_Function.php:674
+#: mp_global/class/WBTM_Global_Function.php:1275
+msgid "Validity of this licenses is"
+msgstr "A validade destas licenças é"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:28
+#: mp_global/class/WBTM_Select_Icon_image.php:154
+msgid "Remove Icon"
+msgstr "Remover ícone"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:47
+msgid "Select Icon"
+msgstr "Selecionar ícone"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:49
+msgid "Icon/class name...."
+msgstr "Nome do ícone/classe..."
+
+#: mp_global/class/WBTM_Select_Icon_image.php:65
+msgid "All Icon"
+msgstr "Todos os ícones"
+
+#: mp_global/class/WBTM_Select_Icon_image.php:158
+msgid "Remove Image"
+msgstr "Remover imagem"
+
+#: templates/layout/search_result.php:121
+#, php-format
+msgctxt "Duration format (hours and minutes)"
+msgid "%d H %d M"
+msgstr "%d H %d M"

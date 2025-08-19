@@ -21,8 +21,55 @@
 				?>
 				<div class="tabsItem wbtm_settings_pricing_routing" data-tabs="#wbtm_settings_pricing_routing">
 					
+					<style>
+						.wbtm-coordinates-section {
+							transition: all 0.3s ease;
+						}
+						.wbtm-coordinates-section:hover {
+							box-shadow: 0 2px 8px rgba(0, 124, 186, 0.1);
+						}
+						.wbtm_stop_coordinate_input {
+							transition: border-color 0.3s ease;
+						}
+						.wbtm_stop_coordinate_input:focus {
+							border-color: #007cba !important;
+							box-shadow: 0 0 0 1px #007cba;
+						}
+						.wbtm-get-coordinates:hover, .wbtm-validate-coordinates:hover {
+							background-color: #0073aa;
+							color: white;
+						}
+						.wbtm-coordinates-section .fas {
+							font-size: 14px;
+						}
+						.wbtm-coordinates-section .description {
+							line-height: 1.4;
+						}
+						@media (max-width: 768px) {
+							.wbtm-coordinates-section ._dFlex_justifyBetween_alignCenter {
+								flex-direction: column;
+								align-items: stretch;
+							}
+							.wbtm-coordinates-section .col_6 {
+								width: 100%;
+								margin-bottom: 10px;
+								padding: 0 !important;
+							}
+						}
+					</style>
+					
 					<h3 class="pB_xs"><?php _e('Price And Routing Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
 					<p><?php _e('Here you can configure Price And Routing for a bus.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					
+					<div class="notice notice-info" style="margin: 15px 0;">
+						<p>
+							<strong><i class="fas fa-info-circle"></i> <?php esc_html_e('GTFS Export Ready!', 'bus-ticket-booking-with-seat-reservation'); ?></strong><br>
+							<?php esc_html_e('Add GPS coordinates to your bus stops to enable Google Transit integration. This allows your routes to appear in Google Maps, Apple Maps, and other transit apps.', 'bus-ticket-booking-with-seat-reservation'); ?>
+							<a href="<?php echo admin_url('edit.php?post_type=wbtm_bus&page=wbtm-gtfs-export'); ?>" class="button button-small" style="margin-left: 10px;">
+								<i class="fas fa-download"></i> <?php esc_html_e('Export GTFS Feed', 'bus-ticket-booking-with-seat-reservation'); ?>
+							</a>
+						</p>
+					</div>
 					<div class="">
 						<div class="_dLayout_padding_bgLight">
 							<div class="col_6 _dFlex_fdColumn">
@@ -72,6 +119,88 @@
 					</div>
                     <?php do_action('wbtm_add_return_discount',$post_id); ?>
 				</div>
+				<script>
+jQuery(document).ready(function($) {
+    // Handle showing/hiding checkbox when selecting "Dropping" or "Boarding & Dropping"
+    $('select[name="wbtm_route_type[]"]').on('change', function() {
+        var type = $(this).val();
+        var nextDayCheckbox = $(this).closest('.wbtm_stop_item').find('.next-day-dropping-checkbox');
+        if (type == 'dp' || type == 'both') {
+            nextDayCheckbox.show();
+        } else {
+            nextDayCheckbox.hide();
+        }
+    });
+    $('select[name="wbtm_route_type[]"]').each(function() {
+        $(this).trigger('change');
+    });
+    // GTFS Coordinates functionality
+    $('select[name="wbtm_route_place[]"]').on('change', function() {
+        var stopName = $(this).val();
+        var $container = $(this).closest('.wbtm_stop_item');
+        var $latInput = $container.find('input[name="wbtm_stop_latitude[]"]');
+        var $lonInput = $container.find('input[name="wbtm_stop_longitude[]"]');
+        $latInput.attr('data-stop-name', stopName);
+        $lonInput.attr('data-stop-name', stopName);
+        $container.find('.wbtm-get-coordinates').attr('data-stop-name', stopName);
+        $container.find('.wbtm-validate-coordinates').attr('data-stop-name', stopName);
+    });
+    $(document).on('click', '.wbtm-get-coordinates', function(e) {
+        e.preventDefault();
+        var stopName = $(this).attr('data-stop-name');
+        if (!stopName) {
+            alert('Please select a stop first');
+            return;
+        }
+        var searchUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(stopName);
+        window.open(searchUrl, '_blank');
+        alert('Instructions:\n1. Find your stop on Google Maps\n2. Right-click on the exact location\n3. Click on the coordinates (numbers) that appear\n4. Copy and paste the latitude and longitude values back here');
+    });
+    $(document).on('click', '.wbtm-validate-coordinates', function(e) {
+        e.preventDefault();
+        var $container = $(this).closest('.wbtm_stop_item');
+        var lat = parseFloat($container.find('input[name="wbtm_stop_latitude[]"]').val());
+        var lon = parseFloat($container.find('input[name="wbtm_stop_longitude[]"]').val());
+        var isValid = true;
+        var errors = [];
+        if (isNaN(lat) || lat < -90 || lat > 90) {
+            isValid = false;
+            errors.push('Latitude must be between -90 and 90');
+        }
+        if (isNaN(lon) || lon < -180 || lon > 180) {
+            isValid = false;
+            errors.push('Longitude must be between -180 and 180');
+        }
+        if (lat === 0 && lon === 0) {
+            isValid = false;
+            errors.push('Coordinates (0,0) are likely incorrect. Please verify the location.');
+        }
+        if (isValid) {
+            alert('✓ Coordinates are valid!');
+            var mapUrl = 'https://www.google.com/maps/@' + lat + ',' + lon + ',15z';
+            if (confirm('Would you like to verify this location on Google Maps?')) {
+                window.open(mapUrl, '_blank');
+            }
+        } else {
+            alert('❌ Validation errors:\n' + errors.join('\n'));
+        }
+    });
+    $(document).on('input', '.wbtm_stop_coordinate_input', function() {
+        var $input = $(this);
+        var value = parseFloat($input.val());
+        var isLat = $input.attr('name') === 'wbtm_stop_latitude[]';
+        var min = isLat ? -90 : -180;
+        var max = isLat ? 90 : 180;
+        if (!isNaN(value) && (value < min || value > max)) {
+            $input.css('border-color', '#dc3232');
+            $input.attr('title', 'Value out of range');
+        } else {
+            $input.css('border-color', '#8c8f94');
+            $input.removeAttr('title');
+        }
+    });
+});
+</script>
 				<?php
 			}
 			public function add_stops_item($bus_stop_lists, $full_route_info = [], $key = 0) {
@@ -80,6 +209,11 @@
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
+			
+			// Get coordinates for GTFS export
+			$post_id = get_the_ID();
+			$latitude = $palace ? WBTM_Global_Function::get_post_info($post_id, "stop_lat_" . sanitize_title($palace), '') : '';
+			$longitude = $palace ? WBTM_Global_Function::get_post_info($post_id, "stop_lon_" . sanitize_title($palace), '') : '';
 				?>
 				<div class="wbtm_remove_area col_12_mB  wbtm_stop_item ">
 					<div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
@@ -153,27 +287,68 @@
 								<input type="checkbox" name="wbtm_route_next_day[<?php echo esc_attr($key); ?>]" value="1" <?php echo esc_attr($next_day ? 'checked' : ''); ?> />
 							</div>
 						</div>
-						<script>
-            jQuery(document).ready(function($) {
-                // Handle showing/hiding checkbox when selecting "Dropping" or "Boarding & Dropping"
-                $('select[name="wbtm_route_type[]"]').on('change', function() {
-                    var type = $(this).val();
-                    var nextDayCheckbox = $(this).closest('.wbtm_stop_item').find('.next-day-dropping-checkbox');
-                    
-                    // Show or hide the "Next Day Dropping" checkbox based on the selected type
-                    if (type == 'dp' || type == 'both') {
-                        nextDayCheckbox.show();
-                    } else {
-                        nextDayCheckbox.hide();
-                    }
-                });
-                
-                // Trigger the change event on page load to ensure the checkbox visibility is correct
-                $('select[name="wbtm_route_type[]"]').each(function() {
-                    $(this).trigger('change');
-                });
-            });
-        </script>
+						
+						<!-- GTFS Coordinates Section -->
+						<div class="_dFlex_justifyCenter_alignCenter _mT wbtm-coordinates-section" style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #007cba;">
+							<div class="col_12">
+								<div class="_dFlex_alignCenter _mB_xs">
+									<i class="fas fa-map-marker-alt" style="color: #007cba; margin-right: 8px;"></i>
+									<label class="mp_zero" style="font-weight: 600; color: #007cba;">
+										<?php esc_html_e('GTFS Coordinates (for Google Transit)', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+								</div>
+								<p class="description" style="margin: 5px 0 15px 0; font-size: 12px; color: #666;">
+									<?php esc_html_e('Add GPS coordinates for this stop to enable Google Maps integration. You can find coordinates using Google Maps or GPS tools.', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</p>
+								<div class="_dFlex_justifyBetween_alignCenter">
+									<div class="col_6 _dFlex_alignCenter" style="padding-right: 10px;">
+										<label class="mp_zero _mR" style="min-width: 70px;">
+											<i class="fas fa-arrows-alt-v"></i>
+											<?php esc_html_e('Latitude:', 'bus-ticket-booking-with-seat-reservation'); ?>
+										</label>
+										<input type="number" 
+											   name="wbtm_stop_latitude[]" 
+											   class="formControl wbtm_stop_coordinate_input" 
+											   placeholder="40.7128" 
+											   step="any"
+											   min="-90" 
+											   max="90"
+											   value="<?php echo esc_attr($latitude); ?>"
+											   data-stop-name="<?php echo esc_attr($palace); ?>"
+											   style="width: 100%;" />
+									</div>
+									<div class="col_6 _dFlex_alignCenter" style="padding-left: 10px;">
+										<label class="mp_zero _mR" style="min-width: 80px;">
+											<i class="fas fa-arrows-alt-h"></i>
+											<?php esc_html_e('Longitude:', 'bus-ticket-booking-with-seat-reservation'); ?>
+										</label>
+										<input type="number" 
+											   name="wbtm_stop_longitude[]" 
+											   class="formControl wbtm_stop_coordinate_input" 
+											   placeholder="-74.0060" 
+											   step="any"
+											   min="-180" 
+											   max="180"
+											   value="<?php echo esc_attr($longitude); ?>"
+											   data-stop-name="<?php echo esc_attr($palace); ?>"
+											   style="width: 100%;" />
+									</div>
+								</div>
+								<div class="_dFlex_justifyBetween_alignCenter _mT_xs">
+									<small class="description" style="color: #666;">
+										<?php esc_html_e('Example: New York City = Lat: 40.7128, Lon: -74.0060', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</small>
+									<div>
+										<button type="button" class="button button-small wbtm-get-coordinates" data-stop-name="<?php echo esc_attr($palace); ?>" style="margin-left: 10px;">
+											<i class="fas fa-map-marker-alt"></i> <?php esc_html_e('Get from Map', 'bus-ticket-booking-with-seat-reservation'); ?>
+										</button>
+										<button type="button" class="button button-small wbtm-validate-coordinates" data-stop-name="<?php echo esc_attr($palace); ?>" style="margin-left: 5px;">
+											<i class="fas fa-check-circle"></i> <?php esc_html_e('Validate', 'bus-ticket-booking-with-seat-reservation'); ?>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 				<?php
@@ -338,6 +513,35 @@
 						}
 						$route_direction = array_unique($route_direction);
 						update_post_meta($post_id, 'wbtm_route_direction', $route_direction);
+					}
+					
+					// Save GTFS coordinates for each stop
+					$stop_latitudes = WBTM_Global_Function::get_submit_info('wbtm_stop_latitude', array());
+					$stop_longitudes = WBTM_Global_Function::get_submit_info('wbtm_stop_longitude', array());
+					$route_places = WBTM_Global_Function::get_submit_info('wbtm_route_place', array());
+					
+					if (sizeof($route_places) > 0) {
+						foreach ($route_places as $key => $place) {
+							if (!empty($place)) {
+								$sanitized_place = sanitize_title($place);
+								
+								// Save latitude if provided
+								if (isset($stop_latitudes[$key]) && !empty($stop_latitudes[$key])) {
+									$latitude = floatval($stop_latitudes[$key]);
+									if ($latitude >= -90 && $latitude <= 90) {
+										update_post_meta($post_id, "stop_lat_" . $sanitized_place, $latitude);
+									}
+								}
+								
+								// Save longitude if provided
+								if (isset($stop_longitudes[$key]) && !empty($stop_longitudes[$key])) {
+									$longitude = floatval($stop_longitudes[$key]);
+									if ($longitude >= -180 && $longitude <= 180) {
+										update_post_meta($post_id, "stop_lon_" . $sanitized_place, $longitude);
+									}
+								}
+							}
+						}
 					}
 					/********************************************/
 					$price_infos = [];

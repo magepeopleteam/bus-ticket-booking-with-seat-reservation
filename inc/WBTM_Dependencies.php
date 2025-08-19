@@ -55,6 +55,8 @@
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Translations.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Query.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Layout.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_GTFS_Export.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_GTFS_Validator.php';
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin.php';
 				//==================//
