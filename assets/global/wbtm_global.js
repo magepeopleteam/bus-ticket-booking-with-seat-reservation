@@ -334,6 +334,12 @@
 	$(document).on('click', '.wbtm_registration_area .seat_available', function () {
 		let current = $(this);
 		let parent = current.closest('.wbtm_registration_area');
+		
+		// Prevent selection of blocked seats
+		if (current.hasClass('seat_blocked')) {
+			return false;
+		}
+		
 		if (current.hasClass('seat_selected')) {
 			let target = current.closest('.mp_seat_item').find('.wbtm_seat_item_list li:first-child');
 			if (target.length > 0) {

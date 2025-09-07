@@ -258,6 +258,13 @@
 						<?php $key = $seat_key . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+						<?php $seat_blocked = array_key_exists($key . '_blocked', $row_info) ? $row_info[$key . '_blocked'] : '0'; ?>
+						<?php 
+						// Get seat price overrides
+						$seat_price_adult = array_key_exists($key . '_price_adult', $row_info) ? $row_info[$key . '_price_adult'] : '';
+						$seat_price_child = array_key_exists($key . '_price_child', $row_info) ? $row_info[$key . '_price_child'] : '';
+						$seat_price_infant = array_key_exists($key . '_price_infant', $row_info) ? $row_info[$key . '_price_infant'] : '';
+						?>
 						<th>
 							<div class="wbtm_seat_container">
 								<label>
@@ -280,6 +287,40 @@
 											   class="wbtm_rotation_value" />
 									</div>
 								<?php } ?>
+								<div class="wbtm_seat_block_controls">
+									<label>
+										<input type="checkbox" class="wbtm_block_seat" 
+											   name="wbtm_<?php echo esc_attr($key); ?>_blocked[]" 
+											   value="1" 
+											   <?php echo $seat_blocked == '1' ? 'checked' : ''; ?>
+											   title="<?php esc_attr_e('Block this seat', 'bus-ticket-booking-with-seat-reservation'); ?>" />
+										<?php esc_html_e('Block', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<input type="hidden" name="wbtm_<?php echo esc_attr($key); ?>_blocked_hidden[]" 
+										   value="<?php echo esc_attr($seat_blocked); ?>" 
+										   class="wbtm_blocked_value" />
+								</div>
+								<!-- Seat Price Override Controls -->
+								<div class="wbtm_seat_price_controls">
+									<div class="wbtm_seat_price_field">
+										<input type="number" step="0.01" class="formControl wbtm_price_validation" 
+											name="wbtm_<?php echo esc_attr($key); ?>_price_adult[]" 
+											placeholder="<?php esc_attr_e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?>"
+											value="<?php echo esc_attr($seat_price_adult); ?>" />
+									</div>
+									<div class="wbtm_seat_price_field">
+										<input type="number" step="0.01" class="formControl wbtm_price_validation" 
+											name="wbtm_<?php echo esc_attr($key); ?>_price_child[]" 
+											placeholder="<?php esc_attr_e('Child Price', 'bus-ticket-booking-with-seat-reservation'); ?>"
+											value="<?php echo esc_attr($seat_price_child); ?>" />
+									</div>
+									<div class="wbtm_seat_price_field">
+										<input type="number" step="0.01" class="formControl wbtm_price_validation" 
+											name="wbtm_<?php echo esc_attr($key); ?>_price_infant[]" 
+											placeholder="<?php esc_attr_e('Infant Price', 'bus-ticket-booking-with-seat-reservation'); ?>"
+											value="<?php echo esc_attr($seat_price_infant); ?>" />
+									</div>
+								</div>
 							</div>
 						</th>
 					<?php } ?>
@@ -307,12 +348,23 @@
 						for ($j = 1; $j <= $columns; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, []);
 							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', []);
+							$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_blocked', []);
+							// Get seat price override info
+							$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_adult', []);
+							$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_child', []);
+							$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_infant', []);
 							for ($i = 0; $i < $rows; $i++) {
 								$lower_deck_info[$i]['seat' . $j] = $col_infos[$i];
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$lower_deck_info[$i]['seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
 								}
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc') {
+								// Save blocked seat info
+								$lower_deck_info[$i]['seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
+								// Save seat price override info
+								$lower_deck_info[$i]['seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
+								$lower_deck_info[$i]['seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
+								$lower_deck_info[$i]['seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
+								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && (!isset($col_blocked_infos[$i]) || $col_blocked_infos[$i] != '1')) {
 									$total_seat++;
 								}
 							}
@@ -333,12 +385,23 @@
 						for ($j = 1; $j <= $cols_dd; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, []);
 							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', []);
+							$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_blocked', []);
+							// Get seat price override info
+							$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_adult', []);
+							$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_child', []);
+							$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_infant', []);
 							for ($i = 0; $i < $rows_dd; $i++) {
 								$upper_deck_info[$i]['dd_seat' . $j] = $col_infos[$i];
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
 								}
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes') {
+								// Save blocked seat info
+								$upper_deck_info[$i]['dd_seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
+								// Save seat price override info
+								$upper_deck_info[$i]['dd_seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
+								$upper_deck_info[$i]['dd_seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
+								$upper_deck_info[$i]['dd_seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
+								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes' && (!isset($col_blocked_infos[$i]) || $col_blocked_infos[$i] != '1')) {
 									$total_seat++;
 								}
 							}
@@ -368,3 +431,4 @@
 		}
 		new WBTM_Seat_Configuration();
 	}
+?>

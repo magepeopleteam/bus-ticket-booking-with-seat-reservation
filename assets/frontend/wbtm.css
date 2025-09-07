@@ -990,4 +990,12 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart {
   }
 }
 
+/* Blocked seat styling */
+div.seat_blocked {
+  cursor: not-allowed;
+  background-color: #808080; /* Gray color for blocked seats */
+  color: var(--wbtm_color_theme_alter);
+  opacity: 0.7;
+}
+
 /*# sourceMappingURL=wbtm.css.map */

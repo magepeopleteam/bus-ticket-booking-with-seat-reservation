@@ -127,6 +127,49 @@
   transform: rotate(270deg);
 }
 
+/* Seat Blocking Controls */
+.wbtm_seat_block_controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+  width: 100%;
+}
+
+.wbtm_block_seat {
+  margin-right: 5px;
+}
+
+.wbtm_block_seat:checked + span {
+  font-weight: bold;
+  color: #dc3545; /* Red color for blocked seats */
+}
+
+/* Seat Price Override Controls */
+.wbtm_seat_price_controls {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.wbtm_seat_price_field {
+  width: 100%;
+}
+
+.wbtm_seat_price_field .formControl {
+  width: 100%;
+  padding: 2px 5px;
+  font-size: 11px;
+  height: 24px;
+  text-align: center;
+}
+
+.wbtm_seat_price_field .formControl::placeholder {
+  font-size: 10px;
+}
+
 /* Ensure table cells have enough space for rotation controls */
 .wbtm_seat_plan_settings table th {
   min-height: 100px; /* Increased height to accommodate rotation controls */

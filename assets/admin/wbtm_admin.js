@@ -68,133 +68,69 @@
 //==========Seat plan settings=================//
 (function ($) {
   "use strict";
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_create_seat_plan",
-    function (e) {
-      let parent = $(this).closest(".wbtm_settings_seat");
-      let target = parent.find(".wbtm_seat_plan_preview");
-      let post_id = $('[name="wbtm_post_id"]').val();
-      let row = parseInt(parent.find('[name="wbtm_seat_rows"]').val());
-      let column = parseInt(parent.find('[name="wbtm_seat_cols"]').val());
-      if (row > 0 && column > 0) {
-        $.ajax({
-          type: "POST",
-          url: wbtm_ajax_url,
-          data: {
-            action: "wbtm_create_seat_plan",
-            post_id: post_id,
-            row: row,
-            column: column,
-          },
-          beforeSend: function () {
-            wbtm_loader(target);
-          },
-          success: function (data) {
-            parent.find('[name="wbtm_seat_cols_hidden"]').val(column);
-            parent.find('[name="wbtm_seat_rows_hidden"]').val(row);
-            target.html(data);
-            //wbtm_loaderRemove(parent);
-          },
-          error: function (response) {
-            console.log(response);
-          },
-        });
-      } else {
-        alert("Number  of row & column must be greater than 0");
-      }
+  
+  // Handle seat blocking functionality
+  $(document).on("change", ".wbtm_block_seat", function() {
+    let $checkbox = $(this);
+    let $hiddenInput = $checkbox.siblings(".wbtm_blocked_value");
+    
+    if ($checkbox.is(":checked")) {
+      $hiddenInput.val("1");
+    } else {
+      $hiddenInput.val("0");
     }
-  );
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview .wbtm_item_remove",
-    function (e) {
-      if (e.result) {
-        let parent = $(".wbtm_settings_seat");
-        let target = parent.find('[name="wbtm_seat_rows"]');
-        let value = parseInt(target.val()) - 1;
-        target.val(value);
-        parent.find('[name="wbtm_seat_rows_hidden"]').val(value);
-      }
+  });
+  
+  // Handle seat rotation functionality
+  $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function() {
+    let isEnabled = $(this).is(':checked');
+    let $seatPlanContainer = $('.wbtm_seat_plan_settings');
+    
+    if (isEnabled) {
+      // Show rotation controls immediately
+      $seatPlanContainer.addClass('wbtm_enable_rotation');
+      $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
+      
+      // Add rotation controls to existing seats if they don't have them
+      $seatPlanContainer.find('.wbtm_seat_container').each(function() {
+        let $container = $(this);
+        if ($container.find('.wbtm_seat_rotation_controls').length === 0) {
+          let $input = $container.find('input[class*="wbtm_id_validation"]');
+          let inputName = $input.attr('name');
+          let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
+          
+          let rotationControls = `
+            <div class="wbtm_seat_rotation_controls">
+              <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+                      data-seat-key="${seatKey}" 
+                      data-rotation="0"
+                      title="Rotate Seat">
+                <span class="fas fa-redo-alt mp_zero"></span>
+              </button>
+              <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
+                     value="0" 
+                     class="wbtm_rotation_value" />
+            </div>
+          `;
+          $container.append(rotationControls);
+        }
+      });
+    } else {
+      // Hide rotation controls immediately
+      $seatPlanContainer.removeClass('wbtm_enable_rotation');
+      $seatPlanContainer.find('.wbtm_seat_rotation_controls').hide();
     }
-  );
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview .wbtm_add_item",
-    function (e) {
-      if (e.result) {
-        let parent = $(".wbtm_settings_seat");
-        let target = parent.find('[name="wbtm_seat_rows"]');
-        let value = parseInt(target.val()) + 1;
-        target.val(value);
-        parent.find('[name="wbtm_seat_rows_hidden"]').val(value);
-      }
+  });
+  
+  // Initialize rotation setting on page load
+  $(document).ready(function() {
+    let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
+    if ($rotationToggle.is(':checked')) {
+      $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
+      $('.wbtm_seat_rotation_controls').show();
     }
-  );
-  //=============================//
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_create_seat_plan_dd",
-    function (e) {
-      let parent = $(this).closest(".wbtm_settings_seat");
-      let target = parent.find(".wbtm_seat_plan_preview_dd");
-      let post_id = $('[name="wbtm_post_id"]').val();
-      let row = parseInt(parent.find('[name="wbtm_seat_rows_dd"]').val());
-      let column = parseInt(parent.find('[name="wbtm_seat_cols_dd"]').val());
-      if (row > 0 && column > 0) {
-        $.ajax({
-          type: "POST",
-          url: wbtm_ajax_url,
-          data: {
-            action: "wbtm_create_seat_plan_dd",
-            post_id: post_id,
-            row: row,
-            column: column,
-          },
-          beforeSend: function () {
-            wbtm_loader(target);
-          },
-          success: function (data) {
-            parent.find('[name="wbtm_seat_cols_dd_hidden"]').val(column);
-            parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(row);
-            target.html(data);
-            //wbtm_loaderRemove(parent);
-          },
-          error: function (response) {
-            console.log(response);
-          },
-        });
-      } else {
-        alert("Number  of row & column must be greater than 0");
-      }
-    }
-  );
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .wbtm_item_remove",
-    function (e) {
-      if (e.result) {
-        let parent = $(".wbtm_settings_seat");
-        let target = parent.find('[name="wbtm_seat_rows_dd"]');
-        let value = parseInt(target.val()) - 1;
-        target.val(value);
-        parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(value);
-      }
-    }
-  );
-  $(document).on(
-    "click",
-    ".wbtm_settings_seat .wbtm_seat_plan_preview_dd .wbtm_add_item",
-    function (e) {
-      if (e.result) {
-        let parent = $(".wbtm_settings_seat");
-        let target = parent.find('[name="wbtm_seat_rows_dd"]');
-        let value = parseInt(target.val()) + 1;
-        target.val(value);
-        parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(value);
-      }
-    }
-  );
+  });
+  
 })(jQuery);
 //==========Pickup settings=================//
 (function ($) {
@@ -289,55 +225,4 @@
       }
     });
   }
-  
-  // Handle rotation setting toggle
-  $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function() {
-    let isEnabled = $(this).is(':checked');
-    let $seatPlanContainer = $('.wbtm_seat_plan_settings');
-    
-    if (isEnabled) {
-      // Show rotation controls immediately
-      $seatPlanContainer.addClass('wbtm_enable_rotation');
-      $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
-      
-      // Add rotation controls to existing seats if they don't have them
-      $seatPlanContainer.find('.wbtm_seat_container').each(function() {
-        let $container = $(this);
-        if ($container.find('.wbtm_seat_rotation_controls').length === 0) {
-          let $input = $container.find('input[class*="wbtm_id_validation"]');
-          let inputName = $input.attr('name');
-          let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
-          
-          let rotationControls = `
-            <div class="wbtm_seat_rotation_controls">
-              <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
-                      data-seat-key="${seatKey}" 
-                      data-rotation="0"
-                      title="Rotate Seat">
-                <span class="fas fa-redo-alt mp_zero"></span>
-              </button>
-              <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
-                     value="0" 
-                     class="wbtm_rotation_value" />
-            </div>
-          `;
-          $container.append(rotationControls);
-        }
-      });
-    } else {
-      // Hide rotation controls immediately
-      $seatPlanContainer.removeClass('wbtm_enable_rotation');
-      $seatPlanContainer.find('.wbtm_seat_rotation_controls').hide();
-    }
-  });
-  
-  // Initialize rotation setting on page load
-  $(document).ready(function() {
-    let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
-    if ($rotationToggle.is(':checked')) {
-      $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
-      $('.wbtm_seat_rotation_controls').show();
-    }
-  });
-  
 })(jQuery);

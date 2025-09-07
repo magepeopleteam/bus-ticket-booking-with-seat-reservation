@@ -141,6 +141,50 @@
     background-color: var(--wbtm_color_light_3);
     color: var(--wbtm_color_theme_alter);
   }
+  div.seat_blocked {
+    cursor: not-allowed;
+    background-color: #808080; /* Gray color for blocked seats */
+    color: var(--wbtm_color_theme_alter);
+    opacity: 0.7;
+  }
+  /* Custom tooltip for blocked seats */
+  .wbtm-tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  .wbtm-tooltip .wbtm-tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #dc3545; /* Red color for better visibility */
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+    font-weight: bold; /* Bold text for better readability */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* Add shadow for better visibility */
+  }
+  .wbtm-tooltip .wbtm-tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #dc3545 transparent transparent transparent;
+  }
+  .wbtm-tooltip:hover .wbtm-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
   /********************/
   div.wbtm_seat_plan_area table tr th:nth-last-child(2) div.wbtm_seat_item_list,
   div.wbtm_seat_plan_area table tr th:last-child div.wbtm_seat_item_list {
@@ -179,7 +223,46 @@
     border-bottom-color: transparent;
   }
 }
-/********************************************************************************************************************/
+/* Custom tooltip for blocked seats - Global styles */
+.wbtm-tooltip {
+  position: relative;
+  display: inline-block;
+}
+.wbtm-tooltip .wbtm-tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #dc3545; /* Red color for better visibility */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  font-weight: bold; /* Bold text for better readability */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* Add shadow for better visibility */
+}
+.wbtm-tooltip .wbtm-tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #dc3545 transparent transparent transparent;
+}
+.wbtm-tooltip:hover .wbtm-tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/********************************************************************************************************/
 /*  ======text alignment======= */
 .text-start {
   text-align: left;
