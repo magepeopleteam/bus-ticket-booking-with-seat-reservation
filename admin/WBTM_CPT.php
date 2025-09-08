@@ -14,6 +14,11 @@
 				add_action('manage_wbtm_bus_posts_columns', [$this, 'set_custom_columns'], 5, 2);
 				add_action('manage_wbtm_bus_posts_custom_column', [$this, 'custom_column_data'], 5, 2);
 				//=======================//
+				
+				// Prevent public access to booking pages
+				add_action('template_redirect', [$this, 'prevent_booking_page_access']);
+				add_action('wp_head', [$this, 'add_noindex_meta'], 1);
+				add_filter('robots_txt', [$this, 'add_robots_txt_rules'], 10, 2);
 			}
 			public function add_cpt(): void {
 				$name = WBTM_Functions::get_name();
@@ -73,20 +78,21 @@
 				register_post_type('wbtm_bus', $args);
 
 				$argsl = apply_filters( 'filter_wbtm_bus_booking', array(
-					'public'          => true,
-					'label'           => __( 'Bus Attendee', 'bus-ticket-booking-with-seat-reservation' ),
-					'menu_icon'       => 'dashicons-id',
-					'supports'        => array( 'title' ),
+					'public'             => false, // Changed from true to false
+					'publicly_queryable' => false, // Explicitly prevent public queries
+					'label'              => __( 'Bus Attendee', 'bus-ticket-booking-with-seat-reservation' ),
+					'menu_icon'          => 'dashicons-id',
+					'supports'           => array( 'title' ),
 					// 'show_in_menu' => 'edit.php?post_type=mep_events',
-					'exclude_from_search'   => true,
-					'show_in_menu'    => false,
-					'capability_type' => 'post',
-					'capabilities'    => array(
+					'exclude_from_search' => true,
+					'show_in_menu'       => false,
+					'capability_type'    => 'post',
+					'capabilities'       => array(
 						'create_posts' => 'do_not_allow',
 					),
-					'map_meta_cap'    => true,
-					'show_in_rest'    => true,
-					'rest_base'       => 'wbtm_bus_bookings'
+					'map_meta_cap'       => true,
+					'show_in_rest'       => false, // Disable REST API access
+					'rest_base'          => 'wbtm_bus_bookings'
 				) );
 				register_post_type( 'wbtm_bus_booking', $argsl );
 			}
@@ -124,6 +130,92 @@
 						echo "<span class=''>" . get_the_author_meta('display_name', $user_id) . ' [' . WBTM_Functions::wbtm_get_user_role($user_id) . "]</span>";
 						break;
 				}
+			}
+			
+			/**
+			 * Prevent public access to booking pages
+			 */
+			public function prevent_booking_page_access() {
+				// Check multiple ways to detect booking page access
+				$is_booking_page = false;
+				
+				// Method 1: Check if it's a singular booking post
+				if (is_singular('wbtm_bus_booking')) {
+					$is_booking_page = true;
+				}
+				
+				// Method 2: Check URL patterns (works with any permalink structure)
+				$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+				if (strpos($request_uri, '/wbtm_bus_booking/') !== false) {
+					$is_booking_page = true;
+				}
+				
+				// Method 3: Check query parameters (for default permalink structure)
+				if (isset($_GET['wbtm_bus_booking']) || isset($_GET['post_type']) && $_GET['post_type'] === 'wbtm_bus_booking') {
+					$is_booking_page = true;
+				}
+				
+				// Method 4: Check if current post is a booking post
+				global $post;
+				if ($post && $post->post_type === 'wbtm_bus_booking') {
+					$is_booking_page = true;
+				}
+				
+				if ($is_booking_page) {
+					// Redirect to 404
+					global $wp_query;
+					$wp_query->set_404();
+					status_header(404);
+					get_template_part(404);
+					exit;
+				}
+			}
+
+			/**
+			 * Add noindex meta tag to booking pages (extra security)
+			 */
+			public function add_noindex_meta() {
+				// Check multiple ways to detect booking page access
+				$is_booking_page = false;
+				
+				// Method 1: Check if it's a singular booking post
+				if (is_singular('wbtm_bus_booking')) {
+					$is_booking_page = true;
+				}
+				
+				// Method 2: Check URL patterns
+				$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+				if (strpos($request_uri, '/wbtm_bus_booking/') !== false) {
+					$is_booking_page = true;
+				}
+				
+				// Method 3: Check query parameters
+				if (isset($_GET['wbtm_bus_booking']) || (isset($_GET['post_type']) && $_GET['post_type'] === 'wbtm_bus_booking')) {
+					$is_booking_page = true;
+				}
+				
+				// Method 4: Check current post
+				global $post;
+				if ($post && $post->post_type === 'wbtm_bus_booking') {
+					$is_booking_page = true;
+				}
+				
+				if ($is_booking_page) {
+					echo '<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
+				}
+			}
+
+			/**
+			 * Add robots.txt rules to prevent crawling of booking pages
+			 */
+			public function add_robots_txt_rules($output, $public) {
+				if ($public) {
+					$output .= "\n# Block bus booking pages from search engines\n";
+					$output .= "Disallow: /wbtm_bus_booking/\n";
+					$output .= "Disallow: /*?wbtm_bus_booking=\n";
+					$output .= "Disallow: /*?post_type=wbtm_bus_booking\n";
+				}
+				return $output;
 			}
 		}
 		new WBTM_CPT();
