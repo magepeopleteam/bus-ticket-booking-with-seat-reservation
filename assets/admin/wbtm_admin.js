@@ -211,6 +211,7 @@
   // Also initialize on page load
   $(document).ready(function() {
     initializeRotationButtons();
+    initializeAdvancedFeaturesToggle();
   });
   
   function initializeRotationButtons() {
@@ -225,4 +226,102 @@
       }
     });
   }
+  
+  // Advanced Seat Features Toggle Functionality
+  function initializeAdvancedFeaturesToggle() {
+    // Handle toggle switch change for advanced seat features
+    $(document).on('change', 'input[name="wbtm_enable_advanced_seat_features"]', function() {
+      let isEnabled = $(this).is(':checked');
+      toggleAdvancedSeatFeatures(isEnabled);
+    });
+    
+    // Initialize on page load based on current state
+    let isAdvancedEnabled = $('input[name="wbtm_enable_advanced_seat_features"]').is(':checked');
+    toggleAdvancedSeatFeatures(isAdvancedEnabled);
+  }
+  
+  function toggleAdvancedSeatFeatures(isEnabled) {
+    let $seatPlanContainer = $('.wbtm_seat_plan_settings');
+    
+    // Check if Pro addon is available (passed from PHP via wp_localize_script)
+    let hasProAddon = (typeof wbtm_admin_data !== 'undefined' && wbtm_admin_data.has_pro_addon) || false;
+    
+    if (isEnabled && hasProAddon) {
+      // Show advanced features
+      $('.wbtm_seat_container').addClass('wbtm_advanced_features_enabled');
+      $('.wbtm_seat_block_controls').show();
+      $('.wbtm_seat_price_controls').show();
+      
+      // Add advanced controls to existing seats if they don't have them
+      $seatPlanContainer.find('.wbtm_seat_container').each(function() {
+        let $container = $(this);
+        let $input = $container.find('input[class*="wbtm_id_validation"]');
+        let inputName = $input.attr('name');
+        
+        if (inputName) {
+          let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
+          
+          // Add block controls if they don't exist
+          if ($container.find('.wbtm_seat_block_controls').length === 0) {
+            let blockControls = `
+              <div class="wbtm_seat_block_controls">
+                <label>
+                  <input type="checkbox" class="wbtm_block_seat" 
+                         name="wbtm_${seatKey}_blocked[]" 
+                         value="1" 
+                         title="Block this seat" />
+                  Block
+                </label>
+                <input type="hidden" name="wbtm_${seatKey}_blocked_hidden[]" 
+                       value="0" 
+                       class="wbtm_blocked_value" />
+              </div>
+            `;
+            $container.append(blockControls);
+          }
+          
+          // Add price controls if they don't exist
+          if ($container.find('.wbtm_seat_price_controls').length === 0) {
+            let priceControls = `
+              <div class="wbtm_seat_price_controls">
+                <div class="wbtm_seat_price_field">
+                  <input type="number" step="0.01" class="formControl wbtm_price_validation" 
+                         name="wbtm_${seatKey}_price_adult[]" 
+                         placeholder="Adult Price"
+                         value="" />
+                </div>
+                <div class="wbtm_seat_price_field">
+                  <input type="number" step="0.01" class="formControl wbtm_price_validation" 
+                         name="wbtm_${seatKey}_price_child[]" 
+                         placeholder="Child Price"
+                         value="" />
+                </div>
+                <div class="wbtm_seat_price_field">
+                  <input type="number" step="0.01" class="formControl wbtm_price_validation" 
+                         name="wbtm_${seatKey}_price_infant[]" 
+                         placeholder="Infant Price"
+                         value="" />
+                </div>
+              </div>
+            `;
+            $container.append(priceControls);
+          }
+        }
+      });
+    } else {
+      // Hide advanced features
+      $('.wbtm_seat_container').removeClass('wbtm_advanced_features_enabled');
+      $('.wbtm_seat_block_controls').hide();
+      $('.wbtm_seat_price_controls').hide();
+    }
+  }
+  
+  // Initialize advanced features toggle when seat plan is regenerated
+  $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd', function() {
+    initializeRotationButtons();
+    
+    // Check if advanced features should be enabled
+    let isAdvancedEnabled = $('input[name="wbtm_enable_advanced_seat_features"]').is(':checked');
+    toggleAdvancedSeatFeatures(isAdvancedEnabled);
+  });
 })(jQuery);

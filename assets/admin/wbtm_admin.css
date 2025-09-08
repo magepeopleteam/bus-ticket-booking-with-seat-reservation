@@ -79,7 +79,22 @@
   align-items: center;
   gap: 5px;
   padding: 5px 0;
-  min-height: 80px; /* Increased height to accommodate rotation controls */
+  min-height: 50px; /* Base height for seat input */
+}
+
+/* Increase height when rotation is enabled */
+.wbtm_enable_rotation .wbtm_seat_container {
+  min-height: 80px;
+}
+
+/* Increase height when advanced features are enabled */
+.wbtm_seat_container.wbtm_advanced_features_enabled {
+  min-height: 120px;
+}
+
+/* Combined height for both rotation and advanced features */
+.wbtm_enable_rotation .wbtm_seat_container.wbtm_advanced_features_enabled {
+  min-height: 150px;
 }
 
 .wbtm_seat_container label {
@@ -193,4 +208,62 @@
 		min-height: 60px;
 		padding: 4px 2px;
 	}
+}
+
+/* Enhanced Block Controls Styling */
+.wbtm_seat_block_controls {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+/* Show block controls when advanced features are enabled */
+.wbtm_seat_container.wbtm_advanced_features_enabled .wbtm_seat_block_controls {
+  display: flex;
+}
+
+.wbtm_seat_block_controls label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Enhanced Price Override Controls Styling */
+.wbtm_seat_price_controls {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 3px;
+  width: 100%;
+}
+
+/* Show price controls when advanced features are enabled */
+.wbtm_seat_container.wbtm_advanced_features_enabled .wbtm_seat_price_controls {
+  display: flex;
+}
+
+.wbtm_seat_price_field {
+  width: 100%;
+}
+
+.wbtm_seat_price_field input {
+  width: 100%;
+  font-size: 10px;
+  padding: 2px 4px;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+/* Compact layout adjustments */
+.wbtm_seat_container.wbtm_advanced_features_enabled label {
+  margin-bottom: 2px;
+}
+
+.wbtm_seat_container.wbtm_advanced_features_enabled .formControl {
+  margin-bottom: 2px;
 }

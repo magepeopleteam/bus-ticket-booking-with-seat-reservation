@@ -83,6 +83,9 @@
 				/***************************/
 				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 				$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
+				/***************************/
+				$enable_advanced_features = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_advanced_seat_features');
+				$checked_advanced = $enable_advanced_features == 'yes' ? 'checked' : '';
 				?>
 				
 				<div class="mpPanel mT">
@@ -156,6 +159,18 @@
 								</div>
 								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
 							</div>
+							<?php if ( class_exists( 'WBTM_Dependencies_Pro' ) ) { ?>
+							<div class="divider"></div>
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Advanced Seat Features', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Enable seat blocking and price override functionality', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_advanced_seat_features', $checked_advanced); ?>
+							</div>
+							<?php } ?>
 						</div>
 					</div>
 				</div>
@@ -252,6 +267,7 @@
 				$seat_key = $dd ? 'dd_seat' : 'seat';
 				$post_id = get_the_ID();
 				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+				$enable_advanced_features = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_advanced_seat_features');
 				?>
 				<tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $seat_column; $j++) { ?>
@@ -266,7 +282,13 @@
 						$seat_price_infant = array_key_exists($key . '_price_infant', $row_info) ? $row_info[$key . '_price_infant'] : '';
 						?>
 						<th>
-							<div class="wbtm_seat_container">
+							<?php 
+							$container_classes = ['wbtm_seat_container'];
+							if ($enable_advanced_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) {
+								$container_classes[] = 'wbtm_advanced_features_enabled';
+							}
+							?>
+							<div class="<?php echo esc_attr(implode(' ', $container_classes)); ?>">
 								<label>
 									<input type="text" class="formControl wbtm_id_validation"
 										name="wbtm_<?php echo esc_attr($key); ?>[]"
@@ -287,6 +309,7 @@
 											   class="wbtm_rotation_value" />
 									</div>
 								<?php } ?>
+								<?php if ($enable_advanced_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) { ?>
 								<div class="wbtm_seat_block_controls">
 									<label>
 										<input type="checkbox" class="wbtm_block_seat" 
@@ -300,7 +323,9 @@
 										   value="<?php echo esc_attr($seat_blocked); ?>" 
 										   class="wbtm_blocked_value" />
 								</div>
+								<?php } ?>
 								<!-- Seat Price Override Controls -->
+								<?php if ($enable_advanced_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) { ?>
 								<div class="wbtm_seat_price_controls">
 									<div class="wbtm_seat_price_field">
 										<input type="number" step="0.01" class="formControl wbtm_price_validation" 
@@ -321,6 +346,7 @@
 											value="<?php echo esc_attr($seat_price_infant); ?>" />
 									</div>
 								</div>
+								<?php } ?>
 							</div>
 						</th>
 					<?php } ?>
@@ -338,33 +364,47 @@
 					$rows = WBTM_Global_Function::get_submit_info('wbtm_seat_rows_hidden', 0);
 					$columns = WBTM_Global_Function::get_submit_info('wbtm_seat_cols_hidden', 0);
 					$wbtm_enable_seat_rotation = WBTM_Global_Function::get_submit_info('wbtm_enable_seat_rotation') ? 'yes' : 'no';
+					$wbtm_enable_advanced_seat_features = WBTM_Global_Function::get_submit_info('wbtm_enable_advanced_seat_features') ? 'yes' : 'no';
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
 					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+					update_post_meta($post_id, 'wbtm_enable_advanced_seat_features', $wbtm_enable_advanced_seat_features);
 					$lower_deck_info = [];
 					$total_seat=0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, []);
 							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', []);
-							$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_blocked', []);
-							// Get seat price override info
-							$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_adult', []);
-							$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_child', []);
-							$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_infant', []);
+							
+							// Only process advanced features if enabled and Pro addon is active
+							$col_blocked_infos = [];
+							$col_price_adult_infos = [];
+							$col_price_child_infos = [];
+							$col_price_infant_infos = [];
+							
+							if ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) {
+								$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_blocked', []);
+								// Get seat price override info
+								$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_adult', []);
+								$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_child', []);
+								$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_price_infant', []);
+							}
 							for ($i = 0; $i < $rows; $i++) {
 								$lower_deck_info[$i]['seat' . $j] = $col_infos[$i];
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$lower_deck_info[$i]['seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
 								}
-								// Save blocked seat info
-								$lower_deck_info[$i]['seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
-								// Save seat price override info
-								$lower_deck_info[$i]['seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
-								$lower_deck_info[$i]['seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
-								$lower_deck_info[$i]['seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && (!isset($col_blocked_infos[$i]) || $col_blocked_infos[$i] != '1')) {
+								// Save blocked seat info and price override info only if advanced features are enabled and Pro addon is active
+								if ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) {
+									$lower_deck_info[$i]['seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
+									$lower_deck_info[$i]['seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
+									$lower_deck_info[$i]['seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
+									$lower_deck_info[$i]['seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
+								}
+								// Count seat only if it's not blocked (when advanced features are enabled and Pro addon is active) or always count (when disabled)
+								$is_blocked = ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' ) && isset($col_blocked_infos[$i]) && $col_blocked_infos[$i] == '1');
+								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && !$is_blocked) {
 									$total_seat++;
 								}
 							}
@@ -385,23 +425,35 @@
 						for ($j = 1; $j <= $cols_dd; $j++) {
 							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, []);
 							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', []);
-							$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_blocked', []);
-							// Get seat price override info
-							$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_adult', []);
-							$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_child', []);
-							$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_infant', []);
+							
+							// Only process advanced features if enabled and Pro addon is active
+							$col_blocked_infos = [];
+							$col_price_adult_infos = [];
+							$col_price_child_infos = [];
+							$col_price_infant_infos = [];
+							
+							if ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) {
+								$col_blocked_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_blocked', []);
+								// Get seat price override info
+								$col_price_adult_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_adult', []);
+								$col_price_child_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_child', []);
+								$col_price_infant_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_price_infant', []);
+							}
 							for ($i = 0; $i < $rows_dd; $i++) {
 								$upper_deck_info[$i]['dd_seat' . $j] = $col_infos[$i];
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
 								}
-								// Save blocked seat info
-								$upper_deck_info[$i]['dd_seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
-								// Save seat price override info
-								$upper_deck_info[$i]['dd_seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
-								$upper_deck_info[$i]['dd_seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
-								$upper_deck_info[$i]['dd_seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes' && (!isset($col_blocked_infos[$i]) || $col_blocked_infos[$i] != '1')) {
+								// Save blocked seat info and price override info only if advanced features are enabled and Pro addon is active
+								if ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' )) {
+									$upper_deck_info[$i]['dd_seat' . $j . '_blocked'] = isset($col_blocked_infos[$i]) ? $col_blocked_infos[$i] : '0';
+									$upper_deck_info[$i]['dd_seat' . $j . '_price_adult'] = isset($col_price_adult_infos[$i]) ? $col_price_adult_infos[$i] : '';
+									$upper_deck_info[$i]['dd_seat' . $j . '_price_child'] = isset($col_price_child_infos[$i]) ? $col_price_child_infos[$i] : '';
+									$upper_deck_info[$i]['dd_seat' . $j . '_price_infant'] = isset($col_price_infant_infos[$i]) ? $col_price_infant_infos[$i] : '';
+								}
+								// Count seat only if it's not blocked (when advanced features are enabled and Pro addon is active) or always count (when disabled)
+								$is_blocked = ($wbtm_enable_advanced_seat_features == 'yes' && class_exists( 'WBTM_Dependencies_Pro' ) && isset($col_blocked_infos[$i]) && $col_blocked_infos[$i] == '1');
+								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes' && !$is_blocked) {
 									$total_seat++;
 								}
 							}
