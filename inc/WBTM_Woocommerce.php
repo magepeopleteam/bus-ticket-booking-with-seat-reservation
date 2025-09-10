@@ -715,7 +715,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							// Use seat-specific price if available, otherwise fall back to route-based pricing
+							$ticket_info[$count]['ticket_price'] = self::get_seat_specific_price($post_id, $start_place, $end_place, $seat_name, $type, false);
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = '';
@@ -734,7 +735,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
+							// Use seat-specific price if available, otherwise fall back to route-based pricing
+							$ticket_info[$count]['ticket_price'] = self::get_seat_specific_price($post_id, $start_place, $end_place, $seat_name, $type, true);
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = 1;
@@ -763,6 +765,67 @@ if (! class_exists('WBTM_Woocommerce')) {
 			}
 			return apply_filters('wbtm_cart_ticket_info_data_prepare', $ticket_info, $post_id);
 		}
+		
+		/**
+		 * Get seat-specific price if available, otherwise fall back to route-based pricing
+		 *
+		 * @param int    $post_id     Bus post ID
+		 * @param string $start_place Boarding point
+		 * @param string $end_place   Dropping point
+		 * @param string $seat_name   Seat name/identifier
+		 * @param int    $type        Passenger type (0=adult, 1=child, 2=infant)
+		 * @param bool   $dd          Whether this is an upper deck seat
+		 * @return float              Price for the seat
+		 */
+		public static function get_seat_specific_price($post_id, $start_place, $end_place, $seat_name, $type, $dd = false) {
+			// Get seat information
+			if ($dd) {
+				$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+			} else {
+				$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+			}
+			
+			// Find the specific seat in the seat configuration
+			foreach ($seat_infos as $row) {
+				foreach ($row as $key => $value) {
+					// Skip non-seat keys
+					if (strpos($key, '_rotation') !== false || 
+						strpos($key, '_blocked') !== false || 
+						strpos($key, '_price_') !== false) {
+						continue;
+					}
+					
+					// Check if this is the seat we're looking for
+					if ($value === $seat_name) {
+						// Found the seat, now check for price overrides
+						$price_key = '';
+						switch ($type) {
+							case 0: // Adult
+								$price_key = $key . '_price_adult';
+								break;
+							case 1: // Child
+								$price_key = $key . '_price_child';
+								break;
+							case 2: // Infant
+								$price_key = $key . '_price_infant';
+								break;
+						}
+						
+						// If we have a price override, use it
+						if (isset($row[$price_key]) && $row[$price_key] !== '' && is_numeric($row[$price_key])) {
+							return WBTM_Global_Function::get_wc_raw_price($post_id, $row[$price_key]);
+						}
+						
+						// No override found, fall back to route-based pricing
+						return WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, $dd);
+					}
+				}
+			}
+			
+			// Seat not found in configuration, fall back to route-based pricing
+			return WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, $dd);
+		}
+		
 		public static function get_cart_extra_service_info($post_id): array
 		{
 			$start_date    = WBTM_Global_Function::get_submit_info('wbtm_bp_time');

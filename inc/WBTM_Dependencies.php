@@ -77,6 +77,12 @@
 				// custom
 				wp_enqueue_script( 'wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array( 'jquery' ), time(), true );
 				wp_enqueue_style( 'wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time() );
+				
+				// Pass Pro addon status to JavaScript
+				wp_localize_script( 'wbtm_admin', 'wbtm_admin_data', array(
+					'has_pro_addon' => class_exists( 'WBTM_Dependencies_Pro' )
+				));
+				
 				do_action( 'add_wbtm_admin_script' );
 			}
 
