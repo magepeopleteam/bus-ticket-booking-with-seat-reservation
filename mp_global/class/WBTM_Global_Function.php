@@ -163,9 +163,9 @@
                             let availableDates = [<?php echo implode( ',', $all_date ); ?>];
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
                             if (jQuery.inArray(dmy, availableDates) !== -1) {
-                                return [true, "", "Available"];
+                                return [true, "", "<?php echo esc_js( WBTM_Translations::text_date_available_status() ); ?>"];
                             } else {
-                                return [false, "", "unAvailable"];
+                                return [false, "", "<?php echo esc_js( WBTM_Translations::text_date_unavailable_status() ); ?>"];
                             }
                         }
                     });

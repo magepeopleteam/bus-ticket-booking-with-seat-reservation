@@ -361,6 +361,18 @@
 				); 
 			}
 			
+			public static function text_date_available_status() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Available', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
+			public static function text_date_unavailable_status() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Unavailable', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
 			public static function duration_text() { 
 				return self::get_translation(__FUNCTION__,
 					esc_html__('Duration :', 'bus-ticket-booking-with-seat-reservation')
