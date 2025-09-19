@@ -98,6 +98,17 @@
 							<div class="_dFlex_justifyBetween_alignCenter">
 								<div class="col_6 _dFlex_fdColumn">
 									<label>
+										<?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</label>
+									<span><?php esc_html_e('Enable seat rotation for individual seats', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
+							</div>
+							<div class="divider"></div>
+
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
 										<?php esc_html_e('Show Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?>
 									</label>
 									<span><?php esc_html_e('Turn On or Off upper deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
@@ -147,15 +158,6 @@
 								<?php $this->create_seat_plan($post_id, $seat_row, $seat_column); ?>
 							</div>
 							<div class="divider"></div>
-							<div class="_dFlex_justifyBetween_alignCenter">
-								<div class="col_6 _dFlex_fdColumn">
-									<label>
-										<?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?>
-									</label>
-									<span><?php esc_html_e('Enable seat rotation for individual seats', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-								</div>
-								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
-							</div>
 						</div>
 					</div>
 				</div>

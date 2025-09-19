@@ -75,9 +75,15 @@
 												<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 													<?php //$sold_seats = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name); ?>
 													<?php if (in_array($seat_name,$seat_booked)) { ?>
-														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
+														<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>">
+															<div class="seat_visual"></div>
+															<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
+														</div>
 													<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
-														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>"><?php echo esc_html($seat_name); ?></div>
+														<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>">
+															<div class="seat_visual"></div>
+															<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
+														</div>
 													<?php } else { ?>
 														<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
 															data-seat_name="<?php echo esc_attr($seat_name); ?>"
@@ -85,7 +91,8 @@
 															data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
 															data-seat_price="<?php echo esc_attr($adult_price); ?>"
 														>
-															<?php echo esc_html($seat_name); ?>
+															<div class="seat_visual"></div>
+															<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 														</div>
 														<?php if (sizeof($ticket_infos) > 1) { ?>
 															<div class="wbtm_seat_item_list">
@@ -155,9 +162,15 @@
 													<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 														<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $info); ?>
 														<?php if ($seat_available > 0) { ?>
-															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>"><?php echo esc_html($info); ?></div>
+															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>">
+																<div class="seat_visual"></div>
+																<div class="seat_number"><?php echo esc_html($info); ?></div>
+															</div>
 														<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $info)) { ?>
-															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info); ?>"><?php echo esc_html($info); ?></div>
+															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info); ?>">
+																<div class="seat_visual"></div>
+																<div class="seat_number"><?php echo esc_html($info); ?></div>
+															</div>
 														<?php } else { ?>
 															<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($info); ?>"
 																data-seat_name="<?php echo esc_attr($info); ?>"
@@ -165,7 +178,8 @@
 																data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
 																data-seat_price="<?php echo esc_attr($adult_price_dd); ?>"
 															>
-																<?php echo esc_html($info); ?>
+																<div class="seat_visual"></div>
+																<div class="seat_number"><?php echo esc_html($info); ?></div>
 															</div>
 															<?php if (sizeof($ticket_infos) > 1) { ?>
 																<div class="wbtm_seat_item_list">
