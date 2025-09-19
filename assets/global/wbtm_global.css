@@ -108,38 +108,58 @@
   }
   /****************/
   div.wbtm_seat_plan_area div.mp_seat {
-    border: 1px solid var(--wbtm_color_border);
+    border: none;
+    background-color: transparent;
     width: 100%;
     height: 100%;
-    border-radius: var(--wbtm_dbr);
     display: -webkit-flex;
     display: flex;
     -webkit-align-items: center;
     align-items: center;
     -webkit-justify-content: center;
     justify-content: center;
+  }
+
+  /* Apply visual styling to seat_visual instead */
+  div.wbtm_seat_plan_area div.mp_seat .seat_visual {
+    border: 1px solid var(--wbtm_color_border);
     border-radius: 15px 15px 0 0;
     border-bottom: 5px solid var(--wbtm_color_light);
   }
   div.seat_available {
-    background-color: var(--wbtm_color_theme_alter);
+    background-color: transparent;
     cursor: pointer;
     color: var(--wbtm_d_color);
   }
   div.seat_selected.seat_available,
   div.mp_seat_item:hover div.seat_selected.seat_available {
-    background-color: var(--wbtm_color_theme);
+    background-color: transparent;
     color: var(--wbtm_color_theme_alter);
   }
   div.seat_booked {
     cursor: not-allowed;
-    background-color: var(--wbtm_color_warning);
+    background-color: transparent;
     color: var(--wbtm_color_theme_alter);
   }
   div.seat_in_cart {
     cursor: not-allowed;
-    background-color: var(--wbtm_color_light_3);
+    background-color: transparent;
     color: var(--wbtm_color_theme_alter);
+  }
+
+  /* Apply seat state styling to seat_visual */
+  div.seat_available .seat_visual {
+    background-color: var(--wbtm_color_theme_alter);
+  }
+  div.seat_selected.seat_available .seat_visual,
+  div.mp_seat_item:hover div.seat_selected.seat_available .seat_visual {
+    background-color: var(--wbtm_color_theme);
+  }
+  div.seat_booked .seat_visual {
+    background-color: var(--wbtm_color_warning);
+  }
+  div.seat_in_cart .seat_visual {
+    background-color: var(--wbtm_color_light_3);
   }
   /********************/
   div.wbtm_seat_plan_area table tr th:nth-last-child(2) div.wbtm_seat_item_list,

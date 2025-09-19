@@ -35,15 +35,37 @@ if (! class_exists('WBTM_Woocommerce')) {
 			add_action('woocommerce_add_to_cart', array($this, 'maybe_set_redirect_flag'), 10, 6);
 			add_filter('woocommerce_cart_item_permalink', array($this, 'cmv_fix_bus_cart_item_link'), 10, 3);
 			add_filter('woocommerce_cart_item_price', array($this, 'cmv_fix_cart_dropdown_price'), 10, 3);
+			add_filter('woocommerce_cart_item_subtotal', array($this, 'cmv_fix_cart_item_subtotal'), 10, 3);
 			// Prevent add to cart notices when redirect is enabled
 			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 		}
 
 		//Price of product in mini cart
 		public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {
-			$line_total = $cart_item['line_total']; // Prezzo totale della riga
-			return wc_price($line_total);
+			// Check if this is a bus booking item
+			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+				// Use the calculated total price instead of the product's base price
+				$line_total = $cart_item['line_total'] ?? $cart_item['wbtm_tp'] ?? 0;
+				return wc_price($line_total);
 			}
+			// For non-bus items, return the original price
+			return $price;
+		}
+
+		// Fix cart item subtotal to prevent 0.01 from showing
+		public function cmv_fix_cart_item_subtotal($subtotal, $cart_item, $cart_item_key) {
+			// Check if this is a bus booking item
+			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+				// Use the calculated total price instead of the product's base price
+				$line_total = $cart_item['line_total'] ?? $cart_item['wbtm_tp'] ?? 0;
+				return wc_price($line_total);
+			}
+			// For non-bus items, return the original subtotal
+			return $subtotal;
+		}
+
 
 			//Link product in the mini cart
 			public function cmv_fix_bus_cart_item_link($permalink, $cart_item, $cart_item_key) {
@@ -126,6 +148,13 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$total_price = $value['wbtm_tp'];
+					// Safety check: ensure we have a valid price and it's not the default 0.01
+					if (empty($total_price) || $total_price <= 0.01) {
+						// Recalculate the price if it's missing or invalid
+						$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
+						$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
+						$total_price = $seat_price + $ex_service_price;
+					}
 					$value['data']->set_price($total_price);
 					$value['data']->set_regular_price($total_price);
 					$value['data']->set_sale_price($total_price);

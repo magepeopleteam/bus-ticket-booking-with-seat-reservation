@@ -551,3 +551,139 @@ div.wbtm_selected_seat_details table tbody tr td{
 .wbtm-seat-book.hide {
   display: none;
 }
+
+/* Frontend Seat Rotation Styles */
+.wbtm_seat_rotated_90 .mp_seat .seat_visual {
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.wbtm_seat_rotated_180 .mp_seat .seat_visual {
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+
+.wbtm_seat_rotated_270 .mp_seat .seat_visual {
+  transform: rotate(270deg);
+  transform-origin: center;
+}
+
+/* Ensure seat number text never rotates */
+.wbtm_seat_rotated_90 .mp_seat .seat_number,
+.wbtm_seat_rotated_180 .mp_seat .seat_number,
+.wbtm_seat_rotated_270 .mp_seat .seat_number {
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  rotate: none !important;
+  transform-origin: initial !important;
+}
+
+/* Additional protection for seat numbers */
+.mp_seat_item .seat_number {
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  rotate: none !important;
+  transform-origin: initial !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
+
+/* Ensure rotated seats maintain proper spacing and alignment */
+.wbtm_seat_plan_area .mp_seat_item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .mp_seat {
+  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  flex-direction: column;
+  background-color: transparent;
+  border: none;
+}
+
+/* Seat structure styles */
+.seat_visual {
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  border: inherit;
+  border-radius: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+/* Ensure seat_visual inherits all visual styling from parent seat */
+.mp_seat .seat_visual {
+  background-color: inherit;
+  border: inherit;
+  border-radius: inherit;
+  cursor: inherit;
+}
+
+/* Specific seat state styling for seat_visual */
+.seat_available .seat_visual {
+  background-color: var(--wbtm_color_theme_alter);
+  cursor: pointer;
+}
+
+.seat_selected.seat_available .seat_visual {
+  background-color: var(--wbtm_color_theme);
+}
+
+.seat_booked .seat_visual {
+  cursor: not-allowed;
+  background-color: var(--wbtm_color_warning);
+}
+
+.seat_in_cart .seat_visual {
+  cursor: not-allowed;
+  background-color: var(--wbtm_color_light_3);
+}
+
+/* Override existing seat styling to move visual properties to seat_visual */
+.mp_seat.seat_available {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.mp_seat.seat_booked {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.mp_seat.seat_in_cart {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Ensure seat_visual gets the border styling */
+.seat_visual {
+  border: 1px solid var(--wbtm_color_border) !important;
+}
+
+.seat_number {
+  position: relative;
+  z-index: 2;
+  font-weight: bold;
+  color: inherit;
+  text-align: center;
+  line-height: 1;
+  pointer-events: none;
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
