@@ -85,6 +85,8 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
                     $seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                     $seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+                    $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+                    $has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
 					$bus_start_time=$all_info['start_time'];
                     ?>
                     <div class="wbtm_registration_area _bgWhite mT">
@@ -103,7 +105,8 @@ if (!class_exists('WBTM_Layout')) {
 
                             <?php
 wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
-                            if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
+                            // Check for cabin configuration or legacy seat plan
+                            if ($seat_type == 'wbtm_seat_plan' && ($has_cabin_config || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0))) {
                                 require WBTM_Functions::template_path('layout/registration_seat_plan.php');
                             } else {
                                 require WBTM_Functions::template_path('layout/registration_without_seat_plan.php');

@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Query')) {
 		class WBTM_Query {
 			public function __construct() {}
-            public static function get_bus_id($start = '', $end = '', $cat = '') {
+            public static function get_bus_id($start = '', $end = '', $cat = '', $posts_per_page = -1) {
                 $bus_ids = [];
                 $start_route_query = !empty($start) ? array(
                     'key' => 'wbtm_bus_bp_stops',
@@ -42,7 +42,7 @@
                 }
                 $args = array(
                     'post_type' => array('wbtm_bus'),
-                    'posts_per_page' => -1,
+                    'posts_per_page' => $posts_per_page,
                     'order' => 'ASC',
                     'orderby' => 'meta_value',
                     'post_status' => 'publish',
@@ -60,6 +60,56 @@
                 }
                 wp_reset_query();
                 return $bus_ids;
+            }
+
+            public static function get_bus_count($start = '', $end = '', $cat = '') {
+                $start_route_query = !empty($start) ? array(
+                    'key' => 'wbtm_bus_bp_stops',
+                    'value' => $start,
+                    'compare' => 'LIKE',
+                ) : '';
+                $end_route_query = !empty($end) ? array(
+                    'key' => 'wbtm_bus_next_stops',
+                    'value' => $end,
+                    'compare' => 'LIKE',
+                ) : '';
+                $cat_query = [];
+                if (!empty($cat)) {
+                    $taxonomies = get_object_taxonomies('wbtm_bus');
+                    $cat_value = $cat;
+                    if (!empty($taxonomies)) {
+                        foreach ($taxonomies as $tax) {
+                            $term = get_term_by('id', $cat, $tax);
+                            if ($term && !is_wp_error($term)) {
+                                $cat_value = trim($term->name);
+                                break;
+                            }
+                        }
+                    }
+                    $cat_query[] = array(
+                        'key'     => 'wbtm_bus_category',
+                        'value'   => $cat_value,
+                        'compare' => '='
+                    );
+                }
+                $args = array(
+                    'post_type' => array('wbtm_bus'),
+                    'posts_per_page' => -1,
+                    'fields' => 'ids',
+                    'order' => 'ASC',
+                    'orderby' => 'meta_value',
+                    'post_status' => 'publish',
+                    'meta_query' => array(
+                        'relation' => 'AND',
+                        $start_route_query,
+                        $end_route_query,
+                        $cat_query
+                    )
+                );
+                $bus_query = new WP_Query($args);
+                $total_count = $bus_query->found_posts;
+                wp_reset_query();
+                return $total_count;
             }
 
             public static function query_total_booked($post_id, $start, $end, $date, $ticket_name = '', $seat_name = '') {

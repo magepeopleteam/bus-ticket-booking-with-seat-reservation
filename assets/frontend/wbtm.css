@@ -1111,4 +1111,163 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
 }
 
+/* Cabin-specific styles for train/bus multi-cabin support */
+.wbtm_cabin_section {
+  margin-bottom: 15px;
+  border: 2px solid var(--wbtm_color_border);
+  border-radius: 8px;
+  background-color: var(--wbtm_color_light);
+  overflow: hidden;
+}
+
+.wbtm_cabin_section:last-child {
+  margin-bottom: 0;
+}
+
+/* Ensure collapsed cabins don't take extra space */
+.wbtm_cabin_section.collapsed {
+  margin-bottom: 10px;
+}
+
+.wbtm_cabin_header {
+  background-color: var(--wbtm_color_theme);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.wbtm_cabin_toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.wbtm_cabin_title_container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.wbtm_cabin_toggle_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
+.wbtm_toggle_arrow {
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.wbtm_cabin_title_container .wbtm_cabin_title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.wbtm_cabin_price_info {
+  display: flex;
+  align-items: center;
+}
+
+.wbtm_price_multiplier {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wbtm_price_discount {
+  background-color: rgba(76, 175, 80, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wbtm_cabin_seat_plan {
+  padding: 20px;
+  background-color: white;
+}
+
+.wbtm_cabin_seat_plan table {
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 8px;
+}
+
+.wbtm_cabin_seat_plan .mp_seat_item {
+  position: relative;
+}
+
+.wbtm_cabin_direction {
+  text-align: center;
+  color: var(--wbtm_color_theme);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.wbtm_cabin_separator {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--wbtm_color_border) 50%, transparent 100%);
+  margin: 20px 0;
+}
+
+.wbtm_cabin_seat_plan .seat_available {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wbtm_cabin_seat_plan .seat_available:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wbtm_cabin_seat_plan .seat_booked,
+.wbtm_cabin_seat_plan .seat_in_cart {
+  opacity: 0.7;
+}
+
+/* Responsive adjustments for cabin layouts */
+@media only screen and (max-width: 768px) {
+  .wbtm_cabin_toggle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .wbtm_cabin_title_container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .wbtm_cabin_title_container .wbtm_cabin_title {
+    font-size: 16px;
+  }
+
+  .wbtm_cabin_toggle_icon {
+    align-self: flex-end;
+  }
+
+  .wbtm_cabin_seat_plan {
+    padding: 15px;
+  }
+
+  .wbtm_cabin_seat_plan table {
+    border-spacing: 6px;
+  }
+}
+
 /*# sourceMappingURL=wbtm.css.map */

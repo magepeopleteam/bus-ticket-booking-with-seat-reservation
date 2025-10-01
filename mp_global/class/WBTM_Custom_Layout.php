@@ -9,8 +9,8 @@
 	if ( ! class_exists( 'WBTM_Custom_Layout' ) ) {
 		class WBTM_Custom_Layout {
 			public function __construct() {
-				add_action( 'wbtm_hidden_table', array( $this, 'hidden_table' ), 10, 2 );
-				//add_action( 'wbtm_pagination_section', array( $this, 'pagination' ), 10, 3 );
+			add_action( 'wbtm_hidden_table', array( $this, 'hidden_table' ), 10, 2 );
+				add_action( 'wbtm_pagination_section', array( $this, 'pagination' ), 10, 3 );
 			}
 			public function hidden_table( $hook_name, $data = array() ) {
 				?>
@@ -24,16 +24,24 @@
 				<?php
 			}
 			public function pagination( $params, $total_item, $active_page = 0 ) {
+				// Prevent multiple executions
+				static $pagination_rendered = false;
+				if ($pagination_rendered) {
+					return; // Don't render pagination multiple times
+				}
+				$pagination_rendered = true;
+				
 				ob_start();
 				$per_page = $params['show'] > 1 ? $params['show'] : $total_item;
+				$pagination_style = isset($params['pagination-style']) ? $params['pagination-style'] : 'load_more';
 				?>
                 <input type="hidden" name="pagination_per_page" value="<?php echo esc_attr( $per_page ); ?>"/>
-                <input type="hidden" name="pagination_style" value="<?php echo esc_attr( $params['pagination-style'] ); ?>"/>
+                <input type="hidden" name="pagination_style" value="<?php echo esc_attr( $pagination_style ); ?>"/>
                 <input type="hidden" name="mp_total_item" value="<?php echo esc_attr( $total_item ); ?>"/>
 				<?php if ( $total_item > $per_page ) { ?>
-                    <div class="allCenter pagination_area" data-placeholder>
+                    <div class="allCenter pagination_area" data-pagination-style="<?php echo esc_attr( $pagination_style ); ?>" data-placeholder>
 						<?php
-							if ( $params['pagination-style'] == 'load_more' ) {
+						if ( $pagination_style == 'load_more' ) {
 								?>
                                 <button type="button" class="_mpBtn_xs_min_200 pagination_load_more" data-load-more="0">
 									<?php esc_html_e( 'Load More', 'bus-ticket-booking-with-seat-reservation' ); ?>

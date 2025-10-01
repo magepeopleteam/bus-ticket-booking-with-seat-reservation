@@ -130,3 +130,11 @@
 /********Info Text******************/
 div.wbtm_style .info_text {display: block;font-weight: normal;font-size: var(--fs_small);color: #666;}
 div.wbtm_style .info_text span {margin: 0 5px 0 0;}
+
+/********Cabin Configuration Toggle******************/
+.wbtm_cabin_fields {
+	transition: opacity 0.3s ease;
+}
+.wbtm_cabin_fields[style*="display: none"] {
+	opacity: 0;
+}

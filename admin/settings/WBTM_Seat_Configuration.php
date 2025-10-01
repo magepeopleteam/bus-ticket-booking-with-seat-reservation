@@ -21,19 +21,64 @@
 			public function tab_content($post_id) {
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
 				$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				$cabin_count = count($cabin_config);
+				$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$checked_cabin_mode = $cabin_mode_enabled == 'yes' ? 'checked' : '';
 				?>
 				<div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
 					<h3><?php esc_html_e('Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
-					<p><?php esc_html_e('Bus seat configuration. Plan your bus seat.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<p><?php esc_html_e('Configure seats for bus/train with support for multiple cabins/coaches.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 					
 					
 					<div class="">
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight">
 							<div class="col_6 _dFlex_fdColumn">
 								<label>
+									<?php esc_html_e('Vehicle Type Configuration', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</label>
+								<span><?php esc_html_e('Configure cabins/coaches for train or multiple deck support for bus.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							</div>
+						</div>
+
+						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+							<div class="col_6 _dFlex_fdColumn">
+								<label>
+									<?php esc_html_e('Enable Cabin/Coach Configuration', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</label>
+								<span><?php esc_html_e('Turn ON to configure multiple cabins/coaches, turn OFF for single bus/train.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							</div>
+							<div class="col_6 textRight">
+								<?php WBTM_Custom_Layout::switch_button('wbtm_cabin_mode_enabled', $checked_cabin_mode); ?>
+							</div>
+						</div>
+
+						<div class="wbtm_cabin_mode_fields" style="display: <?php echo esc_attr($cabin_mode_enabled == 'yes' ? 'block' : 'none'); ?>;">
+							<div class="divider"></div>
+							<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+								<div class="col_6 _dFlex_fdColumn">
+									<label>
+										<?php esc_html_e('Number of Cabins/Coaches', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i>
+									</label>
+									<span><?php esc_html_e('Enter number of cabins for train or 1 for single bus.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</div>
+								<div class="col_6 textRight">
+									<input type="number" min="1" max="20" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_count" placeholder="Ex: 1" value="<?php echo esc_attr($cabin_count > 0 ? $cabin_count : 1); ?>"/>
+									<button type="button" class="button button-primary wbtm_configure_cabins"><?php esc_html_e('Configure Cabins', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+								</div>
+							</div>
+
+							<div class="wbtm_cabin_configuration" style="display: <?php echo esc_attr($cabin_count > 0 ? 'block' : 'none'); ?>;">
+								<?php $this->render_cabin_configuration($post_id, $cabin_config); ?>
+							</div>
+						</div>
+
+						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight">
+							<div class="col_6 _dFlex_fdColumn">
+								<label>
 									<?php esc_html_e('Seat Information', 'bus-ticket-booking-with-seat-reservation'); ?> 
 								</label>
-								<span><?php esc_html_e('Here you can plan seat of the bus.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								<span><?php esc_html_e('Here you can plan seat of the bus/train.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 							</div>
 						</div>
 						<div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
@@ -289,8 +334,248 @@
 				</tr>
 				<?php
 			}
-			public function settings_save($post_id) {
-				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+			public function render_cabin_seat_plan($post_id, $cabin_index, $rows, $cols) {
+		if ($rows > 0 && $cols > 0) {
+			$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
+			$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
+			$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+			$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
+			?>
+			<div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
+				<div class="ovAuto">
+					<table>
+						<tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
+						<?php for ($i = 0; $i < $rows; $i++) { ?>
+							<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
+							<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info); ?>
+						<?php } ?>
+						</tbody>
+					</table>
+				</div>
+				<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Row', 'bus-ticket-booking-with-seat-reservation')); ?>
+				<div class="wbtm_cabin_hidden_content">
+					<table>
+						<tbody class="wbtm_cabin_hidden_item">
+						<?php $this->cabin_seat_plan_row($cols, $cabin_index); ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<?php
+		}
+	}
+
+	public function cabin_seat_plan_row($cols, $cabin_index, $row_info = []) {
+		$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
+		$post_id = get_the_ID();
+		$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+		?>
+		<tr class="wbtm_remove_area">
+			<?php for ($j = 1; $j <= $cols; $j++) { ?>
+				<?php $key = $seat_key_prefix . $j; ?>
+				<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
+				<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+				<th>
+					<div class="wbtm_seat_container">
+						<label>
+							<input type="text" class="formControl wbtm_id_validation"
+								name="wbtm_<?php echo esc_attr($key); ?>[]"
+								placeholder="<?php esc_attr_e('Blank', 'bus-ticket-booking-with-seat-reservation'); ?>"
+								value="<?php echo esc_attr($seat_name); ?>"
+							/>
+						</label>
+						<?php if ($enable_rotation == 'yes') { ?>
+							<div class="wbtm_seat_rotation_controls">
+								<button type="button" class="wbtm_rotate_seat _whiteButton_xs"
+										data-seat-key="<?php echo esc_attr($key); ?>"
+										data-rotation="<?php echo esc_attr($seat_rotation); ?>"
+										title="<?php esc_attr_e('Rotate Seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+									<span class="fas fa-redo-alt mp_zero"></span>
+								</button>
+								<input type="hidden" name="wbtm_<?php echo esc_attr($key); ?>_rotation[]"
+									   value="<?php echo esc_attr($seat_rotation); ?>"
+									   class="wbtm_rotation_value" />
+							</div>
+						<?php } ?>
+					</div>
+				</th>
+			<?php } ?>
+			<th> <?php WBTM_Custom_Layout::move_remove_button(); ?> </th>
+		</tr>
+		<?php
+	}
+
+	public function save_cabin_seat_plans($post_id, $cabin_config) {
+		$total_seat = 0;
+		$has_enabled_cabin = false;
+		$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+
+		foreach ($cabin_config as $cabin_index => $cabin) {
+			if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
+
+			$has_enabled_cabin = true;
+			$rows = $cabin['rows'] ?? 0;
+			$cols = $cabin['cols'] ?? 0;
+			$cabin_seat_info = [];
+
+			if ($rows > 0 && $cols > 0) {
+				for ($j = 1; $j <= $cols; $j++) {
+					$col_infos = WBTM_Global_Function::get_submit_info('wbtm_cabin_' . $cabin_index . '_seat' . $j, null);
+					$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation', null);
+
+					// Ensure we have arrays - handle both single values and arrays
+					if ($col_infos === null) {
+						$col_infos = [];
+					} elseif (is_array($col_infos)) {
+						$col_infos = array_values($col_infos);
+					} else {
+						$col_infos = [$col_infos];
+					}
+
+					if ($col_rotation_infos === null) {
+						$col_rotation_infos = [];
+					} elseif (is_array($col_rotation_infos)) {
+						$col_rotation_infos = array_values($col_rotation_infos);
+					} else {
+						$col_rotation_infos = [$col_rotation_infos];
+					}
+
+					for ($i = 0; $i < $rows; $i++) {
+						$seat_value = $col_infos[$i] ?? '';
+						$rotation_value = $col_rotation_infos[$i] ?? '0';
+
+						$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j] = $seat_value;
+						if ($enable_rotation == 'yes') {
+							$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j . '_rotation'] = $rotation_value;
+						}
+						if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+							$total_seat++;
+						}
+					}
+				}
+			}
+			update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);
+		}
+		
+		// Only update total_seat if there are enabled cabins
+		// Otherwise, let the legacy seat plan logic handle it
+		if ($has_enabled_cabin) {
+			update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
+		}
+	}
+
+	public function render_cabin_configuration($post_id, $cabin_config = []) {
+		$cabin_count = count($cabin_config);
+		if ($cabin_count == 0) {
+			$cabin_config = [
+				[
+					'name' => 'Cabin 1',
+					'rows' => 0,
+					'cols' => 0,
+					'enabled' => 'yes'
+				]
+			];
+		}
+		?>
+		<div class="wbtm_cabin_list">
+			<?php foreach ($cabin_config as $index => $cabin): ?>
+				<div class="mpPanel wbtm_cabin_item" data-cabin-index="<?php echo esc_attr($index); ?>">
+					<div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
+						<div class="_dFlex_fdColumn">
+							<label><?php printf(esc_html__('Cabin %d Configuration', 'bus-ticket-booking-with-seat-reservation'), $index + 1); ?></label>
+							<span><?php esc_html_e('Configure seat layout for this cabin.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						</div>
+					</div>
+					<div class="mpPanelBody">
+						<div class="_dFlex">
+							<div class="col_6 _bR">
+								<div class="_dFlex_justifyBetween_alignCenter">
+									<label><?php esc_html_e('Cabin Name', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+									<input type="text" class="formControl max_200" name="wbtm_cabin_name[]" placeholder="Ex: First Class" value="<?php echo esc_attr($cabin['name'] ?? 'Cabin ' . ($index + 1)); ?>"/>
+								</div>
+								<div class="divider"></div>
+
+						<div class="_dFlex_justifyBetween_alignCenter">
+							<label><?php esc_html_e('Enable Cabin', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+							<?php WBTM_Custom_Layout::switch_button('wbtm_cabin_enabled[]', ($cabin['enabled'] ?? 'yes') == 'yes' ? 'checked' : ''); ?>
+						</div>
+						<div class="divider"></div>
+
+						<!-- Cabin fields that should be hidden when disabled -->
+						<div class="wbtm_cabin_fields">
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<label><?php esc_html_e('Seat Rows', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_200 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="Ex: 10" value="<?php echo esc_attr($cabin['rows'] ?? 0); ?>"/>
+							</div>
+							<div class="divider"></div>
+
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<label><?php esc_html_e('Seat Columns', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_200 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="Ex: 4" value="<?php echo esc_attr($cabin['cols'] ?? 0); ?>"/>
+							</div>
+							<div class="divider"></div>
+
+							<div class="_dFlex_justifyBetween_alignCenter">
+								<label><?php esc_html_e('Price Multiplier', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+								<input type="number" min="0" step="0.01" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.0" value="<?php echo esc_attr($cabin['price_multiplier'] ?? 1.0); ?>"/>
+								<span class="help-text"><?php esc_html_e('1.0 = same price, 1.2 = 20% higher, 0.8 = 20% lower', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+							</div>
+							<div class="divider"></div>
+
+							<button type="button" class="button button-secondary wbtm_generate_cabin_seats" data-cabin-index="<?php echo esc_attr($index); ?>"><?php esc_html_e('Generate Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+						</div>
+					</div>
+					<div class="col_6 wbtm_cabin_fields">
+						<div class="wbtm_cabin_seat_preview" data-cabin-index="<?php echo esc_attr($index); ?>">
+							<label><?php printf(esc_html__('Cabin %d Preview', 'bus-ticket-booking-with-seat-reservation'), $index + 1); ?></label>
+							<div class="wbtm_cabin_seat_plan">
+								<?php
+								$cabin_rows = $cabin['rows'] ?? 0;
+								$cabin_cols = $cabin['cols'] ?? 0;
+								if ($cabin_rows > 0 && $cabin_cols > 0) {
+									$this->render_cabin_seat_plan($post_id, $index, $cabin_rows, $cabin_cols);
+								}
+								?>
+							</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+		public function settings_save($post_id) {
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		// Save cabin mode enabled status
+		$cabin_mode_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_mode_enabled') ? 'yes' : 'no';
+		update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
+
+		// Save cabin configuration
+		$cabin_count = WBTM_Global_Function::get_submit_info('wbtm_cabin_count', 1);
+		$cabin_names = WBTM_Global_Function::get_submit_info('wbtm_cabin_name', []);
+		$cabin_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_enabled', []);
+		$cabin_rows = WBTM_Global_Function::get_submit_info('wbtm_cabin_rows', []);
+		$cabin_cols = WBTM_Global_Function::get_submit_info('wbtm_cabin_cols', []);
+		$cabin_price_multipliers = WBTM_Global_Function::get_submit_info('wbtm_cabin_price_multiplier', []);
+
+			$cabin_config = [];
+			for ($i = 0; $i < $cabin_count; $i++) {
+				$cabin_config[] = [
+					'name' => $cabin_names[$i] ?? 'Cabin ' . ($i + 1),
+					'enabled' => isset($cabin_enabled[$i]) ? 'yes' : 'no',
+					'rows' => intval($cabin_rows[$i] ?? 0),
+					'cols' => intval($cabin_cols[$i] ?? 0),
+					'price_multiplier' => floatval($cabin_price_multipliers[$i] ?? 1.0)
+				];
+			}
+			update_post_meta($post_id, 'wbtm_cabin_config', $cabin_config);
+
+			// Save cabin seat plans
+			$this->save_cabin_seat_plans($post_id, $cabin_config);
+
 					$seat_type = WBTM_Global_Function::get_submit_info('wbtm_seat_type_conf');
 					update_post_meta($post_id, 'wbtm_seat_type_conf', $seat_type);
 					
@@ -307,14 +592,35 @@
 					$total_seat=0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
-							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, []);
-							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', []);
+							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, null);
+							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', null);
+
+							// Ensure we have arrays - handle both single values and arrays
+							if ($col_infos === null) {
+								$col_infos = [];
+							} elseif (is_array($col_infos)) {
+								$col_infos = array_values($col_infos);
+							} else {
+								$col_infos = [$col_infos];
+							}
+
+							if ($col_rotation_infos === null) {
+								$col_rotation_infos = [];
+							} elseif (is_array($col_rotation_infos)) {
+								$col_rotation_infos = array_values($col_rotation_infos);
+							} else {
+								$col_rotation_infos = [$col_rotation_infos];
+							}
+
 							for ($i = 0; $i < $rows; $i++) {
-								$lower_deck_info[$i]['seat' . $j] = $col_infos[$i];
+								$seat_value = $col_infos[$i] ?? '';
+								$rotation_value = $col_rotation_infos[$i] ?? '0';
+
+								$lower_deck_info[$i]['seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {
-									$lower_deck_info[$i]['seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
+									$lower_deck_info[$i]['seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc') {
+								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
 									$total_seat++;
 								}
 							}
@@ -333,25 +639,53 @@
 					$upper_deck_info = [];
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
-							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, []);
-							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', []);
+							$col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, null);
+							$col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', null);
+
+							// Ensure we have arrays - handle both single values and arrays
+							if ($col_infos === null) {
+								$col_infos = [];
+							} elseif (is_array($col_infos)) {
+								$col_infos = array_values($col_infos);
+							} else {
+								$col_infos = [$col_infos];
+							}
+
+							if ($col_rotation_infos === null) {
+								$col_rotation_infos = [];
+							} elseif (is_array($col_rotation_infos)) {
+								$col_rotation_infos = array_values($col_rotation_infos);
+							} else {
+								$col_rotation_infos = [$col_rotation_infos];
+							}
+
 							for ($i = 0; $i < $rows_dd; $i++) {
-								$upper_deck_info[$i]['dd_seat' . $j] = $col_infos[$i];
+								$seat_value = $col_infos[$i] ?? '';
+								$rotation_value = $col_rotation_infos[$i] ?? '0';
+
+								$upper_deck_info[$i]['dd_seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {
-									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = isset($col_rotation_infos[$i]) ? $col_rotation_infos[$i] : '0';
+									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($col_infos[$i] && $col_infos[$i] != 'door' && $col_infos[$i] != 'wc' && $wbtm_show_upper_desk=='yes') {
+								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc' && $wbtm_show_upper_desk=='yes') {
 									$total_seat++;
 								}
 							}
 						}
-					}
-					update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
-					/***********************/
+				}
+				update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
+				/***********************/
+				// Only update total_seat for legacy seat plans
+				// Cabin configuration already set the correct total_seat in save_cabin_seat_plans
+				$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+				
+				if (!$has_cabin_config) {
+					// Legacy seat plan logic
 					$total_seat=$seat_type=='wbtm_seat_plan'?$total_seat:WBTM_Global_Function::get_submit_info('wbtm_get_total_seat', 0);
 					update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 				}
 			}
+		}
 			/**************************/
 			public function wbtm_create_seat_plan() {
 				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);

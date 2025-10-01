@@ -334,6 +334,21 @@
 	$(document).on('click', '.wbtm_registration_area .seat_available', function () {
 		let current = $(this);
 		let parent = current.closest('.wbtm_registration_area');
+
+		// Handle cabin-specific seat selection
+		let cabin_index = current.attr('data-cabin_index');
+		if (cabin_index !== undefined) {
+			// For cabin seats, check if another seat in the same cabin is already selected
+			let cabin_section = current.closest('.wbtm_cabin_section');
+			let cabin_selected_count = cabin_section.find('.seat_available.seat_selected').length;
+
+			// If this is a selection (not deselection) and another seat is already selected in this cabin
+			if (!current.hasClass('seat_selected') && cabin_selected_count > 0) {
+				// Deselect the previously selected seat in this cabin
+				cabin_section.find('.seat_available.seat_selected').not(current).trigger('click');
+			}
+		}
+
 		if (current.hasClass('seat_selected')) {
 			let target = current.closest('.mp_seat_item').find('.wbtm_seat_item_list li:first-child');
 			if (target.length > 0) {
@@ -377,6 +392,7 @@
 	});
 	function wbtm_seat_calculation(parent, total_qty) {
 		if (parent.find('.wbtm_seat_plan_area').length > 0) {
+			// Handle legacy seat plan (single bus)
 			let upper_area = parent.find('.wbtm_seat_plan_lower');
 			if (upper_area.length > 0) {
 				let upper_target = parent.find('[name="wbtm_selected_seat"]');
@@ -391,6 +407,7 @@
 					upper_target_type.val(seats_type);
 				});
 			}
+
 			let lower_area = parent.find('.wbtm_seat_plan_upper');
 			if (lower_area.length > 0) {
 				let lower_target = parent.find('[name="wbtm_selected_seat_dd"]');
@@ -405,6 +422,26 @@
 					lower_target_type.val(seats_dd_type);
 				});
 			}
+
+			// Handle multi-cabin seat plans
+			parent.find('.wbtm_cabin_section').each(function() {
+				let cabin_section = $(this);
+				let cabin_index = cabin_section.find('.wbtm_cabin_seat_plan').attr('data-cabin-index');
+				if (cabin_index !== undefined) {
+					let cabin_target = parent.find('[name="wbtm_selected_seat_cabin_' + cabin_index + '"]');
+					let cabin_target_type = parent.find('[name="wbtm_selected_seat_type_cabin_' + cabin_index + '"]');
+					let seats = '';
+					let seats_type = '';
+					cabin_section.find('.seat_available.seat_selected').each(function () {
+						seats = seats ? seats + ',' + $(this).attr('data-seat_name') : $(this).attr('data-seat_name');
+						seats_type = seats_type ? seats_type + ',' + $(this).attr('data-seat_type') : $(this).attr('data-seat_type');
+					}).promise().done(function () {
+						cabin_target.val(seats);
+						cabin_target_type.val(seats_type);
+					});
+				}
+			});
+
 			wbtm_selected_seat_details(parent, total_qty)
 		}
 	}
@@ -505,4 +542,40 @@
 			form_target.html('').slideUp(250);
 		}
 	}
+
+	// Handle cabin seat plan toggle
+	$(document).on('click', '.wbtm_cabin_toggle', function() {
+		let header = $(this);
+		let cabin_section = header.closest('.wbtm_cabin_section');
+		let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
+		let arrow = header.find('.wbtm_toggle_arrow');
+		let isExpanded = seat_plan.attr('aria-expanded') === 'true';
+
+		if (isExpanded) {
+			seat_plan.slideUp(300).attr('aria-expanded', 'false');
+			cabin_section.removeClass('expanded').addClass('collapsed');
+			arrow.text('▼'); // Show down arrow when collapsed
+		} else {
+			seat_plan.slideDown(300).attr('aria-expanded', 'true');
+			cabin_section.removeClass('collapsed').addClass('expanded');
+			arrow.text('▲'); // Show up arrow when expanded
+		}
+	});
+
+	// Initialize cabin arrows and classes on page load
+	$(document).ready(function() {
+		$('.wbtm_cabin_section').each(function() {
+			let cabin_section = $(this);
+			let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
+			let arrow = cabin_section.find('.wbtm_toggle_arrow');
+
+			if (seat_plan.attr('aria-expanded') === 'true') {
+				cabin_section.addClass('expanded');
+				arrow.text('▲'); // Up arrow for expanded
+			} else {
+				cabin_section.addClass('collapsed');
+				arrow.text('▼'); // Down arrow for collapsed
+			}
+		});
+	});
 }(jQuery));
