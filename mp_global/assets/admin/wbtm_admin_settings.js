@@ -356,6 +356,17 @@ function wbtm_load_sortable_datepicker(parent, item) {
                                     value=""
                                 />
                             </label>
+                            <div class="wbtm_seat_rotation_controls">
+                                <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+                                        data-seat="cabin_${cabin_index}_seat${j}" 
+                                        data-rotation="0"
+                                        title="Rotate Seat">
+                                    <span class="fas fa-redo"></span>
+                                </button>
+                                <input type="hidden" name="wbtm_cabin_${cabin_index}_seat${j}_rotation[]" 
+                                       value="0" 
+                                       class="wbtm_rotation_value" />
+                            </div>
                         </div>
                     </th>
                 `;
@@ -446,6 +457,17 @@ function wbtm_load_sortable_datepicker(parent, item) {
                                 value=""
                             />
                         </label>
+                        <div class="wbtm_seat_rotation_controls">
+                            <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+                                    data-seat="cabin_${cabin_index}_seat${j}" 
+                                    data-rotation="0"
+                                    title="Rotate Seat">
+                                <span class="fas fa-redo"></span>
+                            </button>
+                            <input type="hidden" name="wbtm_cabin_${cabin_index}_seat${j}_rotation[]" 
+                                   value="0" 
+                                   class="wbtm_rotation_value" />
+                        </div>
                     </div>
                 </th>
             `;

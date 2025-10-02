@@ -1010,13 +1010,25 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   line-height: 1 !important;
 }
 
-/* Fix upper deck seat price dropdown positioning */
-.wbtm_seat_plan_upper .mp_seat_item {
+/* Fix seat price dropdown positioning for ALL seat plans */
+.wbtm_seat_plan_area .mp_seat_item,
+.wbtm_seat_plan_upper .mp_seat_item,
+.wbtm_cabin_seat_plan .mp_seat_item {
   position: relative !important;
   overflow: visible !important;
+  z-index: 1 !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list {
+/* Increase z-index when hovering to bring tooltip above other seats */
+.wbtm_seat_plan_area .mp_seat_item:hover,
+.wbtm_seat_plan_upper .mp_seat_item:hover,
+.wbtm_cabin_seat_plan .mp_seat_item:hover {
+  z-index: 9999 !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list {
   position: absolute !important;
   left: 0 !important;
   top: 100% !important;
@@ -1026,17 +1038,22 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   z-index: 99999 !important;
   margin: 0 !important;
   padding: 0 !important;
+  list-style-type: none !important;
   background-color: var(--wbtm_color_light) !important;
   border: 1px solid var(--wbtm_color_theme) !important;
   border-radius: var(--wbtm_dbr) !important;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item:hover .wbtm_seat_item_list {
+.wbtm_seat_plan_area .mp_seat_item:hover .wbtm_seat_item_list,
+.wbtm_seat_plan_upper .mp_seat_item:hover .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan .mp_seat_item:hover .wbtm_seat_item_list {
   display: block !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list::before {
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list::before {
   position: absolute !important;
   content: "" !important;
   width: 20px !important;
@@ -1045,57 +1062,86 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   top: -20px !important;
   border: 10px solid transparent !important;
   border-bottom-color: var(--wbtm_color_theme) !important;
+  z-index: 99998 !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li {
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li {
   cursor: pointer !important;
   padding: 5px var(--wbtm_dmp_xs) !important;
   background-color: var(--wbtm_color_light) !important;
   border-bottom: 1px solid #eee !important;
+  position: relative !important;
+  z-index: 99999 !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:last-child {
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:last-child,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:last-child,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:last-child {
   border-bottom: none !important;
 }
 
-.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:hover {
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:hover,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:hover,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:hover {
   background-color: var(--wbtm_color_theme) !important;
   color: var(--wbtm_color_theme_alter) !important;
 }
 
-/* Fix positioning for seats on the right side of upper deck */
+/* Fix positioning for seats on the right side */
+.wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list,
 .wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list,
-.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list {
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list {
   right: 0 !important;
   left: inherit !important;
 }
 
+.wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list::before,
 .wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
-.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list::before {
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list::before {
   left: inherit !important;
   right: 15px !important;
 }
 
-/* Fix positioning for seats on the bottom rows of upper deck */
+/* Fix positioning for seats on the bottom rows */
+.wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list,
 .wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list,
-.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list {
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list {
   top: calc(-100% - 23px) !important;
 }
 
+.wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list::before,
 .wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
-.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list::before {
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list::before {
   top: 100% !important;
   border-top-color: var(--wbtm_color_theme) !important;
   border-bottom-color: transparent !important;
 }
 
-/* Ensure upper deck container doesn't clip the dropdown */
-.wbtm_seat_plan_upper {
+/* Ensure containers don't clip the dropdown */
+.wbtm_seat_plan_area,
+.wbtm_seat_plan_upper,
+.wbtm_cabin_seat_plan {
   overflow: visible !important;
   position: relative !important;
 }
 
-.wbtm_seat_plan_upper .ovAuto {
+.wbtm_seat_plan_area .ovAuto,
+.wbtm_seat_plan_upper .ovAuto,
+.wbtm_cabin_seat_plan .ovAuto {
   overflow: visible !important;
 }
 
