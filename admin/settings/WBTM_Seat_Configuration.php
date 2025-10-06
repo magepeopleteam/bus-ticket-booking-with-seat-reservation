@@ -547,8 +547,8 @@
 		<?php
 	}
 
-		public function settings_save($post_id) {
-			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+			public function settings_save($post_id) {
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 		// Save cabin mode enabled status
 		$cabin_mode_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_mode_enabled') ? 'yes' : 'no';
 		update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
@@ -672,9 +672,9 @@
 								}
 							}
 						}
-				}
-				update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
-				/***********************/
+					}
+					update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
+					/***********************/
 				// Only update total_seat for legacy seat plans
 				// Cabin configuration already set the correct total_seat in save_cabin_seat_plans
 				$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
@@ -684,8 +684,8 @@
 					$total_seat=$seat_type=='wbtm_seat_plan'?$total_seat:WBTM_Global_Function::get_submit_info('wbtm_get_total_seat', 0);
 					update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 				}
+				}
 			}
-		}
 			/**************************/
 			public function wbtm_create_seat_plan() {
 				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
