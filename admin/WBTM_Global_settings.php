@@ -30,7 +30,7 @@
 				?>
                 <div class="wbtm_style wbtm_global_settings">
                     <div class="mpPanel">
-                        <div class="mpPanelHeader"><?php echo esc_html( esc_html__( ' Global Settings', 'ecab-taxi-booking-manager' ) ); ?></div>
+                        <div class="mpPanelHeader"><?php esc_html_e( ' Global Settings', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
                         <div class="mpPanelBody mp_zero">
                             <div class="wbtm_tabs leftTabs">
 								<?php $this->settings_api->show_navigation(); ?>
