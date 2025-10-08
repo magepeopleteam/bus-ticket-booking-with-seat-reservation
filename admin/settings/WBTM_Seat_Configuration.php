@@ -353,10 +353,45 @@
 					</table>
 				</div>
 				<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Row', 'bus-ticket-booking-with-seat-reservation')); ?>
-				<div class="wbtm_cabin_hidden_content">
+				<div class="wbtm_cabin_hidden_content" style="display: none;">
 					<table>
 						<tbody class="wbtm_cabin_hidden_item">
-						<?php $this->cabin_seat_plan_row($cols, $cabin_index); ?>
+						<?php 
+						// Create template row with disabled inputs to prevent form submission
+						// Template row is used by JavaScript for adding new rows dynamically
+						?>
+						<tr class="wbtm_remove_area wbtm_template_row">
+							<?php for ($j = 1; $j <= $cols; $j++) { ?>
+								<?php $key = 'cabin_' . $cabin_index . '_seat' . $j; ?>
+								<th>
+									<div class="wbtm_seat_container">
+										<label>
+											<input type="text" class="formControl wbtm_id_validation"
+												name="wbtm_template_<?php echo esc_attr($key); ?>[]" 
+												placeholder="<?php esc_attr_e('Blank', 'bus-ticket-booking-with-seat-reservation'); ?>"
+												value=""
+												disabled
+											/>
+										</label>
+										<?php if ($enable_rotation == 'yes') { ?>
+											<div class="wbtm_seat_rotation_controls">
+												<button type="button" class="wbtm_rotate_seat _whiteButton_xs"
+														data-seat-key="<?php echo esc_attr($key); ?>"
+														data-rotation="0"
+														title="<?php esc_attr_e('Rotate Seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+													<span class="fas fa-redo-alt mp_zero"></span>
+												</button>
+												<input type="hidden" name="wbtm_template_<?php echo esc_attr($key); ?>_rotation[]"
+													   value="0"
+													   class="wbtm_rotation_value"
+													   disabled />
+											</div>
+										<?php } ?>
+									</div>
+								</th>
+							<?php } ?>
+							<th> <?php WBTM_Custom_Layout::move_remove_button(); ?> </th>
+						</tr>
 						</tbody>
 					</table>
 				</div>
@@ -440,8 +475,12 @@
 						$col_rotation_infos = [$col_rotation_infos];
 					}
 
-					for ($i = 0; $i < $rows; $i++) {
-						$seat_value = $col_infos[$i] ?? '';
+				// Process only the exact number of rows configured (no more, no less)
+				// This prevents hidden template rows from being processed and saved
+				for ($i = 0; $i < $rows; $i++) {
+					// Only process if this row index exists in the submitted data
+					if (isset($col_infos[$i])) {
+						$seat_value = $col_infos[$i];
 						$rotation_value = $col_rotation_infos[$i] ?? '0';
 
 						$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j] = $seat_value;
@@ -452,6 +491,7 @@
 							$total_seat++;
 						}
 					}
+				}
 				}
 			}
 			update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);

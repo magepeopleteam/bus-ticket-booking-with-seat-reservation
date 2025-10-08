@@ -512,11 +512,28 @@ function wbtm_load_sortable_datepicker(parent, item) {
     // Handle master cabin mode enable/disable toggle
     function toggleCabinModeFields(checkbox) {
         let cabin_mode_fields = $('.wbtm_cabin_mode_fields');
+        let traditional_seat_plan = $('[data-collapse="#wbtm_seat_plan"]');
+        let seat_type_select = $('select[name="wbtm_seat_type_conf"]');
+        let seat_type = seat_type_select.val();
         
         if (checkbox.is(':checked')) {
+            // Auto-select "Seat Plan" when cabin mode is enabled
+            if (seat_type !== 'wbtm_seat_plan') {
+                seat_type_select.val('wbtm_seat_plan').trigger('change');
+                seat_type = 'wbtm_seat_plan';
+            }
+            
+            // Show cabin configuration
             cabin_mode_fields.slideDown(300);
+            // Hide traditional seat plan since we're now in seat plan mode with cabin config
+            traditional_seat_plan.slideUp(300);
         } else {
+            // Hide cabin configuration
             cabin_mode_fields.slideUp(300);
+            // Show traditional seat plan if seat type is 'wbtm_seat_plan'
+            if (seat_type === 'wbtm_seat_plan') {
+                traditional_seat_plan.slideDown(300);
+            }
         }
     }
 
@@ -531,6 +548,13 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
         if (cabin_mode_checkbox.length > 0) {
             toggleCabinModeFields(cabin_mode_checkbox);
+            
+            // Also check seat type selection - if cabin mode is enabled but seat type is 'without_seat_plan',
+            // we should still show the traditional interface
+            let seat_type = $('select[name="wbtm_seat_type_conf"]').val();
+            if (cabin_mode_checkbox.is(':checked') && seat_type === 'wbtm_seat_plan') {
+                $('[data-collapse="#wbtm_seat_plan"]').hide();
+            }
         }
     });
 
@@ -542,6 +566,29 @@ function wbtm_load_sortable_datepicker(parent, item) {
     // Handle master cabin mode enable checkbox change
     $(document).on('change', 'input[name="wbtm_cabin_mode_enabled"]', function() {
         toggleCabinModeFields($(this));
+    });
+
+    // Handle seat type selection change - ensure proper visibility
+    $(document).on('change', 'select[name="wbtm_seat_type_conf"]', function() {
+        let seat_type = $(this).val();
+        let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
+        let traditional_seat_plan = $('[data-collapse="#wbtm_seat_plan"]');
+        
+        // If cabin mode is enabled, force seat type to be 'wbtm_seat_plan'
+        if (cabin_mode_checkbox.is(':checked') && seat_type !== 'wbtm_seat_plan') {
+            $(this).val('wbtm_seat_plan');
+            seat_type = 'wbtm_seat_plan';
+            // Show alert to inform user
+            alert('Cabin/Coach Configuration requires Seat Plan mode. Seat type has been automatically set to "Seat Plan".');
+        }
+        
+        // If seat type is 'wbtm_seat_plan' and cabin mode is enabled, hide traditional seat plan
+        if (seat_type === 'wbtm_seat_plan' && cabin_mode_checkbox.is(':checked')) {
+            traditional_seat_plan.hide();
+        } else if (seat_type === 'wbtm_seat_plan') {
+            // If seat type is 'wbtm_seat_plan' but cabin mode is disabled, show traditional seat plan
+            traditional_seat_plan.show();
+        }
     });
 
 })(jQuery);
