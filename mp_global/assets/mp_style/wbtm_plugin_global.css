@@ -3701,3 +3701,16 @@
 		border: 1px solid var(--wbtm_color_border);
 	}
 }
+
+/* Pagination Style Fixes - Load More vs Page Numbers */
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="load_more"] .buttonGroup,
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="load_more"] .buttonGroup *,
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="load_more"] button[data-pagination],
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="load_more"] .page_prev,
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="load_more"] .page_next {
+    display: none !important;
+}
+
+.wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="page_numbers"] .pagination_load_more {
+    display: none !important;
+}

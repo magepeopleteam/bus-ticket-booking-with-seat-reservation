@@ -268,13 +268,20 @@
   });
   
   // Initialize rotation buttons when seat plan is loaded
-  $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd', function() {
+  $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd, .wbtm_cabin_seat_plan', function() {
     initializeRotationButtons();
   });
   
   // Also initialize on page load
   $(document).ready(function() {
     initializeRotationButtons();
+  });
+
+  // Initialize rotation buttons after generating cabin seats
+  $(document).on('click', '.wbtm_generate_cabin_seats', function() {
+    setTimeout(function() {
+      initializeRotationButtons();
+    }, 100);
   });
   
   function initializeRotationButtons() {
@@ -294,11 +301,14 @@
   $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function() {
     let isEnabled = $(this).is(':checked');
     let $seatPlanContainer = $('.wbtm_seat_plan_settings');
+    let $cabinContainer = $('.wbtm_cabin_settings_area');
     
     if (isEnabled) {
       // Show rotation controls immediately
       $seatPlanContainer.addClass('wbtm_enable_rotation');
       $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
+      $cabinContainer.addClass('wbtm_enable_rotation');
+      $cabinContainer.find('.wbtm_seat_rotation_controls').show();
       
       // Add rotation controls to existing seats if they don't have them
       $seatPlanContainer.find('.wbtm_seat_container').each(function() {
@@ -328,6 +338,8 @@
       // Hide rotation controls immediately
       $seatPlanContainer.removeClass('wbtm_enable_rotation');
       $seatPlanContainer.find('.wbtm_seat_rotation_controls').hide();
+      $cabinContainer.removeClass('wbtm_enable_rotation');
+      $cabinContainer.find('.wbtm_seat_rotation_controls').hide();
     }
   });
   
@@ -336,6 +348,7 @@
     let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
     if ($rotationToggle.is(':checked')) {
       $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
+      $('.wbtm_cabin_settings_area').addClass('wbtm_enable_rotation');
       $('.wbtm_seat_rotation_controls').show();
     }
   });

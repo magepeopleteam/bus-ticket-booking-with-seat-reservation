@@ -17,12 +17,21 @@
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				$cat = $params['cat'];
-				$show = $params['show'];
+				$show = (int)$params['show'];
 				$start = $params['start'];
 				$end = $params['end'];
 				$column = $params['column'];
 				$style = $params['style'];
-				$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat);
+				$pagination = $params['pagination'];
+				
+				// For pagination, we need to get total count and limit results
+				if ($pagination === 'yes' && $show > 0) {
+					$total_buses = WBTM_Query::get_bus_count($start, $end, $cat);
+					$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat, -1); // Get all for now, we'll handle display in template
+				} else {
+					$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat);
+					$total_buses = count($bus_ids);
+				}
 				ob_start();
 				if (sizeof($bus_ids) > 0) {
 					$count = 0;
@@ -64,7 +73,11 @@
 								</div>
 							<?php } ?>
 						</div>
-						<?php do_action('wbtm_pagination_section', $params, sizeof($bus_ids)); ?>
+						<?php 
+							if ($pagination === 'yes') {
+								do_action('wbtm_pagination_section', $params, $total_buses);
+							}
+						?>
 					</div>
 					<?php
 				}

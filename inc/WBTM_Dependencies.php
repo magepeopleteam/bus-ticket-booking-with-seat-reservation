@@ -89,11 +89,11 @@
 				$client->insights()->init();
 			}
 
-			public function frontend_enqueue() {
-				wp_enqueue_style( 'wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time() );
-				wp_enqueue_script( 'wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array( 'jquery' ), time(), true );
-				do_action( 'add_wbtm_frontend_script' );
-			}
+	public function frontend_enqueue() {
+		wp_enqueue_style( 'wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time() );
+		wp_enqueue_script( 'wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array( 'jquery' ), time(), true );
+		do_action( 'add_wbtm_frontend_script' );
+	}
 
 			public function load_single_template( $template ) {
 				global $post;

@@ -698,31 +698,82 @@ function wbtm_pagination_page_management(parent, pagination_page, total_item) {
         let page_no = parseInt(parent.find('.active_pagination').data('pagination')) + 1;
         parent.find('[data-pagination="' + page_no + '"]').trigger('click');
     });
-    //*************** Pagination Load More ***************//
-    $(document).on('click', '.wbtm_style div.wbtm_pagination_main_area  .pagination_load_more', function () {
-        let pagination_page = parseInt($(this).attr('data-load-more')) + 1;
-        let parent = $(this).closest('div.wbtm_pagination_main_area');
-        let per_page_item = parseInt(parent.find('input[name="pagination_per_page"]').val());
-        let count = 0;
-        let end_item = per_page_item * pagination_page + per_page_item;
-        $(this).attr('data-load-more', pagination_page).promise().done(function () {
-            parent.find('.wbtm_pagination_item').each(function () {
-                if (count < end_item) {
-                    $(this).slideDown(250);
+    // Handle page number clicks
+    $(document).on('click', '.wbtm_style .pagination_area [data-pagination]', function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('active_pagination')) {
+            let parent = $(this).closest('.pagination_area');
+            let main_parent = parent.closest('.wbtm_pagination_main_area');
+            let page_no = parseInt($(this).data('pagination'));
+            let per_page_item = parseInt(parent.find('input[name="pagination_per_page"]').val());
+            let total_item = parseInt(parent.find('input[name="mp_total_item"]').val());
+            let pagination_style = parent.find('input[name="pagination_style"]').val();
+            
+            // Only handle if this is not Load More style
+            if (pagination_style !== 'load_more') {
+                // Hide all items first
+                main_parent.find('.wbtm_pagination_item').hide();
+                
+                // Show items for current page
+                let start_item = page_no * per_page_item;
+                let end_item = start_item + per_page_item;
+                let count = 0;
+                
+                main_parent.find('.wbtm_pagination_item').each(function() {
+                    if (count >= start_item && count < end_item) {
+                        $(this).fadeIn(250);
+                    }
+                    count++;
+                });
+                
+                // Update active states
+                parent.find('.active_pagination').removeClass('active_pagination');
+                $(this).addClass('active_pagination');
+                
+                // Update pagination UI
+                wbtm_pagination_page_management(parent, page_no, total_item);
+                
+                // Scroll to first item if needed
+                load_more_scroll(main_parent, page_no);
+                
+                // Load background images
+                if (typeof wbtm_loadBgImage === 'function') {
+                    wbtm_loadBgImage();
                 }
-                count++;
-            });
-        }).promise().done(function () {
-            lode_more_init(parent);
-        }).promise().done(function () {
-            wbtm_loadBgImage();
-        });
+            }
+        }
     });
-    function lode_more_init(parent) {
-        if (parent.find('.wbtm_pagination_item:hidden').length === 0) {
-            parent.find('[data-load-more]').attr('disabled', 'disabled');
+    //*************** Pagination Load More ***************//
+    $(document).on('click', '.wbtm_style .pagination_load_more', function () {
+        let pagination_page = parseInt($(this).attr('data-load-more')) + 1;
+        let main_parent = $(this).closest('div.wbtm_pagination_main_area');
+        let pagination_area = $(this).closest('.pagination_area');
+        let per_page_item = parseInt(pagination_area.find('input[name="pagination_per_page"]').val());
+        let count = 0;
+        let end_item = (pagination_page + 1) * per_page_item;
+        
+        $(this).attr('data-load-more', pagination_page);
+        
+        main_parent.find('.wbtm_pagination_item').each(function () {
+            if (count < end_item) {
+                $(this).slideDown(250);
+            }
+            count++;
+        });
+        
+        // Check if all items are visible and disable button if so
+        setTimeout(function() {
+            lode_more_init(main_parent);
+            if (typeof wbtm_loadBgImage === 'function') {
+                wbtm_loadBgImage();
+            }
+        }, 300);
+    });
+    function lode_more_init(main_parent) {
+        if (main_parent.find('.wbtm_pagination_item:hidden').length === 0) {
+            main_parent.find('[data-load-more]').attr('disabled', 'disabled');
         } else {
-            parent.find('[data-load-more]').removeAttr('disabled');
+            main_parent.find('[data-load-more]').removeAttr('disabled');
         }
     }
     function load_more_scroll(parent, pagination_page) {
@@ -861,18 +912,132 @@ function wbtm_pagination_page_management(parent, pagination_page, total_item) {
 
 // --- Pagination Fix: Always re-initialize pagination after rendering ---
 function wbtm_init_pagination_fix() {
-    jQuery('.pagination_area').each(function() {
-        var parent = jQuery(this);
-        var page = parseInt(parent.find('.active_pagination').data('pagination')) || 0;
-        var total = parseInt(parent.find('input[name="mp_total_item"]').val()) || 0;
-        wbtm_pagination_page_management(parent, page, total);
+    jQuery('.wbtm_pagination_main_area').each(function() {
+        var main_parent = jQuery(this);
+        var parent = main_parent.find('.pagination_area');
+        
+        if (parent.length > 0) {
+            var page = parseInt(parent.find('.active_pagination').data('pagination')) || 0;
+            var total = parseInt(parent.find('input[name="mp_total_item"]').val()) || 0;
+            var per_page = parseInt(parent.find('input[name="pagination_per_page"]').val()) || 9;
+            var pagination_style = parent.find('input[name="pagination_style"]').val() || 'load_more';
+            
+            // Initialize pagination display based on style
+            if (total > per_page) {
+                var count = 0;
+                main_parent.find('.wbtm_pagination_item').each(function() {
+                    if (pagination_style === 'load_more') {
+                        // For Load More: Hide items beyond first page initially
+                        if (count >= per_page) {
+                            jQuery(this).hide();
+                        }
+                    } else {
+                        // For page numbers: Hide items beyond first page initially
+                        if (count >= per_page) {
+                            jQuery(this).hide();
+                        }
+                    }
+                    count++;
+                });
+                
+                // Initialize Load More button if style is load_more
+                if (pagination_style === 'load_more') {
+                    lode_more_init(main_parent);
+                }
+            }
+            
+            // Only run page management for numbered pagination
+            if (pagination_style !== 'load_more') {
+                wbtm_pagination_page_management(parent, page, total);
+            }
+        }
     });
 }
 
 // Run on page load
 jQuery(document).ready(function() {
     wbtm_init_pagination_fix();
+    
+    // Add delay to ensure all elements are loaded
+    setTimeout(function() {
+        wbtm_force_pagination_style_fix();
+    }, 500);
 });
+
+// Also run on window load as backup
+jQuery(window).on('load', function() {
+    setTimeout(function() {
+        wbtm_force_pagination_style_fix();
+    }, 1000);
+});
+
+// Force fix pagination style display
+function wbtm_force_pagination_style_fix() {
+    jQuery('.wbtm_pagination_main_area').each(function() {
+        var main_parent = jQuery(this);
+        var pagination_areas = main_parent.find('.pagination_area');
+        
+        pagination_areas.each(function(index) {
+            var pagination_area = jQuery(this);
+            var style = pagination_area.find('input[name="pagination_style"]').val() || 'load_more';
+            
+            if (style === 'load_more') {
+                // Hide page numbers, show load more
+                pagination_area.find('.buttonGroup').hide();
+                pagination_area.find('.pagination_load_more').show();
+                
+                // Re-bind Load More event
+                pagination_area.find('.pagination_load_more').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    wbtm_handle_load_more(jQuery(this));
+                });
+            } else {
+                // Hide load more, show page numbers  
+                pagination_area.find('.pagination_load_more').hide();
+                pagination_area.find('.buttonGroup').show();
+            }
+            
+            // Add style class for CSS targeting
+            pagination_area.addClass('wbtm-style-' + style);
+        });
+        
+        // If there are multiple pagination areas, hide all but the first
+        if (pagination_areas.length > 1) {
+            pagination_areas.not(':first').hide();
+        }
+    });
+}
+
+// Handle Load More functionality
+function wbtm_handle_load_more(button) {
+    let pagination_page = parseInt(button.attr('data-load-more')) + 1;
+    let main_parent = button.closest('.wbtm_pagination_main_area');
+    let pagination_area = button.closest('.pagination_area');
+    let per_page_item = parseInt(pagination_area.find('input[name="pagination_per_page"]').val()) || 3;
+    let total_items = parseInt(pagination_area.find('input[name="mp_total_item"]').val()) || 0;
+    
+    button.attr('data-load-more', pagination_page);
+    
+    // Calculate which items to show
+    let start_item = 0;
+    let end_item = (pagination_page + 1) * per_page_item;
+    let count = 0;
+    
+    main_parent.find('.wbtm_pagination_item').each(function() {
+        if (count < end_item) {
+            jQuery(this).slideDown(250);
+        }
+        count++;
+    });
+    
+    // Check if we should disable the button
+    setTimeout(function() {
+        let hidden_items = main_parent.find('.wbtm_pagination_item:hidden');
+        if (hidden_items.length === 0) {
+            button.attr('disabled', 'disabled');
+        }
+    }, 300);
+}
 
 // Run after AJAX loads passenger list (you may need to adjust selector/event for your use case)
 jQuery(document).ajaxComplete(function(event, xhr, settings) {
