@@ -107,8 +107,12 @@
 																$rotation = intval($seat_info[$seat_key . '_rotation']);
 															}
 															$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
-															$is_booked = in_array($seat_name, $seat_booked);
-															$is_in_cart = !$is_booked && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
+																													
+															// Enhanced by Shahnur Alam - 2025-10-08
+															// Fix cabin seat availability check - use cabin-specific identifiers
+															$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+															$is_booked = in_array($cabin_seat_identifier, $seat_booked) || in_array($seat_name, $seat_booked);
+															$is_in_cart = !$is_booked && (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier) || WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name));
 															?>
 															<th>
 																<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
@@ -214,12 +218,18 @@
 												?>
 												<th>
 													<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
-														<?php if (in_array($seat_name,$seat_booked)) { ?>
+														<?php 
+														// Enhanced by Shahnur Alam - 2025-10-08
+														// Check both legacy seat names and cabin-specific identifiers for backward compatibility
+														$is_booked_legacy = in_array($seat_name, $seat_booked);
+														$is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
+														?>
+														<?php if ($is_booked_legacy) { ?>
 															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 															</div>
-														<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name)) { ?>
+														<?php } elseif ($is_in_cart_legacy) { ?>
 															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
@@ -298,10 +308,13 @@
 													$rotation = intval($seat_info_dd[$seat_key . '_rotation']);
 												}
 												$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+																									
+												// Enhanced by Shahnur Alam - 2025-10-08
+												// Fix upper deck seat availability check - support cabin-specific identifiers
+												$seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
 												?>
 												<th>
 													<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
-														<?php $seat_available = WBTM_Query:: query_total_booked($post_id, $start_route, $end_route, $date, '', $info); ?>
 														<?php if ($seat_available > 0) { ?>
 															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>">
 																<div class="seat_visual"></div>

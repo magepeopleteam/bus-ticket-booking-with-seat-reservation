@@ -408,8 +408,16 @@
 
 							// Check cabin seats
 							if ( is_array( $cabin_seat_infos ) && sizeof( $cabin_seat_infos ) > 0 ) {
+								// Enhanced by Shahnur Alam - 2025-10-08
+								// Fix cabin seat cart check - use cabin-specific identifiers
 								foreach ( $cabin_seat_infos as $seat_info ) {
-									if ( array_key_exists( 'seat_name', $seat_info ) && $seat_info['seat_name'] == $seat_name ) {
+									$cart_seat_name = array_key_exists( 'seat_name', $seat_info ) ? $seat_info['seat_name'] : '';
+									$cabin_index = array_key_exists( 'cabin_index', $seat_info ) ? $seat_info['cabin_index'] : '';
+													
+									// Create cabin-specific identifier for comparison
+									$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $cart_seat_name;
+													
+									if ( $cabin_seat_identifier == $seat_name ) {
 										return true;
 									}
 								}
