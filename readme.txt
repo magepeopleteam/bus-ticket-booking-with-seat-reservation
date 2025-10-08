@@ -6,7 +6,7 @@ Stable tag: trunk
 Tested up to: 6.7.1
 Requires PHP: 7.0
 WC requires at least: 3.0
-WC tested up to: 4.9
+WC tested up to: 6.8.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -321,10 +321,12 @@ global offday settings*
 *Code Optimize
 Some minor bug fixed*
 
-= 5.6 =
+= 5.5.1 =
 Minor issues fixed
 Seat rotation added 
 
-= 5.7 =
+= 5.5.2 =
 Made compatiable with some of the major caching plugin 
 
+= 5.5.3 =
+Translation Issue fixed
