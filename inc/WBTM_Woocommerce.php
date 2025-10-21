@@ -1188,18 +1188,73 @@ if (! class_exists('WBTM_Woocommerce')) {
 		/*********************/
 		public static function add_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array())
 		{
-			$new_post = array(
-				'post_title'    => $title,
-				'post_content'  => '',
-				'post_category' => $cat,
-				'tags_input'    => array(),
-				'post_status'   => $status,
-				'post_type'     => $cpt_name
-			);
+			// Generate a privacy-safe post title and slug for bus bookings
+			if ($cpt_name === 'wbtm_bus_booking') {
+				// Use order ID and timestamp for privacy-safe identification
+				$order_id = isset($meta_data['wbtm_order_id']) ? $meta_data['wbtm_order_id'] : '';
+				$timestamp = current_time('Y-m-d-H-i-s');
+				$safe_title = 'Bus Booking #' . $order_id . '-' . $timestamp;
+				
+				$new_post = array(
+					'post_title'    => $safe_title,
+					'post_name'     => 'bus-booking-' . $order_id . '-' . $timestamp, // Explicitly set slug
+					'post_content'  => '',
+					'post_category' => $cat,
+					'tags_input'    => array(),
+					'post_status'   => $status,
+					'post_type'     => $cpt_name
+				);
+			} else {
+				// For other post types, use original behavior
+				$new_post = array(
+					'post_title'    => $title,
+					'post_content'  => '',
+					'post_category' => $cat,
+					'tags_input'    => array(),
+					'post_status'   => $status,
+					'post_type'     => $cpt_name
+				);
+			}
+			
 			$post_id  = wp_insert_post($new_post);
 			if (sizeof($meta_data) > 0) {
 				foreach ($meta_data as $key => $value) {
 					update_post_meta($post_id, $key, $value);
+				}
+			}
+		}
+		
+		/**
+		 * Clean up existing booking posts that have customer names in URLs
+		 * This should be run once to fix existing privacy issues
+		 */
+		public static function cleanup_existing_booking_urls() {
+			// Get all existing bus booking posts
+			$bookings = get_posts(array(
+				'post_type' => 'wbtm_bus_booking',
+				'numberposts' => -1,
+				'post_status' => 'publish'
+			));
+			
+			foreach ($bookings as $booking) {
+				// Check if the post name contains customer name patterns
+				$current_slug = $booking->post_name;
+				
+				// If the slug looks like a customer name (contains hyphens and letters)
+				if (preg_match('/^[a-z]+-[a-z]+/', $current_slug)) {
+					// Get order ID from meta
+					$order_id = get_post_meta($booking->ID, 'wbtm_order_id', true);
+					$timestamp = get_the_date('Y-m-d-H-i-s', $booking->ID);
+					
+					// Create new privacy-safe slug
+					$new_slug = 'bus-booking-' . $order_id . '-' . $timestamp;
+					
+					// Update the post
+					wp_update_post(array(
+						'ID' => $booking->ID,
+						'post_name' => $new_slug,
+						'post_title' => 'Bus Booking #' . $order_id . '-' . $timestamp
+					));
 				}
 			}
 		}
