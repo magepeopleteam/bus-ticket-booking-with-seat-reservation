@@ -19,6 +19,14 @@
 				add_filter( 'single_template', array( $this, 'load_single_template' ), 10 );
 				add_filter( 'template_include', array( $this, 'load_template' ) );
 				add_filter( 'register_post_type_args', array( $this, 'modify_bus_slug' ), 5, 2 );
+				
+				// Privacy protection for booking pages
+				add_action( 'wp_head', array( $this, 'add_privacy_meta_tags' ) );
+				add_filter( 'robots_txt', array( $this, 'add_robots_txt_rules' ) );
+				
+				// Add admin cleanup tool
+				add_action( 'admin_init', array( $this, 'handle_privacy_cleanup' ) );
+				add_action( 'admin_notices', array( $this, 'show_privacy_notice' ) );
 
 			}
 
@@ -110,6 +118,78 @@
 				}
 
 				return $template;
+			}
+			
+			/**
+			 * Add privacy meta tags to prevent search engine indexing of booking pages
+			 */
+			public function add_privacy_meta_tags() {
+				global $post;
+				
+				// Check if this is a bus booking page
+				if ( is_singular( 'wbtm_bus_booking' ) ) {
+					echo '<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
+					echo '<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
+					echo '<meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
+					echo '<meta name="duckduckbot" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
+				}
+			}
+			
+			/**
+			 * Add robots.txt rules to prevent crawling of booking pages
+			 */
+			public function add_robots_txt_rules( $output ) {
+				$output .= "\n# Prevent indexing of bus booking pages\n";
+				$output .= "Disallow: /wbtm_bus_booking/\n";
+				$output .= "Disallow: /*/wbtm_bus_booking/\n";
+				$output .= "Disallow: /bus-booking-*\n";
+				
+				return $output;
+			}
+			
+			/**
+			 * Handle privacy cleanup from admin
+			 */
+			public function handle_privacy_cleanup() {
+				if ( isset( $_GET['wbtm_cleanup_urls'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'wbtm_cleanup_urls' ) ) {
+					if ( current_user_can( 'manage_options' ) ) {
+						WBTM_Woocommerce::cleanup_existing_booking_urls();
+						wp_redirect( admin_url( 'edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1' ) );
+						exit;
+					}
+				}
+			}
+			
+			/**
+			 * Show privacy notice in admin
+			 */
+			public function show_privacy_notice() {
+				$screen = get_current_screen();
+				if ( $screen && $screen->id === 'edit-wbtm_bus_booking' ) {
+					if ( isset( $_GET['wbtm_cleanup_complete'] ) ) {
+						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
+					} else {
+						// Check if there are any booking posts with customer names in URLs
+						$bookings = get_posts(array(
+							'post_type' => 'wbtm_bus_booking',
+							'numberposts' => 5,
+							'post_status' => 'publish'
+						));
+						
+						$has_customer_names = false;
+						foreach ($bookings as $booking) {
+							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
+								$has_customer_names = true;
+								break;
+							}
+						}
+						
+						if ($has_customer_names) {
+							$cleanup_url = wp_nonce_url( admin_url( 'edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1' ), 'wbtm_cleanup_urls' );
+							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url( $cleanup_url ) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
+						}
+					}
+				}
 			}
 		}
 		new WBTM_Dependencies();
