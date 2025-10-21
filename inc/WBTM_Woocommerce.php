@@ -87,10 +87,28 @@ if (! class_exists('WBTM_Woocommerce')) {
 					$seat_type   = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 
 					if ($seat_type == 'wbtm_seat_plan') {
-						$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
+						// Handle cabin-specific seat validation
+						$cabin_seats = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : [];
+						$legacy_seats = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
 
-						if (sizeof($cart_seat_infos) > 0) {
-							foreach ($cart_seat_infos as $seat_info) {
+						if (!empty($cabin_seats)) {
+							// Enhanced by Shahnur Alam - 2025-10-08
+							// Fix cabin seat availability validation - use cabin-specific identifiers
+							foreach ($cabin_seats as $seat_info) {
+								$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
+								$cabin_index = array_key_exists('cabin_index', $seat_info) ? $seat_info['cabin_index'] : '';
+								
+								// Create cabin-specific seat identifier to prevent cross-cabin conflicts
+								$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+
+								if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
+									WC()->cart->remove_cart_item($key);
+									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'woocommerce'), $seat_name, $seat_info['cabin_name']), 'error');
+								}
+							}
+						} elseif (!empty($legacy_seats)) {
+							// Legacy seat validation
+							foreach ($legacy_seats as $seat_info) {
 								$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 
 								if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
@@ -113,7 +131,16 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$bp_time          = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
 				$dp               = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
 				$ticket_infos     = self::get_cart_ticket_info($post_id);
-				$seat_price       = self::get_cart_seat_price($ticket_infos);
+				$cabin_config     = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+
+				// Handle both legacy and cabin-based seat selection
+				$seat_price       = 0;
+				if (!empty($cabin_config)) {
+					$seat_price = self::get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config);
+				} else {
+					$seat_price = self::get_cart_seat_price($ticket_infos);
+				}
+
 				$ex_service_infos = self::get_cart_extra_service_info($post_id);
 				$ex_service_price = self::get_cart_ex_service_price($ex_service_infos);
 				$total_price      = $seat_price + $ex_service_price;;
@@ -126,8 +153,19 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$cart_item_data['wbtm_dp_time']        = WBTM_Global_Function::get_submit_info('wbtm_dp_time');
 				$cart_item_data['wbtm_pickup_point']   = WBTM_Global_Function::get_submit_info('wbtm_pickup_point');
 				$cart_item_data['wbtm_drop_off_point'] = WBTM_Global_Function::get_submit_info('wbtm_drop_off_point');
-				$cart_item_data['wbtm_seats']          = $ticket_infos;
-				$cart_item_data['wbtm_seats_qty']      = self::get_cart_ticket_qty($ticket_infos);
+
+				// Handle cabin-specific seat data
+				if (!empty($cabin_config)) {
+					$cabin_seats = self::get_cart_cabin_seat_info($post_id, $cabin_config);
+					$cart_item_data['wbtm_cabin_seats']    = $cabin_seats;
+					$cart_item_data['wbtm_cabin_config']   = $cabin_config;
+					$cart_item_data['wbtm_seats_qty']      = self::get_cart_cabin_ticket_qty($cabin_seats);
+				} else {
+					// Legacy seat handling
+					$cart_item_data['wbtm_seats']          = $ticket_infos;
+					$cart_item_data['wbtm_seats_qty']      = self::get_cart_ticket_qty($ticket_infos);
+				}
+
 				$cart_item_data['wbtm_base_price']     = $seat_price;
 				$cart_item_data['wbtm_extra_services'] = $ex_service_infos;
 				$cart_item_data['wbtm_base_ex_price']  = $ex_service_price;
@@ -141,28 +179,124 @@ if (! class_exists('WBTM_Woocommerce')) {
 			//echo '<pre>'; print_r($cart_item_data); echo '</pre>'; die();
 			return $cart_item_data;
 		}
-		public function before_calculate_totals($cart_object)
-		{
 
-			foreach ($cart_object->cart_contents as $value) {
-				$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
-				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-					$total_price = $value['wbtm_tp'];
-					// Safety check: ensure we have a valid price and it's not the default 0.01
-					if (empty($total_price) || $total_price <= 0.01) {
-						// Recalculate the price if it's missing or invalid
-						$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
-						$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
-						$total_price = $seat_price + $ex_service_price;
+		public static function get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config) {
+			$total_price = 0;
+
+			foreach ($cabin_config as $cabin_index => $cabin) {
+				if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
+
+				$selected_seats = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_cabin_' . $cabin_index, '');
+				if ($selected_seats) {
+					$seat_names = explode(',', $selected_seats);
+					$seat_types = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_type_cabin_' . $cabin_index, '');
+					$seat_types = $seat_types ? explode(',', $seat_types) : [];
+
+					foreach ($seat_names as $seat_index => $seat_name) {
+						$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
+
+						// Find the corresponding ticket info
+						foreach ($ticket_infos as $ticket_info) {
+							if ($ticket_info['type'] == $seat_type) {
+								$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);
+								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+								$total_price += $base_price * $price_multiplier;
+								break;
+							}
+						}
 					}
-					$value['data']->set_price($total_price);
-					$value['data']->set_regular_price($total_price);
-					$value['data']->set_sale_price($total_price);
-					$value['data']->set_sold_individually('yes');
-					$value['data']->get_price();
 				}
 			}
+
+			return $total_price;
 		}
+
+		public static function get_cart_cabin_seat_info($post_id, $cabin_config) {
+			$cabin_seats = [];
+
+			// Get ticket information for price calculation
+			$bp = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
+			$dp = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
+			$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp);
+
+			foreach ($cabin_config as $cabin_index => $cabin) {
+				if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
+
+				$selected_seats = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_cabin_' . $cabin_index, '');
+				$selected_seat_types = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_type_cabin_' . $cabin_index, '');
+
+				if ($selected_seats) {
+					$seat_names = explode(',', $selected_seats);
+					$seat_types = $selected_seat_types ? explode(',', $selected_seat_types) : [];
+
+					foreach ($seat_names as $seat_index => $seat_name) {
+						$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
+
+						// Find the ticket price for this seat type
+						$ticket_price = 0;
+						foreach ($ticket_infos as $ticket_info) {
+							if ($ticket_info['type'] == $seat_type) {
+								$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);
+								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+								$ticket_price = $base_price * $price_multiplier;
+								break;
+							}
+						}
+
+						$cabin_seats[] = [
+							'cabin_index' => $cabin_index,
+							'cabin_name' => $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1),
+							'seat_name' => $seat_name,
+							'seat_type' => $seat_type,
+							'ticket_price' => $ticket_price,
+							'price_multiplier' => $cabin['price_multiplier'] ?? 1.0
+						];
+					}
+				}
+			}
+
+			return $cabin_seats;
+		}
+
+		public static function get_cart_cabin_ticket_qty($cabin_seats) {
+			return count($cabin_seats);
+		}
+	public function before_calculate_totals($cart_object)
+	{
+
+		foreach ($cart_object->cart_contents as $value) {
+			$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+				$total_price = $value['wbtm_tp'] ?? 0;
+				
+				// Always recalculate for cabin seats, or if price is missing/invalid
+				$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
+				
+				if ($has_cabin_seats || empty($total_price) || $total_price <= 0.01) {
+					// Calculate seat price based on seat type
+					if ($has_cabin_seats) {
+						// Calculate price from cabin seats
+						$seat_price = 0;
+						foreach ($value['wbtm_cabin_seats'] as $cabin_seat) {
+							$seat_price += $cabin_seat['ticket_price'] ?? 0;
+						}
+					} else {
+						$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
+					}
+					
+					// Add extra service price
+					$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
+					$total_price = $seat_price + $ex_service_price;
+				}
+				
+				$value['data']->set_price($total_price);
+				$value['data']->set_regular_price($total_price);
+				$value['data']->set_sale_price($total_price);
+				$value['data']->set_sold_individually('yes');
+				$value['data']->get_price();
+			}
+		}
+	}
 		public function update_order_status($order_id)
 		{
 			$force_processing_completed =  WBTM_Global_Function::get_settings('wbtm_general_settings', 'make_processing_completed', 'off');
@@ -211,10 +345,31 @@ if (! class_exists('WBTM_Woocommerce')) {
 						$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 						if ($seat_type == 'wbtm_seat_plan') {
 							$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : '';
-							if (sizeof($cart_seat_infos) > 0) {
+							$cabin_seat_infos = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : '';
+
+							// Check regular seats
+							if (is_array($cart_seat_infos) && sizeof($cart_seat_infos) > 0) {
 								foreach ($cart_seat_infos as $seat_info) {
 									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
-									if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
+									if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
+										WC()->cart->empty_cart();
+										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'woocommerce'), 'error');
+									}
+								}
+							}
+
+							// Check cabin seats
+							if (is_array($cabin_seat_infos) && sizeof($cabin_seat_infos) > 0) {
+								// Enhanced by Shahnur Alam - 2025-10-08
+								// Fix cabin seat availability validation - use cabin-specific identifiers
+								foreach ($cabin_seat_infos as $seat_info) {
+									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
+									$cabin_index = array_key_exists('cabin_index', $seat_info) ? $seat_info['cabin_index'] : '';
+									
+									// Create cabin-specific seat identifier to prevent cross-cabin conflicts
+									$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+									
+									if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 										WC()->cart->empty_cart();
 										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'woocommerce'), 'error');
 									}
@@ -269,7 +424,31 @@ if (! class_exists('WBTM_Woocommerce')) {
 				}
 
 				//==============//
-				$ticket_infos = array_key_exists('wbtm_seats', $values) ? $values['wbtm_seats'] : [];
+				// Enhanced by Shahnur Alam - 2025-10-08
+				// Handle both legacy seats and cabin seats for order creation
+				$ticket_infos = [];
+				$cabin_seats = array_key_exists('wbtm_cabin_seats', $values) ? $values['wbtm_cabin_seats'] : [];
+				$legacy_seats = array_key_exists('wbtm_seats', $values) ? $values['wbtm_seats'] : [];
+				
+				// Convert cabin seats to ticket info format if cabin seats exist
+				if (!empty($cabin_seats)) {
+					foreach ($cabin_seats as $cabin_seat) {
+						$ticket_infos[] = [
+							'ticket_name' => $cabin_seat['cabin_name'] ?? 'Cabin Seat',
+							'seat_name' => $cabin_seat['seat_name'] ?? '',
+							'ticket_type' => $cabin_seat['seat_type'] ?? 0,
+							'ticket_price' => $cabin_seat['ticket_price'] ?? 0,
+							'ticket_qty' => 1, // Each cabin seat is quantity 1
+							'cabin_name' => $cabin_seat['cabin_name'] ?? '',
+							'cabin_index' => $cabin_seat['cabin_index'] ?? 0,
+							'price_multiplier' => $cabin_seat['price_multiplier'] ?? 1.0
+						];
+					}
+				} else {
+					// Use legacy seats if no cabin seats
+					$ticket_infos = $legacy_seats;
+				}
+				
 				$ticket_qty   = array_key_exists('wbtm_seats_qty', $values) ? $values['wbtm_seats_qty'] : 0;
 				$base_price   = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
 				if (sizeof($ticket_infos) > 0) {
@@ -420,6 +599,22 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$data['wbtm_drop_off_point']  = $drop_off_point;
 							$data['wbtm_ticket']          = $ticket_info['ticket_name'];
 							$data['wbtm_seat']            = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
+						
+						// Enhanced by Shahnur Alam - 2025-10-08 
+						// Save cabin information for cabin/coach bookings to display in passenger list
+						// Fix cabin seat storage: use cabin-specific seat identifier for proper availability tracking
+						if (array_key_exists('cabin_name', $ticket_info) && array_key_exists('cabin_index', $ticket_info)) {
+							$data['wbtm_cabin_info'] = [
+								'cabin_name' => $ticket_info['cabin_name'],
+								'cabin_index' => $ticket_info['cabin_index'],
+								'price_multiplier' => $ticket_info['price_multiplier'] ?? 1.0
+							];
+							// Store cabin-specific seat identifier to prevent cross-cabin conflicts
+							$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . $ticket_info['seat_name'];
+						} else {
+							// Legacy seat storage for non-cabin bookings
+							$data['wbtm_seat'] = $ticket_info['seat_name'];
+						}
 							$data['wbtm_bus_fare']        = $ticket_info['ticket_price'];
 							$data['wbtm_ticket_status']   = 1;
 							$data['wbtm_order_status']    = $order_status;
@@ -874,16 +1069,37 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 		public function show_cart_ticket_information($cart_item)
 		{
-			$wbtm_seats   = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : '';
+			$wbtm_seats   = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
+			$cabin_seats  = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : [];
 			$base_price   = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : '';
 			$ticket_count = 0;
 			$tic_key      = 0;
-			if (sizeof($wbtm_seats) > 0) { ?>
+
+			// Handle both regular seats and cabin seats
+			$seats_to_display = [];
+			if (is_array($wbtm_seats) && !empty($wbtm_seats)) {
+				$seats_to_display = $wbtm_seats;
+			} elseif (is_array($cabin_seats) && !empty($cabin_seats)) {
+				$seats_to_display = $cabin_seats;
+			}
+
+			$calculated_total = 0;
+			if (sizeof($seats_to_display) > 0) { ?>
 				<h5 class="_mB_xs"><?php esc_html_e('Ticket Information', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
 				<div class="dLayout_xs">
 					<ul class="cart_list">
-						<?php foreach ($wbtm_seats as $key => $wbtm_seat) {
-							$qty = array_key_exists('ticket_qty', $wbtm_seat) && $wbtm_seat['ticket_qty'] > 0 ? $wbtm_seat['ticket_qty'] : 1;
+						<?php foreach ($seats_to_display as $key => $wbtm_seat) {
+							// Handle different seat data structures
+							$is_cabin_seat = isset($wbtm_seat['cabin_name']);
+							$ticket_name = $wbtm_seat['ticket_name'] ?? $wbtm_seat['cabin_name'] ?? '';
+							$seat_name = $wbtm_seat['seat_name'] ?? '';
+							$seat_type = $wbtm_seat['seat_type'] ?? 0;
+							$ticket_price = $wbtm_seat['ticket_price'] ?? $wbtm_seat['price'] ?? 0;
+							$qty = 1; // Default quantity
+
+							// Calculate total for all seats
+							$calculated_total += $ticket_price * $qty;
+
 							if ($ticket_count > 0) { ?>
 								<li>
 									<div class="_divider"></div>
@@ -891,21 +1107,21 @@ if (! class_exists('WBTM_Woocommerce')) {
 							<?php } ?>
 							<li>
 								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_ticket_type(); ?> :</h6>
-								<span><?php echo esc_html($wbtm_seat['ticket_name']); ?></span>
+								<span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type)); ?></span>
 							</li>
-							<?php if ($wbtm_seat['seat_name']) { ?>
+							<?php if ($seat_name) { ?>
 								<li>
 									<h6 class="_mR_xs"><?php echo WBTM_Translations::text_seat_name(); ?> :</h6>
-									<span><?php echo esc_html($wbtm_seat['seat_name']); ?></span>
+									<span><?php echo esc_html($seat_name); ?></span>
 								</li>
 							<?php } ?>
 							<li>
 								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_qty(); ?> :</h6>
-								<span><?php echo esc_html($wbtm_seat['ticket_qty']); ?></span>
+								<span><?php echo esc_html($qty); ?></span>
 							</li>
 							<li>
 								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_price(); ?> :</h6>
-								<span><?php echo ' ( ' . wc_price($wbtm_seat['ticket_price']) . ' x ' . $wbtm_seat['ticket_qty'] . ' ) = ' . wc_price(($wbtm_seat['ticket_price'] * $wbtm_seat['ticket_qty'])); ?></span>
+								<span><?php echo ' ( ' . wc_price($ticket_price) . ' x ' . $qty . ' ) = ' . wc_price(($ticket_price * $qty)); ?></span>
 							</li>
 							<?php
 							if ($qty > 1) {
@@ -926,7 +1142,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 					<div class="_divider"></div>
 					<div class="justifyBetween">
 						<h5><?php echo WBTM_Translations::text_ticket_sub_total(); ?> :</h5>
-						<h5><?php echo wc_price($base_price); ?></h5>
+						<h5><?php echo wc_price($calculated_total); ?></h5>
 					</div>
 				</div>
 			<?php }

@@ -130,3 +130,47 @@
 /********Info Text******************/
 div.wbtm_style .info_text {display: block;font-weight: normal;font-size: var(--fs_small);color: #666;}
 div.wbtm_style .info_text span {margin: 0 5px 0 0;}
+
+/********Cabin Configuration Toggle******************/
+.wbtm_cabin_fields {
+	transition: opacity 0.3s ease;
+}
+.wbtm_cabin_fields[style*="display: none"] {
+	opacity: 0;
+}
+
+/********Cabin Mode vs Traditional Seat Plan Toggle******************/
+.wbtm_cabin_mode_fields,
+[data-collapse="#wbtm_seat_plan"] {
+	transition: all 0.3s ease-in-out;
+	overflow: hidden;
+}
+
+/* Smooth transitions for seat plan sections */
+.wbtm_cabin_mode_fields.transitioning,
+[data-collapse="#wbtm_seat_plan"].transitioning {
+	transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/********Cabin Configuration Spacing******************/
+/* Add spacing between cabin items */
+.wbtm_cabin_item {
+	margin-bottom: 30px;
+}
+
+/* Add padding to cabin preview area */
+.wbtm_cabin_seat_preview {
+	padding: 15px;
+	margin-top: 10px;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+/* Add spacing to price multiplier help text */
+.help-text {
+	display: block;
+	margin-top: 5px;
+	font-size: 12px;
+	color: #666;
+}

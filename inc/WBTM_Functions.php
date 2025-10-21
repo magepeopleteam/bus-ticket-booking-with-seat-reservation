@@ -395,9 +395,29 @@
 						$bp_date     = $bp_date ? date( 'Y-m-d', strtotime( $bp_date ) ) : '';
 						if ( $cart_bus_id == $bus_id && $cart_bp == $bp && $cart_dp == $dp && strtotime( $cart_date ) == strtotime( $bp_date ) ) {
 							$cart_seat_infos = array_key_exists( 'wbtm_seats', $cart_item ) ? $cart_item['wbtm_seats'] : '';
-							if ( sizeof( $cart_seat_infos ) > 0 ) {
+							$cabin_seat_infos = array_key_exists( 'wbtm_cabin_seats', $cart_item ) ? $cart_item['wbtm_cabin_seats'] : '';
+
+							// Check regular seats
+							if ( is_array( $cart_seat_infos ) && sizeof( $cart_seat_infos ) > 0 ) {
 								foreach ( $cart_seat_infos as $seat_info ) {
 									if ( array_key_exists( 'seat_name', $seat_info ) && $seat_info['seat_name'] == $seat_name ) {
+										return true;
+									}
+								}
+							}
+
+							// Check cabin seats
+							if ( is_array( $cabin_seat_infos ) && sizeof( $cabin_seat_infos ) > 0 ) {
+								// Enhanced by Shahnur Alam - 2025-10-08
+								// Fix cabin seat cart check - use cabin-specific identifiers
+								foreach ( $cabin_seat_infos as $seat_info ) {
+									$cart_seat_name = array_key_exists( 'seat_name', $seat_info ) ? $seat_info['seat_name'] : '';
+									$cabin_index = array_key_exists( 'cabin_index', $seat_info ) ? $seat_info['cabin_index'] : '';
+													
+									// Create cabin-specific identifier for comparison
+									$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $cart_seat_name;
+													
+									if ( $cabin_seat_identifier == $seat_name ) {
 										return true;
 									}
 								}
