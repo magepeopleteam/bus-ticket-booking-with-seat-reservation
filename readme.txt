@@ -57,6 +57,9 @@ Experience efficient booking management with our unique plugin. Website owners e
 * **Dynamic Intermediate Route Allocation**
 Leverage our unique feature for fluid transitions. Seats become instantly available for the next customer upon drop-off or arrival, ensuring an efficient booking process.
 
+* **Cabin Booking Fucntionalities for train**
+You can add cabin for each train and sell cabin based seat selling also for train.
+
 
 * **Automated Email Notifications**
 Sends a notification to users' email when the seat is successful bookings, offering to book confirmations and e-tickets in the Pro Version. Website owners also receive notifications for new bookings and cancellations, ensuring everyone stays informed seamlessly.
@@ -330,3 +333,6 @@ Made compatiable with some of the major caching plugin
 
 = 5.5.3 =
 Translation Issue fixed
+
+= 5.5.6 =
+Cabin booking functionality added
