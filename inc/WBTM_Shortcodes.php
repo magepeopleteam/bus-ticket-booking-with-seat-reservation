@@ -22,7 +22,7 @@
 				$end = $params['end'];
 				$column = $params['column'];
 				$style = $params['style'];
-				$pagination = $params['pagination'];
+				$pagination = "";
 				
 				// For pagination, we need to get total count and limit results
 				if ($pagination === 'yes' && $show > 0) {
