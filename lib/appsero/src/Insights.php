@@ -375,8 +375,9 @@ class Insights {
             return;
         }
 
-        $optin_url  = add_query_arg( $this->client->slug . '_tracker_optin', 'true' );
-        $optout_url = add_query_arg( $this->client->slug . '_tracker_optout', 'true' );
+    // Use a nonce protected URL for opt-in/opt-out to prevent CSRF
+    $optin_url  = wp_nonce_url( add_query_arg( $this->client->slug . '_tracker_optin', 'true' ), $this->client->slug . '_tracker_optin' );
+    $optout_url = wp_nonce_url( add_query_arg( $this->client->slug . '_tracker_optout', 'true' ), $this->client->slug . '_tracker_optout' );
 
         if ( empty( $this->notice ) ) {
             $notice = sprintf( $this->client->__trans( 'Want to help make <strong>%1$s</strong> even more awesome? Allow %1$s to collect non-sensitive diagnostic data and usage information.' ), $this->client->name );
@@ -412,17 +413,34 @@ class Insights {
      */
     public function handle_optin_optout() {
 
-        if ( isset( $_GET[ $this->client->slug . '_tracker_optin' ] ) && $_GET[ $this->client->slug . '_tracker_optin' ] == 'true' ) {
+        // Protect optin/optout actions: require manage_options and nonce verification
+        if ( isset( $_GET[ $this->client->slug . '_tracker_optin' ] ) && sanitize_text_field( wp_unslash( $_GET[ $this->client->slug . '_tracker_optin' ] ) ) === 'true' ) {
+            if ( ! current_user_can( 'manage_options' ) ) {
+                return;
+            }
+
+            if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), $this->client->slug . '_tracker_optin' ) ) {
+                return;
+            }
+
             $this->optin();
 
-            wp_redirect( remove_query_arg( $this->client->slug . '_tracker_optin' ) );
+            wp_redirect( remove_query_arg( array( $this->client->slug . '_tracker_optin', '_wpnonce' ) ) );
             exit;
         }
 
-        if ( isset( $_GET[ $this->client->slug . '_tracker_optout' ] ) && $_GET[ $this->client->slug . '_tracker_optout' ] == 'true' ) {
+        if ( isset( $_GET[ $this->client->slug . '_tracker_optout' ] ) && sanitize_text_field( wp_unslash( $_GET[ $this->client->slug . '_tracker_optout' ] ) ) === 'true' ) {
+            if ( ! current_user_can( 'manage_options' ) ) {
+                return;
+            }
+
+            if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), $this->client->slug . '_tracker_optout' ) ) {
+                return;
+            }
+
             $this->optout();
 
-            wp_redirect( remove_query_arg( $this->client->slug . '_tracker_optout' ) );
+            wp_redirect( remove_query_arg( array( $this->client->slug . '_tracker_optout', '_wpnonce' ) ) );
             exit;
         }
     }

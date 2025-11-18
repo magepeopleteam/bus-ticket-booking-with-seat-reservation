@@ -92,6 +92,8 @@
 					let wbtm_empty_image_url = "<?php echo esc_attr(WBTM_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
 					let wbtm_date_format = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format', 'D d M , yy')); ?>";
 					let wbtm_date_format_without_year = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format_without_year', 'D d M')); ?>";
+					let wbtm_nonce_create_seat_plan = "<?php echo esc_attr( wp_create_nonce( 'wbtm_create_seat_plan_nonce' ) ); ?>";
+					let wbtm_nonce_create_seat_plan_dd = "<?php echo esc_attr( wp_create_nonce( 'wbtm_create_seat_plan_nonce_dd' ) ); ?>";
 				</script>
 				<?php
 				if (WBTM_Global_Function::check_woocommerce() == 1) {

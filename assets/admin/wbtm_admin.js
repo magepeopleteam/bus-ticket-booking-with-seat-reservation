@@ -83,6 +83,7 @@
           url: wbtm_ajax_url,
           data: {
             action: "wbtm_create_seat_plan",
+              security: wbtm_nonce_create_seat_plan,
             post_id: post_id,
             row: row,
             column: column,
@@ -147,6 +148,7 @@
           url: wbtm_ajax_url,
           data: {
             action: "wbtm_create_seat_plan_dd",
+              security: wbtm_nonce_create_seat_plan_dd,
             post_id: post_id,
             row: row,
             column: column,

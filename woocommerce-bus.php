@@ -57,7 +57,12 @@
 				}
 			}
 			function flush_rules_wbtm_post_list_page() {				
-				if ( isset( $_GET['post_type'] ) && sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) == 'wbtm_bus' ) {
+				// Only allow administrators from within admin to trigger a flush
+				if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+					return;
+				}
+
+				if ( isset( $_GET['post_type'] ) && sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) === 'wbtm_bus' ) {
 					flush_rewrite_rules(); 
 				}
 			}			

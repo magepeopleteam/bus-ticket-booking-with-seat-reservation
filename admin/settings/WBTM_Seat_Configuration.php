@@ -12,11 +12,10 @@
 				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
 				add_action('wbtm_settings_save', [$this, 'settings_save']);
 				/*********************/
+				// AJAX actions for seat plan generation - only accessible to authenticated users (no nopriv)
 				add_action('wp_ajax_wbtm_create_seat_plan', [$this, 'wbtm_create_seat_plan']);
-				add_action('wp_ajax_nopriv_wbtm_create_seat_plan', [$this, 'wbtm_create_seat_plan']);
 				/*********************/
 				add_action('wp_ajax_wbtm_create_seat_plan_dd', [$this, 'wbtm_create_seat_plan_dd']);
-				add_action('wp_ajax_nopriv_wbtm_create_seat_plan_dd', [$this, 'wbtm_create_seat_plan_dd']);
 			}
 			public function tab_content($post_id) {
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
@@ -728,17 +727,45 @@
 			}
 			/**************************/
 			public function wbtm_create_seat_plan() {
-				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-				$row = WBTM_Global_Function::data_sanitize($_POST['row']);
-				$column = WBTM_Global_Function::data_sanitize($_POST['column']);
-				$this->create_seat_plan($post_id, $row, $column);
+				// Only allow authenticated administrators via AJAX to generate seat plan
+				if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+					wp_die( -1 );
+				}
+
+				// Verify nonce and capabilities
+				if ( empty( $_POST['security'] ) || ! check_ajax_referer( 'wbtm_create_seat_plan_nonce', 'security', false ) ) {
+					wp_die( -1 );
+				}
+
+				if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+					wp_die( -1 );
+				}
+
+				$post_id = WBTM_Global_Function::data_sanitize( $_POST['post_id'] ?? '' );
+				$row = WBTM_Global_Function::data_sanitize( $_POST['row'] ?? '' );
+				$column = WBTM_Global_Function::data_sanitize( $_POST['column'] ?? '' );
+				$this->create_seat_plan( $post_id, $row, $column );
 				die();
 			}
 			public function wbtm_create_seat_plan_dd() {
-				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-				$row = WBTM_Global_Function::data_sanitize($_POST['row']);
-				$column = WBTM_Global_Function::data_sanitize($_POST['column']);
-				$this->create_seat_plan($post_id, $row, $column, true);
+				// Only allow authenticated administrators via AJAX to generate seat plan (upper deck)
+				if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+					wp_die( -1 );
+				}
+
+				// Verify nonce and capabilities for upper deck
+				if ( empty( $_POST['security'] ) || ! check_ajax_referer( 'wbtm_create_seat_plan_nonce_dd', 'security', false ) ) {
+					wp_die( -1 );
+				}
+
+				if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+					wp_die( -1 );
+				}
+
+				$post_id = WBTM_Global_Function::data_sanitize( $_POST['post_id'] ?? '' );
+				$row = WBTM_Global_Function::data_sanitize( $_POST['row'] ?? '' );
+				$column = WBTM_Global_Function::data_sanitize( $_POST['column'] ?? '' );
+				$this->create_seat_plan( $post_id, $row, $column, true );
 				die();
 			}
 		}
