@@ -340,3 +340,5 @@ Translation Issue fixed
 
 = 5.5.6 =
 Cabin booking functionality added
+Bus default available seat selection added
+Seat number rotation stopped
