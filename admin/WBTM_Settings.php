@@ -106,8 +106,8 @@ if (!class_exists('WBTM_Settings')) {
                 <?php
             }
         }
-        public function save_settings($post_id) {
-            if (!isset($_POST['wbtm_type_nonce']) || !wp_verify_nonce($_POST['wbtm_type_nonce'], 'wbtm_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
+      public function save_settings($post_id) {
+            if (!isset($_POST['wbtm_type_nonce']) || !wp_verify_nonce($_POST['wbtm_type_nonce'], 'wbtm_type_nonce') || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || !current_user_can('edit_post', $post_id)) {
                 return;
             }
             do_action('wbtm_settings_save', $post_id);
