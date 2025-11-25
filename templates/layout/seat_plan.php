@@ -14,8 +14,9 @@
 	$seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 	$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 	$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
-	// Check if cabin config exists AND has at least one enabled cabin
-	$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+	$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+	// Check if cabin config exists AND has at least one enabled cabin AND cabin mode is enabled globally
+	$has_cabin_config = $cabin_mode_enabled === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
 
 	if (($has_cabin_config && sizeof($cabin_config) > 0) || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
 		$date = $_POST['date'] ?? '';

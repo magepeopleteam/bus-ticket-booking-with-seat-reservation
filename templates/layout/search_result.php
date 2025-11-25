@@ -92,7 +92,7 @@ if (sizeof($bus_ids) > 0) {
         usort($bus_data, function ($a, $b) {
             return strtotime($a['all_info']['bp_time']) - strtotime($b['all_info']['bp_time']);
         });
-
+     
         foreach ($bus_data as $key => $bus) {
             $bus_id = $bus['bus_id'];
             $all_info = $bus['all_info'];

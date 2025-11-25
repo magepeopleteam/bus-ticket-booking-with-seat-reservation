@@ -21,6 +21,7 @@
 			public function tab_content($post_id) {
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
 				$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+				
 				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
 				$cabin_count = count($cabin_config);
 				$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
@@ -440,7 +441,7 @@
 		<?php
 	}
 
-	public function save_cabin_seat_plans($post_id, $cabin_config) {
+	public function save_cabin_seat_plans($post_id, $cabin_config, $cabin_mode_enabled = 'yes') {
 		$total_seat = 0;
 		$has_enabled_cabin = false;
 		$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
@@ -497,9 +498,7 @@
 			update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);
 		}
 		
-		// Only update total_seat if there are enabled cabins
-		// Otherwise, let the legacy seat plan logic handle it
-		if ($has_enabled_cabin) {
+		if ($has_enabled_cabin && $cabin_mode_enabled === 'yes') {
 			update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 		}
 	}
@@ -587,19 +586,19 @@
 		<?php
 	}
 
-			public function settings_save($post_id) {
-				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-		// Save cabin mode enabled status
-		$cabin_mode_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_mode_enabled') ? 'yes' : 'no';
-		update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
+	public function settings_save($post_id) {
+		if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+			// Save cabin mode enabled status
+			$cabin_mode_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_mode_enabled') ? 'yes' : 'no';
+			update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
 
-		// Save cabin configuration
-		$cabin_count = WBTM_Global_Function::get_submit_info('wbtm_cabin_count', 1);
-		$cabin_names = WBTM_Global_Function::get_submit_info('wbtm_cabin_name', []);
-		$cabin_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_enabled', []);
-		$cabin_rows = WBTM_Global_Function::get_submit_info('wbtm_cabin_rows', []);
-		$cabin_cols = WBTM_Global_Function::get_submit_info('wbtm_cabin_cols', []);
-		$cabin_price_multipliers = WBTM_Global_Function::get_submit_info('wbtm_cabin_price_multiplier', []);
+			// Save cabin configuration
+			$cabin_count = WBTM_Global_Function::get_submit_info('wbtm_cabin_count', 1);
+			$cabin_names = WBTM_Global_Function::get_submit_info('wbtm_cabin_name', []);
+			$cabin_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_enabled', []);
+			$cabin_rows = WBTM_Global_Function::get_submit_info('wbtm_cabin_rows', []);
+			$cabin_cols = WBTM_Global_Function::get_submit_info('wbtm_cabin_cols', []);
+			$cabin_price_multipliers = WBTM_Global_Function::get_submit_info('wbtm_cabin_price_multiplier', []);
 
 			$cabin_config = [];
 			for ($i = 0; $i < $cabin_count; $i++) {
@@ -614,13 +613,13 @@
 			update_post_meta($post_id, 'wbtm_cabin_config', $cabin_config);
 
 			// Save cabin seat plans
-			$this->save_cabin_seat_plans($post_id, $cabin_config);
+			$this->save_cabin_seat_plans($post_id, $cabin_config, $cabin_mode_enabled);
 
-					$seat_type = WBTM_Global_Function::get_submit_info('wbtm_seat_type_conf');
-					update_post_meta($post_id, 'wbtm_seat_type_conf', $seat_type);
-					
-					/***********************/
-					$driver_seat_position = WBTM_Global_Function::get_submit_info('driver_seat_position');
+			$seat_type = WBTM_Global_Function::get_submit_info('wbtm_seat_type_conf');
+			update_post_meta($post_id, 'wbtm_seat_type_conf', $seat_type);
+			
+			/***********************/
+			$driver_seat_position = WBTM_Global_Function::get_submit_info('driver_seat_position');
 					$rows = WBTM_Global_Function::get_submit_info('wbtm_seat_rows_hidden', 0);
 					$columns = WBTM_Global_Function::get_submit_info('wbtm_seat_cols_hidden', 0);
 					$wbtm_enable_seat_rotation = WBTM_Global_Function::get_submit_info('wbtm_enable_seat_rotation') ? 'yes' : 'no';
@@ -719,7 +718,7 @@
 				// Cabin configuration already set the correct total_seat in save_cabin_seat_plans
 				$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
 				
-				if (!$has_cabin_config) {
+				if ($cabin_mode_enabled !== 'yes' || !$has_cabin_config || $seat_type == 'wbtm_without_seat_plan') {
 					// Legacy seat plan logic
 					$total_seat=$seat_type=='wbtm_seat_plan'?$total_seat:WBTM_Global_Function::get_submit_info('wbtm_get_total_seat', 0);
 					update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
