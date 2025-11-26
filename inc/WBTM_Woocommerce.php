@@ -11,6 +11,10 @@ if (! class_exists('WBTM_Woocommerce')) {
 	{
 		public function __construct()
 		{
+
+            add_action('wp_ajax_wbtm_add_to_cart_ajax', array($this, 'wbtm_add_to_cart_ajax' ) );
+            add_action('wp_ajax_nopriv_wbtm_add_to_cart_ajax', array( $this, 'wbtm_add_to_cart_ajax' ) );
+
 			add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
 			add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
 			add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
@@ -39,6 +43,48 @@ if (! class_exists('WBTM_Woocommerce')) {
 			// Prevent add to cart notices when redirect is enabled
 			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 		}
+
+        function wbtm_add_to_cart_ajax() {
+
+            /*if (!isset($_POST['wbtm_form_nonce']) || !wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce')) {
+                wp_send_json_error('Invalid nonce');
+            }*/
+
+            $product_id = 24;
+            error_log( print_r( [ '$_POST' =>$_POST ], true ) );
+
+            // ✅ Inject all WBTM data into $_POST so your existing function reads it
+            $fields = array(
+                'wbtm_start_point',
+                'wbtm_start_time',
+                'wbtm_bp_place',
+                'wbtm_bp_time',
+                'wbtm_dp_place',
+                'wbtm_dp_time',
+                'wbtm_pickup_point',
+                'wbtm_drop_off_point',
+                'wbtm_selected_seat',
+                'wbtm_selected_seat_type',
+            );
+
+            foreach ($fields as $field) {
+                if (isset($_POST[$field])) {
+                    $_REQUEST[$field] = $_POST[$field];
+                }
+            }
+
+            // This triggers your existing woocommerce_add_cart_item_data filter
+            $added = WC()->cart->add_to_cart($product_id, 1);
+
+            if ($added) {
+                wp_send_json_success(array(
+                    'message' => 'Added to cart successfully',
+                    'cart_hash' => WC()->cart->get_cart_hash()
+                ));
+            } else {
+                wp_send_json_error('Failed to add to cart');
+            }
+        }
 
 		//Price of product in mini cart
 		public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {

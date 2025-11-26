@@ -26,6 +26,9 @@ $link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_produc
             <button type="submit" class="_themeButton" name="add-to-cart" value="<?php echo esc_attr($link_wc_product); ?>">
                 <?php echo WBTM_Translations::text_book_now(); ?>
             </button>
+            <button type="button" class="_themeButton" name="wbtm_add_to_cart" id="wbtm_add_to_cart" value="<?php echo esc_attr($link_wc_product); ?>">
+                <?php echo WBTM_Translations::text_book_now(); ?>
+            </button>
         <?php } ?>
     </div>
 </div>

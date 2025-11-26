@@ -125,15 +125,17 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[], $left_filter_show='') {
             
             if ($start_route && $end_route && $j_date) { ?>
-                <div class="wbtm-date-suggetion">
-                    <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
-                </div>
-                <div class="wbtm-date-route">
-                    <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
-                </div>
-                <div class="wbtm-bus-lists">
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey', $left_filter_show); ?>
-                </div>
+                    <div class="wbtm-bus-lists" id="wbtm_start_container">
+                        <div class="wbtm-date-suggetion">
+                            <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
+                        </div>
+                        <div class="wbtm-date-route">
+                            <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
+                        </div>
+                        <div class="wbtm-bus-lists">
+                            <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey', $left_filter_show); ?>
+                        </div>
+                    </div>
             <?php }
               
             if ($post_id==0 && $start_route && $end_route && $r_date) { ?>

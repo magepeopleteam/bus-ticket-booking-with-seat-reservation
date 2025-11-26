@@ -658,4 +658,46 @@
 			}
 		});
 	});
+
+
+	$(document).on( 'click','#wbtm_add_to_cart', function(e){
+		e.preventDefault();
+
+		let data = {
+			action: 'wbtm_add_to_cart_ajax',
+			product_id: $(this).data('product-id'),
+			wbtm_form_nonce: $('input[name="wbtm_form_nonce"]').val(),
+			wbtm_start_point: $('input[name="wbtm_start_point"]').val(),
+			wbtm_start_time: $('input[name="wbtm_start_time"]').val(),
+			wbtm_bp_place: $('input[name="wbtm_bp_place"]').val(),
+			wbtm_bp_time: $('input[name="wbtm_bp_time"]').val(),
+			wbtm_dp_place: $('input[name="wbtm_dp_place"]').val(),
+			wbtm_dp_time: $('input[name="wbtm_dp_time"]').val(),
+			wbtm_pickup_point: $('input[name="wbtm_pickup_point"]').val(),
+			wbtm_drop_off_point: $('input[name="wbtm_drop_off_point"]').val(),
+			wbtm_selected_seat: $('input[name="wbtm_selected_seat"]').val(),
+			wbtm_selected_seat_type: $('input[name="wbtm_selected_seat_type"]').val(),
+			wbtm_selected_seat_dd: $('#wbtm_selected_seat_dd').val(),
+			wbtm_selected_seat_dd_type: $('#wbtm_selected_seat_dd_type').val(),
+		};
+
+		console.log( data );
+		$.ajax({
+			type: 'POST',
+			url: wbtm_ajax_url,
+			data: data,
+			success: function (data) {
+				if(response.success){
+					$(document.body).trigger('wc_fragment_refresh');
+				}else{
+					alert(response.data);
+				}
+			},
+			error: function (response) {
+				console.log(response);
+			}
+		});
+
+	});
+
 }(jQuery));
