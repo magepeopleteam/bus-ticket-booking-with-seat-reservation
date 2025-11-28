@@ -613,8 +613,10 @@
 			}
 			update_post_meta($post_id, 'wbtm_cabin_config', $cabin_config);
 
-			// Save cabin seat plans
-			$this->save_cabin_seat_plans($post_id, $cabin_config);
+			// Save cabin seat plans only when cabin mode is enabled
+			if ($cabin_mode_enabled === 'yes') {
+				$this->save_cabin_seat_plans($post_id, $cabin_config);
+			}
 
 					$seat_type = WBTM_Global_Function::get_submit_info('wbtm_seat_type_conf');
 					update_post_meta($post_id, 'wbtm_seat_type_conf', $seat_type);
@@ -717,7 +719,7 @@
 					/***********************/
 				// Only update total_seat for legacy seat plans
 				// Cabin configuration already set the correct total_seat in save_cabin_seat_plans
-				$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+				$has_cabin_config = $cabin_mode_enabled === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
 				
 				if (!$has_cabin_config) {
 					// Legacy seat plan logic

@@ -73,9 +73,15 @@ if (! class_exists('WBTM_Woocommerce')) {
 			// Check if this is a bus booking item
 			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-				// Use the calculated total price instead of the product's base price
-				$line_total = $cart_item['line_total'] ?? $cart_item['wbtm_tp'] ?? 0;
-				return wc_price($line_total);
+			// Use the stored total price from cart item data
+			$line_total = isset($cart_item['wbtm_tp']) ? floatval($cart_item['wbtm_tp']) : 0;
+			// Fallback to line_total if wbtm_tp is not available
+			if ($line_total <= 0 && isset($cart_item['line_total'])) {
+				$line_total = floatval($cart_item['line_total']);
+			}
+			// Ensure we have a valid price
+			$line_total = max(0, $line_total);
+			return wc_price($line_total);
 			}
 			// For non-bus items, return the original price
 			return $price;
@@ -86,9 +92,15 @@ if (! class_exists('WBTM_Woocommerce')) {
 			// Check if this is a bus booking item
 			$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-				// Use the calculated total price instead of the product's base price
-				$line_total = $cart_item['line_total'] ?? $cart_item['wbtm_tp'] ?? 0;
-				return wc_price($line_total);
+			// Use the stored total price from cart item data
+			$line_total = isset($cart_item['wbtm_tp']) ? floatval($cart_item['wbtm_tp']) : 0;
+			// Fallback to line_total if wbtm_tp is not available
+			if ($line_total <= 0 && isset($cart_item['line_total'])) {
+				$line_total = floatval($cart_item['line_total']);
+			}
+			// Ensure we have a valid price
+			$line_total = max(0, $line_total);
+			return wc_price($line_total);
 			}
 			// For non-bus items, return the original subtotal
 			return $subtotal;
@@ -158,20 +170,53 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$bp               = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
 				$bp_time          = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
 				$dp               = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
+				
 				$ticket_infos     = self::get_cart_ticket_info($post_id);
 				$cabin_config     = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+
+				// Check if cabin seats are actually selected
+				$has_cabin_seats_selected = false;
+				if ($cabin_mode_enabled === 'yes' && !empty($cabin_config)) {
+					// Check if any cabin has seats selected
+					foreach ($cabin_config as $cabin_index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') === 'yes' && ($cabin['rows'] ?? 0) > 0 && ($cabin['cols'] ?? 0) > 0) {
+							$selected_seats = WBTM_Global_Function::get_submit_info('wbtm_selected_seat_cabin_' . $cabin_index, '');
+							if (!empty($selected_seats)) {
+								$has_cabin_seats_selected = true;
+								break;
+							}
+						}
+					}
+				}
 
 				// Handle both legacy and cabin-based seat selection
 				$seat_price       = 0;
-				if (!empty($cabin_config)) {
+				if ($has_cabin_seats_selected) {
 					$seat_price = self::get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config);
 				} else {
 					$seat_price = self::get_cart_seat_price($ticket_infos);
 				}
+				
+				// Ensure seat_price is a valid number
+				$seat_price = floatval($seat_price);
+				if ($seat_price < 0) {
+					$seat_price = 0;
+				}
 
 				$ex_service_infos = self::get_cart_extra_service_info($post_id);
 				$ex_service_price = self::get_cart_ex_service_price($ex_service_infos);
-				$total_price      = $seat_price + $ex_service_price;;
+				
+				// Ensure ex_service_price is a valid number
+				$ex_service_price = floatval($ex_service_price);
+				if ($ex_service_price < 0) {
+					$ex_service_price = 0;
+				}
+				
+				$total_price = $seat_price + $ex_service_price;
+				
+				// Ensure total_price is valid
+				$total_price = max(0, floatval($total_price));
 				$cart_item_data['wbtm_bus_id']         = $post_id;
 				$cart_item_data['wbtm_start_point']    = WBTM_Global_Function::get_submit_info('wbtm_start_point');
 				$cart_item_data['wbtm_start_time']     = WBTM_Global_Function::get_submit_info('wbtm_start_time');
@@ -183,7 +228,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$cart_item_data['wbtm_drop_off_point'] = WBTM_Global_Function::get_submit_info('wbtm_drop_off_point');
 
 				// Handle cabin-specific seat data
-				if (!empty($cabin_config)) {
+				if ($has_cabin_seats_selected) {
 					$cabin_seats = self::get_cart_cabin_seat_info($post_id, $cabin_config);
 					$cart_item_data['wbtm_cabin_seats']    = $cabin_seats;
 					$cart_item_data['wbtm_cabin_config']   = $cabin_config;
@@ -201,6 +246,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$cart_item_data['wbtm_tp']             = $total_price;
 				$cart_item_data['line_total']          = $total_price;
 				$cart_item_data['line_subtotal']       = $total_price;
+				
 				$cart_item_data                        = apply_filters('wbtm_add_cart_item', $cart_item_data, $post_id);
 			}
 			//echo '<pre>'; print_r(WBTM_Global_Function::get_post_info($post_id, 'wbtm_selected_seat')); echo '</pre>';
@@ -291,37 +337,63 @@ if (! class_exists('WBTM_Woocommerce')) {
 		}
 	public function before_calculate_totals($cart_object)
 	{
-
-		foreach ($cart_object->cart_contents as $value) {
+		foreach ($cart_object->cart_contents as $key => $value) {
 			$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
 			if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-				$total_price = $value['wbtm_tp'] ?? 0;
+				// Get stored total price
+				$total_price = isset($value['wbtm_tp']) ? floatval($value['wbtm_tp']) : 0;
 				
-				// Always recalculate for cabin seats, or if price is missing/invalid
+				// Check if we have cabin seats
 				$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
 				
-				if ($has_cabin_seats || empty($total_price) || $total_price <= 0.01) {
-					// Calculate seat price based on seat type
+				// Recalculate price if it's missing, zero, or we need to recalculate from seat data
+				if (empty($total_price) || $total_price <= 0) {
+					$seat_price = 0;
+					
 					if ($has_cabin_seats) {
 						// Calculate price from cabin seats
-						$seat_price = 0;
 						foreach ($value['wbtm_cabin_seats'] as $cabin_seat) {
-							$seat_price += $cabin_seat['ticket_price'] ?? 0;
+							$ticket_price = isset($cabin_seat['ticket_price']) ? floatval($cabin_seat['ticket_price']) : 0;
+							$seat_price += $ticket_price;
 						}
 					} else {
-						$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
+						// Try to use stored base price first
+						$base_price = isset($value['wbtm_base_price']) ? floatval($value['wbtm_base_price']) : 0;
+						
+						if ($base_price > 0) {
+							$seat_price = $base_price;
+						} else {
+							// Calculate from seat ticket info
+							$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
+						}
 					}
 					
-					// Add extra service price
-					$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
-					$total_price = $seat_price + $ex_service_price;
+					// Get extra service price
+					$ex_base_price = isset($value['wbtm_base_ex_price']) ? floatval($value['wbtm_base_ex_price']) : 0;
+					
+					if ($ex_base_price > 0) {
+						$ex_service_price = $ex_base_price;
+					} else {
+						$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
+					}
+					
+					// Calculate total price
+					$total_price = floatval($seat_price) + floatval($ex_service_price);
+					
+					// Ensure price is not negative
+					$total_price = max(0, $total_price);
+					
+					// Update the cart item data with the calculated price
+					$cart_object->cart_contents[$key]['wbtm_tp'] = $total_price;
+					$cart_object->cart_contents[$key]['line_total'] = $total_price;
+					$cart_object->cart_contents[$key]['line_subtotal'] = $total_price;
 				}
 				
+				// Always set the price on the product object (WooCommerce uses this for display)
 				$value['data']->set_price($total_price);
 				$value['data']->set_regular_price($total_price);
 				$value['data']->set_sale_price($total_price);
 				$value['data']->set_sold_individually('yes');
-				$value['data']->get_price();
 			}
 		}
 	}
@@ -913,16 +985,24 @@ if (! class_exists('WBTM_Woocommerce')) {
 			}
 		}
 		/*********************/
-		public static function get_cart_seat_price($ticket_infos = [])
-		{
-			$total_price = 0;
-			if (sizeof($ticket_infos) > 0) {
-				foreach ($ticket_infos as $ticket_info) {
-					$total_price = $total_price + $ticket_info['ticket_price'] * $ticket_info['ticket_qty'];
+	public static function get_cart_seat_price($ticket_infos = [])
+	{
+		$total_price = 0;
+		if (sizeof($ticket_infos) > 0) {
+			foreach ($ticket_infos as $index => $ticket_info) {
+				$ticket_price = isset($ticket_info['ticket_price']) ? floatval($ticket_info['ticket_price']) : 0;
+				$ticket_qty = isset($ticket_info['ticket_qty']) ? intval($ticket_info['ticket_qty']) : 0;
+				// Handle false values from get_seat_price function
+				if ($ticket_price === false || $ticket_price < 0) {
+					$ticket_price = 0;
 				}
+				$item_total = $ticket_price * $ticket_qty;
+				$total_price = $total_price + $item_total;
 			}
-			return max(0, $total_price);
 		}
+		$final_price = max(0, floatval($total_price));
+		return $final_price;
+	}
 		public static function get_cart_ticket_qty($ticket_infos = [])
 		{
 			$total_qty = 0;
@@ -962,12 +1042,17 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$selected_ticket_type = $selected_ticket_type ? explode(',', $selected_ticket_type) : [0];
 				if (sizeof($selected_seat) > 0 && sizeof($selected_ticket_type) > 0) {
 					foreach ($selected_seat as $key => $seat_name) {
-						$type = $selected_ticket_type[$key];
+						$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : 0;
 						if ($seat_name) {
+							$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							// Handle false return value from get_seat_price
+							if ($seat_price === false || $seat_price < 0) {
+								$seat_price = 0;
+							}
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							$ticket_info[$count]['ticket_price'] = floatval($seat_price);
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = '';
@@ -981,12 +1066,17 @@ if (! class_exists('WBTM_Woocommerce')) {
 				$selected_ticket_type_dd = $selected_ticket_type_dd ? explode(',', $selected_ticket_type_dd) : [0];
 				if (sizeof($selected_seat_dd) > 0 && sizeof($selected_ticket_type_dd) > 0) {
 					foreach ($selected_seat_dd as $key => $seat_name) {
-						$type = $selected_ticket_type_dd[$key];
+						$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : 0;
 						if ($seat_name) {
+							$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
+							// Handle false return value from get_seat_price
+							if ($seat_price === false || $seat_price < 0) {
+								$seat_price = 0;
+							}
 							$ticket_info[$count]['ticket_name']  = WBTM_Functions::get_ticket_name($type);
 							$ticket_info[$count]['ticket_type']  = $type;
 							$ticket_info[$count]['seat_name']    = $seat_name;
-							$ticket_info[$count]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
+							$ticket_info[$count]['ticket_price'] = floatval($seat_price);
 							$ticket_info[$count]['ticket_qty']   = 1;
 							$ticket_info[$count]['date']         = $start_date ?? '';
 							$ticket_info[$count]['dd']           = 1;
@@ -995,19 +1085,25 @@ if (! class_exists('WBTM_Woocommerce')) {
 					}
 				}
 			} else {
+				// Without seat plan mode
 				$qty            = WBTM_Global_Function::get_submit_info('wbtm_seat_qty', array());
 				$passenger_type = WBTM_Global_Function::get_submit_info('wbtm_passenger_type', []);
 				$count          = count($passenger_type);
-				if ($count > 0) {
+				if ($count > 0 && is_array($qty)) {
 					for ($i = 0; $i < count($passenger_type); $i++) {
-						if ($qty[$i] > 0) {
+						if (isset($qty[$i]) && $qty[$i] > 0) {
 							$type                              = $passenger_type[$i] ?? '';
 							$ticket_name                       = WBTM_Functions::get_ticket_name($type);
+							$seat_price                        = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+							// Handle false return value from get_seat_price
+							if ($seat_price === false || $seat_price < 0) {
+								$seat_price = 0;
+							}
 							$ticket_info[$i]['ticket_name']  = $ticket_name;
 							$ticket_info[$i]['seat_name']    = $ticket_name;
 							$ticket_info[$i]['ticket_type']  = $type;
-							$ticket_info[$i]['ticket_price'] = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
-							$ticket_info[$i]['ticket_qty']   = $qty[$i];
+							$ticket_info[$i]['ticket_price'] = floatval($seat_price);
+							$ticket_info[$i]['ticket_qty']   = intval($qty[$i]);
 							$ticket_info[$i]['date']         = $start_date ?? '';
 						}
 					}

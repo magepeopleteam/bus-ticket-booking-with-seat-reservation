@@ -12,12 +12,31 @@
 	$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 	$seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 	$seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
-	$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-	$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
-	// Check if cabin config exists AND has at least one enabled cabin
-	$has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+$seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 
-	if (($has_cabin_config && sizeof($cabin_config) > 0) || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
+// Determine if there is at least one usable cabin seat plan
+$has_cabin_seat_plan = false;
+if ($cabin_mode_enabled === 'yes' && !empty($cabin_config)) {
+	foreach ($cabin_config as $index => $cabin) {
+		if (($cabin['enabled'] ?? 'yes') !== 'yes') {
+			continue;
+		}
+		$rows = intval($cabin['rows'] ?? 0);
+		$cols = intval($cabin['cols'] ?? 0);
+		if ($rows <= 0 || $cols <= 0) {
+			continue;
+		}
+		$cabin_seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
+		if (!empty($cabin_seat_infos)) {
+			$has_cabin_seat_plan = true;
+			break;
+		}
+	}
+}
+
+if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
 		$date = $_POST['date'] ?? '';
 		$bus_start_time=$bus_start_time??'';
 		$seat_position = WBTM_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
@@ -40,7 +59,7 @@
 		<div class="_dLayout_xs">
 			<?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
 			<div class="wbtm_seat_plan_area">
-				<?php if ($has_cabin_config) { ?>
+				<?php if ($has_cabin_seat_plan) { ?>
 					<?php
 					// Render cabin seat plans
 					foreach ($cabin_config as $cabin_index => $cabin) {
