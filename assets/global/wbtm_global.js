@@ -253,23 +253,23 @@
             wbtm_loaderRemove(parent);
             wbtm_loadBgImage();
             
-            // Auto-select first available seat or set quantity to 1
-            setTimeout(function() {
-              // Check if it's seat plan layout
-              if (target.find('.wbtm_seat_plan_area').length > 0) {
-                // Auto-click first available seat in seat plan
-                var firstAvailableSeat = target.find('.seat_available').first();
-                if (firstAvailableSeat.length > 0) {
-                  firstAvailableSeat.trigger('click');
-                }
-              } else {
-                // For without seat plan, set first quantity input to 1
-                var firstQtyInput = target.find('input[name="wbtm_seat_qty[]"]').first();
-                if (firstQtyInput.length > 0 && firstQtyInput.val() == 0) {
-                  firstQtyInput.val(1).trigger('change');
-                }
-              }
-            }, 100);
+            // // Auto-select first available seat or set quantity to 1
+            // setTimeout(function() {
+            //   // Check if it's seat plan layout
+            //   if (target.find('.wbtm_seat_plan_area').length > 0) {
+            //     // Auto-click first available seat in seat plan
+            //     var firstAvailableSeat = target.find('.seat_available').first();
+            //     if (firstAvailableSeat.length > 0) {
+            //       firstAvailableSeat.trigger('click');
+            //     }
+            //   } else {
+            //     // For without seat plan, set first quantity input to 1
+            //     var firstQtyInput = target.find('input[name="wbtm_seat_qty[]"]').first();
+            //     if (firstQtyInput.length > 0 && firstQtyInput.val() == 0) {
+            //       firstQtyInput.val(1).trigger('change');
+            //     }
+            //   }
+            // }, 100);
           },
           error: function (response) {
             console.log(response);
