@@ -11,10 +11,10 @@
 		<table class="_layoutFixed_textLeft">
 			<thead>
 			<tr>
-				<th><?php echo WBTM_Translations::text_ticket_type(); ?></th>
-				<th><?php echo WBTM_Translations::text_seat_name();?></th>
-				<th><?php echo WBTM_Translations::text_price(); ?></th>
-				<th class="_textCenter"><?php echo WBTM_Translations::text_action(); ?></th>
+				<th><?php echo esc_html( WBTM_Translations::text_ticket_type() ); ?></th>
+				<th><?php echo esc_html( WBTM_Translations::text_seat_name() );?></th>
+				<th><?php echo esc_html( WBTM_Translations::text_price() ); ?></th>
+				<th class="_textCenter"><?php echo esc_html( WBTM_Translations::text_action() ); ?></th>
 			</tr>
 			</thead>
 			<tbody class="wbtm_item_insert">

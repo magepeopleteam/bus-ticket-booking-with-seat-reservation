@@ -116,16 +116,16 @@
 				$images = is_array( $images ) ? WBTM_Global_Function::array_to_string( $images ) : $images;
 				?>
                 <div class="wbtm_multi_image_area">
-                    <input type="hidden" class="wbtm_multi_image_value" name="<?php echo esc_attr( $name ); ?>" value="<?php esc_attr_e( $images ); ?>"/>
+                    <input type="hidden" class="wbtm_multi_image_value" name="<?php echo esc_attr( $name ); ?>" value="<?php esc_attr( $images ); ?>"/>
                     <div class="wbtm_multi_image">
 						<?php
 							$all_images = explode( ',', $images );
 							if ( $images && sizeof( $all_images ) > 0 ) {
 								foreach ( $all_images as $image ) {
 									?>
-                                    <div class="wbtm_multi_image_item" data-image-id="<?php esc_attr_e( $image ); ?>">
+                                    <div class="wbtm_multi_image_item" data-image-id="<?php esc_attr( $image ); ?>">
                                         <span class="fas fa-times circleIcon_xs wbtm_remove_multi_image"></span>
-                                        <img src="<?php echo WBTM_Global_Function::get_image_url( '', $image, 'medium' ); ?>" alt="<?php esc_attr_e( $image ); ?>"/>
+                                        <img src="<?php echo WBTM_Global_Function::get_image_url( '', $image, 'medium' ); ?>" alt="<?php esc_attr( $image ); ?>"/>
                                     </div>
 									<?php
 								}

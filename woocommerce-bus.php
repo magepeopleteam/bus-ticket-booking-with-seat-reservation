@@ -7,6 +7,8 @@
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
 	 * Text Domain: bus-ticket-booking-with-seat-reservation
+     *  License:     GPL-2.0-or-later
+     *  License URI: https://www.gnu.org/licenses/gpl-2.0.html
 	 * Domain Path: /languages/
 	 */
 // If this file is called directly, abort.
@@ -65,14 +67,14 @@
 				if (strpos($plugin_file_name, basename(__FILE__))) {
 					if (!is_plugin_active('addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php')) {
 						$wbtm_links = array(
-							'docs' => '<a href="' . esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/") . '" target="_blank">' . __('Docs', 'bus-booking-manager') . '</a>',
-							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-booking-manager') . '</a>',
-							'get_pro' => '<a href="' . esc_url("https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/") . '" target="_blank" class="wbtm_plugin_pro_meta_link">' . __('Upgrade to PRO Version', 'bus-booking-manager') . '</a>'
+							'docs' => '<a href="' . esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/") . '" target="_blank">' . __('Docs', 'bus-ticket-booking-with-seat-reservation') . '</a>',
+							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-ticket-booking-with-seat-reservation') . '</a>',
+							'get_pro' => '<a href="' . esc_url("https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/") . '" target="_blank" class="wbtm_plugin_pro_meta_link">' . __('Upgrade to PRO Version', 'bus-ticket-booking-with-seat-reservation') . '</a>'
 						);
 					} else {
 						$wbtm_links = array(
-							'docs' => '<a href="' . esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/") . '" target="_blank">' . __('Docs', 'bus-booking-manager') . '</a>',
-							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-booking-manager') . '</a>',
+							'docs' => '<a href="' . esc_url("https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/") . '" target="_blank">' . __('Docs', 'bus-ticket-booking-with-seat-reservation') . '</a>',
+							'support' => '<a href="' . esc_url("https://mage-people.com/my-account") . '" target="_blank">' . __('Support', 'bus-ticket-booking-with-seat-reservation') . '</a>',
 						);
 					}
 					$links_array = array_merge($links_array, $wbtm_links);
@@ -81,7 +83,7 @@
 			}
 			function wbtm_plugin_action_link($links_array, $plugin_file_name) {
 				if (strpos($plugin_file_name, basename(__FILE__))) {
-					array_unshift($links_array, '<a href="' . esc_url(admin_url()) . 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page">' . __('Settings', 'bus-booking-manager') . '</a>');
+					array_unshift($links_array, '<a href="' . esc_url(admin_url()) . 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page">' . __('Settings', 'bus-ticket-booking-with-seat-reservation') . '</a>');
 				}
 				return $links_array;
 			}

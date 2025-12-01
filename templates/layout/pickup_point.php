@@ -24,13 +24,13 @@ if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
                 ?>
                 <div class="wbtm_pickup_point _bgLight padding_xs mB mT">
                     <label class="justifyBetween">
-                        <span class="_mR"><?php echo WBTM_Translations::text_pickup_point(); ?></span>
+                        <span class="_mR"><?php echo esc_html( WBTM_Translations::text_pickup_point() ); ?></span>
                         <select class="formControl" name="wbtm_pickup_point" id="wbtm_pickup_point" <?php echo ($pickup_required == 'yes') ? 'required' : ''; ?>>
-                            <option selected value=""><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point(); ?></option>
+                            <option selected value=""><?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point() ); ?></option>
                             <?php foreach ($pickup_infos as $pickup_info) { ?>
                                 <?php $pickup_time = date('Y-m-d H:i', strtotime($date . ' ' . $pickup_info['time'])); ?>
                                 <?php $pickup_time = WBTM_Global_Function::date_format($pickup_time, 'time'); ?>
-                                <option value="<?php echo esc_attr($pickup_info['pickup_point'] . ' ' . $pickup_time) ?>"><?php echo esc_html($pickup_info['pickup_point']) . ' ' . ' (' . $pickup_time . ')'; ?></option>
+                                <option value="<?php echo esc_attr($pickup_info['pickup_point'] . ' ' . esc_html($pickup_time ) ) ?>"><?php echo esc_html($pickup_info['pickup_point']) . ' ' . ' (' . esc_html($pickup_time) . ')'; ?></option>
                             <?php } ?>
                         </select>
                     </label>
@@ -42,7 +42,7 @@ if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
                         var pickupPoint = document.getElementById('wbtm_pickup_point').value;
                         if (pickupRequired === 'yes' && pickupPoint.trim() === '') {
                             e.preventDefault();
-                            alert("<?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point(); ?>");
+                            alert("<?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point() ); ?>");
                         }
                     });
                 </script>

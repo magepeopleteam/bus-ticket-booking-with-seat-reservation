@@ -70,13 +70,13 @@ if (sizeof($bus_ids) > 0) {
     ?>
     <div class="wbtm_bus_left_filter_holder">
       <?php
-        echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
+        echo wp_kses_post( WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show ) );
       ?>
     </div>
     <?php  }else{
         $width = '100%';
     }?>
-    <div class="wbtm_bus_list_area" style="width: <?php echo $width?>">
+    <div class="wbtm_bus_list_area" style="width: <?php echo esc_html( $width )?>">
         <input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
         <input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
         <input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
@@ -117,14 +117,25 @@ if (sizeof($bus_ids) > 0) {
 
             $duration_hours = floor($duration_seconds / 3600);
             $duration_minutes = floor(($duration_seconds % 3600) / 60);
-            $duration_formatted = sprintf(
+            /*$duration_formatted = sprintf(
                 _x('%d H %d M', 'Duration format (hours and minutes)', 'bus-ticket-booking-with-seat-reservation'),
                 $duration_hours,
                 $duration_minutes
+            );*/
+
+            $duration_text = _x(
+                '%1$d H %2$d M',
+                'Duration format (hours and minutes)',
+                'bus-ticket-booking-with-seat-reservation'
+            );
+            $duration_formatted = str_replace(
+                ['%1$d', '%2$d'],
+                [$duration_hours, $duration_minutes],
+                $duration_text
             );
             ?>
 
-            <div class="wbtm-bus-list wtbm_bus_counter <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -141,7 +152,7 @@ if (sizeof($bus_ids) > 0) {
                     <?php WBTM_Custom_Layout::bg_image($bus_id); ?>
                 </div>
                 <div class="wbtm-bus-name">
-                    <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
+                    <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_html( get_the_title( $bus_id ) ); ?></h5>
                     <p><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
                 </div>
                 <div class="wbtm-bus-route">
@@ -160,7 +171,7 @@ if (sizeof($bus_ids) > 0) {
                         <?php endif; ?>
                     </h6>
                     <h6>
-                        <i class="far fa-clock"></i><?php echo WBTM_Translations::duration_text(); ?><?php echo esc_html($duration_formatted); ?>
+                        <i class="far fa-clock"></i><?php echo esc_html( WBTM_Translations::duration_text() ); ?><?php echo esc_html($duration_formatted); ?>
                     </h6>
                 </div>
                 <div class="wbtm-seat-info">
@@ -172,18 +183,18 @@ if (sizeof($bus_ids) > 0) {
                     </div>
                 <div class="wbtm-seat-info">
                     <h6 class="seats-available"><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></h6>
-                    <span><?php echo WBTM_Translations::text_available(); ?></span>
+                    <span><?php echo esc_html( WBTM_Translations::text_available() ); ?></span>
                 </div>
                 <div class="wbtm-seat-info">
-                        <h6 class="seats-price"><?php echo wc_price($price); ?></h6>
-                        <span><?php echo WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat(); ?></span>
+                        <h6 class="seats-price"><?php echo wp_kses_post( wc_price($price) ); ?></h6>
+                        <span><?php echo esc_html( WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat() ); ?></span>
                 </div>
                 <?php
                 if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {
                     WBTM_Layout::trigger_view_seat_details();
                 }
                 ?>
-                <div class="wbtm-seat-book <?php echo $btn_show; ?>">
+                <div class="wbtm-seat-book <?php echo esc_html( $btn_show ); ?>">
                     <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
                             data-bus_id="<?php echo esc_attr($bus_id); ?>"
                             data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"

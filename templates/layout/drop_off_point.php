@@ -23,13 +23,13 @@ if ($display_drop_off_point == 'yes' && sizeof($drop_off_points) > 0) {
                 ?>
                 <div class="wbtm_pickup_point _bgLight padding_xs">
                     <label class="justifyBetween">
-                        <span class="_mR_xs"><?php echo WBTM_Translations::text_drop_off_point(); ?></span>
+                        <span class="_mR_xs"><?php echo esc_html( WBTM_Translations::text_drop_off_point() ); ?></span>
                         <select class="formControl" name="wbtm_drop_off_point" id="wbtm_drop_off_point" <?php echo ($drop_off_required == 'yes') ? 'required' : ''; ?>>
-                            <option selected value=""><?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point(); ?></option>
+                            <option selected value=""><?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point() ); ?></option>
                             <?php foreach ($drop_off_infos as $drop_off_info) { ?>
                                 <?php $drop_off_time = date('Y-m-d H:i', strtotime($date . ' ' . $drop_off_info['time'])); ?>
                                 <?php $drop_off_time = WBTM_Global_Function::date_format($drop_off_time, 'time'); ?>
-                                <option value="<?php echo esc_attr($drop_off_info['drop_off_point'] . ' ' . $drop_off_time) ?>"><?php echo esc_html($drop_off_info['drop_off_point']) . ' ' . ' (' . $drop_off_time . ')'; ?></option>
+                                <option value="<?php echo esc_attr($drop_off_info['drop_off_point'] . ' ' . esc_html( $drop_off_time) ) ?>"><?php echo esc_html($drop_off_info['drop_off_point']) . ' ' . ' (' . esc_html($drop_off_time ) . ')'; ?></option>
                             <?php } ?>
                         </select>
                     </label>
@@ -41,7 +41,7 @@ if ($display_drop_off_point == 'yes' && sizeof($drop_off_points) > 0) {
                         var dropOffPoint = document.getElementById('wbtm_drop_off_point').value;
                         if (dropOffRequired === 'yes' && dropOffPoint.trim() === '') {
                             e.preventDefault();
-                            alert("<?php echo WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point(); ?>");
+                            alert("<?php echo esc_html(WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point() ); ?>");
                         }
                     });
                 </script>

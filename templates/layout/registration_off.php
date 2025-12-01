@@ -25,7 +25,7 @@
 					$pickup_infos = $pickup_point['pickup_info'];
 					if (sizeof($pickup_infos) > 0) {
 						?>
-						<h6><?php echo WBTM_Translations::text_pickup_point(); ?></h6>
+						<h6><?php echo esc_html( WBTM_Translations::text_pickup_point() ); ?></h6>
 						<div class="divider"></div>
 						<h4 class="textTheme"><i class="fas fa-map-marker-alt"></i>  <?php echo esc_html($start_route); ?></h4>
 						<div class="wbtm_pickup_poin pickup-point">
@@ -55,7 +55,7 @@
 					$pickup_infos = $drop_off_point['drop_off_info'];
 					if (sizeof($pickup_infos) > 0) {
 						?>
-						<h6><?php echo WBTM_Translations::text_drop_off_point(); ?></h6>
+						<h6><?php echo esc_html( WBTM_Translations::text_drop_off_point() ); ?></h6>
 						<div class="divider"></div>
 						<h4 class="textTheme"><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($end_route); ?></h4>
 						<div class="wbtm_pickup_point drop-off-point">

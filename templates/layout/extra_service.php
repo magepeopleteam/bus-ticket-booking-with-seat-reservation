@@ -16,15 +16,15 @@
 		if (sizeof($ex_services) > 0) {
 			?>
 			<div class="wbtm_ex_service_area mB_xs">
-				<h3 class="textTheme mT mB"><?php echo WBTM_Translations::text_ex_service(); ?> : </h3>
+				<h3 class="textTheme mT mB"><?php echo esc_html( WBTM_Translations::text_ex_service() ); ?> : </h3>
 				<div class="mpPanel">
 					
 					<table class="_layoutFixed">
 						<thead>
 						<tr>
-							<th class="_textLeft"><?php echo WBTM_Translations::text_name();?></th>
-							<th class="_textCenter"><?php echo WBTM_Translations::text_qty(); ?></th>
-							<th class="_textCenter"><?php echo WBTM_Translations::text_price();?></th>
+							<th class="_textLeft"><?php echo esc_html( WBTM_Translations::text_name() );?></th>
+							<th class="_textCenter"><?php echo esc_html( WBTM_Translations::text_qty() ); ?></th>
+							<th class="_textCenter"><?php echo esc_html( WBTM_Translations::text_price() );?></th>
 						</tr>
 						</thead>
 						<tbody>
@@ -43,7 +43,7 @@
 									<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
 									<?php WBTM_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>
 								</td>
-								<td class="_textCenter"><?php echo wc_price($row_price); ?></td>
+								<td class="_textCenter"><?php echo wp_kses_post( wc_price($row_price) ); ?></td>
 							</tr>
 						<?php } ?>
 						</tbody>

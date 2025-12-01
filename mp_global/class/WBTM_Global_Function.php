@@ -644,7 +644,7 @@
 					if ( false === $license_data->success ) {
 						switch ( $license_data->error ) {
 							case 'expired':
-								$message = esc_html__( 'Your license key expired on ' ) . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) );
+								$message = esc_html__( 'Your license key expired on' , 'bus-ticket-booking-with-seat-reservation') . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) );
 								break;
 							case 'revoked':
 								$message = esc_html__( 'Your license key has been disabled.', 'bus-ticket-booking-with-seat-reservation' );
@@ -1245,7 +1245,7 @@
 					if ( false === $license_data->success ) {
 						switch ( $license_data->error ) {
 							case 'expired':
-								$message = esc_html__( 'Your license key expired on ' ) . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) );
+								$message = esc_html__( 'Your license key expired on', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) );
 								break;
 							case 'revoked':
 								$message = esc_html__( 'Your license key has been disabled.', 'bus-ticket-booking-with-seat-reservation' );

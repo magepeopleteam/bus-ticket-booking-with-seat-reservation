@@ -20,7 +20,7 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
         <tr>
             <th>
                 <span class="fas fa-map-marker-alt"></span>
-                <?php echo WBTM_Translations::text_bp(); ?>
+                <?php echo esc_html( WBTM_Translations::text_bp() ); ?>
             </th>
             <td>
                 <h6><?php echo esc_html($all_info['bp']); ?></h6>
@@ -30,7 +30,7 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
         <tr>
             <th>
                 <span class="fas fa-map-marker-alt"></span>
-                <?php echo WBTM_Translations::text_dp(); ?>
+                <?php echo esc_html( WBTM_Translations::text_dp() ); ?>
             </th>
             <td>
                 <h6><?php echo esc_html($all_info['dp']); ?></h6>
@@ -41,7 +41,7 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
             <tr>
                 <th>
                     <span class="fas fa-map-marker-alt"></span>
-                    <?php echo WBTM_Translations::text_start_point(); ?>
+                    <?php echo esc_html( WBTM_Translations::text_start_point() ); ?>
                 </th>
                 <td>
                     <h6><?php echo esc_html($all_info['start_point']); ?></h6>
@@ -52,30 +52,30 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
         <tr>
             <th>
                 <span class="fa fa-calendar"></span>
-                <?php echo WBTM_Translations::text_date(); ?>
+                <?php echo esc_html( WBTM_Translations::text_date() ); ?>
             </th>
-            <td><?php echo WBTM_Global_Function::date_format($date); ?></td>
+            <td><?php echo esc_html( WBTM_Global_Function::date_format($date) ); ?></td>
         </tr>
         <tr>
             <th>
                 <span class="fas fa-bus"></span>
-                <?php echo WBTM_Translations::text_coach_type(); ?>
+                <?php echo esc_html( WBTM_Translations::text_coach_type() ); ?>
             </th>
             <td>
                 <?php 
-                $bus_type = WBTM_Functions::synchronize_bus_type($post_id);
-                echo $bus_type; 
+                $bus_type = esc_html( WBTM_Functions::synchronize_bus_type($post_id) );
+                echo esc_html( $bus_type );
                 ?>
             </td>
         </tr>
         <tr>
             <th>
                 <span class="fas fa-money-bill"></span>
-                <?php echo WBTM_Translations::text_fare(); ?>
+                <?php echo esc_html( WBTM_Translations::text_fare() ); ?>
             </th>
             <td>
-                <?php echo wc_price($seat_price); ?>
-                <small>/<?php echo WBTM_Translations::text_seat(); ?></small>
+                <?php echo wp_kses_post( wc_price($seat_price ) ); ?>
+                <small>/<?php echo esc_html( WBTM_Translations::text_seat() ); ?></small>
             </td>
         </tr>
     </tbody>
