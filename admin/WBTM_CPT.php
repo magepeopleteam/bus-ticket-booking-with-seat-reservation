@@ -19,6 +19,11 @@
 				add_action('template_redirect', [$this, 'prevent_booking_page_access']);
 				add_action('wp_head', [$this, 'add_noindex_meta'], 1);
 				add_filter('robots_txt', [$this, 'add_robots_txt_rules'], 10, 2);
+				
+				// SECURITY FIX: Exclude booking posts from all sitemaps
+				add_filter('wp_sitemaps_post_types', [$this, 'exclude_booking_from_sitemap']);
+				add_filter('wpseo_sitemap_exclude_post_type', [$this, 'exclude_booking_from_yoast_sitemap'], 10, 2);
+				add_filter('rank_math/sitemap/excluded_post_types', [$this, 'exclude_booking_from_rankmath_sitemap']);
 			}
 			public function add_cpt(): void {
 				$name = WBTM_Functions::get_name();
@@ -210,12 +215,46 @@
 			 */
 			public function add_robots_txt_rules($output, $public) {
 				if ($public) {
-					$output .= "\n# Block bus booking pages from search engines\n";
+					$output .= "\n# Block bus booking pages from search engines (PRIVACY PROTECTION)\n";
 					$output .= "Disallow: /wbtm_bus_booking/\n";
 					$output .= "Disallow: /*?wbtm_bus_booking=\n";
 					$output .= "Disallow: /*?post_type=wbtm_bus_booking\n";
+					$output .= "Disallow: /*admin-ajax.php?action=get_wbtm_passenger_filter_result\n";
+					$output .= "Disallow: /*admin-ajax.php?action=wbtm_delete_attendee\n";
+					$output .= "Disallow: /*admin-ajax.php?action=wbtm_load_custom_attendee_fields\n";
 				}
 				return $output;
+			}
+
+			/**
+			 * SECURITY FIX: Exclude booking post type from WordPress core sitemaps
+			 */
+			public function exclude_booking_from_sitemap($post_types) {
+				if (isset($post_types['wbtm_bus_booking'])) {
+					unset($post_types['wbtm_bus_booking']);
+				}
+				return $post_types;
+			}
+
+			/**
+			 * SECURITY FIX: Exclude booking post type from Yoast SEO sitemaps
+			 */
+			public function exclude_booking_from_yoast_sitemap($excluded, $post_type) {
+				if ($post_type === 'wbtm_bus_booking') {
+					return true;
+				}
+				return $excluded;
+			}
+
+			/**
+			 * SECURITY FIX: Exclude booking post type from Rank Math sitemaps
+			 */
+			public function exclude_booking_from_rankmath_sitemap($excluded_post_types) {
+				if (!is_array($excluded_post_types)) {
+					$excluded_post_types = array();
+				}
+				$excluded_post_types[] = 'wbtm_bus_booking';
+				return $excluded_post_types;
 			}
 		}
 		new WBTM_CPT();
