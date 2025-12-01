@@ -228,7 +228,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
             $stats = $this->get_booking_stats();
             ?>
             <div class="wrap wbtm-analytics-dashboard">
-                <h1><?php _e('Bus Booking Analytics Dashboard', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
+                <h1><?php esc_html_e('Bus Booking Analytics Dashboard', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
                 
                 <div class="wbtm-stats-grid">
                     <!-- Summary Cards -->
@@ -238,7 +238,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                         </div>
                         <div class="stat-content">
                             <h3><?php echo esc_html($stats['total_bookings']); ?></h3>
-                            <p><?php _e('Total Bookings', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                            <p><?php esc_html_e('Total Bookings', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                         </div>
                     </div>
 
@@ -248,7 +248,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                         </div>
                         <div class="stat-content">
                             <h3><?php echo wc_price($stats['total_revenue']); ?></h3>
-                            <p><?php _e('Total Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                            <p><?php esc_html_e('Total Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                         </div>
                     </div>
 
@@ -258,7 +258,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                         </div>
                         <div class="stat-content">
                             <h3><?php echo esc_html($stats['total_seats']); ?></h3>
-                            <p><?php _e('Total Seats Booked', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                            <p><?php esc_html_e('Total Seats Booked', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                         </div>
                     </div>
                 </div>
@@ -266,42 +266,42 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                 <!-- Charts Section -->
                 <div class="wbtm-charts-grid">
                     <div class="wbtm-chart-card">
-                        <h2><?php _e('Popular Routes', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
+                        <h2><?php esc_html_e('Popular Routes', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
                         <canvas id="routesChart"></canvas>
                     </div>
                     
                     <div class="wbtm-chart-card">
-                        <h2><?php _e('Monthly Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
+                        <h2><?php esc_html_e('Monthly Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Advanced Analytics Section -->
                 <div class="wbtm-advanced-stats">
-                    <h2><?php _e('Advanced Analytics', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
+                    <h2><?php esc_html_e('Advanced Analytics', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
                     
                     <div class="wbtm-charts-grid">
                         <!-- Peak Hours Chart -->
                         <div class="wbtm-chart-card">
-                            <h3><?php _e('Peak Booking Hours', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                            <h3><?php esc_html_e('Peak Booking Hours', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                             <canvas id="peakHoursChart"></canvas>
                         </div>
 
                         <!-- Weekly Pattern Chart -->
                         <div class="wbtm-chart-card">
-                            <h3><?php _e('Weekly Booking Pattern', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                            <h3><?php esc_html_e('Weekly Booking Pattern', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                             <canvas id="weeklyPatternChart"></canvas>
                         </div>
 
                         <!-- Ticket Types Chart -->
                         <div class="wbtm-chart-card">
-                            <h3><?php _e('Ticket Type Distribution', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                            <h3><?php esc_html_e('Ticket Type Distribution', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                             <canvas id="ticketTypesChart"></canvas>
                         </div>
 
                         <!-- Bus Type Performance -->
                         <div class="wbtm-chart-card">
-                            <h3><?php _e('Bus Type Performance', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+                            <h3><?php esc_html_e('Bus Type Performance', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                             <canvas id="busTypeChart"></canvas>
                         </div>
                     </div>
@@ -309,7 +309,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                     <!-- Customer Insights -->
                     <div class="wbtm-insight-cards">
                         <div class="wbtm-stat-card">
-                            <h4><?php _e('Return Customer Rate', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
+                            <h4><?php esc_html_e('Return Customer Rate', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
                             <p>
                                 <?php 
                                 $return_rate = ($stats['total_bookings'] > 0) 
@@ -321,7 +321,7 @@ if (!class_exists('WBTM_Analytics_Dashboard')) {
                         </div>
 
                         <div class="wbtm-stat-card">
-                            <h4><?php _e('Average Occupancy Rate', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
+                            <h4><?php esc_html_e('Average Occupancy Rate', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
                             <p>
                                 <?php 
                                 $avg_occupancy = (!empty($stats['occupancy_rates'])) 

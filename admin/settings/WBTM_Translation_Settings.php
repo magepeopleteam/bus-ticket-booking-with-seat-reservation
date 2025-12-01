@@ -190,7 +190,7 @@ class WBTM_Translation_Settings {
 
         <div class="wbtm-translation-wrapper">
             <div class="wbtm-translation-header">
-                <h1><?php _e('Bus Ticket Booking Translations', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
+                <h1><?php esc_html_e('Bus Ticket Booking Translations', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
             </div>
             
             <form method="post" action="options.php">
@@ -225,7 +225,7 @@ class WBTM_Translation_Settings {
                                     class="wbtm-input"
                                 />
                                 <div class="wbtm-description">
-                                    <?php echo sprintf(__('Default: %s', 'bus-ticket-booking-with-seat-reservation'), $default_value); ?>
+                                    <?php  printf('Default: %s', esc_html($default_value)); ?>
                                 </div>
                             </div>
                         </div>

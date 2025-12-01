@@ -14,7 +14,6 @@
 				add_action('manage_wbtm_bus_posts_columns', [$this, 'set_custom_columns'], 5, 2);
 				add_action('manage_wbtm_bus_posts_custom_column', [$this, 'custom_column_data'], 5, 2);
 				//=======================//
-				
 				// Prevent public access to booking pages
 				add_action('template_redirect', [$this, 'prevent_booking_page_access']);
 				add_action('wp_head', [$this, 'add_noindex_meta'], 1);
@@ -24,34 +23,58 @@
 				$name = WBTM_Functions::get_name();
 				$slug = WBTM_Functions::get_slug();
 				$icon = WBTM_Functions::get_icon();
+
 				$labels = array(
-					'name' => _x($name, 'bus-ticket-booking-with-seat-reservation'),
-					'singular_name' => _x($name, 'bus-ticket-booking-with-seat-reservation'),
-					'menu_name' => __($name, 'bus-ticket-booking-with-seat-reservation'),
-					'name_admin_bar' => __($name, 'bus-ticket-booking-with-seat-reservation'),
-					'archives' => __($name . ' List', 'bus-ticket-booking-with-seat-reservation'),
-					'attributes' => __($name . ' List', 'bus-ticket-booking-with-seat-reservation'),
-					'parent_item_colon' => __($name . ' Item:', 'bus-ticket-booking-with-seat-reservation'),
-					'all_items' => __('All', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'add_new_item' => __('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'add_new' => __('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'new_item' => __('New', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'edit_item' => __('Edit', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'update_item' => __('Update', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'view_item' => __('View', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'view_items' => __('View', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'search_items' => __('Search', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'not_found' => __('Not found', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'not_found_in_trash' => __('Not found in Trash', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'featured_image' => __('Feature Image', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'set_featured_image' => __('Set', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . '.' . __('featured image', 'bus-ticket-booking-with-seat-reservation'),
-					'remove_featured_image' => __('Remove', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . '.' . __('featured image', 'bus-ticket-booking-with-seat-reservation'),
-					'use_featured_image' => __('Use as', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . '.' . __('featured image', 'bus-ticket-booking-with-seat-reservation'),
-					'insert_into_item' => __('Insert into', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'uploaded_to_this_item' => __('Uploaded to this', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name,
-					'items_list' => $name . ' ' . __(' list', 'bus-ticket-booking-with-seat-reservation'),
-					'items_list_navigation' => $name . ' ' . __(' list navigation', 'bus-ticket-booking-with-seat-reservation'),
-					'filter_items_list' => __('Filter', 'bus-ticket-booking-with-seat-reservation') . ' ' . $name . ' ' . __('list', 'bus-ticket-booking-with-seat-reservation'),
+					'name' => $name,
+					'singular_name' => $name,
+					'menu_name' => $name,
+					'name_admin_bar' => $name,
+					/* translators: %s: event name */
+					'archives' => sprintf(__('%s List', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'attributes' => sprintf(__('%s Attributes', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'parent_item_colon' => sprintf(__('%s Item :', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'all_items' => sprintf(__('All %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'add_new_item' => sprintf(__('All New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'add_new' => sprintf(__('Add New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'new_item' => sprintf(__('New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'edit_item' => sprintf(__('Edit %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'update_item' => sprintf(__('Update %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'view_item' => sprintf(__('View %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'view_items' => sprintf(__('View %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'search_items' => sprintf(__('Search %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'not_found' => sprintf(__('Not found %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'not_found_in_trash' => sprintf(__('Not found in Trash %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'featured_image' => sprintf(__('Feature Image %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'insert_into_item' => sprintf(__('Insert into %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'uploaded_to_this_item' => sprintf(__('Uploaded to this %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'items_list' => sprintf(__('%s list', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'items_list_navigation' => sprintf(__('%s list navigation', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'set_featured_image' => sprintf(__('Set %s featured image', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'remove_featured_image' => sprintf(__('Remove %s featured image', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'use_featured_image' => sprintf(__('Use as %s featured image', 'bus-ticket-booking-with-seat-reservation'), $name),
+					/* translators: %s: event name */
+					'filter_items_list' => sprintf(__('Filter %s list', 'bus-ticket-booking-with-seat-reservation'), $name),
 				);
 				$args = array(
 					'public' => true,
@@ -76,25 +99,24 @@
 				);
 				$args = apply_filters('wbtm_add_cap', $args);
 				register_post_type('wbtm_bus', $args);
-
-				$argsl = apply_filters( 'filter_wbtm_bus_booking', array(
-					'public'             => false, // Changed from true to false
+				$argsl = apply_filters('filter_wbtm_bus_booking', array(
+					'public' => false, // Changed from true to false
 					'publicly_queryable' => false, // Explicitly prevent public queries
-					'label'              => __( 'Bus Attendee', 'bus-ticket-booking-with-seat-reservation' ),
-					'menu_icon'          => 'dashicons-id',
-					'supports'           => array( 'title' ),
+					'label' => __('Bus Attendee', 'bus-ticket-booking-with-seat-reservation'),
+					'menu_icon' => 'dashicons-id',
+					'supports' => array('title'),
 					// 'show_in_menu' => 'edit.php?post_type=mep_events',
 					'exclude_from_search' => true,
-					'show_in_menu'       => false,
-					'capability_type'    => 'post',
-					'capabilities'       => array(
+					'show_in_menu' => false,
+					'capability_type' => 'post',
+					'capabilities' => array(
 						'create_posts' => 'do_not_allow',
 					),
-					'map_meta_cap'       => true,
-					'show_in_rest'       => false, // Disable REST API access
-					'rest_base'          => 'wbtm_bus_bookings'
-				) );
-				register_post_type( 'wbtm_bus_booking', $argsl );
+					'map_meta_cap' => true,
+					'show_in_rest' => false, // Disable REST API access
+					'rest_base' => 'wbtm_bus_bookings'
+				));
+				register_post_type('wbtm_bus_booking', $argsl);
 			}
 			//************************************//
 			public function set_custom_columns($column) {
@@ -116,51 +138,45 @@
 				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seal Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seal Plan', 'bus-ticket-booking-with-seat-reservation');
 				switch ($column) {
 					case 'wbtm_bus_no':
-						echo "<span class=''>" . WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no') . "</span>";
+						echo wp_kses_post("<span class=''>" . WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no') . "</span>");
 						break;
 					case 'wbtm_bus_type':
-						echo "<span class=''>" . $seat_plan_text . "</span>";
+						echo wp_kses_post("<span class=''>" . $seat_plan_text . "</span>");
 						break;
 					case 'wbtm_coach_type':
 						$category = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category');
-						echo "<span class=''>" . ($category ? esc_html($category) : '-') . "</span>";
+						echo wp_kses_post("<span class=''>" . ($category ? esc_html($category) : '-') . "</span>");
 						break;
 					case 'wbtm_added_by':
 						$user_id = get_post_field('post_author', $post_id);
-						echo "<span class=''>" . get_the_author_meta('display_name', $user_id) . ' [' . WBTM_Functions::wbtm_get_user_role($user_id) . "]</span>";
+						echo wp_kses_post("<span class=''>" . get_the_author_meta('display_name', $user_id) . ' [' . WBTM_Functions::wbtm_get_user_role($user_id) . "]</span>");
 						break;
 				}
 			}
-			
 			/**
 			 * Prevent public access to booking pages
 			 */
 			public function prevent_booking_page_access() {
 				// Check multiple ways to detect booking page access
 				$is_booking_page = false;
-				
 				// Method 1: Check if it's a singular booking post
 				if (is_singular('wbtm_bus_booking')) {
 					$is_booking_page = true;
 				}
-				
 				// Method 2: Check URL patterns (works with any permalink structure)
 				$request_uri = $_SERVER['REQUEST_URI'] ?? '';
 				if (strpos($request_uri, '/wbtm_bus_booking/') !== false) {
 					$is_booking_page = true;
 				}
-				
 				// Method 3: Check query parameters (for default permalink structure)
 				if (isset($_GET['wbtm_bus_booking']) || isset($_GET['post_type']) && $_GET['post_type'] === 'wbtm_bus_booking') {
 					$is_booking_page = true;
 				}
-				
 				// Method 4: Check if current post is a booking post
 				global $post;
 				if ($post && $post->post_type === 'wbtm_bus_booking') {
 					$is_booking_page = true;
 				}
-				
 				if ($is_booking_page) {
 					// Redirect to 404
 					global $wp_query;
@@ -170,41 +186,34 @@
 					exit;
 				}
 			}
-
 			/**
 			 * Add noindex meta tag to booking pages (extra security)
 			 */
 			public function add_noindex_meta() {
 				// Check multiple ways to detect booking page access
 				$is_booking_page = false;
-				
 				// Method 1: Check if it's a singular booking post
 				if (is_singular('wbtm_bus_booking')) {
 					$is_booking_page = true;
 				}
-				
 				// Method 2: Check URL patterns
 				$request_uri = $_SERVER['REQUEST_URI'] ?? '';
 				if (strpos($request_uri, '/wbtm_bus_booking/') !== false) {
 					$is_booking_page = true;
 				}
-				
 				// Method 3: Check query parameters
 				if (isset($_GET['wbtm_bus_booking']) || (isset($_GET['post_type']) && $_GET['post_type'] === 'wbtm_bus_booking')) {
 					$is_booking_page = true;
 				}
-				
 				// Method 4: Check current post
 				global $post;
 				if ($post && $post->post_type === 'wbtm_bus_booking') {
 					$is_booking_page = true;
 				}
-				
 				if ($is_booking_page) {
 					echo '<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">' . "\n";
 				}
 			}
-
 			/**
 			 * Add robots.txt rules to prevent crawling of booking pages
 			 */
