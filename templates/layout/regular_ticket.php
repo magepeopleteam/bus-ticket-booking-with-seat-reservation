@@ -18,9 +18,9 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
 <table class="_layoutFixed_textCenter">
     <thead>
         <tr>
-            <th><?php echo WBTM_Translations::text_ticket_type(); ?></th>
-            <th><?php echo WBTM_Translations::text_qty(); ?></th>
-            <th><?php echo WBTM_Translations::text_price(); ?></th>
+            <th><?php echo esc_html( WBTM_Translations::text_ticket_type() ); ?></th>
+            <th><?php echo esc_html( WBTM_Translations::text_qty() ); ?></th>
+            <th><?php echo esc_html( WBTM_Translations::text_price() ); ?></th>
         </tr>
     </thead>
     <tbody>
@@ -31,7 +31,7 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
                     <input type="hidden" name="wbtm_passenger_type[]" value="<?php echo esc_attr($ticket_info['type']); ?>">
                     <?php WBTM_Custom_Layout::qty_input('wbtm_seat_qty[]', $ticket_info['price'], $all_info['available_seat'], 0, 0, $all_info['available_seat']); ?>
                 </td>
-                <th><?php echo wc_price($ticket_info['price']); ?></th>
+                <th><?php echo wp_kses_post( wc_price($ticket_info['price'] ) ); ?></th>
             </tr>
         <?php } ?>
     </tbody>

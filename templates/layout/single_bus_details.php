@@ -27,12 +27,12 @@
 					</h4>
 					<div class="divider"></div>
 					<h6>
-						<strong><?php echo WBTM_Translations::text_coach_type(); ?> :</strong>
-						<?php echo WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category'); ?>
+						<strong><?php echo esc_html( WBTM_Translations::text_coach_type() ); ?> :</strong>
+						<?php echo esc_html( WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category') ); ?>
 					</h6>
 					<h6>
-						<strong><?php echo WBTM_Translations::text_passenger_capacity(); ?> :</strong>
-						<?php echo WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0); ?>
+						<strong><?php echo esc_html( WBTM_Translations::text_passenger_capacity() ); ?> :</strong>
+						<?php echo esc_html( WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0) ); ?>
 					</h6>
 					<div class="mp_wp_editor">
 						<?php the_content(); ?>
@@ -40,7 +40,7 @@
 				</div>
 				<div class="flexEqual">
 					<div class="dLayout_xs mR_xs">
-						<h5><?php echo WBTM_Translations::text_bp(); ?></h5>
+						<h5><?php echo esc_html( WBTM_Translations::text_bp() ); ?></h5>
 						<div class="divider"></div>
 						<?php if (sizeof($full_route_infos) > 0) { ?>
 							<ul class="mp_list">
@@ -48,7 +48,7 @@
 									<?php if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') { ?>
 										<li>
 											<span class="fa fa-map-marker _mR_xs_textTheme"></span>
-											<?php echo esc_html($full_route_info['place']) . ' (' . WBTM_Global_Function::date_format($full_route_info['time'], 'time') . ')'; ?>
+											<?php echo esc_html($full_route_info['place']) . ' (' . esc_html( WBTM_Global_Function::date_format($full_route_info['time'], 'time') . ')' ); ?>
 										</li>
 									<?php } ?>
 								<?php } ?>
@@ -56,7 +56,7 @@
 						<?php } ?>
 					</div>
 					<div class="dLayout_xs">
-						<h5><?php echo WBTM_Translations::text_dp(); ?></h5>
+						<h5><?php echo esc_html( WBTM_Translations::text_dp() ); ?></h5>
 						<div class="divider"></div>
 						<?php if (sizeof($full_route_infos) > 0) { ?>
 							<ul class="mp_list">
@@ -64,7 +64,7 @@
 									<?php if ($full_route_info['type'] == 'dp' || $full_route_info['type'] == 'both') { ?>
 										<li>
 											<span class="fa fa-map-marker _mR_xs_textTheme"></span>
-											<?php echo esc_html($full_route_info['place']) . ' (' . WBTM_Global_Function::date_format($full_route_info['time'], 'time') . ')'; ?>
+											<?php echo esc_html($full_route_info['place']) . ' (' . esc_html( WBTM_Global_Function::date_format($full_route_info['time'], 'time') . ')' ); ?>
 										</li>
 									<?php } ?>
 								<?php } ?>

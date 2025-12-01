@@ -71,7 +71,7 @@
 				<?php } ?>
                 <div class="inputList wbtm_input_select wbtm_start_point">
                     <label class="fdColumn">
-                        <?php echo WBTM_Translations::text_from(); ?>
+                        <?php echo esc_html( WBTM_Translations::text_from() ); ?>
                         <div class="marker">
                             <i class="fas fa-map-marker-alt"></i>
                             <input type="text" class="formControl" name="bus_start_route" value="<?php echo esc_attr( $start_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
@@ -79,7 +79,7 @@
                     </label>
 					<?php WBTM_Layout::route_list( $post_id ); ?>
                 </div>
-                <div class="inputList wbtm_input_select wbtm_dropping_point" data-alert="<?php echo WBTM_Translations::text_select_wrong_route(); ?>">
+                <div class="inputList wbtm_input_select wbtm_dropping_point" data-alert="<?php echo esc_html( WBTM_Translations::text_select_wrong_route() ); ?>">
                     <label class="fdColumn ">
                         <?php echo esc_html( WBTM_Translations::text_to() ); ?>
                         <div class="marker">
@@ -102,11 +102,11 @@
                         <span>&nbsp;</span>
 						<?php if ( $active_redirect_page == 'on' && $search_page_redirect ) { ?>
                             <button type="submit" class="_themeButton_radius wbtm_bus_submit">
-                                <span class="fas fa-search mR_xs"></span><?php echo WBTM_Translations::text_search(); ?>
+                                <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                             </button>
 						<?php } else { ?>
                             <button type="button" class="_themeButton_radius get_wbtm_bus_list">
-                                <span class="fas fa-search mR_xs"></span><?php echo WBTM_Translations::text_search(); ?>
+                                <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                             </button>
 						<?php } ?>
                     </div>

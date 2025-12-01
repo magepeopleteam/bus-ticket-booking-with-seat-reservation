@@ -81,9 +81,19 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 										<?php if ($price_multiplier != 1.0): ?>
 											<div class="wbtm_cabin_price_info">
 												<?php if ($price_multiplier > 1.0): ?>
-													<span class="wbtm_price_multiplier"><?php printf(esc_html__('+%d%% Premium', 'bus-ticket-booking-with-seat-reservation'), (($price_multiplier - 1.0) * 100)); ?></span>
+                                                    <span class="wbtm_price_multiplier">
+                                                        <?php
+                                                        $premium = ( $price_multiplier - 1.0 ) * 100;
+                                                        echo esc_html( '+' . number_format_i18n( $premium ) . '% Premium' );
+                                                        ?>
+                                                    </span>
 												<?php elseif ($price_multiplier < 1.0): ?>
-													<span class="wbtm_price_discount"><?php printf(esc_html__('-%d%% Discount', 'bus-ticket-booking-with-seat-reservation'), ((1.0 - $price_multiplier) * 100)); ?></span>
+                                                    <span class="wbtm_price_discount">
+                                                        <?php
+                                                        $discount = ( 1.0 - $price_multiplier ) * 100;
+                                                        echo esc_html( '-' . number_format_i18n( $discount ) . '% Discount' );
+                                                        ?>
+                                                    </span>
 												<?php endif; ?>
 											</div>
 										<?php endif; ?>
@@ -136,12 +146,12 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 															<th>
 																<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 																	<?php if ($is_booked): ?>
-																		<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>">
+																		<div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
 																			<div class="seat_visual"></div>
 																			<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 																		</div>
 																	<?php elseif ($is_in_cart): ?>
-																		<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>">
+																		<div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name) ); ?>">
 																			<div class="seat_visual"></div>
 																			<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 																		</div>
@@ -171,7 +181,7 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 																						>
 																							<span><?php echo esc_html($ticket_info['name']); ?></span>
 																							-
-																							<span><?php echo wc_price($ticket_price); ?></span>
+																							<span><?php echo wp_kses_post( wc_price( $ticket_price ) ); ?></span>
 																						</li>
 																					<?php endforeach; ?>
 																				</ul>
@@ -244,12 +254,12 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 														$is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
 														?>
 														<?php if ($is_booked_legacy) { ?>
-															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name); ?>">
+															<div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 															</div>
 														<?php } elseif ($is_in_cart_legacy) { ?>
-															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name); ?>">
+															<div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name) ); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 															</div>
@@ -275,7 +285,7 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 																			>
 																				<span><?php echo esc_html($ticket_info['name']); ?></span>
 																				-
-																				<span><?php echo wc_price($ticket_price); ?></span>
+																				<span><?php echo wp_kses_post( wc_price($ticket_price) ); ?></span>
 																			</li>
 																		<?php } ?>
 																	</ul>
@@ -304,7 +314,7 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 						<input type="hidden" name="wbtm_selected_seat_dd" value=""/>
 						<input type="hidden" name="wbtm_selected_seat_dd_type" value=""/>
 						<div class="divider"></div>
-						<h4 class="_textCenter_textTheme"><?php echo WBTM_Translations::text_upper_deck(); ?></h4>
+						<h4 class="_textCenter_textTheme"><?php echo esc_html( WBTM_Translations::text_upper_deck() ); ?></h4>
 						<div class="divider"></div>
 						<table>
 							<tbody>
@@ -335,12 +345,12 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 												<th>
 													<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
 														<?php if ($seat_available > 0) { ?>
-															<div class="mp_seat seat_booked" title="<?php echo WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info); ?>">
+															<div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info) ); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($info); ?></div>
 															</div>
 														<?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $info)) { ?>
-															<div class="mp_seat seat_in_cart" title="<?php echo WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info); ?>">
+															<div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info) ); ?>">
 																<div class="seat_visual"></div>
 																<div class="seat_number"><?php echo esc_html($info); ?></div>
 															</div>
@@ -369,7 +379,7 @@ if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_c
 																			>
 																				<span><?php echo esc_html($ticket_info['name']); ?></span>
 																				-
-																				<span><?php echo wc_price($ticket_price); ?></span>
+																				<span><?php echo wp_kses_post( wc_price($ticket_price) ); ?></span>
 																			</li>
 																		<?php } ?>
 																	</ul>

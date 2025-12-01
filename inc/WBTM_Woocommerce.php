@@ -143,7 +143,15 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 								if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 									WC()->cart->remove_cart_item($key);
-									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'woocommerce'), $seat_name, $seat_info['cabin_name']), 'error');
+//									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name, $seat_info['cabin_name']), 'error');
+                                    wc_add_notice(
+                                        sprintf(
+                                            esc_html( 'Seat %1$s in %2$s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+                                            $seat_name,
+                                            $seat_info['cabin_name']
+                                        ),
+                                        'error'
+                                    );
 								}
 							}
 						} elseif (!empty($legacy_seats)) {
@@ -153,7 +161,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 								if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 									WC()->cart->remove_cart_item($key);
-									wc_add_notice(sprintf(__("Seat %s has already been booked by another user. Please choose another seat.", 'woocommerce'), $seat_name), 'error');
+									wc_add_notice(sprintf(esc_html("Seat %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name), 'error');
 								}
 							}
 						}
@@ -453,7 +461,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 									if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 										WC()->cart->empty_cart();
-										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'woocommerce'), 'error');
+										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 									}
 								}
 							}
@@ -471,7 +479,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 									
 									if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 										WC()->cart->empty_cart();
-										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'woocommerce'), 'error');
+										wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 									}
 								}
 							}
@@ -482,7 +490,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 							$available_seat = max(0, $total_seat - $sold_seat);
 							if ($available_seat < $seats_qty) {
 								WC()->cart->empty_cart();
-								wc_add_notice(__("Sorry, Your Selected ticket Already Booked by another user", 'woocommerce'), 'error');
+								wc_add_notice(esc_html("Sorry, Your Selected ticket Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 							}
 						}
 					}

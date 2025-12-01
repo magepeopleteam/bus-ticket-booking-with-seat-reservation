@@ -68,7 +68,7 @@ if (sizeof($bus_ids) > 0) {
             ?>
             <div class="wbtm_bus_left_filter_holder">
                 <?php
-                echo WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
+                echo wp_kses_post( WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show ) );
                 ?>
             </div>
         <?php  }else{
@@ -118,7 +118,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -134,7 +134,7 @@ if (sizeof($bus_ids) > 0) {
 
 
                 <div class="title">
-					<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo get_the_title($bus_id); ?></h5>
+					<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_attr( get_the_title($bus_id ) ) ; ?></h5>
 					<p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
 				</div>
 				<div class="route">
@@ -159,18 +159,18 @@ if (sizeof($bus_ids) > 0) {
 						error_log('FLIX DISPLAY - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Using Bus Type: ' . $bus_types[$key] . ' - Date: ' . $date);
 						?>
 						<p><strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
-						<p><?php echo WBTM_Translations::text_available(); ?></p>
+						<p><?php echo esc_html( WBTM_Translations::text_available() ); ?></p>
 					</div>
 				</div>
 				<div class="price">
-					<h4 class="textTheme"><?php echo wc_price($price); ?></h4>
+					<h4 class="textTheme"><?php echo wp_kses_post( wc_price($price) ); ?></h4>
 				</div>
 				<?php
 				if ($btn_show == 'hide' && $all_info['regi_status'] == 'no') {
 					WBTM_Layout::trigger_view_seat_details();
 				}
 				?>
-				<button type="button" class="_themeButton_xs wbtm-seat-book <?php echo $btn_show; ?>" id="get_wbtm_bus_details"
+				<button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
 					data-bus_id="<?php echo esc_attr($bus_id); ?>"
 					data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
 					data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
