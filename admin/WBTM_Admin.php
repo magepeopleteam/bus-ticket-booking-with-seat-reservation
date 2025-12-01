@@ -232,10 +232,10 @@
 						$prev_date = $date;
 						foreach ($start_routes as $start_route) {
 							$bp = $start_route['wbtm_bus_bp_stops_name'];
-							$bp_date = date('Y-m-d', strtotime($prev_date)) . ' ' . $start_route['wbtm_bus_bp_start_time'];
-							$bp_date = date('Y-m-d H:i', strtotime($bp_date));
+							$bp_date = gmdate('Y-m-d', strtotime($prev_date)) . ' ' . $start_route['wbtm_bus_bp_start_time'];
+							$bp_date = gmdate('Y-m-d H:i', strtotime($bp_date));
 							if (strtotime($bp_date) < strtotime($prev_date)) {
-								$bp_date = date('Y-m-d H:i', strtotime($bp_date . ' +1 day'));
+								$bp_date = gmdate('Y-m-d H:i', strtotime($bp_date . ' +1 day'));
 							}
 							$bp_infos[] = [
 								'bp' => $bp,
@@ -244,13 +244,13 @@
 							$prev_date = $bp_date;
 						}
 						$bp_prev_date = $bp_infos[0]['bp_time'];
-						$bp_prev_date = date('Y-m-d H:i', strtotime($bp_prev_date));
+						$bp_prev_date = gmdate('Y-m-d H:i', strtotime($bp_prev_date));
 						foreach ($end_routes as $end_route) {
 							$dp = $end_route['wbtm_bus_next_stops_name'];
-							$dp_date = date('Y-m-d', strtotime($bp_prev_date)) . ' ' . $end_route['wbtm_bus_next_end_time'];
-							$dp_date = date('Y-m-d H:i', strtotime($dp_date));
+							$dp_date = gmdate('Y-m-d', strtotime($bp_prev_date)) . ' ' . $end_route['wbtm_bus_next_end_time'];
+							$dp_date = gmdate('Y-m-d H:i', strtotime($dp_date));
 							if (strtotime($dp_date) < strtotime($bp_prev_date)) {
-								$dp_date = date('Y-m-d H:i', strtotime($dp_date . ' +1 day'));
+								$dp_date = gmdate('Y-m-d H:i', strtotime($dp_date . ' +1 day'));
 							}
 							$dp_infos[] = [
 								'dp' => $dp,
@@ -287,7 +287,7 @@
 						}
 						usort($full_route_infos, "WBTM_Global_Function::sort_date_array");
 						foreach ($full_route_infos as $key => $route) {
-							$full_route_infos[$key]['time'] = date('H:i', strtotime($route['time']));
+							$full_route_infos[$key]['time'] = gmdate('H:i', strtotime($route['time']));
 						}
 					}
 					$count_route = sizeof($full_route_infos);

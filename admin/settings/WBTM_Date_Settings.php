@@ -17,10 +17,10 @@
 				$date_type = WBTM_Global_Function::get_post_info($post_id, 'show_operational_on_day', 'no');
 				/*********************/
 				$repeated_start_date = WBTM_Global_Function::get_post_info($post_id, 'wbtm_repeated_start_date');
-				$hidden_repeated_start_date = $repeated_start_date ? date('Y-m-d', strtotime($repeated_start_date)) : '';
+				$hidden_repeated_start_date = $repeated_start_date ? gmdate('Y-m-d', strtotime($repeated_start_date)) : '';
 				$visible_repeated_start_date = $repeated_start_date ? date_i18n($date_format, strtotime($repeated_start_date)) : '';
 				$repeated_end_date = WBTM_Global_Function::get_post_info($post_id, 'wbtm_repeated_end_date');
-				$hidden_repeated_end_date = $repeated_end_date ? date('Y-m-d', strtotime($repeated_end_date)) : '';
+				$hidden_repeated_end_date = $repeated_end_date ? gmdate('Y-m-d', strtotime($repeated_end_date)) : '';
 				$visible_repeated_end_date = $repeated_end_date ? date_i18n($date_format, strtotime($repeated_end_date)) : '';
 				$repeated_after = WBTM_Global_Function::get_post_info($post_id, 'wbtm_repeated_after', 1);
 				$active_days = WBTM_Global_Function::get_post_info($post_id, 'wbtm_active_days');
@@ -255,7 +255,7 @@
 			public function date_item_without_year($name, $date = '', $has_year = '') {
 				$date_format = WBTM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format);
-				$hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
                 <label class="_fullWidth_mR">
