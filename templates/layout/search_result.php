@@ -124,7 +124,7 @@ if (sizeof($bus_ids) > 0) {
             );
             ?>
 
-            <div class="wbtm-bus-list  <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly

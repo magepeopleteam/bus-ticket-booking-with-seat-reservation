@@ -11,6 +11,11 @@ if (! class_exists('WBTM_Woocommerce')) {
 	{
 		public function __construct()
 		{
+
+            add_action('wp_ajax_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart' ) );
+            add_action('wp_ajax_nopriv_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart' ) );
+
+
 			add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
 			add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
 			add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
@@ -39,6 +44,29 @@ if (! class_exists('WBTM_Woocommerce')) {
 			// Prevent add to cart notices when redirect is enabled
 			add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 		}
+
+        function wbtm_ajax_add_to_cart(){
+
+            if ( ! isset($_POST['wbtm_form_nonce']) || ! wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce') ) {
+                wp_send_json_error('Nonce failed');
+            }
+            $post_id = isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '';
+            $product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+            if( $product_id ){
+                $quantity   = 1;
+                $added = WC()->cart->add_to_cart($product_id, $quantity);
+                if($added){
+                    wp_send_json_success([
+                        'message' => 'Added successfully'
+                    ]);
+                }else{
+                    wp_send_json_error('Cart error');
+                }
+            }else{
+                wp_send_json_error('Cart error');
+            }
+
+        }
 
 		//Price of product in mini cart
 		public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {

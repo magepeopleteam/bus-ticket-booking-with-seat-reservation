@@ -23,7 +23,11 @@ $link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_produc
                 <?php echo WBTM_Translations::text_book_now(); ?>
             </button>
         <?php } else { ?>
-            <button type="submit" class="_themeButton" name="add-to-cart" value="<?php echo esc_attr($link_wc_product); ?>">
+           <!-- <button type="submit" class="_themeButton" name="add-to-cart" value="<?php /*echo esc_attr($link_wc_product); */?>">
+                <?php /*echo WBTM_Translations::text_book_now(); */?>
+            </button>-->
+
+            <button type="button" id="wbtm_add_to_cart" class="_themeButton" value="<?php echo esc_attr($link_wc_product);?>">
                 <?php echo WBTM_Translations::text_book_now(); ?>
             </button>
         <?php } ?>

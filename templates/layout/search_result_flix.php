@@ -118,7 +118,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo $wbtm_bus_search; echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly

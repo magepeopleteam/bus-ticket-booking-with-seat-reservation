@@ -32,6 +32,30 @@
   div.wbtm_ex_service_area {    display: none;  }
   /**********************/
   img.driver_img {    max-width: 45px !important;  }
+
+  .wbtm-bus-notification{
+    background-color: #d4f7d4; /* light green */
+    color: #000; /* black text for contrast */
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 20px auto;
+    width: fit-content;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .wbtm-bus-notification a.cart-link {
+    color: #007c00;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: 5px;
+  }
+
+  .wbtm-bus-notification a.cart-link:hover {
+    color: #005500;
+  }
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {

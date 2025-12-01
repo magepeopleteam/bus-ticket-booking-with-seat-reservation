@@ -232,6 +232,17 @@
 								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
 							)
 						),
+						array(
+							'name'    => 'cart_empty_after_search',
+							'label'   => esc_html__( 'Empty cart after new search', 'bus-ticket-booking-with-seat-reservation' ),
+                            'desc'  => esc_html__( 'Enable this option to automatically clear the cart whenever a user performs a new search, ensuring only the latest selection is added.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on'  => esc_html__( 'ON', 'bus-ticket-booking-with-seat-reservation' ),
+								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
+							)
+						),
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'filter_wbtm_global_settings', array(
 						array(

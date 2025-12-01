@@ -71,10 +71,15 @@
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		$('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
 			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
 		});
+
+		$("#wbtm_start_container").fadeIn();
+		$("#wbtm_return_container").fadeOut();
+
 	});
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
 		let current = $(this);
@@ -658,4 +663,53 @@
 			}
 		});
 	});
+
+
+	$(document).on( 'click', '#wbtm_add_to_cart', function(e){
+		e.preventDefault();
+
+		let this_btn = $(this);
+		let form = this_btn.closest('form');
+
+		let formData = form.serialize();
+		formData += '&action=wbtm_ajax_add_to_cart';
+
+		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
+		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
+
+		$.ajax({
+			url: woocommerce_params.ajax_url,
+			type: 'POST',
+			data: formData,
+			beforeSend: function(){
+				this_btn.text( 'Adding to Cart...' );
+			},
+			success: function(response){
+				if(response.success){
+					this_btn.text( 'Added to Cart ✅' );
+					$(document.body).trigger('wc_update_cart');
+				}else{
+					alert('Failed to add ticket ❌');
+				}
+			},
+			complete: function(){
+				this_btn.text( 'Book Now' );
+				if( burPosition === 'start_bus' ){
+					if( numberOfBuses > 0 ){
+						$('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
+						$("#wbtm_start_container").fadeOut();
+						$("#wbtm_return_container").fadeIn();
+					}else{
+						window.location.href = my_wc_vars.checkout_url;
+					}
+				}else{
+					window.location.href = my_wc_vars.checkout_url;
+				}
+			}
+		});
+
+	});
+
+
 }(jQuery));
+

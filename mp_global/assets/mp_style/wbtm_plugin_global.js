@@ -112,7 +112,8 @@ function wbtm_alert($this, attr = 'alert') {
 }(jQuery));
 //====================================================================Load Bg Image=================//
 function wbtm_loadBgImage() {
-    jQuery('body').find('.wbtm_style [data-bg-image]:visible').each(function () {
+    jQuery('body').find('.wbtm_style [data-bg-image]').each(function () {
+    // jQuery('body').find('.wbtm_style [data-bg-image]:visible').each(function () {
         let target = jQuery(this);
         let width = target.outerWidth();
         let height = target.outerHeight();

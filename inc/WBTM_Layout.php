@@ -71,6 +71,13 @@ if (!class_exists('WBTM_Layout')) {
             $search_info['j_date']=$j_date;
             $search_info['r_date']=$r_date;
             self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style,$btn_show,$search_info, $left_filter_show);
+
+            $redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
+            error_log( print_r( [ '$redirect_enabled' => $redirect_enabled ], true ) );
+            if (WC()->cart->get_cart_contents_count() > 0) {
+                WC()->cart->empty_cart();
+            }
+
             die();
         }
         public function get_wbtm_bus_details() {
@@ -125,28 +132,40 @@ wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[], $left_filter_show='') {
             
             if ($start_route && $end_route && $j_date) { ?>
-                <div class="wbtm-date-suggetion">
-                    <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
-                </div>
-                <div class="wbtm-date-route">
-                    <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
-                </div>
-                <div class="wbtm-bus-lists">
-                    <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey', $left_filter_show); ?>
-                </div>
+                    <div class="wbtm-bus-lists" id="wbtm_start_container">
+                        <div class="wbtm-date-suggetion">
+                            <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date); ?>
+                        </div>
+                        <div class="wbtm-date-route">
+                            <?php self::route_title($start_route,$end_route,$j_date,$r_date); ?>
+                        </div>
+                        <div class="wbtm-bus-lists" id="start_bus">
+                            <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date,$post_id,$style,$btn_show,$search_info,'start_journey', $left_filter_show); ?>
+                        </div>
+                    </div>
             <?php }
               
             if ($post_id==0 && $start_route && $end_route && $r_date) { ?>
-            
-                <div class="wbtm-bus-lists" id="wbtm_return_container">
-                    <h4 class="lists-title"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
+
+                <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: none">
+
                     <div class="wbtm-date-suggetion">
                         <?php self::next_date_suggestion($post_id,$start_route,$end_route,$j_date,$r_date,true); ?>
                     </div>
+
+                    <div class="wbtm-bus-notification" id="wbtm_selected_bus_notification" style="display: none">
+                        <?php esc_attr_e( 'Your ticket has been added to the cart.', 'bus-ticket-booking-with-seat-reservation' );?>
+                        <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="cart-link">
+                            <?php esc_attr_e( 'View Cart', 'bus-ticket-booking-with-seat-reservation' );?>
+                        </a>
+                        <?php esc_attr_e( 'Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation' );?>
+                    </div>
+
+                    <h4 class="lists-title"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
                     <div class="wbtm-date-route">
                         <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
                     </div>
-                    <div class="wbtm-bus-lists">
+                    <div class="wbtm-bus-lists" id="return_bus">
                         <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date,'',$style,$btn_show,$search_info,'return_journey', $left_filter_show); ?>
                     </div>
                 </div>
