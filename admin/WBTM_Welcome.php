@@ -74,7 +74,7 @@
 				<!-- Start Tab Two Content -->
 				<div id="tab-2" class="tab-content">
 					<h1><?php esc_html_e('Welcome to Documentation of Bus Ticket Booking with Seat Reservation Plugin', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
-					<a href="<?php echo esc_url('https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/'); ?>" class="wbtm-top-pro-btn"><?php _e('BUY PRO', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+					<a href="<?php echo esc_url('https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/'); ?>" class="wbtm-top-pro-btn"><?php esc_html_e('BUY PRO', 'bus-ticket-booking-with-seat-reservation'); ?></a>
 					<ul class="accordion">
 						<li>
 							<a class="toggle" href="javascript:void(0);"><?php esc_html_e('How to install the plugin?', 'bus-ticket-booking-with-seat-reservation'); ?></a>
@@ -98,7 +98,7 @@
 							</div>
 						</li>
 						<li>
-							<a class="toggle" href="javascript:void(0);"><?php esc_html_e('How to setup PDF ticket?', 'bus-ticket-booking-with-seat-reservation'); ?><?php echo $pro_badge; //escaped already above
+							<a class="toggle" href="javascript:void(0);"><?php esc_html_e('How to setup PDF ticket?', 'bus-ticket-booking-with-seat-reservation'); ?><?php echo esc_html($pro_badge); //escaped already above
 								?></a>
 							<div class="inner">
 								<p><?php esc_html_e('Please watch the video to know how to setup PDF ticket.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
@@ -172,7 +172,7 @@
 							<a class="toggle" href="javascript:void(0);"><?php esc_html_e('How to buy PRO version?', 'bus-ticket-booking-with-seat-reservation'); ?></a>
 							<div class="inner">
 								<p><?php esc_html_e('Bus Ticket Booking with Seat Reservation PRO', 'bus-ticket-booking-with-seat-reservation'); ?></p>
-								<a href="<?php echo esc_url('https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/'); ?>" class="wbtm-d-btn"><?php _e('BUY PRO', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+								<a href="<?php echo esc_url('https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/'); ?>" class="wbtm-d-btn"><?php esc_html_e('BUY PRO', 'bus-ticket-booking-with-seat-reservation'); ?></a>
 							</div>
 						</li>
 					</ul>

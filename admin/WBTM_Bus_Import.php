@@ -43,11 +43,11 @@
 						// Show success/error messages
 						if (isset($_GET['imported']) && $_GET['imported'] > 0) {
 							$count = intval($_GET['imported']);
-							echo '<div class="notice notice-success is-dismissible"><p>' . $count . ' ' . esc_html__('bus imported successfully.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
+							echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus imported successfully.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
 						}
 						if (isset($_GET['failed']) && $_GET['failed'] > 0) {
 							$count = intval($_GET['failed']);
-							echo '<div class="notice notice-error is-dismissible"><p>' . $count . ' ' . esc_html__('bus failed to import.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
+							echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus failed to import.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
 						}
 						if (isset($_GET['error']) && !empty($_GET['error'])) {
 							echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($_GET['error']) . '</p></div>';
@@ -147,23 +147,41 @@
 				}
 				// Check if file is uploaded
 				if (!isset($_FILES['wbtm_import_file']) || $_FILES['wbtm_import_file']['error'] !== UPLOAD_ERR_OK) {
-					wp_redirect(add_query_arg(array('error' => __('No file uploaded or upload error.', 'bus-ticket-booking-with-seat-reservation')), admin_url('admin.php?page=wbtm-bus-import')));
+					wp_safe_redirect(
+						add_query_arg(
+							array(
+								'error' => esc_html__( 'No file uploaded or upload error.', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+							admin_url( 'admin.php?page=wbtm-bus-import' )
+						)
+					);
 					exit;
 				}
 				// Check file type
 				$file_info = pathinfo($_FILES['wbtm_import_file']['name']);
 				if (!isset($file_info['extension']) || strtolower($file_info['extension']) !== 'csv') {
-					wp_redirect(add_query_arg(array('error' => __('Invalid file type. Please upload a CSV file.', 'bus-ticket-booking-with-seat-reservation')), admin_url('admin.php?page=wbtm-bus-import')));
+					wp_safe_redirect(
+						add_query_arg(
+							array(
+								'error' => esc_html__( 'Invalid file type. Please upload a CSV file.', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+							admin_url( 'admin.php?page=wbtm-bus-import' )
+						)
+					);
 					exit;
 				}
 				// Process the CSV file
 				$result = $this->import_csv($_FILES['wbtm_import_file']['tmp_name']);
-				// Redirect with results
-				wp_redirect(add_query_arg(array(
-					'imported' => $result['imported'],
-					'failed' => $result['failed'],
-					'error' => $result['error']
-				), admin_url('admin.php?page=wbtm-bus-import')));
+				wp_safe_redirect(
+					add_query_arg(
+						array(
+							'imported' => esc_html( $result['imported'] ),
+							'failed'   => esc_html( $result['failed'] ),
+							'error'    => esc_html( $result['error'] ),
+						),
+						admin_url( 'admin.php?page=wbtm-bus-import' )
+					)
+				);
 				exit;
 			}
 			/**
@@ -313,12 +331,12 @@
 				if (!empty($data['start_date'])) {
 					$meta_data['wbtm_repeated_start_date'] = sanitize_text_field($data['start_date']);
 				} else {
-					$meta_data['wbtm_repeated_start_date'] = date('Y-m-d', strtotime('+1 day'));
+					$meta_data['wbtm_repeated_start_date'] = gmdate('Y-m-d', strtotime('+1 day'));
 				}
 				if (!empty($data['end_date'])) {
 					$meta_data['wbtm_repeated_end_date'] = sanitize_text_field($data['end_date']);
 				} else {
-					$meta_data['wbtm_repeated_end_date'] = date('Y-m-d', strtotime('+90 days'));
+					$meta_data['wbtm_repeated_end_date'] = gmdate('Y-m-d', strtotime('+90 days'));
 				}
 				$meta_data['wbtm_repeated_after'] = isset($data['repeat_days']) ? intval($data['repeat_days']) : 1;
 				$meta_data['wbtm_active_days'] = isset($data['active_days']) ? intval($data['active_days']) : 90;
@@ -459,8 +477,8 @@
 					'Baltimore,Washington DC',
 					'08:00',
 					'12:30',
-					date('Y-m-d', strtotime('+1 day')),
-					date('Y-m-d', strtotime('+90 days')),
+					gmdate('Y-m-d', strtotime('+1 day')),
+					gmdate('Y-m-d', strtotime('+90 days')),
 					'1',
 					'90',
 					'saturday,sunday',
@@ -485,8 +503,8 @@
 					'Detroit,Chicago',
 					'09:00',
 					'18:00',
-					date('Y-m-d', strtotime('+2 days')),
-					date('Y-m-d', strtotime('+120 days')),
+					gmdate('Y-m-d', strtotime('+2 days')),
+					gmdate('Y-m-d', strtotime('+120 days')),
 					'2',
 					'90',
 					'sunday',
