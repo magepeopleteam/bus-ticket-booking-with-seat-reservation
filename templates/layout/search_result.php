@@ -123,11 +123,7 @@ if (sizeof($bus_ids) > 0) {
                 $duration_minutes
             );*/
 
-            $duration_text = _x(
-                '%1$d H %2$d M',
-                'Duration format (hours and minutes)',
-                'bus-ticket-booking-with-seat-reservation'
-            );
+            $duration_text = esc_html( '%1$d H %2$d M' );
             $duration_formatted = str_replace(
                 ['%1$d', '%2$d'],
                 [$duration_hours, $duration_minutes],

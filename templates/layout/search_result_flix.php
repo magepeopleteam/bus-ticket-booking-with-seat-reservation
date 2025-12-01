@@ -74,7 +74,7 @@ if (sizeof($bus_ids) > 0) {
         <?php  }else{
             $width = '100%';
         }?>
-        <div class="wbtm_bus_list_area" style="width: <?php echo $width?>">
+        <div class="wbtm_bus_list_area" style="width: <?php echo esc_html( $width );?>">
 		<input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
 		<input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
 		<input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
