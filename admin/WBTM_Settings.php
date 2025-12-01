@@ -42,7 +42,7 @@ if (!class_exists('WBTM_Settings')) {
                             <span class="fas fa-file-invoice-dollar"></span><?php esc_html_e('Pricing & Route', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </li>
                         <li data-tabs-target="#wbtm_settings_ex_service">
-                            <span class="fas fa-list"></span><?php echo WBTM_Translations::text_ex_service(); ?>
+                            <span class="fas fa-list"></span><?php echo esc_html(WBTM_Translations::text_ex_service()); ?>
                         </li>
                         <li data-tabs-target="#wbtm_settings_pickup_point">
                             <span class="fas fa-route"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -110,9 +110,471 @@ if (!class_exists('WBTM_Settings')) {
             if (!isset($_POST['wbtm_type_nonce']) || !wp_verify_nonce($_POST['wbtm_type_nonce'], 'wbtm_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
                 return;
             }
+            //Genarel settings
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        $bus_no = WBTM_Global_Function::get_submit_info('wbtm_bus_no');
+		        update_post_meta($post_id, 'wbtm_bus_no', $bus_no);
+
+		        $bus_category = WBTM_Global_Function::get_submit_info('wbtm_bus_category');
+
+		        // Update post meta
+		        update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
+
+		        // Check if the term exists, if not create it
+		        $term = term_exists($bus_category, 'wbtm_bus_cat');
+		        if (!$term) {
+			        $term = wp_insert_term($bus_category, 'wbtm_bus_cat');
+		        }
+
+		        // Set the taxonomy term for this bus
+		        if (!is_wp_error($term)) {
+			        // Get the term ID
+			        $term_id = is_array($term) ? $term['term_id'] : $term;
+
+			        // Set the term for the post, replacing any existing terms
+			        $result = wp_set_object_terms($post_id, intval($term_id), 'wbtm_bus_cat', false);
+		        }
+
+		        $wbtm_registration = WBTM_Global_Function::get_submit_info('wbtm_registration') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'wbtm_registration', $wbtm_registration);
+	        }
+            //date settings
+	        if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
+		        //************************************//
+		        $date_type = WBTM_Global_Function::get_submit_info( 'show_operational_on_day', 'no' );
+		        update_post_meta( $post_id, 'show_operational_on_day', $date_type );
+		        //**********************//
+		        $particular_dates = WBTM_Global_Function::get_submit_info( 'wbtm_particular_dates', array() );
+		        $particular = array();
+		        if ( ! empty( $particular_dates ) ) {
+			        foreach ( $particular_dates as $particular_date ) {
+				        if ( ! empty( $particular_date ) ) {
+					        if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_date ) ) {
+						        $particular[] = $particular_date;
+					        } else {
+						        $particular[] = date( 'Y-m-d', strtotime( date( 'Y' ) . '-' . $particular_date ) );
+					        }
+				        }
+			        }
+		        }
+		        update_post_meta( $post_id, 'wbtm_particular_dates', array_unique( $particular ) );
+		        //*************************//
+		        $repeated_start_date = WBTM_Global_Function::get_submit_info( 'wbtm_repeated_start_date' );
+		        $repeated_start_date = $repeated_start_date ? date( 'Y-m-d', strtotime( $repeated_start_date ) ) : '';
+		        update_post_meta( $post_id, 'wbtm_repeated_start_date', $repeated_start_date );
+		        //**********************//
+		        $repeated_end_date = WBTM_Global_Function::get_submit_info( 'wbtm_repeated_end_date' );
+		        $repeated_end_date = $repeated_end_date ? date( 'Y-m-d', strtotime( $repeated_end_date ) ) : '';
+		        update_post_meta( $post_id, 'wbtm_repeated_end_date', $repeated_end_date );
+		        //**********************//
+		        $repeated_after = WBTM_Global_Function::get_submit_info( 'wbtm_repeated_after', 1 );
+		        update_post_meta( $post_id, 'wbtm_repeated_after', $repeated_after );
+		        $active_days = WBTM_Global_Function::get_submit_info( 'wbtm_active_days' );
+		        update_post_meta( $post_id, 'wbtm_active_days', $active_days );
+		        //**********************//
+		        $off_days = WBTM_Global_Function::get_submit_info( 'wbtm_off_days', array() );
+		        update_post_meta( $post_id, 'wbtm_off_days', $off_days );
+		        //**********************//
+		        $off_dates  = WBTM_Global_Function::get_submit_info( 'wbtm_off_dates', array() );
+		        $_off_dates = array();
+		        if ( sizeof( $off_dates ) > 0 ) {
+			        foreach ( $off_dates as $off_date ) {
+				        if ( $off_date ) {
+					        $_off_dates[] = $off_date;
+				        }
+			        }
+		        }
+		        update_post_meta( $post_id, 'wbtm_off_dates', $_off_dates );
+		        //**********************//
+		        $off_schedules = [];
+		        $from_dates    = WBTM_Global_Function::get_submit_info( 'wbtm_from_date', array() );
+		        $to_dates      = WBTM_Global_Function::get_submit_info( 'wbtm_to_date', array() );
+		        if ( sizeof( $from_dates ) > 0 ) {
+			        foreach ( $from_dates as $key => $from_date ) {
+				        if ( $from_date && $to_dates[ $key ] ) {
+					        $off_schedules[] = [
+						        'from_date' => $from_date,
+						        'to_date'   => $to_dates[ $key ],
+					        ];
+				        }
+			        }
+		        }
+		        update_post_meta( $post_id, 'wbtm_offday_schedule', $off_schedules );
+
+		        //***********************************//
+		        // Collect From and To Dates for Off Day Ranges
+		        $off_date_ranges = [];
+		        $from_dates      = WBTM_Global_Function::get_submit_info('wbtm_from_off_date', array());
+		        $to_dates        = WBTM_Global_Function::get_submit_info('wbtm_to_off_date', array());
+
+		        if (sizeof($from_dates) > 0) {
+			        foreach ($from_dates as $key => $from_date) {
+				        // Ensure both dates are present and valid
+				        if ($from_date && $to_dates[$key]) {
+					        $off_date_ranges[] = [
+						        'from_date' => $from_date,
+						        'to_date'   => $to_dates[$key],
+					        ];
+				        }
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_offday_range', $off_date_ranges);
+
+	        }
+            //pricing and  routing
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        $route_infos = [];
+		        $bp = [];
+		        $dp = [];
+		        $stops = WBTM_Global_Function::get_submit_info('wbtm_route_place', array());
+		        $times = WBTM_Global_Function::get_submit_info('wbtm_route_time', array());
+		        $types = WBTM_Global_Function::get_submit_info('wbtm_route_type', array());
+		        //$intervals = WBTM_Global_Function::get_submit_info('wbtm_route_interval', array());
+		        $next_days = WBTM_Global_Function::get_submit_info('wbtm_route_next_day', array());
+		        if (sizeof($stops) > 0) {
+			        foreach ($stops as $key => $stop) {
+				        if ($stop && $times[$key] && $types[$key]) {
+					        $next_day_value = isset($next_days[$key]) ? $next_days[$key] : '0';
+					        $route_infos[] = [
+						        'place' => $stop,
+						        'time' => $times[$key],
+						        'type' => $types[$key],
+						        //'interval' => max(0, $intervals[$key]),
+						        'next_day' => $next_day_value == '1',
+					        ];
+				        }
+			        }
+		        }
+		        $count = sizeof($route_infos);
+		        if ($count > 0) {
+			        $route_infos[0]['type'] = 'bp';
+			        //$route_infos[0]['interval'] = 0;
+			        $route_infos[$count - 1]['type'] = 'dp';
+			        //$route_infos[$count - 1]['interval'] = 0;
+			        foreach ($route_infos as $route_info) {
+				        if ($route_info['type'] == 'bp') {
+					        $bp[] = $route_info['place'];
+				        } elseif ($route_info['type'] == 'dp') {
+					        $dp[] = $route_info['place'];
+				        } else {
+					        $bp[] = $route_info['place'];
+					        $dp[] = $route_info['place'];
+				        }
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_route_info', $route_infos);
+		        update_post_meta($post_id, 'wbtm_bus_bp_stops', $bp);
+		        update_post_meta($post_id, 'wbtm_bus_next_stops', $dp);
+		        if (sizeof($route_infos) > 0) {
+			        $route_direction = [];
+			        foreach ($route_infos as $route) {
+				        $route_direction[] = $route['place'];
+			        }
+			        $route_direction = array_unique($route_direction);
+			        update_post_meta($post_id, 'wbtm_route_direction', $route_direction);
+		        }
+		        /********************************************/
+		        $price_infos = [];
+		        $stops_bps = WBTM_Global_Function::get_submit_info('wbtm_price_bp', array());
+		        $stops_dps = WBTM_Global_Function::get_submit_info('wbtm_price_dp', array());
+		        $adult_price = WBTM_Global_Function::get_submit_info('wbtm_adult_price', array());
+		        $child_price = WBTM_Global_Function::get_submit_info('wbtm_child_price', array());
+		        $infant_price = WBTM_Global_Function::get_submit_info('wbtm_infant_price', array());
+		        if (sizeof($stops_bps) > 0) {
+			        foreach ($stops_bps as $key => $stops_bp) {
+				        if ($stops_bp && $stops_dps[$key] && isset($adult_price[$key])) {
+					        $adult = $adult_price[$key] === '' ? '' : (float)$adult_price[$key];
+					        $child = !isset($child_price[$key]) || $child_price[$key] === '' ? '' : (float)$child_price[$key];
+					        $infant = !isset($infant_price[$key]) || $infant_price[$key] === '' ? '' : (float)$infant_price[$key];
+					        $price_infos[] = [
+						        'wbtm_bus_bp_price_stop' => $stops_bp,
+						        'wbtm_bus_dp_price_stop' => $stops_dps[$key],
+						        'wbtm_bus_price' => $adult,
+						        'wbtm_bus_child_price' => $child,
+						        'wbtm_bus_infant_price' => $infant,
+					        ];
+				        }
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_bus_prices', $price_infos);
+	        }
+            //Seat configuration
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        $pickup_infos = [];
+		        $count = 0;
+		        $hidden_ids = WBTM_Global_Function::get_submit_info('wbtm_pickup_unique_id', array());
+		        $wbtm_pickup_bp = WBTM_Global_Function::get_submit_info('wbtm_bp_pickup', array());
+		        $wbtm_pickup = WBTM_Global_Function::get_submit_info('wbtm_pickup_name', array());
+		        $wbtm_pickup_time = WBTM_Global_Function::get_submit_info('wbtm_pickup_time', array());
+		        //echo "<pre>"; print_r(array($hidden_ids,$wbtm_pickup_bp,$wbtm_pickup,$wbtm_pickup_time));echo "</pre>";exit;
+		        if (sizeof($hidden_ids) > 0) {
+			        foreach ($hidden_ids as $hidden_id) {
+				        $pickups = array_key_exists($hidden_id, $wbtm_pickup) ? $wbtm_pickup[$hidden_id] : [];
+				        $pickup_times = array_key_exists($hidden_id, $wbtm_pickup_time) ? $wbtm_pickup_time[$hidden_id] : '';
+				        if (array_key_exists($hidden_id, $wbtm_pickup_bp) && $wbtm_pickup_bp[$hidden_id] && sizeof($pickups) > 0 && sizeof($pickup_times) > 0) {
+					        foreach ($pickups as $key => $pickup) {
+						        if ($pickup && $pickup_times[$key]) {
+							        $pickup_infos[$count]['bp_point'] = $wbtm_pickup_bp[$hidden_id];
+							        $pickup_infos[$count]['pickup_info'][] = [
+								        'pickup_point' => $pickup,
+								        'time' => $pickup_times[$key],
+							        ];
+						        }
+					        }
+				        }
+				        $count++;
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_pickup_point', $pickup_infos);
+		        $display_pickup = WBTM_Global_Function::get_submit_info('show_pickup_point') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'show_pickup_point', $display_pickup);
+		        $wbtm_pickup_point_required = WBTM_Global_Function::get_submit_info('wbtm_pickup_point_required') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'wbtm_pickup_point_required', $wbtm_pickup_point_required);
+		        //************************//
+		        $drop_off_infos=[];
+		        $d_count=0;
+		        $d_hidden_ids = WBTM_Global_Function::get_submit_info('wbtm_drop_off_unique_id', array());
+		        $wbtm_dp_pickup = WBTM_Global_Function::get_submit_info('wbtm_dp_pickup', array());
+		        $wbtm_drop_off_name = WBTM_Global_Function::get_submit_info('wbtm_drop_off_name', array());
+		        $wbtm_drop_off_time = WBTM_Global_Function::get_submit_info('wbtm_drop_off_time', array());
+		        if (sizeof($d_hidden_ids) > 0) {
+			        foreach ($d_hidden_ids as $d_hidden_id) {
+				        $drop_offs = array_key_exists($d_hidden_id, $wbtm_drop_off_name) ? $wbtm_drop_off_name[$d_hidden_id] : [];
+				        $drop_off_times = array_key_exists($d_hidden_id, $wbtm_drop_off_time) ? $wbtm_drop_off_time[$d_hidden_id] : '';
+				        if (array_key_exists($d_hidden_id, $wbtm_dp_pickup) && $wbtm_dp_pickup[$d_hidden_id] && sizeof($drop_offs) > 0 && sizeof($drop_off_times) > 0) {
+					        foreach ($drop_offs as $key => $drop_off) {
+						        if ($drop_off && $drop_off_times[$key]) {
+							        $drop_off_infos[$d_count]['dp_point'] = $wbtm_dp_pickup[$d_hidden_id];
+							        $drop_off_infos[$d_count]['drop_off_info'][] = [
+								        'drop_off_point' => $drop_off,
+								        'time' => $drop_off_times[$key],
+							        ];
+						        }
+					        }
+				        }
+				        $d_count++;
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_drop_off_point', $drop_off_infos);
+		        $display_dro_off = WBTM_Global_Function::get_submit_info('show_drop_off_point') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'show_drop_off_point', $display_dro_off);
+		        $wbtm_dropping_point_required = WBTM_Global_Function::get_submit_info('wbtm_dropping_point_required') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'wbtm_dropping_point_required', $wbtm_dropping_point_required);
+
+	        }
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        // Save cabin mode enabled status
+		        $cabin_mode_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_mode_enabled') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
+		        // Save cabin configuration
+		        $cabin_count = WBTM_Global_Function::get_submit_info('wbtm_cabin_count', 1);
+		        $cabin_names = WBTM_Global_Function::get_submit_info('wbtm_cabin_name', []);
+		        $cabin_enabled = WBTM_Global_Function::get_submit_info('wbtm_cabin_enabled', []);
+		        $cabin_rows = WBTM_Global_Function::get_submit_info('wbtm_cabin_rows', []);
+		        $cabin_cols = WBTM_Global_Function::get_submit_info('wbtm_cabin_cols', []);
+		        $cabin_price_multipliers = WBTM_Global_Function::get_submit_info('wbtm_cabin_price_multiplier', []);
+		        $cabin_config = [];
+		        for ($i = 0; $i < $cabin_count; $i++) {
+			        $cabin_config[] = [
+				        'name' => $cabin_names[$i] ?? 'Cabin ' . ($i + 1),
+				        'enabled' => isset($cabin_enabled[$i]) ? 'yes' : 'no',
+				        'rows' => intval($cabin_rows[$i] ?? 0),
+				        'cols' => intval($cabin_cols[$i] ?? 0),
+				        'price_multiplier' => floatval($cabin_price_multipliers[$i] ?? 1.0)
+			        ];
+		        }
+		        update_post_meta($post_id, 'wbtm_cabin_config', $cabin_config);
+		        // Save cabin seat plans only when cabin mode is enabled
+		        if ($cabin_mode_enabled === 'yes') {
+			        $this->save_cabin_seat_plans($post_id, $cabin_config);
+		        }
+		        $seat_type = WBTM_Global_Function::get_submit_info('wbtm_seat_type_conf');
+		        update_post_meta($post_id, 'wbtm_seat_type_conf', $seat_type);
+		        /***********************/
+		        $driver_seat_position = WBTM_Global_Function::get_submit_info('driver_seat_position');
+		        $rows = WBTM_Global_Function::get_submit_info('wbtm_seat_rows_hidden', 0);
+		        $columns = WBTM_Global_Function::get_submit_info('wbtm_seat_cols_hidden', 0);
+		        $wbtm_enable_seat_rotation = WBTM_Global_Function::get_submit_info('wbtm_enable_seat_rotation') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
+		        update_post_meta($post_id, 'wbtm_seat_rows', $rows);
+		        update_post_meta($post_id, 'wbtm_seat_cols', $columns);
+		        update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+		        $lower_deck_info = [];
+		        $total_seat = 0;
+		        if ($rows > 0 && $columns > 0) {
+			        for ($j = 1; $j <= $columns; $j++) {
+				        $col_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j, null);
+				        $col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_seat' . $j . '_rotation', null);
+				        // Ensure we have arrays - handle both single values and arrays
+				        if ($col_infos === null) {
+					        $col_infos = [];
+				        } elseif (is_array($col_infos)) {
+					        $col_infos = array_values($col_infos);
+				        } else {
+					        $col_infos = [$col_infos];
+				        }
+				        if ($col_rotation_infos === null) {
+					        $col_rotation_infos = [];
+				        } elseif (is_array($col_rotation_infos)) {
+					        $col_rotation_infos = array_values($col_rotation_infos);
+				        } else {
+					        $col_rotation_infos = [$col_rotation_infos];
+				        }
+				        for ($i = 0; $i < $rows; $i++) {
+					        $seat_value = $col_infos[$i] ?? '';
+					        $rotation_value = $col_rotation_infos[$i] ?? '0';
+					        $lower_deck_info[$i]['seat' . $j] = $seat_value;
+					        if ($wbtm_enable_seat_rotation == 'yes') {
+						        $lower_deck_info[$i]['seat' . $j . '_rotation'] = $rotation_value;
+					        }
+					        if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+						        $total_seat++;
+					        }
+				        }
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_bus_seats_info', $lower_deck_info);
+		        /***********************/
+		        $wbtm_show_upper_desk = WBTM_Global_Function::get_submit_info('wbtm_show_upper_desk') ? 'yes' : 'no';
+		        $rows_dd = WBTM_Global_Function::get_submit_info('wbtm_seat_rows_dd_hidden', 0);
+		        $cols_dd = WBTM_Global_Function::get_submit_info('wbtm_seat_cols_dd_hidden', 0);
+		        $wbtm_seat_dd_price_parcent = WBTM_Global_Function::get_submit_info('wbtm_seat_dd_price_parcent');
+		        update_post_meta($post_id, 'show_upper_desk', $wbtm_show_upper_desk);
+		        update_post_meta($post_id, 'wbtm_seat_rows_dd', $rows_dd);
+		        update_post_meta($post_id, 'wbtm_seat_cols_dd', $cols_dd);
+		        update_post_meta($post_id, 'wbtm_seat_dd_price_parcent', $wbtm_seat_dd_price_parcent);
+		        $upper_deck_info = [];
+		        if ($rows_dd > 0 && $cols_dd > 0) {
+			        for ($j = 1; $j <= $cols_dd; $j++) {
+				        $col_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j, null);
+				        $col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_dd_seat' . $j . '_rotation', null);
+				        // Ensure we have arrays - handle both single values and arrays
+				        if ($col_infos === null) {
+					        $col_infos = [];
+				        } elseif (is_array($col_infos)) {
+					        $col_infos = array_values($col_infos);
+				        } else {
+					        $col_infos = [$col_infos];
+				        }
+				        if ($col_rotation_infos === null) {
+					        $col_rotation_infos = [];
+				        } elseif (is_array($col_rotation_infos)) {
+					        $col_rotation_infos = array_values($col_rotation_infos);
+				        } else {
+					        $col_rotation_infos = [$col_rotation_infos];
+				        }
+				        for ($i = 0; $i < $rows_dd; $i++) {
+					        $seat_value = $col_infos[$i] ?? '';
+					        $rotation_value = $col_rotation_infos[$i] ?? '0';
+					        $upper_deck_info[$i]['dd_seat' . $j] = $seat_value;
+					        if ($wbtm_enable_seat_rotation == 'yes') {
+						        $upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
+					        }
+					        if ($seat_value && $seat_value != 'door' && $seat_value != 'wc' && $wbtm_show_upper_desk == 'yes') {
+						        $total_seat++;
+					        }
+				        }
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
+		        /***********************/
+		        // Only update total_seat for legacy seat plans
+		        // Cabin configuration already set the correct total_seat in save_cabin_seat_plans
+		        $has_cabin_config = $cabin_mode_enabled === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function ($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+		        if (!$has_cabin_config) {
+			        // Legacy seat plan logic
+			        $total_seat = $seat_type == 'wbtm_seat_plan' ? $total_seat : WBTM_Global_Function::get_submit_info('wbtm_get_total_seat', 0);
+			        update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
+		        }
+	        }
+            //Extra service configuration
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        $new_extra_service = array();
+		        //$extra_icon = WBTM_Global_Function::get_submit_info('ex_option_icon', array());
+		        $extra_names = WBTM_Global_Function::get_submit_info('ex_option_name', array());
+		        $extra_price = WBTM_Global_Function::get_submit_info('ex_option_price', array());
+		        $extra_qty = WBTM_Global_Function::get_submit_info('ex_option_qty', array());
+		        $extra_qty_type = WBTM_Global_Function::get_submit_info('ex_option_qty_type', array());
+		        $extra_count = count($extra_names);
+		        for ($i = 0; $i < $extra_count; $i++) {
+			        if ($extra_names[$i] && $extra_price[$i] && $extra_qty[$i] > 0) {
+				        //$new_extra_service[$i]['option_icon'] = $extra_icon[$i] ?? '';
+				        $new_extra_service[$i]['option_name'] = $extra_names[$i];
+				        $new_extra_service[$i]['option_price'] = $extra_price[$i];
+				        $new_extra_service[$i]['option_qty'] = $extra_qty[$i];
+				        $new_extra_service[$i]['option_qty_type'] = $extra_qty_type[$i] ?? 'inputbox';
+			        }
+		        }
+		        update_post_meta($post_id, 'wbtm_extra_services', $new_extra_service);
+		        $display_ex = WBTM_Global_Function::get_submit_info('show_extra_service') ? 'yes' : 'no';
+		        update_post_meta($post_id, 'show_extra_service', $display_ex);
+	        }
+            //tax configuration
+	        if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+		        $tax_status = WBTM_Global_Function::get_submit_info('_tax_status','none');
+		        $tax_class = WBTM_Global_Function::get_submit_info('_tax_class');
+		        update_post_meta($post_id, '_tax_status', $tax_status);
+		        update_post_meta($post_id, '_tax_class', $tax_class);
+	        }
             do_action('wbtm_settings_save', $post_id);
             do_action('wcpp_partial_settings_saved', $post_id);
         }
+	    public function save_cabin_seat_plans($post_id, $cabin_config) {
+		    $total_seat = 0;
+		    $has_enabled_cabin = false;
+		    $enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+		    foreach ($cabin_config as $cabin_index => $cabin) {
+			    if (($cabin['enabled'] ?? 'yes') !== 'yes')
+				    continue;
+			    $has_enabled_cabin = true;
+			    $rows = $cabin['rows'] ?? 0;
+			    $cols = $cabin['cols'] ?? 0;
+			    $cabin_seat_info = [];
+			    if ($rows > 0 && $cols > 0) {
+				    for ($j = 1; $j <= $cols; $j++) {
+					    $col_infos = WBTM_Global_Function::get_submit_info('wbtm_cabin_' . $cabin_index . '_seat' . $j, null);
+					    $col_rotation_infos = WBTM_Global_Function::get_submit_info('wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation', null);
+					    // Ensure we have arrays - handle both single values and arrays
+					    if ($col_infos === null) {
+						    $col_infos = [];
+					    } elseif (is_array($col_infos)) {
+						    $col_infos = array_values($col_infos);
+					    } else {
+						    $col_infos = [$col_infos];
+					    }
+					    if ($col_rotation_infos === null) {
+						    $col_rotation_infos = [];
+					    } elseif (is_array($col_rotation_infos)) {
+						    $col_rotation_infos = array_values($col_rotation_infos);
+					    } else {
+						    $col_rotation_infos = [$col_rotation_infos];
+					    }
+					    // Process only the exact number of rows configured (no more, no less)
+					    // This prevents hidden template rows from being processed and saved
+					    for ($i = 0; $i < $rows; $i++) {
+						    // Only process if this row index exists in the submitted data
+						    if (isset($col_infos[$i])) {
+							    $seat_value = $col_infos[$i];
+							    $rotation_value = $col_rotation_infos[$i] ?? '0';
+							    $cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j] = $seat_value;
+							    if ($enable_rotation == 'yes') {
+								    $cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j . '_rotation'] = $rotation_value;
+							    }
+							    if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+								    $total_seat++;
+							    }
+						    }
+					    }
+				    }
+			    }
+			    update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);
+		    }
+		    // Only update total_seat if there are enabled cabins
+		    // Otherwise, let the legacy seat plan logic handle it
+		    if ($has_enabled_cabin) {
+			    update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
+		    }
+	    }
     }
     new WBTM_Settings();
 }
