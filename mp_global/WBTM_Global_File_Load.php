@@ -89,6 +89,7 @@
 					let wbtm_currency_thousands_separator = "";
 					let wbtm_num_of_decimal = "";
 					let wbtm_ajax_url = "<?php echo admin_url('admin-ajax.php'); ?>";
+					let wbtm_nonce = "<?php echo wp_create_nonce( 'wtbm_ajax_nonce' ); ?>";
 					let wbtm_empty_image_url = "<?php echo esc_attr(WBTM_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
 					let wbtm_date_format = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format', 'D d M , yy')); ?>";
 					let wbtm_date_format_without_year = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format_without_year', 'D d M')); ?>";

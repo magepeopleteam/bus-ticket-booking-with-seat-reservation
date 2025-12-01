@@ -106,6 +106,7 @@
 						"action": "get_wbtm_dropping_point",
 						"start_route": start_route,
 						"post_id": post_id,
+						"nonce": wbtm_nonce,
 					},
 					success: function (data) {
 						target.append(data).promise().done(function () {
@@ -123,7 +124,6 @@
 				current.val('').trigger('click');
 			}
 		});
-		//alert(start_route);
 	});
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_dropping_point input.formControl", function () {
 		let current = $(this);
@@ -145,7 +145,6 @@
 				current.val('').trigger('click');
 			}
 		});
-		//alert(start_route);
 	});
 	function wbtm_load_journey_date(parent) {
 		let post_id = parent.find('[name="wbtm_post_id"]').val();
@@ -182,8 +181,6 @@
 			let start_route = parent.find('[name="bus_start_route"]').val();
 			let end_route = parent.find('input[name="bus_end_route"]').val();
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
-			//alert(date);
-			//alert(end_route);
 			$.ajax({
 				type: 'POST',
 				url: wbtm_ajax_url,
@@ -245,6 +242,7 @@
             start_route: start,
             end_route: end,
             post_id: post_id,
+			nonce: wbtm_nonce,
             date: date,
 			  j_date: j_date,
 			  r_date: r_date,

@@ -83,7 +83,7 @@ if (sizeof($bus_ids) > 0) {
         <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
         <input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
         <input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
-        <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>" />
+        <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
         <?php
 

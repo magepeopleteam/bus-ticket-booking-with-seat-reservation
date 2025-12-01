@@ -103,7 +103,7 @@
 				$date_format  = WBTM_Global_Function::date_picker_format();
 				$now          = date_i18n( $date_format, strtotime( current_time( 'Y-m-d' ) ) );
 				$date         = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
-				$hidden_date  = $date ? date( 'Y-m-d', strtotime( $date ) ) : '';
+				$hidden_date  = $date ? gmdate( 'Y-m-d', strtotime( $date ) ) : '';
 				$visible_date = $date ? date_i18n( $date_format, strtotime( $date ) ) : '';
 				$name         = $args['section'] . '[' . $args['id'] . ']';
 				?>
