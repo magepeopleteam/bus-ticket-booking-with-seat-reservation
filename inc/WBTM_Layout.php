@@ -73,8 +73,7 @@ if (!class_exists('WBTM_Layout')) {
             self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style,$btn_show,$search_info, $left_filter_show);
 
             $redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
-            error_log( print_r( [ '$redirect_enabled' => $redirect_enabled ], true ) );
-            if (WC()->cart->get_cart_contents_count() > 0) {
+            if ( $redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
                 WC()->cart->empty_cart();
             }
 

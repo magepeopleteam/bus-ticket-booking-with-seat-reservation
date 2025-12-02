@@ -83,7 +83,7 @@ if (sizeof($bus_ids) > 0) {
         <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
         <input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
         <input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
-        <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>" />
+        <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
         <?php
 
@@ -123,11 +123,7 @@ if (sizeof($bus_ids) > 0) {
                 $duration_minutes
             );*/
 
-            $duration_text = _x(
-                '%1$d H %2$d M',
-                'Duration format (hours and minutes)',
-                'bus-ticket-booking-with-seat-reservation'
-            );
+            $duration_text = esc_html( '%1$d H %2$d M' );
             $duration_formatted = str_replace(
                 ['%1$d', '%2$d'],
                 [$duration_hours, $duration_minutes],

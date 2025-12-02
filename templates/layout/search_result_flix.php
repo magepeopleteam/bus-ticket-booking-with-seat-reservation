@@ -39,8 +39,6 @@ if (sizeof($bus_ids) > 0) {
             $bus_types[] = $bus_type;
             
             // Log bus types for debugging
-            error_log('FLIX Template - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
-            
             $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
             foreach ( $get_boarding_routes as $route ){
                 if( !empty( $route ) ){
@@ -74,14 +72,14 @@ if (sizeof($bus_ids) > 0) {
         <?php  }else{
             $width = '100%';
         }?>
-        <div class="wbtm_bus_list_area" style="width: <?php echo $width?>">
+        <div class="wbtm_bus_list_area" style="width: <?php echo esc_html( $width );?>">
 		<input type="hidden" name="bus_start_route" value="<?php echo esc_attr(array_key_exists('bus_start_route', $search_info) ? $search_info['bus_start_route'] : ''); ?>" />
 		<input type="hidden" name="bus_end_route" value="<?php echo esc_attr(array_key_exists('bus_end_route', $search_info) ? $search_info['bus_end_route'] : ''); ?>" />
 		<input type="hidden" name="j_date" value="<?php echo esc_attr(array_key_exists('j_date', $search_info) ? $search_info['j_date'] : ''); ?>" />
 		<input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
 		<input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
 		<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
-		<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(date('Y-m-d', strtotime($date))); ?>" />
+		<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
 		<?php
 		// Collect all bus info first
@@ -156,7 +154,6 @@ if (sizeof($bus_ids) > 0) {
 					<div class="items">
 						<?php 
 						// Add more detailed logging
-						error_log('FLIX DISPLAY - Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Using Bus Type: ' . $bus_types[$key] . ' - Date: ' . $date);
 						?>
 						<p><strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
 						<p><?php echo esc_html( WBTM_Translations::text_available() ); ?></p>
