@@ -105,7 +105,7 @@
 				$label           = WBTM_Functions::get_name();
 				$current_date    = current_time( 'Y-m-d' );
 				$settings_fields = array(
-					'wbtm_general_settings' => apply_filters( 'filter_wbtm_general_settings', array(
+					'wbtm_general_settings' => apply_filters( 'wbtm_filter_general_settings', array(
 						array(
 							'name'    => 'set_book_status',
 							'label'   => esc_html__( 'Seat Booked Status', 'bus-ticket-booking-with-seat-reservation' ),
@@ -244,7 +244,7 @@
 							)
 						),
 					) ),
-					'wbtm_global_settings'  => apply_filters( 'filter_wbtm_global_settings', array(
+					'wbtm_global_settings'  => apply_filters( 'wbtm_filter_global_settings', array(
 						array(
 							'name'    => 'disable_block_editor',
 							'label'   => esc_html__( 'Disable Block/Gutenberg Editor', 'bus-ticket-booking-with-seat-reservation' ),
@@ -395,7 +395,7 @@
 							)
 						)
 					),
-					'wbtm_style_settings'   => apply_filters( 'filter_wbtm_style_settings', array(
+					'wbtm_style_settings'   => apply_filters( 'wbtm_filter_style_settings', array(
 						array(
 							'name'    => 'theme_color',
 							'label'   => esc_html__( 'Theme Color', 'bus-ticket-booking-with-seat-reservation' ),
@@ -509,7 +509,7 @@
 							'default' => '#FAFCFE'
 						),
 					) ),
-					'wbtm_custom_css'       => apply_filters( 'filter_wbtm_custom_css', array(
+					'wbtm_custom_css'       => apply_filters( 'wbtm_filter_custom_css', array(
 						array(
 							'name'  => 'custom_css',
 							'label' => esc_html__( 'Custom CSS', 'bus-ticket-booking-with-seat-reservation' ),

@@ -23,7 +23,7 @@
 					return;
 				}
 				wp_enqueue_style('wbtm-analytics-style', plugins_url('/assets/css/wbtm-analytics.css', dirname(__FILE__)));
-				wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
+				wp_enqueue_script('chart-js', plugins_url('/assets/js/chart.js', dirname(__FILE__)), array(), '4.5.1', true);
 				wp_enqueue_script('wbtm-analytics-js', plugins_url('/assets/js/wbtm-analytics.js', dirname(__FILE__)), array('jquery', 'chart-js'), '1.0', true);
 				// Add this: Localize the script with new data
 				$stats = $this->get_booking_stats();

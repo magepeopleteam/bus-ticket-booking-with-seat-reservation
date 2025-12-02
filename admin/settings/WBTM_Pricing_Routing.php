@@ -12,7 +12,6 @@
 				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
 				add_action('wp_ajax_wbtm_reload_pricing', [$this, 'wbtm_reload_pricing']);
-				add_action('wp_ajax_nopriv_wbtm_reload_pricing', [$this, 'wbtm_reload_pricing']);
 			}
 			public function tab_content($post_id) {
 				$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
@@ -268,8 +267,13 @@
 				}
 			}
 			public function wbtm_reload_pricing() {
-				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-				$route_infos = WBTM_Global_Function::data_sanitize($_POST['route_infos']);
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
+					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				}
+				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
+				$raw_route_infos = filter_input(INPUT_POST, 'route_infos', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+				$route_infos = is_array($raw_route_infos) ? wp_unslash($raw_route_infos) : [];
+				array_walk_recursive($route_infos, function (&$v) { $v = sanitize_text_field($v); });
 				$this->route_pricing($post_id, $route_infos);
 				die();
 			}

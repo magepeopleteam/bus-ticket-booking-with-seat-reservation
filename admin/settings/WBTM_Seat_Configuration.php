@@ -12,10 +12,8 @@
 				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
 				add_action('wp_ajax_wbtm_create_seat_plan', [$this, 'wbtm_create_seat_plan']);
-				add_action('wp_ajax_nopriv_wbtm_create_seat_plan', [$this, 'wbtm_create_seat_plan']);
 				/*********************/
 				add_action('wp_ajax_wbtm_create_seat_plan_dd', [$this, 'wbtm_create_seat_plan_dd']);
-				add_action('wp_ajax_nopriv_wbtm_create_seat_plan_dd', [$this, 'wbtm_create_seat_plan_dd']);
 			}
 			public function tab_content($post_id) {
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
@@ -501,16 +499,22 @@
 			}
 			/**************************/
 			public function wbtm_create_seat_plan() {
-				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-				$row = WBTM_Global_Function::data_sanitize($_POST['row']);
-				$column = WBTM_Global_Function::data_sanitize($_POST['column']);
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
+					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				}
+				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
+				$row = isset($_POST['row']) ? sanitize_text_field(wp_unslash($_POST['row'])) : '';
+				$column = isset($_POST['column']) ? sanitize_text_field(wp_unslash($_POST['column'])) : '';
 				$this->create_seat_plan($post_id, $row, $column);
 				die();
 			}
 			public function wbtm_create_seat_plan_dd() {
-				$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-				$row = WBTM_Global_Function::data_sanitize($_POST['row']);
-				$column = WBTM_Global_Function::data_sanitize($_POST['column']);
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
+					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				}
+				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
+				$row = isset($_POST['row']) ? sanitize_text_field(wp_unslash($_POST['row'])) : '';
+				$column = isset($_POST['column']) ? sanitize_text_field(wp_unslash($_POST['column'])) : '';
 				$this->create_seat_plan($post_id, $row, $column, true);
 				die();
 			}

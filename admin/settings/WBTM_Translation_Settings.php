@@ -23,7 +23,7 @@ class WBTM_Translation_Settings {
     }
 
     public function register_settings() {
-        register_setting('wbtm_translation_settings', $this->option_name);
+        register_setting('wbtm_translation_settings', $this->option_name,'');
     }
 
     public function settings_page() {
