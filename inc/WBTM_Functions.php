@@ -122,20 +122,20 @@
 							$prev_full_date = $date;
 							$count          = 0;
 							foreach ( $route_infos as $info ) {
-								$current_date = date( 'Y-m-d H:i', strtotime( $prev_date . ' ' . $info['time'] ) );
+								$current_date = gmdate( 'Y-m-d H:i', strtotime( $prev_date . ' ' . $info['time'] ) );
 								if (isset($info['next_day']) && $info['next_day'] == '1') {
-									$current_date = date('Y-m-d H:i', strtotime($current_date . ' +1 day'));
+									$current_date = gmdate('Y-m-d H:i', strtotime($current_date . ' +1 day'));
 								}
 								if ($count > 0) {
 									if ( strtotime( $prev_full_date ) > strtotime( $current_date ) ) {
-										$current_date = date( 'Y-m-d H:i', strtotime( $current_date . ' +1 day' ) );
+										$current_date = gmdate( 'Y-m-d H:i', strtotime( $current_date . ' +1 day' ) );
 									}
 								}
 								$info['time']    = $current_date;
 								$info['next_day'] = isset($info['next_day']) ? $info['next_day'] : '0';
 								$all_infos[ $date ][] = $info;
 								$prev_full_date       = $current_date;
-								$prev_date            = date( 'Y-m-d', strtotime( $current_date ) );
+								$prev_date            = gmdate( 'Y-m-d', strtotime( $current_date ) );
 								$count ++;
 							}
 						}
@@ -154,7 +154,7 @@
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
 								foreach ( $route_info as $info ) {
-									if ( strtolower( $start_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( date( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
+									if ( strtolower( $start_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
 										$bp_date = $info['time'];
 									}
 									if ( $bp_date && strtolower( $end_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
@@ -222,10 +222,10 @@
 									if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
 										if ( $start_route ) {
 											if ( $start_route == $info['place'] ) {
-												$all_dates[] = date( 'Y-m-d', strtotime( $info['time'] ) );
+												$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 											}
 										} else {
-											$all_dates[] = date( 'Y-m-d', strtotime( $info['time'] ) );
+											$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 										}
 									}
 								}
@@ -249,10 +249,10 @@
                             if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $on_date ) ) {
                                 $date_item = $on_date;
                             } else {
-                                $date_item = date( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
+                                $date_item = gmdate( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
                             }
                             if ( strtotime( $date_item ) < strtotime( $now ) ) {
-                                $date_item = date( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
+                                $date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
                             }
                             if ( strtotime( $date_item ) >= strtotime( $now ) ) {
                                 $all_dates[] = $date_item;
@@ -262,13 +262,13 @@
                 } else {
                     // Handling of regular operational dates without specific operational days
                     $sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
-                    $sale_end_date = $sale_end_date ? date( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
+                    $sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
                     $active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
                     $start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
                     if ( strtotime( $now ) >= strtotime( $start_date ) ) {
                         $start_date = $now;
                     }
-                    $end_date = date( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
+                    $end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
 
                     if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
                         $end_date = $sale_end_date;
@@ -282,8 +282,8 @@
                         if ( sizeof( $off_day_ranges ) ) {
                             foreach ( $off_day_ranges as $off_day_range ) {
                                 if ( isset( $off_day_range['from_date'] ) && isset( $off_day_range['to_date'] ) ) {
-                                    $from_date = date( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
-                                    $to_date   = date( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
+                                    $from_date = gmdate( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
+                                    $to_date   = gmdate( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
 
                                     // Collect all off dates within this range
                                     $off_date_lists = WBTM_Global_Function::date_separate_period( $from_date, $to_date );
@@ -305,10 +305,10 @@
                                         $processed_date = $particular_off_date;
                                     } else {
                                         // Assume date is in 'MM-DD' format, prepend year
-                                        $processed_date = date( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
+                                        $processed_date = gmdate( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
                                         // Move to next year if the date is in the past
                                         if ( strtotime( $processed_date ) < strtotime( $now ) ) {
-                                            $processed_date = date( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
+                                            $processed_date = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
                                         }
                                     }
                                     $off_dates[] = $processed_date;
@@ -326,7 +326,7 @@
                             foreach ( $dates as $date ) {
                                 $date = $date->format( 'Y-m-d' );
                                 if ( strtotime( $date ) >= strtotime( $now ) ) {
-                                    $day = strtolower( date( 'l', strtotime( $date ) ) ); // Get the day of the week
+                                    $day = strtolower( gmdate( 'l', strtotime( $date ) ) ); // Get the day of the week
                                     // Add date if it is not an off date and not an off day
                                     if ( ! in_array( $date, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
                                         $all_dates[] = $date;
@@ -342,7 +342,7 @@
 			public static function slice_buffer_time( $date ) {
 				$buffer_time = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ) * 60;
 				if ( $buffer_time > 0 ) {
-					$date = date( 'Y-m-d H:i', strtotime( $date ) - $buffer_time );
+					$date = gmdate( 'Y-m-d H:i', strtotime( $date ) - $buffer_time );
 				}
 				return $date;
 			}
@@ -391,8 +391,8 @@
 						$cart_bp     = array_key_exists( 'wbtm_bp_place', $cart_item ) ? $cart_item['wbtm_bp_place'] : '';
 						$cart_dp     = array_key_exists( 'wbtm_dp_place', $cart_item ) ? $cart_item['wbtm_dp_place'] : '';
 						$cart_date   = array_key_exists( 'wbtm_bp_time', $cart_item ) ? $cart_item['wbtm_bp_time'] : '';
-						$cart_date   = $cart_date ? date( 'Y-m-d', strtotime( $cart_date ) ) : '';
-						$bp_date     = $bp_date ? date( 'Y-m-d', strtotime( $bp_date ) ) : '';
+						$cart_date   = $cart_date ? gmdate( 'Y-m-d', strtotime( $cart_date ) ) : '';
+						$bp_date     = $bp_date ? gmdate( 'Y-m-d', strtotime( $bp_date ) ) : '';
 						if ( $cart_bus_id == $bus_id && $cart_bp == $bp && $cart_dp == $dp && strtotime( $cart_date ) == strtotime( $bp_date ) ) {
 							$cart_seat_infos = array_key_exists( 'wbtm_seats', $cart_item ) ? $cart_item['wbtm_seats'] : '';
 							$cabin_seat_infos = array_key_exists( 'wbtm_cabin_seats', $cart_item ) ? $cart_item['wbtm_cabin_seats'] : '';
@@ -523,7 +523,7 @@
                                     if( !empty( $bus_type ) ){
                                     ?>
                                     <div class="wbtm_bus_left_filter_checkbox_holder">
-                                        <input type="checkbox" class="<?php echo $filter_by_box;?>" data-filter="wbtm_bus_type" value="<?php echo esc_attr( $bus_type );?>">
+                                        <input type="checkbox" class="<?php echo esc_attr( $filter_by_box );?>" data-filter="wbtm_bus_type" value="<?php echo esc_attr( $bus_type );?>">
                                         <span><?php echo esc_attr( $bus_type );?></span>
                                     </div>
                                 <?php } }?>
@@ -540,7 +540,7 @@
                                 if( !empty( $bus_title ) ){
                                 ?>
                                 <div class="wbtm_bus_left_filter_checkbox_holder">
-                                    <input type="checkbox" class="<?php echo $filter_by_box;?>" data-filter="wbtm_bus_name" value="<?php echo esc_attr( $bus_title ); ?>">
+                                    <input type="checkbox" class="<?php echo esc_attr( $filter_by_box );?>" data-filter="wbtm_bus_name" value="<?php echo esc_attr( $bus_title ); ?>">
                                     <span><?php echo esc_attr( $bus_title );?></span>
                                 </div>
                             <?php } }?>
@@ -553,7 +553,7 @@
                             <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_boarding_point()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php  foreach ( $start_routes as $route ){?>
                                 <div class="wbtm_bus_left_filter_checkbox_holder">
-                                    <input type="checkbox" class="<?php echo $filter_by_box?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($route); ?>">
+                                    <input type="checkbox" class="<?php echo esc_attr( $filter_by_box );?>" data-filter="wbtm_bus_start_route" value="<?php echo esc_attr($route); ?>">
                                     <span><?php echo esc_attr($route); ?></span>
                                 </div>
                             <?php }?>

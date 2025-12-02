@@ -33,6 +33,7 @@
         url: wbtm_ajax_url,
         data: {
           action: "get_wbtm_bus_list",
+		  nonce: wbtm_nonce,
           start_route: start.val(),
           end_route: end.val(),
           j_date: j_date.val(),
@@ -159,6 +160,7 @@
 				"start_route": start_route,
 				"end_route": end_route,
 				"post_id": post_id,
+				"nonce": wbtm_nonce,
 			},
 			beforeSend: function () {
 				wbtm_loader_xs(target);
@@ -190,6 +192,7 @@
 					"end_route": end_route,
 					"j_date": date,
 					"post_id": post_id,
+					"nonce": wbtm_nonce,
 				},
 				beforeSend: function () {
 					wbtm_loader_xs(target);

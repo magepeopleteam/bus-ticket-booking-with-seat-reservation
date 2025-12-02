@@ -47,7 +47,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
         function wbtm_ajax_add_to_cart(){
 
-            if ( ! isset($_POST['wbtm_form_nonce']) || ! wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce') ) {
+            if ( ! isset($_POST['wbtm_form_nonce']) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_form_nonce'] ) ), 'wbtm_form_nonce') ) {
                 wp_send_json_error('Nonce failed');
             }
             $post_id = isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '';
@@ -174,7 +174,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 
 			$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
 			$post_id   = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
-			if (get_post_type($post_id) == WBTM_Functions::get_cpt() && (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce($_POST['wbtm_form_nonce'], 'wbtm_form_nonce'))) {
+			if (get_post_type($post_id) == WBTM_Functions::get_cpt() ) {
 				$bp               = WBTM_Global_Function::get_submit_info('wbtm_bp_place');
 				$bp_time          = WBTM_Global_Function::get_submit_info('wbtm_bp_time');
 				$dp               = WBTM_Global_Function::get_submit_info('wbtm_dp_place');
@@ -483,7 +483,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 									}
 								}
 							}
-							do_action('something');
+							do_action('wbtm_something');
 						} else {
 							$total_seat     = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 							$sold_seat      = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
@@ -896,7 +896,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 					$(document.body).on('added_to_cart', function(event, fragments, cart_hash, button) {
 						if (window.wbtm_should_redirect) {
 							// Redirect to checkout immediately (no notice to remove)
-							window.location.href = '<?php echo wc_get_checkout_url(); ?>';
+							window.location.href = '<?php echo esc_url( wc_get_checkout_url() ); ?>';
 						}
 					});
 				});
@@ -1143,7 +1143,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 		{
 ?>
 			<div class="wbtm_style">
-				<?php do_action('mptbm_before_cart_item_display', $cart_item, $post_id); ?>
+				<?php do_action('wbtm_before_cart_item_display', $cart_item, $post_id); ?>
 				<?php $this->show_cart_route_details($cart_item); ?>
 				<?php $this->show_cart_ticket_information($cart_item); ?>
 				<?php $this->show_cart_ex_service($cart_item); ?>
@@ -1166,32 +1166,32 @@ if (! class_exists('WBTM_Woocommerce')) {
 				<ul class="cart_list">
 					<li>
 						<span class="fas fa-map-marker-alt"></span>
-						<h6 class="_mR_xs"><?php echo WBTM_Translations::text_bp(); ?> :</h6>
+						<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_bp() ); ?> :</h6>
 						<span><?php echo esc_html($bp) . ' ' . esc_html($bp_time ? ' (' . WBTM_Global_Function::date_format($bp_time, 'full') . ' )' : ''); ?></span>
 					</li>
 					<li>
 						<span class="fas fa-map-marker-alt"></span>
-						<h6 class="_mR_xs"><?php echo WBTM_Translations::text_dp(); ?> :</h6>
+						<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_dp() ); ?> :</h6>
 						<span><?php echo esc_html($dp) . ' ' . esc_html($dp_time ? ' (' . WBTM_Global_Function::date_format($dp_time, 'full') . ' )' : ''); ?></span>
 					</li>
 					<?php if ($start_point != $bp) { ?>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php echo WBTM_Translations::text_start_point(); ?> :</h6>
+							<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_start_point() ); ?> :</h6>
 							<span><?php echo esc_html($start_point) . ' ' . esc_html($start_time ? ' (' . WBTM_Global_Function::date_format($start_time, 'full') . ' )' : ''); ?></span>
 						</li>
 					<?php } ?>
 					<?php if ($pickup_point) { ?>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php echo WBTM_Translations::text_pickup_point(); ?> :</h6>
+							<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_pickup_point() ); ?> :</h6>
 							<span><?php echo esc_html($pickup_point); ?></span>
 						</li>
 					<?php } ?>
 					<?php if ($drop_off_point) { ?>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php echo WBTM_Translations::text_drop_off_point(); ?> :</h6>
+							<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_drop_off_point() ); ?> :</h6>
 							<span><?php echo esc_html($drop_off_point); ?></span>
 						</li>
 					<?php } ?>
@@ -1238,22 +1238,22 @@ if (! class_exists('WBTM_Woocommerce')) {
 								</li>
 							<?php } ?>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_ticket_type(); ?> :</h6>
+								<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_ticket_type() ); ?> :</h6>
 								<span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type)); ?></span>
 							</li>
 							<?php if ($seat_name) { ?>
 								<li>
-									<h6 class="_mR_xs"><?php echo WBTM_Translations::text_seat_name(); ?> :</h6>
+									<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_seat_name() ); ?> :</h6>
 									<span><?php echo esc_html($seat_name); ?></span>
 								</li>
 							<?php } ?>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_qty(); ?> :</h6>
+								<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_qty() ); ?> :</h6>
 								<span><?php echo esc_html($qty); ?></span>
 							</li>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_price(); ?> :</h6>
-								<span><?php echo ' ( ' . wc_price($ticket_price) . ' x ' . $qty . ' ) = ' . wc_price(($ticket_price * $qty)); ?></span>
+								<h6 class="_mR_xs"><?php echo esc_attr( WBTM_Translations::text_price() ); ?> :</h6>
+								<span><?php echo ' ( ' . wp_kses_post( wc_price($ticket_price) ) . ' x ' . esc_attr( $qty ) . ' ) = ' . wp_kses_post( wc_price(($ticket_price * $qty) ) ); ?></span>
 							</li>
 							<?php
 							if ($qty > 1) {
@@ -1273,8 +1273,8 @@ if (! class_exists('WBTM_Woocommerce')) {
 					</ul>
 					<div class="_divider"></div>
 					<div class="justifyBetween">
-						<h5><?php echo WBTM_Translations::text_ticket_sub_total(); ?> :</h5>
-						<h5><?php echo wc_price($calculated_total); ?></h5>
+						<h5><?php echo esc_attr( WBTM_Translations::text_ticket_sub_total() ); ?> :</h5>
+						<h5><?php echo wp_kses_post( wc_price($calculated_total) ); ?></h5>
 					</div>
 				</div>
 			<?php }
@@ -1285,7 +1285,7 @@ if (! class_exists('WBTM_Woocommerce')) {
 			$extra_service = array_key_exists('wbtm_extra_services', $cart_item) ? $cart_item['wbtm_extra_services'] : [];
 			$ex_count      = 0;
 			if (sizeof($extra_service) > 0) { ?>
-				<h5 class="_mB_xs"><?php echo WBTM_Translations::text_ex_service(); ?></h5>
+				<h5 class="_mB_xs"><?php echo esc_html( WBTM_Translations::text_ex_service() ); ?></h5>
 				<div class="dLayout_xs">
 					<ul class="cart_list">
 						<?php foreach ($extra_service as $service) { ?>
@@ -1295,24 +1295,24 @@ if (! class_exists('WBTM_Woocommerce')) {
 								</li>
 							<?php } ?>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_name(); ?> :</h6>
+								<h6 class="_mR_xs"><?php echo esc_html( WBTM_Translations::text_name() ); ?> :</h6>
 								<span><?php echo esc_html($service['name']); ?></span>
 							</li>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_qty(); ?> :</h6>
+								<h6 class="_mR_xs"><?php echo esc_html( WBTM_Translations::text_qty() ); ?> :</h6>
 								<span><?php echo esc_html($service['qty']); ?></span>
 							</li>
 							<li>
-								<h6 class="_mR_xs"><?php echo WBTM_Translations::text_price(); ?> :</h6>
-								<span><?php echo ' ( ' . wc_price($service['price']) . ' x ' . $service['qty'] . ' ) = ' . wc_price(($service['price'] * $service['qty'])); ?></span>
+								<h6 class="_mR_xs"><?php echo esc_html( WBTM_Translations::text_price() ); ?> :</h6>
+								<span><?php echo ' ( ' . wp_kses_post( wc_price($service['price']) ) . ' x ' . esc_attr( $service['qty'] ) . ' ) = ' . wp_kses_post( wc_price(($service['price'] * $service['qty'] ) ) ); ?></span>
 							</li>
 							<?php $ex_count++; ?>
 						<?php } ?>
 					</ul>
 					<div class="_divider"></div>
 					<div class="justifyBetween">
-						<h5><?php echo WBTM_Translations::text_ex_service_sub_total(); ?></h5>
-						<h5><?php echo wc_price($ex_base_price); ?></h5>
+						<h5><?php echo esc_attr( WBTM_Translations::text_ex_service_sub_total() ); ?></h5>
+						<h5><?php echo wp_kses_post( wc_price($ex_base_price) ); ?></h5>
 					</div>
 				</div>
 <?php }

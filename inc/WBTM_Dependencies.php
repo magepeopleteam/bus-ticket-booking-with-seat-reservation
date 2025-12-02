@@ -134,10 +134,12 @@
 			 * Handle privacy cleanup from admin
 			 */
 			public function handle_privacy_cleanup() {
-				if (isset($_GET['wbtm_cleanup_urls']) && isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'wbtm_cleanup_urls')) {
+
+                $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+				if ( isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
 					if (current_user_can('manage_options')) {
 						WBTM_Woocommerce::cleanup_existing_booking_urls();
-						wp_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
+                        wp_safe_redirect( admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1&_nonce='.$nonce ) );
 						exit;
 					}
 				}
@@ -146,9 +148,16 @@
 			 * Show privacy notice in admin
 			 */
 			public function show_privacy_notice() {
+
+                $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+                if( !wp_verify_nonce( $nonce, 'wbtm_cleanup_urls') ){
+                    exit();
+                }
+
+                $wbtm_cleanup_complete = isset($_GET['wbtm_cleanup_complete']) ? sanitize_text_field( wp_unslash( $_GET['wbtm_cleanup_complete'] ) ) : '';
 				$screen = get_current_screen();
 				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
-					if (isset($_GET['wbtm_cleanup_complete'])) {
+					if ( $wbtm_cleanup_complete ) {
 						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
 					} else {
 						// Check if there are any booking posts with customer names in URLs
