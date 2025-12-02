@@ -99,7 +99,7 @@
 				);
 				$args = apply_filters('wbtm_add_cap', $args);
 				register_post_type('wbtm_bus', $args);
-				$argsl = apply_filters('filter_wbtm_bus_booking', array(
+				$argsl = apply_filters('wbtm_filter_bus_booking', array(
 					'public' => false, // Changed from true to false
 					'publicly_queryable' => false, // Explicitly prevent public queries
 					'label' => __('Bus Attendee', 'bus-ticket-booking-with-seat-reservation'),

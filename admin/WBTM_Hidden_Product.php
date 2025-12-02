@@ -25,7 +25,7 @@
 			}
 			public function run_link_product_on_save( $post_id ) {
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
-					if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( $_POST['wbtm_type_nonce'], 'wbtm_type_nonce' ) ) {
+					if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['wbtm_type_nonce'])), 'wbtm_type_nonce' ) ) {
 						return;
 					}
 					if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
