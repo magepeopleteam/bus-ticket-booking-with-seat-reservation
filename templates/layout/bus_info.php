@@ -8,10 +8,13 @@ if (!defined('ABSPATH')) {
     die; // Cannot access pages directly.
 }
 
-$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
-$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
-$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
-$date = $_POST['date'] ?? '';
+//if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
+
+$post_id = $post_id ?? '';
+$start_route = $start_route ?? '';
+$end_route = $end_route ?? '';
+$date = $date ?? '';
+//$date = $_POST['date'] ?? '';
 $all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
 $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);
 ?>
@@ -81,3 +84,4 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
     </tbody>
 </table>
 <?php
+//}

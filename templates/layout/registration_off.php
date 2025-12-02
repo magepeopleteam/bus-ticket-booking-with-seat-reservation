@@ -6,23 +6,20 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
+//if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 	?>
     <div class="mpRow justifyBetween _dLayout">
         <?php
-        $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
+//        $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
         $display_pickup_point = WBTM_Global_Function::get_post_info($post_id, 'show_pickup_point', 'no');
         $pickup_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
         ?>
         <div class="col_5 col_5_1000 col_6_900 col_12_800">
             <?php
             if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {
-                $date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : '';
-//                $start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
+               /* $date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : '';
                 $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '';
-//                $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
-                $start_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '';
-                //echo '<pre>'; print_r($pickup_points); echo '</pre>';
+                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '';*/
                 foreach ($pickup_points as $pickup_point) {
                     if ($pickup_point['bp_point'] == $start_route) {
                         $pickup_infos = $pickup_point['pickup_info'];
@@ -50,11 +47,9 @@ if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslas
             $display_drop_off_point = WBTM_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
             $drop_off_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
             if ($display_drop_off_point == 'yes' && sizeof($drop_off_points) > 0) {
-                $date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : '';
-//                $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
-                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '';
+                $date = $date ?? '';
+                $end_route = $end_route ?? '';
 
-                //echo '<pre>'; print_r($drop_off_points); echo '</pre>';
                 foreach ($drop_off_points as $drop_off_point) {
                     if ($drop_off_point['dp_point'] == $end_route) {
                         $pickup_infos = $drop_off_point['drop_off_info'];
@@ -81,4 +76,4 @@ if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslas
             ?>
         </div>
     </div>
-<?php }?>
+<?php //}?>

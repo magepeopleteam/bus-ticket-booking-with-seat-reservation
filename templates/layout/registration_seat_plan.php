@@ -6,9 +6,13 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
-	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
-	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
+//if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
+	/*$post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+    $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+    $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;*/
+
+//    error_log( print_r( [ '$post_id' =>$post_id, '$start_route' =>$start_route, '$end_route' =>$end_route ], true ) );
+
 	$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 	$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
 	if (sizeof($ticket_infos) > 0) {
@@ -35,3 +39,7 @@
 	} else {
 		WBTM_Layout::msg(WBTM_Translations::text_no_ticket());
 	}
+
+/*}else{
+    WBTM_Layout::msg(WBTM_Translations::text_no_security_issue());
+}*/
