@@ -6,9 +6,9 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+	/*$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
 	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
-	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
+	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);*/
 	$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 	$seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 	$seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
@@ -37,7 +37,7 @@ if ($cabin_mode_enabled === 'yes' && !empty($cabin_config)) {
 }
 
 if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
-		$date = $_POST['date'] ?? '';
+//		$date = $_POST['date'] ?? '';
 		$bus_start_time=$bus_start_time??'';
 		$seat_position = WBTM_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
 		$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');

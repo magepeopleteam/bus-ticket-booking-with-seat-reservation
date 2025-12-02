@@ -180,6 +180,11 @@
 					esc_html__('No Ticket found !', 'bus-ticket-booking-with-seat-reservation')
 				); 
 			}
+			public static function text_no_security_issue() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Security Issue Found !', 'bus-ticket-booking-with-seat-reservation')
+				);
+			}
 			
 			public static function text_no_seat_plan() { 
 				return self::get_translation(__FUNCTION__,

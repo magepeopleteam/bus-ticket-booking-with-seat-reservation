@@ -7,10 +7,10 @@ if (!defined('ABSPATH')) {
     die; // Cannot access pages directly.
 }
 
-$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
+/*$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
 $start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
 $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
-$date = $_POST['date'] ?? '';
+$date = $_POST['date'] ?? '';*/
 $all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
 $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 ?>

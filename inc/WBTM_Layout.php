@@ -80,53 +80,66 @@ if (!class_exists('WBTM_Layout')) {
             die();
         }
         public function get_wbtm_bus_details() {
-            $post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = WBTM_Global_Function::data_sanitize($_POST['end_route']);
-            $date = $_POST['date'] ?? '';
-            $seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-            if ($post_id > 0 && $start_route && $end_route && $date) {
-                $all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
-                if ($all_info['available_seat'] > 0) {
-                    $seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-                    $seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-                    $seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
-                    $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
-                    $has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
-					$bus_start_time=$all_info['start_time'];
-                    ?>
-                    <div class="wbtm_registration_area _bgWhite mT">
-                        <form action="" method="post" class="">
-                            <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
-                            <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
-                            <input type="hidden" name='wbtm_start_time' value='<?php echo esc_attr($bus_start_time); ?>'/>
-                            <input type="hidden" name='wbtm_bp_place' value='<?php echo esc_attr($all_info['bp']); ?>'/>
-                            <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
-                            <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
-                            <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
-                            <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_start_route')); ?>'/>
-                            <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_end_route')); ?>'/>
-                            <input type="hidden" name='j_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['j_date'])); ?>'/>
-                            <input type="hidden" name='r_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
 
-                            <?php
-wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
-                            // Check for cabin configuration or legacy seat plan
-                            if ($seat_type == 'wbtm_seat_plan' && ($has_cabin_config || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0))) {
-                                require WBTM_Functions::template_path('layout/registration_seat_plan.php');
-                            } else {
-                                require WBTM_Functions::template_path('layout/registration_without_seat_plan.php');
-                            }
-                            ?>
-                        </form>
-                        <?php do_action('wbtm_attendee_form_hidden', $post_id); ?>
-                    </div>
-                    <?php
-                } else {
-                    WBTM_Layout::msg(WBTM_Translations::text_no_seat());
+            if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
+                /*$post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
+                $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
+                $end_route = WBTM_Global_Function::data_sanitize($_POST['end_route']);
+                $date = $_POST['date'] ?? '';*/
+
+
+                $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+                $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;
+                $date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : '' ;
+                $backend_order = isset( $_POST['backend_order'] ) ? sanitize_text_field( wp_unslash( $_POST['backend_order'] ) ) : '';
+
+
+
+                $seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
+                if ($post_id > 0 && $start_route && $end_route && $date) {
+                    $all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
+                    if ($all_info['available_seat'] > 0) {
+                        $seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+                        $seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
+                        $seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+                        $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+                        $has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+                        $bus_start_time=$all_info['start_time'];
+                        ?>
+                        <div class="wbtm_registration_area _bgWhite mT">
+                            <form action="" method="post" class="">
+                                <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
+                                <input type="hidden" name='wbtm_start_point' value='<?php echo esc_attr($all_info['start_point']); ?>'/>
+                                <input type="hidden" name='wbtm_start_time' value='<?php echo esc_attr($bus_start_time); ?>'/>
+                                <input type="hidden" name='wbtm_bp_place' value='<?php echo esc_attr($all_info['bp']); ?>'/>
+                                <input type="hidden" name='wbtm_bp_time' value='<?php echo esc_attr($all_info['bp_time']); ?>'/>
+                                <input type="hidden" name='wbtm_dp_place' value='<?php echo esc_attr($all_info['dp']); ?>'/>
+                                <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
+                                <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_start_route')); ?>'/>
+                                <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_end_route')); ?>'/>
+                                <input type="hidden" name='j_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['j_date'])); ?>'/>
+                                <input type="hidden" name='r_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
+
+                                <?php
+    wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
+                                // Check for cabin configuration or legacy seat plan
+                                if ($seat_type == 'wbtm_seat_plan' && ($has_cabin_config || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0))) {
+                                    require WBTM_Functions::template_path('layout/registration_seat_plan.php');
+                                } else {
+                                    require WBTM_Functions::template_path('layout/registration_without_seat_plan.php');
+                                }
+                                ?>
+                            </form>
+                            <?php do_action('wbtm_attendee_form_hidden', $post_id); ?>
+                        </div>
+                        <?php
+                    } else {
+                        WBTM_Layout::msg(WBTM_Translations::text_no_seat());
+                    }
                 }
+                die();
             }
-            die();
         }
         public static function wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style='',$btn_show='',$search_info=[], $left_filter_show='') {
             
