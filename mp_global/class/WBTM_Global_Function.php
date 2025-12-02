@@ -80,14 +80,14 @@
 					if ( is_array( $data ) ) {
 						$data = self::data_sanitize( $data );
 					} else {
-						$data = sanitize_text_field( stripslashes( strip_tags( $data ) ) );
+						$data = sanitize_text_field( stripslashes( wp_strip_all_tags( $data ) ) );
 					}
 				} elseif ( is_array( $data ) ) {
 					foreach ( $data as &$value ) {
 						if ( is_array( $value ) ) {
 							$value = self::data_sanitize( $value );
 						} else {
-							$value = sanitize_text_field( stripslashes( strip_tags( $value ) ) );
+							$value = sanitize_text_field( stripslashes( wp_strip_all_tags( $value ) ) );
 						}
 					}
 				}
@@ -132,16 +132,16 @@
 
 			public function date_picker_js( $selector, $dates ) {
 				$start_date  = $dates[0];
-				$start_year  = date( 'Y', strtotime( $start_date ) );
-				$start_month = ( date( 'n', strtotime( $start_date ) ) - 1 );
-				$start_day   = date( 'j', strtotime( $start_date ) );
+				$start_year  = gmdate( 'Y', strtotime( $start_date ) );
+				$start_month = ( gmdate( 'n', strtotime( $start_date ) ) - 1 );
+				$start_day   = gmdate( 'j', strtotime( $start_date ) );
 				$end_date    = end( $dates );
-				$end_year    = date( 'Y', strtotime( $end_date ) );
-				$end_month   = ( date( 'n', strtotime( $end_date ) ) - 1 );
-				$end_day     = date( 'j', strtotime( $end_date ) );
+				$end_year    = gmdate( 'Y', strtotime( $end_date ) );
+				$end_month   = ( gmdate( 'n', strtotime( $end_date ) ) - 1 );
+				$end_day     = gmdate( 'j', strtotime( $end_date ) );
 				$all_date    = [];
 				foreach ( $dates as $date ) {
-					$all_date[] = '"' . date( 'j-n-Y', strtotime( $date ) ) . '"';
+					$all_date[] = '"' . gmdate( 'j-n-Y', strtotime( $date ) ) . '"';
 				}
 				?>
                 <script>
@@ -201,7 +201,7 @@
 			public static function date_separate_period( $start_date, $end_date, $repeat = 1 ): DatePeriod {
 				$repeat    = max( $repeat, 1 );
 				$_interval = "P" . $repeat . "D";
-				$end_date  = date( 'Y-m-d', strtotime( $end_date . ' +1 day' ) );
+				$end_date  = gmdate( 'Y-m-d', strtotime( $end_date . ' +1 day' ) );
 
 				return new DatePeriod( new DateTime( $start_date ), new DateInterval( $_interval ), new DateTime( $end_date ) );
 			}
@@ -221,7 +221,7 @@
 				if ( $date ) {
 					if ( $date == 'lifetime' ) {
 						return esc_html__( 'Lifetime', 'bus-ticket-booking-with-seat-reservation' );
-					} else if ( strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( date( 'Y-m-d H:i', strtotime( $date ) ) ) ) {
+					} else if ( strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( gmdate( 'Y-m-d H:i', strtotime( $date ) ) ) ) {
 						return WBTM_Global_Function::date_format( $date, 'full' );
 					} else {
 						return esc_html__( 'Expired', 'bus-ticket-booking-with-seat-reservation' );
@@ -966,13 +966,13 @@
 			}
 
 			//***********************************//
-			public static function get_submit_info( $key, $default = '' ) {
+			/*public static function get_submit_info( $key, $default = '' ) {
 				return self::data_sanitize( $_POST[ $key ] ?? $default );
 			}
 
 			public static function get_submit_info_get_method( $key, $default = '' ) {
 				return self::data_sanitize( $_GET[ $key ] ?? $default );
-			}
+			}*/
 
 			public static function data_sanitize( $data ) {
 				$data = maybe_unserialize( $data );
@@ -981,14 +981,14 @@
 					if ( is_array( $data ) ) {
 						$data = self::data_sanitize( $data );
 					} else {
-						$data = sanitize_text_field( stripslashes( strip_tags( $data ) ) );
+						$data = sanitize_text_field( stripslashes( wp_strip_all_tags( $data ) ) );
 					}
 				} elseif ( is_array( $data ) ) {
 					foreach ( $data as &$value ) {
 						if ( is_array( $value ) ) {
 							$value = self::data_sanitize( $value );
 						} else {
-							$value = sanitize_text_field( stripslashes( strip_tags( $value ) ) );
+							$value = sanitize_text_field( stripslashes( wp_strip_all_tags( $value ) ) );
 						}
 					}
 				}
@@ -1043,7 +1043,7 @@
 				if ( $date ) {
 					if ( $date == 'lifetime' ) {
 						return esc_html__( 'Lifetime', 'bus-ticket-booking-with-seat-reservation' );
-					} else if ( strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( date( 'Y-m-d H:i', strtotime( $date ) ) ) ) {
+					} else if ( strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( gmdate( 'Y-m-d H:i', strtotime( $date ) ) ) ) {
 						return WBTM_Global_Function::date_format( $date, 'full' );
 					} else {
 						return esc_html__( 'Expired', 'bus-ticket-booking-with-seat-reservation' );
