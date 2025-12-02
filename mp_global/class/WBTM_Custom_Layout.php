@@ -9,7 +9,7 @@
 	if ( ! class_exists( 'WBTM_Custom_Layout' ) ) {
 		class WBTM_Custom_Layout {
 			public function __construct() {
-			add_action( 'wbtm_hidden_table', array( $this, 'hidden_table' ), 10, 2 );
+			    add_action( 'wbtm_hidden_table', array( $this, 'hidden_table' ), 10, 2 );
 				add_action( 'wbtm_pagination_section', array( $this, 'pagination' ), 10, 3 );
 			}
 			public function hidden_table( $hook_name, $data = array() ) {
@@ -84,7 +84,8 @@
                     </div>
 					<?php
 				}
-				echo ob_get_clean();
+				$output = ob_get_clean();
+                echo wp_kses_post( $output );
 			}
 			/*****************************/
 			public static function switch_button( $name, $checked = '' ) {
@@ -116,7 +117,7 @@
 				?>
                 <button class="<?php echo esc_attr( $button_class . ' ' . $class ); ?>" type="button">
                     <span class="<?php echo esc_attr( $icon_class ); ?>"></span>
-                    <span class="mL_xs"><?php echo WBTM_Global_Function::esc_html( $button_text ); ?></span>
+                    <span class="mL_xs"><?php echo esc_attr( WBTM_Global_Function::esc_html( $button_text ) ); ?></span>
                 </button>
 				<?php
 			}
@@ -224,13 +225,13 @@
 						?>
                         <label>
                             <select name="<?php echo esc_attr( $input_name ); ?>" data-price="<?php echo esc_attr( $price ); ?>" class="formControl">
-                                <option selected value="0"><?php echo esc_html__( 'Please select', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $text; ?></option>
+                                <option selected value="0"><?php echo esc_html__( 'Please select', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . esc_html( $text ); ?></option>
 								<?php
 									$max_total = $max_qty > 0 ? $max_qty : $available_seat;
 									$min_value = max( 1, $min_qty );
 									for ( $i = $min_value; $i <= $max_total; $i ++ ) {
 										?>
-                                        <option value="<?php echo esc_html( $i ); ?>"> <?php echo esc_html( $i ) . ' ' . $text; ?> </option>
+                                        <option value="<?php echo esc_html( $i ); ?>"> <?php echo esc_html( $i ) . ' ' . esc_html( $text ); ?> </option>
 									<?php } ?>
                             </select>
                         </label>
@@ -241,8 +242,8 @@
 		}
 		new WBTM_Custom_Layout();
 	}
-	if (class_exists('Wbtm_Woocommerce_bus_Pro') &&  get_option( 'wbtm_conflict_update_pro' ) != 'completed' && ! class_exists( 'MP_Custom_Layout' ) ) {
-		class MP_Custom_Layout {
+	if (class_exists('Wbtm_Woocommerce_bus_Pro') &&  get_option( 'wbtm_conflict_update_pro' ) != 'completed' && ! class_exists( 'Wbtm__Custom_Layout' ) ) {
+		class Wbtm__Custom_Layout {
 			public function __construct() {
 				add_action('add_mp_hidden_table', array($this, 'hidden_table'), 10, 2);
 				add_action('add_mp_pagination_section', array($this, 'pagination'), 10, 3);
@@ -311,7 +312,9 @@
                     </div>
 					<?php
 				}
-				echo ob_get_clean();
+				$output = ob_get_clean();
+
+                echo wp_kses_post( $output );
 			}
 			/*****************************/
 			public static function switch_button( $name, $checked = '' ) {
@@ -327,7 +330,7 @@
 				?>
                 <button class="<?php echo esc_attr( $button_class . ' ' . $class ); ?>" type="button">
                     <span class="<?php echo esc_attr( $icon_class ); ?>"></span>
-                    <span class="mL_xs"><?php echo WBTM_Global_Function::esc_html( $button_text ); ?></span>
+                    <span class="mL_xs"><?php echo esc_attr( WBTM_Global_Function::esc_html( $button_text ) ); ?></span>
                 </button>
 				<?php
 			}
@@ -358,5 +361,5 @@
 				<?php
 			}
 		}
-		new MP_Custom_Layout();
+		new Wbtm__Custom_Layout();
 	}

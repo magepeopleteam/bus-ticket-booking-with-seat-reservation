@@ -39,7 +39,7 @@
 					if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
 						$section['desc'] = '<div class="inside">' . $section['desc'] . '</div>';
 						$callback        = function () use ( $section ) {
-							echo str_replace( '"', '\"', $section['desc'] );
+							echo esc_attr( str_replace( '"', '\"', $section['desc'] ) );
 						};
 					} else if ( isset( $section['callback'] ) ) {
 						$callback = $section['callback'];
@@ -304,7 +304,7 @@
 					'id'       => $args['section'] . '[' . $args['id'] . ']',
 					'echo'     => 0
 				);
-				echo wp_dropdown_pages( $dropdown_args );
+				echo wp_kses_post( wp_dropdown_pages( $dropdown_args ) );
 			}
 			function sanitize_options( $options ) {
 				if ( ! $options ) {
