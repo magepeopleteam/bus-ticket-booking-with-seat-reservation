@@ -40,18 +40,20 @@
                 <div class="wrap wbtm-import-wrap">
                     <h1><?php esc_html_e('Import Buses', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
 					<?php
-						// Show success/error messages
-						if (isset($_GET['imported']) && $_GET['imported'] > 0) {
-							$count = intval($_GET['imported']);
-							echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus imported successfully.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
-						}
-						if (isset($_GET['failed']) && $_GET['failed'] > 0) {
-							$count = intval($_GET['failed']);
-							echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus failed to import.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
-						}
-						if (isset($_GET['error']) && !empty($_GET['error'])) {
-							echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($_GET['error']) . '</p></div>';
-						}
+				if (isset($_POST['wbtm_import_nonce']) && (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_import_nonce'])), 'wbtm_import_buses_nonce'))) {
+					// Show success/error messages
+					if (isset($_GET['imported']) && sanitize_text_field(wp_unslash($_GET['imported'])) > 0) {
+						$count = intval($_GET['imported']);
+						echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus imported successfully.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
+					}
+					if (isset($_GET['failed']) && sanitize_text_field(wp_unslash($_GET['failed'])) > 0) {
+						$count = intval($_GET['failed']);
+						echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($count) . ' ' . esc_html__('bus failed to import.', 'bus-ticket-booking-with-seat-reservation') . '</p></div>';
+					}
+					if (isset($_GET['error']) && !empty(sanitize_text_field(wp_unslash($_GET['error'])))) {
+						echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($_GET['error']) . '</p></div>';
+					}
+				}
 					?>
                     <div class="wbtm-import-container">
                         <div class="wbtm-import-section">
@@ -128,8 +130,11 @@
 			 * Process the import form submission
 			 */
 			public function process_import() {
+				if (isset($_POST['wbtm_import_nonce']) && (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_import_nonce'])), 'wbtm_import_buses_nonce'))) {
+					wp_die(esc_html__('Security check failed. Please try again.', 'bus-ticket-booking-with-seat-reservation'));
+				}
 				// Check if we need to download the sample CSV
-				if (isset($_GET['page']) && $_GET['page'] === 'wbtm-bus-import' && isset($_GET['action']) && $_GET['action'] === 'download_sample') {
+				if (isset($_GET['page']) && sanitize_text_field(wp_unslash($_GET['page'])) === 'wbtm-bus-import' && isset($_GET['action']) && sanitize_text_field(wp_unslash($_GET['action'])) === 'download_sample') {
 					$this->download_sample_csv();
 					exit;
 				}
@@ -138,9 +143,7 @@
 					return;
 				}
 				// Verify nonce
-				if (!isset($_POST['wbtm_import_nonce']) || !wp_verify_nonce($_POST['wbtm_import_nonce'], 'wbtm_import_buses_nonce')) {
-					wp_die(esc_html__('Security check failed. Please try again.', 'bus-ticket-booking-with-seat-reservation'));
-				}
+
 				// Check user capabilities
 				if (!current_user_can('manage_options')) {
 					wp_die(esc_html__('You do not have sufficient permissions to import data.', 'bus-ticket-booking-with-seat-reservation'));
@@ -150,9 +153,9 @@
 					wp_safe_redirect(
 						add_query_arg(
 							array(
-								'error' => esc_html__( 'No file uploaded or upload error.', 'bus-ticket-booking-with-seat-reservation' ),
+								'error' => esc_html__('No file uploaded or upload error.', 'bus-ticket-booking-with-seat-reservation'),
 							),
-							admin_url( 'admin.php?page=wbtm-bus-import' )
+							admin_url('admin.php?page=wbtm-bus-import')
 						)
 					);
 					exit;
@@ -163,9 +166,9 @@
 					wp_safe_redirect(
 						add_query_arg(
 							array(
-								'error' => esc_html__( 'Invalid file type. Please upload a CSV file.', 'bus-ticket-booking-with-seat-reservation' ),
+								'error' => esc_html__('Invalid file type. Please upload a CSV file.', 'bus-ticket-booking-with-seat-reservation'),
 							),
-							admin_url( 'admin.php?page=wbtm-bus-import' )
+							admin_url('admin.php?page=wbtm-bus-import')
 						)
 					);
 					exit;
@@ -175,11 +178,11 @@
 				wp_safe_redirect(
 					add_query_arg(
 						array(
-							'imported' => esc_html( $result['imported'] ),
-							'failed'   => esc_html( $result['failed'] ),
-							'error'    => esc_html( $result['error'] ),
+							'imported' => esc_html($result['imported']),
+							'failed' => esc_html($result['failed']),
+							'error' => esc_html($result['error']),
 						),
-						admin_url( 'admin.php?page=wbtm-bus-import' )
+						admin_url('admin.php?page=wbtm-bus-import')
 					)
 				);
 				exit;
@@ -214,7 +217,7 @@
 				foreach ($required_headers as $required) {
 					if (!in_array($required, $headers)) {
 						fclose($handle);
-						$result['error'] = sprintf('Required column "%s" is missing.' ,$required);
+						$result['error'] = sprintf('Required column "%s" is missing.', $required);
 						return $result;
 					}
 				}
@@ -242,12 +245,12 @@
 			 */
 			private function import_single_bus($data) {
 				// Check required fields
-				if (empty($data['name']) || empty($data['bus_no'])) {
+				if (empty($data['name']) || empty(sanitize_text_field(wp_unslash($data['bus_no'])))) {
 					return false;
 				}
 				// Create post array
 				$post_args = array(
-					'post_title' => sanitize_text_field($data['name']),
+					'post_title' => sanitize_text_field(wp_unslash($data['name'])),
 					'post_status' => 'publish',
 					'post_type' => 'wbtm_bus'
 				);
@@ -258,20 +261,20 @@
 				}
 				// Prepare meta data
 				$meta_data = array(
-					'wbtm_bus_no' => isset($data['bus_no']) ? sanitize_text_field($data['bus_no']) : '',
-					'wbtm_bus_category' => isset($data['category']) ? sanitize_text_field($data['category']) : 'Non AC',
-					'wbtm_seat_type_conf' => isset($data['seat_type']) ? sanitize_text_field($data['seat_type']) : 'wbtm_seat_plan',
-					'driver_seat_position' => isset($data['driver_seat']) ? sanitize_text_field($data['driver_seat']) : 'driver_left',
-					'wbtm_seat_rows' => isset($data['seat_rows']) ? intval($data['seat_rows']) : 8,
-					'wbtm_seat_cols' => isset($data['seat_cols']) ? intval($data['seat_cols']) : 5,
-					'wbtm_get_total_seat' => isset($data['total_seats']) ? intval($data['total_seats']) : 32,
-					'show_upper_desk' => isset($data['has_upper_deck']) && strtolower($data['has_upper_deck']) === 'yes' ? 'yes' : 'no',
+					'wbtm_bus_no' => isset($data['bus_no']) ? sanitize_text_field(wp_unslash($data['bus_no'])) : '',
+					'wbtm_bus_category' => isset($data['category']) ? sanitize_text_field(wp_unslash($data['category'])) : 'Non AC',
+					'wbtm_seat_type_conf' => isset($data['seat_type']) ? sanitize_text_field(wp_unslash($data['seat_type'])) : 'wbtm_seat_plan',
+					'driver_seat_position' => isset($data['driver_seat']) ? sanitize_text_field(wp_unslash($data['driver_seat'])) : 'driver_left',
+					'wbtm_seat_rows' => isset($data['seat_rows']) ? intval(sanitize_text_field(wp_unslash($data['seat_rows']))) : 8,
+					'wbtm_seat_cols' => isset($data['seat_cols']) ? intval(sanitize_text_field(wp_unslash($data['seat_cols']))) : 5,
+					'wbtm_get_total_seat' => isset($data['total_seats']) ? intval(sanitize_text_field(wp_unslash($data['total_seats']))) : 32,
+					'show_upper_desk' => isset($data['has_upper_deck']) && strtolower(sanitize_text_field(wp_unslash($data['has_upper_deck']))) === 'yes' ? 'yes' : 'no',
 				);
 				// Add upper deck data if needed
 				if ($meta_data['show_upper_desk'] === 'yes') {
-					$meta_data['wbtm_seat_rows_dd'] = isset($data['upper_rows']) ? intval($data['upper_rows']) : 8;
-					$meta_data['wbtm_seat_cols_dd'] = isset($data['upper_cols']) ? intval($data['upper_cols']) : 5;
-					$meta_data['wbtm_seat_dd_price_parcent'] = isset($data['upper_price_percent']) ? intval($data['upper_price_percent']) : 10;
+					$meta_data['wbtm_seat_rows_dd'] = isset($data['upper_rows']) ? intval(sanitize_text_field(wp_unslash($data['upper_rows']))) : 8;
+					$meta_data['wbtm_seat_cols_dd'] = isset($data['upper_cols']) ? intval(sanitize_text_field(wp_unslash($data['upper_cols']))) : 5;
+					$meta_data['wbtm_seat_dd_price_parcent'] = isset($data['upper_price_percent']) ? intval(sanitize_text_field(wp_unslash($data['upper_price_percent']))) : 10;
 				}
 				// Process route data
 				if (!empty($data['route_from']) && !empty($data['route_to'])) {
