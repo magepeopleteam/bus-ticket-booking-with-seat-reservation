@@ -65,7 +65,7 @@
                                 <div class="tabsItem" data-tabs="#mp_pp_deposits_type">
                                     <h5><?php esc_html_e('Partial Payment Settings : ', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
                                     <div class="divider"></div>
-									<?php do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
+									<?php //do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
                                 </div>
 							<?php } ?>
                         </div>
@@ -160,7 +160,7 @@
 					update_post_meta($post_id, 'wbtm_repeated_after', $repeated_after);
 					update_post_meta($post_id, 'wbtm_active_days', $active_days);
 					//**********************//
-					$off_days = isset($_POST['wbtm_off_days']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_off_days'])) : [];
+					$off_days = isset($_POST['wbtm_off_days']) ? sanitize_text_field(wp_unslash($_POST['wbtm_off_days'])) : '';
 					update_post_meta($post_id, 'wbtm_off_days', $off_days);
 					//**********************//
 					$off_dates = isset($_POST['wbtm_off_dates']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_off_dates'])) : [];
@@ -291,7 +291,7 @@
 						foreach ($hidden_ids as $hidden_id) {
 							$pickups = array_key_exists($hidden_id, $wbtm_pickup) ? $wbtm_pickup[$hidden_id] : [];
 							$pickup_times = array_key_exists($hidden_id, $wbtm_pickup_time) ? $wbtm_pickup_time[$hidden_id] : '';
-							if (array_key_exists($hidden_id, $wbtm_pickup_bp) && $wbtm_pickup_bp[$hidden_id] && sizeof($pickups) > 0 && sizeof($pickup_times) > 0) {
+							if (array_key_exists($hidden_id, $wbtm_pickup_bp) && $wbtm_pickup_bp[$hidden_id] && is_array($pickups) && sizeof($pickups) > 0 && is_array($pickup_times) &&  sizeof($pickup_times) > 0) {
 								foreach ($pickups as $key => $pickup) {
 									if ($pickup && $pickup_times[$key]) {
 										$pickup_infos[$count]['bp_point'] = $wbtm_pickup_bp[$hidden_id];
@@ -536,7 +536,7 @@
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}
 				do_action('wbtm_settings_save', $post_id);
-				do_action('wcpp_partial_settings_saved', $post_id);
+				//do_action('wcpp_partial_settings_saved', $post_id);
 			}
 		}
 		new WBTM_Settings();

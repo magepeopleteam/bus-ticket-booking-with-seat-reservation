@@ -23,8 +23,8 @@
 				add_action('wp_head', array($this, 'add_privacy_meta_tags'));
 				add_filter('robots_txt', array($this, 'add_robots_txt_rules'));
 				// Add admin cleanup tool
-				add_action('admin_init', array($this, 'handle_privacy_cleanup'));
-				add_action('admin_notices', array($this, 'show_privacy_notice'));
+				//add_action('admin_init', array($this, 'handle_privacy_cleanup'));
+				//add_action('admin_notices', array($this, 'show_privacy_notice'));
 			}
 			public function modify_bus_slug($args, $post_type) {
 				if ('wbtm_bus' === $post_type) {
@@ -43,8 +43,6 @@
 					update_option('wbtm_style_settings', $style_settings);
 					$slider_settings = get_option('mp_slider_settings');
 					update_option('wbtm_slider_settings', $slider_settings);
-					$custom_css = get_option('mp_add_custom_css');
-					update_option('wbtm_custom_css', $custom_css);
 					$license_settings = get_option('mp_basic_license_settings');
 					update_option('wbtm_license_settings', $license_settings);
 					update_option('wbtm_conflict_update', 'completed');
@@ -79,12 +77,12 @@
 				do_action('add_wbtm_admin_script');
 			}
 			public function appsero_init_tracker() {
-				if (!class_exists('Appsero\Client')) {
-					require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
+				//if (!class_exists('Appsero\Client')) {
+					//require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
 					// require_once __DIR__ . '/lib/appsero/src/Client.php';
-				}
-				$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
-				$client->insights()->init();
+				//}
+				//$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
+				//$client->insights()->init();
 			}
 			public function frontend_enqueue() {
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time());
@@ -133,47 +131,47 @@
 			/**
 			 * Handle privacy cleanup from admin
 			 */
-			public function handle_privacy_cleanup() {
-
-                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-
-				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
-					if (current_user_can('manage_options')) {
-						WBTM_Woocommerce::cleanup_existing_booking_urls();
-						wp_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
-						exit;
-					}
-				}
-			}
+//			public function handle_privacy_cleanup() {
+//
+//                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+//
+//				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
+//					if (current_user_can('manage_options')) {
+//						WBTM_Woocommerce::cleanup_existing_booking_urls();
+//						wp_safe_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
+//						exit;
+//					}
+//				}
+//			}
 			/**
 			 * Show privacy notice in admin
 			 */
-			public function show_privacy_notice() {
-				$screen = get_current_screen();
-				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
-					if (isset($_GET['wbtm_cleanup_complete'])) {
-						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
-					} else {
-						// Check if there are any booking posts with customer names in URLs
-						$bookings = get_posts(array(
-							'post_type' => 'wbtm_bus_booking',
-							'numberposts' => 5,
-							'post_status' => 'publish'
-						));
-						$has_customer_names = false;
-						foreach ($bookings as $booking) {
-							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
-								$has_customer_names = true;
-								break;
-							}
-						}
-						if ($has_customer_names) {
-							$cleanup_url = wp_nonce_url(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1'), 'wbtm_cleanup_urls');
-							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url($cleanup_url) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
-						}
-					}
-				}
-			}
+//			public function show_privacy_notice() {
+//				$screen = get_current_screen();
+//				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
+//					if (isset($_GET['wbtm_cleanup_complete'])) {
+//						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
+//					} else {
+//						// Check if there are any booking posts with customer names in URLs
+//						$bookings = get_posts(array(
+//							'post_type' => 'wbtm_bus_booking',
+//							'numberposts' => 5,
+//							'post_status' => 'publish'
+//						));
+//						$has_customer_names = false;
+//						foreach ($bookings as $booking) {
+//							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
+//								$has_customer_names = true;
+//								break;
+//							}
+//						}
+//						if ($has_customer_names) {
+//							$cleanup_url = wp_nonce_url(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1'), 'wbtm_cleanup_urls');
+//							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url($cleanup_url) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
+//						}
+//					}
+//				}
+//			}
 		}
 		new WBTM_Dependencies();
 	}

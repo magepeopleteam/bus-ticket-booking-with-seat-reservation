@@ -78,7 +78,6 @@
 			}
 			public function add_frontend_head() {
 				$this->js_constant();
-				$this->custom_css();
 			}
 			public function js_constant() {
 				?>
@@ -106,18 +105,6 @@
 					</script>
 					<?php
 				}
-			}
-			public function custom_css() {
-				$custom_css = WBTM_Global_Function::get_settings('wbtm_custom_css', 'custom_css');
-				ob_start();
-				?>
-				<style>
-					<?php echo esc_html( $custom_css ); ?>
-				</style>
-				<?php
-				$output = ob_get_clean();
-
-                echo wp_kses_post( $output );
 			}
 		}
 		new WBTM_Global_File_Load();
