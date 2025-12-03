@@ -9,10 +9,10 @@
 
 //if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 
-    $post_id = $post_id ?? '';
+    /*$post_id = $post_id ?? '';
     $start_route = $start_route ?? '';
     $end_route = $end_route ?? '';
-	$date = $bus_start_time ?? '';
+	$date = $bus_start_time ?? '';*/
 	$show_extra_service = WBTM_Global_Function::get_post_info($post_id, 'show_extra_service', 'no');
 	if ($show_extra_service == 'yes') {
 		$ex_services = WBTM_Global_Function::get_post_info($post_id, 'wbtm_extra_services', []);

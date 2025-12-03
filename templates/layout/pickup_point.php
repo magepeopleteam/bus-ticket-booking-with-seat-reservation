@@ -10,8 +10,7 @@ if (!defined('ABSPATH')) {
 //if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 
 //    $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
-    $display_pickup_point = WBTM_Global_Function::get_post_info($post_id, 'show_pickup_point', 'no');
-    $pickup_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
+
     $pickup_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point_required', 'no');
 
     if ($display_pickup_point == 'yes' && sizeof($pickup_points) > 0) {

@@ -10,13 +10,13 @@ if (!defined('ABSPATH')) {
 
 //if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 
-$post_id = $post_id ?? '';
+/*$post_id = $post_id ?? '';
 $start_route = $start_route ?? '';
 $end_route = $end_route ?? '';
 $date = $date ?? '';
 //$date = $_POST['date'] ?? '';
 $all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
-$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);
+$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);*/
 ?>
 <table>
     <tbody>
@@ -65,9 +65,8 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
                 <?php echo esc_html( WBTM_Translations::text_coach_type() ); ?>
             </th>
             <td>
-                <?php 
-                $bus_type = esc_html( WBTM_Functions::synchronize_bus_type($post_id) );
-                echo esc_html( $bus_type );
+                <?php
+                echo esc_html( $wbtm_bus_type );
                 ?>
             </td>
         </tr>
