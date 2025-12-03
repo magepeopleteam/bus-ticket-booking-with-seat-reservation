@@ -11,7 +11,9 @@ if (!defined('ABSPATH')) {
 $start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
 $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 $date = $_POST['date'] ?? '';*/
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 ?>
 
@@ -24,7 +26,9 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($ticket_infos as $ticket_info) { ?>
+        <?php
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+        foreach ($ticket_infos as $ticket_info) { ?>
             <tr>
                 <th><?php echo esc_html($ticket_info['name']); ?></th>
                 <td>

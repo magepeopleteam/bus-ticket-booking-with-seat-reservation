@@ -7,48 +7,81 @@
 		die;
 	} // Cannot access pages directly.
 	//================//
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$start_route = WBTM_Global_Function::get_submit_info( 'wbtm_bp_place' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$start_route = $start_route ?: WBTM_Global_Function::get_submit_info_get_method( 'bus_start_route' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$start_time  = WBTM_Global_Function::get_submit_info( 'j_date' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$start_time  = $start_time ?: WBTM_Global_Function::get_submit_info_get_method( 'j_date' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$start_time  = $start_time ? gmdate( 'Y-m-d', strtotime( $start_time ) ) : '';
 	//===============//
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$end_route = WBTM_Global_Function::get_submit_info( 'wbtm_dp_place' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$end_route = $end_route ?: WBTM_Global_Function::get_submit_info_get_method( 'bus_end_route' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$end_time  = WBTM_Global_Function::get_submit_info( 'r_date' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$end_time  = $end_time ?: WBTM_Global_Function::get_submit_info_get_method( 'r_date' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$end_time  = $end_time ? gmdate( 'Y-m-d', strtotime( $end_time ) ) : '';
 	//================//
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$post_id          = $post_id ?? 0;
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$return_date_show = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_return_show', 'enable' );
 	//================//
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$form_style       = $form_style ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
 	//================//
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$buy_ticket_text  = WBTM_Translations::text_buy_ticket();
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$placeholder_text = WBTM_Translations::text_please_select();
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$style            = $style ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$global_settings  = get_option( 'wbtm_general_settings' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$btn_show         = ( is_array( $global_settings ) && array_key_exists( 'show_hide_view_seats_button', $global_settings ) ) ? $global_settings['show_hide_view_seats_button'] : 'show';
 	/****************************/
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$active_redirect_page = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'active_redirect_page', 'off' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$search_page_redirect = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'search_page_redirect' );
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$redirect_url         = $active_redirect_page == 'on' && $search_page_redirect && $post_id == 0 ? get_home_url() . '/' . get_page_uri( $search_page_redirect ) : '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$redirect_url         = is_admin() ? '' : $redirect_url;
 
     if (is_page()) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $left_filter          = $left_filter ?? 'on';
     }else{
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $left_filter          = 'off';
     }
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $left_filter_type     = $left_filter_type ?? 'on';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $left_filter_operator = $left_filter_operator ?? 'on';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $left_filter_boarding = $left_filter_boarding ?? 'on';
 
     /*********************************/
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$search_info['bus_start_route']=$start_route;
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$search_info['bus_end_route']=$end_route;
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$search_info['j_date']=$start_time;
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$search_info['r_date']=$end_time;
 ?>
     <div id="wbtm_area">

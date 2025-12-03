@@ -124,21 +124,21 @@ if (!class_exists('WBTM_Layout')) {
                     $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);
 
                     $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
-                    $display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
-                    $seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-                    $seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
-                    $seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-                    $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+//                    $seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+//                    $seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
+//                    $seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+//                    $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
                     $cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 
                     $wbtm_bus_type = esc_html( WBTM_Functions::synchronize_bus_type($post_id) );
-
+                    $display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
 
                     if ($all_info['available_seat'] > 0) {
                         $seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
                         $seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
                         $seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
                         $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+
                         $has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
                         $bus_start_time=$all_info['start_time'];
 

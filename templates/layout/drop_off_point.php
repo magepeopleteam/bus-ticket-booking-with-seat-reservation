@@ -28,8 +28,12 @@ if (!defined('ABSPATH')) {
                             <select class="formControl" name="wbtm_drop_off_point" id="wbtm_drop_off_point" <?php echo ($drop_off_required == 'yes') ? 'required' : ''; ?>>
                                 <option selected value=""><?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_drop_off_point() ); ?></option>
                                 <?php foreach ($wbtm_drop_off_infos as $wbtm_drop_off_info) { ?>
-                                    <?php $wtbm_drop_off_time = gmdate('Y-m-d H:i', strtotime($date . ' ' . $wbtm_drop_off_info['time']));
-                                     $wtbm_drop_off_time = WBTM_Global_Function::date_format($wtbm_drop_off_time, 'time'); ?>
+                                    <?php
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                         $wtbm_drop_off_time = gmdate('Y-m-d H:i', strtotime($date . ' ' . $wbtm_drop_off_info['time']));
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                         $wtbm_drop_off_time = WBTM_Global_Function::date_format($wtbm_drop_off_time, 'time');
+                                     ?>
                                     <option value="<?php echo esc_attr($wbtm_drop_off_info['drop_off_point'] . ' ' . esc_html( $wtbm_drop_off_time) ) ?>"><?php echo esc_html($wbtm_drop_off_info['drop_off_point']) . ' ' . ' (' . esc_html($wtbm_drop_off_time ) . ')'; ?></option>
                                 <?php } ?>
                             </select>

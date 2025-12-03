@@ -12,6 +12,7 @@
 		<head>
 			<meta charset="<?php bloginfo('charset'); ?>">
 			<?php
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$block_content = do_blocks('
 		<!-- wp:group {"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">

@@ -6,8 +6,11 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$post_id = $post_id ?? get_the_id();
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$bus_id = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
 ?>
 	<div class="_dLayout_dShadow_1">
@@ -44,7 +47,9 @@
 						<div class="divider"></div>
 						<?php if (sizeof($full_route_infos) > 0) { ?>
 							<ul class="mp_list">
-								<?php foreach ($full_route_infos as $full_route_info) { ?>
+								<?php
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                foreach ($full_route_infos as $full_route_info) { ?>
 									<?php if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') { ?>
 										<li>
 											<span class="fa fa-map-marker _mR_xs_textTheme"></span>
@@ -60,7 +65,9 @@
 						<div class="divider"></div>
 						<?php if (sizeof($full_route_infos) > 0) { ?>
 							<ul class="mp_list">
-								<?php foreach ($full_route_infos as $full_route_info) { ?>
+								<?php
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                foreach ($full_route_infos as $full_route_info) { ?>
 									<?php if ($full_route_info['type'] == 'dp' || $full_route_info['type'] == 'both') { ?>
 										<li>
 											<span class="fa fa-map-marker _mR_xs_textTheme"></span>
