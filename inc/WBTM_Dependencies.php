@@ -23,7 +23,7 @@
 				add_action('wp_head', array($this, 'add_privacy_meta_tags'));
 				add_filter('robots_txt', array($this, 'add_robots_txt_rules'));
 				// Add admin cleanup tool
-				add_action('admin_init', array($this, 'handle_privacy_cleanup'));
+				//add_action('admin_init', array($this, 'handle_privacy_cleanup'));
 				//add_action('admin_notices', array($this, 'show_privacy_notice'));
 			}
 			public function modify_bus_slug($args, $post_type) {
@@ -131,18 +131,18 @@
 			/**
 			 * Handle privacy cleanup from admin
 			 */
-			public function handle_privacy_cleanup() {
-
-                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-
-				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
-					if (current_user_can('manage_options')) {
-						WBTM_Woocommerce::cleanup_existing_booking_urls();
-						wp_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
-						exit;
-					}
-				}
-			}
+//			public function handle_privacy_cleanup() {
+//
+//                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+//
+//				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
+//					if (current_user_can('manage_options')) {
+//						WBTM_Woocommerce::cleanup_existing_booking_urls();
+//						wp_safe_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
+//						exit;
+//					}
+//				}
+//			}
 			/**
 			 * Show privacy notice in admin
 			 */
