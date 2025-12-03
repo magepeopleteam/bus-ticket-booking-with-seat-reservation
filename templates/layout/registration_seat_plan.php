@@ -11,7 +11,10 @@
     $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
     $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;*/
 
-//    error_log( print_r( [ '$post_id' =>$post_id, '$start_route' =>$start_route, '$end_route' =>$end_route ], true ) );
+    $post_id = $post_id ?? '';
+    $start_route = $start_route ?? '';
+    $end_route = $end_route ?? '';
+
 
 	$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
 	$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');

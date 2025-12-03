@@ -134,7 +134,10 @@
 			 * Handle privacy cleanup from admin
 			 */
 			public function handle_privacy_cleanup() {
-				if (isset($_GET['wbtm_cleanup_urls']) && isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'wbtm_cleanup_urls')) {
+
+                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+
+				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
 					if (current_user_can('manage_options')) {
 						WBTM_Woocommerce::cleanup_existing_booking_urls();
 						wp_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));

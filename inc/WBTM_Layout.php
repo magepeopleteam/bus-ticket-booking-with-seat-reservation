@@ -37,47 +37,59 @@ if (!class_exists('WBTM_Layout')) {
             }
         }
         public function get_wbtm_dropping_point() {
-            $post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
-            self::route_list($post_id, $start_route);
-            die();
+            if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ) {
+                $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+                $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+                self::route_list($post_id, $start_route);
+                die();
+            }
         }
         public function get_wbtm_journey_date() {
-            $post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = WBTM_Global_Function::data_sanitize($_POST['end_route']);
-            self::journey_date_picker($post_id, $start_route,$end_route);
-            die();
+            if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ) {
+                $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+                $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;
+                self::journey_date_picker($post_id, $start_route, $end_route);
+                die();
+            }
         }
         public function get_wbtm_return_date() {
-            $post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = WBTM_Global_Function::data_sanitize($_POST['end_route']);
-            $j_date = $_POST['j_date'] ?? '';
-            self::return_date_picker($post_id, $end_route,$start_route, $j_date);
-            die();
+            if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ) {
+                $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+                $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;
+
+                $j_date = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '' ;
+                self::return_date_picker($post_id, $end_route, $start_route, $j_date);
+                die();
+            }
         }
         public function get_wbtm_bus_list() {
-            $post_id = WBTM_Global_Function::data_sanitize($_POST['post_id']);
-            $start_route = WBTM_Global_Function::data_sanitize($_POST['start_route']);
-            $end_route = WBTM_Global_Function::data_sanitize($_POST['end_route']);
-            $j_date = $_POST['j_date'] ?? '';
-            $r_date = $_POST['r_date'] ?? '';
-            $style = $_POST['style'] ?? '';
-            $btn_show = $_POST['btn_show'] ?? '';
-            $left_filter_show = $_POST['left_filter_show'] ?? '';
-            $search_info['bus_start_route']=$start_route;
-            $search_info['bus_end_route']=$end_route;
-            $search_info['j_date']=$j_date;
-            $search_info['r_date']=$r_date;
-            self::wbtm_bus_list($post_id,$start_route,$end_route,$j_date,$r_date,$style,$btn_show,$search_info, $left_filter_show);
+            if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ) {
 
-            $redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
-            if ( $redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
-                WC()->cart->empty_cart();
+                $post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '' ;
+                $start_route = isset( $_POST['start_route'] ) ? sanitize_text_field( wp_unslash( $_POST['start_route'] ) ) : '' ;
+                $end_route = isset( $_POST['end_route'] ) ? sanitize_text_field( wp_unslash( $_POST['end_route'] ) ) : '' ;
+
+                $j_date = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '' ;
+                $r_date = isset( $_POST['r_date'] ) ? sanitize_text_field( wp_unslash( $_POST['r_date'] ) ) : '' ;
+                $style = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '' ;
+                $btn_show = isset( $_POST['btn_show'] ) ? sanitize_text_field( wp_unslash( $_POST['btn_show'] ) ) : '' ;
+                $left_filter_show = isset( $_POST['left_filter_show'] ) ? sanitize_text_field( wp_unslash( $_POST['left_filter_show'] ) ) : '' ;
+
+                $search_info['bus_start_route'] = $start_route;
+                $search_info['bus_end_route'] = $end_route;
+                $search_info['j_date'] = $j_date;
+                $search_info['r_date'] = $r_date;
+                self::wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show);
+
+                $redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
+                if ($redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
+                    WC()->cart->empty_cart();
+                }
+
+                die();
             }
-
-            die();
         }
         public function get_wbtm_bus_details() {
 
@@ -94,6 +106,9 @@ if (!class_exists('WBTM_Layout')) {
                 $date = isset( $_POST['date'] ) ? sanitize_text_field( wp_unslash( $_POST['date'] ) ) : '' ;
                 $backend_order = isset( $_POST['backend_order'] ) ? sanitize_text_field( wp_unslash( $_POST['backend_order'] ) ) : '';
 
+                $display_drop_off_point = WBTM_Global_Function::get_post_info($post_id, 'show_drop_off_point', 'no');
+                $drop_off_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
+                $drop_off_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_dropping_point_required', 'no');
 
 
                 $seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
@@ -106,6 +121,9 @@ if (!class_exists('WBTM_Layout')) {
                         $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
                         $has_cabin_config = !empty($cabin_config) && count(array_filter($cabin_config, function($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
                         $bus_start_time=$all_info['start_time'];
+
+                        $j_date = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '';
+                        $r_date = isset( $_POST['r_date'] ) ? sanitize_text_field( wp_unslash( $_POST['r_date'] ) ) : '';
                         ?>
                         <div class="wbtm_registration_area _bgWhite mT">
                             <form action="" method="post" class="">
@@ -118,11 +136,11 @@ if (!class_exists('WBTM_Layout')) {
                                 <input type="hidden" name='wbtm_dp_time' value='<?php echo esc_attr($all_info['dp_time']); ?>'/>
                                 <input type="hidden" name='bus_start_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_start_route')); ?>'/>
                                 <input type="hidden" name='bus_end_route' value='<?php echo esc_attr(WBTM_Global_Function::get_submit_info('bus_end_route')); ?>'/>
-                                <input type="hidden" name='j_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['j_date'])); ?>'/>
-                                <input type="hidden" name='r_date' value='<?php echo esc_attr(WBTM_Global_Function::data_sanitize($_POST['r_date'])); ?>'/>
+                                <input type="hidden" name='j_date' value='<?php echo esc_attr( $j_date ); ?>'/>
+                                <input type="hidden" name='r_date' value='<?php echo esc_attr( $r_date ); ?>'/>
 
                                 <?php
-    wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
+                                wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
                                 // Check for cabin configuration or legacy seat plan
                                 if ($seat_type == 'wbtm_seat_plan' && ($has_cabin_config || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0))) {
                                     require WBTM_Functions::template_path('layout/registration_seat_plan.php');
@@ -173,7 +191,7 @@ if (!class_exists('WBTM_Layout')) {
                         <?php esc_attr_e( 'Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation' );?>
                     </div>
 
-                    <h4 class="lists-title"><?php echo WBTM_Translations::text_return_trip(); ?></h4>
+                    <h4 class="lists-title"><?php echo esc_html( WBTM_Translations::text_return_trip() ); ?></h4>
                     <div class="wbtm-date-route">
                         <?php self::route_title($start_route,$end_route,$j_date,$r_date,true); ?>
                     </div>
@@ -213,7 +231,7 @@ if (!class_exists('WBTM_Layout')) {
                         <?php foreach ($all_dates as $date) { ?>
                             <?php $btn_class = strtotime($date) == strtotime($active_date) ? 'active' : ''; ?>
                             <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
-                                <?php echo WBTM_Global_Function::date_format($date); ?>
+                                <?php echo esc_html( WBTM_Global_Function::date_format($date) ); ?>
                             </button>
                         <?php } ?>
                     </div>
@@ -235,7 +253,7 @@ if (!class_exists('WBTM_Layout')) {
                     <?php echo esc_html($end); ?>
                 </div>
                 <div>
-                    <?php echo WBTM_Global_Function::date_format($date); ?>
+                    <?php echo esc_attr( WBTM_Global_Function::date_format($date) ); ?>
                 </div>
                 <?php
             }
@@ -243,15 +261,15 @@ if (!class_exists('WBTM_Layout')) {
         public static function journey_date_picker($post_id = '', $start_route = '',$end_route='',$date='') {
             $date_format = WBTM_Global_Function::date_picker_format();
             $now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
-            $hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+            $hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
-                <?php echo WBTM_Translations::text_journey_date(); ?>
+                <?php echo esc_attr( WBTM_Translations::text_journey_date() ); ?>
                 <div class="calendar">
                     <i class="fas fa-calendar-alt"></i>
                     <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
-                    <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo WBTM_Translations::text_select_route(); ?>" readonly required/>
+                    <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo esc_html( WBTM_Translations::text_select_route() ); ?>" readonly required/>
                 </div>
             </label>
             <?php
@@ -263,11 +281,11 @@ if (!class_exists('WBTM_Layout')) {
         public static function return_date_picker($post_id = '', $end_route = '',$start_route='', $j_date = '',$date='') {
             $date_format = WBTM_Global_Function::date_picker_format();
             $now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
-            $hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+            $hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
             <label class="fdColumn">
-                <?php echo WBTM_Translations::text_return_date(); ?>
+                <?php echo esc_html( WBTM_Translations::text_return_date() ); ?>
                 <div class="calendar">
                     <i class="fas fa-calendar-alt"></i>
                     <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>

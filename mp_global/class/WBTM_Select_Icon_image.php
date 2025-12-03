@@ -68,14 +68,14 @@
                                                 </li>
 												<?php foreach ( $icons as $key => $icon ) { ?>
                                                     <li data-icon-menu="<?php echo esc_attr( $key ); ?>">
-														<?php echo esc_html( $icon['title'] ) . '&nbsp;(<strong>' . sizeof( $icon['icon'] ) . '</strong>)'; ?>
+														<?php echo esc_html( $icon['title'] ) . '&nbsp;(<strong>' . esc_html( sizeof( $icon['icon'] ) ) . '</strong>)'; ?>
                                                     </li>
 												<?php } ?>
                                             </ul>
                                             <div class="popup_all_icon">
 												<?php foreach ( $icons as $key => $icon ) { ?>
                                                     <div class="popupTabItem" data-icon-list="<?php echo esc_attr( $key ); ?>" data-icon-title="<?php echo esc_attr( $icon['title'] ); ?>">
-                                                        <h5 class="textTheme"><?php echo esc_html( $icon['title'] ) . '&nbsp;(<strong>' . sizeof( $icon['icon'] ) . '</strong>)'; ?></h5>
+                                                        <h5 class="textTheme"><?php echo esc_html( $icon['title'] ) . '&nbsp;(<strong>' . esc_html(  sizeof( $icon['icon'] ) ) . '</strong>)'; ?></h5>
                                                         <div class="divider"></div>
                                                         <div class="itemIconArea">
 															<?php foreach ( $icon['icon'] as $icon => $item ) { ?>
@@ -103,7 +103,7 @@
 					<?php if ( $image_id ) { ?>
                         <div class="wbtm_single_image_item" data-image-id="<?php echo esc_attr( $image_id ); ?>'">
                             <span class="fas fa-times circleIcon_xs wbtm_remove_single_image"></span>
-                            <img src="<?php echo wp_get_attachment_image_url( $image_id, 'medium' ) ?>" alt="<?php echo esc_attr( $image_id ); ?>"/>
+                            <img src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'medium' ) ) ?>" alt="<?php echo esc_attr( $image_id ); ?>"/>
                         </div>
 					<?php } ?>
                     <button type="button" class="_dButton_xs_bgColor_1_fullWidth <?php echo esc_attr( $image_id ? 'dNone' : '' ); ?>">
@@ -125,7 +125,7 @@
 									?>
                                     <div class="wbtm_multi_image_item" data-image-id="<?php esc_attr( $image ); ?>">
                                         <span class="fas fa-times circleIcon_xs wbtm_remove_multi_image"></span>
-                                        <img src="<?php echo WBTM_Global_Function::get_image_url( '', $image, 'medium' ); ?>" alt="<?php esc_attr( $image ); ?>"/>
+                                        <img src="<?php echo esc_url( WBTM_Global_Function::get_image_url( '',  $image , 'medium' ) ) ; ?>" alt="<?php esc_attr( $image ); ?>"/>
                                     </div>
 									<?php
 								}

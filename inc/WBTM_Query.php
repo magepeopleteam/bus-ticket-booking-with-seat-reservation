@@ -58,7 +58,7 @@
                     $bus_query->the_post();
                     $bus_ids[] = get_the_id();
                 }
-                wp_reset_query();
+                wp_reset_postdata();
                 return $bus_ids;
             }
 
@@ -108,14 +108,14 @@
                 );
                 $bus_query = new WP_Query($args);
                 $total_count = $bus_query->found_posts;
-                wp_reset_query();
+                wp_reset_postdata();
                 return $total_count;
             }
 
             public static function query_total_booked($post_id, $start, $end, $date, $ticket_name = '', $seat_name = '') {
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
-					$date = date('Y-m-d', strtotime($date));
+					$date = gmdate('Y-m-d', strtotime($date));
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
@@ -169,7 +169,7 @@
 						);
 						$q = new WP_Query($args);
 						$total_booked = $q->found_posts;
-                        wp_reset_query();
+                        wp_reset_postdata();
 					}
 				}
 				return $total_booked;
@@ -177,7 +177,7 @@
 			public static function query_seat_booked($post_id, $start, $end, $date) {
 				$seat_booked=[];
 				if ($post_id && $start && $end && $date) {
-					$date = date('Y-m-d', strtotime($date));
+					$date = gmdate('Y-m-d', strtotime($date));
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
@@ -231,7 +231,7 @@
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {
-					$date = date('Y-m-d', strtotime($date));
+					$date = gmdate('Y-m-d', strtotime($date));
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$args = array(
 						'post_type' => 'wbtm_service_booking',
@@ -273,7 +273,7 @@
 							}
 						}
 					}
-                    wp_reset_query();
+                    wp_reset_postdata();
 				}
 				return $total_booked;
 			}

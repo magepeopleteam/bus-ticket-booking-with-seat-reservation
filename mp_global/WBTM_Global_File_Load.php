@@ -88,8 +88,8 @@
 					let wbtm_currency_decimal = "";
 					let wbtm_currency_thousands_separator = "";
 					let wbtm_num_of_decimal = "";
-					let wbtm_ajax_url = "<?php echo admin_url('admin-ajax.php'); ?>";
-					let wbtm_nonce = "<?php echo wp_create_nonce( 'wtbm_ajax_nonce' ); ?>";
+					let wbtm_ajax_url = "<?php echo esc_url( admin_url('admin-ajax.php') ); ?>";
+					let wbtm_nonce = "<?php echo esc_attr( wp_create_nonce( 'wtbm_ajax_nonce' ) ); ?>";
 					let wbtm_empty_image_url = "<?php echo esc_attr(WBTM_GLOBAL_PLUGIN_URL . '/assets/images/no_image.png'); ?>";
 					let wbtm_date_format = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format', 'D d M , yy')); ?>";
 					let wbtm_date_format_without_year = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format_without_year', 'D d M')); ?>";
@@ -98,11 +98,11 @@
 				if (WBTM_Global_Function::check_woocommerce() == 1) {
 					?>
 					<script type="text/javascript">
-						wbtm_currency_symbol = "<?php echo get_woocommerce_currency_symbol(); ?>";
-						wbtm_currency_position = "<?php echo get_option('woocommerce_currency_pos'); ?>";
-						wbtm_currency_decimal = "<?php echo wc_get_price_decimal_separator(); ?>";
-						wbtm_currency_thousands_separator = "<?php echo wc_get_price_thousand_separator(); ?>";
-						wbtm_num_of_decimal = "<?php echo get_option('woocommerce_price_num_decimals', 2); ?>";
+						wbtm_currency_symbol = "<?php echo esc_html( get_woocommerce_currency_symbol() ); ?>";
+						wbtm_currency_position = "<?php echo esc_html( get_option('woocommerce_currency_pos') ) ; ?>";
+						wbtm_currency_decimal = "<?php echo esc_html( wc_get_price_decimal_separator() ); ?>";
+						wbtm_currency_thousands_separator = "<?php echo esc_html( wc_get_price_thousand_separator() ); ?>";
+						wbtm_num_of_decimal = "<?php echo esc_html( get_option('woocommerce_price_num_decimals', 2) ); ?>";
 					</script>
 					<?php
 				}
@@ -112,10 +112,12 @@
 				ob_start();
 				?>
 				<style>
-					<?php echo $custom_css; ?>
+					<?php echo esc_html( $custom_css ); ?>
 				</style>
 				<?php
-				echo ob_get_clean();
+				$output = ob_get_clean();
+
+                echo wp_kses_post( $output );
 			}
 		}
 		new WBTM_Global_File_Load();

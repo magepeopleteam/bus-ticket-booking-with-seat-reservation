@@ -63,8 +63,8 @@
 									<h6 class="_allCenter"><?php echo esc_html(current($route)); ?><small><span class="fas fa-long-arrow-alt-right _mLR_xs"></span></small><?php echo esc_html(end($route)); ?></h6>
 									<div class="divider"></div>
 									<h6 class="_allCenter">
-										<strong><?php echo WBTM_Translations::text_passenger_capacity(); ?> :</strong>
-										<?php echo WBTM_Global_Function::get_post_info($bus_id, 'wbtm_get_total_seat', 0); ?>
+										<strong><?php echo esc_html( WBTM_Translations::text_passenger_capacity() ); ?> :</strong>
+										<?php echo esc_html( WBTM_Global_Function::get_post_info($bus_id, 'wbtm_get_total_seat', 0) ); ?>
 									</h6>
 									<div class="divider"></div>
 									<div class="mp_wp_editor">
