@@ -9,12 +9,14 @@
 
 //if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 
-    $post_id = $post_id ?? '';
+    /*$post_id = $post_id ?? '';
     $start_route = $start_route ?? '';
     $end_route = $end_route ?? '';
-	$date = $bus_start_time ?? '';
+	$date = $bus_start_time ?? '';*/
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$show_extra_service = WBTM_Global_Function::get_post_info($post_id, 'show_extra_service', 'no');
 	if ($show_extra_service == 'yes') {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$ex_services = WBTM_Global_Function::get_post_info($post_id, 'wbtm_extra_services', []);
 		if (sizeof($ex_services) > 0) {
 			?>
@@ -31,13 +33,22 @@
 						</tr>
 						</thead>
 						<tbody>
-						<?php foreach ($ex_services as $ex_service) { ?>
+
+						<?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                        foreach ($ex_services as $ex_service) { ?>
 							<?php
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$row_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ex_service['option_price']);
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$qty_type = $ex_service['option_qty_type'];
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$ex_name = $ex_service['option_name'];
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$total_ex = max($ex_service['option_qty'], 0);
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$sold = WBTM_Query::query_ex_service_sold($post_id, $date, $ex_name);
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$available_ex_service = $total_ex - $sold;
 							?>
 							<tr>

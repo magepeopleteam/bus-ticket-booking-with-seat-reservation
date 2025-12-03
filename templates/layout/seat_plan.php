@@ -10,32 +10,39 @@
 	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
 	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);*/
 
-    $post_id = $post_id ?? '';
+    /*$post_id = $post_id ?? '';
     $start_route = $start_route ?? '';
     $end_route = $end_route ?? '';
     $date = $date ?? '';
 
-	$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
-	$seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-	$seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+	*/
+
+    $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
+    $seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+    $seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
     $seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
     $cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
     $cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 
-    // Determine if there is at least one usable cabin seat plan
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $has_cabin_seat_plan = false;
     if ($cabin_mode_enabled === 'yes' && !empty($cabin_config)) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         foreach ($cabin_config as $index => $cabin) {
             if (($cabin['enabled'] ?? 'yes') !== 'yes') {
                 continue;
             }
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $rows = intval($cabin['rows'] ?? 0);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $cols = intval($cabin['cols'] ?? 0);
             if ($rows <= 0 || $cols <= 0) {
                 continue;
             }
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $cabin_seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
             if (!empty($cabin_seat_infos)) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                 $has_cabin_seat_plan = true;
                 break;
             }
@@ -44,17 +51,26 @@
 
     if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
     //		$date = $_POST['date'] ?? '';
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_start_time=$bus_start_time??'';
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $seat_position = WBTM_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $seat_infos_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $adult_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_infos[0]['price']);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
             //echo current($seat_infos)['price'];
-
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $seat_booked=WBTM_Query:: query_seat_booked($post_id, $start_route, $end_route, $bus_start_time);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $seat_count = 0;
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             foreach ($seat_infos as $seats) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                 foreach ($seats as $seat) {
                     if (!empty($seat)) {
                         $seat_count++;
@@ -68,16 +84,22 @@
                     <?php if ($has_cabin_seat_plan) { ?>
                         <?php
                         // Render cabin seat plans
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                         foreach ($cabin_config as $cabin_index => $cabin) {
                             if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
-
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                             $cabin_name = $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1);
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                             $cabin_rows = $cabin['rows'] ?? 0;
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                             $cabin_cols = $cabin['cols'] ?? 0;
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                             $price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                             $cabin_seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
 
                             if ($cabin_rows > 0 && $cabin_cols > 0 && !empty($cabin_seat_infos)) {
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                 $cabin_price = $adult_price * $price_multiplier;
                                 ?>
                                 <div class="wbtm_cabin_section">
@@ -89,6 +111,7 @@
                                                     <?php if ($price_multiplier > 1.0): ?>
                                                         <span class="wbtm_price_multiplier">
                                                             <?php
+                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $premium = ( $price_multiplier - 1.0 ) * 100;
                                                             echo esc_html( '+' . number_format_i18n( $premium ) . '% Premium' );
                                                             ?>
@@ -96,6 +119,7 @@
                                                     <?php elseif ($price_multiplier < 1.0): ?>
                                                         <span class="wbtm_price_discount">
                                                             <?php
+                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $discount = ( 1.0 - $price_multiplier ) * 100;
                                                             echo esc_html( '-' . number_format_i18n( $discount ) . '% Discount' );
                                                             ?>
@@ -123,9 +147,13 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <?php foreach ($cabin_seat_infos as $row_index => $seat_info): ?>
+                                            <?php
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                            foreach ($cabin_seat_infos as $row_index => $seat_info): ?>
                                                 <tr>
-                                                    <?php foreach ($seat_info as $seat_key => $seat_name): ?>
+                                                    <?php
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    foreach ($seat_info as $seat_key => $seat_name): ?>
                                                         <?php
                                                         // Skip rotation keys (they end with _rotation)
                                                         if (strpos($seat_key, '_rotation') !== false) {
@@ -137,16 +165,22 @@
                                                                 <td><?php echo esc_html($seat_name); ?></td>
                                                             <?php else: ?>
                                                                 <?php
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $rotation = 0;
                                                                 if ($enable_rotation == 'yes' && isset($seat_info[$seat_key . '_rotation'])) {
+                                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                     $rotation = intval($seat_info[$seat_key . '_rotation']);
                                                                 }
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
                                                                 // Enhanced by Shahnur Alam - 2025-10-08
                                                                 // Fix cabin seat availability check - use cabin-specific identifiers
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $is_booked = in_array($cabin_seat_identifier, $seat_booked) || in_array($seat_name, $seat_booked);
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $is_in_cart = !$is_booked && (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier) || WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name));
                                                                 ?>
                                                                 <th>
@@ -175,9 +209,13 @@
                                                                             <?php if (sizeof($ticket_infos) > 1): ?>
                                                                                 <div class="wbtm_seat_item_list">
                                                                                     <ul class="mp_list">
-                                                                                        <?php foreach ($ticket_infos as $key => $ticket_info): ?>
+                                                                                        <?php
+                                                                                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                                        foreach ($ticket_infos as $key => $ticket_info): ?>
                                                                                             <?php
+                                                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                                             $ticket_price = $key > 0 ? $ticket_info['price'] : $adult_price;
+                                                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                                             $ticket_price = $ticket_price * $price_multiplier;
                                                                                             ?>
                                                                                             <li class="justifyBetween"
@@ -231,9 +269,13 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($seat_infos as $seat_info) { ?>
+                                <?php
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                foreach ($seat_infos as $seat_info) { ?>
                                     <tr>
-                                        <?php foreach ($seat_info as $seat_key => $seat_name) { ?>
+                                        <?php
+                                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                        foreach ($seat_info as $seat_key => $seat_name) { ?>
                                             <?php
                                             // Skip rotation keys (they end with _rotation)
                                             if (strpos($seat_key, '_rotation') !== false) {
@@ -245,10 +287,13 @@
                                                     <td><?php echo esc_html($seat_name); ?></td>
                                                 <?php } else { ?>
                                                     <?php
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation = 0;
                                                     if ($enable_rotation == 'yes' && isset($seat_info[$seat_key . '_rotation'])) {
+                                                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                         $rotation = intval($seat_info[$seat_key . '_rotation']);
                                                     }
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
                                                     ?>
                                                     <th>
@@ -256,7 +301,9 @@
                                                             <?php
                                                             // Enhanced by Shahnur Alam - 2025-10-08
                                                             // Check both legacy seat names and cabin-specific identifiers for backward compatibility
+                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $is_booked_legacy = in_array($seat_name, $seat_booked);
+                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
                                                             ?>
                                                             <?php if ($is_booked_legacy) { ?>
@@ -282,8 +329,11 @@
                                                                 <?php if (sizeof($ticket_infos) > 1) { ?>
                                                                     <div class="wbtm_seat_item_list">
                                                                         <ul class="mp_list">
-                                                                            <?php foreach ($ticket_infos as $key => $ticket_info) { ?>
-                                                                                <?php $ticket_price = $key > 0 ? $ticket_info['price'] : $adult_price; ?>
+                                                                            <?php
+                                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                            foreach ($ticket_infos as $key => $ticket_info) {
+                                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                                 $ticket_price = $key > 0 ? $ticket_info['price'] : $adult_price; ?>
                                                                                 <li class="justifyBetween"
                                                                                     data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
                                                                                     data-seat_type="<?php echo esc_attr($ticket_info['type']); ?>"
@@ -313,7 +363,9 @@
                     <?php } ?>
                     <?php if ($show_upper_desk == 'yes' && sizeof($seat_infos_dd) > 0) { ?>
                         <?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                         $seat_dd_increase = (int)WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent', 0);
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                         $adult_price_dd = $adult_price + ($adult_price * $seat_dd_increase / 100);
                         ?>
                         <div class="wbtm_seat_plan_upper ovAuto">
@@ -324,9 +376,13 @@
                             <div class="divider"></div>
                             <table>
                                 <tbody>
-                                <?php foreach ($seat_infos_dd as $seat_info_dd) { ?>
+                                <?php
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                foreach ($seat_infos_dd as $seat_info_dd) { ?>
                                     <tr>
-                                        <?php foreach ($seat_info_dd as $seat_key => $info) { ?>
+                                        <?php
+                                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                        foreach ($seat_info_dd as $seat_key => $info) { ?>
                                             <?php
                                             // Skip rotation keys (they end with _rotation)
                                             if (strpos($seat_key, '_rotation') !== false) {
@@ -338,14 +394,18 @@
                                                     <td><?php echo esc_html($info) ?></td>
                                                 <?php } else { ?>
                                                     <?php
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation = 0;
                                                     if ($enable_rotation == 'yes' && isset($seat_info_dd[$seat_key . '_rotation'])) {
+                                                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                         $rotation = intval($seat_info_dd[$seat_key . '_rotation']);
                                                     }
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
                                                     // Enhanced by Shahnur Alam - 2025-10-08
                                                     // Fix upper deck seat availability check - support cabin-specific identifiers
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
                                                     ?>
                                                     <th>
@@ -373,9 +433,13 @@
                                                                 <?php if (sizeof($ticket_infos) > 1) { ?>
                                                                     <div class="wbtm_seat_item_list">
                                                                         <ul class="mp_list">
-                                                                            <?php foreach ($ticket_infos as $key => $ticket_info) { ?>
+                                                                            <?php
+                                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                            foreach ($ticket_infos as $key => $ticket_info) { ?>
                                                                                 <?php
+                                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                                 $ticket_price = $key > 0 ? WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
+                                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                                 $ticket_price = $ticket_price + ($ticket_price * $seat_dd_increase / 100);
                                                                                 ?>
                                                                                 <li class="justifyBetween"

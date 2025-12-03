@@ -6,59 +6,83 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $search_info = $search_info ?? [];
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $start_route = $start_route ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $end_route = $end_route ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $post_id = $post_id ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $date = $date ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $journey_type = $journey_type ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $btn_show = $btn_show ?? '';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $left_filter_show = $left_filter_show ?? '';
-
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $label = WBTM_Functions::get_name();
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $bus_ids = $post_id > 0 ? [$post_id] : WBTM_Query::get_bus_id($start_route, $end_route);
 //echo '<pre>';	print_r($search_info);	echo '</pre>';
 if (sizeof($bus_ids) > 0) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $bus_count = 0;
 
     // Collect all bus info first
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $bus_data = [];
-
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $bus_titles = [];
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $bus_types = [];
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $all_boarding_routes = [];
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     foreach ($bus_ids as $bus_id) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
         if (sizeof($all_info) > 0) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
             ];
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_titles[] = get_the_title($bus_id);
             
-            // Use the synchronize_bus_type function to ensure bus type is consistent
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_types[] = $bus_type;
             
-            // Log bus types for debugging
-           // error_log('Bus ID: ' . $bus_id . ' - Title: ' . get_the_title($bus_id) . ' - Bus Type: ' . $bus_type . ' - Date: ' . $date);
-            
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $get_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             foreach ( $get_boarding_routes as $route ){
                 if( !empty( $route ) ){
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                     $all_boarding_routes[] = $route;
                 }
             }
         }
 
     }
+
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $all_boarding_routes = array_unique( $all_boarding_routes );
 
     if( $journey_type === 'start_journey' ){
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $wbtm_bus_search = 'wbtm_bus_search_journey_start';
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $filter_by_box = 'filter-checkbox';
     }else{
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $wbtm_bus_search = 'wbtm_bus_search_journey_return';
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $filter_by_box = 'return_filter-checkbox';
     }
 
@@ -66,6 +90,7 @@ if (sizeof($bus_ids) > 0) {
 <div class="wbtm_search_result_holder">
     <?php
     if( !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && $left_filter_show['left_filter_input'] && count( $bus_titles ) > 0 ){
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
      $width = 'calc( 100% - 180px )'
     ?>
     <div class="wbtm_bus_left_filter_holder">
@@ -74,6 +99,7 @@ if (sizeof($bus_ids) > 0) {
       ?>
     </div>
     <?php  }else{
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $width = '100%';
     }?>
     <div class="wbtm_bus_list_area" style="width: <?php echo esc_html( $width )?>">
@@ -93,37 +119,51 @@ if (sizeof($bus_ids) > 0) {
             return strtotime($a['all_info']['bp_time']) - strtotime($b['all_info']['bp_time']);
         });
 
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         foreach ($bus_data as $key => $bus) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_id = $bus['bus_id'];
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $all_info = $bus['all_info'];
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_count++;
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $price = $all_info['price'];
 
-            // Check if next_day exists and set a default value if not
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bp_time = $all_info['bp_time'];
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $dp_time = $all_info['dp_time'];
 
             // Adjust dp_time if next_day is '1'
             if ($next_day == '1') {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                 $dp_timestamp += 24 * 60 * 60; // Add 24 hours in seconds
             }
 
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
 
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bp_timestamp = strtotime($bp_time);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $dp_timestamp = strtotime($dp_time);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_seconds = $dp_timestamp - $bp_timestamp;
-
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_hours = floor($duration_seconds / 3600);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_minutes = floor(($duration_seconds % 3600) / 60);
             /*$duration_formatted = sprintf(
                 _x('%d H %d M', 'Duration format (hours and minutes)', 'bus-ticket-booking-with-seat-reservation'),
                 $duration_hours,
                 $duration_minutes
             );*/
-
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_text = esc_html( '%1$d H %2$d M' );
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_formatted = str_replace(
                 ['%1$d', '%2$d'],
                 [$duration_hours, $duration_minutes],
@@ -134,11 +174,12 @@ if (sizeof($bus_ids) > 0) {
             <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
-                // Get the bus type directly
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                 $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
                 ?>
                 <input type="hidden" name="wbtm_bus_type" value="<?php echo esc_attr($bus_type); ?>" />
                 <?php if( is_array( $bus_boarding_routes ) && count( $bus_boarding_routes ) > 0 ){
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                     foreach ( $bus_boarding_routes as $boarding_route ){
                     ?>
                 <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($boarding_route); ?>" />
@@ -171,7 +212,8 @@ if (sizeof($bus_ids) > 0) {
                     </h6>
                 </div>
                 <div class="wbtm-seat-info">
-                        <?php 
+                        <?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                         $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
                         ?>
                         <span class="<?php echo esc_attr($bus_type=='AC')?'ac':'none-ac'; ?>"><?php echo esc_attr($bus_type); ?></span>

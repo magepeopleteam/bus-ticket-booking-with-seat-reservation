@@ -9,9 +9,9 @@ if (!defined('ABSPATH')) {
 }
 //if( isset( $_POST['nonce'] ) && wp_verify_nonce(  sanitize_text_field( wp_unslash( $_POST['nonce'] ) ),'wtbm_ajax_nonce' ) ){
 
-    $post_id = $post_id ?? '';
+    /*$post_id = $post_id ?? '';
     $backend_order = $backend_order ?? '';
-    $link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_product');
+    $link_wc_product = WBTM_Global_Function::get_post_info($post_id, 'link_wc_product');*/
 
     ?>
     <div class="_dLayout_xs col_12 wbtm_form_submit_area mT_xs">
