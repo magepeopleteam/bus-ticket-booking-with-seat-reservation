@@ -79,12 +79,12 @@
 				do_action('add_wbtm_admin_script');
 			}
 			public function appsero_init_tracker() {
-				if (!class_exists('Appsero\Client')) {
-					require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
+				//if (!class_exists('Appsero\Client')) {
+					//require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
 					// require_once __DIR__ . '/lib/appsero/src/Client.php';
-				}
-				$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
-				$client->insights()->init();
+				//}
+				//$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
+				//$client->insights()->init();
 			}
 			public function frontend_enqueue() {
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time());
