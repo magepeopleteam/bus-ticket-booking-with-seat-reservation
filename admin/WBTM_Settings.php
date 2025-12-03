@@ -65,7 +65,7 @@
                                 <div class="tabsItem" data-tabs="#mp_pp_deposits_type">
                                     <h5><?php esc_html_e('Partial Payment Settings : ', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
                                     <div class="divider"></div>
-									<?php do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
+									<?php //do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
                                 </div>
 							<?php } ?>
                         </div>
@@ -536,7 +536,7 @@
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}
 				do_action('wbtm_settings_save', $post_id);
-				do_action('wcpp_partial_settings_saved', $post_id);
+				//do_action('wcpp_partial_settings_saved', $post_id);
 			}
 		}
 		new WBTM_Settings();
