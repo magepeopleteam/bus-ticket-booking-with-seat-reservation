@@ -24,7 +24,7 @@
 				add_filter('robots_txt', array($this, 'add_robots_txt_rules'));
 				// Add admin cleanup tool
 				add_action('admin_init', array($this, 'handle_privacy_cleanup'));
-				add_action('admin_notices', array($this, 'show_privacy_notice'));
+				//add_action('admin_notices', array($this, 'show_privacy_notice'));
 			}
 			public function modify_bus_slug($args, $post_type) {
 				if ('wbtm_bus' === $post_type) {
@@ -43,8 +43,6 @@
 					update_option('wbtm_style_settings', $style_settings);
 					$slider_settings = get_option('mp_slider_settings');
 					update_option('wbtm_slider_settings', $slider_settings);
-					$custom_css = get_option('mp_add_custom_css');
-					update_option('wbtm_custom_css', $custom_css);
 					$license_settings = get_option('mp_basic_license_settings');
 					update_option('wbtm_license_settings', $license_settings);
 					update_option('wbtm_conflict_update', 'completed');
@@ -148,32 +146,32 @@
 			/**
 			 * Show privacy notice in admin
 			 */
-			public function show_privacy_notice() {
-				$screen = get_current_screen();
-				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
-					if (isset($_GET['wbtm_cleanup_complete'])) {
-						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
-					} else {
-						// Check if there are any booking posts with customer names in URLs
-						$bookings = get_posts(array(
-							'post_type' => 'wbtm_bus_booking',
-							'numberposts' => 5,
-							'post_status' => 'publish'
-						));
-						$has_customer_names = false;
-						foreach ($bookings as $booking) {
-							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
-								$has_customer_names = true;
-								break;
-							}
-						}
-						if ($has_customer_names) {
-							$cleanup_url = wp_nonce_url(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1'), 'wbtm_cleanup_urls');
-							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url($cleanup_url) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
-						}
-					}
-				}
-			}
+//			public function show_privacy_notice() {
+//				$screen = get_current_screen();
+//				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
+//					if (isset($_GET['wbtm_cleanup_complete'])) {
+//						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
+//					} else {
+//						// Check if there are any booking posts with customer names in URLs
+//						$bookings = get_posts(array(
+//							'post_type' => 'wbtm_bus_booking',
+//							'numberposts' => 5,
+//							'post_status' => 'publish'
+//						));
+//						$has_customer_names = false;
+//						foreach ($bookings as $booking) {
+//							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
+//								$has_customer_names = true;
+//								break;
+//							}
+//						}
+//						if ($has_customer_names) {
+//							$cleanup_url = wp_nonce_url(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1'), 'wbtm_cleanup_urls');
+//							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url($cleanup_url) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
+//						}
+//					}
+//				}
+//			}
 		}
 		new WBTM_Dependencies();
 	}

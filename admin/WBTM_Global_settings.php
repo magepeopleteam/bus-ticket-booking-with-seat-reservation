@@ -89,10 +89,6 @@
 						'title' => esc_html__( 'Style Settings', 'bus-ticket-booking-with-seat-reservation' )
 					),
 					array(
-						'id'    => 'wbtm_custom_css',
-						'title' => esc_html__( 'Custom CSS', 'bus-ticket-booking-with-seat-reservation' )
-					),
-					array(
 						'id'    => 'wbtm_license_settings',
 						'title' => esc_html__( 'Mage-People License', 'bus-ticket-booking-with-seat-reservation' )
 					)
@@ -509,14 +505,6 @@
 							'default' => '#FAFCFE'
 						),
 					) ),
-					'wbtm_custom_css'       => apply_filters( 'wbtm_filter_custom_css', array(
-						array(
-							'name'  => 'custom_css',
-							'label' => esc_html__( 'Custom CSS', 'bus-ticket-booking-with-seat-reservation' ),
-							'desc'  => esc_html__( 'Write Your Custom CSS Code Here', 'bus-ticket-booking-with-seat-reservation' ),
-							'type'  => 'textarea',
-						)
-					) )
 				);
 
 				return array_merge( $default_fields, $settings_fields );
