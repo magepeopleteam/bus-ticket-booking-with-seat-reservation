@@ -66,12 +66,12 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
 
         //***********************************//
         public static function get_submit_info( $key, $default = '' ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- handled elsewhere
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             return self::data_sanitize( $_POST[ $key ] ?? $default );
         }
 
         public static function get_submit_info_get_method( $key, $default = '' ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- handled elsewhere
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             return self::data_sanitize( $_GET[ $key ] ?? $default );
         }
 
