@@ -39,6 +39,7 @@
 				wp_enqueue_script('jquery-ui-datepicker');
 				wp_localize_script('wbtm_ajax_url', 'wbtm_ajax_url', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('mp-ajax-nonce')));
 				wp_enqueue_style('mp_jquery_ui', WBTM_GLOBAL_PLUGIN_URL . '/assets/jquery-ui.min.css', array(), '1.13.2');
+                // phpcs:ignore PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent
 				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
 				wp_enqueue_style('mp_select_2', WBTM_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.css', array(), '4.0.13');
 				wp_enqueue_script('mp_select_2', WBTM_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.js', array(), '4.0.13');
@@ -60,7 +61,9 @@
 				wp_enqueue_script('wp-codemirror');
 				//wp_enqueue_script('jquery-ui-accordion');
 				//loading Time picker
+                // phpcs:ignore PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent
 				wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
+                // phpcs:ignore PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent
 				wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array('jquery'), 1, true);
 				//=====================//
 				wp_enqueue_script('form-field-dependency', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);

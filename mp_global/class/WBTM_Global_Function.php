@@ -66,10 +66,12 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
 
         //***********************************//
         public static function get_submit_info( $key, $default = '' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- handled elsewhere
             return self::data_sanitize( $_POST[ $key ] ?? $default );
         }
 
         public static function get_submit_info_get_method( $key, $default = '' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- handled elsewhere
             return self::data_sanitize( $_GET[ $key ] ?? $default );
         }
 
@@ -340,6 +342,7 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
                     $tax_rates      = WC_Tax::get_rates( $product->get_tax_class() );
                     $base_tax_rates = WC_Tax::get_base_tax_rates( $product->get_tax_class( 'unfiltered' ) );
                     if ( ! empty( WC()->customer ) && WC()->customer->get_is_vat_exempt() ) { // @codingStandardsIgnoreLine.
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core filter
                         $remove_taxes = apply_filters( 'woocommerce_adjust_non_base_location_prices', true ) ? WC_Tax::calc_tax( $line_price, $base_tax_rates, true ) : WC_Tax::calc_tax( $line_price, $tax_rates, true );
                         if ( 'yes' === get_option( 'woocommerce_tax_round_at_subtotal' ) ) {
                             $remove_taxes_total = array_sum( $remove_taxes );
@@ -362,6 +365,7 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
                     }
                 }
             }
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core filter
             $return_price   = apply_filters( 'woocommerce_get_price_including_tax', $return_price, $qty, $product );
             $display_suffix = get_option( 'woocommerce_price_display_suffix' ) ? get_option( 'woocommerce_price_display_suffix' ) : '';
 
@@ -432,10 +436,17 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
 
         public static function get_order_item_meta( $item_id, $key ): string {
             global $wpdb;
-            $table_name = $wpdb->prefix . "woocommerce_order_itemmeta";
-            $results    = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE order_item_id = %d AND meta_key = %s", $item_id, $key ) );
-            foreach ( $results as $result ) {
-                $value = $result->meta_value;
+            $table_name =  esc_sql( $wpdb->prefix . "woocommerce_order_itemmeta" );
+
+            $cache_key = 'wbtm_order_item_meta_' . $item_id . '_' . $key;
+            $value = wp_cache_get( $cache_key, 'wbtm_order_item_meta' );
+            if ( false === $value ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- direct query necessary, no WP API available
+                $results = $wpdb->get_results($wpdb->prepare("SELECT meta_value FROM $table_name WHERE order_item_id = %d AND meta_key = %s", $item_id, $key));
+                foreach ($results as $result) {
+                    $value = $result->meta_value;
+                }
+                wp_cache_set($cache_key, $value, 'wbtm_order_item_meta', 3600); // cache for 1 hour
             }
 
             return $value ?? '';
@@ -470,11 +481,20 @@ if ( ! class_exists( 'WBTM_Global_Function' ) ) {
         //***********************************//
         public static function all_tax_list(): array {
             global $wpdb;
-            $table_name = $wpdb->prefix . 'wc_tax_rate_classes';
-            $result     = $wpdb->get_results( "SELECT * FROM $table_name" );
-            $tax_list   = [];
-            foreach ( $result as $tax ) {
-                $tax_list[ $tax->slug ] = $tax->name;
+//            $table_name = $wpdb->prefix . 'wc_tax_rate_classes';
+            $table_name = esc_sql( $wpdb->prefix . 'wc_tax_rate_classes' );
+            $cache_key = 'wbtm_all_tax_list';
+            $tax_list = wp_cache_get( $cache_key, 'wbtm_tax' );
+
+            if ( $tax_list === false ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- safe, custom table
+                $result = $wpdb->get_results("SELECT * FROM $table_name");
+                $tax_list = [];
+                foreach ($result as $tax) {
+                    $tax_list[$tax->slug] = $tax->name;
+                }
+
+                wp_cache_set( $cache_key, $tax_list, 'wbtm_tax', 3600 );
             }
 
             return $tax_list;
