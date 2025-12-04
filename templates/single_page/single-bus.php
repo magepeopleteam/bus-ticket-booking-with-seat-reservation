@@ -36,6 +36,7 @@
 	}
 	$post_id = get_the_id();
 	do_action('wbtm_before_single_bus_search_page');
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
 	do_action('woocommerce_before_single_product');
 	//echo '<pre>';print_r($wp_roles->roles);echo '</pre>';
 ?>

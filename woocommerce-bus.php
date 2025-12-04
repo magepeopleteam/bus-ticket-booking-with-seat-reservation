@@ -49,16 +49,19 @@
 			public function activation_redirect($plugin) {
 				$wbtm_quick_setup_done = get_option('wbtm_quick_setup_done');
 				if ($plugin == plugin_basename(__FILE__) && $wbtm_quick_setup_done != 'yes') {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					exit(wp_safe_redirect(admin_url('edit.php?post_type=wbtm_bus&page=wbtm_quick_setup')));
 				}
 			}
 			public function activation_redirect_setup($plugin) {
 				$wbtm_quick_setup_done = get_option('wbtm_quick_setup_done');
 				if ($plugin == plugin_basename(__FILE__) && $wbtm_quick_setup_done != 'yes') {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					exit(wp_safe_redirect(admin_url('admin.php?post_type=wbtm_bus&page=wbtm_quick_setup')));
 				}
 			}
-			function flush_rules_wbtm_post_list_page() {				
+			function flush_rules_wbtm_post_list_page() {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				if ( isset( $_GET['post_type'] ) && sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) == 'wbtm_bus' ) {
 					flush_rewrite_rules(); 
 				}

@@ -17,7 +17,10 @@
                 <div class="wbtm_hidden_content">
                     <table>
                         <tbody class="wbtm_hidden_item">
-						<?php do_action( $hook_name, $data ); ?>
+						<?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+                        do_action( $hook_name, $data );
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -253,7 +256,10 @@
                 <div class="wbtm_hidden_content">
                     <table>
                         <tbody class="wbtm_hidden_item">
-						<?php do_action( $hook_name, $data ); ?>
+						<?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+                        do_action( $hook_name, $data );
+                        ?>
                         </tbody>
                     </table>
                 </div>
