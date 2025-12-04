@@ -52,12 +52,43 @@ if (! class_exists('WBTM_Woocommerce')) {
             }
             $post_id = isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '';
             $product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+
+            $selected_cabin_seats = '';
+            $cabin_seats = false;
+            foreach ($_POST as $key => $value) {
+                if ( strpos( $key, 'wbtm_selected_seat_cabin_') === 0) {
+                    $cabin_seats = true;
+                    $cabin = str_replace('wbtm_selected_seat_', '', $key);
+                    $selected_cabin_seats .= $cabin . ' (' . $value . ')' . PHP_EOL;
+                }
+            }
+
+            if( $cabin_seats ){
+                $selected_seats = $selected_cabin_seats;
+            }else{
+                $selected_seats = isset( $_POST['wbtm_selected_seat'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_selected_seat'] ) ) : '';
+            }
+
+            $selected_Data = array(
+                    'post_id' => isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '',
+                    'j_date' => isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '',
+                    'wbtm_selected_seat' => $selected_seats,
+                    'wbtm_bp_place' => isset( $_POST['wbtm_bp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ) ) : '',
+                    'wbtm_dp_place' => isset( $_POST['wbtm_dp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ) ) : '',
+                    'wbtm_bp_time' => isset( $_POST['wbtm_bp_time'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_time'] ) ) : '',
+                    'wbtm_dp_time' => isset( $_POST['wbtm_dp_time'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_dp_time'] ) ) : '',
+                    'price_val' => isset( $_POST['price_val'] ) ? sanitize_text_field( wp_unslash( $_POST['price_val'] ) ) : 0,
+            );
+
             if( $product_id ){
                 $quantity   = 1;
                 $added = WC()->cart->add_to_cart($product_id, $quantity);
                 if($added){
+
+                    $selected_bus = WBTM_Layout::selected_bus_display( $selected_Data );
                     wp_send_json_success([
-                        'message' => 'Added successfully'
+                        'message' => 'Added successfully',
+                        'selected_bus' => $selected_bus,
                     ]);
                 }else{
                     wp_send_json_error('Cart error');

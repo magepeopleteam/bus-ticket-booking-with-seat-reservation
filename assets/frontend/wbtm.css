@@ -165,6 +165,17 @@
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid var(--wbtm_color_theme);
 }
+.wbtm-date-return-route {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px 5px 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  /*border-bottom: 2px solid var(--wbtm_color_theme);*/
+}
 .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
