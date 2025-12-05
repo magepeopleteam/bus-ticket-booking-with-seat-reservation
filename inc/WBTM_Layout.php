@@ -375,14 +375,14 @@ if (!class_exists('WBTM_Layout')) {
             $hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
-            <label class="fdColumn">
+            <div class="wtbm_fdColumn">
                 <?php echo esc_attr( WBTM_Translations::text_journey_date() ); ?>
                 <div class="calendar">
                     <i class="fas fa-calendar-alt"></i>
                     <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
                     <input id="wbtm_journey_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl " placeholder="<?php echo esc_attr($now); ?>" data-alert="<?php echo esc_html( WBTM_Translations::text_select_route() ); ?>" readonly required/>
                 </div>
-            </label>
+            </div>
             <?php
             if ($start_route) {
                 $all_dates = WBTM_Functions::get_all_dates($post_id, $start_route,$end_route);
@@ -395,14 +395,14 @@ if (!class_exists('WBTM_Layout')) {
             $hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
             $visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
             ?>
-            <label class="fdColumn">
+            <div class="wtbm_fdColumn">
                 <?php echo esc_html( WBTM_Translations::text_return_date() ); ?>
                 <div class="calendar">
                     <i class="fas fa-calendar-alt"></i>
                     <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>
                     <input id="wbtm_return_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
                 </div>
-            </label>
+            </div>
             <?php
             if ($end_route && $j_date) {
                 $all_dates = WBTM_Functions::get_all_dates($post_id, $end_route,$start_route);

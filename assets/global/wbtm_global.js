@@ -47,7 +47,7 @@
 			  left_filter_operator : wbtm_left_filter_operator.val(),
 			  left_filter_boarding : wbtm_left_filter_boarding.val(),
 		  },
-          backend_order: window.location.href.search("wbtm_backend_order"),
+          // backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {
           wbtm_loader(parent.find(".wbtm_search_result"));
