@@ -47,7 +47,7 @@
 			  left_filter_operator : wbtm_left_filter_operator.val(),
 			  left_filter_boarding : wbtm_left_filter_boarding.val(),
 		  },
-          backend_order: window.location.href.search("wbtm_backend_order"),
+          // backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {
           wbtm_loader(parent.find(".wbtm_search_result"));
@@ -78,8 +78,11 @@
 			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
 		});
 
+		alert('clicked');
 		$("#wbtm_start_container").fadeIn();
 		$("#wbtm_return_container").fadeOut();
+		$("#wbtm_date_return_route_start").fadeOut();
+		$("#wbtm_date_return_route_return").fadeIn();
 
 	});
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
@@ -672,8 +675,11 @@
 		let this_btn = $(this);
 		let form = this_btn.closest('form');
 
+		let priceVal = $(".wbtm_total").text();
+
 		let formData = form.serialize();
 		formData += '&action=wbtm_ajax_add_to_cart';
+		formData += '&price_val=' + encodeURIComponent(priceVal);
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
 		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
@@ -686,7 +692,11 @@
 				this_btn.text( 'Adding to Cart...' );
 			},
 			success: function(response){
+
+				console.log( response.data.selected_bus );
+
 				if(response.success){
+					$("#wbtm_seleced_start_bus").html( response.data.selected_bus);
 					this_btn.text( 'Added to Cart ✅' );
 					$(document.body).trigger('wc_update_cart');
 				}else{
@@ -700,6 +710,9 @@
 						$('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
 						$("#wbtm_start_container").fadeOut();
 						$("#wbtm_return_container").fadeIn();
+
+						$("#wbtm_date_return_route_start").fadeOut();
+						$("#wbtm_date_return_route_return").fadeIn();
 					}else{
 						window.location.href = my_wc_vars.checkout_url;
 					}

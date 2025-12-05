@@ -72,6 +72,122 @@
     cursor: pointer;
 }
 
+
+.wbtm_selected_bus_card {
+    display: flex;
+    align-items: center;
+    background: #fafffa;
+    border: 2px solid #34c759;
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 1100px;
+    margin: auto;
+    gap: 20px;
+}
+
+/* 1. Bus Image */
+.wbtm_selected_bus_image img {
+    width: 170px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* 2. Image Name */
+.wbtm_selected_bus_img_name {
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+}
+
+.wbtm_selected_bus_img_name span {
+    font-size: 14px;
+    color: gray;
+}
+
+/* 3. Info block */
+.wbtm_selected_bus_info {
+    flex: 1;
+}
+
+.wbtm_selected_bus_date {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #09a53c;
+    margin-bottom: 8px;
+}
+
+.wbtm_selected_bus_route {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wbtm_selected_bus_time {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.wbtm_selected_bus_city {
+    font-size: 14px;
+}
+
+.wbtm_selected_bus_center {
+    text-align: center;
+    color: #555;
+}
+
+.wbtm_selected_bus_icon {
+    font-size: 22px;
+}
+
+.wbtm_selected_bus_duration {
+    font-size: 14px;
+}
+
+.wbtm_selected_bus_arrow {
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.wbtm_selected_bus_seats {
+    margin-top: 10px;
+    background: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
+
+/* 4. Payment Section */
+.wbtm_selected_bus_payment {
+    text-align: center;
+    min-width: 180px;
+}
+
+.wbtm_selected_bus_label {
+    font-size: 13px;
+    color: #555;
+}
+
+.wbtm_selected_bus_price {
+    font-size: 26px;
+    font-weight: bold;
+    color: #ff6600;
+    margin: 5px 0;
+}
+
+.wbtm_selected_bus_btn {
+    background: #25c04a;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
 @media screen and (max-width: 520px) {
     .wbtm_search_result_holder{
         flex-direction: column;
