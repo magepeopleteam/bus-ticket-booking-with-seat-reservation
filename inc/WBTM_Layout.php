@@ -312,6 +312,90 @@
                 </script>
 				<?php
 			}
+
+            public static function wbtm_get_time_diff( $start_time, $end_time) {
+                $start = new DateTime($start_time);
+                $end   = new DateTime($end_time);
+                $interval = $start->diff($end);
+                $result = [];
+                if ($interval->d > 0) {
+                    $result[] = $interval->d . ' day' . ($interval->d > 1 ? 's' : '');
+                }
+                if ($interval->h > 0) {
+                    $result[] = $interval->h . ' hour' . ($interval->h > 1 ? 's' : '');
+                }
+                if ($interval->i > 0) {
+                    $result[] = $interval->i . ' minute' . ($interval->i > 1 ? 's' : '');
+                }
+                if (empty($result)) {
+                    return '0 minutes';
+                }
+
+                return implode(' ', $result);
+            }
+
+            public static function selected_bus_display( $data ){
+
+                $bus_id = $data['post_id'];
+                $bus_title = get_the_title( $bus_id );
+                $bus_image = get_the_post_thumbnail_url( $bus_id, 'medium' );
+                $bus_number = get_post_meta( $bus_id, 'wbtm_bus_no', true );
+                $start_date_format = date("d F, Y", strtotime( $data['j_date'] ) );
+                $start_time = date("h:i A", strtotime( $data['wbtm_bp_time'] ) );
+                $end_time = date("h:i A", strtotime( $data['wbtm_dp_time'] ) );
+                $time_diff = self::wbtm_get_time_diff( $data['wbtm_bp_time'], $data['wbtm_dp_time']);
+
+                ob_start();
+                ?>
+                <div class="wbtm_selected_bus_card">
+                    <div class="wbtm_selected_bus_image">
+                        <img src="<?php echo esc_url( $bus_image );?>" alt="<?php echo esc_html( $bus_title );?>" style="width: 160px; height: 140px">
+                    </div>
+
+                    <div class="wbtm_selected_bus_img_name">
+                        <?php echo esc_html( $bus_title );?> <span><?php echo esc_html( $bus_number );?></span>
+                    </div>
+
+                    <div class="wbtm_selected_bus_info">
+
+                        <div class="wbtm_selected_bus_date"><?php echo esc_attr( $start_date_format );?></div>
+
+                        <div class="wbtm_selected_bus_route">
+
+                            <div class="wbtm_selected_bus_left">
+                                <div class="wbtm_selected_bus_time"><?php echo esc_attr( $start_time )?></div>
+                                <div class="wbtm_selected_bus_city"><?php echo esc_attr( $data['wbtm_bp_place']);?></div>
+                            </div>
+
+                            <div class="wbtm_selected_bus_center">
+                                <div class="wbtm_selected_bus_icon">🚍</div>
+                                <div class="wbtm_selected_bus_duration"><?php echo esc_attr( $time_diff );?></div>
+                                <div class="wbtm_selected_bus_arrow">➜</div>
+                            </div>
+
+                            <div class="wbtm_selected_bus_right">
+                                <div class="wbtm_selected_bus_time"><?php echo esc_attr( $end_time )?></div>
+                                <div class="wbtm_selected_bus_city"><?php echo esc_attr( $data['wbtm_dp_place']);?></div>
+                            </div>
+
+                        </div>
+
+                        <div class="wbtm_selected_bus_seats">
+                            Seat: <?php echo esc_attr($data['wbtm_selected_seat']);?>
+                        </div>
+                    </div>
+
+                    <div class="wbtm_selected_bus_payment">
+                        <div class="wbtm_selected_bus_label"><?php esc_html_e( 'Total Amount to be Paid', 'bus-ticket-booking-with-seat-reservation' );?></div>
+                        <div class="wbtm_selected_bus_price"><?php echo esc_attr($data['price_val']);?></div>
+                        <button class="wbtm_selected_bus_btn"><?php esc_html_e( 'Booked', 'bus-ticket-booking-with-seat-reservation' );?></button>
+                    </div>
+
+                </div>
+                <?php
+
+                return ob_get_clean();
+            }
 		}
 		new WBTM_Layout();
 	}
