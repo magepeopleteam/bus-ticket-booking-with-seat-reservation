@@ -375,8 +375,10 @@
 							$cabin_seat_info = [];
 							if ($rows > 0 && $cols > 0) {
 								for ($j = 1; $j <= $cols; $j++) {
-									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])) : null;
-									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])) : null;
+									/*$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])) : null;
+									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])) : null;*/
+									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ?$_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j] : null;
+									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'] : null;
 									if ($col_infos === null) {
 										$col_infos = [];
 									} elseif (is_array($col_infos)) {
@@ -427,8 +429,12 @@
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
-							$col_infos = isset($_POST['wbtm_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j])) : '';
-							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j . '_rotation'])) : '';
+							/*$col_infos = isset($_POST['wbtm_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j])) : '';
+							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j . '_rotation'])) : '';*/
+
+                            $col_infos = isset($_POST['wbtm_seat' . $j]) ? $_POST['wbtm_seat' . $j] : '';
+                            $col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? $_POST['wbtm_seat' . $j . '_rotation'] : '';
+
 							if ($col_infos === null) {
 								$col_infos = [];
 							} elseif (is_array($col_infos)) {
@@ -469,8 +475,11 @@
 					$upper_deck_info = [];
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
-							$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j])) : null;
-							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j . '_rotation'])) : null;
+							/*$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j])) : null;
+							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j . '_rotation'])) : null;*/
+
+							$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ?$_POST['wbtm_dd_seat' . $j] : null;
+							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? $_POST['wbtm_dd_seat' . $j . '_rotation'] : null;
 							if ($col_infos === null) {
 								$col_infos = [];
 							} elseif (is_array($col_infos)) {
