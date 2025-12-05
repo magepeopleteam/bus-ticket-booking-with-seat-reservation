@@ -78,7 +78,6 @@
 			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
 		});
 
-		alert('clicked');
 		$("#wbtm_start_container").fadeIn();
 		$("#wbtm_return_container").fadeOut();
 		$("#wbtm_date_return_route_start").fadeOut();
