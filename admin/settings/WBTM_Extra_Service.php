@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Extra_Service')) {
 		class WBTM_Extra_Service {
 			public function __construct() {
-				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 				add_action('wbtm_extra_service_item', array($this, 'extra_service_item'));
 			}
 			public function tab_content($post_id) {
@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                         </div>
-						<?php do_action('add_wbtm_extra_service_content', $post_id); ?>
+						<?php do_action('wbtm_add_extra_service_content', $post_id); ?>
                     </div>
                 </div>
 				<?php

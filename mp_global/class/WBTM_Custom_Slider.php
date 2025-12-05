@@ -10,9 +10,9 @@
 	if ( ! class_exists( 'WBTM_Custom_Slider' ) ) {
 		class WBTM_Custom_Slider {
 			public function __construct() {
-				add_action( 'add_wbtm_custom_slider', array( $this, 'super_slider' ), 10, 2 );
-				add_action( 'add_wbtm_custom_slider_only', array( $this, 'super_slider_only' ) );
-				add_action( 'add_wbtm_custom_slider_icon_indicator', array( $this, 'icon_indicator' ) );
+				add_action( 'wbtm_add_custom_slider', array( $this, 'super_slider' ), 10, 2 );
+				add_action( 'wbtm_add_custom_slider_only', array( $this, 'super_slider_only' ) );
+				add_action( 'wbtm_add_custom_slider_icon_indicator', array( $this, 'icon_indicator' ) );
 			}
 			public function super_slider( $post_id = '', $meta_key = '' ) {
 				$type      = WBTM_Global_Function::get_slider_settings( 'slider_type', 'slider' );

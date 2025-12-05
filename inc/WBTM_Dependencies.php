@@ -13,9 +13,9 @@
 				add_action('admin_init', array($this, 'wbtm_upgrade'));
 				$this->load_file();
 				$this->appsero_init_tracker();
-				add_action('add_wbtm_global_enqueue', array($this, 'global_enqueue'), 90);
-				add_action('add_wbtm_admin_enqueue', array($this, 'admin_enqueue'), 90);
-				add_action('add_wbtm_frontend_enqueue', array($this, 'frontend_enqueue'), 90);
+				add_action('wbtm_add_global_enqueue', array($this, 'global_enqueue'), 90);
+				add_action('wbtm_add_admin_enqueue', array($this, 'admin_enqueue'), 90);
+				add_action('wbtm_add_frontend_enqueue', array($this, 'frontend_enqueue'), 90);
 				add_filter('single_template', array($this, 'load_single_template'), 10);
 				add_filter('template_include', array($this, 'load_template'));
 				add_filter('register_post_type_args', array($this, 'modify_bus_slug'), 5, 2);
@@ -67,14 +67,14 @@
 				wp_enqueue_style('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.css', array(), time());
 				wp_enqueue_script('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.js', array('jquery'), time(), true);
 				wp_enqueue_script('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.js', array('jquery'), time(), true);
-				do_action('add_wbtm_common_script');
+				do_action('wbtm_add_common_script');
 			}
 			public function admin_enqueue() {
 				// custom
 				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				wp_localize_script( 'wbtm_admin', 'wbtm_admin_var', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'wbtm_admin_nonce' ) ) );
-				do_action('add_wbtm_admin_script');
+				do_action('wbtm_add_admin_script');
 			}
 			public function appsero_init_tracker() {
 				//if (!class_exists('Appsero\Client')) {
@@ -87,10 +87,10 @@
 			public function frontend_enqueue() {
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), time());
 				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), time(), true);
-				wp_localize_script('jquery', 'my_wc_vars', array(
+				wp_localize_script('jquery', 'wbtm_wc_vars', array(
 					'checkout_url' => wc_get_checkout_url()
 				));
-				do_action('add_wbtm_frontend_script');
+				do_action('wbtm_add_frontend_script');
 			}
 			public function load_single_template($template) {
 				global $post;
