@@ -102,7 +102,6 @@
 					<?php require WBTM_Functions::template_path('layout/search_form.php'); ?>
 				</div>
 				<?php
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
 				do_action('wbtm_after_search_result_section', $params);
 				return ob_get_clean();
 			}
