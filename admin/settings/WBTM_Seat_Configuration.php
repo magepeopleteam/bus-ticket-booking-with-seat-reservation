@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Seat_Configuration')) {
 		class WBTM_Seat_Configuration {
 			public function __construct() {
-				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
 				add_action('wp_ajax_wbtm_create_seat_plan', [$this, 'wbtm_create_seat_plan']);
 				/*********************/

@@ -46,7 +46,7 @@
                             <li data-tabs-target="#wbtm_settings_pickup_point">
                                 <span class="fas fa-route"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
-							<?php do_action('add_wbtm_add_setting_menu', $post_id); ?>
+							<?php do_action('wbtm_add_add_setting_menu', $post_id); ?>
                             <li data-tabs-target="#wbtm_settings_date">
                                 <span class="fas fa-calendar-alt"></span><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
@@ -60,7 +60,7 @@
 							<?php } ?>
                         </ul>
                         <div class="tabsContent tab-content">
-							<?php do_action('add_wbtm_settings_tab_content', $post_id); ?>
+							<?php do_action('wbtm_add_settings_tab_content', $post_id); ?>
 							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                                 <div class="tabsItem" data-tabs="#mp_pp_deposits_type">
                                     <h5><?php esc_html_e('Partial Payment Settings : ', 'bus-ticket-booking-with-seat-reservation'); ?></h5>

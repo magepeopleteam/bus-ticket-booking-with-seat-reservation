@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Settings_Pickup_Point')) {
 		class WBTM_Settings_Pickup_Point {
 			public function __construct() {
-				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 			}
 			public function tab_content($post_id) {
 				//echo '<pre>'; print_r($pickup_points); echo '</pre>';

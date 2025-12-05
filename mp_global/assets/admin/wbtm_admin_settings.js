@@ -150,7 +150,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
                 .html();
         }
         wbtm_load_sortable_datepicker(parent, item);
-        parent.find(".wbtm_item_insert").find(".add_wbtm_select2").select2({});
+        parent.find(".wbtm_item_insert").find(".wbtm_add_select2").select2({});
         return true;
     });
 })(jQuery);

@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Date_Settings')) {
 		class WBTM_Date_Settings {
 			public function __construct() {
-				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 			}
 			public function tab_content($post_id) {
 				$date_format = WBTM_Global_Function::date_picker_format();

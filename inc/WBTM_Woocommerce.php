@@ -123,11 +123,7 @@
 										WC()->cart->remove_cart_item($key);
 //									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name, $seat_info['cabin_name']), 'error');
 										wc_add_notice(
-											sprintf(
-												esc_html('Seat %1$s in %2$s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation'),
-												$seat_name,
-												$seat_info['cabin_name']
-											),
+											sprintf('Seat %1$s in %2$s has already been booked by another user. Please choose another seat.',$seat_name,$seat_info['cabin_name']),
 											'error'
 										);
 									}
@@ -138,7 +134,7 @@
 									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 									if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 										WC()->cart->remove_cart_item($key);
-										wc_add_notice(sprintf(esc_html("Seat %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name), 'error');
+										wc_add_notice(sprintf("Seat %s has already been booked by another user. Please choose another seat.", $seat_name), 'error');
 									}
 								}
 							}
@@ -217,7 +213,7 @@
 						$cart_item_data['wbtm_base_price'] = $seat_price;
 						$cart_item_data['wbtm_extra_services'] = $ex_service_infos;
 						$cart_item_data['wbtm_base_ex_price'] = $ex_service_price;
-						$cart_item_data['wbtm_passenger_info'] = apply_filters('add_wbtm_user_info_data', array(), $post_id, $ticket_infos);
+						$cart_item_data['wbtm_passenger_info'] = apply_filters('wbtm_add_user_info_data', array(), $post_id, $ticket_infos);
 						$cart_item_data['wbtm_tp'] = $total_price;
 						$cart_item_data['line_total'] = $total_price;
 						$cart_item_data['line_subtotal'] = $total_price;
@@ -420,7 +416,7 @@
 										$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 											WC()->cart->empty_cart();
-											wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
+											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 										}
 									}
 								}
@@ -431,7 +427,7 @@
 								$available_seat = max(0, $total_seat - $sold_seat);
 								if ($available_seat < $seats_qty) {
 									WC()->cart->empty_cart();
-									wc_add_notice(esc_html("Sorry, Your Selected ticket Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
+									wc_add_notice(esc_html__("Sorry, Your Selected ticket Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 								}
 							}
 						}
@@ -657,7 +653,7 @@
 								$data['wbtm_user_email'] = $billing_email;
 								$data['wbtm_user_phone'] = $billing_phone;
 								$data['wbtm_user_address'] = $billing_address;
-								$booking_data = apply_filters('add_wbtm_booking_data', $data, $post_id, $count);
+								$booking_data = apply_filters('wbtm_add_booking_data', $data, $post_id, $count);
 								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 								$count++;
 							}
@@ -1131,12 +1127,12 @@
 									for ($i = 0; $i < $qty; $i++) {
 										?>
                                         <div class="_divider"></div><?php
-										do_action('add_wbtm_after_cart_ticket_info', $cart_item, $tic_key);
+										do_action('wbtm_add_after_cart_ticket_info', $cart_item, $tic_key);
 										$tic_key++;
 									}
 								} else {
 									// Fixed by Shahnur Alam: Use $tic_key instead of $key to maintain proper passenger indexing
-									do_action('add_wbtm_after_cart_ticket_info', $cart_item, $tic_key);
+									do_action('wbtm_add_after_cart_ticket_info', $cart_item, $tic_key);
 									$tic_key++; // Fixed by Shahnur Alam: Increment $tic_key for consistency
 								}
 								$ticket_count++;

@@ -42,7 +42,7 @@ if (!defined('ABSPATH')) {
                     <script>
                         // Ensure a drop-off point is selected when required
                         document.querySelector('form').addEventListener('submit', function (e) {
-                            var dropOffRequired = <?php echo json_encode($drop_off_required); ?>;
+                            var dropOffRequired = <?php echo wp_json_encode($drop_off_required); ?>;
                             var dropOffPoint = document.getElementById('wbtm_drop_off_point').value;
                             if (dropOffRequired === 'yes' && dropOffPoint.trim() === '') {
                                 e.preventDefault();

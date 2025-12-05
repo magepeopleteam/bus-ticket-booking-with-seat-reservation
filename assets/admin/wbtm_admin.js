@@ -4,50 +4,47 @@
     function wbtm_reload_pricing(parent) {
         let post_id = $('[name="wbtm_post_id"]').val();
         let target = parent.find(".wbtm_price_setting_area");
-        let route_infos = {};
+        let places = {};
+        let types = {};
         let count = 0;
-        parent
-            .find(".wbtm_stop_item")
-            .each(function () {
-                let infos = {};
-                let place = $(this).find('[name="wbtm_route_place[]"]').val();
-                let time = $(this).find('[name="wbtm_route_time[]"]').val();
-                let type = $(this).find('[name="wbtm_route_type[]"]').val();
-                if (place && time && type) {
-                    infos["place"] = place;
-                    infos["type"] = count < 1 ? "bp" : type;
-                    route_infos[count] = infos;
-                    count++;
-                }
-            })
-            .promise()
-            .done(function () {
-                if (count > 1) {
-                    route_infos[count - 1]["type"] = "dp";
-                    $.ajax({
-                        type: "POST",
-                        url: wbtm_admin_var.url,
-                        data: {
-                            action: "wbtm_reload_pricing",
-                            post_id: post_id,
-                            route_infos: route_infos,
-                            nonce: wbtm_admin_var.nonce
-                        },
-                        beforeSend: function () {
-                            wbtm_loader(target);
-                        },
-                        success: function (data) {
-                            target.html(data);
-                            wbtm_loaderRemove(parent);
-                        },
-                        error: function (response) {
-                            console.log(response);
-                        },
-                    });
-                } else {
-                    target.html("");
-                }
-            });
+        parent.find(".wbtm_stop_item").each(function () {
+            let infos = {};
+            let place = $(this).find('[name="wbtm_route_place[]"]').val();
+            let time = $(this).find('[name="wbtm_route_time[]"]').val();
+            let type = $(this).find('[name="wbtm_route_type[]"]').val();
+            if (place && time && type) {
+                places[count] = place;
+                types[count] = count < 1 ? "bp" : type;
+                count++;
+            }
+        }).promise().done(function () {
+            if (count > 1) {
+                types[count - 1]= "dp";
+                $.ajax({
+                    type: "POST",
+                    url: wbtm_admin_var.url,
+                    data: {
+                        action: "wbtm_reload_pricing",
+                        post_id: post_id,
+                        places: places,
+                        types: types,
+                        nonce: wbtm_admin_var.nonce
+                    },
+                    beforeSend: function () {
+                        wbtm_loader(target);
+                    },
+                    success: function (data) {
+                        target.html(data);
+                        wbtm_loaderRemove(parent);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
+            } else {
+                target.html("");
+            }
+        });
     }
     $(document).on(
         "click",

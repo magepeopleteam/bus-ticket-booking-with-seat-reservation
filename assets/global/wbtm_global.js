@@ -701,10 +701,10 @@
 						$("#wbtm_start_container").fadeOut();
 						$("#wbtm_return_container").fadeIn();
 					}else{
-						window.location.href = my_wc_vars.checkout_url;
+						window.location.href = wbtm_wc_vars.checkout_url;
 					}
 				}else{
-					window.location.href = my_wc_vars.checkout_url;
+					window.location.href = wbtm_wc_vars.checkout_url;
 				}
 			}
 		});

@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Pricing_Routing')) {
 		class WBTM_Pricing_Routing {
 			public function __construct() {
-				add_action('add_wbtm_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
 				add_action('wp_ajax_wbtm_reload_pricing', [$this, 'wbtm_reload_pricing']);
 			}
@@ -271,9 +271,15 @@
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
 				}
 				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
-				$raw_route_infos = filter_input(INPUT_POST, 'route_infos', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-				$route_infos = is_array($raw_route_infos) ? wp_unslash($raw_route_infos) : [];
-				array_walk_recursive($route_infos, function (&$v) { $v = sanitize_text_field($v); });
+				$places = isset($_POST['places']) ? array_map('sanitize_text_field', wp_unslash($_POST['places'])) : [];
+				$types = isset($_POST['types']) ? array_map('sanitize_text_field', wp_unslash($_POST['types'])) : [];
+				$route_infos = [];
+                if(sizeof($places)>0){
+                    foreach ($places as $key=>$place){
+	                    $route_infos[$key]['place'] = $place;
+	                    $route_infos[$key]['type'] = $types[$key];
+                    }
+                }
 				$this->route_pricing($post_id, $route_infos);
 				die();
 			}

@@ -45,7 +45,7 @@ if (!defined('ABSPATH')) {
                     <script>
                         // Ensure a pickup point is selected when required
                         document.querySelector('form').addEventListener('submit', function (e) {
-                            var pickupRequired = <?php echo json_encode($pickup_required); ?>;
+                            var pickupRequired = <?php echo wp_json_encode($pickup_required); ?>;
                             var pickupPoint = document.getElementById('wbtm_pickup_point').value;
                             if (pickupRequired === 'yes' && pickupPoint.trim() === '') {
                                 e.preventDefault();
