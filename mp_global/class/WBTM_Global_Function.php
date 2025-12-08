@@ -54,16 +54,10 @@
 			}
 			//***********************************//
 			public static function get_submit_info($key, $default = '') {
-				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					return isset($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : $default;
-				}
-				return false;
+				return isset($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : $default;
 			}
 			public static function get_submit_info_get_method($key, $default = '') {
-				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					return isset($_GET[$key]) ? sanitize_text_field(wp_unslash($_GET[$key])) : $default;
-				}
-				return false;
+				return isset($_GET[$key]) ? sanitize_text_field(wp_unslash($_GET[$key])) : $default;
 			}
 			public static function data_sanitize($data) {
 				$data = maybe_unserialize($data);
@@ -413,10 +407,9 @@
 			//***********************************//
 			public static function all_tax_list(): array {
 				$classes = array();
-
-				foreach ( WC_Tax::get_tax_classes() as $name ) {
-					$slug = sanitize_title( $name );
-					$classes[ $slug ] = $name;
+				foreach (WC_Tax::get_tax_classes() as $name) {
+					$slug = sanitize_title($name);
+					$classes[$slug] = $name;
 				}
 				return $classes;
 			}
