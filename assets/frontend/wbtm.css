@@ -112,6 +112,7 @@
   margin: 0 10px 5px 0;
 }
 .wtbm_inputList {
+  width: 50%;
   margin: 0 5px 0 0;
 }
 .wbtm_style .wbtm_search_area .inputList:last-child {
@@ -1351,6 +1352,21 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   opacity: 0.6;
 }
 
+.wbtm_input_fields_holder{
+  display: flex;
+  width: calc( 100% - 140px );
+}
+
+.wtbm_bus_search_button_holder{
+  display: flex;
+  width: 140px;
+  justify-content: center;
+}
+.wbtm_input_start_end_location,
+.wbtm_input_start_end_date{
+  display: flex;
+  width: 50%;
+}
 
 /* Responsive adjustments for cabin layouts */
 @media only screen and (max-width: 768px) {
@@ -1380,6 +1396,22 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
   .wbtm_cabin_seat_plan table {
     border-spacing: 6px;
+  }
+
+  .wbtm_input_fields_holder,
+  .wbtm_search_input_fields_holder{
+    flex-direction: column;
+  }
+
+  .wbtm_input_fields_holder,
+  .wbtm_input_start_end_location,
+  .wbtm_input_start_end_date,
+  .wtbm_bus_search_button_holder{
+    width: 100%;
+  }
+
+  .wtbm_bus_search_button_holder{
+    justify-content: end;
   }
 }
 
