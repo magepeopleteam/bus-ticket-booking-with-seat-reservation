@@ -72,7 +72,7 @@
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
-		$('body').find('#wbtm_selected_bus_notification').slideUp('fast');
+		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
 			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
@@ -706,7 +706,7 @@
 				this_btn.text( 'Book Now' );
 				if( burPosition === 'start_bus' ){
 					if( numberOfBuses > 0 ){
-						$('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
+						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
 						$("#wbtm_start_container").fadeOut();
 						$("#wbtm_return_container").fadeIn();
 

@@ -187,7 +187,7 @@
 							<?php esc_attr_e('Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </div>
                         <div class="wbtm_seleced_start_bus" id="wbtm_seleced_start_bus"></div>
-                        <h4 class="lists-title"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
+                        <h4 class="lists-title" style="display: none"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
                         <div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
 							<?php self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); ?>
                         </div>
@@ -331,15 +331,6 @@
                 $end_loc = strtoupper(substr($end, 0, 3));
                 if ($date) {
                     ?>
-                    <!--<div>
-                    <?php /*echo esc_html($start); */?>
-                    <span class="fas fa-long-arrow-alt-right _mLR_xs"></span>
-                    <?php /*echo esc_html($end); */?>
-                </div>
-                <div>
-                    <?php /*echo esc_attr( WBTM_Global_Function::date_format($date) ); */?>
-                </div>-->
-
                     <div class="wbtm_search_route_container">
                         <div class="wbtm_search_route_return_date">
                             <div class="wbtm_search_route_label"><?php echo esc_html( $start_end );?></div>
