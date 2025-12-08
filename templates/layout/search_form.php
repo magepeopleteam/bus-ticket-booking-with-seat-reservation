@@ -11,8 +11,8 @@
 	$post_id = $post_id ?? 0;
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$params = $params ?? [];
-	wbtm_load_search_form($post_id, $params);
-	function wbtm_load_search_form($post_id, $params) {
+//	wbtm_load_search_form($post_id, $params);
+//	function wbtm_load_search_form($post_id, $params) {
 
 		$style = array_key_exists('style', $params) ? $params['style'] : '';
 		$form_style = array_key_exists('style', $params) ? $params['style'] : '';
@@ -144,4 +144,4 @@
         </div>
 		<?php
 //do_action('wbtm_after_search_list');
-	}
+//	}
