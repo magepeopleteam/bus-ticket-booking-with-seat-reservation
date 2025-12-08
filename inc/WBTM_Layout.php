@@ -163,15 +163,15 @@
                         <div class="wbtm-date-suggetion">
 							<?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date); ?>
                         </div>
-                        <div class="wbtm-date-route">
-							<?php self::route_title($start_route, $end_route, $j_date, $r_date); ?>
+                        <div class="wbtm-date-route_title">
+							<?php self::route_title('Departure', $start_route, $end_route, $j_date, $r_date); ?>
                         </div>
                         <div class="wbtm-bus-lists" id="start_bus">
 							<?php do_action('wbtm_search_result', $start_route, $end_route, $j_date, $post_id, $style, $btn_show, $search_info, 'start_journey', $left_filter_show); ?>
                         </div>
                     </div>
-                    <div class="wbtm-date-return-route" id="wbtm_date_return_route_start">
-						<?php esc_html_e('Return', 'bus-ticket-booking-with-seat-reservation'); ?><?php self::route_title($start_route, $end_route, $j_date, $r_date, true); ?>
+                    <div class="wbtm-date-return-route-title" id="wbtm_date_return_route_start">
+						<?php self::route_title('Return', $start_route, $end_route, $j_date, $r_date, true); ?>
                     </div>
 				<?php }
 				if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
@@ -188,8 +188,8 @@
                         </div>
                         <div class="wbtm_seleced_start_bus" id="wbtm_seleced_start_bus"></div>
                         <h4 class="lists-title"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
-                        <div class="wbtm-date-route" id="wbtm_date_return_route_return" style="display: none">
-							<?php self::route_title($start_route, $end_route, $j_date, $r_date, true); ?>
+                        <div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
+							<?php self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); ?>
                         </div>
                         <div class="wbtm-bus-lists" id="return_bus">
 							<?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, '', $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
@@ -304,7 +304,7 @@
 					WBTM_Layout::msg(WBTM_Translations::text_bus_close_msg());
 				}
 			}
-			public static function route_title($start_route, $end_route, $j_date, $r_date, $return = false) {
+			public static function route_title_old($start_route, $end_route, $j_date, $r_date, $return = false) {
 				$start = $return ? $end_route : $start_route;
 				$end = $return ? $start_route : $end_route;
 				$date = $return ? $r_date : $j_date;
@@ -321,6 +321,53 @@
 					<?php
 				}
 			}
+            public static function route_title($start_end,$start_route,$end_route,$j_date,$r_date,$return = false) {
+                $start = $return ? $end_route : $start_route;
+                $end = $return ? $start_route : $end_route;
+                $date = $return ? $r_date : $j_date;
+
+                $day = date("l", strtotime($j_date));
+                $start_loc = strtoupper(substr($start, 0, 3));
+                $end_loc = strtoupper(substr($end, 0, 3));
+                if ($date) {
+                    ?>
+                    <!--<div>
+                    <?php /*echo esc_html($start); */?>
+                    <span class="fas fa-long-arrow-alt-right _mLR_xs"></span>
+                    <?php /*echo esc_html($end); */?>
+                </div>
+                <div>
+                    <?php /*echo esc_attr( WBTM_Global_Function::date_format($date) ); */?>
+                </div>-->
+
+                    <div class="wbtm_search_route_container">
+                        <div class="wbtm_search_route_return_date">
+                            <div class="wbtm_search_route_label"><?php echo esc_html( $start_end );?></div>
+                            <div class="wbtm_search_route_date"><?php echo esc_attr( WBTM_Global_Function::date_format($date) ); ?></div>
+                            <div class="wbtm_search_route_day"><?php echo esc_attr( $day );?></div>
+                        </div>
+                        <div class="wbtm_search_route_cities_wrapper">
+                            <div class="wbtm_search_route_city_section">
+                                <div class="wbtm_search_route_city"><?php echo esc_attr( $start );?></div>
+                                <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $start_loc );?></div>
+                            </div>
+                            <div class="wbtm_search_route_icon_wrapper">
+                                <span class="wbtm_search_route_bus_icon">🚌</span>
+                            </div>
+                            <div class="wbtm_search_route_city_section wbtm_search_route_city_section_right">
+                                <div class="wbtm_search_route_city"><?php echo esc_attr( $end );?></div>
+                                <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $end_loc );?></div>
+                            </div>
+                            <div class="wbtm_search_route_dropdown_icon">
+                                <span class="wbtm_search_route_arrow_icon">⌄</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                }
+            }
+
 			public static function journey_date_picker($post_id = '', $start_route = '', $end_route = '', $date = '') {
 				$date_format = WBTM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
