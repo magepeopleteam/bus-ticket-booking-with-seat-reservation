@@ -85,27 +85,28 @@
                     <div class="wbtm_search_input_fields_holder">
                         <div class="wbtm_input_fields_holder">
                             <div class="wbtm_input_start_end_location">
-                                <div class="wbtm_search_location_toggle" id="wbtm_search_location_toggle" title="Swap locations" style="display: none">
-                                    <i class="fas fa-exchange-alt"></i>
-                                </div>
+                                
                                 <div class="wtbm_inputList wbtm_input_select wbtm_start_point">
-                                    <div class="wtbm_fdColumn">
+                                    <label class="wtbm_fdColumn">
                                         <?php echo esc_html( WBTM_Translations::text_from() ); ?>
                                         <div class="marker">
                                             <i class="fas fa-map-marker-alt"></i>
                                             <input type="text" class="formControl" name="bus_start_route" id="bus_start_route" value="<?php echo esc_attr( $start_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
                                         </div>
-                                    </div>
+                                    </label>
                                     <?php WBTM_Layout::route_list( $post_id ); ?>
                                 </div>
+                                <div class="wbtm_search_location_toggle" id="wbtm_search_location_toggle" title="Swap locations">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
                                 <div class="wtbm_inputList wbtm_input_select wbtm_dropping_point" data-alert="<?php echo esc_html( WBTM_Translations::text_select_wrong_route() ); ?>">
-                                    <div class="wtbm_fdColumn ">
+                                    <label class="wtbm_fdColumn ">
                                         <?php echo esc_html( WBTM_Translations::text_to() ); ?>
                                         <div class="marker">
                                             <i class="fas fa-map-marker-alt wtbm_icon_margin"></i>
                                             <input type="text" class="formControl" name="bus_end_route" value="<?php echo esc_attr( $end_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
                                         </div>
-                                    </div>
+                                    </label>
                                     <?php WBTM_Layout::route_list( $post_id ); ?>
                                 </div>
                             </div>

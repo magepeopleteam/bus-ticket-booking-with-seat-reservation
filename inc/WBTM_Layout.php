@@ -359,7 +359,9 @@
                                 <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $start_loc );?></div>
                             </div>
                             <div class="wbtm_search_route_icon_wrapper">
-                                <span class="wbtm_search_route_bus_icon">🚌</span>
+                                <span class="wbtm_search_route_bus_icon">
+									<img src="<?php echo WBTM_PLUGIN_URL ?>/assets/images/bus.svg" alt="">
+								</span>
                             </div>
                             <div class="wbtm_search_route_city_section wbtm_search_route_city_section_right">
                                 <div class="wbtm_search_route_city"><?php echo esc_attr( $end );?></div>
@@ -381,7 +383,7 @@
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
-                <label class="fdColumn">
+                <label class="wtbm_fdColumn">
 					<?php echo esc_attr(WBTM_Translations::text_journey_date()); ?>
                     <div class="calendar">
                         <i class="fas fa-calendar-alt"></i>
@@ -401,7 +403,7 @@
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
-                <label class="fdColumn">
+                <label class="wtbm_fdColumn">
 					<?php echo esc_html(WBTM_Translations::text_return_date()); ?>
                     <div class="calendar">
                         <i class="fas fa-calendar-alt"></i>

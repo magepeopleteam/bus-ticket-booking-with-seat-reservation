@@ -1,19 +1,14 @@
 
 .wbtm-date-route_title{
-    background-color: white;
-    padding: 15px 1px;
-    border-radius: 12px 12px 0 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-weight: 600;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    border-bottom: 2px solid var(--wbtm_color_theme);
+    /* border-bottom: 2px solid var(--wbtm_color_theme); */
 }
 .wbtm-date-return-route-title {
-    background-color: white;
-    padding: 15px 1px;
-    border-radius: 5px 5px 5px 5px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -27,7 +22,7 @@
     align-items: center;
     background-color: #e8f0fe; /* Light blue background */
     border-radius: 4px; /* Optional: adds slight rounding */
-    padding: 10px 0;
+
     width: 100%;
     font-family: Arial, sans-serif;
     border: 1px solid #c5dafd;
@@ -35,11 +30,12 @@
 
 .wbtm_search_route_return_date {
     background-color: #dae7ff;
-    padding: 10px 15px;
+    padding:10px;
     text-align: left;
     height: 100%;
     min-width: 120px;
 }
+
 
 .wbtm_selected_bus_payment{
     display: flex;
@@ -57,9 +53,9 @@
 }
 
 .wbtm_search_route_label {
-    color: #4285f4;
-    font-size: 14px;
-    font-weight: 500;
+    color: var(--wbtm_color_theme);
+    font-size: 24px;
+    font-weight: 700;
     margin-bottom: 3px;
 }
 
@@ -78,18 +74,25 @@
     display: flex;
     flex-grow: 1;
     align-items: center;
-    padding: 0 10px;
+    padding:10px;
 }
 
 .wbtm_search_route_city_section {
-    padding: 0 15px;
-    flex-basis: 35%;
+    padding:10px;
+    width: 33%;
+}
+.wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon img{
+    width: 80px;
+    height: auto;
+}
+.wbtm_search_route_icon_wrapper {
+    width: 30%;
 }
 
 .wbtm_search_route_city_section_right {
     border-left: 1px solid #c5dafd;
-    padding-left: 25px;
-    flex-basis: 30%;
+    padding:10px;
+    width: 30%;
 }
 
 .wbtm_search_route_city {
@@ -104,27 +107,14 @@
     color: #5f6368;
 }
 
-.wbtm_search_route_icon_wrapper {
-    flex-grow: 1;
-    text-align: center;
-    font-size: 24px;
-    color: #4285f4;
-    /*transform: rotate(90deg);*/
-    margin: 0 10px;
-}
 
 .wbtm_search_route_dropdown_icon {
     font-size: 30px;
     color: #4285f4;
     cursor: pointer;
-    padding: 0 15px 0 5px;
     line-height: 1;
-    margin-top: -8px;
 }
-.wbtm_search_route_icon_wrapper {
-    flex-grow: 1;
-    text-align: center;
-    font-size: 28px;
-    color: #4285f4;
-    margin: 0 10px;
+
+.wbtm_return_bus_lists_holder  .wbtm_search_route_cities_wrapper .wbtm_search_route_icon_wrapper img{
+   transform: scaleX(-1);
 }
