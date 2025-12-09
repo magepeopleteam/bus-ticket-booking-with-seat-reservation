@@ -102,7 +102,7 @@
                                     <div class="wtbm_fdColumn ">
                                         <?php echo esc_html( WBTM_Translations::text_to() ); ?>
                                         <div class="marker">
-                                            <i class="fas fa-map-marker-alt"></i>
+                                            <i class="fas fa-map-marker-alt wtbm_icon_margin"></i>
                                             <input type="text" class="formControl" name="bus_end_route" value="<?php echo esc_attr( $end_route ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off" required/>
                                         </div>
                                     </div>
