@@ -194,7 +194,7 @@
                         </div>
 
                         <h4 class="lists-title" style="display: none"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
-                         <div class="wbtm_return_bus_lists_holder" >
+                         <div class="wbtm_return_bus_lists_container" >
                             <!--<div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
                                 <?php /*self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); */?>
                             </div>-->
@@ -368,7 +368,9 @@
                                 <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $end_loc );?></div>
                             </div>
                             <div class="wbtm_search_route_dropdown_icon">
-                                <span class=" <?php echo esc_attr( $show_hide_class );?> wbtm_search_route_arrow_icon">⌄</span>
+                                <span class=" <?php echo esc_attr( $show_hide_class );?> wbtm_search_route_arrow_icon">
+									<i class="fas fa-chevron-down"></i>
+								</span>
                             </div>
                         </div>
                     </div>

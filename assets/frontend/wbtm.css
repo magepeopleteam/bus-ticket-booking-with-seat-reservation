@@ -132,8 +132,8 @@
   padding-left: 30px;
   font-size: 16px;
 }
-.wbtm_style .wbtm_search_result .wbtm-date-suggetion {
-  margin-bottom: 20px;
+.wbtm_search_result .wbtm-date-suggetion {
+  margin: 10px 0;
 }
 .wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date {
   margin-right: 5px;
@@ -1371,6 +1371,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_input_start_end_date{
   display: flex;
   width: 50%;
+  position: relative;
 }
 
 /* Responsive adjustments for cabin layouts */
