@@ -41,6 +41,21 @@
     min-width: 120px;
 }
 
+.wbtm_selected_bus_payment{
+    display: flex;
+    flex-direction: column;
+}
+
+.wbtm_seleced_start_bus{
+    margin: 15px 0;
+}
+
+.wtbm_icon_margin{
+    margin: unset !important;
+    margin-left: 5px !important;
+
+}
+
 .wbtm_search_route_label {
     color: #4285f4;
     font-size: 14px;

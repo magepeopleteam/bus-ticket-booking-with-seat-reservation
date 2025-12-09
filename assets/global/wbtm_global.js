@@ -72,7 +72,7 @@
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
-		$('body').find('#wbtm_selected_bus_notification').slideUp('fast');
+		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
 			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
@@ -80,7 +80,7 @@
 
 		$("#wbtm_start_container").fadeIn();
 		$("#wbtm_return_container").fadeOut();
-		$("#wbtm_date_return_route_start").fadeOut();
+		// $("#wbtm_date_return_route_start").fadeOut();
 		$("#wbtm_date_return_route_return").fadeIn();
 
 	});
@@ -668,13 +668,29 @@
 	});
 
 
+	$(document).on( 'click', '.wbtm_return_icon', function(e){
+
+		let parent = $(this).closest('.wbtm_return_bus_lists_holder');
+		let listHolder = parent.find('#wbtm_return_container');
+		listHolder.toggle(200);
+
+	});
+	$(document).on( 'click', '.wbtm_departure_icon', function(e){
+
+		let parent = $(this).closest('.wbtm_departure_bus_lists_holder');
+		let listHolder = parent.find('#start_bus');
+		listHolder.toggle(200);
+
+	});
+
 	$(document).on( 'click', '#wbtm_add_to_cart', function(e){
 		e.preventDefault();
 
 		let this_btn = $(this);
 		let form = this_btn.closest('form');
 
-		let priceVal = $(".wbtm_total").text();
+		// let priceVal = $(this).closest.find(".wbtm_total").text();
+		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
 
 		let formData = form.serialize();
 		formData += '&action=wbtm_ajax_add_to_cart';
@@ -706,11 +722,11 @@
 				this_btn.text( 'Book Now' );
 				if( burPosition === 'start_bus' ){
 					if( numberOfBuses > 0 ){
-						$('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
-						$("#wbtm_start_container").fadeOut();
+						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
+						$("#start_bus").fadeOut();
 						$("#wbtm_return_container").fadeIn();
 
-						$("#wbtm_date_return_route_start").fadeOut();
+						// $("#wbtm_date_return_route_start").fadeOut();
 						$("#wbtm_date_return_route_return").fadeIn();
 					}else{
 						window.location.href = wbtm_wc_vars.checkout_url;
