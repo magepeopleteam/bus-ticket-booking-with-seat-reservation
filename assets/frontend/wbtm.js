@@ -25,17 +25,5 @@ jQuery(document).ready(function ($) {
         toggleBtn.toggleClass('rotate');
     });
 
-    let searchParent = $('#wbtm_area');
-
-    if( searchParent.find('#bus_start_route').length ) {
-        let width = parseInt(searchParent.find('#bus_start_route').outerWidth());
-        let marginLeft = width + 2 ;
-        $("#wbtm_search_location_toggle").css({
-            "display":  'flex',
-            "margin-left":  marginLeft,
-        });
-    }
-
-
 
 });

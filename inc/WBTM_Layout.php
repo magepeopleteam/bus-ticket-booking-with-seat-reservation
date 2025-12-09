@@ -381,7 +381,7 @@
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
-                <label class="fdColumn">
+                <label class="wtbm_fdColumn">
 					<?php echo esc_attr(WBTM_Translations::text_journey_date()); ?>
                     <div class="calendar">
                         <i class="fas fa-calendar-alt"></i>
@@ -401,7 +401,7 @@
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
-                <label class="fdColumn">
+                <label class="wtbm_fdColumn">
 					<?php echo esc_html(WBTM_Translations::text_return_date()); ?>
                     <div class="calendar">
                         <i class="fas fa-calendar-alt"></i>
