@@ -304,7 +304,7 @@
 					'id'       => $args['section'] . '[' . $args['id'] . ']',
 					'echo'     => 0
 				);
-				echo wp_kses_post( wp_dropdown_pages( $dropdown_args ) );
+				echo wp_dropdown_pages( $dropdown_args ) ;
 			}
 			function sanitize_options( $options ) {
 				if ( ! $options ) {
