@@ -359,7 +359,9 @@
                                 <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $start_loc );?></div>
                             </div>
                             <div class="wbtm_search_route_icon_wrapper">
-                                <span class="wbtm_search_route_bus_icon">🚌</span>
+                                <span class="wbtm_search_route_bus_icon">
+									<img src="<?php echo WBTM_PLUGIN_URL ?>/assets/images/bus.svg" alt="">
+								</span>
                             </div>
                             <div class="wbtm_search_route_city_section wbtm_search_route_city_section_right">
                                 <div class="wbtm_search_route_city"><?php echo esc_attr( $end );?></div>
