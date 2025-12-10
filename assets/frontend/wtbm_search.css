@@ -103,7 +103,20 @@
     padding:10px;
     width: 30%;
 }
-
+@media only screen and (max-width: 768px) {
+  .wbtm_search_route_icon_wrapper{
+    display: none;
+  }
+  .wbtm_search_route_city_section{
+    width: 45%;
+  }
+  .wbtm_search_route_city_section_right{
+    width: 45%;
+  }
+  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
+    height: 200px;
+  }
+}
 .wbtm_search_route_city {
     font-size: 18px;
     font-weight: 700;

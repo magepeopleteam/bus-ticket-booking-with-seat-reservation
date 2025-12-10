@@ -122,7 +122,7 @@
                             </div>
                         </div>
                         <div class="wtbm_bus_search_button_holder" style="display: flex">
-                            <div class="_dFlex_fdColumn_justifyBetween_fullHeight">
+                            <div class="_dFlex_fdColumn_justifyBetween_fullHeight search_button_holder">
                                 <span>&nbsp;</span>
                                 <?php if ( $active_redirect_page == 'on' && $search_page_redirect ) {
                                     $redirect_btn_display = 'block';
