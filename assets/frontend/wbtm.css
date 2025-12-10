@@ -155,8 +155,9 @@
   border: 1px solid var(--wbtm_color_theme);
 }
 .wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date.active {
-  background-color: var(--wbtm_color_theme);
-  color: #fff;
+    background-color: #f0f6ff;
+    color: #4285f4;
+    border: 1px solid #4285f4;
 }
 .wbtm_style .wbtm_search_result .wbtm-date-route {
   background-color: white;
