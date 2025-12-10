@@ -1410,7 +1410,12 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 }
 
 @media only screen and (max-width: 768px) {
-  
+  .wbtm_selected_seat_details table tr th{
+    font-size: 14px;
+  }
+  table.wbtm_totals tbody tr h5{
+    font-size: 14px;
+  }
   .wbtm_cabin_toggle {
     flex-direction: column;
     align-items: flex-start;
