@@ -92,6 +92,7 @@
 .wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon img{
     width: 80px;
     height: auto;
+    filter: brightness(0) saturate(100%) invert(29%) sepia(94%) saturate(2497%) hue-rotate(190deg) brightness(95%) contrast(96%);
 }
 .wbtm_search_route_icon_wrapper {
     width: 30%;
@@ -118,7 +119,7 @@
 
 .wbtm_search_route_dropdown_icon {
     font-size: 30px;
-    color: #4285f4;
+    color: #b1bed3;
     cursor: pointer;
     line-height: 1;
 }
