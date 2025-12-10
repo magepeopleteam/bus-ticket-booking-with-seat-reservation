@@ -124,15 +124,21 @@
                         <div class="wtbm_bus_search_button_holder" style="display: flex">
                             <div class="_dFlex_fdColumn_justifyBetween_fullHeight">
                                 <span>&nbsp;</span>
-                                <?php if ( $active_redirect_page == 'on' && $search_page_redirect ) { ?>
-                                    <button type="submit" class="_themeButton_radius wbtm_bus_submit">
+                                <?php if ( $active_redirect_page == 'on' && $search_page_redirect ) {
+                                    $redirect_btn_display = 'block';
+                                    $ajax_btn_display = 'none';
+                                }else{
+                                    $redirect_btn_display = 'none';
+                                    $ajax_btn_display = 'block';
+                                }?>
+                                    <button type="submit" class="_themeButton_radius wbtm_bus_submit" style="display: <?php echo esc_attr( $redirect_btn_display );?>">
                                         <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
-                                <?php } else { ?>
-                                    <button type="button" class="_themeButton_radius get_wbtm_bus_list">
+<!--                                --><?php //} else { ?>
+                                    <button type="button" class="_themeButton_radius get_wbtm_bus_list" style=" display: <?php echo esc_attr( $ajax_btn_display ); ?>">
                                         <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
-                                <?php } ?>
+<!--                                --><?php //} ?>
                             </div>
                         </div>
                     </div>

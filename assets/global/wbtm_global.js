@@ -75,8 +75,11 @@
 		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
-			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
+			parent.find('.get_wbtm_bus_list').trigger('click');
 		});
+
+        let bus_search_type = $(this).closest('.wbtm-bus-lists').attr('id');
+        // alert( bus_search_type );
 
 		$("#wbtm_start_container").fadeIn();
 		$("#wbtm_return_container").fadeOut();
