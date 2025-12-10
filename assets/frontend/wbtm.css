@@ -539,7 +539,7 @@ div[class*=wbtm_loader] {
   background: rgba(0, 0, 0, 0.2);
   color: var(--wbtm_color_theme);
 }
-
+div[class*=wbtm_loader] span{width:initial !important;margin: 0 !important;}
 div[class*=wbtm_loader].border_spin_loader span {
   border-top: 5px solid var(--wbtm_color_theme_alter);
   border-right: 5px solid var(--wbtm_color_theme);
