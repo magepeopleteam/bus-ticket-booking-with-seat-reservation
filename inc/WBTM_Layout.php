@@ -359,8 +359,13 @@
                                 <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $start_loc );?></div>
                             </div>
                             <div class="wbtm_search_route_icon_wrapper">
+								<?php
+									$default_icon = WBTM_PLUGIN_URL."/assets/images/bus.svg";
+									$redirect_icon = WBTM_Global_Function::get_settings('wbtm_general_settings', 'bus_search_list_direction_icon', '');
+									$icon =  $redirect_icon!='' ? wp_get_attachment_url($redirect_icon) : $default_icon;
+								?>
                                 <span class="wbtm_search_route_bus_icon">
-									<img src="<?php echo WBTM_PLUGIN_URL ?>/assets/images/bus.svg" alt="">
+									<img src="<?php echo esc_attr($icon); ?>" alt="">
 								</span>
                             </div>
                             <div class="wbtm_search_route_city_section wbtm_search_route_city_section_right">
