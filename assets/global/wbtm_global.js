@@ -92,7 +92,7 @@
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
-		wbtm_loader_xs(target);
+		wbtm_loader_xs(target.find('.marker'));
 		let exit_route = 0;
 		parent.find('.wbtm_start_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
@@ -165,7 +165,7 @@
 				"nonce": wbtm_nonce,
 			},
 			beforeSend: function () {
-				wbtm_loader_xs(target);
+				wbtm_loader_xs(target.find('.calendar'));
 			},
 			success: function (data) {
 				target.html(data);
@@ -197,7 +197,7 @@
 					"nonce": wbtm_nonce,
 				},
 				beforeSend: function () {
-					wbtm_loader_xs(target);
+					wbtm_loader_xs(target.find('.calendar'));
 				},
 				success: function (data) {
 					target.html(data);
