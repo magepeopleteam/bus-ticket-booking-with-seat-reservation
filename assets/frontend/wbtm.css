@@ -111,6 +111,9 @@
 .wbtm_style .wbtm_search_area .inputList {
   margin: 0 10px 5px 0;
 }
+.wbtm_search_input_fields_holder .marker,.wbtm_search_input_fields_holder .calendar{
+  margin-top:5px;  
+}
 .wtbm_inputList {
   width: 50%;
   margin: 0 5px 0 0;
