@@ -692,7 +692,20 @@
 		let this_btn = $(this);
 		let form = this_btn.closest('form');
 
-		// let priceVal = $(this).closest.find(".wbtm_total").text();
+		let isValid = true;
+		form.find('input[required], select[required], textarea[required]').each(function(){
+			if( $(this).val().trim() === '' ){
+				$(this).addClass('wbtm_input_error');
+				isValid = false;
+			} else {
+				$(this).removeClass('wbtm_input_error');
+			}
+		});
+		if(!isValid){
+			alert('Please fill all required fields ❗');
+			return;
+		}
+
 		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
 
 		let formData = form.serialize();
