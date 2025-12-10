@@ -313,8 +313,8 @@
 					if ($start_route && $end_route && $j_date) {
 						$key = array_search($active_date, $all_dates);
 						$start_key = $key > 2 ? $key - 2 : 0;
-						$start_key = $total_date - 3 <= $key ? max(0, $total_date - 5) : $start_key;
-						$all_dates = array_slice($all_dates, $start_key, 5);
+						$start_key = $total_date - 3 <= $key ? max(0, $total_date - 6) : $start_key;
+						$all_dates = array_slice($all_dates, $start_key, 6);
 						?>
                         <div class="_xs_equalChild ">
 							<?php foreach ($all_dates as $date) { ?>
