@@ -146,7 +146,7 @@
                 </form>
             </div>
             <div class="_ovHidden wbtm_search_result">
-				<?php WBTM_Layout::wbtm_bus_list($post_id, $start_route, $end_route, $start_time, $end_time, $style, $btn_show, $search_info); ?>
+				<?php WBTM_Layout::wbtm_bus_list($post_id, $start_route, $end_route, $start_time, $end_time, $style, $btn_show, $search_info ); ?>
             </div>
         </div>
 		<?php
