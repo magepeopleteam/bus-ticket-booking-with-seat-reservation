@@ -136,11 +136,11 @@
   font-size: 16px;
 }
 .wbtm_search_result .wbtm-date-suggetion {
-  margin: 10px 0;
+  margin: 10px;
 }
 .wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date {
   margin-right: 5px;
-  padding: 12px;
+  padding: 10px;
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
@@ -148,7 +148,7 @@
   background-color: #fff;
   color: var(--wbtm_d_color);
   font-weight: normal;
-  font-size: 16px;
+  font-size: 14px;
 }
 .wbtm_style .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:last-child {
   margin-right: 0;
