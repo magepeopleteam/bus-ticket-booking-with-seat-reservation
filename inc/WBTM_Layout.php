@@ -71,11 +71,12 @@
 					$style = isset($_POST['style']) ? sanitize_text_field(wp_unslash($_POST['style'])) : '';
 					$btn_show = isset($_POST['btn_show']) ? sanitize_text_field(wp_unslash($_POST['btn_show'])) : '';
 					$left_filter_show = isset($_POST['left_filter_show']) ? sanitize_text_field(wp_unslash($_POST['left_filter_show'])) : '';
+					$bus_start_end_id = isset( $_POST['wbtm_bus_start_end_id']) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bus_start_end_id'])) : '';
 					$search_info['bus_start_route'] = $start_route;
 					$search_info['bus_end_route'] = $end_route;
 					$search_info['j_date'] = $j_date;
 					$search_info['r_date'] = $r_date;
-					self::wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show);
+					self::wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show, $bus_start_end_id );
 					$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
 					if ($redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
 						WC()->cart->empty_cart();
@@ -157,19 +158,33 @@
 					die();
 				}
 			}
-			public static function wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = '') {
-				if ($start_route && $end_route && $j_date) { ?>
+			public static function wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = '', $bus_start_end_id = '' ) {
+				if ($start_route && $end_route && $j_date) {
+                    if( $bus_start_end_id === 'start_bus' ){
+                        $start_bus = 'block';
+                        $return_bus = 'none';
+                    }else if( $bus_start_end_id === 'wbtm_return_container' ){
+                        $start_bus = 'none';
+                        $return_bus = 'block';
+                    }else{
+                        $start_bus = 'block';
+                        $return_bus = 'none';
+                    }
+                    ?>
                     <div class="wbtm-bus-lists" id="wbtm_start_container">
-                        <div class="wbtm-date-suggetion">
-							<?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date); ?>
-                        </div>
+
 
                         <div class="wbtm_departure_bus_lists_holder">
                             <div class="wbtm-date-route_title">
                                 <?php self::route_title('Departure', $start_route, $end_route, $j_date, $r_date); ?>
                             </div>
                             <div class="wbtm_seleced_start_bus" id="wbtm_seleced_start_bus"></div>
-                            <div class="wbtm-bus-lists" id="start_bus">
+                            <div class="wbtm-bus-lists" id="start_bus" style="display: <?php echo esc_attr( $start_bus );?>">
+
+                                <div class="wbtm-date-suggetion">
+                                    <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date); ?>
+                                </div>
+
                                 <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date, $post_id, $style, $btn_show, $search_info, 'start_journey', $left_filter_show); ?>
                             </div>
                         </div>
@@ -181,19 +196,19 @@
                         </div>
                         <?php }
                         if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
-                        <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: none">
-                        <div class="wbtm-date-suggetion">
-							<?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, true); ?>
-                        </div>
-                        <div class="wbtm-bus-notification" id="wbtm_selected_bus_notification" style="display: none">
-							<?php esc_attr_e('Your ticket has been added to the cart.', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">
-								<?php esc_attr_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </a>
-							<?php esc_attr_e('Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </div>
+                        <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: <?php echo esc_attr( $return_bus );?>">
+                            <div class="wbtm-date-suggetion">
+                                <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, true); ?>
+                            </div>
+                            <div class="wbtm-bus-notification" id="wbtm_selected_bus_notification" style="display: none">
+                                <?php esc_attr_e('Your ticket has been added to the cart.', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">
+                                    <?php esc_attr_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                </a>
+                                <?php esc_attr_e('Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </div>
 
-                        <h4 class="lists-title" style="display: none"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
+                            <h4 class="lists-title" style="display: none"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
                          <div class="wbtm_return_bus_lists_container" >
                             <!--<div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
                                 <?php /*self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); */?>

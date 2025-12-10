@@ -1,6 +1,8 @@
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
+
+	let wbtm_bus_start_end = '';
 	$(document).on("click", "#wbtm_area button.get_wbtm_bus_list", function (e) {
 		e.preventDefault();
 		let parent = $(this).closest('#wbtm_area');
@@ -13,6 +15,7 @@
 		let wbtm_left_filter_type = parent.find('input[name="wbtm_left_filter_type"]');
 		let wbtm_left_filter_operator = parent.find('input[name="wbtm_left_filter_operator"]');
 		let wbtm_left_filter_boarding = parent.find('input[name="wbtm_left_filter_boarding"]');
+
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!wbtm_check_required(start)) {
 			start.trigger('click');
@@ -41,6 +44,7 @@
           post_id: post_id,
           style: style.val(),
           btn_show: btn_show.val(),
+		  wbtm_bus_start_end_id: wbtm_bus_start_end,
 		  left_filter_show:{
 			  left_filter_input : left_filter_input.val(),
 			  left_filter_type : wbtm_left_filter_type.val(),
@@ -69,17 +73,16 @@
 		}
 	});
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {
+		wbtm_bus_start_end = $(this).closest('.wbtm-bus-lists').attr('id');
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
-			parent.find('.get_wbtm_bus_list,.wbtm_bus_submit').trigger('click');
+			parent.find('.get_wbtm_bus_list').trigger('click');
 		});
 
-		$("#wbtm_start_container").fadeIn();
-		$("#wbtm_return_container").fadeOut();
 		// $("#wbtm_date_return_route_start").fadeOut();
 		$("#wbtm_date_return_route_return").fadeIn();
 
