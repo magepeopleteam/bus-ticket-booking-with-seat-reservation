@@ -239,6 +239,14 @@
 								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
 							)
 						),
+						array(
+							'name'    => 'bus_search_list_direction_icon',
+							'label'   => esc_html__( 'Bus search list direction icon', 'bus-ticket-booking-with-seat-reservation' ),
+                            'desc'  => esc_html__( 'Enable this option to automatically clear the cart whenever a user performs a new search, ensuring only the latest selection is added.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'file',
+							'default' => '',
+						),
+						
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'wbtm_filter_global_settings', array(
 						array(
