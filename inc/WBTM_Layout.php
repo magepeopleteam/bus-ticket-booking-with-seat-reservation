@@ -247,7 +247,6 @@
 			public static function selected_bus_display($data) {
 				$bus_id = $data['post_id'];
 				$bus_title = get_the_title($bus_id);
-				$bus_image = get_the_post_thumbnail_url($bus_id, 'medium');
 				$bus_number = get_post_meta($bus_id, 'wbtm_bus_no', true);
 				$start_date_format = date("d F, Y", strtotime($data['j_date']));
 				$start_time = date("h:i A", strtotime($data['wbtm_bp_time']));
@@ -259,7 +258,7 @@
 				?>
                 <div class="wbtm_selected_bus_card">
                     <div class="wbtm_selected_bus_image">
-                        <img src="<?php echo esc_url($bus_image); ?>" alt="<?php echo esc_html($bus_title); ?>" style="width: 160px; height: 140px">
+						<?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
                     </div>
                     <div class="wbtm_selected_bus_img_name">
 						<?php echo esc_html($bus_title); ?> <span><?php echo esc_html($bus_number); ?></span>

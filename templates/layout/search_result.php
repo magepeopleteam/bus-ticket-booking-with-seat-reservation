@@ -187,7 +187,7 @@ if (sizeof($bus_ids) > 0) {
                 <?php } }?>
 
                 <div class="wbtm-bus-image ">
-                    <?php WBTM_Custom_Layout::bg_image($bus_id); ?>
+                    <?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
                 </div>
                 <div class="wbtm-bus-name">
                     <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_html( get_the_title( $bus_id ) ); ?></h5>
