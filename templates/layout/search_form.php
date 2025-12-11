@@ -17,12 +17,13 @@
 		$style = array_key_exists('style', $params) ? $params['style'] : '';
 		$form_style = array_key_exists('style', $params) ? $params['style'] : '';
 		$form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
-		$left_filter = array_key_exists('left_filter', $params) ? $params['left_filter'] : '';
+		$left_filter = array_key_exists('left_filter_input', $params) ? $params['left_filter_input'] : '';
 		if (is_page()) {
 			$left_filter = $left_filter ?: 'on';
 		} else {
 			$left_filter = 'off';
 		}
+
 		$left_filter_type = array_key_exists('left_filter_type', $params) && $params['left_filter_type']? $params['left_filter_type'] : 'on';
 		$left_filter_operator = array_key_exists('left_filter_operator', $params) && $params['left_filter_operator']? $params['left_filter_operator'] : 'on';
 		$left_filter_boarding = array_key_exists('left_filter_boarding', $params) && $params['left_filter_boarding']? $params['left_filter_boarding'] : 'on';
@@ -32,6 +33,7 @@
 		$start_time = '';
 		$end_time = '';
 		if (isset($_GET['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
+
 			$start_route = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 			$start_route = $start_route ?: (isset($_GET['bus_start_route']) ? sanitize_text_field(wp_unslash($_GET['bus_start_route'])) : '');
 			//===============//
@@ -45,6 +47,12 @@
 			$end_time = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
 			$end_time = $end_time ?: (isset($_GET['r_date']) ? sanitize_text_field(wp_unslash($_GET['r_date'])) : '');
 			$end_time = $end_time ? gmdate('Y-m-d', strtotime($end_time)) : '';
+
+
+            $left_filter = isset($_GET['wbtm_left_filter_show']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_show'])) : 'off';
+            $left_filter_type = isset($_GET['wbtm_left_filter_type']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_type'])) : 'on';
+            $left_filter_operator = isset($_GET['wbtm_left_filter_operator']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_operator'])) : 'on';
+            $left_filter_boarding = isset($_GET['wbtm_left_filter_boarding']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_boarding'])) : 'on';
 			//===============//
 		}
 		$return_date_show = WBTM_Global_Function::get_settings('wbtm_general_settings', 'bus_return_show', 'enable');
@@ -62,20 +70,31 @@
 		$search_info['bus_end_route'] = $end_route;
 		$search_info['j_date'] = $start_time;
 		$search_info['r_date'] = $end_time;
+
+
+
+        $left_filter_show = array(
+            'left_filter_input'     => $left_filter,
+            'left_filter_type'     => $left_filter_type,
+            'left_filter_operator' => $left_filter_operator,
+            'left_filter_boarding' => $left_filter_boarding,
+        );
 		?>
         <div id="wbtm_area">
-            <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
-            <input type="hidden" name='wbtm_list_btn_show' value="<?php echo esc_attr($btn_show); ?>"/>
-            <input type="hidden" name='wbtm_left_filter_show' value="<?php echo esc_attr($left_filter); ?>"/>
-            <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr($left_filter_type); ?>"/>
-            <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr($left_filter_operator); ?>"/>
-            <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr($left_filter_boarding); ?>"/>
             <div class="_dLayout wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
 				<?php if ($buy_ticket_text) { ?>
                     <h4><?php echo esc_html($buy_ticket_text); ?></h4>
 				<?php } ?>
                 <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
                 <form action="<?php echo esc_attr($redirect_url); ?>" method="get" class="mpForm">
+
+                    <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
+                    <input type="hidden" name='wbtm_list_btn_show' value="<?php echo esc_attr($btn_show); ?>"/>
+                    <input type="hidden" name='wbtm_left_filter_show' value="<?php echo esc_attr($left_filter); ?>"/>
+                    <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr($left_filter_type); ?>"/>
+                    <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr($left_filter_operator); ?>"/>
+                    <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr($left_filter_boarding); ?>"/>
+
 					<?php wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce'); ?>
 					<?php if (is_admin()) { ?>
                         <input type="hidden" name="post_type" value="wbtm_bus"/>
@@ -146,7 +165,7 @@
                 </form>
             </div>
             <div class="_ovHidden wbtm_search_result">
-				<?php WBTM_Layout::wbtm_bus_list($post_id, $start_route, $end_route, $start_time, $end_time, $style, $btn_show, $search_info ); ?>
+				<?php WBTM_Layout::wbtm_bus_list($post_id, $start_route, $end_route, $start_time, $end_time, $style, $btn_show, $search_info, $left_filter_show ); ?>
             </div>
         </div>
 		<?php

@@ -1328,7 +1328,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_search_location_toggle{
   position: absolute ;
   margin: 9px -4px;
-  top: 50%;
+  top: 55%;
   left: 50%;
   transform: translate(-50%,-50%);
   z-index: 2;

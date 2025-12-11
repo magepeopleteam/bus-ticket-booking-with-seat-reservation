@@ -27,7 +27,7 @@
 				add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				/**************************/
 			}
-			public function search_result($start_route, $end_route, $date, $post_id = '', $style = '', $btn_show = '', $search_info = [], $journey_type = '', $left_filter_show = '') {
+			public function search_result($start_route, $end_route, $date, $post_id = '', $style = '', $btn_show = '', $search_info = [], $journey_type = '', $left_filter_show = [] ) {
 				if ($style == 'flix') {
 					require WBTM_Functions::template_path('layout/search_result_flix.php');
 				} else {
@@ -70,7 +70,8 @@
 					$r_date = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
 					$style = isset($_POST['style']) ? sanitize_text_field(wp_unslash($_POST['style'])) : '';
 					$btn_show = isset($_POST['btn_show']) ? sanitize_text_field(wp_unslash($_POST['btn_show'])) : '';
-					$left_filter_show = isset($_POST['left_filter_show']) ? sanitize_text_field(wp_unslash($_POST['left_filter_show'])) : '';
+					$left_filter_show = isset($_POST['left_filter_show']) ? $_POST['left_filter_show'] : '';
+
 					$bus_start_end_id = isset( $_POST['wbtm_bus_start_end_id']) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bus_start_end_id'])) : '';
 					$search_info['bus_start_route'] = $start_route;
 					$search_info['bus_end_route'] = $end_route;
@@ -158,7 +159,8 @@
 					die();
 				}
 			}
-			public static function wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = '', $bus_start_end_id = '' ) {
+			public static function wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = [], $bus_start_end_id = '' ) {
+
 				if ($start_route && $end_route && $j_date) {
                     if( $bus_start_end_id === 'start_bus' ){
                         $start_bus = 'block';

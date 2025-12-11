@@ -22,6 +22,7 @@ $journey_type = $journey_type ?? '';
 $btn_show = $btn_show ?? '';
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $left_filter_show = $left_filter_show ?? '';
+
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $label = WBTM_Functions::get_name();
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
