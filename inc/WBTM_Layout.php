@@ -70,7 +70,9 @@
 					$r_date = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
 					$style = isset($_POST['style']) ? sanitize_text_field(wp_unslash($_POST['style'])) : '';
 					$btn_show = isset($_POST['btn_show']) ? sanitize_text_field(wp_unslash($_POST['btn_show'])) : '';
-					$left_filter_show = isset($_POST['left_filter_show']) ? $_POST['left_filter_show'] : '';
+                    $left_filter_show = isset($_POST['left_filter_show'])
+                        ? json_decode( sanitize_text_field( wp_unslash($_POST['left_filter_show'] ) ), true )
+                        : [];
 
 					$bus_start_end_id = isset( $_POST['wbtm_bus_start_end_id']) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bus_start_end_id'])) : '';
 					$search_info['bus_start_route'] = $start_route;

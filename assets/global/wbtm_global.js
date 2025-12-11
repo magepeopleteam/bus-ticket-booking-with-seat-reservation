@@ -16,6 +16,14 @@
 		let wbtm_left_filter_operator = parent.find('input[name="wbtm_left_filter_operator"]');
 		let wbtm_left_filter_boarding = parent.find('input[name="wbtm_left_filter_boarding"]');
 
+
+		let left_filter_show = {
+				left_filter_input : left_filter_input.val(),
+				left_filter_type : wbtm_left_filter_type.val(),
+				left_filter_operator : wbtm_left_filter_operator.val(),
+				left_filter_boarding : wbtm_left_filter_boarding.val(),
+		}
+
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!wbtm_check_required(start)) {
 			start.trigger('click');
@@ -45,12 +53,7 @@
           style: style.val(),
           btn_show: btn_show.val(),
 		  wbtm_bus_start_end_id: wbtm_bus_start_end,
-		  left_filter_show:{
-			  left_filter_input : left_filter_input.val(),
-			  left_filter_type : wbtm_left_filter_type.val(),
-			  left_filter_operator : wbtm_left_filter_operator.val(),
-			  left_filter_boarding : wbtm_left_filter_boarding.val(),
-		  },
+		  left_filter_show:JSON.stringify(left_filter_show),
           // backend_order: window.location.href.search("wbtm_backend_order"),
         },
         beforeSend: function () {
