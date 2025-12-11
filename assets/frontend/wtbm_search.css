@@ -30,14 +30,14 @@
 .wbtm_search_route_container {
     display: flex;
     align-items: center;
-    background-color: #e8f0fe; /* Light blue background */
-    border-radius: 4px; /* Optional: adds slight rounding */
+    background-color: #cfe2ff;
+    border-radius: 4px;  
     width: 100%;
     font-family: Arial, sans-serif;
 }
 
 .wbtm_search_route_return_date {
-    background-color: #dae7ff;
+    background-color: #9ec5fe;
     padding:10px;
     text-align: left;
     height: 100%;
@@ -118,7 +118,7 @@
 }
 .wbtm_search_route_city {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: normal;
     color: #000;
     line-height: 1.2;
 }
