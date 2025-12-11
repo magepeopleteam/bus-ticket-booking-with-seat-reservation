@@ -86,11 +86,12 @@
 }
 
 /* 1. Bus Image */
-.wbtm_selected_bus_image img {
+.wbtm_selected_bus_image {
     width: 170px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /* 2. Image Name */
