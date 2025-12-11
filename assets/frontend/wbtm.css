@@ -1005,11 +1005,11 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
 .wbtm_seat_plan_upper .mp_seat_item {
   width: 60px !important;
-  height: 60px !important;
+  height: 50px !important;
   min-width: 60px !important;
-  min-height: 60px !important;
+  min-height: 50px !important;
   max-width: 60px !important;
-  max-height: 60px !important;
+  max-height: 50px !important;
   position: relative !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -1022,7 +1022,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   min-width: 60px !important;
   min-height: 50px !important;
   max-width: 60px !important;
-  max-height: 60px !important;
+  max-height: 50px !important;
   border: 1px solid var(--wbtm_color_border) !important;
   border-radius: 15px 15px 0 0 !important;
   border-bottom: 5px solid var(--wbtm_color_light) !important;
