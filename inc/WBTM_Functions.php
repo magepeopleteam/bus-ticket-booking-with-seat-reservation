@@ -626,5 +626,15 @@
                 
                 return '';
             }
+
+			public static function logo_thumbnail_display($bus_id){
+				$bus_logo = get_post_meta( $bus_id, 'wbtm_bus_logo', true );
+				$thumbnail = get_the_post_thumbnail_url( $bus_id );
+				$bus_logo = !empty($bus_logo)?wp_get_attachment_url( $bus_logo):$thumbnail;
+				$default_logo = WBTM_PLUGIN_URL . '/assets/images/bus-logo.svg';
+				?>
+				<img src="<?php echo $bus_logo; ?>" onerror="this.onerror=null; this.src='<?php echo $default_logo; ?>';">
+				<?php
+			}
 		}
 	}

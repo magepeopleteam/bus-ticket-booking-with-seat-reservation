@@ -186,12 +186,7 @@ if (sizeof($bus_ids) > 0) {
                 <?php } }?>
 
                 <div class="wbtm-bus-image ">
-                    <?php
-                        $bus_logo = get_post_meta( $bus_id, 'wbtm_bus_logo', true );
-                        $thumbnail = get_the_post_thumbnail_url( $bus_id );
-                        $bus_logo = !empty($bus_logo)?wp_get_attachment_url( $bus_logo):$thumbnail;
-                    ?>
-                    <img src="<?php echo $bus_logo; ?>" alt="">
+                    <?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
                 </div>
                 <div class="wbtm-bus-name">
                     <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_html( get_the_title( $bus_id ) ); ?></h5>
