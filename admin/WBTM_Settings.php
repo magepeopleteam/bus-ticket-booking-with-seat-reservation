@@ -111,9 +111,12 @@
 				}
 				//General settings
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					$bus_logo = isset($_POST['wbtm_bus_logo']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bus_logo'])) : '';
 					$bus_no = isset($_POST['wbtm_bus_no']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bus_no'])) : '';
 					$bus_category = isset($_POST['wbtm_bus_category']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bus_category'])) : '';
 					$wbtm_registration = isset($_POST['wbtm_registration']) && sanitize_text_field(wp_unslash($_POST['wbtm_registration'])) ? 'yes' : 'no';
+					
+					update_post_meta($post_id, 'wbtm_bus_logo', $bus_logo);
 					update_post_meta($post_id, 'wbtm_bus_no', $bus_no);
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
 					update_post_meta($post_id, 'wbtm_registration', $wbtm_registration);
