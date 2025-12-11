@@ -217,8 +217,8 @@
 	}
 	div.wbtm_style h5,
 	div.wbtm_style [class*="_fs_h5"] {
-		font-size: var(--wbtm_fs_h5);
-		font-weight: var(--wbtm_fw-medium);
+		font-size: 16px;
+		font-weight: normal;
 		text-transform: inherit;
 	}
 	div.wbtm_style h6,

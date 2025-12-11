@@ -506,6 +506,12 @@ function wbtm_load_sortable_datepicker(parent, item) {
             cabin_fields.show();
         } else {
             cabin_fields.hide();
+            
+            // When any individual cabin is disabled, automatically disable the main cabin mode
+            let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
+            if (cabin_mode_checkbox.is(':checked')) {
+                cabin_mode_checkbox.data('programmatic-change', true).prop('checked', false).trigger('change');
+            }
         }
     }
 
@@ -528,6 +534,13 @@ function wbtm_load_sortable_datepicker(parent, item) {
             // Hide traditional seat plan since we're now in seat plan mode with cabin config
             traditional_seat_plan.slideUp(300);
         } else {
+            // When cabin mode is disabled, automatically disable all individual cabin toggles
+            $('input[name="wbtm_cabin_enabled[]"]').each(function() {
+                if ($(this).is(':checked')) {
+                    $(this).data('programmatic-change', true).prop('checked', false).trigger('change');
+                }
+            });
+            
             // Hide cabin configuration
             cabin_mode_fields.slideUp(300);
             // Show traditional seat plan if seat type is 'wbtm_seat_plan'
@@ -560,12 +573,22 @@ function wbtm_load_sortable_datepicker(parent, item) {
 
     // Handle individual cabin enable checkbox change
     $(document).on('change', 'input[name="wbtm_cabin_enabled[]"]', function() {
-        toggleCabinFields($(this));
+        // Prevent infinite loops by checking if this change was programmatically triggered
+        if (!$(this).data('programmatic-change')) {
+            toggleCabinFields($(this));
+        }
+        // Reset the flag
+        $(this).removeData('programmatic-change');
     });
 
     // Handle master cabin mode enable checkbox change
     $(document).on('change', 'input[name="wbtm_cabin_mode_enabled"]', function() {
-        toggleCabinModeFields($(this));
+        // Prevent infinite loops by checking if this change was programmatically triggered
+        if (!$(this).data('programmatic-change')) {
+            toggleCabinModeFields($(this));
+        }
+        // Reset the flag
+        $(this).removeData('programmatic-change');
     });
 
     // Handle seat type selection change - ensure proper visibility
