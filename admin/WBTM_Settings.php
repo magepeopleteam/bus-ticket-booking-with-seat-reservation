@@ -288,8 +288,8 @@
 					$count = 0;
 					$hidden_ids = isset($_POST['wbtm_pickup_unique_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_pickup_unique_id'])) : [];
 					$wbtm_pickup_bp = isset($_POST['wbtm_bp_pickup']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_bp_pickup'])) : [];
-					$wbtm_pickup = isset($_POST['wbtm_pickup_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_pickup_name'])) : [];
-					$wbtm_pickup_time = isset($_POST['wbtm_pickup_time']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_pickup_time'])) : [];
+					$wbtm_pickup = isset($_POST['wbtm_pickup_name']) ? wp_unslash($_POST['wbtm_pickup_name']) : [];
+					$wbtm_pickup_time = isset($_POST['wbtm_pickup_time']) ? wp_unslash($_POST['wbtm_pickup_time']) : [];
 					if (sizeof($hidden_ids) > 0) {
 						foreach ($hidden_ids as $hidden_id) {
 							$pickups = array_key_exists($hidden_id, $wbtm_pickup) ? $wbtm_pickup[$hidden_id] : [];
@@ -318,9 +318,9 @@
 					$d_count = 0;
 					$d_hidden_ids = isset($_POST['wbtm_drop_off_unique_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_drop_off_unique_id'])) : [];
 					$wbtm_dp_pickup = isset($_POST['wbtm_dp_pickup']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_dp_pickup'])) : [];
-					$wbtm_drop_off_name = isset($_POST['wbtm_drop_off_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_drop_off_name'])) : [];
-					$wbtm_drop_off_time = isset($_POST['wbtm_drop_off_time']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_drop_off_time'])) : [];
-					if (sizeof($d_hidden_ids) > 0) {
+					$wbtm_drop_off_name = isset($_POST['wbtm_drop_off_name']) ? wp_unslash($_POST['wbtm_drop_off_name']) : [];
+					$wbtm_drop_off_time = isset($_POST['wbtm_drop_off_time']) ?  wp_unslash($_POST['wbtm_drop_off_time']) : [];
+					if (sizeof($d_hidden_ids) > 0 ) {
 						foreach ($d_hidden_ids as $d_hidden_id) {
 							$drop_offs = array_key_exists($d_hidden_id, $wbtm_drop_off_name) ? $wbtm_drop_off_name[$d_hidden_id] : [];
 							$drop_off_times = array_key_exists($d_hidden_id, $wbtm_drop_off_time) ? $wbtm_drop_off_time[$d_hidden_id] : '';
