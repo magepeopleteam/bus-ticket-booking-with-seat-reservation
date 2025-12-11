@@ -17,7 +17,7 @@
 				add_filter( 'wbtm_settings_sec_reg', array( $this, 'settings_sec_reg' ) );
 				add_filter( 'wbtm_settings_sec_fields', array( $this, 'settings_sec_fields' ) );
 				add_filter( 'wbtm_settings_sec_reg', array( $this, 'global_sec_reg' ), 90 );
-				add_action( 'wsa_form_bottom_wbtm_license_settings', [ $this, 'license_settings' ], 5 );
+				add_action( 'wbtm_wsa_form_bottom_wbtm_license_settings', [ $this, 'license_settings' ] );
 				add_action( 'wbtm_basic_license_list', [ $this, 'licence_area' ] );
 			}
 
