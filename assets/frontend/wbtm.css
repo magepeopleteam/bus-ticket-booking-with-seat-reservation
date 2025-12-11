@@ -290,7 +290,7 @@
   font-size: 14px;
   color: gray;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route {
+ .wbtm_search_result  .wbtm-bus-route {
   margin: 0;
   padding: 15px;
   display: flex;
@@ -300,36 +300,40 @@
   text-align: center;
   width: auto;
   align-items: start;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
 }
 @media (min-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route {
+   .wbtm_search_result  .wbtm-bus-route {
     border-right: 1px solid #eee;
   }
 }
 @media (max-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route {
+   .wbtm_search_result  .wbtm-bus-route {
     border-top: 1px solid #eee;
   }
 }
 @media (min-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route {
+   .wbtm_search_result  .wbtm-bus-route {
     width: 25%;
   }
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route h6:nth-child(1) i {
+.wbtm_search_result  .wbtm-bus-route h6 {
+  font-weight: normal;
+  font-size: 16px;
+}
+ .wbtm_search_result  .wbtm-bus-route h6:nth-child(1) i {
   color: #28a745;
   padding-right: 10px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route h6:nth-child(2) i {
+ .wbtm_search_result  .wbtm-bus-route h6:nth-child(2) i {
   color: #dc3545;
   padding-right: 10px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route h6:nth-child(3) i {
+ .wbtm_search_result  .wbtm-bus-route h6:nth-child(3) i {
   padding-right: 10px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-bus-route .time {
+ .wbtm_search_result  .wbtm-bus-route .time {
   color: gray;
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
@@ -583,7 +587,10 @@ div[class*=simpleSpinner] {
   padding: var(--wbtm_dmp);
   color: var(--wbtm_color_theme);
 }
-
+.wbtm_ex_service_area h3{
+  font-size: 14px;
+  font-weight: normal;
+}
 /*****Text Theme*********/
 div.wbtm_style .textTheme,
 div.wbtm_style [class*=_textTheme] {
@@ -626,6 +633,7 @@ div.wbtm_style [class*=_bTheme],
 .wbtm_selected_seat_details table thead th {
   font-size: 16px;
   color: #666;
+  font-weight: normal;
 }
 .wbtm_selected_seat_details table tbody tr {
   border-bottom: 1px solid #d8d8d8;
