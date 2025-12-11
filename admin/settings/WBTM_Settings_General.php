@@ -9,6 +9,7 @@
 			}
 			public function tab_content($post_id) {
 				$bus_no = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
+				$logo = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_logo');
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category');
 				$bus_categories = WBTM_Global_Function::get_all_term_data('wbtm_bus_cat');
 				$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
@@ -28,6 +29,20 @@
                     <div class="">
                         <!-- if bus transporter panel active it will show title field -->
 						<?php do_action('wbtm_general_settings_fields', $post_id); ?>
+                        <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+                            <div class="col_6 _dFlex_fdColumn">
+                                <label>
+									<?php esc_html_e('Bus Logo', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                </label>
+                                <span><?php _e('Add your logo','bus-ticket-booking-with-seat-reservation') ?></span>
+                            </div>
+                            <div >
+                                <?php
+									$image_id = get_post_meta( $post_id, 'wbtm_bus_logo', true );
+									do_action( 'wbtm_add_single_image', 'wbtm_bus_logo', $image_id );
+								?>
+                            </div>
+                        </div>
                         <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
                             <div class="col_6 _dFlex_fdColumn">
                                 <label>
