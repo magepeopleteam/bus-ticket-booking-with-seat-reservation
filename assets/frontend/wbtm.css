@@ -106,6 +106,7 @@
   border: 0;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 
 }
  .wbtm_search_area .inputList {
@@ -982,7 +983,6 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
 .wbtm_seat_plan_upper table {
   table-layout: fixed !important;
-  width: auto !important;
   margin: 0 auto !important;
 }
 
@@ -994,21 +994,22 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   min-height: 60px !important;
   max-width: 60px !important;
   max-height: 60px !important;
-  padding: 5px !important;
+  padding:0 35px !important;
   margin: 0 !important;
   border: none !important;
   background-color: var(--wbtm_color_theme_alter) !important;
   text-align: center !important;
   vertical-align: middle !important;
   box-sizing: border-box !important;
+  font-size: 17px !important;
 }
 
 .wbtm_seat_plan_upper .mp_seat_item {
-  width: 50px !important;
+  width: 60px !important;
   height: 50px !important;
-  min-width: 50px !important;
+  min-width: 60px !important;
   min-height: 50px !important;
-  max-width: 50px !important;
+  max-width: 60px !important;
   max-height: 50px !important;
   position: relative !important;
   margin: 0 !important;
@@ -1017,11 +1018,11 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 }
 
 .wbtm_seat_plan_upper .mp_seat {
-  width: 50px !important;
+  width: 60px !important;
   height: 50px !important;
-  min-width: 50px !important;
+  min-width: 60px !important;
   min-height: 50px !important;
-  max-width: 50px !important;
+  max-width: 60px !important;
   max-height: 50px !important;
   border: 1px solid var(--wbtm_color_border) !important;
   border-radius: 15px 15px 0 0 !important;
@@ -1032,7 +1033,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   margin: 0 !important;
   padding: 0 !important;
   box-sizing: border-box !important;
-  font-size: 12px !important;
+  font-size: 16px !important;
   line-height: 1 !important;
 }
 
