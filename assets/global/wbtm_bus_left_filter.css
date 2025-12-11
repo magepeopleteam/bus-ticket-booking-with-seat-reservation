@@ -84,7 +84,11 @@
     margin: 5px;
     gap: 20px;
 }
-
+@media (max-width:768px) {
+    .wbtm_selected_bus_card {
+        flex-direction: column;
+    }
+}
 /* 1. Bus Image */
 .wbtm_selected_bus_image {
     width: 170px;
