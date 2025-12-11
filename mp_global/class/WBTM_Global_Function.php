@@ -111,6 +111,13 @@
 				return $format == 'D M d , yy' ? 'D M  j, Y' : $date_format;
 			}
 			public function date_picker_js($selector, $dates) {
+
+                $empty_dates = 0;
+                if( empty( $dates ) ){
+                    $dates[] =  date("Y-m-d");
+                    $empty_dates = 1;
+                }
+
 				$start_date = $dates[0];
 				$start_year = gmdate('Y', strtotime($start_date));
 				$start_month = (gmdate('n', strtotime($start_date)) - 1);
@@ -120,9 +127,12 @@
 				$end_month = (gmdate('n', strtotime($end_date)) - 1);
 				$end_day = gmdate('j', strtotime($end_date));
 				$all_date = [];
-				foreach ($dates as $date) {
-					$all_date[] = '"' . gmdate('j-n-Y', strtotime($date)) . '"';
-				}
+                if( $empty_dates === 0 ){
+                    foreach ($dates as $date) {
+                        $all_date[] = '"' . gmdate('j-n-Y', strtotime($date)) . '"';
+                    }
+                }
+
 				?>
                 <script>
                     jQuery(document).ready(function () {
