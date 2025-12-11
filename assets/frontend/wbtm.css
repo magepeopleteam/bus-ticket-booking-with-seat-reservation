@@ -223,6 +223,10 @@
    .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image {
     width: 15%;
     height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image .bg_image_area {
