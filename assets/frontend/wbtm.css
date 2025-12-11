@@ -239,6 +239,9 @@
     justify-content: center;
     align-items: center;
   }
+  .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image img{
+  height: auto;
+}
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image .bg_image_area {
   width: 100%;
