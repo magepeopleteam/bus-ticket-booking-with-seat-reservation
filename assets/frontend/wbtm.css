@@ -436,7 +436,7 @@
 .wbtm_style [class*=_themeButton] {
   background-color: var(--wbtm_color_theme);
   color: var(--wbtm_color_theme_alter);
-  padding: var(--wbtm_dmp_xs) var(--wbtm_dmp);
+  padding: var(--wbtm_dmp_xs) var(--wbtm_dmp_xs);
   border: 1px solid var(--wbtm-primary);
 }
 
