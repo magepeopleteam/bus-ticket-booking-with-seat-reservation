@@ -91,7 +91,8 @@
 				$form_style = $params['style'];
 				$search_path = $params['search-page'];
 				$style = $params['style'];
-				$left_filter            = $params['left_filter_input'];
+//				$left_filter            = $params['left_filter_input'];
+				$left_filter            = $params['left_filter'];
 				$left_filter_type       = $params['left_filter_type'];
 				$left_filter_operator   = $params['left_filter_operator'];
 				$left_filter_boarding   = $params['left_filter_boarding'];

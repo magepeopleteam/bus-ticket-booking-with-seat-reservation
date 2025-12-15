@@ -17,7 +17,8 @@
 		$style = array_key_exists('style', $params) ? $params['style'] : '';
 		$form_style = array_key_exists('style', $params) ? $params['style'] : '';
 		$form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
-		$left_filter = array_key_exists('left_filter_input', $params) ? $params['left_filter_input'] : '';
+//		$left_filter = array_key_exists('left_filter_input', $params) ? $params['left_filter_input'] : '';
+		$left_filter = array_key_exists('left_filter', $params) ? $params['left_filter'] : '';
 		if (is_page()) {
 			$left_filter = $left_filter ?: 'on';
 		} else {
