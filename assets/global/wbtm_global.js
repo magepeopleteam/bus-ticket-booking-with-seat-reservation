@@ -711,23 +711,103 @@
 
 		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
 
-		let formData = form.serialize();
+		/*let formData = form.serialize();
 		formData += '&action=wbtm_ajax_add_to_cart';
-		formData += '&price_val=' + encodeURIComponent(priceVal);
+		formData += '&price_val=' + encodeURIComponent(priceVal);*/
+
+		let data = {};
+		form.find(':input[name]').each(function () {
+			let name  = $(this).attr('name').trim();
+
+			let value = $(this).val();
+			if (name.endsWith('[]')) {
+				let cleanName = name.replace('[]', '');
+
+				if (!data[cleanName]) {
+					data[cleanName] = [];
+				}
+				data[cleanName].push(value);
+			}
+			else {
+				data[name] = value;
+			}
+		});
+		data.action = 'wbtm_ajax_add_to_cart';
+		data.price_val  = encodeURIComponent(priceVal);
+
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
 		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
 
+		const cabinSeats = [];
+		$('input[name^="wbtm_selected_seat_cabin_"]').each(function () {
+			const value = $(this).val();
+			if (!value) return;
+			const cabin = this.name.replace('wbtm_selected_seat_cabin_', '');
+			cabinSeats.push({
+				cabin: cabin,
+				seat: value
+			});
+		});
+
+		const cabinSeatTypes = [];
+		$('input[name^="wbtm_selected_seat_type_cabin_"]').each(function () {
+			const value = $(this).val();
+			if (!value) return;
+			const cabin = this.name.replace('wbtm_selected_seat_type_cabin_', '');
+			cabinSeatTypes.push({
+				cabin: cabin,
+				seat: value
+			});
+		});
+		console.log( cabinSeatTypes );
+
+
+		// data = JSON.stringify(data);
+		let extraServiceNames = form
+			.find(':input[name="extra_service_name[]"]')
+			.map(function () {
+				return $(this).val();
+			})
+			.get();
+		let extraServiceQty = form
+			.find(':input[name="extra_service_qty[]"]')
+			.map(function () {
+				return $(this).val();
+			})
+			.get();
+
 		$.ajax({
 			url: woocommerce_params.ajax_url,
 			type: 'POST',
-			data: formData,
+			// data: data,
+			data: {
+				"action": "wbtm_ajax_add_to_cart",
+				"price_val": encodeURIComponent(priceVal),
+				"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
+				"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
+				"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
+				"wbtm_bp_place": form.find(':input[name=wbtm_bp_place]').val(),
+				"wbtm_bp_time": form.find(':input[name=wbtm_bp_time]').val(),
+				"wbtm_dp_place": form.find(':input[name=wbtm_dp_place]').val(),
+				"wbtm_dp_time": form.find(':input[name=wbtm_dp_time]').val(),
+				"bus_start_route": form.find(':input[name=bus_start_route]').val(),
+				"bus_end_route": form.find(':input[name=bus_end_route]').val(),
+				"j_date": form.find(':input[name=j_date]').val(),
+				"r_date": form.find(':input[name=r_date]').val(),
+				"wbtm_form_nonce": form.find(':input[name=wbtm_form_nonce]').val(),
+				"_wp_http_referer": form.find(':input[name=_wp_http_referer]').val(),
+				"wbtm_selected_seat": form.find(':input[name=wbtm_selected_seat]').val(),
+				"wbtm_selected_seat_type": form.find(':input[name=wbtm_selected_seat_type]').val(),
+				"extra_service_name": extraServiceNames,
+				"extra_service_qty": extraServiceQty,
+				"cabinSeats": JSON.stringify( cabinSeats ),
+				"cabinSeatTypes": JSON.stringify( cabinSeatTypes ),
+			},
 			beforeSend: function(){
 				this_btn.text( 'Adding to Cart...' );
 			},
 			success: function(response){
-
-				console.log( response.data.selected_bus );
 
 				if(response.success){
 					$("#wbtm_seleced_start_bus").html( response.data.selected_bus);
