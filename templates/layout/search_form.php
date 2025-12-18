@@ -19,7 +19,7 @@
 		$form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
 		$left_filter = array_key_exists('left_filter_input', $params) ? $params['left_filter_input'] : '';
 		if (is_page()) {
-			$left_filter = $left_filter ?: 'off';
+			$left_filter = $left_filter ?: 'on';
 		} else {
 			$left_filter = 'off';
 		}
@@ -28,42 +28,37 @@
 		$left_filter_operator = array_key_exists('left_filter_operator', $params) && $params['left_filter_operator']? $params['left_filter_operator'] : 'on';
 		$left_filter_boarding = array_key_exists('left_filter_boarding', $params) && $params['left_filter_boarding']? $params['left_filter_boarding'] : 'on';
         //====================//
-	// Process search parameters from GET/POST
-	// Note: We allow GET parameters without nonce verification for shareable links
-	// Nonce is only required for form submissions, not for reading search parameters
-	$start_route = '';
-	$end_route = '';
-	$start_time = '';
-	$end_time = '';
+		$start_route = '';
+		$end_route = '';
+		$start_time = '';
+		$end_time = '';
+		// Allow processing of GET parameters for direct links (shareable URLs)
+	// OR when nonce is present and valid (form submissions)
+	$has_search_params = isset($_GET['bus_start_route']) || isset($_GET['bus_end_route']) || isset($_GET['j_date']);
+	$nonce_valid = isset($_GET['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['wbtm_form_nonce'])), 'wbtm_form_nonce');
 	
-	// Get start route from POST or GET
-	$start_route = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
-	$start_route = $start_route ?: (isset($_GET['bus_start_route']) ? sanitize_text_field(wp_unslash($_GET['bus_start_route'])) : '');
-	//===============//
-	// Get journey date from POST or GET
-	$start_time = isset($_POST['j_date']) ? sanitize_text_field(wp_unslash($_POST['j_date'])) : '';
-	$start_time = $start_time ?: (isset($_GET['j_date']) ? sanitize_text_field(wp_unslash($_GET['j_date'])) : '');
-	$start_time = $start_time ? gmdate('Y-m-d', strtotime($start_time)) : '';
-	//===============//
-	// Get end route from POST or GET
-	$end_route = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
-	$end_route = $end_route ?: (isset($_GET['bus_end_route']) ? sanitize_text_field(wp_unslash($_GET['bus_end_route'])) : '');
-	//===============//
-	// Get return date from POST or GET
-	$end_time = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
-	$end_time = $end_time ?: (isset($_GET['r_date']) ? sanitize_text_field(wp_unslash($_GET['r_date'])) : '');
-	$end_time = $end_time ? gmdate('Y-m-d', strtotime($end_time)) : '';
-	//===============//
-	// Get filter settings from GET parameters
-	$left_filter = isset($_GET['wbtm_left_filter_show']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_show'])) : $left_filter;
-	$left_filter_type = isset($_GET['wbtm_left_filter_type']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_type'])) : $left_filter_type;
-	$left_filter_operator = isset($_GET['wbtm_left_filter_operator']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_operator'])) : $left_filter_operator;
-	$left_filter_boarding = isset($_GET['wbtm_left_filter_boarding']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_boarding'])) : $left_filter_boarding;	
-		if (isset($_GET['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-			// This block is for form submissions where nonce verification is crucial.
-			// The search parameters are already processed above, so this block might be redundant
-			// for setting search parameters, but kept for any other nonce-dependent logic.
-			// No changes needed here as the main parameter processing is moved out.
+	if ($nonce_valid || $has_search_params) {
+
+			$start_route = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
+			$start_route = $start_route ?: (isset($_GET['bus_start_route']) ? sanitize_text_field(wp_unslash($_GET['bus_start_route'])) : '');
+			//===============//
+			$start_time = isset($_POST['j_date']) ? sanitize_text_field(wp_unslash($_POST['j_date'])) : '';
+			$start_time = $start_time ?: (isset($_GET['j_date']) ? sanitize_text_field(wp_unslash($_GET['j_date'])) : '');
+			$start_time = $start_time ? gmdate('Y-m-d', strtotime($start_time)) : '';
+			//===============//
+			$end_route = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
+			$end_route = $end_route ?: (isset($_GET['bus_end_route']) ? sanitize_text_field(wp_unslash($_GET['bus_end_route'])) : '');
+			//===============//
+			$end_time = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
+			$end_time = $end_time ?: (isset($_GET['r_date']) ? sanitize_text_field(wp_unslash($_GET['r_date'])) : '');
+			$end_time = $end_time ? gmdate('Y-m-d', strtotime($end_time)) : '';
+
+
+            $left_filter = isset($_GET['wbtm_left_filter_show']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_show'])) : 'off';
+            $left_filter_type = isset($_GET['wbtm_left_filter_type']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_type'])) : 'on';
+            $left_filter_operator = isset($_GET['wbtm_left_filter_operator']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_operator'])) : 'on';
+            $left_filter_boarding = isset($_GET['wbtm_left_filter_boarding']) ? sanitize_text_field(wp_unslash($_GET['wbtm_left_filter_boarding'])) : 'on';
+			//===============//
 		}
 		$return_date_show = WBTM_Global_Function::get_settings('wbtm_general_settings', 'bus_return_show', 'enable');
 		$buy_ticket_text = WBTM_Translations::text_buy_ticket();
