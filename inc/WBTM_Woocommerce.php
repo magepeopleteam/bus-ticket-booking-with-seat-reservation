@@ -35,26 +35,6 @@
 				// Prevent add to cart notices when redirect is enabled
 				add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
 			}
-			function wbtm_ajax_add_to_cart_old() {
-				if (!isset($_POST['wbtm_form_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					wp_send_json_error('Nonce failed');
-				}
-				$post_id = isset($_POST['wbtm_post_id']) ? sanitize_text_field(wp_unslash($_POST['wbtm_post_id'])) : '';
-				$product_id = WBTM_Global_Function::get_post_info($post_id, 'link_wc_product');
-				if ($product_id) {
-					$quantity = 1;
-					$added = WC()->cart->add_to_cart($product_id, $quantity);
-					if ($added) {
-						wp_send_json_success([
-							'message' => 'Added successfully'
-						]);
-					} else {
-						wp_send_json_error('Cart error');
-					}
-				} else {
-					wp_send_json_error('Cart error');
-				}
-			}
 			//Price of product in mini cart
 			public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {
 				// Check if this is a bus booking item
@@ -143,6 +123,7 @@
 				}
 			}
 			public function add_cart_item_data($cart_item_data, $product_id) {
+
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
 					$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
 					$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
@@ -223,7 +204,8 @@
 				//echo '<pre>'; print_r($cart_item_data); echo '</pre>'; die();
 				return $cart_item_data;
 			}
-			public static function get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config) {
+
+            public static function get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config) {
 				$total_price = 0;
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
 					foreach ($cabin_config as $cabin_index => $cabin) {
@@ -1250,23 +1232,39 @@
 			}
 
 
-            function wbtm_ajax_add_to_cart(){
-
+          /*  function wbtm_ajax_add_to_cart_old(){
                 if ( ! isset($_POST['wbtm_form_nonce']) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_form_nonce'] ) ), 'wbtm_form_nonce') ) {
                     wp_send_json_error('Nonce failed');
                 }
                 $post_id = isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '';
                 $product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
 
-                $selected_cabin_seats = '';
+
+                $cabin_mode_enabled = isset($_POST['wbtm_cabin_mode_enabled']) ? sanitize_text_field( wp_unslash( $_POST['wbtm_cabin_mode_enabled'] ) ) : '';
                 $cabin_seats = false;
-                foreach ($_POST as $key => $value) {
-                    if ( strpos( $key, 'wbtm_selected_seat_cabin_') === 0) {
-                        $cabin_seats = true;
-                        $cabin = str_replace('wbtm_selected_seat_', '', $key);
-                        $selected_cabin_seats .= $cabin . ' (' . $value . ')' . PHP_EOL;
+                $selected_cabin_seats = '';
+                if( $cabin_mode_enabled === 'yes' ) {
+                    $cabin_seats = isset($_POST['cabinSeats']) ? sanitize_text_field($_POST['cabinSeats']) : '';
+                    $cabin_seats = self::wbtm_get_sanitized_cabin_seats($cabin_seats);
+                    foreach ($cabin_seats as $key => $value) {
+                        $_POST['wbtm_selected_seat_cabin_' . $value['cabin']] = $value['seat'];
+                    }
+
+                    $cabin_seat_types = isset($_POST['cabinSeatTypes']) ? sanitize_text_field($_POST['cabinSeatTypes']) : '';
+                    $cabin_seat_types = self::wbtm_get_sanitized_cabin_seats($cabin_seat_types);
+                    foreach ($cabin_seat_types as $key => $type_value) {
+                        $_POST['wbtm_selected_seat_type_cabin_' . $type_value['cabin']] = $type_value['seat'];
+                    }
+
+                    foreach ($_POST as $key => $value) {
+                        if (strpos($key, 'wbtm_selected_seat_cabin_') === 0) {
+                            $cabin_seats = true;
+                            $cabin = str_replace('wbtm_selected_seat_', '', $key);
+                            $selected_cabin_seats .= $cabin . ' (' . $value . ')' . PHP_EOL;
+                        }
                     }
                 }
+
 
                 if( $cabin_seats ){
                     $selected_seats = $selected_cabin_seats;
@@ -1302,6 +1300,161 @@
                     wp_send_json_error('Cart error');
                 }
 
+            }*/
+
+            function wbtm_ajax_add_to_cart() {
+
+                // Nonce check
+                if (
+                    ! isset( $_POST['wbtm_form_nonce'] ) ||
+                    ! wp_verify_nonce(
+                        sanitize_text_field( wp_unslash( $_POST['wbtm_form_nonce'] ) ),
+                        'wbtm_form_nonce'
+                    )
+                ) {
+                    wp_send_json_error( 'Nonce failed', 403 );
+                }
+
+                /**
+                 * Block PHP Object Injection via serialized payloads
+                 */
+                $block_serialized = function ( $value ) {
+                    if ( is_string( $value ) && is_serialized( $value ) ) {
+                        wp_send_json_error( 'Invalid input detected', 400 );
+                        exit;
+                    }
+                };
+
+                /* -------------------------
+                 * Block dangerous inputs
+                 * ------------------------- */
+                $fields = [
+                    'wbtm_bp_place',
+                    'wbtm_dp_place',
+                    'wbtm_bp_time',
+                    'wbtm_dp_time',
+                    'wbtm_selected_seat',
+                    'price_val',
+                    'cabinSeats',
+                    'cabinSeatTypes',
+                    'j_date',
+                ];
+
+                foreach ( $fields as $field ) {
+                    if ( isset( $_POST[ $field ] ) ) {
+                        $block_serialized( $_POST[ $field ] );
+                    }
+                }
+
+                $post_id = isset( $_POST['wbtm_post_id'] )
+                    ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) )
+                    : '';
+
+                $product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+
+                $cabin_mode_enabled = isset( $_POST['wbtm_cabin_mode_enabled'] )
+                    ? sanitize_text_field( wp_unslash( $_POST['wbtm_cabin_mode_enabled'] ) )
+                    : '';
+
+                $cabin_seats = false;
+                $selected_cabin_seats = '';
+
+                if ( $cabin_mode_enabled === 'yes' ) {
+
+                    $cabin_seats_raw = $_POST['cabinSeats'] ?? '';
+                    $block_serialized( $cabin_seats_raw );
+
+                    $cabin_seats = sanitize_text_field( wp_unslash( $cabin_seats_raw ) );
+                    $cabin_seats = self::wbtm_get_sanitized_cabin_seats( $cabin_seats );
+
+                    foreach ( $cabin_seats as $value ) {
+                        $_POST[ 'wbtm_selected_seat_cabin_' . $value['cabin'] ] = $value['seat'];
+                    }
+
+                    $cabin_seat_types_raw = $_POST['cabinSeatTypes'] ?? '';
+                    $block_serialized( $cabin_seat_types_raw );
+
+                    $cabin_seat_types = sanitize_text_field( wp_unslash( $cabin_seat_types_raw ) );
+                    $cabin_seat_types = self::wbtm_get_sanitized_cabin_seats( $cabin_seat_types );
+
+                    foreach ( $cabin_seat_types as $type_value ) {
+                        $_POST[ 'wbtm_selected_seat_type_cabin_' . $type_value['cabin'] ] = $type_value['seat'];
+                    }
+
+                    foreach ( $_POST as $key => $value ) {
+                        if ( strpos( $key, 'wbtm_selected_seat_cabin_' ) === 0 ) {
+                            $cabin_seats = true;
+                            $cabin = str_replace( 'wbtm_selected_seat_', '', $key );
+                            $selected_cabin_seats .= $cabin . ' (' . sanitize_text_field( $value ) . ')' . PHP_EOL;
+                        }
+                    }
+                }
+
+                $selected_seats = $cabin_seats
+                    ? $selected_cabin_seats
+                    : sanitize_text_field( wp_unslash( $_POST['wbtm_selected_seat'] ?? '' ) );
+
+                /* -------------------------
+                 * Selected data
+                 * ------------------------- */
+                $selected_Data = [
+                    'post_id'            => $post_id,
+                    'j_date'             => sanitize_text_field( wp_unslash( $_POST['j_date'] ?? '' ) ),
+                    'wbtm_selected_seat' => $selected_seats,
+                    'wbtm_bp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ?? '' ) ),
+                    'wbtm_dp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ?? '' ) ),
+                    'wbtm_bp_time'       => sanitize_text_field( wp_unslash( $_POST['wbtm_bp_time'] ?? '' ) ),
+                    'wbtm_dp_time'       => sanitize_text_field( wp_unslash( $_POST['wbtm_dp_time'] ?? '' ) ),
+                    'price_val'          => sanitize_text_field( wp_unslash( $_POST['price_val'] ?? 0 ) ),
+                ];
+
+                if ( $product_id ) {
+                    $added = WC()->cart->add_to_cart( $product_id, 1 );
+                    if ( $added ) {
+                        $selected_bus = WBTM_Layout::selected_bus_display( $selected_Data );
+                        wp_send_json_success( [
+                            'message'      => 'Added successfully',
+                            'selected_bus' => $selected_bus,
+                        ] );
+                    }
+                }
+
+                wp_send_json_error( 'Cart error', 400 );
+            }
+
+
+            /**
+             * Sanitize cabin seats JSON and return safe array
+             *
+             * @param string $json Cabin seats JSON string
+             * @return array
+             */
+            public static function wbtm_get_sanitized_cabin_seats( $json ) {
+
+                if ( empty($json) || ! is_string($json) ) {
+                    return [];
+                }
+                $raw_json = wp_unslash( $json );
+                $decoded = json_decode( $raw_json, true );
+                if ( ! is_array($decoded) ) {
+                    return [];
+                }
+                $cabin_seats = [];
+                foreach ( $decoded as $item ) {
+                    if (
+                        ! isset($item['cabin'], $item['seat']) ||
+                        ! is_string($item['cabin']) ||
+                        ! is_string($item['seat'])
+                    ) {
+                        continue;
+                    }
+                    $cabin_seats[] = [
+                        'cabin' => sanitize_key( $item['cabin'] ),
+                        'seat'  => sanitize_text_field( $item['seat'] ),
+                    ];
+                }
+
+                return $cabin_seats;
             }
 
         }

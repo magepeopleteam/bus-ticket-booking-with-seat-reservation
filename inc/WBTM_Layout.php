@@ -141,6 +141,7 @@
                                     <input type="hidden" name='bus_end_route' value='<?php echo esc_attr($bus_end_route); ?>'/>
                                     <input type="hidden" name='j_date' value='<?php echo esc_attr($j_date); ?>'/>
                                     <input type="hidden" name='r_date' value='<?php echo esc_attr($r_date); ?>'/>
+                                    <input type="hidden" name='wbtm_cabin_mode_enabled' value='<?php echo esc_attr($cabin_mode_enabled); ?>'/>
 									<?php
 										wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
 										// Check for cabin configuration or legacy seat plan
