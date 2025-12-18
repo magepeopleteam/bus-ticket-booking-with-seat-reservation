@@ -13,7 +13,7 @@
   div.wbtm_bus_list_area table th,
   div.wbtm_bus_list_area table td {    border: none;    vertical-align: middle;    font-size: var(--wbtm_fs_label); text-align:left; text-transform: none;  }
   h5.wbtm_sub_total.col_6.paddingLeft_xs{text-align:right;}
-  div.wbtm_bus_list_area table thead th {    background-color: var(--wbtm_color_light);    text-transform: capitalize;  }
+  div.wbtm_bus_list_area table thead th {    background-color: var(--wbtm_color_light);    text-transform: capitalize;  font-weight: normal;}
   div.wbtm_bus_list_area table tbody {    background-color: var(--wbtm_color_theme_alter);  }
   div.wbtm_bus_list_area table tbody tr.bus_item_row td {    border-top: 1px solid var(--wbtm_color_theme);  }
   div.wbtm_selected_seat_details table {    border: 1px solid var(--wbtm_color_border);  }
