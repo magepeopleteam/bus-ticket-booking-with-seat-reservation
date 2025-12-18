@@ -33,7 +33,12 @@
 		$end_route = '';
 		$start_time = '';
 		$end_time = '';
-		if (isset($_GET['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
+		// Allow processing of GET parameters for direct links (shareable URLs)
+	// OR when nonce is present and valid (form submissions)
+	$has_search_params = isset($_GET['bus_start_route']) || isset($_GET['bus_end_route']) || isset($_GET['j_date']);
+	$nonce_valid = isset($_GET['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['wbtm_form_nonce'])), 'wbtm_form_nonce');
+	
+	if ($nonce_valid || $has_search_params) {
 
 			$start_route = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 			$start_route = $start_route ?: (isset($_GET['bus_start_route']) ? sanitize_text_field(wp_unslash($_GET['bus_start_route'])) : '');
