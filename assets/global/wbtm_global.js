@@ -708,36 +708,12 @@
 			alert('Please fill all required fields ❗');
 			return;
 		}
-
 		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
-
-		/*let formData = form.serialize();
-		formData += '&action=wbtm_ajax_add_to_cart';
-		formData += '&price_val=' + encodeURIComponent(priceVal);*/
-
-		let data = {};
-		form.find(':input[name]').each(function () {
-			let name  = $(this).attr('name').trim();
-
-			let value = $(this).val();
-			if (name.endsWith('[]')) {
-				let cleanName = name.replace('[]', '');
-
-				if (!data[cleanName]) {
-					data[cleanName] = [];
-				}
-				data[cleanName].push(value);
-			}
-			else {
-				data[name] = value;
-			}
-		});
-		data.action = 'wbtm_ajax_add_to_cart';
-		data.price_val  = encodeURIComponent(priceVal);
-
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
 		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
+
+		let wbtm_cabin_mode_enabled = form.find(':input[name=wbtm_cabin_mode_enabled]').val();
 
 		const cabinSeats = [];
 		$('input[name^="wbtm_selected_seat_cabin_"]').each(function () {
@@ -760,7 +736,6 @@
 				seat: value
 			});
 		});
-		console.log( cabinSeatTypes );
 
 
 		// data = JSON.stringify(data);
@@ -786,6 +761,7 @@
 				"price_val": encodeURIComponent(priceVal),
 				"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
 				"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
+				"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
 				"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
 				"wbtm_bp_place": form.find(':input[name=wbtm_bp_place]').val(),
 				"wbtm_bp_time": form.find(':input[name=wbtm_bp_time]').val(),
