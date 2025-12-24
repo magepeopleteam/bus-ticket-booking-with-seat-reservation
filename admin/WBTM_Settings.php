@@ -53,6 +53,9 @@
                             <li data-tabs-target="#wbtm_settings_tax">
                                 <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
+                            <li data-tabs-target="#wbtm_settings_gallery_images">
+                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Gallery Image', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </li>
 							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                                 <li data-tabs-target="#mp_pp_deposits_type">
                                     <span class=""></span>&nbsp;&nbsp;<?php esc_html_e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
