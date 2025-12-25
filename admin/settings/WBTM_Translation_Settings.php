@@ -23,71 +23,82 @@ class WBTM_Translation_Settings {
     }
 
     public function register_settings() {
-        register_setting('wbtm_translation_settings', $this->option_name,array(
-	        'type'              => 'string',
-	        'sanitize_callback' => 'sanitize_text_field',
+        register_setting('wbtm_translation_settings', $this->option_name, array(
+	        'type'              => 'array',
+	        'sanitize_callback' => array($this, 'sanitize_translations'),
         ));
+    }
+    
+    public function sanitize_translations($input) {
+        if (!is_array($input)) {
+            return array();
+        }
+        $sanitized = array();
+        foreach ($input as $key => $value) {
+            $sanitized[sanitize_key($key)] = sanitize_text_field($value);
+        }
+        return $sanitized;
+    }
+
+    private function get_all_translation_methods() {
+        $methods = get_class_methods('WBTM_Translations');
+        $text_methods = array();
+        foreach ($methods as $method) {
+            if (strpos($method, 'text_') === 0 || strpos($method, 'duration_') === 0) {
+                $text_methods[] = $method;
+            }
+        }
+        sort($text_methods);
+        return $text_methods;
+    }
+    
+    private function categorize_methods($methods) {
+        $categories = array(
+            'general' => array('label' => 'General Labels', 'icon' => 'fas fa-language', 'keywords' => array('journey', 'date', 'from', 'to', 'search', 'please', 'note', 'terms')),
+            'booking' => array('label' => 'Booking & Orders', 'icon' => 'fas fa-ticket-alt', 'keywords' => array('booking', 'order', 'payment', 'transaction', 'billing')),
+            'passenger' => array('label' => 'Passenger Information', 'icon' => 'fas fa-users', 'keywords' => array('passenger', 'mobile', 'email', 'gender', 'adult', 'child', 'infant', 'nid', 'age')),
+            'bus' => array('label' => 'Bus & Route', 'icon' => 'fas fa-bus', 'keywords' => array('bus', 'route', 'departure', 'arrival', 'schedule', 'duration', 'operator')),
+            'seat' => array('label' => 'Seat & Coach', 'icon' => 'fas fa-chair', 'keywords' => array('seat', 'coach', 'available', 'sold', 'cart', 'upper', 'deck', 'plan')),
+            'location' => array('label' => 'Boarding & Dropping', 'icon' => 'fas fa-map-marker-alt', 'keywords' => array('bp', 'dp', 'boarding', 'dropping', 'pickup', 'drop_off', 'start_point', 'pin')),
+            'pricing' => array('label' => 'Price & Payment', 'icon' => 'fas fa-money-bill', 'keywords' => array('price', 'fare', 'total', 'qty', 'tax', 'discount', 'sub_total')),
+            'actions' => array('label' => 'Buttons & Actions', 'icon' => 'fas fa-toggle-on', 'keywords' => array('book', 'view', 'close', 'proceed', 'cancel', 'print', 'buy', 'action')),
+            'messages' => array('label' => 'Messages & Status', 'icon' => 'fas fa-info-circle', 'keywords' => array('no_', 'error', 'success', 'failed', 'pending', 'confirmed', 'cancelled', 'status', 'msg', 'wrong', 'security')),
+            'misc' => array('label' => 'Miscellaneous', 'icon' => 'fas fa-ellipsis-h', 'keywords' => array())
+        );
+        
+        $categorized = array();
+        foreach ($categories as $cat_key => $cat_data) {
+            $categorized[$cat_key] = array(
+                'label' => $cat_data['label'],
+                'icon' => $cat_data['icon'],
+                'methods' => array()
+            );
+        }
+        
+        foreach ($methods as $method) {
+            $placed = false;
+            foreach ($categories as $cat_key => $cat_data) {
+                if ($cat_key === 'misc') continue;
+                foreach ($cat_data['keywords'] as $keyword) {
+                    if (stripos($method, $keyword) !== false) {
+                        $categorized[$cat_key]['methods'][] = $method;
+                        $placed = true;
+                        break 2;
+                    }
+                }
+            }
+            if (!$placed) {
+                $categorized['misc']['methods'][] = $method;
+            }
+        }
+        
+        return $categorized;
     }
 
     public function settings_page() {
         $translations = get_option($this->option_name, array());
-        $sections = array(
-            'general-translations' => array(
-                'label' => __('General Labels', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-language',
-                'items' => array('journey_date', 'return_date', 'date', 'from', 'to', 'search', 'note', 'terms_conditions')
-            ),
-            'booking-translations' => array(
-                'label' => __('Booking Labels', 'bus-ticket-booking-with-seat-reservation'), 
-                'icon' => 'fas fa-ticket-alt',
-                'items' => array('booking_date', 'booking_id', 'booking_status', 'payment_status', 'transaction_id', 'booking_success', 'booking_failed')
-            ),
-            'passenger-translations' => array(
-                'label' => __('Passenger Information', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-users',
-                'items' => array('passenger_details', 'mobile_number', 'email', 'gender', 'passenger_info', 'adult', 'child', 'infant')
-            ),
-            'bus-translations' => array(
-                'label' => __('Bus Information', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-bus',
-                'items' => array('departure_time', 'arrival_time', 'route_details', 'bus_type', 'coach_type', 'seat_type', 'schedule')
-            ),
-            'seat-translations' => array(
-                'label' => __('Seat Information', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-chair',
-                'items' => array('seat_details', 'seat_selection', 'seat_unavailable', 'text_available_seat', 'text_already_sold')
-            ),
-            'button-translations' => array(
-                'label' => __('Button Labels', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-toggle-on',
-                'items' => array('proceed', 'cancel', 'print_ticket', 'book_now', 'view_seat')
-            ),
-            'error-messages' => array(
-                'label' => __('Error Messages', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-exclamation-triangle',
-                'items' => array('error_required_field', 'error_invalid_email', 'error_invalid_phone')
-            ),
-            'ticket-status' => array(
-                'label' => __('Ticket Status', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-info-circle',
-                'items' => array('ticket_confirmed', 'ticket_pending', 'ticket_cancelled')
-            ),
-            'passenger-form' => array(
-                'label' => __('Passenger Form', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-user-edit',
-                'items' => array('passenger_name', 'age', 'nid', 'mobile_number', 'email', 'gender')
-            ),
-            'journey-info' => array(
-                'label' => __('Journey Information', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-route',
-                'items' => array('boarding_point', 'dropping_point', 'journey_time', 'distance')
-            ),
-            'price-info' => array(
-                'label' => __('Price Information', 'bus-ticket-booking-with-seat-reservation'),
-                'icon' => 'fas fa-money-bill',
-                'items' => array('tax', 'discount', 'grand_total', 'payment_pending', 'payment_complete', 'payment_failed')
-            )
-        );
+        $all_methods = $this->get_all_translation_methods();
+        $sections = $this->categorize_methods($all_methods);
         ?>
         <style>
             .wbtm-translation-wrapper {
@@ -166,6 +177,12 @@ class WBTM_Translation_Settings {
                 font-size: 12px;
                 margin-top: 5px;
             }
+            .wbtm-method-name {
+                font-size: 11px;
+                color: #999;
+                font-family: monospace;
+                margin-top: 3px;
+            }
             .wbtm-submit {
                 margin-top: 20px;
                 text-align: right;
@@ -209,26 +226,29 @@ class WBTM_Translation_Settings {
                 </div>
 
                 <?php foreach ($sections as $section_id => $section) : ?>
+                    <?php if (empty($section['methods'])) continue; ?>
                     <div id="<?php echo esc_attr($section_id); ?>" class="wbtm-tab-content">
-                        <?php foreach ($section['items'] as $field) :
-                            $method = 'text_' . $field;
+                        <?php foreach ($section['methods'] as $method) :
                             if (method_exists('WBTM_Translations', $method)) :
                                 $default_value = call_user_func(array('WBTM_Translations', $method));
-                                $value = isset($translations[$method]) ? $translations[$method] : $default_value;
-                                $label = ucwords(str_replace('_', ' ', $field));
+                                $current_value = isset($translations[$method]) && !empty($translations[$method]) ? $translations[$method] : '';
+                                $display_value = !empty($current_value) ? $current_value : $default_value;
+                                $label = ucwords(str_replace('_', ' ', str_replace('text_', '', $method)));
                         ?>
                         <div class="wbtm-field-row">
                             <div class="wbtm-field-label">
-                                <?php echo esc_html($label); ?>
+                                <strong><?php echo esc_html($label); ?></strong>
+                                <div class="wbtm-method-name"><?php echo esc_html($method); ?>()</div>
                             </div>
                             <div class="wbtm-field-input">
                                 <input type="text" 
                                     name="<?php echo esc_attr($this->option_name . '[' . $method . ']'); ?>"
-                                    value="<?php echo esc_attr($value); ?>"
+                                    value="<?php echo esc_attr($display_value); ?>"
                                     class="wbtm-input"
+                                    placeholder="<?php echo esc_attr($default_value); ?>"
                                 />
                                 <div class="wbtm-description">
-                                    <?php  printf('Default: %s', esc_html($default_value)); ?>
+                                    Default: <code><?php echo esc_html($default_value); ?></code>
                                 </div>
                             </div>
                         </div>
