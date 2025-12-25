@@ -17,7 +17,8 @@
 		<div class="flexWrap">
 			<div class="col_6 col_12_700">
 				<div class="mR">
-					<?php WBTM_Custom_Layout::bg_image($post_id); ?>
+<!--					--><?php //WBTM_Custom_Layout::bg_image($post_id); ?>
+					<?php WBTM_Custom_Layout::bg_image_new($post_id); ?>
 				</div>
 			</div>
 			<div class=" col_6 col_12_700">

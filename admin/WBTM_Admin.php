@@ -49,6 +49,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Extra_Service.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_Pickup_Point.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Tax_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Gallery_Image_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Translation_Settings.php'; // Add this line
 
 				//=====================//

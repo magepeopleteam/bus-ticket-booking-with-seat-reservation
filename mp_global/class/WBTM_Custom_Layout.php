@@ -180,6 +180,86 @@
                 </div>
 				<?php
 			}
+
+			public static function bg_image_new( $post_id = '', $url = '' ) {
+                $thumbnail_url = $post_id > 0 ? WBTM_Global_Function::get_image_url( $post_id ) : $url;
+				$post_url  = $post_id > 0 ? get_the_permalink( $post_id ) : '';
+
+                $gallery_images = get_post_meta( $post_id, 'wbtm_gallery_images', true );
+                $gallery_image_urls = [];
+                if (!empty($gallery_images) && is_array($gallery_images)) {
+                    $gallery_image_urls = array_map(function ( $id ) {
+                        return wp_get_attachment_url( $id );
+                    }, $gallery_images );
+                }
+                $all_image_urls = $gallery_image_urls;
+                if( $thumbnail_url ){
+                    array_push( $all_image_urls, $thumbnail_url );
+                }
+                $car_name = get_the_title( $post_id );
+				?>
+               <!-- <div class="bg_image_area" data-href="<?php /*echo esc_attr( $post_url ); */?>" data-placeholder>
+                    <div data-bg-image="<?php /*echo esc_attr( $thumbnail_url ); */?>"></div>
+                </div>-->
+
+                <div class="wbtm_gallery_image_popup_wrapper">
+                    <div class="wbtm_gallery_image_popup_overlay"></div>
+                    <div class="wbtm_gallery_image_popup_content">
+                        <div class="" style="display: block; float: right">
+                            <button class="wbtm_gallery_image_popup_close">✕</button>
+                        </div>
+                        <div class="wbtm_gallery_image_popup_container">
+                            <?php foreach ( $all_image_urls as $index => $img_url): ?>
+                                <img src="<?php echo esc_url($img_url); ?>"
+                                     class="wbtm_gallery_image_popup_item <?php echo $index === 0 ? 'active' : ''; ?>"
+                                     alt="Gallery image">
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="wbtm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
+                            <div class="">
+                                <button class="wbtm_gallery_image_popup_prev">←</button>
+                            </div>
+                            <div class="">
+                                <button class="wbtm_gallery_image_popup_next">→</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="wbtm_car_details_images">
+                    <div class="wbtm_car_details_feature_image">
+                        <?php if( $thumbnail_url ){?>
+                            <img class="wbtm_car_image_details" id="wbtm_car_details_feature_image" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $post_id );?>">
+                        <?php }?>
+                    </div>
+                    <?php
+                    if (!empty( $gallery_images ) && is_array( $gallery_images ) ) { ?>
+                        <div class="wbtm_car_details_gallery">
+                            <?php
+                            $counter = 0;
+
+                            foreach ( $gallery_image_urls as $gallery_image_url ) {
+                                if ( !$gallery_image_url ) continue;
+                                if ( $counter < 4 ) { ?>
+                                    <img class="wbtm_gallery_image" src=" <?php echo esc_url( $gallery_image_url );?> " alt="<?php echo esc_attr( $car_name )?> Gallery Image">
+                                    <?php
+                                }
+                                $counter++;
+                            }
+                            if ( count( $all_image_urls ) > 4) { ?>
+                                <button class="wbtm_car_image_details mpcrbm_car_details_view_more"><?php esc_attr_e( 'View More', 'car-rental-manager' );?> →</button>
+                                <?php
+                            }
+                            ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+				<?php
+			}
 			/*****************************/
 			public static function load_more_text( $text = '', $length = 150 ) {
 				$text_length = strlen( $text );
