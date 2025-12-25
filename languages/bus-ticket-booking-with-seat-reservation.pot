@@ -1,0 +1,475 @@
+# Copyright (C) 2025 MagePeople Team
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bus Ticket Booking with Seat Reservation 5.6.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bus-ticket-booking-with-seat-reservation\n"
+"POT-Creation-Date: 2025-12-25 10:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WordPress\n"
+"X-Domain: bus-ticket-booking-with-seat-reservation\n"
+
+#: inc/WBTM_Translations.php:18
+msgid "Journey Date"
+msgstr ""
+
+#: inc/WBTM_Translations.php:24
+msgid "Return Date (Optional)"
+msgstr ""
+
+#: inc/WBTM_Translations.php:30
+msgid "Date"
+msgstr ""
+
+#: inc/WBTM_Translations.php:36
+msgid "Order Date"
+msgstr ""
+
+#: inc/WBTM_Translations.php:42
+msgid "BUY TICKET"
+msgstr ""
+
+#: inc/WBTM_Translations.php:48
+msgid "From"
+msgstr ""
+
+#: inc/WBTM_Translations.php:54
+msgid "To"
+msgstr ""
+
+#: inc/WBTM_Translations.php:60
+msgid "Search"
+msgstr ""
+
+#: inc/WBTM_Translations.php:66
+msgid "Please Select"
+msgstr ""
+
+#: inc/WBTM_Translations.php:72
+msgid "Boarding"
+msgstr ""
+
+#: inc/WBTM_Translations.php:78
+msgid "Dropping"
+msgstr ""
+
+#: inc/WBTM_Translations.php:84
+msgid "Starting Points"
+msgstr ""
+
+#: inc/WBTM_Translations.php:90
+msgid "Pickup"
+msgstr ""
+
+#: inc/WBTM_Translations.php:96
+msgid "Pickup Point"
+msgstr ""
+
+#: inc/WBTM_Translations.php:102
+msgid "Drop-Off"
+msgstr ""
+
+#: inc/WBTM_Translations.php:108
+msgid "Drop-Off Point"
+msgstr ""
+
+#: inc/WBTM_Translations.php:114
+msgid "PIN"
+msgstr ""
+
+#: inc/WBTM_Translations.php:120
+msgid "Bus Type"
+msgstr ""
+
+#: inc/WBTM_Translations.php:126
+msgid "Bus Operator"
+msgstr ""
+
+#: inc/WBTM_Translations.php:132
+msgid "Attendee ID"
+msgstr ""
+
+#: inc/WBTM_Translations.php:138
+msgid "Passenger Type"
+msgstr ""
+
+#: inc/WBTM_Translations.php:144
+msgid "Order Status"
+msgstr ""
+
+#: inc/WBTM_Translations.php:150
+msgid "Payment Method"
+msgstr ""
+
+#: inc/WBTM_Translations.php:156
+msgid "Return Trip"
+msgstr ""
+
+#: inc/WBTM_Translations.php:162
+msgid "Upper Deck"
+msgstr ""
+
+#: inc/WBTM_Translations.php:168
+msgid "Already Added in cart !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:174
+msgid "No Bus Found !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:180
+msgid "No Ticket found !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:185
+msgid "Security Issue Found !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:191
+msgid "No Seat Plan Available !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:197
+msgid "No Seat Available !!"
+msgstr ""
+
+#: inc/WBTM_Translations.php:203
+msgid "This bus Now Closed."
+msgstr ""
+
+#: inc/WBTM_Translations.php:209
+msgid "Available Seat"
+msgstr ""
+
+#: inc/WBTM_Translations.php:215
+msgid "Already Sold"
+msgstr ""
+
+#: inc/WBTM_Translations.php:221
+msgid "You select Wrong Route !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:227
+msgid "Please select Starting Point !"
+msgstr ""
+
+#: inc/WBTM_Translations.php:233
+msgid "Schedule"
+msgstr ""
+
+#: inc/WBTM_Translations.php:239
+msgid "Coach Type"
+msgstr ""
+
+#: inc/WBTM_Translations.php:245
+msgid "Seat Type"
+msgstr ""
+
+#: inc/WBTM_Translations.php:251
+#: inc/WBTM_Translations.php:257
+msgid "Seat"
+msgstr ""
+
+#: inc/WBTM_Translations.php:263
+msgid "Name"
+msgstr ""
+
+#: inc/WBTM_Translations.php:269
+msgid "Image"
+msgstr ""
+
+#: inc/WBTM_Translations.php:275
+msgid "Quantity"
+msgstr ""
+
+#: inc/WBTM_Translations.php:281
+msgid "Total Quantity"
+msgstr ""
+
+#: inc/WBTM_Translations.php:287
+msgid "Price"
+msgstr ""
+
+#: inc/WBTM_Translations.php:293
+msgid "Fare"
+msgstr ""
+
+#: inc/WBTM_Translations.php:299
+msgid "Total"
+msgstr ""
+
+#: inc/WBTM_Translations.php:305
+msgid "Ticket Sub total"
+msgstr ""
+
+#: inc/WBTM_Translations.php:311
+msgid "Order Total"
+msgstr ""
+
+#: inc/WBTM_Translations.php:317
+msgid "Passenger Capacity"
+msgstr ""
+
+#: inc/WBTM_Translations.php:323
+msgid "Passenger Information"
+msgstr ""
+
+#: inc/WBTM_Translations.php:329
+msgid "Extra Services"
+msgstr ""
+
+#: inc/WBTM_Translations.php:335
+msgid "Extra Service Sub total"
+msgstr ""
+
+#: inc/WBTM_Translations.php:341
+msgid "Adult"
+msgstr ""
+
+#: inc/WBTM_Translations.php:347
+msgid "Child"
+msgstr ""
+
+#: inc/WBTM_Translations.php:353
+msgid "Infant"
+msgstr ""
+
+#: inc/WBTM_Translations.php:359
+msgid "Action"
+msgstr ""
+
+#: inc/WBTM_Translations.php:365
+msgid "Seats Available"
+msgstr ""
+
+#: inc/WBTM_Translations.php:371
+msgid "Available"
+msgstr ""
+
+#: inc/WBTM_Translations.php:377
+msgid "Unavailable"
+msgstr ""
+
+#: inc/WBTM_Translations.php:383
+msgid "Duration :"
+msgstr ""
+
+#: inc/WBTM_Translations.php:389
+msgid "View Seats"
+msgstr ""
+
+#: inc/WBTM_Translations.php:395
+msgid "Close Seat"
+msgstr ""
+
+#: inc/WBTM_Translations.php:401
+msgid "Book Now"
+msgstr ""
+
+#: inc/WBTM_Translations.php:407
+msgid "This seat is already reserved."
+msgstr ""
+
+#: inc/WBTM_Translations.php:414
+msgid "Seat Details"
+msgstr ""
+
+#: inc/WBTM_Translations.php:420
+msgid "Seat Selection"
+msgstr ""
+
+#: inc/WBTM_Translations.php:427
+msgid "Passenger Details"
+msgstr ""
+
+#: inc/WBTM_Translations.php:434
+msgid "Filter"
+msgstr ""
+
+#: inc/WBTM_Translations.php:440
+msgid "Reset"
+msgstr ""
+
+#: inc/WBTM_Translations.php:446
+msgid "Mobile Number"
+msgstr ""
+
+#: inc/WBTM_Translations.php:452
+msgid "Email"
+msgstr ""
+
+#: inc/WBTM_Translations.php:458
+msgid "Gender"
+msgstr ""
+
+#: inc/WBTM_Translations.php:465
+msgid "Booking Date"
+msgstr ""
+
+#: inc/WBTM_Translations.php:471
+msgid "Booking ID"
+msgstr ""
+
+#: inc/WBTM_Translations.php:477
+msgid "Booking Status"
+msgstr ""
+
+#: inc/WBTM_Translations.php:484
+msgid "Departure Time"
+msgstr ""
+
+#: inc/WBTM_Translations.php:490
+msgid "Arrival Time"
+msgstr ""
+
+#: inc/WBTM_Translations.php:496
+msgid "Route Details"
+msgstr ""
+
+#: inc/WBTM_Translations.php:503
+msgid "Payment Status"
+msgstr ""
+
+#: inc/WBTM_Translations.php:509
+msgid "Transaction ID"
+msgstr ""
+
+#: inc/WBTM_Translations.php:516
+msgid "Booking Successful!"
+msgstr ""
+
+#: inc/WBTM_Translations.php:522
+msgid "Booking Failed!"
+msgstr ""
+
+#: inc/WBTM_Translations.php:528
+msgid "Selected seat(s) no longer available!"
+msgstr ""
+
+#: inc/WBTM_Translations.php:535
+msgid "Proceed"
+msgstr ""
+
+#: inc/WBTM_Translations.php:541
+msgid "Cancel"
+msgstr ""
+
+#: inc/WBTM_Translations.php:547
+msgid "Print Ticket"
+msgstr ""
+
+#: inc/WBTM_Translations.php:554
+msgid "Terms & Conditions"
+msgstr ""
+
+#: inc/WBTM_Translations.php:560
+msgid "Note"
+msgstr ""
+
+#: inc/WBTM_Translations.php:567
+msgid "This field is required"
+msgstr ""
+
+#: inc/WBTM_Translations.php:573
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: inc/WBTM_Translations.php:579
+msgid "Please enter a valid phone number"
+msgstr ""
+
+#: inc/WBTM_Translations.php:586
+msgid "Ticket Confirmed"
+msgstr ""
+
+#: inc/WBTM_Translations.php:592
+msgid "Ticket Pending"
+msgstr ""
+
+#: inc/WBTM_Translations.php:598
+msgid "Ticket Cancelled"
+msgstr ""
+
+#: inc/WBTM_Translations.php:605
+msgid "Passenger Name"
+msgstr ""
+
+#: inc/WBTM_Translations.php:611
+msgid "Age"
+msgstr ""
+
+#: inc/WBTM_Translations.php:617
+msgid "NID/Passport"
+msgstr ""
+
+#: inc/WBTM_Translations.php:624
+msgid "Boarding Point"
+msgstr ""
+
+#: inc/WBTM_Translations.php:630
+msgid "Dropping Point"
+msgstr ""
+
+#: inc/WBTM_Translations.php:636
+msgid "Journey Time"
+msgstr ""
+
+#: inc/WBTM_Translations.php:642
+msgid "Distance"
+msgstr ""
+
+#: inc/WBTM_Translations.php:649
+msgid "Seat Number"
+msgstr ""
+
+#: inc/WBTM_Translations.php:655
+msgid "Seat Status"
+msgstr ""
+
+#: inc/WBTM_Translations.php:662
+msgid "Tax"
+msgstr ""
+
+#: inc/WBTM_Translations.php:668
+msgid "Discount"
+msgstr ""
+
+#: inc/WBTM_Translations.php:674
+msgid "Grand Total"
+msgstr ""
+
+#: inc/WBTM_Translations.php:681
+msgid "Payment Pending"
+msgstr ""
+
+#: inc/WBTM_Translations.php:687
+msgid "Payment Complete"
+msgstr ""
+
+#: inc/WBTM_Translations.php:693
+msgid "Payment Failed"
+msgstr ""
+
+#: woocommerce-bus.php:73
+msgid "Docs"
+msgstr ""
+
+#: woocommerce-bus.php:74
+#: woocommerce-bus.php:80
+msgid "Support"
+msgstr ""
+
+#: woocommerce-bus.php:75
+msgid "Upgrade to PRO Version"
+msgstr ""
+
+#: woocommerce-bus.php:89
+msgid "Settings"
+msgstr ""
