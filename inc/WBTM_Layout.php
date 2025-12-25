@@ -365,10 +365,17 @@
                     $show_hide_class = 'wbtm_return_icon';
                 }
                 if ($date) {
+                    // Translate the start_end label
+                    $translated_label = $start_end;
+                    if ($start_end === 'Departure') {
+                        $translated_label = esc_html__('Departure', 'bus-ticket-booking-with-seat-reservation');
+                    } elseif ($start_end === 'Return') {
+                        $translated_label = esc_html__('Return', 'bus-ticket-booking-with-seat-reservation');
+                    }
                     ?>
                     <div class="wbtm_search_route_container">
                         <div class="wbtm_search_route_return_date">
-                            <div class="wbtm_search_route_label"><?php echo esc_html( $start_end );?></div>
+                            <div class="wbtm_search_route_label"><?php echo esc_html( $translated_label );?></div>
                             <div class="wbtm_search_route_date"><?php echo esc_attr( WBTM_Global_Function::date_format($date) ); ?></div>
                             <div class="wbtm_search_route_day"><?php echo esc_attr( $day );?></div>
                         </div>
@@ -410,7 +417,7 @@
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
                 <label class="wtbm_fdColumn">
-					<?php echo esc_attr(WBTM_Translations::text_journey_date()); ?>
+					<?php echo esc_html(WBTM_Translations::text_journey_date()); ?>
                     <div class="calendar">
                         <i class="fas fa-calendar-alt"></i>
                         <input type="hidden" name="j_date" value="<?php echo esc_attr($hidden_date); ?>" required/>
