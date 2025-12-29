@@ -24,6 +24,7 @@
 			public function global_settings_menu() {
 				$cpt = WBTM_Functions::get_cpt();
 				add_submenu_page( 'edit.php?post_type=' . $cpt, esc_html__( ' Settings', 'bus-ticket-booking-with-seat-reservation' ), esc_html__( ' Settings', 'bus-ticket-booking-with-seat-reservation' ), 'manage_options', 'wbtm_settings_page', array( $this, 'settings_page' ) );
+				add_submenu_page( 'edit.php?post_type=' . $cpt, esc_html__( ' Term And Condition', 'bus-ticket-booking-with-seat-reservation' ), esc_html__( ' Term And Condition', 'bus-ticket-booking-with-seat-reservation' ), 'manage_options', 'wbtm_term_and_condition_page', array( $this, 'wbtm_term_and_condition' ) );
 			}
 
 			public function settings_page() {
@@ -38,6 +39,20 @@
 									<?php $this->settings_api->show_forms(); ?>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+				<?php
+			}
+			public function wbtm_term_and_condition() {
+				?>
+                <div class="wbtm_style wbtm_global_settings">
+                    <div class="mpPanel">
+                        <div class="mpPanelHeader"><?php esc_html_e( ' Term And Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+                        <div class="mpPanelBody mp_zero">
+                            <?php
+                            WBTM_Term_Condition_Setting::term_and_condition_display();
+                            ?>
                         </div>
                     </div>
                 </div>
