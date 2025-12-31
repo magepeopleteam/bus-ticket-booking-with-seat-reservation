@@ -107,7 +107,7 @@
             data-key="${title}"
             >
                 <div class="wtbm_term_title">${title}</div>
-                <button type="button" class="button button-small wtbm_remove_term">Remove</button>
+                <button type="button" class="button button-small  wtbm_remove_term_condition">Remove</button>
             </div>`;
 
             updateTermMeta( $this, item, 'add', 'wtbm_selected_term_condition', html );
@@ -127,7 +127,7 @@
             data-key="${title}"
             >
                 <div class="wtbm_term_title">${title}</div>
-                <button type="button" class="button button-small wtbm_add_term">Add</button>
+                <button type="button" class="button button-small wtbm_add_term_condition">Add</button>
             </div>`;
 
             updateTermMeta( $this, item, 'remove', 'wtbm_all_term_condition', html  );

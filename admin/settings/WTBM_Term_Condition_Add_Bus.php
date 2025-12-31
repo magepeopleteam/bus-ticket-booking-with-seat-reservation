@@ -28,11 +28,11 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
             }
 
             ?>
-            <div class="tabsItem wbtm_settings_term_condition" data-tabs="#wbtm_settings_term_condition">
+            <div class="tabsItem" data-tabs="#wbtm_settings_term_condition">
 
                 <h3><?php esc_html_e('Term And Condition Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                 <p><?php esc_html_e('Bus Term And Condition', 'bus-ticket-booking-with-seat-reservation'); ?></p>
-                <div class="_dLayout_padding_bgLight">
+                <div class="_dLayout_padding_bgLight" style="margin-bottom: 10px">
                     <div class="col_6 _dFlex_fdColumn">
                         <label>
                             <?php esc_html_e('Term And Condition', 'bus-ticket-booking-with-seat-reservation'); ?>
