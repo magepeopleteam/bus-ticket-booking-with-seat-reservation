@@ -99,9 +99,8 @@
                 <?php if( !empty( $selected_term_condition ) ){?>
                 <div class="wtbm_term_wrapper">
 
-                    <h4>Terms & Condition</h4>
+                    <h4><?php esc_html_e( 'Terms & Condition', 'bus-ticket-booking-with-seat-reservation' );?></h4>
                     <?php foreach ( $selected_term_condition as $key => $value ){
-                        error_log( print_r( $value, true ) );
                         ?>
                         <div class="wtbm_term_item">
                             <div class="wtbm_term_header">

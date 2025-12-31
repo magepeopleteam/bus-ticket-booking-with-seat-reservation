@@ -133,8 +133,8 @@
 .wtbm_term_item {
     background: #ffffff;
     border-radius: 14px;
-    padding: 22px 26px;
-    margin-bottom: 20px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-left: 3px solid #4f46e5;
