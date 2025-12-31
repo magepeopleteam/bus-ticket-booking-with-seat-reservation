@@ -12,6 +12,21 @@
 	$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$bus_id = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no');
+
+
+    $all_term_condition = get_option( 'wbtm_term_condition_list', [] );
+    $added_term_condition = get_post_meta( $post_id, 'wbtm_term_condition_list', true );
+    $selected_term_condition = [];
+    if (!empty($added_term_condition) && !empty( $all_term_condition ) ) {
+        foreach ($added_term_condition as $term_key) {
+            if (isset($all_term_condition[$term_key])) {
+                $selected_term_condition[$term_key] = $all_term_condition[$term_key];
+            }
+        }
+    }
+
+//    error_log( print_r( [ '$selected_term_condition' => $selected_term_condition ], true ) );
+
 ?>
 	<div class="_dLayout_dShadow_1">
 		<div class="flexWrap">
@@ -79,8 +94,28 @@
 							</ul>
 						<?php } ?>
 					</div>
+
 				</div>
+                <?php if( !empty( $selected_term_condition ) ){?>
+                <div class="wtbm_term_wrapper">
+
+                    <h4>Terms & Condition</h4>
+                    <?php foreach ( $selected_term_condition as $key => $value ){
+                        error_log( print_r( $value, true ) );
+                        ?>
+                        <div class="wtbm_term_item">
+                            <div class="wtbm_term_header">
+                                <h5 class="wtbm_term_title"><?php echo esc_html( $value['title'] );?></h5>
+                            </div>
+                            <div class="wtbm_term_content">
+                                <p><?php echo wp_kses_post( $value['answer'] );?></p>
+                            </div>
+                        </div>
+                    <?php }?>
+                </div>
+                <?php }?>
 			</div>
+
 		</div>
 	</div>
 <?php

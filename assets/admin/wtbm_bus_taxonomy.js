@@ -2,66 +2,65 @@
     $(document).ready(function () {
 
         function closeTermModal() {
-            $('#mpcrbm_term_condition_modal').hide();
-            $('#mpcrbm_term_condition_key').val('');
-            $('#mpcrbm_term_condition_title').val('');
-            if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
-                tinymce.get('mpcrbm_term_condition_answer_editor').setContent('');
+            $('#wtbm_term_condition_modal').hide();
+            $('#wtbm_term_condition_key').val('');
+            $('#wtbm_term_condition_title').val('');
+            if (tinymce.get('wtbm_term_condition_answer_editor')) {
+                tinymce.get('wtbm_term_condition_answer_editor').setContent('');
             } else {
-                $('#mpcrbm_term_condition_answer_editor').val('');
+                $('#wtbm_term_condition_answer_editor').val('');
             }
         }
 
-        $(document).on('click', '#mpcrbm_add_term_condition_btn',function() {
-            $('#mpcrbm_term_modal_title').text('Add Term & Condition');
+        $(document).on('click', '#wtbm_add_term_condition_btn',function() {
+            $('#wtbm_term_modal_title').text('Add Term & Condition');
             closeTermModal();
 
-            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+            let targetBtn = $('#wtbm_save_term_condition_btn');
 
             if (targetBtn.length) {
-                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+                targetBtn.attr('id', 'wtbm_save_term_condition_btn');
             }
-            $('#mpcrbm_term_condition_modal').show();
+            $('#wtbm_term_condition_modal').show();
         });
 
-        $(document).on( 'click', '#mpcrbm_cancel_term_condition_btn', function() {
+        $(document).on( 'click', '#wtbm_cancel_term_condition_btn', function() {
             closeTermModal();
         });
 
-        $(document).on('click', '.mpcrbm_edit_term', function() {
+        $(document).on('click', '.wtbm_edit_term', function() {
             const row = $(this).closest('tr');
-            $('#mpcrbm_term_condition_key').val(row.data('key'));
-            $('#mpcrbm_term_condition_title').val(row.find('.faq-title').text());
-            $('#mpcrbm_term_modal_title').text('Edit Term & Condition');
-            $('#mpcrbm_term_condition_modal').show();
+            $('#wtbm_term_condition_key').val(row.data('key'));
+            $('#wtbm_term_condition_title').val(row.find('.term-title').text());
+            $('#wtbm_term_modal_title').text('Edit Term & Condition');
+            $('#wtbm_term_condition_modal').show();
 
-            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+            let targetBtn = $('#wtbm_save_term_condition_btn');
 
             if (targetBtn.length) {
-                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+                targetBtn.attr('id', 'wtbm_save_term_condition_btn');
             }
 
-            const answer = row.find('.faq-answer').text();
+            const answer = row.find('.term-answer').text();
             setTimeout(() => {
-                if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
-                    tinymce.get('mpcrbm_term_condition_answer_editor').setContent(answer);
+                if (tinymce.get('wtbm_term_condition_answer_editor')) {
+                    tinymce.get('wtbm_term_condition_answer_editor').setContent(answer);
                 } else {
-                    $('#mpcrbm_term_condition_answer_editor').val(answer);
+                    $('#wtbm_term_condition_answer_editor').val(answer);
                 }
             }, 300);
         });
 
-        $(document).on( 'click','#mpcrbm_save_term_condition_btn', function( e ) {
-            alert("ok");
+        $(document).on( 'click','#wtbm_save_term_condition_btn', function( e ) {
             e.preventDefault();
-            const title = $('#mpcrbm_term_condition_title').val().trim();
+            const title = $('#wtbm_term_condition_title').val().trim();
             let answer = '';
-            if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
-                answer = tinymce.get('mpcrbm_term_condition_answer_editor').getContent();
+            if (tinymce.get('wtbm_term_condition_answer_editor')) {
+                answer = tinymce.get('wtbm_term_condition_answer_editor').getContent();
             } else {
-                answer = $('#mpcrbm_term_condition_answer_editor').val();
+                answer = $('#wtbm_term_condition_answer_editor').val();
             }
-            const key = $('#mpcrbm_term_condition_key').val();
+            const key = $('#wtbm_term_condition_key').val();
 
             if (title === '' || answer === '') {
                 alert('Please fill all fields.');
@@ -69,7 +68,7 @@
             }
 
             $.post( wbtm_admin_var.url, {
-                action: 'mpcrbm_save_term_and_condition',
+                action: 'wtbm_save_term_and_condition',
                 title: title,
                 answer: answer,
                 key: key,
@@ -80,11 +79,11 @@
             });
         });
 
-        $(document).on('click', '.mpcrbm_delete_term', function() {
+        $(document).on('click', '.wtbm_delete_term', function() {
             if (!confirm('Are you sure you want to delete this FAQ?')) return;
             const key = $(this).closest('tr').data('key');
             $.post( wbtm_admin_var.url, {
-                action: 'mpcrbm_delete_term',
+                action: 'wtbm_delete_term',
                 key: key,
                 nonce: wbtm_admin_var.nonce
             }, function(response){
@@ -94,32 +93,53 @@
         });
 
 
-        $(document).on('click', '.mpcrbm_remove_term_condition', function() {
+        // ===== ADD TERM =====
+        $(document).on('click', '.wtbm_add_term_condition', function() {
+            let item = $(this).closest('.wtbm_term_item');
             let $this = $(this);
-            $this.text( 'removing...');
-            let item = $(this).closest('.mpcrbm_selected_item');
+            $this.text( 'adding...');
             let key = item.data('key');
             let title = item.data('title');
 
             let html = `
-            <div class="mpcrbm_faq_item" 
+            <div class="wtbm_selected_item" 
             data-key="${key}"
             data-key="${title}"
             >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+                <div class="wtbm_term_title">${title}</div>
+                <button type="button" class="button button-small wtbm_remove_term">Remove</button>
             </div>`;
 
-            updateTermMeta( $this, item, 'remove', 'mpcrbm_all_term_condition', html  );
+            updateTermMeta( $this, item, 'add', 'wtbm_selected_term_condition', html );
+
+        });
+        // ===== REMOVE TERM =====
+        $(document).on('click', '.wtbm_remove_term_condition', function() {
+            let $this = $(this);
+            $this.text( 'removing...');
+            let item = $(this).closest('.wtbm_selected_item');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="wtbm_term_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="wtbm_term_title">${title}</div>
+                <button type="button" class="button button-small wtbm_add_term">Add</button>
+            </div>`;
+
+            updateTermMeta( $this, item, 'remove', 'wtbm_all_term_condition', html  );
 
         });
 
         function updateTermMeta( clickBtn, item, action, append_section, html ) {
 
-            let post_id = $('[name="mpcrbm_post_id"]').val();
+            let post_id = $('[name="wbtm_post_id"]').val();
             let data = [];
 
-            $('.mpcrbm_selected_item').each(function() {
+            $('.wtbm_selected_item').each(function() {
                 let key = $(this).data('key');
                 data.push(key);
             });
@@ -136,23 +156,23 @@
                 }
             }
 
-            let faq_keys = JSON.stringify(data);
-            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+            let term_keys = JSON.stringify(data);
+            $('#wtbm_added_term_input').val(JSON.stringify( term_keys ));
 
             $.ajax({
-                url: ajaxurl,
+                url: wbtm_ajax_url,
                 method: 'POST',
                 data: {
-                    action: 'mpcrbm_save_added_term_condition',
+                    action: 'wtbm_save_added_term_condition',
                     post_id: post_id,
-                    mpcrbm_added_term: faq_keys,
-                    nonce: mpcrbm_admin_nonce.nonce
+                    wtbm_added_term: term_keys,
+                    nonce: wbtm_nonce
                 },
                 success: function (response) {
                     if (response.success) {
                         // alert('✅ FAQs saved successfully');
 
-                        console.log(append_section);
+                        // console.log(append_section);
                         clickBtn.text( action );
                         $('.'+append_section).append(html);
                         item.remove();
