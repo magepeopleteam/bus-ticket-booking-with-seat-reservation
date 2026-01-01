@@ -50,7 +50,9 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_Pickup_Point.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Tax_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Gallery_Image_Settings.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Translation_Settings.php'; // Add this line
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Translation_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Term_Condition_Setting.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WTBM_Term_Condition_Add_Bus.php';
 
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';
