@@ -104,7 +104,7 @@
             let html = `
             <div class="wtbm_selected_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="wtbm_term_title">${title}</div>
                 <button type="button" class="button button-small  wtbm_remove_term_condition">Remove</button>
@@ -124,7 +124,7 @@
             let html = `
             <div class="wtbm_term_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="wtbm_term_title">${title}</div>
                 <button type="button" class="button button-small wtbm_add_term_condition">Add</button>
