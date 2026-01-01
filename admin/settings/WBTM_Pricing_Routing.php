@@ -153,9 +153,9 @@
                                     }
                                 });
                                 // Trigger the change event on page load to ensure the checkbox visibility is correct
-                                $('select[name="wbtm_route_type[]"]').each(function () {
-                                    $(this).trigger('change');
-                                });
+                                // $('select[name="wbtm_route_type[]"]').each(function () {
+                                //     $(this).trigger('change');
+                                // });
                             });
                         </script>
                     </div>
