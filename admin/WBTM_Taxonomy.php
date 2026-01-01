@@ -192,7 +192,37 @@
 					'meta_box_cb' => false,
 				);
 				register_taxonomy('wbtm_bus_drop_off', 'wbtm_bus', $args_drop_off);
-			}
+
+
+                $bus_feature_args = array(
+                    'hierarchical'        => true, // IMPORTANT: makes it behave like a category
+                    'public'              => false,
+                    'label'               => esc_html__( 'Bus Features', 'car-rental-manager' ),
+                    'labels'              => array(
+                        'name'              => esc_html__( 'Bus Features', 'car-rental-manager' ),
+                        'singular_name'     => esc_html__( 'Bus Feature', 'car-rental-manager' ),
+                        'search_items'      => esc_html__( 'Search Bus Features', 'car-rental-manager' ),
+                        'all_items'         => esc_html__( 'All Bus Features', 'car-rental-manager' ),
+                        'parent_item'       => esc_html__( 'Parent Bus Feature', 'car-rental-manager' ),
+                        'parent_item_colon' => esc_html__( 'Parent Bus Feature:', 'car-rental-manager' ),
+                        'edit_item'         => esc_html__( 'Edit Bus Feature', 'car-rental-manager' ),
+                        'update_item'       => esc_html__( 'Update Bus Feature', 'car-rental-manager' ),
+                        'add_new_item'      => esc_html__( 'Add New Bus Feature', 'car-rental-manager' ),
+                        'new_item_name'     => esc_html__( 'New Bus Feature Name', 'car-rental-manager' ),
+                        'menu_name'         => esc_html__( 'Bus Features', 'car-rental-manager' ),
+                    ),
+                    'show_ui'             => true,
+                    'show_admin_column'   => true, // shows column in bus list table
+                    'show_in_menu'        => 'edit.php?post_type=wbtm_bus',
+                    'publicly_queryable'  => true,
+                    'exclude_from_search' => true,
+                    'show_in_nav_menus'   => false,
+                    'has_archive'         => false,
+                    'rewrite'             => false,
+                );
+                register_taxonomy( 'wbtm_bus_feature', 'wbtm_bus', $bus_feature_args );
+
+            }
 		}
 		new WBTM_Taxonomy();
 	}

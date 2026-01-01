@@ -183,5 +183,37 @@
             });
         }
 
+        function updateHiddenField() {
+            let selected = [];
+            let post_id = $('[name="wbtm_post_id"]').val();
+
+            $('.wtbm_bus_feature_checkbox:checked').each(function () {
+                selected.push($(this).data('term-id'));
+            });
+
+            $('#wtbm_added_feature').val(selected.join(','));
+
+            jQuery.ajax({
+                url: wbtm_ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wtbm_save_bus_features',
+                    post_id: post_id,
+                    nonce: wbtm_nonce,
+                    features: jQuery('#wtbm_added_feature').val(),
+                },
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        $(document).on('change', '.wtbm_bus_feature_checkbox', function () {
+            updateHiddenField();
+        });
+
+
+
+
     });
 })(jQuery);
