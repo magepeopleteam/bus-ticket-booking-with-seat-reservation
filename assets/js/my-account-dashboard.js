@@ -1,4 +1,4 @@
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
     'use strict';
 
     const WBTMDashboard = {
@@ -6,17 +6,17 @@ jQuery(document).ready(function($) {
         isLoading: false,
         searchTerm: '',
 
-        init: function() {
+        init: function () {
             this.bindEvents();
             this.handleSearchTypeChange(); // Initialize search input visibility
             this.loadBookings();
         },
 
-        bindEvents: function() {
+        bindEvents: function () {
             // Search functionality
             $('#wbtm-search-btn').on('click', this.handleSearch.bind(this));
             $('#wbtm-reset-btn').on('click', this.handleReset.bind(this));
-            $('#wbtm-search-bookings, #wbtm-search-date').on('keypress', function(e) {
+            $('#wbtm-search-bookings, #wbtm-search-date').on('keypress', function (e) {
                 if (e.which === 13) {
                     WBTMDashboard.handleSearch();
                 }
@@ -29,10 +29,10 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.wbtm-view-btn', this.handleViewBooking.bind(this));
             $(document).on('click', '.wbtm-edit-btn', this.handleEditAttendee.bind(this));
             $(document).on('click', '.wbtm-pdf-btn', this.handleDownloadPDF.bind(this));
-            
+
             // Modal close events
             $('#wbtm-modal-close, #wbtm-edit-modal-close').on('click', this.closeModals.bind(this));
-            $('.wbtm-modal').on('click', function(e) {
+            $('.wbtm-modal').on('click', function (e) {
                 if (e.target === this) {
                     WBTMDashboard.closeModals();
                 }
@@ -45,9 +45,9 @@ jQuery(document).ready(function($) {
             $(document).on('submit', '#wbtm-edit-form', this.handleEditSubmission.bind(this));
         },
 
-        loadBookings: function(page = 1, search = '') {
+        loadBookings: function (page = 1, search = '') {
             if (this.isLoading) return;
-            
+
             this.isLoading = true;
             this.currentPage = page;
             this.searchTerm = search;
@@ -66,13 +66,13 @@ jQuery(document).ready(function($) {
                 },
                 success: this.handleBookingsResponse.bind(this),
                 error: this.handleError.bind(this),
-                complete: function() {
+                complete: function () {
                     WBTMDashboard.isLoading = false;
                 }
             });
         },
 
-        handleBookingsResponse: function(response) {
+        handleBookingsResponse: function (response) {
             if (response.success) {
                 this.renderBookings(response.data.bookings);
                 this.updateStats(response.data.stats);
@@ -82,9 +82,9 @@ jQuery(document).ready(function($) {
             }
         },
 
-        renderBookings: function(bookings) {
+        renderBookings: function (bookings) {
             const $container = $('#wbtm-bookings-list');
-            
+
             if (bookings.length === 0) {
                 $container.html(this.getEmptyState());
                 return;
@@ -98,11 +98,11 @@ jQuery(document).ready(function($) {
             $container.html(html);
         },
 
-        getBookingHTML: function(booking) {
+        getBookingHTML: function (booking) {
             const statusClass = booking.status.replace('-', '');
             const journeyDate = booking.journey_date || 'Not specified';
-            const route = booking.boarding_point && booking.dropping_point 
-                ? `${booking.boarding_point} → ${booking.dropping_point}` 
+            const route = booking.boarding_point && booking.dropping_point
+                ? `${booking.boarding_point} → ${booking.dropping_point}`
                 : 'Route not specified';
             const price = booking.total ? `$${parseFloat(booking.total).toFixed(2)}` : 'N/A';
 
@@ -141,23 +141,23 @@ jQuery(document).ready(function($) {
                         <button class="wbtm-btn wbtm-btn-primary wbtm-view-btn" data-order-id="${booking.order_id}">
                             <i class="fas fa-eye"></i> View
                         </button>
-                        ${booking.pdf_url ? 
-                            `<button class="wbtm-btn wbtm-btn-success wbtm-pdf-btn _themeButton" data-href="${booking.pdf_url}" data-order-id="${booking.order_id}">
+                        ${booking.pdf_url ?
+                    `<button class="wbtm-btn wbtm-btn-success wbtm-pdf-btn _themeButton" data-href="${booking.pdf_url}" data-order-id="${booking.order_id}">
                                 <i class="fas fa-file-pdf"></i> PDF
                             </button>` :
-                            `<div class="wbtm-pdf-disabled">
+                    `<div class="wbtm-pdf-disabled">
                                 <button class="wbtm-btn wbtm-btn-disabled" disabled>
                                     <i class="fas fa-file-pdf"></i> PDF
                                 </button>
                                 <div class="wbtm-pro-required-text">Pro Addon Required</div>
                             </div>`
-                        }
+                }
                     </div>
                 </div>
             `;
         },
 
-        getEmptyState: function() {
+        getEmptyState: function () {
             return `
                 <div class="wbtm-empty-state">
                     <i class="fas fa-ticket-alt"></i>
@@ -167,22 +167,23 @@ jQuery(document).ready(function($) {
             `;
         },
 
-        updateStats: function(stats) {
+        updateStats: function (stats) {
             $('#total-bookings').text(stats.total);
+            $('#total-tickets').text(stats.tickets);
             $('#upcoming-bookings').text(stats.upcoming);
             $('#completed-bookings').text(stats.completed);
         },
 
-        renderPagination: function(pagination) {
+        renderPagination: function (pagination) {
             const $container = $('#wbtm-pagination');
-            
+
             if (pagination.total_pages <= 1) {
                 $container.hide();
                 return;
             }
 
             let html = '';
-            
+
             // Previous button
             if (pagination.current_page > 1) {
                 html += `<button class="wbtm-pagination-btn" data-page="${pagination.current_page - 1}">
@@ -223,11 +224,11 @@ jQuery(document).ready(function($) {
             $container.html(html).show();
         },
 
-        handleSearchTypeChange: function() {
+        handleSearchTypeChange: function () {
             const searchType = $('#wbtm-search-type').val();
             const $textInput = $('#wbtm-search-bookings');
             const $dateInput = $('#wbtm-search-date');
-            
+
             if (searchType === 'journey_date') {
                 $textInput.hide();
                 $dateInput.show();
@@ -235,7 +236,7 @@ jQuery(document).ready(function($) {
             } else {
                 $dateInput.hide();
                 $textInput.show();
-                
+
                 // Update placeholder based on search type
                 const placeholders = {
                     'order_id': 'Enter order ID...',
@@ -246,25 +247,25 @@ jQuery(document).ready(function($) {
             }
         },
 
-        handleSearch: function() {
+        handleSearch: function () {
             const searchType = $('#wbtm-search-type').val();
             let searchTerm = '';
-            
+
             if (searchType === 'journey_date') {
                 searchTerm = $('#wbtm-search-date').val();
             } else {
                 searchTerm = $('#wbtm-search-bookings').val().trim();
             }
-            
+
             const searchData = {
                 type: searchType,
                 term: searchTerm
             };
-            
+
             this.loadBookings(1, searchData);
         },
 
-        handleReset: function() {
+        handleReset: function () {
             $('#wbtm-search-bookings').val('');
             $('#wbtm-search-date').val('');
             $('#wbtm-search-type').val('order_id');
@@ -272,22 +273,22 @@ jQuery(document).ready(function($) {
             this.loadBookings(1, '');
         },
 
-        handlePagination: function(e) {
+        handlePagination: function (e) {
             const page = parseInt($(e.currentTarget).data('page'));
             if (page && page !== this.currentPage) {
                 this.loadBookings(page, this.searchTerm);
             }
         },
 
-        handleViewBooking: function(e) {
+        handleViewBooking: function (e) {
             const orderId = $(e.currentTarget).data('order-id');
             this.loadBookingDetails(orderId);
         },
 
-        loadBookingDetails: function(orderId) {
+        loadBookingDetails: function (orderId) {
             const $modal = $('#wbtm-booking-modal');
             const $body = $('#wbtm-modal-body');
-            
+
             $body.html('<div class="wbtm-loading"><i class="fas fa-spinner fa-spin"></i> ' + wbtm_dashboard_ajax.strings.loading + '</div>');
             $modal.show();
 
@@ -299,24 +300,24 @@ jQuery(document).ready(function($) {
                     order_id: orderId,
                     nonce: wbtm_dashboard_ajax.nonce
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         WBTMDashboard.renderBookingDetails(response.data);
                     } else {
                         $body.html('<div class="wbtm-error">' + (response.data.message || wbtm_dashboard_ajax.strings.error) + '</div>');
                     }
                 },
-                error: function() {
+                error: function () {
                     $body.html('<div class="wbtm-error">' + wbtm_dashboard_ajax.strings.error + '</div>');
                 }
             });
         },
 
-        renderBookingDetails: function(data) {
+        renderBookingDetails: function (data) {
             const $body = $('#wbtm-modal-body');
-            
+
             let html = '<div class="wbtm-booking-details">';
-            
+
             // Order Information
             html += `
                 <div class="wbtm-detail-section">
@@ -421,13 +422,13 @@ jQuery(document).ready(function($) {
                                 <h5 style="margin: 15px 0 10px 0; color: #374151; font-weight: 600;">Extra Services</h5>
                                 <div class="wbtm-services-list">
                         `;
-                        
+
                         attendee.extra_services.forEach(service => {
                             const serviceName = service.name || 'Service';
                             const serviceQty = service.qty || 1;
                             const servicePrice = service.price || 0;
                             const totalPrice = servicePrice * serviceQty;
-                            
+
                             html += `
                                 <div class="wbtm-service-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
                                     <div class="wbtm-service-name" style="font-weight: 500; color: #111827;">${serviceName}</div>
@@ -437,7 +438,7 @@ jQuery(document).ready(function($) {
                                 </div>
                             `;
                         });
-                        
+
                         html += `
                                 </div>
                             </div>
@@ -459,15 +460,15 @@ jQuery(document).ready(function($) {
             $body.html(html);
         },
 
-        handleEditAttendee: function(e) {
+        handleEditAttendee: function (e) {
             const attendeeId = $(e.currentTarget).data('attendee-id');
             this.showEditForm(attendeeId);
         },
 
-        showEditForm: function(attendeeId) {
+        showEditForm: function (attendeeId) {
             const $modal = $('#wbtm-edit-modal');
             const $body = $('#wbtm-edit-modal-body');
-            
+
             // For now, show a simple form. In a real implementation, you'd load the attendee data first
             const html = `
                 <form id="wbtm-edit-form" data-attendee-id="${attendeeId}">
@@ -493,21 +494,21 @@ jQuery(document).ready(function($) {
                     </div>
                 </form>
             `;
-            
+
             $body.html(html);
             $modal.show();
-            
+
             // Bind cancel button
             $('#wbtm-edit-cancel').on('click', this.closeModals.bind(this));
         },
 
-        handleEditSubmission: function(e) {
+        handleEditSubmission: function (e) {
             e.preventDefault();
-            
+
             const $form = $(e.currentTarget);
             const attendeeId = $form.data('attendee-id');
             const formData = $form.serializeArray();
-            
+
             const fieldData = {};
             formData.forEach(field => {
                 fieldData[field.name] = field.value;
@@ -522,7 +523,7 @@ jQuery(document).ready(function($) {
                     field_data: fieldData,
                     nonce: wbtm_dashboard_ajax.nonce
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         alert('Information updated successfully!');
                         WBTMDashboard.closeModals();
@@ -531,44 +532,44 @@ jQuery(document).ready(function($) {
                         alert(response.data.message || wbtm_dashboard_ajax.strings.error);
                     }
                 },
-                error: function() {
+                error: function () {
                     alert(wbtm_dashboard_ajax.strings.error);
                 }
             });
         },
 
-        handleDownloadPDF: function(e) {
+        handleDownloadPDF: function (e) {
             e.preventDefault();
             const $button = $(e.currentTarget);
             const pdfUrl = $button.attr('data-href');
-            
+
             if (!pdfUrl) {
                 alert('PDF download URL not available.');
                 return;
             }
-            
+
             // Show loading indicator (similar to the pro addon)
             const loadingMsg = $('<div id="wbtm-download-loading" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;"><div style="background:#fff;padding:30px 50px;border-radius:8px;box-shadow:0 2px 8px #ccc;font-size:18px;font-weight:600;color:#2271b1;">Preparing download...</div></div>');
             $('body').append(loadingMsg);
-            
+
             // Trigger download
             window.open(pdfUrl, '_blank');
-            
+
             // Remove loading indicator after a short delay
-            setTimeout(function() {
+            setTimeout(function () {
                 loadingMsg.remove();
             }, 2000);
         },
 
-        closeModals: function() {
+        closeModals: function () {
             $('.wbtm-modal').hide();
         },
 
-        handleError: function() {
+        handleError: function () {
             this.showError(wbtm_dashboard_ajax.strings.error);
         },
 
-        showError: function(message) {
+        showError: function (message) {
             const $container = $('#wbtm-bookings-list');
             $container.html(`
                 <div class="wbtm-error-state">
