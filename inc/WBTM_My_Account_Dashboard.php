@@ -111,6 +111,10 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                         <div class="wbtm-stat-label"><?php _e('TOTAL BOOKINGS', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                     </div>
                     <div class="wbtm-stat-card">
+                        <div class="wbtm-stat-number" id="total-tickets">0</div>
+                        <div class="wbtm-stat-label"><?php _e('TOTAL TICKETS', 'bus-ticket-booking-with-seat-reservation'); ?></div>
+                    </div>
+                    <div class="wbtm-stat-card">
                         <div class="wbtm-stat-number" id="upcoming-bookings">0</div>
                         <div class="wbtm-stat-label"><?php _e('UPCOMING', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                     </div>
@@ -363,7 +367,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             }
 
             $bookings = array();
-            $stats = array('total' => 0, 'upcoming' => 0, 'completed' => 0);
+            $stats = array('total' => 0, 'tickets' => 0, 'upcoming' => 0, 'completed' => 0);
 
             // Process current page bookings
             if ($bookings_query->have_posts()) {
@@ -375,15 +379,31 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                 }
             }
 
-            // Calculate stats from all user bookings
+            // Calculate stats from all user bookings - count unique orders and total tickets
             if ($all_bookings_query->have_posts()) {
+                $counted_orders = array();
                 foreach ($all_bookings_query->posts as $booking_post) {
-                    $stats['total']++;
+                    $order_id = get_post_meta($booking_post->ID, 'wbtm_order_id', true);
+                    $order_status = get_post_meta($booking_post->ID, 'wbtm_order_status', true);
                     $journey_date = get_post_meta($booking_post->ID, 'wbtm_boarding_time', true);
-                    if ($journey_date && strtotime($journey_date) > current_time('timestamp')) {
-                        $stats['upcoming']++;
-                    } else {
-                        $stats['completed']++;
+                    
+                    // Count total tickets (all booking posts)
+                    $stats['tickets']++;
+                    
+                    // Only count each order once for order-based stats
+                    if (!in_array($order_id, $counted_orders)) {
+                        $counted_orders[] = $order_id;
+                        $stats['total']++;
+                        
+                        // Check order status first, then journey date for upcoming/completed
+                        if (in_array($order_status, array('completed', 'wc-completed'))) {
+                            $stats['completed']++;
+                        } elseif ($journey_date && strtotime($journey_date) > current_time('timestamp')) {
+                            $stats['upcoming']++;
+                        } else {
+                            // Processing, on-hold, or past journey date
+                            $stats['upcoming']++;
+                        }
                     }
                 }
             }
@@ -586,17 +606,23 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
 
             // Get booking posts for this order
             $user_id = get_current_user_id();
+            
+            // Verify the order belongs to the current user (unless admin)
+            if (!current_user_can('manage_options')) {
+                $wc_order = wc_get_order($order_id);
+                if (!$wc_order || $wc_order->get_customer_id() != $user_id) {
+                    wp_send_json_error(array('message' => __('Booking not found or access denied.', 'bus-ticket-booking-with-seat-reservation')));
+                }
+            }
+            
+            // Get all bookings for this order
             $bookings = get_posts(array(
                 'post_type' => 'wbtm_bus_booking',
+                'post_status' => 'publish',
                 'meta_query' => array(
                     array(
                         'key' => 'wbtm_order_id',
                         'value' => $order_id,
-                        'compare' => '='
-                    ),
-                    array(
-                        'key' => 'wbtm_user_id',
-                        'value' => $user_id,
                         'compare' => '='
                     )
                 ),
