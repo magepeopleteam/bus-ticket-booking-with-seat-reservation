@@ -143,7 +143,12 @@
 .wtbm_selected_item:hover {
     background: #eef3f7;
 }
-
+.wbtm_add_icon_popup {
+    display: none;
+}
+.wbtm_add_icon_popup.active {
+    display: block;
+}
 @media (max-width: 768px) {
     .wtbm_term_question_holder {
         flex-direction: column;

@@ -157,7 +157,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
 (function ($) {
     "use strict";
     //=================select icon=========================//
-    $(document).on("click", ".wbtm_add_icon_image_area button.wbtm_icon_add", function () {
+    /*$(document).on("click", ".wbtm_add_icon_image_area button.wbtm_icon_add", function () {
             let target_popup = $(".wbtm_add_icon_popup");
             target_popup.find(".iconItem").click(function () {
                 let parent = $("[data-active-popup]").closest(".wbtm_add_icon_image_area");
@@ -194,7 +194,51 @@ function wbtm_load_sortable_datepicker(parent, item) {
                 target_popup.find(".iconItem").removeClass("active");
             });
         }
-    );
+    );*/
+
+    // Popup open
+    $(document).on("click", ".wbtm_icon_add", function () {
+        $(".wbtm_add_icon_popup").addClass("active");
+    });
+    $(document).on("click", ".wbtm_add_icon_popup .popupClose", function () {
+        let popup = $(".wbtm_add_icon_popup");
+        popup.removeClass("active");
+        popup.find(".iconItem").removeClass("active");
+        popup.find('[data-icon-menu="all_item"]').click();
+    });
+    $(document).on("click", ".wbtm_add_icon_popup .iconItem", function () {
+        let iconClass = $(this).data("icon-class");
+        if (!iconClass) return;
+
+        let parent = $(".wbtm_add_icon_image_area"); // সহজভাবে parent ধরা
+
+        parent.find('input[type="hidden"]').val(iconClass);
+        parent.find(".wbtm_add_icon_image_button_area, .wbtm_image_item").hide();
+        parent.find(".wbtm_icon_item").show();
+        parent.find("[data-add-icon]").attr("class", iconClass);
+
+        $(".wbtm_add_icon_popup .popupClose").click();
+    });
+
+    $(document).on("click", ".wbtm_add_icon_popup [data-icon-menu]", function (e) {
+        e.preventDefault();
+        let menu = $(this);
+        let target = menu.data("icon-menu");
+        $(".wbtm_add_icon_popup [data-icon-menu]").removeClass("active");
+        menu.addClass("active");
+        $(".wbtm_add_icon_popup [data-icon-list]").each(function () {
+            let list = $(this);
+            let type = list.data("icon-list");
+
+            if (target === "all_item" || target === type) {
+                list.show();
+            } else {
+                list.hide();
+            }
+        });
+    });
+
+
     $(document).on("click", ".wbtm_add_icon_image_area .wbtm_icon_remove", function () {
             let parent = $(this).closest(".wbtm_add_icon_image_area");
             parent.find('input[type="hidden"]').val("");
