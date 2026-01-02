@@ -60,6 +60,8 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
             $selected = '';
             if( !empty( $get_selected_features ) ){
                 $selected = implode( ',', $get_selected_features );
+            }else{
+                $get_selected_features = [];
             }
 
             ?>
