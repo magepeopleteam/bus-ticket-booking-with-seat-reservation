@@ -636,5 +636,19 @@
 				<img src="<?php echo $bus_logo; ?>" onerror="this.onerror=null; this.src='<?php echo $default_logo; ?>';">
 				<?php
 			}
+
+            public static function getSelectedFeatures( $all_features, $selected_ids ) {
+
+                $selected_features = [];
+                if( is_array( $all_features ) && !empty( $all_features ) && is_array( $selected_ids ) && !empty( $selected_ids ) ){
+                    $selected_features = array_filter($all_features, function($feature) use ($selected_ids) {
+                        return in_array($feature['term_id'], $selected_ids);
+                    });
+                }
+
+                // Reindex array
+                return array_values($selected_features);
+            }
+
 		}
 	}
