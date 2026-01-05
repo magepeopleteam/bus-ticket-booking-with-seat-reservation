@@ -57,6 +57,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin.php';
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Shortcodes.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Single_Bus_Details.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woocommerce.php';
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/inc/class-functions.php';
