@@ -177,12 +177,16 @@
 .wbtm_bus_list_area .wbtm_bus_details_tabs {
     display: flex;
     visibility: hidden;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.5s ease;
 }
 
 /* Show tab when hovering over parent bus item */
 .wbtm_bus_list_area .wbtm-bus-list:hover .wbtm_bus_details_tabs {
-    display: flex;
     visibility: visible;
+    opacity: 1;
+    transform: scale(1);
 }
 .wbtm-bus-popup {
     display: none;
