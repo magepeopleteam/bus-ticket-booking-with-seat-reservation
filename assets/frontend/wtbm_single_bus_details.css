@@ -139,6 +139,14 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-left: 3px solid #4f46e5;
 }
+.wbtm_bus_feature_items {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
 .wtbm_term_item:hover {
     transform: translateY(-4px);

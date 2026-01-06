@@ -63,4 +63,32 @@ jQuery(document).ready(function ($) {
         $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);
     }
 
+
+    $(document).on('click','.wbtm_bus_details_tab', function () {
+        let post_id = $(this).data('post-id');
+
+        $('#wbtm-bus-popup').fadeIn();
+        $('.wbtm-popup-content').html('<p>Loading...</p>');
+
+        $.ajax({
+            url: wbtm_ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wbtm_load_bus_details',
+                post_id: post_id,
+                nonce: wbtm_nonce,
+            },
+            success: function (response) {
+                $('.wbtm-popup-content').html(response);
+            }
+        });
+    });
+
+    // Close popup
+    $(document).on('click', '.wbtm-popup-close, #wbtm-bus-popup', function (e) {
+        if ($(e.target).is('#wbtm-bus-popup, .wbtm-popup-close')) {
+            $('#wbtm-bus-popup').fadeOut();
+        }
+    });
+
 });

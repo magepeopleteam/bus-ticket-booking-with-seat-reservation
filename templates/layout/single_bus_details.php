@@ -25,7 +25,11 @@
         }
     }
 
-//    error_log( print_r( [ '$selected_term_condition' => $selected_term_condition ], true ) );
+    $all_features = WTBM_Features_Seating::get_all_bus_features();
+    $selected_feature_ids = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
+    $feature_lists = WBTM_Functions::getSelectedFeatures( $all_features, $selected_feature_ids );
+
+//    error_log( print_r( [ '$feature_lists' => $feature_lists ], true ) );
 
 ?>
 	<div class="_dLayout_dShadow_1">
@@ -96,6 +100,20 @@
 					</div>
 
 				</div>
+                <?php if( !empty( $feature_lists ) ){?>
+                    <div class="wtbm_term_wrapper">
+
+                        <h4><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' );?></h4>
+                        <?php foreach ( $feature_lists as $key => $value ){
+                            ?>
+                            <div class="wbtm_bus_feature_items">
+                                <div class="wtbm_term_content">
+                                    <span><?php echo esc_attr( $value['name'] );?></span>
+                                </div>
+                            </div>
+                        <?php }?>
+                    </div>
+                <?php }?>
                 <?php if( !empty( $selected_term_condition ) ){?>
                 <div class="wtbm_term_wrapper">
 

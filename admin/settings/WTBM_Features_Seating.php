@@ -11,6 +11,41 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
         public function __construct() {
             add_action( 'wbtm_add_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
             add_action('wp_ajax_wtbm_save_bus_features', [ $this, 'wtbm_save_bus_features' ] );
+
+            add_action( 'wbtm_bus_feature_add_form_fields', [ $this, 'wbtm_bus_feature_add_icon_field' ] );
+            add_action( 'wbtm_bus_feature_edit_form_fields',  [ $this, 'wbtm_bus_feature_edit_icon_field' ] );
+            add_action( 'created_wbtm_bus_feature', [ $this, 'wbtm_save_bus_feature_icon'] );
+            add_action( 'edited_wbtm_bus_feature', [ $this, 'wbtm_save_bus_feature_icon'] );
+        }
+        function wbtm_save_bus_feature_icon( $term_id ) {
+            if ( isset( $_POST['wbtm_bus_feature_icon'] ) ) {
+                $bus_feature_icon = sanitize_text_field( wp_unslash( $_POST['wbtm_bus_feature_icon'] ) );
+                update_term_meta( $term_id, 'wbtm_bus_feature_icon', $bus_feature_icon );
+            }
+        }
+
+
+        function wbtm_bus_feature_add_icon_field() {
+            do_action('wbtm_input_add_icon', 'wbtm_bus_feature_icon');
+            ?>
+            <?php
+        }
+
+        function wbtm_bus_feature_edit_icon_field( $term ) {
+            $bus_feature_icon  = get_term_meta( $term->term_id, 'wbtm_bus_feature_icon', true );
+
+            ?>
+            <tr class="form-field term-icon-wrap">
+                <th scope="row">
+                    <label for="wbtm_bus_feature_icon"><?php esc_html_e( 'Feature Icon', 'car-rental-manager' ); ?></label>
+                </th>
+                <td>
+                    <?php
+                    do_action('wbtm_input_add_icon', 'wbtm_bus_feature_icon', $bus_feature_icon);
+                    ?>
+                </td>
+            </tr>
+            <?php
         }
 
         public function wtbm_save_bus_features() {
@@ -46,6 +81,7 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
                         'name'    => $feature->name,
                         'slug'    => $feature->slug,
                         'parent'  => $feature->parent,
+                        'icon'  => get_term_meta( $feature->term_id, 'wbtm_bus_feature_icon', true ),
                     );
                 }
             }
@@ -56,10 +92,13 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
         public function term_tab_content( $post_id ){
 
             $features = self::get_all_bus_features();
+//            error_log( print_r( [ '$features' => $features ], true ) );
             $get_selected_features = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
             $selected = '';
             if( !empty( $get_selected_features ) ){
                 $selected = implode( ',', $get_selected_features );
+            }else{
+                $get_selected_features = [];
             }
 
             ?>
@@ -83,12 +122,14 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
                         <div class="wtbm-bus-features">
                             <?php foreach ( $features as $feature ) : ?>
                                 <label>
+
                                     <input type="checkbox"
                                            class="wtbm_bus_feature_checkbox"
                                            data-term-id="<?php echo esc_attr( $feature['term_id'] ); ?>"
                                         <?php checked( in_array( (int) $feature['term_id'], $get_selected_features, true ) ); ?>
                                     >
-                                    <?php echo esc_html( $feature['name'] ); ?>
+<!--                                    <span class="wbtm_bus_feature_icon"><i class="--><?php //echo esc_attr( $feature['icon']);?><!--"></i></span>--><?php //echo esc_html( $feature['name'] ); ?>
+                                    <span class="wbtm_bus_feature_icon <?php echo esc_attr( $feature['icon']);?>"></span><?php echo esc_html( $feature['name'] ); ?>
                                 </label><br>
                             <?php endforeach; ?>
                         </div>
