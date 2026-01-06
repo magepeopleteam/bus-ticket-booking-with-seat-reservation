@@ -87,6 +87,14 @@ if (sizeof($bus_ids) > 0) {
 ?>
 	<!-- new layout -->
     <div class="wbtm_search_result_holder">
+        <div id="wbtm-bus-popup" class="wbtm-bus-popup">
+            <div class="wbtm-bus-popup-inner">
+                <span class="wbtm-popup-close">&times;</span>
+                <div class="wbtm-popup-content">
+                    <!-- AJAX content loads here -->
+                </div>
+            </div>
+        </div>
         <?php if( !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $width = 'calc( 100% - 180px )'
@@ -129,8 +137,32 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$price = $all_info['price'];
 
+            $popup_tabs = array(
+                'wbtm_bus_details' => 'Bus Details',
+                'wbtm_bus_boarding_dropping' => 'Boarding/Dripping Points',
+                'wbtm_bus_image' => 'Bus Photo',
+                'wbtm_bus_term_condition' => 'Term & Conditions',
+                'wbtm_bus_feature' => 'Bus Features',
+            );
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
+            $selected_feature_ids = get_post_meta( $bus_id, 'wbbm_bus_features_term_id', true );
+            $added_term_condition = get_post_meta( $bus_id, 'wbtm_term_condition_list', true );
+            $gallery_images = get_post_meta( $bus_id, 'wbtm_gallery_images', true );
+            $gallery_images = get_post_meta( $bus_id, 'wbtm_gallery_images', true );
+            if( empty( $bus_boarding_routes ) ){
+                unset( $popup_tabs['wbtm_bus_details'] );
+            }
+            if( !is_array($selected_feature_ids) && empty( $selected_feature_ids ) ){
+                unset( $popup_tabs['wbtm_bus_feature'] );
+            }
+            if(  !is_array( $added_term_condition ) && empty( $added_term_condition ) ){
+                unset( $popup_tabs['wbtm_bus_term_condition'] );
+            }
+            if( !is_array( $gallery_images ) && empty( $gallery_images ) ){
+                unset( $popup_tabs['wbtm_bus_image'] );
+            }
+
 			// Check if next_day exists and set a default value if not
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
@@ -174,52 +206,67 @@ if (sizeof($bus_ids) > 0) {
                     foreach ( $bus_boarding_routes as $boarding_route ){
                         ?>
                         <input type="hidden" name="wbtm_bus_start_route" value="<?php echo esc_attr($boarding_route); ?>" />
-                    <?php } }?>
+                    <?php }
+                }?>
 
 
-                <div class="title">
-					<h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_attr( get_the_title($bus_id ) ) ; ?></h5>
-					<p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
-				</div>
-				<div class="route">
-					<div class="route-info">
-						<div class="from">
-							<h4 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? WBTM_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h4>
-							<p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
-						</div>
-						<div class="duration textCenter">
-						<i class="fas fa-clock"></i> <strong><?php echo esc_html($duration_formatted); ?> </strong>
-						</div>
-						<div class="to">
-							<h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? WBTM_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
-							<p><strong><?php echo esc_html($all_info['dp']); ?></strong></p>
-						</div>
-					</div>
-				</div>
-				<div class="feature">
-					<div class="items">
-						<?php 
-						// Add more detailed logging
-						?>
-						<p><strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
-						<p><?php echo esc_html( WBTM_Translations::text_available() ); ?></p>
-					</div>
-				</div>
-				<div class="price">
-					<h4 class="textTheme"><?php echo wp_kses_post( wc_price($price) ); ?></h4>
-				</div>
-				<?php
-				if ($btn_show == 'hide' && $all_info['regi_status'] == 'no') {
-					WBTM_Layout::trigger_view_seat_details();
-				}
-				?>
-				<button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
-					data-bus_id="<?php echo esc_attr($bus_id); ?>"
-					data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-					data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-					data-add-class="mActive">
-					<?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
-				</button>
+                <div class="wbtm-bus-flix-style_bus">
+                    <div class="title">
+                        <h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_attr( get_the_title($bus_id ) ) ; ?></h5>
+                        <p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
+                    </div>
+                    <div class="route">
+                        <div class="route-info">
+                            <div class="from">
+                                <h4 class="textTheme"><?php echo esc_html($all_info['bp_time'] ? WBTM_Global_Function::date_format($all_info['bp_time'], 'time') : ''); ?></h4>
+                                <p><strong><?php echo esc_html($all_info['bp']); ?></strong></p>
+                            </div>
+                            <div class="duration textCenter">
+                                <i class="fas fa-clock"></i> <strong><?php echo esc_html($duration_formatted); ?> </strong>
+                            </div>
+                            <div class="to">
+                                <h4 class="textTheme"><?php echo esc_html($all_info['dp_time'] ? WBTM_Global_Function::date_format($all_info['dp_time'], 'time') : ''); ?></h4>
+                                <p><strong><?php echo esc_html($all_info['dp']); ?></strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="items">
+                            <?php
+                            // Add more detailed logging
+                            ?>
+                            <p><strong><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></strong></p>
+                            <p><?php echo esc_html( WBTM_Translations::text_available() ); ?></p>
+                        </div>
+                    </div>
+                    <div class="price">
+                        <h4 class="textTheme"><?php echo wp_kses_post( wc_price($price) ); ?></h4>
+                    </div>
+
+                </div>
+                <div class="wbtm_bus_details_tabs_holder" style="display: flex; justify-content: space-between">
+                    <!--<div class="wbtm_bus_details_tabs">
+                        <span class="wbtm_bus_details_tab" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <span class="wbtm_bus_details_tab" id="wbtm_bus_image" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <span class="wbtm_bus_details_tab" id="wbtm_bus_term_condition" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <span class="wbtm_bus_details_tab" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                    </div>-->
+                    <?php
+                    echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+
+                    if ($btn_show == 'hide' && $all_info['regi_status'] == 'no') {
+                        WBTM_Layout::trigger_view_seat_details();
+                    }
+                    ?>
+                    <button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
+                            data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                            data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+                            data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+                            data-add-class="mActive">
+                        <?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
+                    </button>
+                </div>
 			</div>
 
 			<div class="wbtm_bus_details mT_xs" data-row_id="<?php echo esc_attr($bus_id); ?>">

@@ -365,12 +365,13 @@
                     $show_hide_class = 'wbtm_return_icon';
                 }
                 if ($date) {
+                    $label = WBTM_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
                     // Translate the start_end label
                     $translated_label = $start_end;
                     if ($start_end === 'Departure') {
-                        $translated_label = esc_html__('Departure', 'bus-ticket-booking-with-seat-reservation');
+                        $translated_label = esc_html__('Departure', 'bus-ticket-booking-with-seat-reservation').' '.$label;
                     } elseif ($start_end === 'Return') {
-                        $translated_label = esc_html__('Return', 'bus-ticket-booking-with-seat-reservation');
+                        $translated_label = esc_html__('Return', 'bus-ticket-booking-with-seat-reservation').' '.$label;
                     }
                     ?>
                     <div class="wbtm_search_route_container">
