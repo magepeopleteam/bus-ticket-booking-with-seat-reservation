@@ -239,6 +239,16 @@ if (sizeof($bus_ids) > 0) {
                             <h6 class="seats-price"><?php echo wp_kses_post( wc_price($price) ); ?></h6>
                             <span><?php echo esc_html( WBTM_Translations::text_fare() . '/' . WBTM_Translations::text_seat() ); ?></span>
                         </div>
+
+                    </div>
+                    <div class="dddd" style="display: flex; justify-content: space-between">
+                        <div class="wbtm_bus_details_tabs">
+                            <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );?></span>
+                            <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );?></span>
+                            <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );?></span>
+                            <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );?></span>
+                            <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );?></span>
+                        </div>
                         <?php
                         if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {
                             WBTM_Layout::trigger_view_seat_details();
@@ -254,13 +264,7 @@ if (sizeof($bus_ids) > 0) {
                             </button>
                         </div>
                     </div>
-                    <div class="wbtm_bus_details_tabs">
-                        <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );?></span>
-                        <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );?></span>
-                        <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );?></span>
-                        <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );?></span>
-                        <span class="wbtm_bus_details_tab" data-post-id="<?php echo $bus_id; ?>"><?php esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );?></span>
-                    </div>
+
 
                 </div>
 

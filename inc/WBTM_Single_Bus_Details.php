@@ -67,7 +67,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
             $feature_lists       = WBTM_Functions::getSelectedFeatures( $all_features, $selected_feature_ids );
             ?>
 
-            <div class="_dLayout_dShadow_1">
+            <div class="_dLayout_dShadow_1" style="border-radius: 10px">
                 <div class="flexWrap">
                     <div class="wbtm_bus_details_holder">
                         <div class="mR">
