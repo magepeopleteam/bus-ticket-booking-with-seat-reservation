@@ -129,6 +129,10 @@
     /*padding: 0 20px;*/
     font-family: "Inter", Arial, sans-serif;
 }
+.wtbm_term_wrapper_popup {
+    margin: 20px auto;
+    font-family: "Inter", Arial, sans-serif;
+}
 
 .wtbm_term_item {
     background: #ffffff;
