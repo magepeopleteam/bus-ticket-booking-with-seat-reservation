@@ -175,31 +175,37 @@
 }
 /* Hide all tabs by default */
 .wbtm_bus_list_area .wbtm_bus_details_tabs {
-    display: none;
+    display: flex;
+    visibility: hidden;
 }
 
 /* Show tab when hovering over parent bus item */
 .wbtm_bus_list_area .wbtm-bus-list:hover .wbtm_bus_details_tabs {
     display: flex;
+    visibility: visible;
 }
 .wbtm-bus-popup {
     display: none;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
-    z-index: 99999;
+    z-index: 99;
 }
 
 .wbtm-bus-popup-inner {
-    background: #fff;
-    width: 90%;
-    max-width: 900px;
+    background: #d1d1d1;
+    width: 98%;
+    /*max-width: 900px;*/
     margin: 5% auto;
     padding: 20px;
     border-radius: 12px;
     position: relative;
-    max-height: 90vh;
+    max-height: 95vh;
     overflow-y: auto;
+}
+.wbtm-popup-content{
+    max-width: 1100px;
+    margin: auto;
 }
 
 .wbtm-popup-close {
