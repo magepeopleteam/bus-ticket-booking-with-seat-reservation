@@ -130,7 +130,8 @@ jQuery(document).ready(function ($) {
             'wbtm_bus_detail_popup_tab': 'wbtm_bus_details_holder',
             'wbtm_bus_boarding_dropping_popup_tab': 'wbtm_bus_boarding_dropping_holder',
             'wbtm_bus_feature_popup_tab': 'wbtm_bus_feature_holder',
-            'wbtm_bus_term_condition_popup_tab': 'wbtm_bus_term_condition_holder'
+            'wbtm_bus_term_condition_popup_tab': 'wbtm_bus_term_condition_holder',
+            'wbtm_bus_photos_popup_tab': 'wbtm_bus_photos_popup_holder'
         };
 
         let targetId = targetMap[clicked_id];

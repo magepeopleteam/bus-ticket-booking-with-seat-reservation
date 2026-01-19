@@ -69,12 +69,6 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
             <div class="_dLayout_dShadow_1" style="border-radius: 10px">
                 <div class="flexWrap">
-                    <div class="wbtm_bus_details_holder">
-                        <div class="mR">
-                            <?php WBTM_Custom_Layout::bg_image_new( $post_id ); ?>
-                        </div>
-                    </div>
-
                     <div class="wbtm_bus_details_holder" >
 
                         <div class="wbtm_bus_detail_popup_tabs">
@@ -191,6 +185,10 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
+
+                        <div class="wbtm_bus_photos_wrapper_popup" id="wbtm_bus_photos_popup_holder">
+                            <?php WBTM_Custom_Layout::bg_image_new( $post_id ); ?>
+                        </div>
                     </div>
                 </div>
             </div>
