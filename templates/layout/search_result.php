@@ -232,34 +232,34 @@ if (sizeof($bus_ids) > 0) {
                         <div class="wbtm-bus-name">
                             <h5 class="_textTheme" data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_html( get_the_title( $bus_id ) ); ?></h5>
                             <p><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></p>
+                            <?php
+                                $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
+                            ?>
+                            <span class="<?php echo esc_attr($bus_type=='AC')?'ac':'none-ac'; ?>">
+                                <i class="mi <?php echo esc_attr($bus_type=='AC')?'mi-air-conditioner':''; ?>"></i>
+                                <?php echo esc_attr($bus_type); ?>
+                            </span>
                         </div>
                         <div class="wbtm-bus-route">
                             <h6>
-                                <i class="fas fa-dot-circle"></i>
+                                <i class="mi mi-marker"></i>
                                 <span class="route"><?php echo esc_html($all_info['bp']) ?></span>
                                 <?php if($all_info['bp_time']): ?>
                                     <span class="time">(<?php echo esc_html(WBTM_Global_Function::date_format($all_info['bp_time'],'time')); ?>)</span>
                                 <?php endif; ?>
                             </h6>
                             <h6>
-                                <i class="fas fa-map-marker-alt"></i>
+                                <i class="mi mi-map-pin"></i>
                                 <span class="route"><?php echo esc_html($all_info['dp']) ?></span>
                                 <?php if($all_info['bp_time']): ?>
                                     <span class="time">(<?php echo esc_html(WBTM_Global_Function::date_format($all_info['dp_time'],'time')); ?>)</span>
                                 <?php endif; ?>
                             </h6>
                             <h6>
-                                <i class="far fa-clock"></i><?php echo esc_html( WBTM_Translations::duration_text() ); ?><?php echo esc_html($duration_formatted); ?>
+                                <i class="mi mi-clock-three"></i><?php echo esc_html( WBTM_Translations::duration_text() ); ?><?php echo esc_html($duration_formatted); ?>
                             </h6>
                         </div>
-                        <div class="wbtm-seat-info">
-                            <?php
-                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                            $bus_type = WBTM_Functions::synchronize_bus_type($bus_id);
-                            ?>
-                            <span class="<?php echo esc_attr($bus_type=='AC')?'ac':'none-ac'; ?>"><?php echo esc_attr($bus_type); ?></span>
-
-                        </div>
+                        
                         <div class="wbtm-seat-info">
                             <h6 class="seats-available"><?php echo esc_html($all_info['available_seat']); ?>/<?php echo esc_html($all_info['total_seat']); ?></h6>
                             <span><?php echo esc_html( WBTM_Translations::text_available() ); ?></span>
@@ -270,7 +270,7 @@ if (sizeof($bus_ids) > 0) {
                         </div>
 
                     </div>
-                    <div class="wbtm_bus_details_tabs_holder" style="display: flex; justify-content: space-between">
+                    <div class="wbtm_bus_details_tabs_holder">
                         <!--<div class="wbtm_bus_details_tabs">
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>

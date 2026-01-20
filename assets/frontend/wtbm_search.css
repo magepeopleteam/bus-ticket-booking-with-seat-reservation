@@ -147,7 +147,7 @@
 .wbtm_bus_info_details_holder{
     display: flex;
     flex-direction: column;
-    width: 85%;
+    width: 80%;
     /*justify-content: space-between;*/
 }
 
@@ -160,18 +160,18 @@
     display: flex;
     gap: 10px;
     justify-content: space-evenly;
-    margin: 5px 0;
     cursor: pointer;
-    color: #4989ed;
+    color: var(--wbtm_color_theme);
 }
 .wbtm_bus_details_tab{
     padding: 5px 10px;
-    margin: 10px;
-    border-radius: 10px;
+    border-radius: 50px;
+    background: #f8f8f8;
+    transition: all .5s;
 }
 .wbtm_bus_details_tab:hover{
-    border: 1px solid #b1cadb;
-    background-color: #b1cadb;
+    background-color: var(--wbtm_color_theme);
+    color: var(--wbtm_color_theme_alter);
 }
 /* Hide all tabs by default */
 .wbtm_bus_list_area .wbtm_bus_details_tabs {
@@ -192,6 +192,7 @@
     visibility: visible;
     opacity: 1;
     transform: scale(1);
+    padding: 5px;
 }
 .wbtm-bus-popup {
     display: none;

@@ -241,7 +241,7 @@
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image {
-  border-radius: 0 0 0 12px;
+  border-radius: 12px 0 0 12px;
   width: 100%;
   height: 250px;
   padding: 10px;
@@ -251,12 +251,13 @@
 }
 @media (min-width: 800px) {
    .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image {
-    width: 15%;
-    height: 130px;
+    width:20%;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #f5f5f5;
   }
   .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image img{
   height: auto;
@@ -283,9 +284,6 @@
   align-items: center;
   text-align: center;
   width: auto;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 5px;
   align-items: start;
   width: 100%;
 }
@@ -301,7 +299,7 @@
 }
 @media (min-width: 800px) {
    .wbtm_search_result  .wbtm-bus-list .wbtm-bus-name {
-    width: 20%;
+    width: 25%;
   }
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-bus-name p {
@@ -340,20 +338,11 @@
   font-weight: normal;
   font-size: 16px;
 }
- .wbtm_search_result  .wbtm-bus-route h6:nth-child(1) i {
-  color: #28a745;
+ .wbtm_search_result  .wbtm-bus-route h6 i {
   padding-right: 10px;
-}
- .wbtm_search_result  .wbtm-bus-route h6:nth-child(2) i {
-  color: #dc3545;
-  padding-right: 10px;
-}
- .wbtm_search_result  .wbtm-bus-route h6:nth-child(3) i {
-  padding-right: 10px;
-}
- .wbtm_search_result  .wbtm-bus-route .time {
   color: gray;
 }
+
  .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
   margin: 0;
   padding: 15px;
@@ -366,39 +355,37 @@
   width: 33%;
 }
 @media (min-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
+  .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
     border-right: 1px solid #eee;
+    width: 25%;
+  }
+  .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info:last-child {
+    border-right:0;
   }
 }
-@media (max-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
-    border-top: 1px solid #eee;
-  }
-}
-@media (min-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info {
-    width: 10%;
-  }
-}
- .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info .ac {
+
+ .wbtm_search_result  .wbtm-bus-list .ac {
   background-color: #e0f7fa;
   color: #0097a7;
-  padding: 2px 6px;
+  padding:3px;
   border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info .none-ac {
+ .wbtm_search_result  .wbtm-bus-list .none-ac {
   background-color: #fff8e1;
   color: #ffa000;
   padding: 2px 6px;
   border-radius: 5px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info .seats-available {
+ .wbtm_search_result  .wbtm-bus-list  .seats-available {
   color: #28a745;
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 }
- .wbtm_search_result  .wbtm-bus-list .wbtm-seat-info .seats-price {
+ .wbtm_search_result  .wbtm-bus-list  .seats-price {
   color: var(--wbtm_color_theme);
   font-size: 16px;
   font-weight: bold;
@@ -406,7 +393,7 @@
 }
  .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book {
   margin: 0;
-  padding: 15px;
+  padding:5px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -416,25 +403,14 @@
   border-right: 0;
   width: 100%;
 }
+
+
 @media (min-width: 800px) {
    .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book {
-    border-right: 1px solid #eee;
+    width: auto;
   }
 }
-@media (max-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book {
-    border-top: 1px solid #eee;
-  }
-}
-@media (min-width: 800px) {
-   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book {
-    width: 14%;
-    border-right: 0;
-  }
-}
- .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book button {
-  width: 100%;
-}
+
  .wbtm_search_result .wbtm-bus-lists .lists-title {
   background: linear-gradient(105deg, #dddddd, #d8d8d8);
   color: var(--wbtm_color_theme);
@@ -448,6 +424,15 @@
   padding: 20px;
   border: 1px solid #d0d0d0;
   margin-bottom: 20px;
+}
+
+.wbtm_bus_details_tabs_holder{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  box-sizing: border-box;
+  border-top: 1px solid #eee;
 }
 
 .wbtm_style .themeButton,

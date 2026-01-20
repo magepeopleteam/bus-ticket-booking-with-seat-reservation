@@ -244,7 +244,7 @@ if (sizeof($bus_ids) > 0) {
                     </div>
 
                 </div>
-                <div class="wbtm_bus_details_tabs_holder" style="display: flex; justify-content: space-between">
+                <div class="wbtm_bus_details_tabs_holder" >
                     <!--<div class="wbtm_bus_details_tabs">
                         <span class="wbtm_bus_details_tab" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
