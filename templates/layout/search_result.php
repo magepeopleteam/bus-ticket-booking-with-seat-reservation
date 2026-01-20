@@ -279,7 +279,7 @@ if (sizeof($bus_ids) > 0) {
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         </div>-->
                         <?php
-
+                        
                         echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
 
                         if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {
