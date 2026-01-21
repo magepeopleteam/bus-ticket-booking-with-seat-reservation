@@ -71,7 +71,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
             <div class="_dLayout_dShadow_1" style="border-radius: 10px">
                 <div class="flexWrap">
-                    <div class="wbtm_bus_details_holder" >
+                    <div class="wbtm_bus_details_container" >
                         <div class="wbtm_bus_detail_popup_tabs">
                             <?php foreach($popup_tabs as $key => $value): ?>
                                 <div class="wbtm_bus_detail_popup_tab" id="<?php echo esc_html($key); ?>_popup_tab"><?php echo esc_html($value); ?></div>
