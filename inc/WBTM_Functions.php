@@ -640,9 +640,9 @@
 				$tabs = [
 					'wbtm_bus_details'           => __( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' ),
 					'wbtm_bus_boarding_dropping' => __( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' ),
-					'wbtm_bus_image'             => __( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' ),
-					'wbtm_bus_term_condition'    => __( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' ),
 					'wbtm_bus_feature'           => __( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_term_condition'    => __( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_image'             => __( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' ),
 				];
 				return apply_filters( 'wbtm_single_bus_details_tabs', $tabs, $bus_id );
 			}

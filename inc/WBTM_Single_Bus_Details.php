@@ -66,19 +66,21 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
             $selected_feature_ids= get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
             $feature_lists       = WBTM_Functions::getSelectedFeatures( $all_features, $selected_feature_ids );
             $popup_tabs          = WBTM_Functions::single_bus_details_tabs_filtered($post_id);
-            
+            $tab_content         = WBTM_Functions::single_bus_details_tabs($post_id);
+            $tab_keys = array_keys( $tab_content );
             ?>
 
             <div class="_dLayout_dShadow_1" style="border-radius: 10px">
                 <div class="flexWrap">
                     <div class="wbtm_bus_details_container" >
                         <div class="wbtm_bus_detail_popup_tabs">
-                            <?php foreach($popup_tabs as $key => $value): ?>
-                                <div class="wbtm_bus_detail_popup_tab" id="<?php echo esc_html($key); ?>_popup_tab"><?php echo esc_html($value); ?></div>
+                            <?php foreach($popup_tabs as $key => $value): ;?>
+
+                                <div class="wbtm_bus_detail_popup_tab" id="<?php echo esc_html($key); ?>_popup_tab" data-tab-id="<?php echo esc_html($key); ?>_content"><?php echo esc_html($value); ?></div>
                             <?php  endforeach; ?>
                         </div>
 
-                        <div class="wbtm_bus_popup_holder dLayout_xs" id="wbtm_bus_details_holder">
+                        <div class="wbtm_bus_popup_holder dLayout_xs" id="<?php echo esc_html($tab_keys[0].'_content'); ?>">
                             <h4>
                                 <?php echo esc_html( get_the_title( $post_id ) ); ?>
                                 <?php if ( $bus_id ) : ?>
@@ -103,7 +105,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             </div>
                         </div>
 
-                        <div class="wbtm_bus_popup_holder" id="wbtm_bus_boarding_dropping_holder">
+                        <div class="wbtm_bus_popup_holder" id="<?php echo esc_html($tab_keys[1].'_content'); ?>">
                             <!-- Boarding Points -->
                             <div class="flexEqual">
                                 <div class="dLayout_xs mR_xs">
@@ -155,7 +157,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
                         <!-- Features -->
                         <?php if ( ! empty( $feature_lists ) ) : ?>
-                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="wbtm_bus_feature_holder">
+                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="<?php echo esc_html($tab_keys[2].'_content'); ?>">
                                 <h4><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' ); ?></h4>
                                 <?php foreach ( $feature_lists as $feature ) : ?>
                                     <div class="wbtm_bus_feature_items">
@@ -169,7 +171,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
                         <!-- Terms & Conditions -->
                         <?php if ( ! empty( $selected_term_condition ) ) : ?>
-                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="wbtm_bus_term_condition_holder">
+                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="<?php echo esc_html($tab_keys[3].'_content'); ?>">
                                 <h4><?php esc_html_e( 'Terms & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h4>
 
                                 <?php foreach ( $selected_term_condition as $term ) : ?>
@@ -185,7 +187,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             </div>
                         <?php endif; ?>
 
-                        <div class="wbtm_bus_popup_holder wbtm_bus_photos_wrapper_popup" id="wbtm_bus_image_holder">
+                        <div class="wbtm_bus_popup_holder wbtm_bus_photos_wrapper_popup" id="<?php echo esc_html($tab_keys[4].'_content'); ?>">
                             <?php WBTM_Custom_Layout::bg_image_new( $post_id ); ?>
                         </div>
                     </div>
