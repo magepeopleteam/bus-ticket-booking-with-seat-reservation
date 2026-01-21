@@ -101,7 +101,8 @@ jQuery(document).ready(function ($) {
                     let target = $('#' + busContentId);
 
                     if (target.length) {
-                        console.log('here');
+                        target.show();
+                        target.addClass('active');
                         container.animate({
                             scrollTop: container.scrollTop() + target.position().top - 20
                         }, 500);
@@ -130,7 +131,7 @@ jQuery(document).ready(function ($) {
             'wbtm_bus_boarding_dropping_popup_tab': 'wbtm_bus_boarding_dropping_holder',
             'wbtm_bus_feature_popup_tab': 'wbtm_bus_feature_holder',
             'wbtm_bus_term_condition_popup_tab': 'wbtm_bus_term_condition_holder',
-            'wbtm_bus_image_popup_tab': 'wbtm_bus_photos_popup_holder'
+            'wbtm_bus_image_popup_tab': 'wbtm_bus_image_holder'
         };
         let targetId = targetMap[clicked_id];
         if (targetId) {

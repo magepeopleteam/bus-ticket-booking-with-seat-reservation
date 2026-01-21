@@ -105,51 +105,51 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
                         <div class="wbtm_bus_popup_holder" id="wbtm_bus_boarding_dropping_holder">
                             <!-- Boarding Points -->
-                            <div class="flexEqual dLayout_xs mR_xs">
-                                <h5><?php echo esc_html( WBTM_Translations::text_bp() ); ?></h5>
-                                <div class="divider"></div>
+                            <div class="flexEqual">
+                                <div class="dLayout_xs mR_xs">
+                                    <h5><?php echo esc_html( WBTM_Translations::text_bp() ); ?></h5>
+                                    <div class="divider"></div>
+                                    <?php if ( ! empty( $full_route_infos ) ) : ?>
+                                        <ul class="mp_list">
+                                            <?php foreach ( $full_route_infos as $info ) : ?>
+                                                <?php if ( $info['type'] === 'bp' || $info['type'] === 'both' ) : ?>
+                                                    <li>
+                                                        <span class="fa fa-map-marker _mR_xs_textTheme"></span>
+                                                        <?php
+                                                        echo esc_html(
+                                                            $info['place'] . ' (' .
+                                                            WBTM_Global_Function::date_format( $info['time'], 'time' ) . ')'
+                                                        );
+                                                        ?>
+                                                    </li>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    <?php endif; ?>
+                                </div>
+                                <!-- Dropping Points -->
+                                <div class="dLayout_xs" >
+                                    <h5><?php echo esc_html( WBTM_Translations::text_dp() ); ?></h5>
+                                    <div class="divider"></div>
 
-                                <?php if ( ! empty( $full_route_infos ) ) : ?>
-                                    <ul class="mp_list">
-                                        <?php foreach ( $full_route_infos as $info ) : ?>
-                                            <?php if ( $info['type'] === 'bp' || $info['type'] === 'both' ) : ?>
-                                                <li>
-                                                    <span class="fa fa-map-marker _mR_xs_textTheme"></span>
-                                                    <?php
-                                                    echo esc_html(
-                                                        $info['place'] . ' (' .
-                                                        WBTM_Global_Function::date_format( $info['time'], 'time' ) . ')'
-                                                    );
-                                                    ?>
-                                                </li>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                <?php endif; ?>
-                            </div>
-
-                            <!-- Dropping Points -->
-                            <div class="dLayout_xs" >
-                                <h5><?php echo esc_html( WBTM_Translations::text_dp() ); ?></h5>
-                                <div class="divider"></div>
-
-                                <?php if ( ! empty( $full_route_infos ) ) : ?>
-                                    <ul class="mp_list">
-                                        <?php foreach ( $full_route_infos as $info ) : ?>
-                                            <?php if ( $info['type'] === 'dp' || $info['type'] === 'both' ) : ?>
-                                                <li>
-                                                    <span class="fa fa-map-marker _mR_xs_textTheme"></span>
-                                                    <?php
-                                                    echo esc_html(
-                                                        $info['place'] . ' (' .
-                                                        WBTM_Global_Function::date_format( $info['time'], 'time' ) . ')'
-                                                    );
-                                                    ?>
-                                                </li>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                <?php endif; ?>
+                                    <?php if ( ! empty( $full_route_infos ) ) : ?>
+                                        <ul class="mp_list">
+                                            <?php foreach ( $full_route_infos as $info ) : ?>
+                                                <?php if ( $info['type'] === 'dp' || $info['type'] === 'both' ) : ?>
+                                                    <li>
+                                                        <span class="fa fa-map-marker _mR_xs_textTheme"></span>
+                                                        <?php
+                                                        echo esc_html(
+                                                            $info['place'] . ' (' .
+                                                            WBTM_Global_Function::date_format( $info['time'], 'time' ) . ')'
+                                                        );
+                                                        ?>
+                                                    </li>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
 
@@ -185,7 +185,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             </div>
                         <?php endif; ?>
 
-                        <div class="wbtm_bus_popup_holder wbtm_bus_photos_wrapper_popup" id="wbtm_bus_photos_popup_holder">
+                        <div class="wbtm_bus_popup_holder wbtm_bus_photos_wrapper_popup" id="wbtm_bus_image_holder">
                             <?php WBTM_Custom_Layout::bg_image_new( $post_id ); ?>
                         </div>
                     </div>
