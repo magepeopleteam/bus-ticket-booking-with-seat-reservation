@@ -229,12 +229,12 @@ if (sizeof($bus_ids) > 0) {
 
                     </div>
                     <div class="wbtm_bus_details_tabs_holder">
-                        <!--<div class="wbtm_bus_details_tabs">
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_image" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_term_condition" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <!--<div class="wbtm_bus_popup_links">
+                            <span class="wbtm_bus_popup_link" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                            <span class="wbtm_bus_popup_link" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                            <span class="wbtm_bus_popup_link" id="wbtm_bus_image" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                            <span class="wbtm_bus_popup_link" id="wbtm_bus_term_condition" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                            <span class="wbtm_bus_popup_link" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         </div>-->
                         <?php
                         

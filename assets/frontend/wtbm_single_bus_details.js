@@ -64,7 +64,7 @@ jQuery(document).ready(function ($) {
     }
 
 
-    $(document).on('click','.wbtm_bus_details_tab', function () {
+    $(document).on('click','.wbtm_bus_popup_link', function () {
         let post_id = $(this).data('post-id');
         let clicked_tab_id = $(this).attr('id');
         let busContentId = clicked_tab_id+'_holder';
