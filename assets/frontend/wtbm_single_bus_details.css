@@ -196,5 +196,8 @@
     margin: 0;
 }
 
+.wbtm_bus_popup_holder{
+    display: none;
+}
 
 /*End*/

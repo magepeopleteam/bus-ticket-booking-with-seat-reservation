@@ -94,8 +94,8 @@ jQuery(document).ready(function ($) {
                 $('.wbtm-popup-content').html(response);
 
                 $('.wbtm_bus_detail_popup_tab').removeClass('active');
+                $('.wbtm_bus_popup_holder').removeClass('active');
                 $("#"+targetClickId).addClass('active');
-
                 setTimeout(function () {
                     let container = $('.wbtm-bus-popup-inner');
                     let target = $('#' + busContentId);
@@ -120,32 +120,25 @@ jQuery(document).ready(function ($) {
 
     $(document).on('click', '.wbtm_bus_detail_popup_tab', function () {
 
-        // active tab
         $('.wbtm_bus_detail_popup_tab').removeClass('active');
+        $('.wbtm_bus_popup_holder').removeClass('active');
+        $('.wbtm_bus_popup_holder').hide();
         $(this).addClass('active');
-
         let clicked_id = $(this).attr('id');
-
         let targetMap = {
-            'wbtm_bus_detail_popup_tab': 'wbtm_bus_details_holder',
+            'wbtm_bus_details_popup_tab': 'wbtm_bus_details_holder',
             'wbtm_bus_boarding_dropping_popup_tab': 'wbtm_bus_boarding_dropping_holder',
             'wbtm_bus_feature_popup_tab': 'wbtm_bus_feature_holder',
             'wbtm_bus_term_condition_popup_tab': 'wbtm_bus_term_condition_holder',
-            'wbtm_bus_photos_popup_tab': 'wbtm_bus_photos_popup_holder'
+            'wbtm_bus_image_popup_tab': 'wbtm_bus_photos_popup_holder'
         };
-
         let targetId = targetMap[clicked_id];
-
-        if (targetId && $('#' + targetId).length) {
-            let container = $('.wbtm-bus-popup-inner');
-            let target = $('#' + targetId);
-
-            container.animate({
-                scrollTop: container.scrollTop() + target.position().top - 20
-            }, 500);
+        if (targetId) {
+            let $target = $('#' + targetId);
+            if ($target.length) {
+                $target.addClass('active');
+                $target.show();
+            }
         }
     });
-
-
-
 });

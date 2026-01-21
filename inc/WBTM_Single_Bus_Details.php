@@ -78,7 +78,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             <?php  endforeach; ?>
                         </div>
 
-                        <div class="dLayout_xs" id="wbtm_bus_details_holder">
+                        <div class="wbtm_bus_popup_holder dLayout_xs" id="wbtm_bus_details_holder">
                             <h4>
                                 <?php echo esc_html( get_the_title( $post_id ) ); ?>
                                 <?php if ( $bus_id ) : ?>
@@ -103,9 +103,9 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             </div>
                         </div>
 
-                        <div class="flexEqual" id="wbtm_bus_boarding_dropping_holder">
+                        <div class="wbtm_bus_popup_holder" id="wbtm_bus_boarding_dropping_holder">
                             <!-- Boarding Points -->
-                            <div class="dLayout_xs mR_xs">
+                            <div class="flexEqual dLayout_xs mR_xs">
                                 <h5><?php echo esc_html( WBTM_Translations::text_bp() ); ?></h5>
                                 <div class="divider"></div>
 
@@ -155,7 +155,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
                         <!-- Features -->
                         <?php if ( ! empty( $feature_lists ) ) : ?>
-                            <div class="wtbm_term_wrapper_popup" id="wbtm_bus_feature_holder">
+                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="wbtm_bus_feature_holder">
                                 <h4><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' ); ?></h4>
                                 <?php foreach ( $feature_lists as $feature ) : ?>
                                     <div class="wbtm_bus_feature_items">
@@ -169,7 +169,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
                         <!-- Terms & Conditions -->
                         <?php if ( ! empty( $selected_term_condition ) ) : ?>
-                            <div class="wtbm_term_wrapper_popup" id="wbtm_bus_term_condition_holder">
+                            <div class="wbtm_bus_popup_holder wtbm_term_wrapper_popup" id="wbtm_bus_term_condition_holder">
                                 <h4><?php esc_html_e( 'Terms & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h4>
 
                                 <?php foreach ( $selected_term_condition as $term ) : ?>
@@ -185,7 +185,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             </div>
                         <?php endif; ?>
 
-                        <div class="wbtm_bus_photos_wrapper_popup" id="wbtm_bus_photos_popup_holder">
+                        <div class="wbtm_bus_popup_holder wbtm_bus_photos_wrapper_popup" id="wbtm_bus_photos_popup_holder">
                             <?php WBTM_Custom_Layout::bg_image_new( $post_id ); ?>
                         </div>
                     </div>
