@@ -63,20 +63,19 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
 
             // Features
             $all_features        = WTBM_Features_Seating::get_all_bus_features();
-            $selected_feature_ids = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
+            $selected_feature_ids= get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
             $feature_lists       = WBTM_Functions::getSelectedFeatures( $all_features, $selected_feature_ids );
+            $popup_tabs          = WBTM_Functions::single_bus_details_tabs_filtered($post_id);
+            
             ?>
 
             <div class="_dLayout_dShadow_1" style="border-radius: 10px">
                 <div class="flexWrap">
                     <div class="wbtm_bus_details_holder" >
-
                         <div class="wbtm_bus_detail_popup_tabs">
-                            <div class="wbtm_bus_detail_popup_tab" id="wbtm_bus_detail_popup_tab"><?php esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );?></div>
-                            <div class="wbtm_bus_detail_popup_tab" id="wbtm_bus_boarding_dropping_popup_tab"><?php esc_html_e( 'Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation' );?></div>
-                            <div class="wbtm_bus_detail_popup_tab" id="wbtm_bus_feature_popup_tab"><?php esc_html_e( 'Bus Feature', 'bus-ticket-booking-with-seat-reservation' );?></div>
-                            <div class="wbtm_bus_detail_popup_tab" id="wbtm_bus_term_condition_popup_tab"><?php esc_html_e( 'Bus Term & Condition', 'bus-ticket-booking-with-seat-reservation' );?></div>
-                            <div class="wbtm_bus_detail_popup_tab" id="wbtm_bus_photos_popup_tab"><?php esc_html_e( 'Images', 'bus-ticket-booking-with-seat-reservation' );?></div>
+                            <?php foreach($popup_tabs as $key => $value): ?>
+                                <div class="wbtm_bus_detail_popup_tab" id="<?php echo esc_html($key); ?>_popup_tab"><?php echo esc_html($value); ?></div>
+                            <?php  endforeach; ?>
                         </div>
 
                         <div class="dLayout_xs" id="wbtm_bus_details_holder">

@@ -70,9 +70,9 @@ jQuery(document).ready(function ($) {
         let busContentId = clicked_tab_id+'_holder';
 
         let targetPopupMap = {
-            'wbtm_bus_details': 'wbtm_bus_detail_popup_tab',
+            'wbtm_bus_details': 'wbtm_bus_details_popup_tab',
             'wbtm_bus_boarding_dropping': 'wbtm_bus_boarding_dropping_popup_tab',
-            'wbtm_bus_image': 'wbtm_bus_photos_popup_tab',
+            'wbtm_bus_image': 'wbtm_bus_image_popup_tab',
             'wbtm_bus_term_condition': 'wbtm_bus_term_condition_popup_tab',
             'wbtm_bus_feature': 'wbtm_bus_feature_popup_tab',
         };
