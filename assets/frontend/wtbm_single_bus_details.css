@@ -199,5 +199,7 @@
 .wbtm_bus_popup_holder{
     display: none;
 }
-
+.wbtm_bus_photos_wrapper_popup{
+    overflow: hidden;
+}
 /*End*/
