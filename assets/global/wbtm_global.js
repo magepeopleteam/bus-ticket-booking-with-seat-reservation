@@ -18,10 +18,10 @@
 
 
 		let left_filter_show = {
-				left_filter_input : left_filter_input.val(),
-				left_filter_type : wbtm_left_filter_type.val(),
-				left_filter_operator : wbtm_left_filter_operator.val(),
-				left_filter_boarding : wbtm_left_filter_boarding.val(),
+			left_filter_input: left_filter_input.val(),
+			left_filter_type: wbtm_left_filter_type.val(),
+			left_filter_operator: wbtm_left_filter_operator.val(),
+			left_filter_boarding: wbtm_left_filter_boarding.val(),
 		}
 
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
@@ -40,39 +40,39 @@
 			let r_date = parent.find('input[name="r_date"]');
 			let post_id = parent.find('[name="wbtm_post_id"]').val();
 			$.ajax({
-        type: "POST",
-        url: wbtm_ajax_url,
-        data: {
-          action: "get_wbtm_bus_list",
-		  nonce: wbtm_nonce,
-          start_route: start.val(),
-          end_route: end.val(),
-          j_date: j_date.val(),
-          r_date: r_date.val(),
-          post_id: post_id,
-          style: style.val(),
-          btn_show: btn_show.val(),
-		  wbtm_bus_start_end_id: wbtm_bus_start_end,
-		  left_filter_show:JSON.stringify(left_filter_show),
-          // backend_order: window.location.href.search("wbtm_backend_order"),
-        },
-        beforeSend: function () {
-          wbtm_loader(parent.find(".wbtm_search_result"));
-        },
-		  success: function (data) {
-          parent
-            .find(".wbtm_search_result")
-            .html(data)
-            .promise()
-            .done(function () {
-              wbtm_loaderRemove(parent.find(".wbtm_search_area"));
-              wbtm_loadBgImage();
-            });
-        },
-        error: function (response) {
-          console.log(response);
-        },
-      });
+				type: "POST",
+				url: wbtm_ajax_url,
+				data: {
+					action: "get_wbtm_bus_list",
+					nonce: wbtm_nonce,
+					start_route: start.val(),
+					end_route: end.val(),
+					j_date: j_date.val(),
+					r_date: r_date.val(),
+					post_id: post_id,
+					style: style.val(),
+					btn_show: btn_show.val(),
+					wbtm_bus_start_end_id: wbtm_bus_start_end,
+					left_filter_show: JSON.stringify(left_filter_show),
+					// backend_order: window.location.href.search("wbtm_backend_order"),
+				},
+				beforeSend: function () {
+					wbtm_loader(parent.find(".wbtm_search_result"));
+				},
+				success: function (data) {
+					parent
+						.find(".wbtm_search_result")
+						.html(data)
+						.promise()
+						.done(function () {
+							wbtm_loaderRemove(parent.find(".wbtm_search_area"));
+							wbtm_loadBgImage();
+						});
+				},
+				error: function (response) {
+					console.log(response);
+				},
+			});
 		}
 	});
 	$(document).on("click", "#wbtm_area button.wbtm_next_date", function () {
@@ -147,7 +147,7 @@
 			}
 		}).promise().done(function () {
 			wbtm_load_journey_date(parent);
-		}).promise().done(function (){
+		}).promise().done(function () {
 			if (exit_route > 0) {
 				parent.find('input[name="j_date"]').siblings('input').focus();
 			} else {
@@ -223,76 +223,121 @@
 			wbtm_alert($(this));
 		}
 	});
+	$(document).on("click", ".wbtm_reopen_action", function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let current = $(this);
+		let seat = current.data('seat');
+		let post_id = current.data('post_id');
+		let date = current.data('date');
+		let parent = current.closest('.wbtm_registration_area');
+
+		if (confirm('Are you sure you want to reopen this seat for online sales on this date?')) {
+			$.ajax({
+				type: "POST",
+				url: wbtm_ajax_url,
+				data: {
+					action: "wbtm_reopen_seat",
+					post_id: post_id,
+					date: date,
+					seat: seat,
+					nonce: wbtm_nonce
+				},
+				beforeSend: function () {
+					current.find('i').removeClass('fa-unlock').addClass('fa-spinner fa-spin');
+				},
+				success: function (response) {
+					if (response.success) {
+						// Success, refresh the seat plan
+						$("#get_wbtm_bus_details[data-bus_id='" + post_id + "']").trigger('click');
+						// Re-trigger after short delay to ensure details are loaded
+						setTimeout(function () {
+							if (!$("#get_wbtm_bus_details[data-bus_id='" + post_id + "']").hasClass('mActive')) {
+								$("#get_wbtm_bus_details[data-bus_id='" + post_id + "']").trigger('click');
+							}
+						}, 500);
+					} else {
+						alert(response.data.message);
+						current.find('i').removeClass('fa-spinner fa-spin').addClass('fa-unlock');
+					}
+				},
+				error: function () {
+					alert('An error occurred. Please try again.');
+					current.find('i').removeClass('fa-spinner fa-spin').addClass('fa-unlock');
+				}
+			});
+		}
+	});
 }(jQuery));
 //====================================================================//
 (function ($) {
-  "use strict";
-  $(document).on("click", "#get_wbtm_bus_details", function () {
-    let parent = $(this).closest(".wbtm_bus_list_area");
-    let post_id = $(this).attr("data-bus_id");
-    let target = parent.find("[data-row_id=" + post_id + "]");
-    $("body").find(".woocommerce-notices-wrapper").slideUp("fast");
-    if ($(this).hasClass("mActive")) {
-      target.find(">div").slideUp("fast");
-      wbtm_all_content_change($(this));
-    } else {
-      parent.find("#get_wbtm_bus_details.mActive").each(function () {
-        $(this).trigger("click");
-      });
-      let start = parent.find('input[name="wbtm_start_route"]').val();
-      let end = parent.find('input[name="wbtm_end_route"]').val();
-      let date = parent.find('input[name="wbtm_date"]').val();
-      let j_date = parent.find('input[name="j_date"]').val();
-      let r_date = parent.find('input[name="r_date"]').val();
-      if (start && end && date && post_id) {
-        $.ajax({
-          type: "POST",
-          url: wbtm_ajax_url,
-          data: {
-            action: "get_wbtm_bus_details",
-            start_route: start,
-            end_route: end,
-            post_id: post_id,
-			nonce: wbtm_nonce,
-            date: date,
-			  j_date: j_date,
-			  r_date: r_date,
-            backend_order: window.location.href.search("wbtm_backend_order"),
-          },
-          beforeSend: function () {
-            wbtm_loader(parent);
-          },
-          success: function (data) {
-            target.html(data);
-            wbtm_loaderRemove(parent);
-            wbtm_loadBgImage();
-            
-            // // Auto-select first available seat or set quantity to 1
-            // setTimeout(function() {
-            //   // Check if it's seat plan layout
-            //   if (target.find('.wbtm_seat_plan_area').length > 0) {
-            //     // Auto-click first available seat in seat plan
-            //     var firstAvailableSeat = target.find('.seat_available').first();
-            //     if (firstAvailableSeat.length > 0) {
-            //       firstAvailableSeat.trigger('click');
-            //     }
-            //   } else {
-            //     // For without seat plan, set first quantity input to 1
-            //     var firstQtyInput = target.find('input[name="wbtm_seat_qty[]"]').first();
-            //     if (firstQtyInput.length > 0 && firstQtyInput.val() == 0) {
-            //       firstQtyInput.val(1).trigger('change');
-            //     }
-            //   }
-            // }, 100);
-          },
-          error: function (response) {
-            console.log(response);
-          },
-        });
-      }
-      wbtm_all_content_change($(this));
-    }
-  });
+	"use strict";
+	$(document).on("click", "#get_wbtm_bus_details", function () {
+		let parent = $(this).closest(".wbtm_bus_list_area");
+		let post_id = $(this).attr("data-bus_id");
+		let target = parent.find("[data-row_id=" + post_id + "]");
+		$("body").find(".woocommerce-notices-wrapper").slideUp("fast");
+		if ($(this).hasClass("mActive")) {
+			target.find(">div").slideUp("fast");
+			wbtm_all_content_change($(this));
+		} else {
+			parent.find("#get_wbtm_bus_details.mActive").each(function () {
+				$(this).trigger("click");
+			});
+			let start = parent.find('input[name="wbtm_start_route"]').val();
+			let end = parent.find('input[name="wbtm_end_route"]').val();
+			let date = parent.find('input[name="wbtm_date"]').val();
+			let j_date = parent.find('input[name="j_date"]').val();
+			let r_date = parent.find('input[name="r_date"]').val();
+			if (start && end && date && post_id) {
+				$.ajax({
+					type: "POST",
+					url: wbtm_ajax_url,
+					data: {
+						action: "get_wbtm_bus_details",
+						start_route: start,
+						end_route: end,
+						post_id: post_id,
+						nonce: wbtm_nonce,
+						date: date,
+						j_date: j_date,
+						r_date: r_date,
+						backend_order: window.location.href.search("wbtm_backend_order"),
+					},
+					beforeSend: function () {
+						wbtm_loader(parent);
+					},
+					success: function (data) {
+						target.html(data);
+						wbtm_loaderRemove(parent);
+						wbtm_loadBgImage();
+
+						// // Auto-select first available seat or set quantity to 1
+						// setTimeout(function() {
+						//   // Check if it's seat plan layout
+						//   if (target.find('.wbtm_seat_plan_area').length > 0) {
+						//     // Auto-click first available seat in seat plan
+						//     var firstAvailableSeat = target.find('.seat_available').first();
+						//     if (firstAvailableSeat.length > 0) {
+						//       firstAvailableSeat.trigger('click');
+						//     }
+						//   } else {
+						//     // For without seat plan, set first quantity input to 1
+						//     var firstQtyInput = target.find('input[name="wbtm_seat_qty[]"]').first();
+						//     if (firstQtyInput.length > 0 && firstQtyInput.val() == 0) {
+						//       firstQtyInput.val(1).trigger('change');
+						//     }
+						//   }
+						// }, 100);
+					},
+					error: function (response) {
+						console.log(response);
+					},
+				});
+			}
+			wbtm_all_content_change($(this));
+		}
+	});
 })(jQuery);
 //====================================================================//
 (function ($) {
@@ -405,19 +450,19 @@
 		let seat_type = current_tr.attr('data-seat_type');
 		let cabin_index = current_tr.attr('data-cabin_index');
 		let parent = current.closest('.wbtm_registration_area');
-		
+
 		parent.find('.seat_available.seat_selected').each(function () {
 			let seat_name_match = $(this).attr('data-seat_name') === seat_name;
 			let seat_type_match = $(this).attr('data-seat_type') === seat_type;
 			let cabin_index_match = true;
-			
+
 			// For cabin seats, also check cabin index
 			if (cabin_index) {
 				cabin_index_match = $(this).attr('data-cabin_index') === cabin_index;
 			} else {
 				cabin_index_match = !$(this).attr('data-cabin_index');
 			}
-			
+
 			if (seat_name_match && seat_type_match && cabin_index_match) {
 				$(this).trigger('click');
 				return false;
@@ -458,7 +503,7 @@
 			}
 
 			// Handle multi-cabin seat plans
-			parent.find('.wbtm_cabin_section').each(function() {
+			parent.find('.wbtm_cabin_section').each(function () {
 				let cabin_section = $(this);
 				let cabin_index = cabin_section.find('.wbtm_cabin_seat_plan').attr('data-cabin-index');
 				if (cabin_index !== undefined) {
@@ -485,76 +530,77 @@
 			if (total_qty > 0) {
 				let item_length = target.find('.wbtm_remove_area').length;
 				//if (item_length !== total_qty) {
-					let hidden_target_tr = parent.find('.wbtm_item_hidden .wbtm_remove_area');
-					parent.find('.seat_available.seat_selected').each(function () {
-						let seat_name = $(this).attr('data-seat_name');
-						let seat_type = $(this).attr('data-seat_type');
-						let cabin_index = $(this).attr('data-cabin_index');
-						
-						// Create unique identifier for cabin seats (seat_name + cabin_index)
-						let seat_identifier = cabin_index ? seat_name + '_cabin_' + cabin_index : seat_name;
-						
-						// Check if this exact seat (considering cabin) is already in the summary
-						let existing_row = target.find('[data-seat_name="' + seat_name + '"]');
-						let seat_already_exists = false;
-						
-						if (existing_row.length > 0) {
-							// For cabin seats, check if it's the same cabin
-							if (cabin_index) {
-								let existing_cabin = existing_row.attr('data-cabin_index');
-								if (existing_cabin === cabin_index && existing_row.attr('data-seat_type') === seat_type) {
-									seat_already_exists = true;
-								}
-							} else {
-								// For legacy seats, just check name and type
-								if (existing_row.attr('data-seat_type') === seat_type) {
-									seat_already_exists = true;
-								}
+				let hidden_target_tr = parent.find('.wbtm_item_hidden .wbtm_remove_area');
+				parent.find('.seat_available.seat_selected').each(function () {
+					let seat_name = $(this).attr('data-seat_name');
+					let seat_type = $(this).attr('data-seat_type');
+					let cabin_index = $(this).attr('data-cabin_index');
+
+					// Create unique identifier for cabin seats (seat_name + cabin_index)
+					let seat_identifier = cabin_index ? seat_name + '_cabin_' + cabin_index : seat_name;
+
+					// Check if this exact seat (considering cabin) is already in the summary
+					let existing_row = target.find('[data-seat_name="' + seat_name + '"]');
+					let seat_already_exists = false;
+
+					if (existing_row.length > 0) {
+						// For cabin seats, check if it's the same cabin
+						if (cabin_index) {
+							let existing_cabin = existing_row.attr('data-cabin_index');
+							if (existing_cabin === cabin_index && existing_row.attr('data-seat_type') === seat_type) {
+								seat_already_exists = true;
+							}
+						} else {
+							// For legacy seats, just check name and type
+							if (existing_row.attr('data-seat_type') === seat_type) {
+								seat_already_exists = true;
 							}
 						}
-						
-						if (!seat_already_exists) {
-							wbtm_reload_selected_seat($(this),hidden_target_tr,target);
-						}
-					}).promise().done(function () {
-						item_length = target.find('.wbtm_remove_area').length;
-						if (item_length !== total_qty) {
-							target.find('.wbtm_remove_area').each(function () {
-								let seat_name = $(this).attr('data-seat_name');
-								let cabin_index = $(this).attr('data-cabin_index');
-								
-								// Find matching selected seat considering cabin context
-								let matching_selected_seat;
-								if (cabin_index) {
-									matching_selected_seat = parent.find('.seat_available.seat_selected[data-seat_name="' + seat_name + '"][data-cabin_index="' + cabin_index + '"]');
-								} else {
-									matching_selected_seat = parent.find('.seat_available.seat_selected[data-seat_name="' + seat_name + '"]').not('[data-cabin_index]');
-								}
-								
-								if (matching_selected_seat.length === 0) {
-									$(this).remove();
-								}
-							});
-						}
-					});
+					}
+
+					if (!seat_already_exists) {
+						wbtm_reload_selected_seat($(this), hidden_target_tr, target);
+					}
+				}).promise().done(function () {
+					item_length = target.find('.wbtm_remove_area').length;
+					if (item_length !== total_qty) {
+						target.find('.wbtm_remove_area').each(function () {
+							let seat_name = $(this).attr('data-seat_name');
+							let seat_type = $(this).attr('data-seat_type');
+							let cabin_index = $(this).attr('data-cabin_index');
+
+							// Find matching selected seat considering cabin context AND seat type
+							let matching_selected_seat;
+							if (cabin_index) {
+								matching_selected_seat = parent.find('.seat_available.seat_selected[data-seat_name="' + seat_name + '"][data-seat_type="' + seat_type + '"][data-cabin_index="' + cabin_index + '"]');
+							} else {
+								matching_selected_seat = parent.find('.seat_available.seat_selected[data-seat_name="' + seat_name + '"][data-seat_type="' + seat_type + '"]').not('[data-cabin_index]');
+							}
+
+							if (matching_selected_seat.length === 0) {
+								$(this).remove();
+							}
+						});
+					}
+				});
 				//}
 			} else {
 				target.html('');
 			}
 		}
 	}
-	function wbtm_reload_selected_seat(current,hidden_target_tr,target){
+	function wbtm_reload_selected_seat(current, hidden_target_tr, target) {
 		let seat_label = current.attr('data-seat_label');
 		let seat_price = current.attr('data-seat_price');
 		let seat_name = current.attr('data-seat_name');
 		let seat_type = current.attr('data-seat_type');
 		let cabin_index = current.attr('data-cabin_index');
-		
+
 		// Set cabin index if it exists
 		if (cabin_index) {
 			hidden_target_tr.attr('data-cabin_index', cabin_index);
 		}
-		
+
 		hidden_target_tr.attr('data-seat_type', seat_type).attr('data-seat_name', seat_name).promise().done(function () {
 			hidden_target_tr.find('.insert_seat_label').html(seat_label);
 			hidden_target_tr.find('.insert_seat_name').html(seat_name);
@@ -574,7 +620,7 @@
 					parent.find('.seat_available.seat_selected').each(function () {
 						let seat_name = $(this).attr('data-seat_name');
 						let cabin_index = $(this).attr('data-cabin_index');
-						
+
 						// Check if this seat (considering cabin) is already in the attendee form
 						let seat_already_in_form = false;
 						if (cabin_index) {
@@ -582,7 +628,7 @@
 						} else {
 							seat_already_in_form = form_target.find('[data-seat_name="' + seat_name + '"]').not('[data-cabin_index]').length > 0;
 						}
-						
+
 						if (!seat_already_in_form) {
 							let attendee_item = hidden_target.find('.wbtm_attendee_item');
 							attendee_item.attr('data-seat_name', seat_name);
@@ -601,7 +647,7 @@
 							form_target.find('.wbtm_attendee_item').each(function () {
 								let seat_name = $(this).attr('data-seat_name');
 								let cabin_index = $(this).attr('data-cabin_index');
-								
+
 								// Find matching selected seat considering cabin context
 								let matching_selected_seat;
 								if (cabin_index) {
@@ -609,7 +655,7 @@
 								} else {
 									matching_selected_seat = parent.find('.seat_available.seat_selected[data-seat_name="' + seat_name + '"]').not('[data-cabin_index]');
 								}
-								
+
 								if (matching_selected_seat.length === 0) {
 									$(this).remove();
 								}
@@ -638,11 +684,20 @@
 	}
 
 	// Handle cabin seat plan toggle
-	$(document).on('click', '.wbtm_cabin_toggle', function() {
+	$(document).off('click', '.wbtm_cabin_toggle').on('click', '.wbtm_cabin_toggle', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+
 		let header = $(this);
 		let cabin_section = header.closest('.wbtm_cabin_section');
 		let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
 		let arrow = header.find('.wbtm_toggle_arrow');
+
+		if (seat_plan.is(':animated')) {
+			return;
+		}
+
 		let isExpanded = seat_plan.attr('aria-expanded') === 'true';
 
 		if (isExpanded) {
@@ -657,8 +712,8 @@
 	});
 
 	// Initialize cabin arrows and classes on page load
-	$(document).ready(function() {
-		$('.wbtm_cabin_section').each(function() {
+	$(document).ready(function () {
+		$('.wbtm_cabin_section').each(function () {
 			let cabin_section = $(this);
 			let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
 			let arrow = cabin_section.find('.wbtm_toggle_arrow');
@@ -674,14 +729,14 @@
 	});
 
 
-	$(document).on( 'click', '.wbtm_return_icon', function(e){
+	$(document).on('click', '.wbtm_return_icon', function (e) {
 
 		let parent = $(this).closest('.wbtm_return_bus_lists_holder');
 		let listHolder = parent.find('#wbtm_return_container');
 		listHolder.toggle(200);
 
 	});
-	$(document).on( 'click', '.wbtm_departure_icon', function(e){
+	$(document).on('click', '.wbtm_departure_icon', function (e) {
 
 		let parent = $(this).closest('.wbtm_departure_bus_lists_holder');
 		let listHolder = parent.find('#start_bus');
@@ -689,22 +744,22 @@
 
 	});
 
-	$(document).on( 'click', '#wbtm_add_to_cart', function(e){
+	$(document).on('click', '#wbtm_add_to_cart', function (e) {
 		e.preventDefault();
 
 		let this_btn = $(this);
 		let form = this_btn.closest('form');
 
 		let isValid = true;
-		form.find('input[required], select[required], textarea[required]').each(function(){
-			if( $(this).val().trim() === '' ){
+		form.find('input[required], select[required], textarea[required]').each(function () {
+			if ($(this).val().trim() === '') {
 				$(this).addClass('wbtm_input_error');
 				isValid = false;
 			} else {
 				$(this).removeClass('wbtm_input_error');
 			}
 		});
-		if(!isValid){
+		if (!isValid) {
 			alert('Please fill all required fields ❗');
 			return;
 		}
@@ -751,6 +806,18 @@
 				return $(this).val();
 			})
 			.get();
+		let seatQty = form
+			.find(':input[name="wbtm_seat_qty[]"]')
+			.map(function () {
+				return $(this).val();
+			})
+			.get();
+		let passengerTypes = form
+			.find(':input[name="wbtm_passenger_type[]"]')
+			.map(function () {
+				return $(this).val();
+			})
+			.get();
 
 		$.ajax({
 			url: woocommerce_params.ajax_url,
@@ -777,36 +844,38 @@
 				"wbtm_selected_seat_type": form.find(':input[name=wbtm_selected_seat_type]').val(),
 				"extra_service_name": extraServiceNames,
 				"extra_service_qty": extraServiceQty,
-				"cabinSeats": JSON.stringify( cabinSeats ),
-				"cabinSeatTypes": JSON.stringify( cabinSeatTypes ),
+				"wbtm_seat_qty": seatQty,
+				"wbtm_passenger_type": passengerTypes,
+				"cabinSeats": JSON.stringify(cabinSeats),
+				"cabinSeatTypes": JSON.stringify(cabinSeatTypes),
 			},
-			beforeSend: function(){
-				this_btn.text( 'Adding to Cart...' );
+			beforeSend: function () {
+				this_btn.text('Adding to Cart...');
 			},
-			success: function(response){
+			success: function (response) {
 
-				if(response.success){
-					$("#wbtm_seleced_start_bus").html( response.data.selected_bus);
-					this_btn.text( 'Added to Cart ✅' );
+				if (response.success) {
+					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
+					this_btn.text('Added to Cart ✅');
 					$(document.body).trigger('wc_update_cart');
-				}else{
+				} else {
 					alert('Failed to add ticket ❌');
 				}
 			},
-			complete: function(){
-				this_btn.text( 'Book Now' );
-				if( burPosition === 'start_bus' ){
-					if( numberOfBuses > 0 ){
+			complete: function () {
+				this_btn.text('Book Now');
+				if (burPosition === 'start_bus') {
+					if (numberOfBuses > 0) {
 						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
 						$("#start_bus").fadeOut();
 						$("#wbtm_return_container").fadeIn();
 
 						// $("#wbtm_date_return_route_start").fadeOut();
 						$("#wbtm_date_return_route_return").fadeIn();
-					}else{
+					} else {
 						window.location.href = wbtm_wc_vars.checkout_url;
 					}
-				}else{
+				} else {
 					window.location.href = wbtm_wc_vars.checkout_url;
 				}
 			}

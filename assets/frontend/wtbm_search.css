@@ -1,11 +1,12 @@
 
-.wbtm-date-route_title{
+.wbtm-date-route_title {
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-weight: 600;
     /* border-bottom: 2px solid var(--wbtm_color_theme); */
 }
+
 .wbtm-date-return-route-title {
 
     display: flex;
@@ -15,46 +16,47 @@
     /*border-bottom: 2px solid var(--wbtm_color_theme);*/
 }
 
-.wbtm_departure_bus_lists_holder,.wbtm_return_bus_lists_holder{
+.wbtm_departure_bus_lists_holder,
+.wbtm_return_bus_lists_holder {
     border: 1px solid #b9d3ff;
     background-color: #fff;
     margin-bottom: 20px;
     border-radius: 5px;
 }
-.wbtm_bus_list_area{
-    padding:10px;
+
+.wbtm_bus_list_area {
+    padding: 10px;
 }
-#wbtm_return_container .wbtm-date-suggetion{
+
+#wbtm_return_container .wbtm-date-suggetion {
     margin: 10px;
 }
+
 .wbtm_search_route_container {
     display: flex;
     align-items: center;
     background-color: #cfe2ff;
-    border-radius: 4px;  
+    border-radius: 4px;
     width: 100%;
     font-family: Arial, sans-serif;
 }
 
 .wbtm_search_route_return_date {
     background-color: #9ec5fe;
-    padding:10px;
+    padding: 10px;
     text-align: left;
     height: 100%;
     min-width: 120px;
 }
 
 
-.wbtm_selected_bus_payment{
+.wbtm_selected_bus_payment {
     display: flex;
     flex-direction: column;
 }
 
-.wbtm_seleced_start_bus{
 
-}
-
-.wtbm_icon_margin{
+.wtbm_icon_margin {
     margin: unset !important;
     margin-left: 5px !important;
 
@@ -82,44 +84,78 @@
     display: flex;
     flex-grow: 1;
     align-items: center;
-    padding:10px;
+    padding: 10px;
 }
 
 .wbtm_search_route_city_section {
-    padding:10px;
+    padding: 10px;
     width: 33%;
 }
-.wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon img{
+
+.wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon img {
     width: 80px;
     height: auto;
 }
+
 .wbtm_search_route_icon_wrapper {
     width: 30%;
 }
 
 .wbtm_search_route_city_section_right {
     border-left: 1px solid #c5dafd;
-    padding:10px;
+    padding: 10px;
     width: 30%;
 }
-@media only screen and (max-width: 768px) {
-  .wbtm_search_route_icon_wrapper{
-    display: none;
-  }
-  .wbtm_search_route_city_section{
-    width: 45%;
-  }
-  .wbtm_search_route_city_section_right{
-    width: 45%;
-  }
-  .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
-    height: 200px;
-  }
 
-  .wbtm_bus_info_details_holder{
-      width: 100%;
-  }
+@media only screen and (max-width: 768px) {
+    .wbtm_search_route_container {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .wbtm_search_route_return_date {
+        width: 100% !important;
+        padding: 8px 12px !important;
+        border-radius: 4px 4px 0 0 !important;
+    }
+
+    .wbtm_search_route_label {
+        font-size: 18px !important;
+    }
+
+    .wbtm_search_route_cities_wrapper {
+        width: 100% !important;
+        padding: 5px !important;
+    }
+
+    .wbtm_search_route_icon_wrapper {
+        display: none;
+    }
+
+    .wbtm_search_route_city_section {
+        width: 48% !important;
+        padding: 5px 10px !important;
+    }
+
+    .wbtm_search_route_city_section_right {
+        width: 48% !important;
+        padding: 5px 10px !important;
+        border-left: 1px dashed #c5dafd !important;
+    }
+
+    .wbtm_search_route_city {
+        font-size: 15px !important;
+    }
+
+    .wbtm_style .wbtm_search_result .wbtm-bus-lists .wbtm-bus-list .wbtm-bus-image {
+        height: 180px;
+    }
+
+    .wbtm_bus_info_details_holder {
+        width: 100%;
+    }
 }
+
 .wbtm_search_route_city {
     font-size: 18px;
     font-weight: normal;
@@ -140,64 +176,108 @@
     line-height: 1;
 }
 
-.wbtm_return_bus_lists_holder  .wbtm_search_route_cities_wrapper .wbtm_search_route_icon_wrapper img{
-   transform: scaleX(-1);
+.wbtm_return_bus_lists_holder .wbtm_search_route_cities_wrapper .wbtm_search_route_icon_wrapper img {
+    transform: scaleX(-1);
 }
 
-.wbtm_bus_info_details_holder{
+.wbtm_bus_info_details_holder {
     display: flex;
     flex-direction: column;
-    width: 85%;
-    /*justify-content: space-between;*/
+    flex-grow: 1;
+    min-height: 130px;
+    justify-content: space-between;
 }
 
-.wbtm_bus_info_holder{
+.wbtm_bus_info_holder {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    flex-grow: 1;
 }
-.wbtm_bus_details_tabs{
+
+.wbtm_bus_details_tabs {
     display: flex;
     gap: 10px;
-    justify-content: space-evenly;
-    margin: 5px 0;
+    justify-content: flex-start;
+    margin: 0;
     cursor: pointer;
     color: #4989ed;
 }
-.wbtm_bus_details_tab{
+
+.wbtm_bus_details_tab {
     padding: 5px 10px;
     margin: 10px;
     border-radius: 10px;
 }
-.wbtm_bus_details_tab:hover{
+
+.wbtm_bus_details_tab:hover {
     border: 1px solid #b1cadb;
     background-color: #b1cadb;
 }
-/* Hide all tabs by default */
+
+.wbtm-bus-list.wbtm-no-image .wbtm-bus-image {
+    display: none !important;
+}
+
+.wbtm-bus-list.wbtm-no-image .wbtm_bus_info_details_holder {
+    width: 100% !important;
+}
+
+.wbtm-bus-list.wbtm-no-image {
+    min-height: auto !important;
+    height: auto !important;
+}
+
+.wbtm-bus-list.wbtm-no-image .wbtm-bus-name { width: 25% !important; }
+.wbtm-bus-list.wbtm-no-image .wbtm-bus-route { width: 35% !important; flex-grow: 1; }
+.wbtm-bus-list.wbtm-no-image .wbtm-seat-info { width: 13% !important; flex-shrink: 0; }
+
+.wbtm-bus-list.wbtm-no-image .wbtm_bus_info_holder {
+    align-items: center;
+    gap: 10px;
+}
+
+.wbtm_bus_details_tabs_holder {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: auto;
+}
+
+/* Ensure the button stays on the far right */
+.wbtm-seat-book {
+    margin-left: auto !important;
+    text-align: right;
+    width: auto !important;
+}
+
+/* Fix tabs taking space when hidden */
 .wbtm_bus_list_area .wbtm_bus_details_tabs {
     display: flex;
     visibility: hidden;
     opacity: 0;
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
     transform: scale(0.95);
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
 }
 
-/* Show tab when hovering over parent bus item */
-.wbtm_bus_list_area .wbtm-bus-list:hover .wbtm_bus_details_tabs {
-    visibility: visible;
-    opacity: 1;
-    transform: scale(1);
-}
+.wbtm_bus_list_area .wbtm-bus-list:hover .wbtm_bus_details_tabs,
 .wbtm_bus_list_area .wtbm_bus_counter:hover .wbtm_bus_details_tabs {
     visibility: visible;
     opacity: 1;
+    max-height: 100px;
+    margin: 10px 0;
     transform: scale(1);
 }
+
 .wbtm-bus-popup {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 99;
 }
 
@@ -212,7 +292,8 @@
     max-height: 95vh;
     overflow-y: auto;
 }
-.wbtm-popup-content{
+
+.wbtm-popup-content {
     max-width: 1100px;
     margin: auto;
 }
@@ -224,10 +305,12 @@
     font-size: 30px;
     cursor: pointer;
 }
-.wbtm_bus_details_holder{
+
+.wbtm_bus_details_holder {
     width: 100%;
     margin-bottom: 15px;
 }
+
 .wbtm_bus_detail_popup_tabs {
     display: flex;
     gap: 8px;
@@ -263,7 +346,203 @@
     background: #007cba;
     color: #fff;
     border-color: #007cba;
-    box-shadow: 0 3px 10px rgba(0,124,186,.25);
+    box-shadow: 0 3px 10px rgba(0, 124, 186, .25);
 }
 
+/* Mobile-Only Responsive Styles for Flix Layout */
+@media only screen and (max-width: 767px) {
+    /* Flix Style Bus Card - Mobile Optimization */
+    .wbtm-bus-flix-style {
+        padding: 12px !important;
+        margin: 8px 0 !important;
+    }
 
+    .wbtm-bus-flix-style_bus {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* Bus Title Section */
+    .wbtm-bus-flix-style .title {
+        width: 100% !important;
+        text-align: left !important;
+        padding-bottom: 10px !important;
+        border-bottom: 1px solid #e8e8e8 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .wbtm-bus-flix-style .title h5 {
+        font-size: 16px !important;
+        margin: 0 0 4px 0 !important;
+        font-weight: 600 !important;
+    }
+
+    .wbtm-bus-flix-style .title p {
+        font-size: 12px !important;
+        margin: 0 !important;
+        color: #666 !important;
+    }
+
+    /* Route Information Section */
+    .wbtm-bus-flix-style .route {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #e8e8e8 !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .from,
+    .wbtm-bus-flix-style .route .route-info .to {
+        width: 38% !important;
+        text-align: left !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .from h4,
+    .wbtm-bus-flix-style .route .route-info .to h4 {
+        font-size: 16px !important;
+        margin: 0 0 2px 0 !important;
+        font-weight: 600 !important;
+        color: var(--wbtm_color_theme) !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .from p,
+    .wbtm-bus-flix-style .route .route-info .to p {
+        font-size: 12px !important;
+        margin: 0 !important;
+        color: #666 !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .duration {
+        width: 24% !important;
+        text-align: center !important;
+        border-bottom: 2px solid #ddd !important;
+        padding-bottom: 4px !important;
+        position: relative;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .duration i {
+        font-size: 11px !important;
+        color: #999 !important;
+    }
+
+    .wbtm-bus-flix-style .route .route-info .duration strong {
+        font-size: 10px !important;
+        display: block !important;
+        margin-top: 2px !important;
+        color: #666 !important;
+    }
+
+    /* Feature/Bus Type Section */
+    .wbtm-bus-flix-style .feature {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #e8e8e8 !important;
+        margin: 0 !important;
+    }
+
+    .wbtm-bus-flix-style .feature .items {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .wbtm-bus-flix-style .feature .items p {
+        margin: 0 !important;
+        font-size: 13px !important;
+    }
+
+    .wbtm-bus-flix-style .feature .items p:first-child {
+        font-weight: 600 !important;
+        color: #28a745 !important;
+    }
+
+    .wbtm-bus-flix-style .feature .items p:last-child {
+        font-size: 11px !important;
+        color: #666 !important;
+    }
+
+    /* Price Section */
+    .wbtm-bus-flix-style .price {
+        width: 100% !important;
+        text-align: right !important;
+        padding: 10px 0 !important;
+        margin: 0 !important;
+    }
+
+    .wbtm-bus-flix-style .price h4 {
+        font-size: 20px !important;
+        margin: 0 !important;
+        font-weight: 700 !important;
+        color: var(--wbtm_color_theme) !important;
+    }
+
+    /* Tabs and Button Section */
+    .wbtm-bus-flix-style .wbtm_bus_details_tabs_holder {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 10px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #e8e8e8 !important;
+    }
+
+    .wbtm-bus-flix-style .wbtm_bus_details_tabs {
+        width: 100% !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .wbtm-bus-flix-style .wbtm-seat-book {
+        width: 100% !important;
+        margin: 0 !important;
+        text-align: center !important;
+    }
+
+    .wbtm-bus-flix-style .wbtm-seat-book button,
+    .wbtm-bus-flix-style button._themeButton_xs {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+        border-radius: 6px !important;
+    }
+
+    /* Standard Layout Mobile Fixes */
+    .wbtm-bus-list.wbtm-no-image .wbtm-bus-name,
+    .wbtm-bus-list.wbtm-no-image .wbtm-bus-route,
+    .wbtm-bus-list.wbtm-no-image .wbtm-seat-info {
+        width: 100% !important;
+        padding: 8px 10px !important;
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+
+    .wbtm-bus-list.wbtm-no-image .wbtm_bus_info_holder {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+
+    .wbtm-bus-list.wbtm-no-image .wbtm-seat-book {
+        width: 100% !important;
+        padding: 10px !important;
+        margin: 0 !important;
+    }
+
+    .wbtm-bus-list.wbtm-no-image .wbtm-seat-book button {
+        width: 100% !important;
+        padding: 12px !important;
+    }
+}

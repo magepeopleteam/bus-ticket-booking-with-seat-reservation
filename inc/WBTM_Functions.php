@@ -39,7 +39,9 @@
 						}
 					}
 				}
-				return array_unique( $all_routes );
+				$unique_routes = array_unique( $all_routes );
+				asort($unique_routes); // Sort routes alphabetically
+				return $unique_routes;
 			}
 			public static function single_bus_route( $post_id, $start_route = '' ) {
 				$all_routes       = [];
@@ -76,26 +78,61 @@
 								$child_price  = array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ? (float) $price_info['wbtm_bus_child_price'] : '';
 								$infant_price = array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ? (float) $price_info['wbtm_bus_infant_price'] : '';
 								
+								// Get override descriptions and prices
+								$adult_override_desc = array_key_exists( 'wbtm_bus_adult_override_desc', $price_info ) ? $price_info['wbtm_bus_adult_override_desc'] : '';
+								$adult_override_price = array_key_exists( 'wbtm_bus_adult_override_price', $price_info ) && $price_info['wbtm_bus_adult_override_price'] !== '' ? (float) $price_info['wbtm_bus_adult_override_price'] : '';
+								$child_override_desc = array_key_exists( 'wbtm_bus_child_override_desc', $price_info ) ? $price_info['wbtm_bus_child_override_desc'] : '';
+								$child_override_price = array_key_exists( 'wbtm_bus_child_override_price', $price_info ) && $price_info['wbtm_bus_child_override_price'] !== '' ? (float) $price_info['wbtm_bus_child_override_price'] : '';
+								$infant_override_desc = array_key_exists( 'wbtm_bus_infant_override_desc', $price_info ) ? $price_info['wbtm_bus_infant_override_desc'] : '';
+								$infant_override_price = array_key_exists( 'wbtm_bus_infant_override_price', $price_info ) && $price_info['wbtm_bus_infant_override_price'] !== '' ? (float) $price_info['wbtm_bus_infant_override_price'] : '';
+								
 								if ( $adult_price !== '' ) {
+									$adult_final_price = $adult_price;
+									$adult_display_name = WBTM_Translations::text_adult();
+									if ( !empty( $adult_override_desc ) && $adult_override_price !== '' ) {
+										$adult_final_price = $adult_price + $adult_override_price;
+										$adult_display_name = WBTM_Translations::text_adult() . ' + ' . $adult_override_desc;
+									}
 									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_adult(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_price ),
-										'type'  => 0
+										'name'  => $adult_display_name,
+										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_final_price ),
+										'type'  => 0,
+										'base_price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_price ),
+										'override_desc' => $adult_override_desc,
+										'override_price' => $adult_override_price !== '' ? WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_override_price ) : '',
 									];
 								}
 								if ( $child_price !== '' ) {
+									$child_final_price = $child_price;
+									$child_display_name = WBTM_Translations::text_child();
+									if ( !empty( $child_override_desc ) && $child_override_price !== '' ) {
+										$child_final_price = $child_price + $child_override_price;
+										$child_display_name = WBTM_Translations::text_child() . ' + ' . $child_override_desc;
+									}
 									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_child(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_price ),
-										'type'  => 1
+										'name'  => $child_display_name,
+										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_final_price ),
+										'type'  => 1,
+										'base_price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_price ),
+										'override_desc' => $child_override_desc,
+										'override_price' => $child_override_price !== '' ? WBTM_Global_Function::get_wc_raw_price( $post_id, $child_override_price ) : '',
 									];
 								}
 								
 								if ( $infant_price !== '' ) {
+									$infant_final_price = $infant_price;
+									$infant_display_name = WBTM_Translations::text_infant();
+									if ( !empty( $infant_override_desc ) && $infant_override_price !== '' ) {
+										$infant_final_price = $infant_price + $infant_override_price;
+										$infant_display_name = WBTM_Translations::text_infant() . ' + ' . $infant_override_desc;
+									}
 									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_infant(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_price ),
-										'type'  => 2
+										'name'  => $infant_display_name,
+										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_final_price ),
+										'type'  => 2,
+										'base_price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_price ),
+										'override_desc' => $infant_override_desc,
+										'override_price' => $infant_override_price !== '' ? WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_override_price ) : '',
 									];
 								}
 							}

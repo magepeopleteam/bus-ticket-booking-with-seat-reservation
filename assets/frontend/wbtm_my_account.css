@@ -1,0 +1,310 @@
+/* My Account Bus Bookings Premium Dashboard Style */
+/* No animations included as requested */
+
+.wbtm-dashboard-container {
+    padding: 10px 0;
+    /* Minimal padding */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.wbtm-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 5px 15px 5px;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.wbtm-dashboard-header h2 {
+    margin: 0 !important;
+    font-size: 24px !important;
+    color: #333;
+    font-weight: 600 !important;
+}
+
+.wbtm-search-box {
+    position: relative;
+    width: 300px;
+    max-width: 100%;
+}
+
+.wbtm-search-input {
+    width: 100% !important;
+    padding: 10px 15px 10px 40px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 50px !important;
+    font-size: 14px !important;
+    background: #fff !important;
+    height: auto !important;
+}
+
+.wbtm-search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 16px;
+}
+
+/* Statistics Cards */
+.wbtm-stats-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.wbtm-stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+}
+
+.wbtm-stat-card-clickable {
+    cursor: pointer;
+}
+
+.wbtm-stat-card-clickable:hover {
+    border-color: #2271b1;
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.wbtm-stat-card-clickable.active {
+    border-color: #2271b1;
+    background: #eff6ff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.wbtm-stat-icon {
+    font-size: 16px;
+}
+
+.wbtm-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.wbtm-stat-label {
+    font-size: 9px;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.wbtm-stat-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+}
+
+.wbtm-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+}
+
+.wbtm-orders-table th {
+    background: #fdfdfd;
+    text-align: left;
+    padding: 12px;
+    font-weight: 600;
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.wbtm-orders-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    font-size: 13px;
+    color: #444;
+}
+
+.wbtm-bus-name-row {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 2px;
+}
+
+.wbtm-journey-date {
+    font-weight: 400;
+    color: #777;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.wbtm-status {
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-completed {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.status-processing {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+.status-on-hold {
+    background: #fff4e5;
+    color: #b06000;
+}
+
+.status-cancelled {
+    background: #feebeb;
+    color: #d93025;
+}
+
+.wbtm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.wbtm-btn {
+    padding: 8px 15px !important;
+    border-radius: 5px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none !important;
+}
+
+.btn-view {
+    background: #f5f5f5 !important;
+    color: #333 !important;
+}
+
+.btn-view:hover {
+    background: #eee !important;
+}
+
+.btn-pdf {
+    background: #2271b1 !important;
+    color: #fff !important;
+}
+
+.btn-pdf:hover {
+    background: #135e96 !important;
+}
+
+/* Modal */
+.wbtm-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.wbtm-modal-content {
+    background: #fff;
+    margin: 5% auto;
+    width: 1000px;
+    max-width: 95%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wbtm-modal-header {
+    padding: 20px 25px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wbtm-modal-header h3 {
+    margin: 0 !important;
+    font-size: 20px !important;
+}
+
+.wbtm-close {
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+}
+
+.wbtm-details-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 25px;
+}
+
+.wbtm-details-col {
+    flex: 1;
+    min-width: 250px;
+}
+
+.wbtm-item-divider {
+    height: 10px;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.wbtm-modal-details h4 {
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #2271b1;
+    display: inline-block;
+}
+
+.mp_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mp_list li {
+    padding: 8px 0;
+    border-bottom: 1px dotted #ccc;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.wbtm-modal-footer {
+    padding: 20px 25px;
+    background: #fcfcfc;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.wbtm-modal-total strong {
+    font-size: 28px;
+    color: #2271b1;
+    margin-left: 10px;
+}

@@ -178,12 +178,24 @@
 										$adult_price = '';
 										$child_price = '';
 										$infant_price = '';
+										$adult_override_desc = '';
+										$adult_override_price = '';
+										$child_override_desc = '';
+										$child_override_price = '';
+										$infant_override_desc = '';
+										$infant_override_price = '';
 										if (sizeof($price_infos) > 0) {
 											foreach ($price_infos as $price_info) {
 												if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)) {
 													$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] !== '' ? (float)$price_info['wbtm_bus_price'] : '';
 													$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] !== '' ? (float)$price_info['wbtm_bus_child_price'] : '';
 													$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] !== '' ? (float)$price_info['wbtm_bus_infant_price'] : '';
+													$adult_override_desc = array_key_exists('wbtm_bus_adult_override_desc', $price_info) ? $price_info['wbtm_bus_adult_override_desc'] : '';
+													$adult_override_price = array_key_exists('wbtm_bus_adult_override_price', $price_info) && $price_info['wbtm_bus_adult_override_price'] !== '' ? (float)$price_info['wbtm_bus_adult_override_price'] : '';
+													$child_override_desc = array_key_exists('wbtm_bus_child_override_desc', $price_info) ? $price_info['wbtm_bus_child_override_desc'] : '';
+													$child_override_price = array_key_exists('wbtm_bus_child_override_price', $price_info) && $price_info['wbtm_bus_child_override_price'] !== '' ? (float)$price_info['wbtm_bus_child_override_price'] : '';
+													$infant_override_desc = array_key_exists('wbtm_bus_infant_override_desc', $price_info) ? $price_info['wbtm_bus_infant_override_desc'] : '';
+													$infant_override_price = array_key_exists('wbtm_bus_infant_override_price', $price_info) && $price_info['wbtm_bus_infant_override_price'] !== '' ? (float)$price_info['wbtm_bus_infant_override_price'] : '';
 												}
 											}
 										}
@@ -193,6 +205,12 @@
 											'adult_price' => $adult_price,
 											'child_price' => $child_price,
 											'infant_price' => $infant_price,
+											'adult_override_desc' => $adult_override_desc,
+											'adult_override_price' => $adult_override_price,
+											'child_override_desc' => $child_override_desc,
+											'child_override_price' => $child_override_price,
+											'infant_override_desc' => $infant_override_desc,
+											'infant_override_price' => $infant_override_price,
 										];
 									}
 								}
@@ -221,6 +239,7 @@
                             </th>
                             <th><?php esc_html_e('Child Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                             <th><?php esc_html_e('Infant Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                            <th><?php esc_html_e('Override Options', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -244,16 +263,33 @@
                                     <label>
                                         <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_adult_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['adult_price']); ?>"/>
                                     </label>
+                                    <div class="wbtm_override_fields" style="margin-top: 5px;">
+                                        <input type="text" class="formControl wbtm_override_desc" name="wbtm_adult_override_desc[]" placeholder="<?php esc_attr_e('Description (e.g., + escursione)', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['adult_override_desc']); ?>" style="margin-bottom: 3px; font-size: 11px;"/>
+                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation wbtm_override_price" name="wbtm_adult_override_price[]" placeholder="<?php esc_attr_e('Override Price', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['adult_override_price']); ?>" style="font-size: 11px;"/>
+                                    </div>
                                 </td>
                                 <td>
                                     <label>
                                         <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_child_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['child_price']); ?>"/>
                                     </label>
+                                    <div class="wbtm_override_fields" style="margin-top: 5px;">
+                                        <input type="text" class="formControl wbtm_override_desc" name="wbtm_child_override_desc[]" placeholder="<?php esc_attr_e('Description (e.g., + escursione)', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['child_override_desc']); ?>" style="margin-bottom: 3px; font-size: 11px;"/>
+                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation wbtm_override_price" name="wbtm_child_override_price[]" placeholder="<?php esc_attr_e('Override Price', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['child_override_price']); ?>" style="font-size: 11px;"/>
+                                    </div>
                                 </td>
                                 <td>
                                     <label>
                                         <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_infant_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['infant_price']); ?>"/>
                                     </label>
+                                    <div class="wbtm_override_fields" style="margin-top: 5px;">
+                                        <input type="text" class="formControl wbtm_override_desc" name="wbtm_infant_override_desc[]" placeholder="<?php esc_attr_e('Description (e.g., + escursione)', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['infant_override_desc']); ?>" style="margin-bottom: 3px; font-size: 11px;"/>
+                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation wbtm_override_price" name="wbtm_infant_override_price[]" placeholder="<?php esc_attr_e('Override Price', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($price_info['infant_override_price']); ?>" style="font-size: 11px;"/>
+                                    </div>
+                                </td>
+                                <td style="vertical-align: top; padding-top: 10px;">
+                                    <small style="color: #666; font-size: 10px;">
+                                        <?php esc_html_e('Override fields add description and additional price to base ticket price.', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    </small>
                                 </td>
                             </tr>
 						<?php } ?>

@@ -689,10 +689,101 @@
 			}
 
 			public static function text_payment_failed() {
-				return self::get_translation(__FUNCTION__,
-					esc_html__('Payment Failed', 'bus-ticket-booking-with-seat-reservation')
-				);
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Payment Failed', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		// Bus Details Popup Tabs
+		public static function text_bus_details() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Bus Details', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_boarding_dropping_points() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Boarding/Dropping Points', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_bus_photo() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Bus Photo', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_bus_features() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Bus Features', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_features() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Features', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_term_condition() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Terms & Condition', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_departure() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Departure', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_return() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Return', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_bus() {
+			return self::get_translation(__FUNCTION__,
+				esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation')
+			);
+		}
+
+		public static function text_monday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Monday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_tuesday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Tuesday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_wednesday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Wednesday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_thursday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Thursday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_friday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Friday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_saturday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Saturday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+		public static function text_sunday() {
+			return self::get_translation(__FUNCTION__, esc_html__('Sunday', 'bus-ticket-booking-with-seat-reservation'));
+		}
+
+		public static function translate_day($day) {
+			$day = strtolower($day);
+			switch ($day) {
+				case 'monday': return self::text_monday();
+				case 'tuesday': return self::text_tuesday();
+				case 'wednesday': return self::text_wednesday();
+				case 'thursday': return self::text_thursday();
+				case 'friday': return self::text_friday();
+				case 'saturday': return self::text_saturday();
+				case 'sunday': return self::text_sunday();
+				default: return $day;
 			}
 		}
-		//new WBTM_Translations();
 	}
+	//new WBTM_Translations();
+}

@@ -26,6 +26,8 @@
 				add_action('wp_ajax_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				/**************************/
+				add_action('wp_ajax_wbtm_reopen_seat', [$this, 'wbtm_reopen_seat']);
+				/**************************/
 			}
 			public function search_result($start_route, $end_route, $date, $post_id = '', $style = '', $btn_show = '', $search_info = [], $journey_type = '', $left_filter_show = [] ) {
 				if ($style == 'flix') {
@@ -116,7 +118,7 @@
 						$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 						$wbtm_bus_type = esc_html(WBTM_Functions::synchronize_bus_type($post_id));
 						$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
-						if ($all_info['available_seat'] > 0) {
+						if ($all_info['total_seat'] > 0) {
 							$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 							$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 							$seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
@@ -249,9 +251,9 @@
 				$bus_id = $data['post_id'];
 				$bus_title = get_the_title($bus_id);
 				$bus_number = get_post_meta($bus_id, 'wbtm_bus_no', true);
-				$start_date_format = date("d F, Y", strtotime($data['j_date']));
-				$start_time = date("h:i A", strtotime($data['wbtm_bp_time']));
-				$end_time = date("h:i A", strtotime($data['wbtm_dp_time']));
+				$start_date_format = date_i18n("d F, Y", strtotime($data['j_date']));
+				$start_time = date_i18n("h:i A", strtotime($data['wbtm_bp_time']));
+				$end_time = date_i18n("h:i A", strtotime($data['wbtm_dp_time']));
 				$time_diff = self::wbtm_get_time_diff($data['wbtm_bp_time'], $data['wbtm_dp_time']);
 				ob_start();
                 $checkout_url = wc_get_checkout_url();
@@ -356,7 +358,7 @@
                 $end = $return ? $start_route : $end_route;
                 $date = $return ? $r_date : $j_date;
 
-                $day = date("l", strtotime($j_date));
+                $day = WBTM_Translations::translate_day(date("l", strtotime($date)));
                 $start_loc = strtoupper(substr($start, 0, 3));
                 $end_loc = strtoupper(substr($end, 0, 3));
 
@@ -365,13 +367,13 @@
                     $show_hide_class = 'wbtm_return_icon';
                 }
                 if ($date) {
-                    $label = WBTM_Global_Function::get_settings('wbtm_general_settings','label',esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'));
+                    $label = WBTM_Global_Function::get_settings('wbtm_general_settings','label', WBTM_Translations::text_bus());
                     // Translate the start_end label
                     $translated_label = $start_end;
                     if ($start_end === 'Departure') {
-                        $translated_label = esc_html__('Departure', 'bus-ticket-booking-with-seat-reservation').' '.$label;
+                        $translated_label = WBTM_Translations::text_departure().' '.$label;
                     } elseif ($start_end === 'Return') {
-                        $translated_label = esc_html__('Return', 'bus-ticket-booking-with-seat-reservation').' '.$label;
+                        $translated_label = WBTM_Translations::text_return().' '.$label;
                     }
                     ?>
                     <div class="wbtm_search_route_container">
@@ -466,6 +468,29 @@
                     <label class="_textTheme"><?php echo esc_html($msg); ?></label>
                 </div>
 				<?php
+			}
+			public function wbtm_reopen_seat() {
+				if (current_user_can('manage_options')) {
+					$post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+					$date = isset($_POST['date']) ? sanitize_text_field($_POST['date']) : '';
+					$seat = isset($_POST['seat']) ? sanitize_text_field($_POST['seat']) : '';
+					
+					if ($post_id > 0 && !empty($date) && !empty($seat)) {
+						$all_reopened = WBTM_Global_Function::get_post_info($post_id, '_wbtm_reopened_seats', []);
+						if (!isset($all_reopened[$date])) {
+							$all_reopened[$date] = [];
+						}
+						
+						if (!in_array($seat, $all_reopened[$date])) {
+							$all_reopened[$date][] = $seat;
+							update_post_meta($post_id, '_wbtm_reopened_seats', $all_reopened);
+							wp_send_json_success(['message' => __('Seat reopened successfully', 'bus-ticket-booking-with-seat-reservation')]);
+						} else {
+							wp_send_json_error(['message' => __('Seat already reopened', 'bus-ticket-booking-with-seat-reservation')]);
+						}
+					}
+				}
+				wp_send_json_error(['message' => __('Permission denied', 'bus-ticket-booking-with-seat-reservation')]);
 			}
 			public static function trigger_view_seat_details() {
 				?>

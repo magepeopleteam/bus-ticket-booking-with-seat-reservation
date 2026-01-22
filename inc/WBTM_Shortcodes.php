@@ -12,6 +12,7 @@
 				add_shortcode('wbtm-bus-list', array($this, 'wbtm_bus_list'));
 				add_shortcode('wbtm-bus-search-form', array($this, 'wbtm_bus_search'));
 				add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
+				add_shortcode('wbtm-bus-details', array($this, 'wbtm_bus_details'));
 			}
 			public function wbtm_bus_list($attribute, $content = null){
 				$defaults = $this->default_attribute();
@@ -105,6 +106,134 @@
 				</div>
 				<?php
 				do_action('wbtm_after_search_result_section', $params);
+				return ob_get_clean();
+			}
+			public function wbtm_bus_details($attribute, $content = null) {
+				$params = shortcode_atts(array(
+					'id' => '',
+					'name' => '',
+					'date' => '',
+					'start_route' => '',
+					'end_route' => '',
+					'style' => 'flix',
+					'btn_show' => 'show'
+				), $attribute);
+
+				$bus_id = $params['id'];
+				if (empty($bus_id) && !empty($params['name'])) {
+					$bus = get_page_by_title($params['name'], OBJECT, 'wbtm_bus');
+					if ($bus) {
+						$bus_id = $bus->ID;
+					}
+				}
+
+				if (empty($bus_id)) {
+					// Apply to current post if it's a bus
+					if (get_post_type() == 'wbtm_bus') {
+						$bus_id = get_the_id();
+					} else {
+						return "";
+					}
+				}
+
+				$date = $params['date'] ?: current_time('Y-m-d');
+				$start_route = $params['start_route'];
+				$end_route = $params['end_route'];
+
+				if (empty($start_route) || empty($end_route)) {
+					$route = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_route_direction', []);
+					if (!empty($route)) {
+						$start_route = $start_route ?: reset($route);
+						$end_route = $end_route ?: end($route);
+					}
+				}
+
+				$search_info = [
+					'bus_start_route' => $start_route,
+					'bus_end_route' => $end_route,
+					'j_date' => $date,
+					'r_date' => '',
+				];
+
+				$left_filter_show = [
+					'left_filter_input' => 'off',
+					'left_filter_type' => 'on',
+					'left_filter_operator' => 'on',
+					'left_filter_boarding' => 'on',
+				];
+
+				ob_start();
+				?>
+				<div id="wbtm_area" class="wbtm_style wbtm_container wbtm_bus_details_shortcode">
+                    <input type="hidden" name="bus_start_route" value="<?php echo esc_attr($start_route); ?>" />
+                    <input type="hidden" name="bus_end_route" value="<?php echo esc_attr($end_route); ?>" />
+                    <input type="hidden" name="j_date" value="<?php echo esc_attr($date); ?>" />
+                    <input type="hidden" name="r_date" value="" />
+                    <input type="hidden" name="wbtm_list_style" value="<?php echo esc_attr($params['style']); ?>" />
+                    <input type="hidden" name="wbtm_list_btn_show" value="<?php echo esc_attr($params['btn_show']); ?>" />
+                    <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($bus_id); ?>" />
+                    <input type="hidden" name="wbtm_left_filter_show" value="off" />
+                    <input type="hidden" name="wbtm_left_filter_type" value="on" />
+                    <input type="hidden" name="wbtm_left_filter_operator" value="on" />
+                    <input type="hidden" name="wbtm_left_filter_boarding" value="on" />
+
+                    <button type="submit" class="get_wbtm_bus_list" style="display: none;"></button>
+
+                    <div class="wbtm_search_result">
+                        <?php 
+                        WBTM_Layout::wbtm_bus_list($bus_id, $start_route, $end_route, $date, '', $params['style'], $params['btn_show'], $search_info, $left_filter_show, 'wbtm_bus_start_end_' . $bus_id); 
+                        ?>
+                    </div>
+				</div>
+                <style>
+                    .wbtm_bus_details_shortcode .wbtm_bus_left_filter_holder { display: none !important; }
+                    .wbtm_bus_details_shortcode .wbtm_bus_list_area { width: 100% !important; }
+                    .wbtm_bus_details_shortcode .wbtm-date-suggetion .wbtm_next_date.mActive {
+                        border: 2px solid var(--wbtm_color_theme) !important;
+                        background-color: #fff !important;
+                    }
+                    /* Specific overrides for the flix-style results in shortcode */
+                    .wbtm_bus_details_shortcode .wbtm-bus-flix-style_bus {
+                        padding: 20px !important;
+                        gap: 15px;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm-bus-route {
+                        width: 35% !important;
+                        padding: 0 15px !important;
+                        border-right: none !important;
+                        align-items: flex-start !important;
+                        text-align: left !important;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm-bus-route h6 {
+                        margin: 0 0 10px 0 !important;
+                        display: flex !important;
+                        flex-direction: row !important;
+                        flex-wrap: nowrap !important;
+                        align-items: center !important;
+                        gap: 8px !important;
+                        text-align: left !important;
+                        white-space: nowrap !important;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm-bus-route h6 .route,
+                    .wbtm_bus_details_shortcode .wbtm-bus-route h6 .time {
+                        display: inline !important;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm-bus-route h6 i {
+                        width: 16px;
+                        text-align: center;
+                        padding-right: 0 !important;
+                        flex-shrink: 0 !important;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm-bus-route h6 .time {
+                        margin-left: 4px;
+                        font-size: 0.9em;
+                        color: #666;
+                    }
+                    .wbtm_bus_details_shortcode .wbtm_bus_feature_badge {
+                        white-space: nowrap;
+                    }
+                </style>
+				<?php
 				return ob_get_clean();
 			}
 			public function default_attribute(): array {

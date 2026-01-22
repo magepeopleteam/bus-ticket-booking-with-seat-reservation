@@ -273,18 +273,36 @@
 					$adult_price = isset($_POST['wbtm_adult_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_adult_price'])) : [];
 					$child_price = isset($_POST['wbtm_child_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_child_price'])) : [];
 					$infant_price = isset($_POST['wbtm_infant_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_infant_price'])) : [];
+					$adult_override_desc = isset($_POST['wbtm_adult_override_desc']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_adult_override_desc'])) : [];
+					$adult_override_price = isset($_POST['wbtm_adult_override_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_adult_override_price'])) : [];
+					$child_override_desc = isset($_POST['wbtm_child_override_desc']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_child_override_desc'])) : [];
+					$child_override_price = isset($_POST['wbtm_child_override_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_child_override_price'])) : [];
+					$infant_override_desc = isset($_POST['wbtm_infant_override_desc']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_infant_override_desc'])) : [];
+					$infant_override_price = isset($_POST['wbtm_infant_override_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_infant_override_price'])) : [];
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
 							if ($stops_bp && $stops_dps[$key] && isset($adult_price[$key])) {
 								$adult = $adult_price[$key] === '' ? '' : (float)$adult_price[$key];
 								$child = !isset($child_price[$key]) || $child_price[$key] === '' ? '' : (float)$child_price[$key];
 								$infant = !isset($infant_price[$key]) || $infant_price[$key] === '' ? '' : (float)$infant_price[$key];
+								$adult_desc = isset($adult_override_desc[$key]) ? $adult_override_desc[$key] : '';
+								$adult_ov_price = isset($adult_override_price[$key]) && $adult_override_price[$key] !== '' ? (float)$adult_override_price[$key] : '';
+								$child_desc = isset($child_override_desc[$key]) ? $child_override_desc[$key] : '';
+								$child_ov_price = isset($child_override_price[$key]) && $child_override_price[$key] !== '' ? (float)$child_override_price[$key] : '';
+								$infant_desc = isset($infant_override_desc[$key]) ? $infant_override_desc[$key] : '';
+								$infant_ov_price = isset($infant_override_price[$key]) && $infant_override_price[$key] !== '' ? (float)$infant_override_price[$key] : '';
 								$price_infos[] = [
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
 									'wbtm_bus_price' => $adult,
 									'wbtm_bus_child_price' => $child,
 									'wbtm_bus_infant_price' => $infant,
+									'wbtm_bus_adult_override_desc' => $adult_desc,
+									'wbtm_bus_adult_override_price' => $adult_ov_price,
+									'wbtm_bus_child_override_desc' => $child_desc,
+									'wbtm_bus_child_override_price' => $child_ov_price,
+									'wbtm_bus_infant_override_desc' => $infant_desc,
+									'wbtm_bus_infant_override_price' => $infant_ov_price,
 								];
 							}
 						}
@@ -293,6 +311,10 @@
 				}
 				//Seat configuration
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+                    // Extract rotation setting early to use in both Cabin and Default logic
+                    $wbtm_enable_seat_rotation = isset($_POST['wbtm_enable_seat_rotation']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation'])) ? 'yes' : 'no';
+                    update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+
 					$pickup_infos = [];
 					$count = 0;
 					$hidden_ids = isset($_POST['wbtm_pickup_unique_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_pickup_unique_id'])) : [];
@@ -377,7 +399,9 @@
 					if ($cabin_mode_enabled === 'yes') {
 						$total_seat = 0;
 						$has_enabled_cabin = false;
-						$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+                        // Use the variable extracted at the top of the function
+						//$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+                        $enable_rotation = isset($wbtm_enable_seat_rotation) ? $wbtm_enable_seat_rotation : 'no'; // Use local variable
 						foreach ($cabin_config as $cabin_index => $cabin) {
 							if (($cabin['enabled'] ?? 'yes') !== 'yes')
 								continue;
@@ -432,11 +456,12 @@
 					$driver_seat_position = isset($_POST['driver_seat_position']) ? sanitize_text_field(wp_unslash($_POST['driver_seat_position'])) : '';
 					$rows = isset($_POST['wbtm_seat_rows_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_hidden'])) : 0;
 					$columns = isset($_POST['wbtm_seat_cols_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_cols_hidden'])) : 0;
-					$wbtm_enable_seat_rotation = isset($_POST['wbtm_enable_seat_rotation']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation'])) ? 'yes' : 'no';
+					//$wbtm_enable_seat_rotation = isset($_POST['wbtm_enable_seat_rotation']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation'])) ? 'yes' : 'no';
+                    // Use already extracted variable
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
-					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+					//update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation); // Already updated at top
 					$lower_deck_info = [];
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {

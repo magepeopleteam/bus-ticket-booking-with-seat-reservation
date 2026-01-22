@@ -133,11 +133,11 @@ if (sizeof($bus_ids) > 0) {
         foreach ($bus_data as $key => $bus) {
 
             $popup_tabs = array(
-                'wbtm_bus_details' => 'Bus Details',
-                'wbtm_bus_boarding_dropping' => 'Boarding/Dripping Points',
-                'wbtm_bus_image' => 'Bus Photo',
-                'wbtm_bus_term_condition' => 'Term & Conditions',
-                'wbtm_bus_feature' => 'Bus Features',
+                'wbtm_bus_details' => WBTM_Translations::text_bus_details(),
+                'wbtm_bus_boarding_dropping' => WBTM_Translations::text_boarding_dropping_points(),
+                'wbtm_bus_image' => WBTM_Translations::text_bus_photo(),
+                'wbtm_bus_term_condition' => WBTM_Translations::text_terms_conditions(),
+                'wbtm_bus_feature' => WBTM_Translations::text_bus_features(),
             );
 
             $bus_id = $bus['bus_id'];
@@ -208,9 +208,13 @@ if (sizeof($bus_ids) > 0) {
                 [$duration_hours, $duration_minutes],
                 $duration_text
             );
+
+            $bus_logo_meta = get_post_meta($bus_id, 'wbtm_bus_logo', true);
+            $has_image = !empty($bus_logo_meta) || has_post_thumbnail($bus_id);
+            $image_class = $has_image ? 'wbtm-has-image' : 'wbtm-no-image';
             ?>
 
-            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $image_class ); ?> <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -273,7 +277,7 @@ if (sizeof($bus_ids) > 0) {
                     <div class="wbtm_bus_details_tabs_holder" style="display: flex; justify-content: space-between">
                         <!--<div class="wbtm_bus_details_tabs">
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                            <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                            <span class="wbtm_bus_details_tab" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dropping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_image" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_term_condition" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                             <span class="wbtm_bus_details_tab" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>

@@ -103,7 +103,7 @@
                 <?php if( !empty( $feature_lists ) ){?>
                     <div class="wtbm_term_wrapper">
 
-                        <h4><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' );?></h4>
+                        <h4><?php echo esc_html( WBTM_Translations::text_features() );?></h4>
                         <?php foreach ( $feature_lists as $key => $value ){
                             ?>
                             <div class="wbtm_bus_feature_items">
@@ -117,7 +117,7 @@
                 <?php if( !empty( $selected_term_condition ) ){?>
                 <div class="wtbm_term_wrapper">
 
-                    <h4><?php esc_html_e( 'Terms & Condition', 'bus-ticket-booking-with-seat-reservation' );?></h4>
+                    <h4><?php echo esc_html( WBTM_Translations::text_term_condition() );?></h4>
                     <?php foreach ( $selected_term_condition as $key => $value ){
                         ?>
                         <div class="wtbm_term_item">

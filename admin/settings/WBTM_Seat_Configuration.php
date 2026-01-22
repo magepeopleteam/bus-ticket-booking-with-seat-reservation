@@ -21,7 +21,9 @@
 				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
 				$cabin_count = count($cabin_config);
 				$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
-				$checked_cabin_mode = $cabin_mode_enabled == 'yes' ? 'checked' : '';
+                $checked_cabin_mode = $cabin_mode_enabled == 'yes' ? 'checked' : '';
+				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+				$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
 				?>
                 <div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
                     <h3><?php esc_html_e('Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -47,6 +49,18 @@
                             </div>
                         </div>
                         <div class="wbtm_cabin_mode_fields" style="display: <?php echo esc_attr($cabin_mode_enabled == 'yes' ? 'block' : 'none'); ?>;">
+                            <div class="divider"></div>
+                            <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+                                <div class="col_6 _dFlex_fdColumn">
+                                    <label>
+										<?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    </label>
+                                    <span><?php esc_html_e('Enable seat rotation for individual seats', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                </div>
+                                <div class="col_6 textRight">
+									<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
+                                </div>
+                            </div>
                             <div class="divider"></div>
                             <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
                                 <div class="col_6 _dFlex_fdColumn">
@@ -256,6 +270,33 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<div class="wbtm_seat_types_palette">
+							<strong><?php esc_html_e('Drag Items:', 'bus-ticket-booking-with-seat-reservation'); ?></strong>
+							<div class="wbtm_palette_items">
+								<div class="wbtm_palette_item" draggable="true" data-value="wc" title="Toilet">
+									<span class="fas fa-restroom"></span> <?php esc_html_e('Toilet', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="food" title="Food/Kitchen">
+									<span class="fas fa-utensils"></span> <?php esc_html_e('Food', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="door" title="Door/Entry">
+									<span class="fas fa-door-open"></span> <?php esc_html_e('Door', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="staff" title="Staff Seat">
+									<span class="fas fa-user-tie"></span> <?php esc_html_e('Staff', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="devider" title="Divider Row">
+									<span class="fas fa-minus"></span> <?php esc_html_e('Divider', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="reserved:" title="Reserved Seat (Internal Sale)">
+									<span class="fas fa-ban"></span> <?php esc_html_e('Reserved', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="" title="Regular Seat">
+									<span class="fas fa-chair"></span> <?php esc_html_e('Seat', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+							</div>
+							<p class="description" style="margin: 5px 0 0; font-size: 11px;"><?php esc_html_e('Drag these items onto the seat boxes below. For "Reserved", append a name after the colon (e.g., reserved:A1).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+						</div>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_item_insert wbtm_sortable_area">
@@ -287,6 +328,7 @@
 						<?php $key = $seat_key . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+						<?php $rotation_class = $seat_rotation > 0 ? 'rotated-' . $seat_rotation : ''; ?>
                         <th>
                             <div class="wbtm_seat_container">
                                 <label>
@@ -298,7 +340,7 @@
                                 </label>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
-                                        <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
+                                        <button type="button" class="wbtm_rotate_seat _whiteButton_xs <?php echo esc_attr($rotation_class); ?>"
                                                 data-seat-key="<?php echo esc_attr($key); ?>"
                                                 data-rotation="<?php echo esc_attr($seat_rotation); ?>"
                                                 title="<?php esc_attr_e('Rotate Seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
@@ -324,6 +366,33 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<div class="wbtm_seat_types_palette">
+							<strong><?php esc_html_e('Drag Items:', 'bus-ticket-booking-with-seat-reservation'); ?></strong>
+							<div class="wbtm_palette_items">
+								<div class="wbtm_palette_item" draggable="true" data-value="wc" title="Toilet">
+									<span class="fas fa-restroom"></span> <?php esc_html_e('Toilet', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="food" title="Food/Kitchen">
+									<span class="fas fa-utensils"></span> <?php esc_html_e('Food', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="door" title="Door/Entry">
+									<span class="fas fa-door-open"></span> <?php esc_html_e('Door', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="staff" title="Staff Seat">
+									<span class="fas fa-user-tie"></span> <?php esc_html_e('Staff', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="devider" title="Divider Row">
+									<span class="fas fa-minus"></span> <?php esc_html_e('Divider', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="reserved:" title="Reserved Seat (Internal Sale)">
+									<span class="fas fa-ban"></span> <?php esc_html_e('Reserved', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+								<div class="wbtm_palette_item" draggable="true" data-value="" title="Regular Seat">
+									<span class="fas fa-chair"></span> <?php esc_html_e('Seat', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+							</div>
+							<p class="description" style="margin: 5px 0 0; font-size: 11px;"><?php esc_html_e('Drag these items onto the seat boxes below. For "Reserved", append a name after the colon (e.g., reserved:A1).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+						</div>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
@@ -391,6 +460,7 @@
 						<?php $key = $seat_key_prefix . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+						<?php $rotation_class = $seat_rotation > 0 ? 'rotated-' . $seat_rotation : ''; ?>
                         <th>
                             <div class="wbtm_seat_container">
                                 <label>
@@ -402,7 +472,7 @@
                                 </label>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
-                                        <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
+                                        <button type="button" class="wbtm_rotate_seat _whiteButton_xs <?php echo esc_attr($rotation_class); ?>"
                                                 data-seat-key="<?php echo esc_attr($key); ?>"
                                                 data-rotation="<?php echo esc_attr($seat_rotation); ?>"
                                                 title="<?php esc_attr_e('Rotate Seat', 'bus-ticket-booking-with-seat-reservation'); ?>">

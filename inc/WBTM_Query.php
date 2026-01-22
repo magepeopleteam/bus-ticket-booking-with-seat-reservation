@@ -170,6 +170,14 @@
 						$q = new WP_Query($args);
 						$total_booked = $q->found_posts;
                         wp_reset_postdata();
+
+						// If checking for a specific seat, also check if it's reserved in the plan
+						if (!empty($seat_name)) {
+							$reserved_seats = self::query_reserved_seats($post_id, $date);
+							if (in_array($seat_name, $reserved_seats)) {
+								$total_booked = max(1, $total_booked);
+							}
+						}
 					}
 				}
 				return $total_booked;
@@ -224,9 +232,87 @@
 								$seat_booked[]=WBTM_Global_Function::get_post_info($guest_id,'wbtm_seat');
 							}
 						}
+						// Add reserved seats from seat plan
+						$reserved_seats = self::query_reserved_seats($post_id, $date);
+						$seat_booked = array_merge($seat_booked, $reserved_seats);
 					}
 				}
-				return $seat_booked;
+				return array_unique($seat_booked);
+			}
+			public static function query_reserved_seats($post_id, $date = '') {
+				$reserved_seats = [];
+				$reopened_seats = [];
+				if (!empty($date)) {
+					$date_key = gmdate('Y-m-d', strtotime($date));
+					$all_reopened = WBTM_Global_Function::get_post_info($post_id, '_wbtm_reopened_seats', []);
+					$reopened_seats = isset($all_reopened[$date_key]) ? $all_reopened[$date_key] : [];
+				}
+				
+				// Check main seat plan
+				$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+				foreach ($seat_infos as $row) {
+					foreach ($row as $key => $val) {
+						if (is_string($val) && strpos($key, '_rotation') === false && stripos($val, 'reserved') === 0) {
+							$name = $val;
+							if (stripos($val, 'reserved:') === 0) {
+								$name = substr($val, 9);
+							}
+							if (empty($name)) {
+								$name = $val; // If it was just "reserved:" show full string
+							}
+							if (!in_array($name, $reopened_seats)) {
+								$reserved_seats[] = $name;
+							}
+						}
+					}
+				}
+				
+				// Check upper deck
+				$seat_infos_dd = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+				foreach ($seat_infos_dd as $row) {
+					foreach ($row as $key => $val) {
+						if (is_string($val) && strpos($key, '_rotation') === false && stripos($val, 'reserved') === 0) {
+							$name = $val;
+							if (stripos($val, 'reserved:') === 0) {
+								$name = substr($val, 9);
+							}
+							if (empty($name)) {
+								$name = $val;
+							}
+							if (!in_array($name, $reopened_seats)) {
+								$reserved_seats[] = $name;
+							}
+						}
+					}
+				}
+				
+				// Check cabins
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				if (!empty($cabin_config)) {
+					foreach ($cabin_config as $index => $cabin) {
+						$cabin_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
+						foreach ($cabin_seats as $row) {
+							foreach ($row as $key => $val) {
+								if (is_string($val) && strpos($key, '_rotation') === false && stripos($val, 'reserved') === 0) {
+									$name = $val;
+									if (stripos($val, 'reserved:') === 0) {
+										$name = substr($val, 9);
+									}
+									if (empty($name)) {
+										$name = $val;
+									}
+									$cabin_seat_id = 'cabin_' . $index . '_' . $name;
+									if (!in_array($cabin_seat_id, $reopened_seats) && !in_array($name, $reopened_seats)) {
+										$reserved_seats[] = $cabin_seat_id;
+										$reserved_seats[] = $name;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				return array_unique($reserved_seats);
 			}
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;

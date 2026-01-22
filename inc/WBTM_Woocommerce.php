@@ -13,6 +13,7 @@
 				add_action('wp_ajax_nopriv_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart'));
 				add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
 				add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
+				add_action('woocommerce_after_calculate_totals', array($this, 'after_calculate_totals'));
 				add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
 				add_filter('woocommerce_get_item_data', array($this, 'get_item_data'), 20, 2);
 				/**********************************************/
@@ -264,13 +265,28 @@
 										break;
 									}
 								}
+								// Get override information from ticket_info
+								$override_desc = '';
+								$override_price = '';
+								$base_price = 0;
+								foreach ($ticket_infos as $ticket_info) {
+									if ($ticket_info['type'] == $seat_type) {
+										$override_desc = isset($ticket_info['override_desc']) ? $ticket_info['override_desc'] : '';
+										$override_price = isset($ticket_info['override_price']) ? $ticket_info['override_price'] : '';
+										$base_price = isset($ticket_info['base_price']) ? floatval($ticket_info['base_price']) : $ticket_price;
+										break;
+									}
+								}
 								$cabin_seats[] = [
 									'cabin_index' => $cabin_index,
 									'cabin_name' => $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1),
 									'seat_name' => $seat_name,
 									'seat_type' => $seat_type,
 									'ticket_price' => $ticket_price,
-									'price_multiplier' => $cabin['price_multiplier'] ?? 1.0
+									'price_multiplier' => $cabin['price_multiplier'] ?? 1.0,
+									'override_desc' => $override_desc,
+									'override_price' => $override_price,
+									'base_price' => $base_price * ($cabin['price_multiplier'] ?? 1.0)
 								];
 							}
 						}
@@ -321,16 +337,86 @@
 							$total_price = max(0, $total_price);
 							// Update the cart item data with the calculated price
 							$cart_object->cart_contents[$key]['wbtm_tp'] = $total_price;
-							$cart_object->cart_contents[$key]['line_total'] = $total_price;
-							$cart_object->cart_contents[$key]['line_subtotal'] = $total_price;
 						}
-						// Always set the price on the product object (WooCommerce uses this for display)
-						$value['data']->set_price($total_price);
-						$value['data']->set_regular_price($total_price);
-						$value['data']->set_sale_price($total_price);
+						
+						// Get tax status and tax class from bus post meta
+						$tax_status = WBTM_Global_Function::get_post_info($post_id, '_tax_status', 'none');
+						$tax_class = WBTM_Global_Function::get_post_info($post_id, '_tax_class', '');
+						
+						// Set tax status and tax class on product (important for correct tax calculation)
+						if (method_exists($value['data'], 'set_tax_status')) {
+							$value['data']->set_tax_status($tax_status);
+						}
+						if (method_exists($value['data'], 'set_tax_class')) {
+							$value['data']->set_tax_class($tax_class);
+						}
+						
+						// WooCommerce expects product prices to be set EXCLUDING tax
+						// If prices include tax, we need to extract tax to get the base price
+						// WooCommerce will then add tax back when calculating totals
+						$price_to_set = $total_price;
+						if ($tax_status === 'taxable' && wc_prices_include_tax() && !empty($tax_class)) {
+							// Prices include tax, extract tax to get price excluding tax
+							$base_tax_rates = WC_Tax::get_base_tax_rates($tax_class);
+							if (!empty($base_tax_rates)) {
+								$remove_taxes = WC_Tax::calc_tax($total_price, $base_tax_rates, true);
+								if ('yes' === get_option('woocommerce_tax_round_at_subtotal')) {
+									$remove_taxes_total = array_sum($remove_taxes);
+								} else {
+									$remove_taxes_total = array_sum(array_map('wc_round_tax_total', $remove_taxes));
+								}
+								$price_to_set = round($total_price - $remove_taxes_total, wc_get_price_decimals());
+							}
+						}
+						
+						// Always set the price on the product object (WooCommerce uses this for display and coupon calculation)
+						// Set price excluding tax - WooCommerce will handle tax display based on settings
+						$value['data']->set_price($price_to_set);
+						$value['data']->set_regular_price($price_to_set);
+						$value['data']->set_sale_price($price_to_set);
 						$value['data']->set_sold_individually('yes');
+						
+						// Set line_subtotal to the original price excluding tax (before discount)
+						// This must match the product price we set above
+						// WooCommerce uses this to calculate coupon discounts
+						$cart_object->cart_contents[$key]['line_subtotal'] = $price_to_set;
+						
+						// Initialize line_total to the same value (WooCommerce will adjust it after applying coupons)
+						// This ensures the cart item has a valid line_total before WooCommerce calculates discounts
+						if (!isset($cart_object->cart_contents[$key]['line_total'])) {
+							$cart_object->cart_contents[$key]['line_total'] = $price_to_set;
+						}
+					} else {
+						// Even if price is already set, ensure line_subtotal is correct
+						// This ensures coupon calculations work correctly
+						$cart_object->cart_contents[$key]['line_subtotal'] = $total_price;
+						
+						// Also ensure tax status is set correctly
+						$tax_status = WBTM_Global_Function::get_post_info($post_id, '_tax_status', 'none');
+						$tax_class = WBTM_Global_Function::get_post_info($post_id, '_tax_class', '');
+						if (method_exists($value['data'], 'set_tax_status')) {
+							$value['data']->set_tax_status($tax_status);
+						}
+						if (method_exists($value['data'], 'set_tax_class')) {
+							$value['data']->set_tax_class($tax_class);
+						}
 					}
 				}
+			}
+			
+			/**
+			 * After totals are calculated, ensure we don't interfere with WooCommerce's coupon calculations
+			 * This runs after WooCommerce applies coupons and calculates line_total
+			 * 
+			 * IMPORTANT: We should NOT override line_subtotal or line_total here as WooCommerce
+			 * has already calculated everything correctly including coupon discounts.
+			 * Only preserve values if absolutely necessary.
+			 */
+			public function after_calculate_totals($cart_object) {
+				// Do not override anything - WooCommerce has already calculated everything correctly
+				// including line_subtotal (before discount) and line_total (after discount)
+				// Any interference here will break coupon calculations
+				return;
 			}
 			public function update_order_status($order_id) {
 				$force_processing_completed = WBTM_Global_Function::get_settings('wbtm_general_settings', 'make_processing_completed', 'off');
@@ -472,7 +558,12 @@
 					$base_price = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
 					if (sizeof($ticket_infos) > 0) {
 						foreach ($ticket_infos as $ticket_info) {
-							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_info['ticket_name']);
+							$ticket_display_name = $ticket_info['ticket_name'];
+							// Check if override description exists
+							if (isset($ticket_info['override_desc']) && !empty($ticket_info['override_desc'])) {
+								$ticket_display_name = $ticket_info['ticket_name'];
+							}
+							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_display_name);
 							if (array_key_exists('seat_name', $ticket_info)) {
 								$seat_name = $ticket_info['seat_name'];
 								if (array_key_exists('dd', $ticket_info) && $ticket_info['dd']) {
@@ -481,7 +572,17 @@
 								$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_name);
 							}
 							$item->add_meta_data(WBTM_Translations::text_qty(), $ticket_info['ticket_qty']);
-							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $ticket_info["ticket_price"] . ' x ' . $ticket_info['ticket_qty'] . ' ) = ' . wc_price($ticket_info['ticket_price'] * $ticket_info['ticket_qty']));
+							// Display price breakdown if override exists
+							$price_display = '';
+							if (isset($ticket_info['base_price']) && isset($ticket_info['override_price']) && !empty($ticket_info['override_price'])) {
+								$base_price = floatval($ticket_info['base_price']);
+								$override_price = floatval($ticket_info['override_price']);
+								$total_price = $base_price + $override_price;
+								$price_display = ' ( ' . wc_price($base_price) . ' + ' . wc_price($override_price) . ' ) x ' . $ticket_info['ticket_qty'] . ' = ' . wc_price($total_price * $ticket_info['ticket_qty']);
+							} else {
+								$price_display = ' ( ' . $ticket_info["ticket_price"] . ' x ' . $ticket_info['ticket_qty'] . ' ) = ' . wc_price($ticket_info['ticket_price'] * $ticket_info['ticket_qty']);
+							}
+							$item->add_meta_data(WBTM_Translations::text_price(), $price_display);
 						}
 						$item->add_meta_data(WBTM_Translations::text_total_qty(), $ticket_qty);
 						$item->add_meta_data(WBTM_Translations::text_ticket_sub_total(), wc_price($base_price));
@@ -626,6 +727,12 @@
 									$data['wbtm_seat'] = $ticket_info['seat_name'];
 								}
 								$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
+								// Store override information for display in passenger list, reports, and PDF
+								if (isset($ticket_info['override_desc']) && !empty($ticket_info['override_desc'])) {
+									$data['wbtm_override_desc'] = $ticket_info['override_desc'];
+									$data['wbtm_override_price'] = isset($ticket_info['override_price']) ? floatval($ticket_info['override_price']) : 0;
+									$data['wbtm_base_price'] = isset($ticket_info['base_price']) ? floatval($ticket_info['base_price']) : $ticket_info['ticket_price'];
+								}
 								$data['wbtm_ticket_status'] = 1;
 								$data['wbtm_order_status'] = $order_status;
 								$data['wbtm_attendee_info'] = array_key_exists($count, $attendee_info) ? $attendee_info[$count] : [];
@@ -911,10 +1018,29 @@
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
 									}
+									// Get ticket info with override information
+									$ticket_infos_full = WBTM_Functions::get_ticket_info($post_id, $start_place, $end_place);
+									$override_desc = '';
+									$override_price = '';
+									$base_price = $seat_price;
+									foreach ($ticket_infos_full as $ticket_info_full) {
+										if ($ticket_info_full['type'] == $type) {
+											$override_desc = isset($ticket_info_full['override_desc']) ? $ticket_info_full['override_desc'] : '';
+											$override_price = isset($ticket_info_full['override_price']) ? floatval($ticket_info_full['override_price']) : '';
+											$base_price = isset($ticket_info_full['base_price']) ? floatval($ticket_info_full['base_price']) : $seat_price;
+											break;
+										}
+									}
 									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type);
+									if (!empty($override_desc)) {
+										$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type) . ' + ' . $override_desc;
+									}
 									$ticket_info[$count]['ticket_type'] = $type;
 									$ticket_info[$count]['seat_name'] = $seat_name;
 									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
+									$ticket_info[$count]['base_price'] = $base_price;
+									$ticket_info[$count]['override_desc'] = $override_desc;
+									$ticket_info[$count]['override_price'] = $override_price;
 									$ticket_info[$count]['ticket_qty'] = 1;
 									$ticket_info[$count]['date'] = $start_date ?? '';
 									$ticket_info[$count]['dd'] = '';
@@ -1088,7 +1214,15 @@
 								<?php } ?>
                                 <li>
                                     <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_ticket_type()); ?> :</h6>
-                                    <span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type)); ?></span>
+                                    <span><?php 
+                                        $display_name = $ticket_name ?: WBTM_Functions::get_ticket_name($seat_type);
+                                        // Check if override description exists in ticket info
+                                        if (isset($wbtm_seat['override_desc']) && !empty($wbtm_seat['override_desc'])) {
+                                            $base_ticket_name = WBTM_Functions::get_ticket_name($seat_type);
+                                            $display_name = $base_ticket_name . ' + ' . $wbtm_seat['override_desc'];
+                                        }
+                                        echo esc_html($display_name); 
+                                    ?></span>
                                 </li>
 								<?php if ($seat_name) { ?>
                                     <li>
@@ -1102,7 +1236,17 @@
                                 </li>
                                 <li>
                                     <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_price()); ?> :</h6>
-                                    <span><?php echo ' ( ' . wp_kses_post(wc_price($ticket_price)) . ' x ' . esc_attr($qty) . ' ) = ' . wp_kses_post(wc_price(($ticket_price * $qty))); ?></span>
+                                    <span><?php 
+                                        // Display price breakdown if override exists
+                                        if (isset($wbtm_seat['base_price']) && isset($wbtm_seat['override_price']) && !empty($wbtm_seat['override_price'])) {
+                                            $base_price = floatval($wbtm_seat['base_price']);
+                                            $override_price = floatval($wbtm_seat['override_price']);
+                                            $total_price = $base_price + $override_price;
+                                            echo ' ( ' . wp_kses_post(wc_price($base_price)) . ' + ' . wp_kses_post(wc_price($override_price)) . ' ) x ' . esc_attr($qty) . ' = ' . wp_kses_post(wc_price($total_price * $qty));
+                                        } else {
+                                            echo ' ( ' . wp_kses_post(wc_price($ticket_price)) . ' x ' . esc_attr($qty) . ' ) = ' . wp_kses_post(wc_price(($ticket_price * $qty)));
+                                        }
+                                    ?></span>
                                 </li>
 								<?php
 								if ($qty > 1) {

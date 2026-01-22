@@ -5,7 +5,8 @@
 */
 	if (!defined('ABSPATH')) {
 		die;
-	} // Cannot access pages directly.
+	} 
+    // Cannot access pages directly.
 	/*$post_id = $post_id ?? WBTM_Global_Function::data_sanitize($_POST['post_id']);
 	$start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start_route']);
 	$end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);*/
@@ -83,6 +84,10 @@
                     }
                 }
             }
+            // Fetch reopened seats for this bus and date
+            $all_reopened = WBTM_Global_Function::get_post_info($post_id, '_wbtm_reopened_seats', []);
+            $date_key = gmdate('Y-m-d', strtotime($date));
+            $current_reopened = isset($all_reopened[$date_key]) ? $all_reopened[$date_key] : [];
             ?>
             <div class="_dLayout_xs">
                 <?php //echo '<pre>'; print_r($seat_booked); echo '</pre>'; ?>
@@ -167,9 +172,25 @@
                                                         }
                                                         ?>
                                                         <?php if ($seat_name): ?>
-                                                            <?php if ($seat_name == 'door' || $seat_name == 'wc'): ?>
-                                                                <td><?php echo esc_html($seat_name); ?></td>
-                                                            <?php else: ?>
+                                                            <?php
+                                                            $seat_name_lower = strtolower($seat_name);
+                                                            $special_types = ['door', 'wc', 'toilet', 'food', 'kitchen', 'staff', 'devider'];
+                                                            if (in_array($seat_name_lower, $special_types)) {
+                                                                $icon_class = '';
+                                                                if ($seat_name_lower == 'door') $icon_class = 'fas fa-door-open';
+                                                                elseif ($seat_name_lower == 'wc' || $seat_name_lower == 'toilet') $icon_class = 'fas fa-restroom';
+                                                                elseif ($seat_name_lower == 'food' || $seat_name_lower == 'kitchen') $icon_class = 'fas fa-utensils';
+                                                                elseif ($seat_name_lower == 'staff') $icon_class = 'fas fa-user-tie';
+                                                                ?>
+                                                                <td>
+                                                                    <div class="wbtm_special_seat wbtm_type_<?php echo esc_attr($seat_name_lower); ?>" title="<?php echo esc_attr($seat_name_lower == 'devider' ? '' : ucfirst($seat_name)); ?>">
+                                                                        <?php if ($seat_name_lower != 'devider'): ?>
+                                                                            <i class="<?php echo esc_attr($icon_class); ?>"></i>
+                                                                            <span class="wbtm_special_label"><?php echo esc_html($seat_name_lower == 'wc' ? 'Toilet' : ucfirst($seat_name)); ?></span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                </td>
+                                                            <?php } else { ?>
                                                                 <?php
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $rotation = 0;
@@ -180,22 +201,45 @@
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
+                                                                $is_reserved = false;
+                                                                if (stripos($seat_name, 'reserved') === 0) {
+                                                                    $raw_seat_name = $seat_name;
+                                                                    if (stripos($seat_name, 'reserved:') === 0) {
+                                                                        $seat_name = trim(substr($seat_name, 9));
+                                                                    } else {
+                                                                        // Handle "reserved" without colon - extract seat name if possible
+                                                                        $seat_name = trim(str_ireplace('reserved', '', $seat_name));
+                                                                    }
+                                                                    if (empty($seat_name)) {
+                                                                        $seat_name = $raw_seat_name;
+                                                                    }
+                                                                    $cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+                                                                    if (!in_array($seat_name, $current_reopened) && !in_array($cabin_seat_identifier, $current_reopened)) {
+                                                                        $is_reserved = true;
+                                                                    }
+                                                                }
+
                                                                 // Enhanced by Shahnur Alam - 2025-10-08
                                                                 // Fix cabin seat availability check - use cabin-specific identifiers
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                $is_booked = in_array($cabin_seat_identifier, $seat_booked) || in_array($seat_name, $seat_booked);
+                                                                $is_booked = $is_reserved || in_array($cabin_seat_identifier, $seat_booked) || in_array($seat_name, $seat_booked);
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $is_in_cart = !$is_booked && (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier) || WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name));
                                                                 ?>
                                                                 <th>
                                                                     <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
-                                                                        <?php if ($is_booked): ?>
-                                                                            <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
-                                                                                <div class="seat_visual"></div>
-                                                                                <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
-                                                                            </div>
+                                                                         <?php if ($is_booked || $is_reserved): ?>
+                                                                             <div class="mp_seat seat_booked <?php echo $is_reserved ? 'seat_reserved' : ''; ?>" title="<?php echo $is_reserved ? esc_attr__('Reserved', 'bus-ticket-booking-with-seat-reservation') : esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
+                                                                                  <div class="seat_visual"></div>
+                                                                                  <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
+                                                                                  <?php if ($is_reserved && current_user_can('manage_options')): ?>
+                                                                                      <div class="wbtm_reopen_action" data-seat="<?php echo esc_attr($cabin_seat_identifier); ?>" data-post_id="<?php echo esc_attr($post_id); ?>" data-date="<?php echo esc_attr($date_key); ?>" title="<?php esc_attr_e('Reopen for online sales', 'bus-ticket-booking-with-seat-reservation'); ?>">
+                                                                                          <i class="fas fa-unlock"></i>
+                                                                                      </div>
+                                                                                  <?php endif; ?>
+                                                                              </div>
                                                                         <?php elseif ($is_in_cart): ?>
                                                                             <div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name) ); ?>">
                                                                                 <div class="seat_visual"></div>
@@ -240,7 +284,7 @@
                                                                         <?php endif; ?>
                                                                     </div>
                                                                 </th>
-                                                            <?php endif; ?>
+                                                            <?php } ?>
                                                         <?php else: ?>
                                                             <td></td>
                                                         <?php endif; ?>
@@ -289,8 +333,24 @@
                                             }
                                             ?>
                                             <?php if ($seat_name) { ?>
-                                                <?php if ($seat_name == 'door' || $seat_name == 'wc') { ?>
-                                                    <td><?php echo esc_html($seat_name); ?></td>
+                                                <?php
+                                                $seat_name_lower = strtolower($seat_name);
+                                                $special_types = ['door', 'wc', 'toilet', 'food', 'kitchen', 'staff', 'devider'];
+                                                if (in_array($seat_name_lower, $special_types)) {
+                                                    $icon_class = '';
+                                                    if ($seat_name_lower == 'door') $icon_class = 'fas fa-door-open';
+                                                    elseif ($seat_name_lower == 'wc' || $seat_name_lower == 'toilet') $icon_class = 'fas fa-restroom';
+                                                    elseif ($seat_name_lower == 'food' || $seat_name_lower == 'kitchen') $icon_class = 'fas fa-utensils';
+                                                    elseif ($seat_name_lower == 'staff') $icon_class = 'fas fa-user-tie';
+                                                    ?>
+                                                    <td>
+                                                        <div class="wbtm_special_seat wbtm_type_<?php echo esc_attr($seat_name_lower); ?>" title="<?php echo esc_attr($seat_name_lower == 'devider' ? '' : ucfirst($seat_name)); ?>">
+                                                            <?php if ($seat_name_lower != 'devider'): ?>
+                                                                <i class="<?php echo esc_attr($icon_class); ?>"></i>
+                                                                <span class="wbtm_special_label"><?php echo esc_html($seat_name_lower == 'wc' ? 'Toilet' : ucfirst($seat_name)); ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -305,18 +365,40 @@
                                                     <th>
                                                         <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
                                                             <?php
-                                                            // Enhanced by Shahnur Alam - 2025-10-08
-                                                            // Check both legacy seat names and cabin-specific identifiers for backward compatibility
-                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                            $is_booked_legacy = in_array($seat_name, $seat_booked);
-                                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                            $is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
-                                                            ?>
-                                                            <?php if ($is_booked_legacy) { ?>
-                                                                <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
-                                                                    <div class="seat_visual"></div>
-                                                                    <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
-                                                                </div>
+                                                                $is_reserved_legacy = false;
+                                                                if (stripos($seat_name, 'reserved') === 0) {
+                                                                    $raw_seat_name = $seat_name;
+                                                                    if (stripos($seat_name, 'reserved:') === 0) {
+                                                                        $seat_name = trim(substr($seat_name, 9));
+                                                                    } else {
+                                                                        // Handle "reserved" without colon - extract seat name if possible
+                                                                        $seat_name = trim(str_ireplace('reserved', '', $seat_name));
+                                                                    }
+                                                                    if (empty($seat_name)) {
+                                                                        $seat_name = $raw_seat_name;
+                                                                    }
+                                                                    if (!in_array($seat_name, $current_reopened)) {
+                                                                        $is_reserved_legacy = true;
+                                                                    }
+                                                                }
+
+                                                                // Enhanced by Shahnur Alam - 2025-10-08
+                                                                // Check both legacy seat names and cabin-specific identifiers for backward compatibility
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $is_booked_legacy = $is_reserved_legacy || in_array($seat_name, $seat_booked);
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
+                                                                ?>
+                                                                 <?php if ($is_booked_legacy || $is_reserved_legacy) { ?>
+                                                                     <div class="mp_seat seat_booked <?php echo $is_reserved_legacy ? 'seat_reserved' : ''; ?>" title="<?php echo $is_reserved_legacy ? esc_attr__('Reserved', 'bus-ticket-booking-with-seat-reservation') : esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
+                                                                          <div class="seat_visual"></div>
+                                                                          <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
+                                                                          <?php if ($is_reserved_legacy && current_user_can('manage_options')): ?>
+                                                                              <div class="wbtm_reopen_action" data-seat="<?php echo esc_attr($seat_name); ?>" data-post_id="<?php echo esc_attr($post_id); ?>" data-date="<?php echo esc_attr($date_key); ?>" title="<?php esc_attr_e('Reopen for online sales', 'bus-ticket-booking-with-seat-reservation'); ?>">
+                                                                                  <i class="fas fa-unlock"></i>
+                                                                              </div>
+                                                                          <?php endif; ?>
+                                                                      </div>
                                                             <?php } elseif ($is_in_cart_legacy) { ?>
                                                                 <div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($seat_name) ); ?>">
                                                                     <div class="seat_visual"></div>
@@ -396,8 +478,24 @@
                                             }
                                             ?>
                                             <?php if ($info) { ?>
-                                                <?php if ($info == 'door' || $info == 'wc') { ?>
-                                                    <td><?php echo esc_html($info) ?></td>
+                                                <?php
+                                                $seat_name_lower = strtolower($info);
+                                                $special_types = ['door', 'wc', 'toilet', 'food', 'kitchen', 'staff', 'devider'];
+                                                if (in_array($seat_name_lower, $special_types)) {
+                                                    $icon_class = '';
+                                                    if ($seat_name_lower == 'door') $icon_class = 'fas fa-door-open';
+                                                    elseif ($seat_name_lower == 'wc' || $seat_name_lower == 'toilet') $icon_class = 'fas fa-restroom';
+                                                    elseif ($seat_name_lower == 'food' || $seat_name_lower == 'kitchen') $icon_class = 'fas fa-utensils';
+                                                    elseif ($seat_name_lower == 'staff') $icon_class = 'fas fa-user-tie';
+                                                    ?>
+                                                    <th>
+                                                        <div class="wbtm_special_seat wbtm_type_<?php echo esc_attr($seat_name_lower); ?>" title="<?php echo esc_attr($seat_name_lower == 'devider' ? '' : ucfirst($info)); ?>">
+                                                            <?php if ($seat_name_lower != 'devider'): ?>
+                                                                <i class="<?php echo esc_attr($icon_class); ?>"></i>
+                                                                <span class="wbtm_special_label"><?php echo esc_html($seat_name_lower == 'wc' ? 'Toilet' : ucfirst($info)); ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </th>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -409,18 +507,40 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
-                                                    // Enhanced by Shahnur Alam - 2025-10-08
-                                                    // Fix upper deck seat availability check - support cabin-specific identifiers
-                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                    $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
-                                                    ?>
-                                                    <th>
-                                                        <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
-                                                            <?php if ($seat_available > 0) { ?>
-                                                                <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info) ); ?>">
-                                                                    <div class="seat_visual"></div>
-                                                                    <div class="seat_number"><?php echo esc_html($info); ?></div>
-                                                                </div>
+                                                     $is_reserved_dd = false;
+                                                     if (stripos($info, 'reserved') === 0) {
+                                                         $raw_info = $info;
+                                                         if (stripos($info, 'reserved:') === 0) {
+                                                             $info = trim(substr($info, 9));
+                                                         } else {
+                                                             // Handle "reserved" without colon - extract seat name if possible
+                                                             $info = trim(str_ireplace('reserved', '', $info));
+                                                         }
+                                                         if (empty($info)) {
+                                                             $info = $raw_info;
+                                                         }
+                                                         if (!in_array($info, $current_reopened)) {
+                                                             $is_reserved_dd = true;
+                                                         }
+                                                     }
+
+                                                     // Enhanced by Shahnur Alam - 2025-10-08
+                                                     // Fix upper deck seat availability check - support cabin-specific identifiers
+                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                     $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
+                                                     ?>
+                                                     <th>
+                                                         <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
+                                                            <?php if ($seat_available > 0 || $is_reserved_dd) { ?>
+                                                                <div class="mp_seat seat_booked <?php echo $is_reserved_dd ? 'seat_reserved' : ''; ?>" title="<?php echo $is_reserved_dd ? esc_attr__('Reserved', 'bus-ticket-booking-with-seat-reservation') : esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info) ); ?>">
+                                                                     <div class="seat_visual"></div>
+                                                                     <div class="seat_number"><?php echo esc_html($info); ?></div>
+                                                                     <?php if ($is_reserved_dd && current_user_can('manage_options')): ?>
+                                                                         <div class="wbtm_reopen_action" data-seat="<?php echo esc_attr($info); ?>" data-post_id="<?php echo esc_attr($post_id); ?>" data-date="<?php echo esc_attr($date_key); ?>" title="<?php esc_attr_e('Reopen for online sales', 'bus-ticket-booking-with-seat-reservation'); ?>">
+                                                                             <i class="fas fa-unlock"></i>
+                                                                         </div>
+                                                                     <?php endif; ?>
+                                                                 </div>
                                                             <?php } elseif (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $info)) { ?>
                                                                 <div class="mp_seat seat_in_cart" title="<?php echo esc_html( WBTM_Translations::text_already_in_cart() . ' :  ' . esc_attr($info) ); ?>">
                                                                     <div class="seat_visual"></div>

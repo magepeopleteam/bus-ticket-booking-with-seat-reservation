@@ -19,7 +19,7 @@
             }
         }).promise().done(function () {
             if (count > 1) {
-                types[count - 1]= "dp";
+                types[count - 1] = "dp";
                 $.ajax({
                     type: "POST",
                     url: wbtm_admin_var.url,
@@ -287,35 +287,65 @@
     // Handle rotation setting toggle
     $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function () {
         let isEnabled = $(this).is(':checked');
+
+        // Sync all other inputs with the same name
+        $('input[name="wbtm_enable_seat_rotation"]').not(this).prop('checked', isEnabled);
+
         let $seatPlanContainer = $('.wbtm_seat_plan_settings');
         let $cabinContainer = $('.wbtm_cabin_settings_area');
+
         if (isEnabled) {
             // Show rotation controls immediately
             $seatPlanContainer.addClass('wbtm_enable_rotation');
             $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
             $cabinContainer.addClass('wbtm_enable_rotation');
             $cabinContainer.find('.wbtm_seat_rotation_controls').show();
+
             // Add rotation controls to existing seats if they don't have them
-            $seatPlanContainer.find('.wbtm_seat_container').each(function () {
+            // Target both seat plan and cabin containers
+            $('.wbtm_seat_container').each(function () {
                 let $container = $(this);
                 if ($container.find('.wbtm_seat_rotation_controls').length === 0) {
                     let $input = $container.find('input[class*="wbtm_id_validation"]');
-                    let inputName = $input.attr('name');
-                    let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
-                    let rotationControls = `
-            <div class="wbtm_seat_rotation_controls">
-              <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
-                      data-seat-key="${seatKey}" 
-                      data-rotation="0"
-                      title="Rotate Seat">
-                <span class="fas fa-redo-alt mp_zero"></span>
-              </button>
-              <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
-                     value="0" 
-                     class="wbtm_rotation_value" />
-            </div>
-          `;
-                    $container.append(rotationControls);
+                    if ($input.length > 0) {
+                        let inputName = $input.attr('name');
+                        if (inputName) {
+                            // Extract key: remove wbtm_ prefix and [] suffix
+                            // Handle potential template_ prefix for hidden rows
+                            let seatKey = inputName.replace('wbtm_', '').replace('template_', '').replace('[]', '');
+
+                            // If it was a template input, we need to be careful, but here we likely deal with real inputs or template inputs
+                            // The rotation input name should match the text input name pattern
+                            // If text input is wbtm_template_cabin_1_seat1[], rotation should be wbtm_template_cabin_1_seat1_rotation[]
+                            // The helper above stripped template_, but we might need it back for the rotation name if the text input had it
+
+                            let rotationInputName = inputName.replace('[]', '') + '_rotation[]';
+
+                            // Simplified approach: rely on the fact that seatKey is used for data attributes primarily
+                            // and constructing the input name.
+                            // Let's stick to the existing logic but make it robust for cabins
+
+                            seatKey = inputName.replace('wbtm_', '').replace('[]', '');
+                            // Check if it has template_
+                            let isTemplate = seatKey.indexOf('template_') === 0;
+
+                            let rotationControls = `
+                                <div class="wbtm_seat_rotation_controls">
+                                  <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
+                                          data-seat-key="${seatKey.replace('template_', '')}" 
+                                          data-rotation="0"
+                                          title="Rotate Seat">
+                                    <span class="fas fa-redo-alt mp_zero"></span>
+                                  </button>
+                                  <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
+                                         value="0" 
+                                         class="wbtm_rotation_value" 
+                                         ${isTemplate ? 'disabled' : ''} />
+                                </div>
+                              `;
+                            $container.append(rotationControls);
+                        }
+                    }
                 }
             });
         } else {
@@ -326,13 +356,70 @@
             $cabinContainer.find('.wbtm_seat_rotation_controls').hide();
         }
     });
+
     // Initialize rotation setting on page load
     $(document).ready(function () {
         let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
-        if ($rotationToggle.is(':checked')) {
+        if ($rotationToggle.first().is(':checked')) {
             $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
             $('.wbtm_cabin_settings_area').addClass('wbtm_enable_rotation');
             $('.wbtm_seat_rotation_controls').show();
         }
     });
+
+    // Seat Type Palette Drag & Drop Logic
+    $(document).on('dragstart', '.wbtm_palette_item', function (e) {
+        e.originalEvent.dataTransfer.setData('text/plain', $(this).data('value'));
+        e.originalEvent.dataTransfer.effectAllowed = 'copy';
+        $(this).css('opacity', '0.5');
+    });
+
+    $(document).on('dragend', '.wbtm_palette_item', function (e) {
+        $(this).css('opacity', '1');
+    });
+
+    $(document).on('dragover', '.wbtm_seat_container', function (e) {
+        e.preventDefault(); // Necessary to allow dropping
+        e.originalEvent.dataTransfer.dropEffect = 'copy';
+        $(this).addClass('drag-over');
+    });
+
+    $(document).on('dragleave', '.wbtm_seat_container', function (e) {
+        $(this).removeClass('drag-over');
+    });
+
+    $(document).on('drop', '.wbtm_seat_container', function (e) {
+        e.preventDefault();
+        $(this).removeClass('drag-over');
+
+        var value = e.originalEvent.dataTransfer.getData('text/plain');
+        var input = $(this).find('input[class*="wbtm_id_validation"]');
+
+        if (input.length) {
+            // Handle reserved items - prepend "reserved:" to existing seat name instead of replacing it
+            if (value === 'reserved:' || value.startsWith('reserved:')) {
+                var currentValue = input.val().trim();
+                // If seat already has a name, prepend "reserved:" to keep the seat name visible
+                if (currentValue && !currentValue.toLowerCase().startsWith('reserved')) {
+                    input.val('reserved:' + currentValue).trigger('change');
+                } else if (!currentValue) {
+                    // If empty, just set to "reserved:" (user can add seat name manually)
+                    input.val(value).trigger('change');
+                } else {
+                    // Already has reserved prefix, just update if needed
+                    input.val(value).trigger('change');
+                }
+            } else {
+                // For other items (door, wc, food, etc.), replace the value as before
+                input.val(value).trigger('change');
+            }
+
+            // Visual feedback
+            input.css('background-color', '#e3f2fd');
+            setTimeout(function () {
+                input.css('background-color', '');
+            }, 500);
+        }
+    });
+
 })(jQuery);

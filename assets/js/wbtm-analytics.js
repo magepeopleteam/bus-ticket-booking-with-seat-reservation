@@ -1,4 +1,91 @@
 jQuery(document).ready(function($) {
+    // Quick Date Selector
+    $('#wbtm_quick_date').on('change', function() {
+        const value = $(this).val();
+        const today = new Date();
+        let fromDate = '';
+        let toDate = '';
+        
+        // Format date as YYYY-MM-DD
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        
+        switch(value) {
+            case 'today':
+                fromDate = toDate = formatDate(today);
+                break;
+            case 'yesterday':
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                fromDate = toDate = formatDate(yesterday);
+                break;
+            case 'last7days':
+                const last7 = new Date(today);
+                last7.setDate(last7.getDate() - 7);
+                fromDate = formatDate(last7);
+                toDate = formatDate(today);
+                break;
+            case 'last30days':
+                const last30 = new Date(today);
+                last30.setDate(last30.getDate() - 30);
+                fromDate = formatDate(last30);
+                toDate = formatDate(today);
+                break;
+            case 'thismonth':
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                fromDate = formatDate(firstDay);
+                toDate = formatDate(today);
+                break;
+            case 'lastmonth':
+                const lastMonthFirst = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthLast = new Date(today.getFullYear(), today.getMonth(), 0);
+                fromDate = formatDate(lastMonthFirst);
+                toDate = formatDate(lastMonthLast);
+                break;
+            case 'thisyear':
+                const yearStart = new Date(today.getFullYear(), 0, 1);
+                fromDate = formatDate(yearStart);
+                toDate = formatDate(today);
+                break;
+        }
+        
+        if (fromDate) {
+            $('#wbtm_date_from').val(fromDate);
+        }
+        if (toDate) {
+            $('#wbtm_date_to').val(toDate);
+        }
+    });
+    
+    // Export Analytics to CSV
+    $('#wbtm_export_analytics').on('click', function(e) {
+        e.preventDefault();
+        
+        // Get current filter values
+        const filters = {
+            date_from: $('#wbtm_date_from').val(),
+            date_to: $('#wbtm_date_to').val(),
+            bus_id: $('#wbtm_bus_filter').val(),
+            route: $('#wbtm_route_filter').val(),
+            order_status: $('#wbtm_status_filter').val()
+        };
+        
+        // Build export URL
+        let exportUrl = ajaxurl + '?action=wbtm_export_analytics_csv';
+        Object.keys(filters).forEach(key => {
+            if (filters[key]) {
+                exportUrl += `&${key}=${encodeURIComponent(filters[key])}`;
+            }
+        });
+        
+        // Trigger download
+        window.location.href = exportUrl;
+    });
+    
     // Check if wbtmAnalytics object exists
     if (typeof wbtmAnalytics === 'undefined') {
         console.error('Analytics data not found');

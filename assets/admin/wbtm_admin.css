@@ -1,27 +1,112 @@
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-	div.wbtm_settings_pricing_routing div.wbtm_item_insert div:nth-last-child(2) h3 span {display: none;}
-	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table {table-layout: auto;border: 0;}
+	div.wbtm_settings_pricing_routing div.wbtm_item_insert div:nth-last-child(2) h3 span {
+		display: none;
+	}
+
+	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table {
+		table-layout: auto;
+		border: 0;
+	}
+
 	/*****************/
-	div.wbtm_seat_plan_settings {padding: var(--wbtm_dmp_xs);width: calc(100% - 300px);background-color: var(--wbtm_color_white);}
-	div.wbtm_seat_plan_settings table {border: none;}
-	div.wbtm_seat_plan_settings table th {min-width: 75px;}
-	div.wbtm_seat_plan_settings table th .formControl {text-align: center;}
+	div.wbtm_seat_plan_settings {
+		padding: var(--wbtm_dmp_xs);
+		width: calc(100% - 300px);
+		background-color: var(--wbtm_color_white);
+	}
+
+	div.wbtm_seat_plan_settings table {
+		border: none;
+	}
+
+	div.wbtm_seat_plan_settings table th {
+		min-width: 75px;
+	}
+
+	div.wbtm_seat_plan_settings table th .formControl {
+		text-align: center;
+	}
+
 	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(even),
-	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
-	div.wbtm_settings_pricing_routing div.mp_stop_items {position: relative;}
-	div.wbtm_settings_pricing_routing div.mp_stop_items::before { position: absolute; content: ""; left: 0; top: -21px; height: 100%; border: 1px solid var(--wbtm_d_color); margin-left: 20px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item { position: relative; width: 98%; padding-left: 50px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
+	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {
+		background-color: transparent;
+	}
+
+	div.wbtm_settings_pricing_routing div.mp_stop_items {
+		position: relative;
+	}
+
+	div.wbtm_settings_pricing_routing div.mp_stop_items::before {
+		position: absolute;
+		content: "";
+		left: 0;
+		top: -21px;
+		height: 100%;
+		border: 1px solid var(--wbtm_d_color);
+		margin-left: 20px;
+	}
+
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item {
+		position: relative;
+		width: 98%;
+		padding-left: 50px;
+	}
+
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before {
+		position: absolute;
+		top: 25px;
+		left: 5px;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: var(--wbtm_color_light);
+		background-image: url("../images/map-location.svg");
+		content: "";
+		transform: translateY(-50%);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 47%;
+		border: 1px solid var(--wbtm_d_color);
+	}
+
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after {
+		position: absolute;
+		top: 25px;
+		left: 40px;
+		content: "";
+		width: 10px;
+		border: 1px solid var(--wbtm_color_border);
+	}
+
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header {
+		padding: 5px 10px;
+		border: 1px solid var(--wbtm_color_border);
+	}
+
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content {
+		padding: 5px;
+		border: 1px solid var(--wbtm_color_border);
+		border-top: 0;
+	}
 }
+
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
-	.wbtm_style .tabsContent { overflow: visible; }
-	.tool-tips { color: var(--wbtm_color_light_1); position: relative; padding: 0 0.2em; }
-	.tool-tips:hover span { visibility: visible; }
+	.wbtm_style .tabsContent {
+		overflow: visible;
+	}
+
+	.tool-tips {
+		color: var(--wbtm_color_light_1);
+		position: relative;
+		padding: 0 0.2em;
+	}
+
+	.tool-tips:hover span {
+		visibility: visible;
+	}
+
 	.tool-tips span {
 		font-weight: normal;
 		font-size: .8rem;
@@ -39,19 +124,23 @@
 		position: absolute;
 		z-index: 1;
 	}
+
 	.tool-tips span:after {
 		content: " ";
 		position: absolute;
-		top: 100%; /* At the bottom of the tooltip */
+		top: 100%;
+		/* At the bottom of the tooltip */
 		left: 50%;
 		transform: translate(-50%);
 		border: 5px solid var(--wbtm_color_black);
 		border-color: var(--wbtm_color_black) transparent transparent transparent;
 	}
+
 	.tool-tips span:hover {
 		color: var(--wbtm_color_black);
 	}
 }
+
 .long-arrow {
 	background-image: url("../images/arrow.svg");
 	background-repeat: no-repeat;
@@ -63,75 +152,123 @@
 /* Seat Rotation Styles */
 /* Hide rotation controls by default when rotation is disabled */
 .wbtm_seat_rotation_controls {
-  display: none;
+	display: none;
 }
 
 /* Show rotation controls when rotation is enabled */
 .wbtm_enable_rotation .wbtm_seat_rotation_controls {
-  display: flex;
+	display: flex;
 }
 
 /* Ensure proper spacing for rotation controls */
 .wbtm_seat_container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 0;
-  min-height: 80px; /* Increased height to accommodate rotation controls */
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 0;
+	min-height: 80px;
+	/* Increased height to accommodate rotation controls */
 }
 
 .wbtm_seat_container label {
-  width: 100%;
-  margin: 0;
+	width: 100%;
+	margin: 0;
 }
 
 .wbtm_seat_container .formControl {
-  width: 100%;
-  margin: 0;
+	width: 100%;
+	margin: 0;
 }
 
 .wbtm_seat_rotation_controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2px;
-  width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2px;
+	width: 100%;
 }
 
 .wbtm_rotate_seat {
-  padding: 4px 6px;
-  font-size: 12px;
-  border-radius: 3px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  cursor: pointer;
-  transition: all 0.2s ease;
+	padding: 4px 6px;
+	font-size: 12px;
+	border-radius: 3px;
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
 .wbtm_rotate_seat:hover {
-  background-color: #e9ecef;
-  border-color: #adb5bd;
+	background-color: #e9ecef;
+	border-color: #adb5bd;
 }
 
 .wbtm_rotate_seat.rotated-90 {
-  transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
 .wbtm_rotate_seat.rotated-180 {
-  transform: rotate(180deg);
+	transform: rotate(180deg);
 }
 
 .wbtm_rotate_seat.rotated-270 {
-  transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+
+/* Seat Type Palette Styles */
+.wbtm_seat_types_palette {
+	margin-bottom: 15px;
+	padding: 10px;
+	background: #f1f1f1;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.wbtm_palette_items {
+	display: flex;
+	gap: 10px;
+	margin-top: 5px;
+	flex-wrap: wrap;
+}
+
+.wbtm_palette_item {
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 5px 10px;
+	border-radius: 3px;
+	cursor: grab;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	transition: all 0.2s;
+}
+
+.wbtm_palette_item:hover {
+	border-color: #999;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+.wbtm_palette_item:active {
+	cursor: grabbing;
+}
+
+.wbtm_seat_container.drag-over {
+	background-color: #e3f2fd;
+	border: 2px dashed #2196f3;
+	border-radius: 4px;
 }
 
 /* Ensure table cells have enough space for rotation controls */
 .wbtm_seat_plan_settings table th {
-  min-height: 100px; /* Increased height to accommodate rotation controls */
-  vertical-align: top;
-  padding: 8px 4px;
+	min-height: 100px;
+	/* Increased height to accommodate rotation controls */
+	vertical-align: top;
+	padding: 8px 4px;
 }
 
 
@@ -140,13 +277,15 @@
 	flex-wrap: wrap;
 	justify-content: start;
 }
+
 .wbtm_gallery-image {
 	width: 215px;
 	height: 150px;
 	margin: 5px;
 	position: relative;
 }
-.wbtm_gallery_image_remove{
+
+.wbtm_gallery_image_remove {
 	position: absolute;
 	color: #ffffff;
 	bottom: 0;
@@ -159,13 +298,15 @@
 	cursor: pointer;
 	padding-top: 4px;
 }
-.wbtm_gallery-images{
+
+.wbtm_gallery-images {
 	width: 100% !important;
 	height: 100% !important;
 	object-fit: cover;
 	border-radius: 0;
 }
-.wbtm_gallery-images-lists{
+
+.wbtm_gallery-images-lists {
 	margin: 20px 0;
 	display: flex;
 	flex-wrap: wrap;
@@ -177,14 +318,22 @@
 		min-height: 50px;
 		padding: 3px 0;
 	}
-	
+
 	.wbtm_rotate_seat {
 		padding: 3px 4px;
 		font-size: 10px;
 	}
-	
+
 	.wbtm_seat_plan_settings table th {
 		min-height: 60px;
 		padding: 4px 2px;
 	}
+}
+
+/* Admin Divider Styling */
+.wbtm_seat_container input.formControl[value="devider"] {
+	background-color: #ccc !important;
+	color: transparent !important;
+	border: none !important;
+	cursor: default;
 }

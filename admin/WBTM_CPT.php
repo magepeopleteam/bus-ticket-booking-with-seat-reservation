@@ -125,17 +125,29 @@
 				unset($column['taxonomy-wbtm_bus_stops']);
 				unset($column['taxonomy-wbtm_bus_cat']);
 				unset($column['date']);
-				$column['wbtm_bus_no'] = esc_html__('Coach no', 'bus-ticket-booking-with-seat-reservation');
-				$column['wbtm_bus_type'] = $name . ' ' . esc_html__('Type', 'bus-ticket-booking-with-seat-reservation');
-				$column['wbtm_coach_type'] = WBTM_Translations::text_coach_type();
-				$column['wbtm_added_by'] = esc_html__('Added by', 'bus-ticket-booking-with-seat-reservation');
-				$column['date'] = $date;
-				return $column;
+
+                $new_columns = array();
+                foreach($column as $key => $title) {
+                    $new_columns[$key] = $title;
+                    if ($key === 'cb') {
+                        $new_columns['wbtm_bus_id'] = esc_html__('ID', 'bus-ticket-booking-with-seat-reservation');
+                    }
+                }
+
+				$new_columns['wbtm_bus_no'] = esc_html__('Coach no', 'bus-ticket-booking-with-seat-reservation');
+				$new_columns['wbtm_bus_type'] = $name . ' ' . esc_html__('Type', 'bus-ticket-booking-with-seat-reservation');
+				$new_columns['wbtm_coach_type'] = WBTM_Translations::text_coach_type();
+				$new_columns['wbtm_added_by'] = esc_html__('Added by', 'bus-ticket-booking-with-seat-reservation');
+				$new_columns['date'] = $date;
+				return $new_columns;
 			}
 			public function custom_column_data($column, $post_id) {
 				$seat_plan = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seal Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seal Plan', 'bus-ticket-booking-with-seat-reservation');
 				switch ($column) {
+                    case 'wbtm_bus_id':
+                        echo wp_kses_post("<span class=''>" . $post_id . "</span>");
+                        break;
 					case 'wbtm_bus_no':
 						echo wp_kses_post("<span class=''>" . WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no') . "</span>");
 						break;
