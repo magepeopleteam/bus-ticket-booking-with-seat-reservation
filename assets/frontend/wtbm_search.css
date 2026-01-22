@@ -231,15 +231,15 @@
     }
 
     .wbtm_bus_detail_popup_tab:hover {
-        background: #eef6ff;
-        color: #007cba;
-        border-color: #cfe6ff;
+        background: var(--wbtm_color_theme_alter);
+        color: var(--wbtm_color_theme);
+        border-color: var(--wbtm_color_theme);
     }
 
     .wbtm_bus_detail_popup_tab.active {
-        background: #007cba;
-        color: #fff;
-        border-color: #007cba;
+        background: var(--wbtm_color_theme);
+        color: var(--wbtm_color_theme_alter);
+        border-color: var(--wbtm_color_theme);
         box-shadow: 0 3px 10px rgba(0,124,186,.25);
     }
 

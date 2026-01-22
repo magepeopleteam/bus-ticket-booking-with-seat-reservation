@@ -81,24 +81,27 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                         </div>
 
                         <div class="wbtm_bus_popup_holder dLayout_xs" id="<?php echo esc_html($tab_keys[0].'_content'); ?>">
-                            <h4>
-                                <?php echo esc_html( get_the_title( $post_id ) ); ?>
-                                <?php if ( $bus_id ) : ?>
-                                    <small>( <?php echo esc_html( $bus_id ); ?> )</small>
-                                <?php endif; ?>
-                            </h4>
-
+                            <p>
+                                <strong>
+                                    <?php echo esc_html( get_the_title( $post_id ) ); ?>
+                                </strong>
+                            </p>
                             <div class="divider"></div>
+                            <?php if ( $bus_id ) : ?>
+                                <p>
+                                    <span><?php echo _e("Bus No:",'bus-booking-manager'); ?></span>
+                                    <strong><?php echo esc_html( $bus_id ); ?></strong>
+                                </p>
+                            <?php endif; ?>
+                            <p>
+                                <span><?php echo esc_html( WBTM_Translations::text_coach_type() ); ?> :</span>
+                                <strong><?php echo esc_html( WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' ) ); ?></strong>
+                            </p>
 
-                            <h6>
-                                <strong><?php echo esc_html( WBTM_Translations::text_coach_type() ); ?> :</strong>
-                                <?php echo esc_html( WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' ) ); ?>
-                            </h6>
-
-                            <h6>
-                                <strong><?php echo esc_html( WBTM_Translations::text_passenger_capacity() ); ?> :</strong>
-                                <?php echo esc_html( WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 ) ); ?>
-                            </h6>
+                            <p>
+                                <span><?php echo esc_html( WBTM_Translations::text_passenger_capacity() ); ?> :</span>
+                                <strong><?php echo esc_html( WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 ) ); ?></strong>
+                            </p>
 
                             <div class="mp_wp_editor">
                                 <?php echo apply_filters( 'the_content', $post->post_content ); ?>
@@ -109,14 +112,14 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             <!-- Boarding Points -->
                             <div class="flexEqual">
                                 <div class="dLayout_xs mR_xs">
-                                    <h5><?php echo esc_html( WBTM_Translations::text_bp() ); ?></h5>
+                                    <strong><?php echo esc_html( WBTM_Translations::text_bp() ); ?></strong>
                                     <div class="divider"></div>
                                     <?php if ( ! empty( $full_route_infos ) ) : ?>
                                         <ul class="mp_list">
                                             <?php foreach ( $full_route_infos as $info ) : ?>
                                                 <?php if ( $info['type'] === 'bp' || $info['type'] === 'both' ) : ?>
                                                     <li>
-                                                        <span class="fa fa-map-marker _mR_xs_textTheme"></span>
+                                                        <i class="mi mi-marker _mR_xs_textTheme"></i>
                                                         <?php
                                                         echo esc_html(
                                                             $info['place'] . ' (' .
@@ -131,7 +134,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                                 </div>
                                 <!-- Dropping Points -->
                                 <div class="dLayout_xs" >
-                                    <h5><?php echo esc_html( WBTM_Translations::text_dp() ); ?></h5>
+                                    <strong><?php echo esc_html( WBTM_Translations::text_dp() ); ?></strong>
                                     <div class="divider"></div>
 
                                     <?php if ( ! empty( $full_route_infos ) ) : ?>
@@ -139,7 +142,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                                             <?php foreach ( $full_route_infos as $info ) : ?>
                                                 <?php if ( $info['type'] === 'dp' || $info['type'] === 'both' ) : ?>
                                                     <li>
-                                                        <span class="fa fa-map-marker _mR_xs_textTheme"></span>
+                                                        <i class="mi mi-marker _mR_xs_textTheme"></i>
                                                         <?php
                                                         echo esc_html(
                                                             $info['place'] . ' (' .
