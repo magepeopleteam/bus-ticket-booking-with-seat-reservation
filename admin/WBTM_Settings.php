@@ -32,35 +32,35 @@
                     <div class="wbtm_tabs leftTabs">
                         <ul class="tabLists">
                             <li data-tabs-target="#wbtm_general_info">
-                                <span class="fas fa-tools"></span><?php esc_html_e('General Info', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-settings"></span><?php esc_html_e('General Info', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_seat">
-                                <span class="fas fa-chair"></span><?php esc_html_e('Seat Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-chair"></span><?php esc_html_e('Seat Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_pricing_routing">
-                                <span class="fas fa-file-invoice-dollar"></span><?php esc_html_e('Pricing & Route', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-coins"></span><?php esc_html_e('Pricing & Route', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_ex_service">
-                                <span class="fas fa-list"></span><?php echo esc_html(WBTM_Translations::text_ex_service()); ?>
+                                <span class="mi mi-apps-add"></span><?php echo esc_html(WBTM_Translations::text_ex_service()); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_pickup_point">
-                                <span class="fas fa-route"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-map-location-track"></span><?php esc_html_e('Pickup/Drop-Off Point', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
 							<?php do_action('wbtm_add_add_setting_menu', $post_id); ?>
                             <li data-tabs-target="#wbtm_settings_date">
-                                <span class="fas fa-calendar-alt"></span><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-calendar"></span><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_tax">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-tax"></span><?php esc_html_e('Tax Configure', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_gallery_images">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Gallery Image', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-images"></span><?php esc_html_e('Gallery Image', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_term_condition">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Term And Condition', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-document-signed"></span><?php esc_html_e('Term And Condition', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
                             <li data-tabs-target="#wbtm_bus_feature_settings">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Bus Feature', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                <span class="mi mi-features"></span><?php esc_html_e('Bus Feature', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
 							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
                                 <li data-tabs-target="#mp_pp_deposits_type">

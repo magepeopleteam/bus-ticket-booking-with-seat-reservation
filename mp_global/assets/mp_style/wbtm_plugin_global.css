@@ -1269,6 +1269,7 @@
 }
 /******************************************************************** Image/slider Section ************************************************/
 @media only screen and (min-width: 10px) {
+	.wbtm_style img:not(.mp_wp_editor img) { width: 100%; height: auto; max-width: 100%; }
 	/*******Click slider***************/
 	.wbtm_style [class*="slideItem"] { display: none; }
 	.wbtm_style [class*="slideItem"].active { display: block; }
