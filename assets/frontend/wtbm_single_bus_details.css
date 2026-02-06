@@ -1,23 +1,41 @@
 /* ===== FEATURE IMAGE ===== */
-.wbtm_car_details_feature_image img {
-    width: 100%;
+.wbtm_car_details_feature_image {
+    width: 400px;
+    margin: auto;
     border-radius: 10px;
-    object-fit: cover;
+    border: 1px solid #ddd;
 }
 /* ===== GALLERY ===== */
 .wbtm_car_details_gallery {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin-top: 2px;
+    gap: 10px;
+    margin-top: 10px;
     flex-wrap: wrap;
 }
 .wbtm_car_details_gallery img {
-    width: 100px !important;
-    height: 75px !important;
+    width: 100px;
+    height: 80px;
+    object-fit: contain;
     border-radius: 5px;
     cursor: pointer;
+    border: 1px solid;
 }
+
+.wbtm_gallery_image {
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    transition: transform 0.3s ease;
+}
+.wbtm_gallery_image:hover {
+    border: 1px solid var(--wbtm_color_theme);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.wbtm_gallery_image.active {
+    border:1px solid var(--wbtm_color_theme);
+}
+
 
 .wbtm_car_details_view_more {
     background: var(--color_theme);
@@ -36,18 +54,6 @@
 .wbtm_gallery_image_fade_in{
     opacity: 1;
     transition: opacity 0.3s ease;
-}
-.wbtm_gallery_image {
-    cursor: pointer;
-    border-radius: 6px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.wbtm_gallery_image:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.wbtm_gallery_image.active {
-    border: 2px solid #0073aa;
 }
 
 .wbtm_gallery_image_popup_wrapper {
@@ -196,5 +202,11 @@
     margin: 0;
 }
 
+.wbtm_bus_popup_holder{
+    display: none;
+}
 
-/*End*/
+.wbtm_bus_photos_wrapper_popup{
+    overflow: scroll;
+    height: 60vh;
+}

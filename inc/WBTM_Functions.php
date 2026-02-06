@@ -636,20 +636,49 @@
 				<img src="<?php echo $bus_logo; ?>" onerror="this.onerror=null; this.src='<?php echo $default_logo; ?>';">
 				<?php
 			}
+			public static function single_bus_details_tabs( $bus_id) {
+				$tabs = [
+					'wbtm_bus_details'           => __( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_boarding_dropping' => __( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_feature'           => __( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_term_condition'    => __( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_image'             => __( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' ),
+				];
+				return apply_filters( 'wbtm_single_bus_details_tabs', $tabs, $bus_id );
+			}
+			public static function single_bus_details_tabs_filtered( $bus_id ) {
+
+				$tabs = WBTM_Functions::single_bus_details_tabs( $bus_id );
+				$boarding_routes  = WBTM_Functions::get_bus_route( $bus_id );
+				$feature_ids = get_post_meta( $bus_id, 'wbbm_bus_features_term_id', true );
+				$term_condition = get_post_meta( $bus_id, 'wbtm_term_condition_list', true );
+				$gallery_images       = get_post_meta( $bus_id, 'wbtm_gallery_images', true );
+
+				if ( empty( $boarding_routes ) ) {
+					unset( $tabs['wbtm_bus_boarding_dropping'] );
+				}
+				if ( empty( $feature_ids ) ) {
+					unset( $tabs['wbtm_bus_feature'] );
+				}
+				if ( empty( $term_condition ) ) {
+					unset( $tabs['wbtm_bus_term_condition'] );
+				}
+				if ( empty( $gallery_images ) ) {
+					unset( $tabs['wbtm_bus_image'] );
+				}
+				return $tabs;
+			}
+
 
             public static function single_bus_details_popup_tabs( $bus_id, $popup_tabs ) {
-                ob_start(); ?>
-                <div class="wbtm_bus_details_tabs">
-                <?php
-
-                foreach ( $popup_tabs as $key => $tab ){?>
-                    <span class="wbtm_bus_details_tab" id="<?php echo esc_attr( $key );?>" data-post-id="<?php echo $bus_id; ?>"><?php echo esc_html( $tab );?></span>
-                <?php
-                }
-                ?>
+                ob_start(); 
+			?>
+                <div class="wbtm_bus_popup_links">
+					<?php foreach ( $popup_tabs as $key => $tab ):?>
+						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo $bus_id; ?>"><?php echo esc_html( $tab );?></span>
+					<?php endforeach ?>
                 </div>
-                <?php
-
+            <?php
                 return ob_get_clean();
             }
 
