@@ -261,6 +261,17 @@
 							'type'    => 'file',
 							'default' => '',
 						),
+                        array(
+                            'name'    => 'next_date_showing_search',
+                            'label'   => esc_html__( 'Show next Date In Search Result', 'bus-ticket-booking-with-seat-reservation' ),
+                            'desc'    => esc_html__( 'If you want to show next date in search result, please select Yes.', 'bus-ticket-booking-with-seat-reservation' ),
+                            'type'    => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'yes' => esc_html__( 'Yes', 'bus-ticket-booking-with-seat-reservation' ),
+                                'no'  => esc_html__( 'No', 'bus-ticket-booking-with-seat-reservation' )
+                            )
+                        ),
 						
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'wbtm_filter_global_settings', array(

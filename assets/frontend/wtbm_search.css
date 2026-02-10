@@ -19,18 +19,26 @@
         align-items: center;
         justify-content: space-between;
         font-weight: 600;
+        border-radius: 5px;
         /* border-bottom: 2px solid var(--wbtm_color_theme); */
     }
     .wbtm-date-return-route-title {
-
         display: flex;
         align-items: center;
         justify-content: space-between;
         font-weight: 600;
+        border-radius: 5px;
         /*border-bottom: 2px solid var(--wbtm_color_theme);*/
     }
 
-    .wbtm_departure_bus_lists_holder,.wbtm_return_bus_lists_holder{
+    .wbtm_departure_bus_lists_holder{
+        /*border: 1px solid #b9d3ff;*/
+        background-color: #fff;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .wbtm_return_bus_lists_holder{
         border: 1px solid #b9d3ff;
         background-color: #fff;
         margin-bottom: 20px;
@@ -45,18 +53,20 @@
     .wbtm_search_route_container {
         display: flex;
         align-items: center;
-        background-color: #cfe2ff;
+        /*background-color: #cfe2ff;*/
         border-radius: 4px;  
         width: 100%;
         font-family: Arial, sans-serif;
+        border: 1px solid #e3dfdf;
     }
 
     .wbtm_search_route_return_date {
-        background-color: #9ec5fe;
+        /*background-color: #9ec5fe;*/
         padding:10px;
         text-align: left;
         height: 100%;
         min-width: 120px;
+
     }
 
 
@@ -77,16 +87,84 @@
 
     .wbtm_search_route_label {
         color: var(--wbtm_color_theme);
-        font-size: 24px;
+        font-size: 14px;
         font-weight: 700;
         margin-bottom: 3px;
     }
 
     .wbtm_search_route_date {
-        font-size: 16px;
+        font-size: 12px;
         font-weight: 500;
         color: #000;
     }
+
+    #start_bus{
+        margin-top: 15px;
+    }
+
+    /* TAB WRAPPER */
+    .wbtm_bus_tab_wrapper {
+        display: flex;
+        gap: 12px;
+        padding: 4px;
+    }
+
+    /* COMMON TAB STYLE */
+    .wbtm_bus_tab_wrapper .wtbm_start_route,
+    .wbtm_bus_tab_wrapper .wtbm_return_route {
+        flex: 1;
+        padding: 14px 18px;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+        border-radius: 12px;
+        position: relative;
+        transition: all 0.35s ease;
+        background: transparent;
+        letter-spacing: 0.3px;
+    }
+
+    /* ICON EFFECT */
+    .wbtm_bus_tab_wrapper .wtbm_start_route::before,
+    .wbtm_bus_tab_wrapper .wtbm_return_route::before {
+        content: "🚌";
+        margin-right: 8px;
+        opacity: 0.7;
+    }
+
+    /* HOVER STATE */
+    .wbtm_bus_tab_wrapper .wtbm_start_route:hover,
+    .wbtm_bus_tab_wrapper .wtbm_return_route:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #222;
+    }
+
+    /* ACTIVE TAB (PHP ADDS CLASS) */
+    .wbtm_bus_tab_wrapper .wbtm_tab_active {
+        background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+        color: #1e1b4b;
+        box-shadow: 0 6px 16px rgba(165, 180, 252, 0.4);
+    }
+
+    /* REMOVE ICON FADE ON ACTIVE */
+    .wbtm_bus_tab_wrapper .wbtm_tab_active::before {
+        opacity: 1;
+    }
+
+    /* SUBTLE GLOW LINE */
+    .wbtm_bus_tab_wrapper .wbtm_tab_active::after {
+        content: "";
+        position: absolute;
+        left: 20%;
+        right: 20%;
+        bottom: 6px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+    }
+
 
     .wbtm_search_route_day {
         font-size: 14px;
@@ -118,7 +196,7 @@
         width: 30%;
     }
     .wbtm_search_route_city {
-        font-size: 18px;
+        font-size: 12px;
         font-weight: normal;
         color: #000;
         line-height: 1.2;

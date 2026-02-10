@@ -689,6 +689,35 @@
 
 	});
 
+	$(document).on( 'click', '.wtbm_start_route', function(e){
+
+		$('#wbtm_date_return_route_start').removeClass( 'wbtm_tab_active' );
+		$('#wbtm_date_start_route').addClass( 'wbtm_tab_active' );
+
+		$('#wbtm_return_container').fadeOut();
+		let parent = $(this).closest('.wbtm_departure_bus_lists_holder');
+		let listHolder = parent.find('#start_bus');
+		listHolder.fadeIn(200);
+
+	});
+
+	$(document).on( 'click', '.wtbm_return_route', function(e){
+
+		wtbm_active_return_bus_tab_data();
+
+	});
+
+	function wtbm_active_return_bus_tab_data(){
+		$('#wbtm_date_start_route').removeClass( 'wbtm_tab_active' );
+		$('#wbtm_date_return_route_start').addClass( 'wbtm_tab_active' );
+
+		$('#start_bus').fadeOut();
+		let parent = $(this).closest('.wbtm_return_bus_lists_holder');
+		let listHolder = $('#wbtm_return_container');
+		listHolder.fadeIn(200);
+	}
+
+
 	$(document).on( 'click', '#wbtm_add_to_cart', function(e){
 		e.preventDefault();
 
@@ -798,11 +827,14 @@
 				if( burPosition === 'start_bus' ){
 					if( numberOfBuses > 0 ){
 						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
-						$("#start_bus").fadeOut();
+						/*$("#start_bus").fadeOut();
 						$("#wbtm_return_container").fadeIn();
 
 						// $("#wbtm_date_return_route_start").fadeOut();
-						$("#wbtm_date_return_route_return").fadeIn();
+						$("#wbtm_date_return_route_return").fadeIn();*/
+
+						wtbm_active_return_bus_tab_data();
+
 					}else{
 						window.location.href = wbtm_wc_vars.checkout_url;
 					}

@@ -168,27 +168,47 @@
                     if( $bus_start_end_id === 'start_bus' ){
                         $start_bus = 'block';
                         $return_bus = 'none';
+                        $start_bus_tab = 'wbtm_tab_active';
+                        $return_bus_tab = '';
                     }else if( $bus_start_end_id === 'wbtm_return_container' ){
                         $start_bus = 'none';
                         $return_bus = 'block';
+
+                        $start_bus_tab = '';
+                        $return_bus_tab = 'wbtm_tab_active';
                     }else{
                         $start_bus = 'block';
                         $return_bus = 'none';
+
+                        $start_bus_tab = 'wbtm_tab_active';
+                        $return_bus_tab = '';
                     }
+
+                    $next_date = WBTM_Global_Function::get_settings('wbtm_general_settings', 'next_date_showing_search', 'no');
                     ?>
                     <div class="wbtm-bus-lists" id="wbtm_start_container">
 
 
                         <div class="wbtm_departure_bus_lists_holder">
-                            <div class="wbtm-date-route_title">
-                                <?php self::route_title('Departure', $start_route, $end_route, $j_date, $r_date); ?>
+                            <div class="wbtm_bus_tab_wrapper">
+                                <div class=" wtbm_start_route <?php echo esc_attr( $start_bus_tab );?>" id="wbtm_date_start_route" >
+                                    Departure Bus
+                                </div>
+
+                                <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start">
+                                   Return Bus
+                                </div>
                             </div>
+
                             <div class="wbtm_seleced_start_bus" id="wbtm_seleced_start_bus"></div>
                             <div class="wbtm-bus-lists" id="start_bus" style="display: <?php echo esc_attr( $start_bus );?>">
 
-                                <div class="wbtm-date-suggetion">
-                                    <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date); ?>
-                                </div>
+                                <?php if( $next_date === 'yes' ){?>
+                                    <div class="wbtm-date-suggetion">
+                                        <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date); ?>
+                                    </div>
+                                <?php }?>
+                                <?php self::route_title('Departure', $start_route, $end_route, $j_date, $r_date); ?>
 
                                 <?php do_action('wbtm_search_result', $start_route, $end_route, $j_date, $post_id, $style, $btn_show, $search_info, 'start_journey', $left_filter_show); ?>
                             </div>
@@ -196,33 +216,24 @@
 
                     </div>
                     <div class="wbtm_return_bus_lists_holder" id="wbtm_return_bus_lists_holder">
-                        <div class="wbtm-date-return-route-title" id="wbtm_date_return_route_start" >
-                            <?php self::route_title('Return', $start_route, $end_route, $j_date, $r_date, true); ?>
-                        </div>
                         <?php }
                         if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
                         <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: <?php echo esc_attr( $return_bus );?>">
-                            <div class="wbtm-date-suggetion">
-                                <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, true); ?>
-                            </div>
-                            <div class="wbtm-bus-notification" id="wbtm_selected_bus_notification" style="display: none">
-                                <?php esc_attr_e('Your ticket has been added to the cart.', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">
-                                    <?php esc_attr_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </a>
-                                <?php esc_attr_e('Book your return ticket now!', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </div>
-
-                            <h4 class="lists-title" style="display: none"><?php echo esc_html(WBTM_Translations::text_return_trip()); ?></h4>
-                         <div class="wbtm_return_bus_lists_container" >
-                            <!--<div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
-                                <?php /*self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); */?>
-                            </div>-->
-                            <div class="wbtm-bus-lists" id="return_bus">
-                                <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, '', $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
+                            <?php if( $next_date === 'yes' ){?>
+                                <div class="wbtm-date-suggetion">
+                                    <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, true); ?>
+                                </div>
+                            <?php }?>
+                             <div class="wbtm_return_bus_lists_container" >
+                                <!--<div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
+                                    <?php /*self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); */?>
+                                </div>-->
+                                 <?php self::route_title('Return', $start_route, $end_route, $j_date, $r_date, true); ?>
+                                <div class="wbtm-bus-lists" id="return_bus">
+                                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, '', $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
 				    <?php }
 			}
@@ -289,6 +300,12 @@
                         <div class="wbtm_selected_bus_label"><?php esc_html_e('Total Amount to be Paid', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                         <div class="wbtm_selected_bus_price"><?php echo esc_attr($data['price_val']); ?></div>
                         <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_attr( $checkout_url );?>" style="text-decoration: none; color: #FFFFFF"><?php esc_html_e('Checkout Without Return', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
+                        <div class="" style="padding: 5px 0">
+                            <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">
+                                <?php esc_attr_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
 				<?php
@@ -399,7 +416,7 @@
                                 <div class="wbtm_search_route_city"><?php echo esc_attr( $end );?></div>
                                 <div class="wbtm_search_route_airport_code"><?php echo esc_attr( $end_loc );?></div>
                             </div>
-                            <div class="wbtm_search_route_dropdown_icon">
+                            <div class="wbtm_search_route_dropdown_icon" style="display: none">
                                 <span class=" <?php echo esc_attr( $show_hide_class );?> wbtm_search_route_arrow_icon">
 									<i class="fas fa-chevron-down"></i>
 								</span>
