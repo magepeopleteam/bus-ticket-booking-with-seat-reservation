@@ -102,14 +102,12 @@
         margin-top: 15px;
     }
 
-    /* TAB WRAPPER */
     .wbtm_bus_tab_wrapper {
         display: flex;
         gap: 12px;
-        padding: 4px;
+        padding: 2px;
     }
 
-    /* COMMON TAB STYLE */
     .wbtm_bus_tab_wrapper .wtbm_start_route,
     .wbtm_bus_tab_wrapper .wtbm_return_route {
         flex: 1;
@@ -126,7 +124,6 @@
         letter-spacing: 0.3px;
     }
 
-    /* ICON EFFECT */
     .wbtm_bus_tab_wrapper .wtbm_start_route::before,
     .wbtm_bus_tab_wrapper .wtbm_return_route::before {
         content: "🚌";
@@ -134,26 +131,22 @@
         opacity: 0.7;
     }
 
-    /* HOVER STATE */
     .wbtm_bus_tab_wrapper .wtbm_start_route:hover,
     .wbtm_bus_tab_wrapper .wtbm_return_route:hover {
         background: rgba(0, 0, 0, 0.05);
         color: #222;
     }
 
-    /* ACTIVE TAB (PHP ADDS CLASS) */
     .wbtm_bus_tab_wrapper .wbtm_tab_active {
         background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
         color: #1e1b4b;
         box-shadow: 0 6px 16px rgba(165, 180, 252, 0.4);
     }
 
-    /* REMOVE ICON FADE ON ACTIVE */
     .wbtm_bus_tab_wrapper .wbtm_tab_active::before {
         opacity: 1;
     }
 
-    /* SUBTLE GLOW LINE */
     .wbtm_bus_tab_wrapper .wbtm_tab_active::after {
         content: "";
         position: absolute;

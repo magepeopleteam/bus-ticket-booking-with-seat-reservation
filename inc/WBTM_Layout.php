@@ -192,12 +192,14 @@
                         <div class="wbtm_departure_bus_lists_holder">
                             <div class="wbtm_bus_tab_wrapper">
                                 <div class=" wtbm_start_route <?php echo esc_attr( $start_bus_tab );?>" id="wbtm_date_start_route" >
-                                    Departure Bus
+                                    <?php esc_attr_e( 'Departure Bus', 'bus-ticket-booking-with-seat-reservation' )?>
                                 </div>
 
-                                <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start">
-                                   Return Bus
-                                </div>
+                                <?php  if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
+                                    <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start">
+                                        <?php esc_attr_e( 'Return Bus', 'bus-ticket-booking-with-seat-reservation' )?>
+                                    </div>
+                                <?php }?>
                             </div>
 
                             <div class="wbtm_seleced_start_bus" id="wbtm_seleced_start_bus"></div>
