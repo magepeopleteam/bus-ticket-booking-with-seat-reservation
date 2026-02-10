@@ -137,6 +137,8 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$price = $all_info['price'];
 
+            $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
+
             $popup_tabs = WBTM_Functions::single_bus_details_tabs_filtered($bus_id);
 
 			// Check if next_day exists and set a default value if not

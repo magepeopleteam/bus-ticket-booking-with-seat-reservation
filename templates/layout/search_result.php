@@ -143,6 +143,8 @@ if (sizeof($bus_ids) > 0) {
             if ($next_day == '1') {
                 $dp_timestamp += 24 * 60 * 60; // Add 24 hours in seconds
             }
+
+            $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
             
             $bp_timestamp = strtotime($bp_time);
            
