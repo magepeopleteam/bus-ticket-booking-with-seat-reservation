@@ -804,6 +804,8 @@
 				"_wp_http_referer": form.find(':input[name=_wp_http_referer]').val(),
 				"wbtm_selected_seat": form.find(':input[name=wbtm_selected_seat]').val(),
 				"wbtm_selected_seat_type": form.find(':input[name=wbtm_selected_seat_type]').val(),
+				"wbtm_selected_seat_dd": form.find(':input[name=wbtm_selected_seat_dd]').val(),
+				"wbtm_selected_seat_dd_type": form.find(':input[name=wbtm_selected_seat_dd_type]').val(),
 				"extra_service_name": extraServiceNames,
 				"extra_service_qty": extraServiceQty,
 				"cabinSeats": JSON.stringify( cabinSeats ),

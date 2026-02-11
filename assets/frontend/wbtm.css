@@ -116,7 +116,7 @@
   .wbtm_seat_rotated_270 .mp_seat .seat_number {
     font-size: 0.9em;
   }
-  
+
   .wbtm_seat_rotated_180 .mp_seat .seat_number {
     font-size: 0.95em;
   }
@@ -375,6 +375,7 @@ div.wbtm_selected_seat_details table tbody tr td {
 
 .seat_selected.seat_available .seat_visual {
   background-color: var(--wbtm_color_theme);
+  color: #ffffff;
 }
 
 .seat_booked .seat_visual {
@@ -578,7 +579,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available {
   background-color: transparent !important;
   cursor: pointer !important;
-  color: var(--wbtm_d_color) !important;
+  /*color: var(--wbtm_d_color) !important;*/
 }
 
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked {
@@ -595,7 +596,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart {
 
 /* Apply seat state styling to seat_visual */
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available .seat_visual {
-  background-color: var(--wbtm_color_theme_alter) !important;
+  /*background-color: var(--wbtm_color_theme_alter) !important;*/
 }
 
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked .seat_visual {
@@ -1097,7 +1098,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     padding: 2px 8px;
     border-radius: 50px;
   }
-  
+
   .wbtm_style {
     background-color: #f5f7fa;
     padding: 20px;
@@ -1121,7 +1122,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
   .wbtm_search_input_fields_holder .marker,
   .wbtm_search_input_fields_holder .calendar{
-    margin-top:5px;  
+    margin-top:5px;
   }
   .wtbm_inputList {
     width: 50%;
@@ -1349,7 +1350,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     margin-bottom: 20px;
   }
 
-  
+
 
   .wbtm_style .themeButton,
   .wbtm_style [class*=_themeButton] {
@@ -1416,7 +1417,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm_search_result  .wbtm-bus-list .wbtm-seat-book {
     width: auto;
   }
-  
+
 }
 
 @media (min-width: 540px) {
@@ -1442,7 +1443,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm_search_result  .wbtm-bus-list .wbtm-bus-image img{
     height: auto;
   }
-  
+
   .wbtm-bus-flix-style .title {
     width: 16%;
   }
