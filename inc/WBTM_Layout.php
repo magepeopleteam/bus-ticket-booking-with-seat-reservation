@@ -300,7 +300,7 @@
                     </div>
                     <div class="wbtm_selected_bus_payment">
                         <div class="wbtm_selected_bus_label"><?php esc_html_e('Total Amount to be Paid', 'bus-ticket-booking-with-seat-reservation'); ?></div>
-                        <div class="wbtm_selected_bus_price"><?php echo esc_attr($data['price_val']); ?></div>
+                        <div class="wbtm_selected_bus_price"><?php echo wp_kses_post( wc_price( $data['price_val'] ) ); ?></div>
                         <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_attr( $checkout_url );?>" style="text-decoration: none; color: #FFFFFF"><?php esc_html_e('Checkout Without Return', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
                         <div class="" style="padding: 5px 0">
                             <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">

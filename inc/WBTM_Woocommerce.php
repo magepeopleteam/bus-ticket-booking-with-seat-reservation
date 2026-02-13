@@ -152,6 +152,7 @@
 						// Handle both legacy and cabin-based seat selection
 						$seat_price = 0;
 						if ($has_cabin_seats_selected) {
+                            $ticket_infos = self::get_cart_cabin_seat_info($post_id, $cabin_config);
 							$seat_price = self::get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config);
 						} else {
 							$seat_price = self::get_cart_seat_price($ticket_infos);
@@ -222,8 +223,11 @@
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
 								// Find the corresponding ticket info
 								foreach ($ticket_infos as $ticket_info) {
-									if ($ticket_info['type'] == $seat_type) {
-										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);
+                                    /*if ($ticket_info['type'] == $
+                                    seat_type) {
+                                        $base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);*/
+									if ($ticket_info['seat_type'] == $seat_type) {
+										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['ticket_price']);
 										$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
 										$total_price += $base_price * $price_multiplier;
 										break;
@@ -946,7 +950,8 @@
 								}
 							}
 						}
-					} else {
+					}
+                    else {
 						// Without seat plan mode
 						$qty = isset($_POST['wbtm_seat_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_qty'])) : [];
 						$passenger_type = isset($_POST['wbtm_passenger_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_passenger_type'])) : [];
