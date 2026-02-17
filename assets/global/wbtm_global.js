@@ -494,27 +494,31 @@
 						// Create unique identifier for cabin seats (seat_name + cabin_index)
 						let seat_identifier = cabin_index ? seat_name + '_cabin_' + cabin_index : seat_name;
 						
-						// Check if this exact seat (considering cabin) is already in the summary
-						let existing_row = target.find('[data-seat_name="' + seat_name + '"]');
-						let seat_already_exists = false;
-						
-						if (existing_row.length > 0) {
-							// For cabin seats, check if it's the same cabin
-							if (cabin_index) {
-								let existing_cabin = existing_row.attr('data-cabin_index');
-								if (existing_cabin === cabin_index && existing_row.attr('data-seat_type') === seat_type) {
-									seat_already_exists = true;
-								}
-							} else {
-								// For legacy seats, just check name and type
-								if (existing_row.attr('data-seat_type') === seat_type) {
-									seat_already_exists = true;
-								}
-							}
+						// Check if this seat (considering cabin) is already in the summary
+						let existing_row;
+						if (cabin_index) {
+							existing_row = target.find('.wbtm_remove_area[data-seat_name="' + seat_name + '"][data-cabin_index="' + cabin_index + '"]');
+						} else {
+							existing_row = target.find('.wbtm_remove_area[data-seat_name="' + seat_name + '"]').not('[data-cabin_index]');
 						}
 						
-						if (!seat_already_exists) {
-							wbtm_reload_selected_seat($(this),hidden_target_tr,target);
+						if (existing_row.length > 0) {
+							// If type matches, do nothing, otherwise update the row
+							if (existing_row.attr('data-seat_type') !== seat_type) {
+								let seat_label = $(this).attr('data-seat_label');
+								let seat_price = $(this).attr('data-seat_price');
+								
+								existing_row.attr('data-seat_type', seat_type);
+								existing_row.find('.insert_seat_label').html(seat_label);
+								existing_row.find('.insert_seat_price').html(wbtm_price_format(seat_price));
+							}
+							
+							// Clean up duplicates if any
+							if (existing_row.length > 1) {
+								existing_row.not(':first').remove();
+							}
+						} else {
+							wbtm_reload_selected_seat($(this), hidden_target_tr, target);
 						}
 					}).promise().done(function () {
 						item_length = target.find('.wbtm_remove_area').length;
