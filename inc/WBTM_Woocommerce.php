@@ -1078,7 +1078,11 @@
 								$seat_name = $wbtm_seat['seat_name'] ?? '';
 								$seat_type = $wbtm_seat['seat_type'] ?? 0;
 								$ticket_price = $wbtm_seat['ticket_price'] ?? $wbtm_seat['price'] ?? 0;
-								$qty = 1; // Default quantity
+								$qty = isset($wbtm_seat['ticket_qty']) ? max(1, intval($wbtm_seat['ticket_qty'])) : 1;
+								// Cabin seats are always single-quantity entries.
+								if ($is_cabin_seat) {
+									$qty = 1;
+								}
 								// Calculate total for all seats
 								$calculated_total += $ticket_price * $qty;
 								if ($ticket_count > 0) { ?>
