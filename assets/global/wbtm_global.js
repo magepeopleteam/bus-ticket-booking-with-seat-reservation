@@ -785,36 +785,62 @@
 			})
 			.get();
 
+		// Include attendee fields for both seat-plan and without-seat-plan flows.
+		// We only collect from the rendered attendee area to avoid the hidden template copy.
+		let attendeeFormData = {};
+		form.find('.wbtm_attendee_area :input[name]').each(function () {
+			let input = $(this);
+			let rawName = input.attr('name') || '';
+			if (!rawName) {
+				return;
+			}
+			let fieldName = rawName.endsWith('[]') ? rawName.slice(0, -2) : rawName;
+			if (!fieldName) {
+				return;
+			}
+			if (!Array.isArray(attendeeFormData[fieldName])) {
+				attendeeFormData[fieldName] = [];
+			}
+			let value = input.val();
+			attendeeFormData[fieldName].push(value ?? '');
+		});
+
+		let requestData = {
+			"action": "wbtm_ajax_add_to_cart",
+			"price_val": encodeURIComponent(priceVal),
+			"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
+			"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
+			"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
+			"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
+			"wbtm_bp_place": form.find(':input[name=wbtm_bp_place]').val(),
+			"wbtm_bp_time": form.find(':input[name=wbtm_bp_time]').val(),
+			"wbtm_seat_qty": form.find(':input[name="wbtm_seat_qty[]"]').map(function () { return $(this).val(); }).get(),
+			"wbtm_passenger_type": form.find(':input[name="wbtm_passenger_type[]"]').map(function () { return $(this).val(); }).get(),
+			"wbtm_dp_place": form.find(':input[name=wbtm_dp_place]').val(),
+			"wbtm_dp_time": form.find(':input[name=wbtm_dp_time]').val(),
+			"bus_start_route": form.find(':input[name=bus_start_route]').val(),
+			"bus_end_route": form.find(':input[name=bus_end_route]').val(),
+			"j_date": form.find(':input[name=j_date]').val(),
+			"r_date": form.find(':input[name=r_date]').val(),
+			"wbtm_form_nonce": form.find(':input[name=wbtm_form_nonce]').val(),
+			"_wp_http_referer": form.find(':input[name=_wp_http_referer]').val(),
+			"wbtm_selected_seat": form.find(':input[name=wbtm_selected_seat]').val(),
+			"wbtm_selected_seat_type": form.find(':input[name=wbtm_selected_seat_type]').val(),
+			"extra_service_name": extraServiceNames,
+			"extra_service_qty": extraServiceQty,
+			"cabinSeats": JSON.stringify(cabinSeats),
+			"cabinSeatTypes": JSON.stringify(cabinSeatTypes),
+		};
+
+		$.each(attendeeFormData, function (fieldName, values) {
+			requestData[fieldName] = values;
+		});
+
 		$.ajax({
 			url: woocommerce_params.ajax_url,
 			type: 'POST',
 			// data: data,
-			data: {
-				"action": "wbtm_ajax_add_to_cart",
-				"price_val": encodeURIComponent(priceVal),
-				"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
-				"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
-				"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
-				"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
-				"wbtm_bp_place": form.find(':input[name=wbtm_bp_place]').val(),
-				"wbtm_bp_time": form.find(':input[name=wbtm_bp_time]').val(),
-				"wbtm_seat_qty": form.find(':input[name="wbtm_seat_qty[]"]').map(function () { return $(this).val(); }).get(),
-				"wbtm_passenger_type": form.find(':input[name="wbtm_passenger_type[]"]').map(function () { return $(this).val(); }).get(),
-				"wbtm_dp_place": form.find(':input[name=wbtm_dp_place]').val(),
-				"wbtm_dp_time": form.find(':input[name=wbtm_dp_time]').val(),
-				"bus_start_route": form.find(':input[name=bus_start_route]').val(),
-				"bus_end_route": form.find(':input[name=bus_end_route]').val(),
-				"j_date": form.find(':input[name=j_date]').val(),
-				"r_date": form.find(':input[name=r_date]').val(),
-				"wbtm_form_nonce": form.find(':input[name=wbtm_form_nonce]').val(),
-				"_wp_http_referer": form.find(':input[name=_wp_http_referer]').val(),
-				"wbtm_selected_seat": form.find(':input[name=wbtm_selected_seat]').val(),
-				"wbtm_selected_seat_type": form.find(':input[name=wbtm_selected_seat_type]').val(),
-				"extra_service_name": extraServiceNames,
-				"extra_service_qty": extraServiceQty,
-				"cabinSeats": JSON.stringify(cabinSeats),
-				"cabinSeatTypes": JSON.stringify(cabinSeatTypes),
-			},
+			data: requestData,
 			beforeSend: function () {
 				this_btn.text('Adding to Cart...');
 			},
