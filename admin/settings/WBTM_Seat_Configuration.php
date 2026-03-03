@@ -499,23 +499,35 @@
 			}
 			/**************************/
 			public function wbtm_create_seat_plan() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
-					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
+					wp_send_json_error( 'Invalid nonce!' );
 				}
-				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
-				$row = isset($_POST['row']) ? sanitize_text_field(wp_unslash($_POST['row'])) : '';
-				$column = isset($_POST['column']) ? sanitize_text_field(wp_unslash($_POST['column'])) : '';
-				$this->create_seat_plan($post_id, $row, $column);
+				if ( ! current_user_can( 'edit_posts' ) ) {
+					wp_send_json_error( 'Unauthorized' );
+				}
+				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
+				$row     = isset( $_POST['row'] ) ? intval( wp_unslash( $_POST['row'] ) ) : 0;
+				$column  = isset( $_POST['column'] ) ? intval( wp_unslash( $_POST['column'] ) ) : 0;
+				if ( ! $post_id || ! $row || ! $column ) {
+					wp_send_json_error( 'Invalid parameters' );
+				}
+				$this->create_seat_plan( $post_id, $row, $column );
 				die();
 			}
 			public function wbtm_create_seat_plan_dd() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
-					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
+					wp_send_json_error( 'Invalid nonce!' );
 				}
-				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
-				$row = isset($_POST['row']) ? sanitize_text_field(wp_unslash($_POST['row'])) : '';
-				$column = isset($_POST['column']) ? sanitize_text_field(wp_unslash($_POST['column'])) : '';
-				$this->create_seat_plan($post_id, $row, $column, true);
+				if ( ! current_user_can( 'edit_posts' ) ) {
+					wp_send_json_error( 'Unauthorized' );
+				}
+				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
+				$row     = isset( $_POST['row'] ) ? intval( wp_unslash( $_POST['row'] ) ) : 0;
+				$column  = isset( $_POST['column'] ) ? intval( wp_unslash( $_POST['column'] ) ) : 0;
+				if ( ! $post_id || ! $row || ! $column ) {
+					wp_send_json_error( 'Invalid parameters' );
+				}
+				$this->create_seat_plan( $post_id, $row, $column, true );
 				die();
 			}
 		}
