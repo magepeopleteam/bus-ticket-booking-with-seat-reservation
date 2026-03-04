@@ -1389,6 +1389,7 @@
                         if ( strpos( $key, 'wbtm_selected_seat_cabin_' ) === 0 ) {
                             $cabin_seats = true;
                             $cabin = str_replace( 'wbtm_selected_seat_', '', $key );
+                            $cabin = sanitize_text_field( $cabin );
                             $selected_cabin_seats .= $cabin . ' (' . sanitize_text_field( $value ) . ')' . PHP_EOL;
                         }
                     }
