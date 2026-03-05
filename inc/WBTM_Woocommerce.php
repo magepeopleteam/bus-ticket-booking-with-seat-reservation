@@ -1083,7 +1083,11 @@
 								$seat_name = $wbtm_seat['seat_name'] ?? '';
 								$seat_type = $wbtm_seat['seat_type'] ?? 0;
 								$ticket_price = $wbtm_seat['ticket_price'] ?? $wbtm_seat['price'] ?? 0;
-								$qty = 1; // Default quantity
+								$qty = isset($wbtm_seat['ticket_qty']) ? max(1, intval($wbtm_seat['ticket_qty'])) : 1;
+								// Cabin seats are always single-quantity entries.
+								if ($is_cabin_seat) {
+									$qty = 1;
+								}
 								// Calculate total for all seats
 								$calculated_total += $ticket_price * $qty;
 								if ($ticket_count > 0) { ?>
@@ -1390,6 +1394,7 @@
                         if ( strpos( $key, 'wbtm_selected_seat_cabin_' ) === 0 ) {
                             $cabin_seats = true;
                             $cabin = str_replace( 'wbtm_selected_seat_', '', $key );
+                            $cabin = sanitize_text_field( $cabin );
                             $selected_cabin_seats .= $cabin . ' (' . sanitize_text_field( $value ) . ')' . PHP_EOL;
                         }
                     }

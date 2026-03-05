@@ -90,18 +90,35 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
         function wtbm_save_added_term_condition() {
             check_ajax_referer( 'wtbm_ajax_nonce', 'nonce' );
 
-            $post_id =  isset( $_POST['wtbm_added_term']) ?  intval( $_POST['post_id']) : '';
-            $data = isset( $_POST['wtbm_added_term']) ? json_decode(stripslashes( $_POST[ 'wtbm_added_term' ] ), true) : [];
+            $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
+            $raw_data = isset( $_POST['wtbm_added_term'] ) ? wp_unslash( $_POST['wtbm_added_term'] ) : '';
+            $data = json_decode( $raw_data, true );
 
-            if (!current_user_can('edit_post', $post_id ) ) {
-                wp_send_json_error(['message' => 'You do not have permission to edit this post.']);
+            if ( ! $post_id ) {
+                wp_send_json_error( [ 'message' => 'Invalid post ID' ] );
             }
-            if ( $post_id && is_array( $data ) ) {
-                update_post_meta( $post_id, $this->term_option_key, $data );
 
-                wp_send_json_success(['message' => 'FAQ saved successfully!', 'data' => $data]);
+            if ( ! current_user_can( 'edit_post', $post_id ) ) {
+                wp_send_json_error( [ 'message' => 'You do not have permission to edit this post.' ] );
+            }
+
+            if ( $post_id && is_array( $data ) ) {
+                // Sanitize the term data array
+                $sanitized_data = [];
+                foreach ( $data as $term ) {
+                    if ( is_array( $term ) ) {
+                        $sanitized_term = [
+                            'title'   => isset( $term['title'] ) ? sanitize_text_field( wp_unslash( $term['title'] ) ) : '',
+                            'answer'  => isset( $term['answer'] ) ? wp_kses_post( wp_unslash( $term['answer'] ) ) : '',
+                        ];
+                        $sanitized_data[] = $sanitized_term;
+                    }
+                }
+                update_post_meta( $post_id, $this->term_option_key, $sanitized_data );
+
+                wp_send_json_success( [ 'message' => 'FAQ saved successfully!', 'data' => $sanitized_data ] );
             } else {
-                wp_send_json_error(['message' => 'Invalid data']);
+                wp_send_json_error( [ 'message' => 'Invalid data' ] );
             }
         }
 

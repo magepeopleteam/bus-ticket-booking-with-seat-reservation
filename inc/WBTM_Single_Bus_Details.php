@@ -17,8 +17,28 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
             check_ajax_referer( 'wtbm_ajax_nonce', 'nonce' );
 
             $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : '';
-            if (!$post_id) {
+            if ( ! $post_id ) {
                 wp_die();
+            }
+
+            $post = get_post( $post_id );
+            if ( ! $post ) {
+                wp_die();
+            }
+
+            // Access Control: Check if user can view this post
+            // For private posts, only authors/editors should be able to view
+            if ( 'private' === $post->post_status && ! current_user_can( 'edit_post', $post_id ) ) {
+                wp_die();
+            }
+
+            // Additional check: Verify post is published or user has edit capability
+            $post_status = get_post_status( $post_id );
+
+            if ( ! in_array( $post_status, [ 'publish', 'private' ], true ) ) {
+                if ( ! current_user_can( 'edit_post', $post_id ) ) {
+                    wp_die();
+                }
             }
 
             ob_start();
