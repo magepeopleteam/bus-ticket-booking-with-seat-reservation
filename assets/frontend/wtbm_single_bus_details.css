@@ -14,8 +14,8 @@
     flex-wrap: wrap;
 }
 .wbtm_car_details_gallery img {
-    width: 100px;
-    height: 80px;
+    width: 100px !important;
+    height: 80px !important;
     object-fit: contain;
     border-radius: 5px;
     cursor: pointer;
