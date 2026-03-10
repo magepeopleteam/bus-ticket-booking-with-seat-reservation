@@ -5,10 +5,12 @@ if (!defined('ABSPATH')) {
 
 class WBTM_Translation_Settings {
     private $option_name = 'wbtm_translations';
+    private $save_action = 'wbtm_save_translations';
     
     public function __construct() {
         add_action('admin_menu', array($this, 'add_translation_menu'), 25);
         add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_post_' . $this->save_action, array($this, 'save_translations'));
     }
 
     public function add_translation_menu() {
@@ -38,6 +40,43 @@ class WBTM_Translation_Settings {
             $sanitized[sanitize_key($key)] = sanitize_text_field($value);
         }
         return $sanitized;
+    }
+
+    public function save_translations() {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have permission to manage translations.', 'bus-ticket-booking-with-seat-reservation'));
+        }
+
+        check_admin_referer($this->save_action, 'wbtm_translation_nonce');
+
+        $translations = isset($_POST[$this->option_name]) ? wp_unslash($_POST[$this->option_name]) : array();
+        $sanitized_translations = $this->sanitize_translations($translations);
+
+        update_option($this->option_name, $sanitized_translations);
+
+        wp_safe_redirect(
+            add_query_arg(
+                array(
+                    'post_type'                 => 'wbtm_bus',
+                    'page'                      => 'wbtm-translations',
+                    'wbtm_translations_updated' => '1',
+                ),
+                admin_url('edit.php')
+            )
+        );
+        exit;
+    }
+
+    private function get_default_translation_value($method) {
+        $disable_saved_translations = static function ($pre_option, $option = '', $default_value = false) {
+            return array();
+        };
+
+        add_filter('pre_option_' . $this->option_name, $disable_saved_translations, 10, 3);
+        $default_value = call_user_func(array('WBTM_Translations', $method));
+        remove_filter('pre_option_' . $this->option_name, $disable_saved_translations);
+
+        return $default_value;
     }
 
     private function get_all_translation_methods() {
@@ -212,9 +251,16 @@ class WBTM_Translation_Settings {
             <div class="wbtm-translation-header">
                 <h1><?php esc_html_e('Bus Ticket Booking Translations', 'bus-ticket-booking-with-seat-reservation'); ?></h1>
             </div>
+
+            <?php if (isset($_GET['wbtm_translations_updated'])) : ?>
+                <div class="notice notice-success is-dismissible">
+                    <p><?php esc_html_e('Translations updated successfully.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                </div>
+            <?php endif; ?>
             
-            <form method="post" action="options.php">
-                <?php settings_fields('wbtm_translation_settings'); ?>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="action" value="<?php echo esc_attr($this->save_action); ?>" />
+                <?php wp_nonce_field($this->save_action, 'wbtm_translation_nonce'); ?>
                 
                 <div class="wbtm-tabs">
                     <?php foreach ($sections as $section_id => $section) : ?>
@@ -230,9 +276,9 @@ class WBTM_Translation_Settings {
                     <div id="<?php echo esc_attr($section_id); ?>" class="wbtm-tab-content">
                         <?php foreach ($section['methods'] as $method) :
                             if (method_exists('WBTM_Translations', $method)) :
-                                $default_value = call_user_func(array('WBTM_Translations', $method));
-                                $current_value = isset($translations[$method]) && !empty($translations[$method]) ? $translations[$method] : '';
-                                $display_value = !empty($current_value) ? $current_value : $default_value;
+                                $default_value = $this->get_default_translation_value($method);
+                                $current_value = isset($translations[$method]) ? $translations[$method] : '';
+                                $display_value = $current_value !== '' ? $current_value : $default_value;
                                 $label = ucwords(str_replace('_', ' ', str_replace('text_', '', $method)));
                         ?>
                         <div class="wbtm-field-row">
