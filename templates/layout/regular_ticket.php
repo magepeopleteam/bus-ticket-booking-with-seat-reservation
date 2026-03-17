@@ -33,6 +33,7 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
                 <th><?php echo esc_html($ticket_info['name']); ?></th>
                 <td>
                     <input type="hidden" name="wbtm_passenger_type[]" value="<?php echo esc_attr($ticket_info['type']); ?>">
+                    <input type="hidden" name="wbtm_seat_price[]" value="<?php echo esc_attr($ticket_info['price']); ?>">
                     <?php WBTM_Custom_Layout::qty_input('wbtm_seat_qty[]', $ticket_info['price'], $all_info['available_seat'], 0, 0, $all_info['available_seat']); ?>
                 </td>
                 <th><?php echo wp_kses_post( wc_price($ticket_info['price'] ) ); ?></th>
