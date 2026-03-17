@@ -955,6 +955,7 @@
 						// Without seat plan mode
 						$qty = isset($_POST['wbtm_seat_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_qty'])) : [];
 						$passenger_type = isset($_POST['wbtm_passenger_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_passenger_type'])) : [];
+						$submitted_prices = isset($_POST['wbtm_seat_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_price'])) : [];
 						$count = count($passenger_type);
 						if ($count > 0 && is_array($qty)) {
 							for ($i = 0; $i < count($passenger_type); $i++) {
@@ -962,9 +963,9 @@
 									$type = $passenger_type[$i] ?? '';
 									$ticket_name = WBTM_Functions::get_ticket_name($type);
 									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
-									// Handle false return value from get_seat_price
+									// Fall back to the price submitted from the form when route name mismatch causes get_seat_price to return false
 									if ($seat_price === false || $seat_price < 0) {
-										$seat_price = 0;
+										$seat_price = isset($submitted_prices[$i]) ? floatval($submitted_prices[$i]) : 0;
 									}
 									$ticket_info[$i]['ticket_name'] = $ticket_name;
 									$ticket_info[$i]['seat_name'] = $ticket_name;
