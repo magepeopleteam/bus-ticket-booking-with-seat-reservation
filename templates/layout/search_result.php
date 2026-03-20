@@ -161,12 +161,11 @@ if (sizeof($bus_ids) > 0) {
                 $duration_minutes
             );*/
            
-            $duration_text = esc_html( '%1$d H %2$d M' );
-           
-            $duration_formatted = str_replace(
-                ['%1$d', '%2$d'],
-                [$duration_hours, $duration_minutes],
-                $duration_text
+            $duration_formatted = sprintf(
+                /* translators: 1: hours, 2: minutes. You can change H and M to your locale's abbreviations. */
+                __('%1$d H %2$d M', 'bus-ticket-booking-with-seat-reservation'),
+                $duration_hours,
+                $duration_minutes
             );
             ?>
 

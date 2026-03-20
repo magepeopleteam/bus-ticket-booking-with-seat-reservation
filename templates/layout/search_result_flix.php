@@ -166,7 +166,12 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_minutes = floor(($duration_seconds % 3600) / 60);
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            $duration_formatted = "{$duration_hours} H {$duration_minutes} M";
+            $duration_formatted = sprintf(
+                /* translators: 1: hours, 2: minutes. You can change H and M to your locale's abbreviations. */
+                esc_html__('%1$d H %2$d M', 'bus-ticket-booking-with-seat-reservation'),
+                $duration_hours,
+                $duration_minutes
+            );
 		?>
 
 			<!-- short code new style flix if set -->

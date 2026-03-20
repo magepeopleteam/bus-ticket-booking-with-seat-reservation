@@ -375,7 +375,7 @@
                 $end = $return ? $start_route : $end_route;
                 $date = $return ? $r_date : $j_date;
 
-                $day = date("l", strtotime($j_date));
+                $day = date_i18n("l", strtotime($j_date));
                 $start_loc = strtoupper(substr($start, 0, 3));
                 $end_loc = strtoupper(substr($end, 0, 3));
 
