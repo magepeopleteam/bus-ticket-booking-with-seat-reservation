@@ -177,31 +177,6 @@
   }
 }
 
-@media only screen and (max-width: 600px) {
-
-  .wbtm_input_start_end_location,
-  .wbtm_input_start_end_date {
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
-
-  .wtbm_inputList {
-    width: 100% !important;
-    margin: 0 0 10px 0 !important;
-  }
-
-  .wbtm_search_location_toggle {
-    top: 50% !important;
-    left: auto !important;
-    right: 15px !important;
-    transform: translateY(-50%) rotate(90deg) !important;
-  }
-
-  .wbtm_dropping_point {
-    margin-top: 5px !important;
-  }
-}
-
 @media only screen and (max-width: 768px) {
   .wbtm_selected_seat_details table tr th {
     font-size: 14px;
