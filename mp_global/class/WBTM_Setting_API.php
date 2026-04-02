@@ -107,10 +107,13 @@
 				$visible_date = $date ? date_i18n( $date_format, strtotime( $date ) ) : '';
 				$name         = $args['section'] . '[' . $args['id'] . ']';
 				?>
-                <label>
-                    <input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>"/>
-                    <input type="text" readonly name="" class="formControl date_type" value="<?php echo esc_attr( $visible_date ); ?>" placeholder="<?php echo esc_attr( $now ); ?>"/>
-                </label>
+                <div class="wbtm_datepicker_field_wrap _dFlex_alignCenter" style="flex-wrap:wrap;gap:8px;">
+                    <label class="_flex_1" style="min-width:200px;">
+                        <input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $hidden_date ); ?>" class="wbtm_datepicker_hidden"/>
+                        <input type="text" readonly name="" class="formControl date_type" value="<?php echo esc_attr( $visible_date ); ?>" placeholder="<?php echo esc_attr( $now ); ?>"/>
+                    </label>
+                    <button type="button" class="button wbtm_clear_datepicker"><?php esc_html_e( 'Clear', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+                </div>
 				<?php
 			}
 			function callback_wbtm_select2( $args ) {
