@@ -238,27 +238,22 @@
 			}
 			//***********************************//
 			public static function get_settings($section, $key, $default = '') {
-				$options = get_option($section);
-				if (isset($options[$key])) {
-					if (is_array($options[$key])) {
-						if (!empty($options[$key])) {
-							return $options[$key];
-						} else {
-							return $default;
-						}
-					} else {
-						if (!empty($options[$key])) {
-							return wp_kses_post($options[$key]);
-						} else {
-							return $default;
-						}
+				$options = get_option( $section );
+				if ( ! is_array( $options ) ) {
+					$options = array();
+				}
+				// Use array_key_exists so an intentionally saved empty string (e.g. cleared date) is respected.
+				if ( array_key_exists( $key, $options ) ) {
+					$val = $options[ $key ];
+					if ( is_array( $val ) ) {
+						return ! empty( $val ) ? $val : $default;
 					}
+					return wp_kses_post( (string) $val );
 				}
-				if (is_array($default)) {
+				if ( is_array( $default ) ) {
 					return $default;
-				} else {
-					return wp_kses_post($default);
 				}
+				return wp_kses_post( $default );
 			}
 			public static function get_style_settings($key, $default = '') {
 				return self::get_settings('wbtm_style_settings', $key, $default);

@@ -34,6 +34,23 @@ function wbtm_load_sortable_datepicker(parent, item) {
                 handle: $(this).find(".wbtm_sortable_button"),
             });
     });
+    // Clear optional datepicker fields (settings + metaboxes): readonly input cannot be cleared by typing.
+    $(document).on("click", ".wbtm_clear_datepicker", function (e) {
+        e.preventDefault();
+        var $wrap = $(this).closest(".wbtm_datepicker_field_wrap");
+        var $visible = $wrap.find(".date_type, .date_type_without_year");
+        var $hidden = $wrap.find('input[type="hidden"].wbtm_datepicker_hidden, label input[type="hidden"]').first();
+        if (!$hidden.length) {
+            $hidden = $wrap.find('input[type="hidden"]').first();
+        }
+        $hidden.val("");
+        $visible.val("");
+        if ($visible.hasClass("hasDatepicker") && $.fn.datepicker) {
+            try {
+                $visible.datepicker("setDate", null);
+            } catch (err) {}
+        }
+    });
     //=========upload image==============//
     $(document).on("click", ".wbtm_add_single_image", function () {
         let parent = $(this);
