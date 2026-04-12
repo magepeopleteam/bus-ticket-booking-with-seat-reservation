@@ -227,7 +227,11 @@ if (sizeof($bus_ids) > 0) {
                     </div>
 
                 </div>
-                <div class="wbtm_bus_details_tabs_holder" >
+                <?php
+                $show_details_tabs = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'show_hide_bus_details_tabs', 'show' );
+                $details_tabs_class = $show_details_tabs === 'hide' ? ' wbtm_no_tabs' : '';
+                ?>
+                <div class="wbtm_bus_details_tabs_holder<?php echo esc_attr( $details_tabs_class ); ?>" >
                     <!--<div class="wbtm_bus_popup_links">
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
@@ -236,7 +240,9 @@ if (sizeof($bus_ids) > 0) {
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                     </div>-->
                     <?php
-                    echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                    if ( $show_details_tabs !== 'hide' ) {
+                        echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                    }
 
                     if ($btn_show == 'hide' && $all_info['regi_status'] == 'no') {
                         WBTM_Layout::trigger_view_seat_details();

@@ -204,6 +204,17 @@
 							)
 						),
 						array(
+							'name'    => 'show_hide_bus_details_tabs',
+							'label'   => esc_html__( 'Show/hide bus details tabs', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Show or hide the Bus Details / Boarding-Dripping Points tabs in the search result list.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'show',
+							'options' => array(
+								'show' => esc_html__( 'Show', 'bus-ticket-booking-with-seat-reservation' ),
+								'hide' => esc_html__( 'Hide', 'bus-ticket-booking-with-seat-reservation' )
+							)
+						),
+						array(
 							'name'    => 'active_redirect_page',
 							'label'   => esc_html__( 'Active Redirect page', 'bus-ticket-booking-with-seat-reservation' ),
 							'desc'    => esc_html__( 'If you want to Active Redirect page,please select on', 'bus-ticket-booking-with-seat-reservation' ),

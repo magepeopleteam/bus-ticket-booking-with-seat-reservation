@@ -10,12 +10,14 @@
 		class WBTM_Pricing_Routing {
 			public function __construct() {
 				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
+				add_action('wbtm_ticket_type_item', [$this, 'ticket_type_item']);
 				/*********************/
 				add_action('wp_ajax_wbtm_reload_pricing', [$this, 'wbtm_reload_pricing']);
 			}
 			public function tab_content($post_id) {
 				$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
 				$bus_stop_lists = WBTM_Global_Function::get_all_term_data('wbtm_bus_stops');
+				$ticket_types = WBTM_Functions::get_ticket_types($post_id);
 				?>
                 <div class="tabsItem wbtm_settings_pricing_routing" data-tabs="#wbtm_settings_pricing_routing">
                     <h3 class="pB_xs"><?php esc_html_e('Price And Routing Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -61,8 +63,28 @@
                         </div>
                     </div>
                     <div class="_dLayout_padding">
+                        <div class="wbtm_settings_area wbtm_ticket_type_area">
+                            <div class="ovAuto">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th><?php esc_html_e('Passenger Type', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
+                                        <th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="wbtm_sortable_area wbtm_item_insert">
+									<?php foreach ($ticket_types as $ticket_type) {
+										$this->ticket_type_item($ticket_type);
+									} ?>
+                                    </tbody>
+                                </table>
+                            </div>
+							<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add Passenger Type', 'bus-ticket-booking-with-seat-reservation')); ?>
+							<?php do_action('wbtm_hidden_table', 'wbtm_ticket_type_item'); ?>
+                        </div>
+                        <div class="_mT"></div>
                         <div class="wbtm_price_setting_area">
-							<?php $this->route_pricing($post_id, $full_route_infos); ?>
+							<?php $this->route_pricing($post_id, $full_route_infos, $ticket_types); ?>
                         </div>
                     </div>
 					<?php do_action('wbtm_add_return_discount', $post_id); ?>
@@ -162,8 +184,84 @@
                 </div>
 				<?php
 			}
-			public function route_pricing($post_id, $full_route_infos) {
-				//echo '<pre>';print_r(WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []));echo '</pre>';
+			public function ticket_type_item($ticket_type = []) {
+				$ticket_type = is_array($ticket_type) ? $ticket_type : [];
+				$ticket_type_id = array_key_exists('id', $ticket_type) ? $ticket_type['id'] : '';
+				$ticket_type_label = array_key_exists('label', $ticket_type) ? $ticket_type['label'] : '';
+				?>
+                <tr class="wbtm_remove_area wbtm_ticket_type_item">
+                    <td>
+                        <input type="hidden" name="wbtm_ticket_type_id[]" value="<?php echo esc_attr($ticket_type_id); ?>"/>
+                        <label>
+                            <input type="text" class="formControl wbtm_name_validation" name="wbtm_ticket_type_label[]" placeholder="<?php esc_attr_e('Ex: Adult', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($ticket_type_label); ?>"/>
+                        </label>
+                    </td>
+                    <td class="_w_100">
+						<?php WBTM_Custom_Layout::move_remove_button(); ?>
+                    </td>
+                </tr>
+				<?php
+			}
+			private function get_route_price_key($bp, $dp) {
+				return strtolower(trim($bp) . '||' . trim($dp));
+			}
+			private function sanitize_ticket_types($ticket_types, $post_id = 0) {
+				if (!is_array($ticket_types) || sizeof($ticket_types) === 0) {
+					return WBTM_Functions::get_ticket_types($post_id);
+				}
+				$normalized_ticket_types = [];
+				$used_ids = [];
+				foreach ($ticket_types as $index => $ticket_type) {
+					if (!is_array($ticket_type)) {
+						continue;
+					}
+					$label = array_key_exists('label', $ticket_type) ? sanitize_text_field($ticket_type['label']) : '';
+					if (!$label) {
+						continue;
+					}
+					$ticket_type_id = array_key_exists('id', $ticket_type) ? $ticket_type['id'] : '';
+					$ticket_type_id = WBTM_Functions::generate_ticket_type_id($ticket_type_id, $label, $used_ids, $index);
+					$normalized_ticket_types[] = [
+						'id' => $ticket_type_id,
+						'label' => $label,
+					];
+					$used_ids[] = $ticket_type_id;
+				}
+				return sizeof($normalized_ticket_types) > 0 ? $normalized_ticket_types : WBTM_Functions::get_ticket_types($post_id);
+			}
+			private function sanitize_price_map($price_map = []) {
+				$sanitized_price_map = [];
+				if (!is_array($price_map)) {
+					return $sanitized_price_map;
+				}
+				foreach ($price_map as $route_key => $route_prices) {
+					if (!is_array($route_prices)) {
+						continue;
+					}
+					$sanitized_route_key = sanitize_text_field($route_key);
+					foreach ($route_prices as $ticket_type_id => $ticket_price) {
+						$sanitized_ticket_type_id = sanitize_key($ticket_type_id);
+						$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = $ticket_price === '' ? '' : (float) sanitize_text_field((string) $ticket_price);
+					}
+				}
+				return $sanitized_price_map;
+			}
+			private function find_route_price_info($price_infos, $bp, $dp) {
+				if (sizeof($price_infos) > 0) {
+					foreach ($price_infos as $price_info) {
+						if (
+							strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) &&
+							strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)
+						) {
+							return $price_info;
+						}
+					}
+				}
+				return [];
+			}
+			public function route_pricing($post_id, $full_route_infos, $ticket_types = [], $request_price_map = []) {
+				$ticket_types = $this->sanitize_ticket_types($ticket_types, $post_id);
+				$request_price_map = $this->sanitize_price_map($request_price_map);
 				$all_price_info = [];
 				if (sizeof($full_route_infos) > 0) {
 					$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
@@ -175,24 +273,18 @@
 								foreach ($next_infos as $next_info) {
 									if ($next_info['type'] == 'dp' || $next_info['type'] == 'both') {
 										$dp = $next_info['place'];
-										$adult_price = '';
-										$child_price = '';
-										$infant_price = '';
-										if (sizeof($price_infos) > 0) {
-											foreach ($price_infos as $price_info) {
-												if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)) {
-													$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] !== '' ? (float)$price_info['wbtm_bus_price'] : '';
-													$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] !== '' ? (float)$price_info['wbtm_bus_child_price'] : '';
-													$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] !== '' ? (float)$price_info['wbtm_bus_infant_price'] : '';
-												}
+										$route_price_key = $this->get_route_price_key($bp, $dp);
+										$route_prices = [];
+										$stored_price_info = $this->find_route_price_info($price_infos, $bp, $dp);
+										foreach ($ticket_types as $ticket_type) {
+											$ticket_type_id = $ticket_type['id'];
+											$route_prices[$ticket_type_id] = array_key_exists($route_price_key, $request_price_map) && array_key_exists($ticket_type_id, $request_price_map[$route_price_key]) ? $request_price_map[$route_price_key][$ticket_type_id] : WBTM_Functions::get_ticket_price_by_type($stored_price_info, $ticket_type_id);
 											}
-										}
 										$all_price_info[] = [
 											'bp' => $bp,
 											'dp' => $dp,
-											'adult_price' => $adult_price,
-											'child_price' => $child_price,
-											'infant_price' => $infant_price,
+											'route_price_key' => $route_price_key,
+											'prices' => $route_prices,
 										];
 									}
 								}
@@ -216,16 +308,19 @@
                                     </div>
                                 </div>
                             </th>
-                            <th><?php esc_html_e('Adult Price', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                <sup class="required">*</sup>
-                            </th>
-                            <th><?php esc_html_e('Child Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-                            <th><?php esc_html_e('Infant Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+							<?php foreach ($ticket_types as $index => $ticket_type) { ?>
+                                <th>
+									<?php echo esc_html($ticket_type['label']); ?>
+									<?php if ($index === 0) { ?>
+                                        <sup class="required">*</sup>
+									<?php } ?>
+                                </th>
+							<?php } ?>
                         </tr>
                         </thead>
                         <tbody>
-						<?php foreach ($all_price_info as $price_info) { ?>
-                            <tr>
+						<?php foreach ($all_price_info as $row_index => $price_info) { ?>
+                            <tr data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>">
                                 <td colspan="2">
                                     <div class="_dFlex_justifyBetween_pT_xs">
                                         <div class="col_5 _textLeft_pL_xs">
@@ -240,21 +335,22 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <label>
-                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_adult_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['adult_price']); ?>"/>
-                                    </label>
-                                </td>
-                                <td>
-                                    <label>
-                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_child_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['child_price']); ?>"/>
-                                    </label>
-                                </td>
-                                <td>
-                                    <label>
-                                        <input type="number" pattern="[0-9]*" step="0.01" class="formControl wbtm_price_validation" name="wbtm_infant_price[]" placeholder="Ex: 10" value="<?php echo esc_attr($price_info['infant_price']); ?>"/>
-                                    </label>
-                                </td>
+								<?php foreach ($ticket_types as $ticket_type) { ?>
+                                    <td>
+                                        <label>
+                                            <input
+                                                type="number"
+                                                pattern="[0-9]*"
+                                                step="0.01"
+                                                class="formControl wbtm_price_validation"
+                                                data-ticket-type="<?php echo esc_attr($ticket_type['id']); ?>"
+                                                name="wbtm_ticket_price[<?php echo esc_attr($row_index); ?>][<?php echo esc_attr($ticket_type['id']); ?>]"
+                                                placeholder="Ex: 10"
+                                                value="<?php echo esc_attr(array_key_exists($ticket_type['id'], $price_info['prices']) ? $price_info['prices'][$ticket_type['id']] : ''); ?>"
+                                            />
+                                        </label>
+                                    </td>
+								<?php } ?>
                             </tr>
 						<?php } ?>
                         </tbody>
@@ -273,6 +369,10 @@
 				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
 				$places = isset($_POST['places']) ? array_map('sanitize_text_field', wp_unslash($_POST['places'])) : [];
 				$types = isset($_POST['types']) ? array_map('sanitize_text_field', wp_unslash($_POST['types'])) : [];
+				$ticket_types_json = isset($_POST['ticket_types_json']) ? wp_unslash($_POST['ticket_types_json']) : '[]';
+				$price_map_json = isset($_POST['price_map_json']) ? wp_unslash($_POST['price_map_json']) : '{}';
+				$ticket_types = json_decode($ticket_types_json, true);
+				$price_map = json_decode($price_map_json, true);
 				$route_infos = [];
                 if(sizeof($places)>0){
                     foreach ($places as $key=>$place){
@@ -280,7 +380,7 @@
 	                    $route_infos[$key]['type'] = $types[$key];
                     }
                 }
-				$this->route_pricing($post_id, $route_infos);
+				$this->route_pricing($post_id, $route_infos, $ticket_types, $price_map);
 				die();
 			}
 		}

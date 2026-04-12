@@ -270,22 +270,50 @@
 					$price_infos = [];
 					$stops_bps = isset($_POST['wbtm_price_bp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_bp'])) : [];
 					$stops_dps = isset($_POST['wbtm_price_dp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_dp'])) : [];
-					$adult_price = isset($_POST['wbtm_adult_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_adult_price'])) : [];
-					$child_price = isset($_POST['wbtm_child_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_child_price'])) : [];
-					$infant_price = isset($_POST['wbtm_infant_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_infant_price'])) : [];
+					$ticket_type_ids = isset($_POST['wbtm_ticket_type_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_id'])) : [];
+					$ticket_type_labels = isset($_POST['wbtm_ticket_type_label']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_label'])) : [];
+					$ticket_price_rows = isset($_POST['wbtm_ticket_price']) ? wp_unslash($_POST['wbtm_ticket_price']) : [];
+					$ticket_types = [];
+					$used_ticket_type_ids = [];
+					foreach ($ticket_type_labels as $ticket_type_index => $ticket_type_label) {
+						$ticket_type_label = sanitize_text_field($ticket_type_label);
+						if (!$ticket_type_label) {
+							continue;
+						}
+						$requested_ticket_type_id = array_key_exists($ticket_type_index, $ticket_type_ids) ? $ticket_type_ids[$ticket_type_index] : '';
+						$ticket_type_id = WBTM_Functions::generate_ticket_type_id($requested_ticket_type_id, $ticket_type_label, $used_ticket_type_ids, $ticket_type_index);
+						$ticket_types[] = [
+							'id' => $ticket_type_id,
+							'label' => $ticket_type_label,
+						];
+						$used_ticket_type_ids[] = $ticket_type_id;
+					}
+					$ticket_types = sizeof($ticket_types) > 0 ? $ticket_types : WBTM_Functions::default_ticket_types();
+					update_post_meta($post_id, 'wbtm_ticket_types', $ticket_types);
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
-							if ($stops_bp && $stops_dps[$key] && isset($adult_price[$key])) {
-								$adult = $adult_price[$key] === '' ? '' : (float)$adult_price[$key];
-								$child = !isset($child_price[$key]) || $child_price[$key] === '' ? '' : (float)$child_price[$key];
-								$infant = !isset($infant_price[$key]) || $infant_price[$key] === '' ? '' : (float)$infant_price[$key];
-								$price_infos[] = [
+							if ($stops_bp && $stops_dps[$key]) {
+								$ticket_prices = [];
+								foreach ($ticket_types as $ticket_type) {
+									$ticket_type_id = $ticket_type['id'];
+									$ticket_price = '';
+									if (
+										is_array($ticket_price_rows) &&
+										array_key_exists($key, $ticket_price_rows) &&
+										is_array($ticket_price_rows[$key]) &&
+										array_key_exists($ticket_type_id, $ticket_price_rows[$key])
+									) {
+										$raw_ticket_price = sanitize_text_field((string) $ticket_price_rows[$key][$ticket_type_id]);
+										$ticket_price = $raw_ticket_price === '' ? '' : (float) $raw_ticket_price;
+									}
+									$ticket_prices[$ticket_type_id] = $ticket_price;
+								}
+								$legacy_prices = WBTM_Functions::get_legacy_price_fields($ticket_prices);
+								$price_infos[] = array_merge([
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
-									'wbtm_bus_price' => $adult,
-									'wbtm_bus_child_price' => $child,
-									'wbtm_bus_infant_price' => $infant,
-								];
+									'wbtm_ticket_prices' => $ticket_prices,
+								], $legacy_prices);
 							}
 						}
 					}

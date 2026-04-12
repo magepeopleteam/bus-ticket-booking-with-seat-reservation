@@ -30,6 +30,23 @@
   /**********************/
   div.wbtm_form_submit_area,
   div.wbtm_ex_service_area {    display: none;  }
+  .wbtm_loading_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .wbtm_loading_button.wbtm_is_loading {
+    cursor: wait;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .wbtm_loading_button .wbtm_loading_button_text {
+    display: inline-block;
+    white-space: nowrap;
+  }
   /**********************/
   img.driver_img {    max-width: 45px !important;  }
 

@@ -63,40 +63,147 @@
 				}
 				return $all_routes;
 			}
-			
+
+			public static function default_ticket_types() {
+				return [
+					[
+						'id'    => 'adult',
+						'label' => WBTM_Translations::text_adult(),
+					],
+					[
+						'id'    => 'child',
+						'label' => WBTM_Translations::text_child(),
+					],
+					[
+						'id'    => 'infant',
+						'label' => WBTM_Translations::text_infant(),
+					],
+				];
+			}
+
+			public static function legacy_ticket_type_aliases() {
+				return [
+					'adult'  => 'adult',
+					'0'      => 'adult',
+					0        => 'adult',
+					'child'  => 'child',
+					'1'      => 'child',
+					1        => 'child',
+					'infant' => 'infant',
+					'2'      => 'infant',
+					2        => 'infant',
+				];
+			}
+
+			public static function generate_ticket_type_id( $raw_id = '', $label = '', $used_ids = [], $index = 0 ) {
+				$ticket_type_id = sanitize_key( $raw_id );
+				if ( ! $ticket_type_id && $label ) {
+					$ticket_type_id = str_replace( '-', '_', sanitize_title( $label ) );
+				}
+				if ( ! $ticket_type_id ) {
+					$ticket_type_id = 'ticket_type_' . ( absint( $index ) + 1 );
+				}
+				$base_ticket_type_id = $ticket_type_id;
+				$suffix              = 2;
+				while ( in_array( $ticket_type_id, $used_ids, true ) ) {
+					$ticket_type_id = $base_ticket_type_id . '_' . $suffix;
+					$suffix ++;
+				}
+				return $ticket_type_id;
+			}
+
+			public static function get_ticket_types( $post_id = 0 ) {
+				$stored_ticket_types = $post_id > 0 ? WBTM_Global_Function::get_post_info( $post_id, 'wbtm_ticket_types', [] ) : [];
+				$source_ticket_types = is_array( $stored_ticket_types ) && sizeof( $stored_ticket_types ) > 0 ? $stored_ticket_types : self::default_ticket_types();
+				$ticket_types        = [];
+				$used_ids            = [];
+
+				foreach ( $source_ticket_types as $index => $ticket_type ) {
+					if ( ! is_array( $ticket_type ) ) {
+						$ticket_type = [
+							'label' => $ticket_type,
+						];
+					}
+					$label = array_key_exists( 'label', $ticket_type ) ? sanitize_text_field( $ticket_type['label'] ) : '';
+					if ( ! $label && array_key_exists( 'name', $ticket_type ) ) {
+						$label = sanitize_text_field( $ticket_type['name'] );
+					}
+					if ( ! $label && array_key_exists( 'id', $ticket_type ) ) {
+						$label = self::get_ticket_name( $ticket_type['id'] );
+					}
+					if ( ! $label ) {
+						continue;
+					}
+					$requested_id = array_key_exists( 'id', $ticket_type ) ? $ticket_type['id'] : '';
+					if ( ! $requested_id && array_key_exists( 'slug', $ticket_type ) ) {
+						$requested_id = $ticket_type['slug'];
+					}
+					$ticket_type_id = self::generate_ticket_type_id( $requested_id, $label, $used_ids, $index );
+					$ticket_types[] = [
+						'id'    => $ticket_type_id,
+						'label' => $label,
+					];
+					$used_ids[] = $ticket_type_id;
+				}
+
+				return sizeof( $ticket_types ) > 0 ? $ticket_types : self::default_ticket_types();
+			}
+
+			public static function get_ticket_type_map( $post_id = 0 ) {
+				$ticket_type_map = [];
+				foreach ( self::get_ticket_types( $post_id ) as $ticket_type ) {
+					$ticket_type_map[ $ticket_type['id'] ] = $ticket_type['label'];
+				}
+				return $ticket_type_map;
+			}
+
+			public static function get_ticket_price_by_type( $price_info, $ticket_type_id ) {
+				$ticket_type_id = (string) $ticket_type_id;
+				$dynamic_prices = array_key_exists( 'wbtm_ticket_prices', $price_info ) && is_array( $price_info['wbtm_ticket_prices'] ) ? $price_info['wbtm_ticket_prices'] : [];
+				if ( array_key_exists( $ticket_type_id, $dynamic_prices ) && $dynamic_prices[ $ticket_type_id ] !== '' ) {
+					return (float) $dynamic_prices[ $ticket_type_id ];
+				}
+
+				$legacy_aliases = self::legacy_ticket_type_aliases();
+				$legacy_ticket  = array_key_exists( $ticket_type_id, $legacy_aliases ) ? $legacy_aliases[ $ticket_type_id ] : $ticket_type_id;
+				if ( $legacy_ticket === 'adult' && array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_price'];
+				}
+				if ( $legacy_ticket === 'child' && array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_child_price'];
+				}
+				if ( $legacy_ticket === 'infant' && array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_infant_price'];
+				}
+				return '';
+			}
+
+			public static function get_legacy_price_fields( $ticket_prices = [] ) {
+				return [
+					'wbtm_bus_price'        => array_key_exists( 'adult', $ticket_prices ) ? $ticket_prices['adult'] : '',
+					'wbtm_bus_child_price'  => array_key_exists( 'child', $ticket_prices ) ? $ticket_prices['child'] : '',
+					'wbtm_bus_infant_price' => array_key_exists( 'infant', $ticket_prices ) ? $ticket_prices['infant'] : '',
+				];
+			}
+
 			public static function get_ticket_info( $post_id, $start_route, $end_route ) {
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
-					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
-					
+					$price_infos   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					$ticket_types  = self::get_ticket_types( $post_id );
+
 					if ( sizeof( $price_infos ) > 0 ) {
 						foreach ( $price_infos as $price_info ) {
 							if ( strtolower( $price_info['wbtm_bus_bp_price_stop'] ) == strtolower( $start_route ) && strtolower( $price_info['wbtm_bus_dp_price_stop'] ) == strtolower( $end_route ) ) {
-								$adult_price  = array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] !== '' ? (float) $price_info['wbtm_bus_price'] : '';
-								$child_price  = array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ? (float) $price_info['wbtm_bus_child_price'] : '';
-								$infant_price = array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ? (float) $price_info['wbtm_bus_infant_price'] : '';
-								
-								if ( $adult_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_adult(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_price ),
-										'type'  => 0
-									];
-								}
-								if ( $child_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_child(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_price ),
-										'type'  => 1
-									];
-								}
-								
-								if ( $infant_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_infant(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_price ),
-										'type'  => 2
-									];
+								foreach ( $ticket_types as $ticket_type ) {
+									$ticket_price = self::get_ticket_price_by_type( $price_info, $ticket_type['id'] );
+									if ( $ticket_price !== '' ) {
+										$ticket_infos[] = [
+											'name'  => $ticket_type['label'],
+											'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $ticket_price ),
+											'type'  => $ticket_type['id'],
+										];
+									}
 								}
 							}
 						}
@@ -104,11 +211,22 @@
 				}
 				return $ticket_infos;
 			}
-			public static function get_ticket_name( $type = 0 ) {
-				$ticket[0] = WBTM_Translations::text_adult();
-				$ticket[1] = WBTM_Translations::text_child();
-				$ticket[2] = WBTM_Translations::text_infant();
-				return $ticket[ $type ];
+			public static function get_ticket_name( $type = 0, $post_id = 0 ) {
+				$ticket_type_map = self::get_ticket_type_map( $post_id );
+				if ( array_key_exists( $type, $ticket_type_map ) ) {
+					return $ticket_type_map[ $type ];
+				}
+
+				$legacy_aliases = self::legacy_ticket_type_aliases();
+				$legacy_ticket  = array_key_exists( $type, $legacy_aliases ) ? $legacy_aliases[ $type ] : '';
+				if ( $legacy_ticket && array_key_exists( $legacy_ticket, $ticket_type_map ) ) {
+					return $ticket_type_map[ $legacy_ticket ];
+				}
+
+				if ( is_string( $type ) && $type !== '' ) {
+					return ucwords( str_replace( [ '_', '-' ], ' ', $type ) );
+				}
+				return '';
 			}
 			public static function get_route_all_date_info( $post_id, $all_dates = [] ) {
 				$all_dates   = sizeof( $all_dates ) > 0 ? $all_dates : self::get_post_date( $post_id );
@@ -351,8 +469,12 @@
 				if ( $post_id && $start_route && $end_route ) {
 					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route );
 					if ( sizeof( $ticket_infos ) > 0 ) {
+						$requested_seat_type = (string) $seat_type;
+						if ( $requested_seat_type === '' || $requested_seat_type === '0' ) {
+							$requested_seat_type = (string) $ticket_infos[0]['type'];
+						}
 						foreach ( $ticket_infos as $ticket_info ) {
-							if ( $ticket_info['type'] == $seat_type ) {
+							if ( (string) $ticket_info['type'] === $requested_seat_type ) {
 								$price          = $ticket_info['price'];
 								$seat_plan_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 								if ( $seat_plan_type == 'wbtm_seat_plan' && $dd ) {

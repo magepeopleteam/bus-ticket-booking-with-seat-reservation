@@ -3,9 +3,42 @@
 	"use strict";
 
 	let wbtm_bus_start_end = '';
+	function wbtm_set_search_button_state(parent, is_loading) {
+		parent.find('.wbtm_search_action_button:visible').each(function () {
+			let button = $(this);
+			let default_html = button.data('default-html');
+			let loading_text = button.data('loading-text') || 'Searching...';
+
+			if (!default_html) {
+				default_html = button.html();
+				button.data('default-html', default_html);
+			}
+
+			if (is_loading) {
+				button
+					.addClass('wbtm_is_loading')
+					.prop('disabled', true)
+					.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_search_button_text">' + loading_text + '</span>');
+			} else {
+				button
+					.removeClass('wbtm_is_loading')
+					.prop('disabled', false)
+					.html(default_html);
+			}
+		});
+	}
+
+	$(document).on("submit", "#wbtm_area form.mpForm", function () {
+		let parent = $(this).closest('#wbtm_area');
+		wbtm_set_search_button_state(parent, true);
+	});
+
 	$(document).on("click", "#wbtm_area button.get_wbtm_bus_list", function (e) {
 		e.preventDefault();
 		let parent = $(this).closest('#wbtm_area');
+		if ($(this).hasClass('wbtm_is_loading')) {
+			return false;
+		}
 		let start = parent.find('input[name="bus_start_route"]');
 		let end = parent.find('input[name="bus_end_route"]');
 		let j_date = parent.find('input[name="j_date"]');
@@ -26,14 +59,17 @@
 
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!wbtm_check_required(start)) {
+			wbtm_set_search_button_state(parent, false);
 			start.trigger('click');
 			return false;
 		}
 		if (!wbtm_check_required(end)) {
+			wbtm_set_search_button_state(parent, false);
 			end.trigger('click');
 			return false;
 		}
 		if (!wbtm_check_required(j_date)) {
+			wbtm_set_search_button_state(parent, false);
 			j_date.siblings('input').focus();
 			return false;
 		} else {
@@ -57,6 +93,7 @@
 					// backend_order: window.location.href.search("wbtm_backend_order"),
 				},
 				beforeSend: function () {
+					wbtm_set_search_button_state(parent, true);
 					wbtm_loader(parent.find(".wbtm_search_result"));
 				},
 				success: function (data) {
@@ -66,10 +103,12 @@
 						.promise()
 						.done(function () {
 							wbtm_loaderRemove(parent.find(".wbtm_search_area"));
+							wbtm_set_search_button_state(parent, false);
 							wbtm_loadBgImage();
 						});
 				},
 				error: function (response) {
+					wbtm_set_search_button_state(parent, false);
 					console.log(response);
 				},
 			});
@@ -297,6 +336,28 @@
 //====================================================================//
 (function ($) {
 	"use strict";
+	function wbtm_set_loading_button_state(button, is_loading) {
+		let default_html = button.data('default-html');
+		let loading_text = button.data('loading-text') || 'Loading...';
+
+		if (!default_html) {
+			default_html = button.html();
+			button.data('default-html', default_html);
+		}
+
+		if (is_loading) {
+			button
+				.addClass('wbtm_is_loading')
+				.prop('disabled', true)
+				.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_loading_button_text">' + loading_text + '</span>');
+		} else {
+			button
+				.removeClass('wbtm_is_loading')
+				.prop('disabled', false)
+				.html(default_html);
+		}
+	}
+
 	function wbtm_price_calculation(parent) {
 		let total_qty = wbtm_seat_qty(parent);
 		wbtm_seat_calculation(parent, total_qty);
@@ -726,6 +787,9 @@
 		e.preventDefault();
 
 		let this_btn = $(this);
+		if (this_btn.hasClass('wbtm_is_loading')) {
+			return false;
+		}
 		let form = this_btn.closest('form');
 
 		let isValid = true;
@@ -741,6 +805,7 @@
 			alert('Please fill all required fields ❗');
 			return;
 		}
+		wbtm_set_loading_button_state(this_btn, true);
 		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
@@ -851,16 +916,19 @@
 
 				if (response.success) {
 					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
-					this_btn.text('Added to Cart ✅');
 					$(document.body).trigger('wc_update_cart');
 				} else {
+					wbtm_set_loading_button_state(this_btn, false);
 					alert('Failed to add ticket ❌');
 				}
 			},
+			error: function () {
+				wbtm_set_loading_button_state(this_btn, false);
+			},
 			complete: function () {
-				this_btn.text('Book Now');
 				if (burPosition === 'start_bus') {
 					if (numberOfBuses > 0) {
+						wbtm_set_loading_button_state(this_btn, false);
 						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
 						/*$("#start_bus").fadeOut();
 						$("#wbtm_return_container").fadeIn();

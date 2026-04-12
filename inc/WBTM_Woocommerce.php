@@ -273,6 +273,7 @@
 									'cabin_name' => $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1),
 									'seat_name' => $seat_name,
 									'seat_type' => $seat_type,
+									'ticket_name' => WBTM_Functions::get_ticket_name($seat_type, $post_id),
 									'ticket_price' => $ticket_price,
 									'price_multiplier' => $cabin['price_multiplier'] ?? 1.0
 								];
@@ -458,7 +459,7 @@
 					if (!empty($cabin_seats)) {
 						foreach ($cabin_seats as $cabin_seat) {
 							$ticket_infos[] = [
-								'ticket_name' => $cabin_seat['cabin_name'] ?? 'Cabin Seat',
+								'ticket_name' => $cabin_seat['ticket_name'] ?? WBTM_Functions::get_ticket_name($cabin_seat['seat_type'] ?? '', $post_id),
 								'seat_name' => $cabin_seat['seat_name'] ?? '',
 								'ticket_type' => $cabin_seat['seat_type'] ?? 0,
 								'ticket_price' => $cabin_seat['ticket_price'] ?? 0,
@@ -896,6 +897,8 @@
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 					$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 					$seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
+					$ticket_types = WBTM_Functions::get_ticket_types($post_id);
+					$default_ticket_type = array_key_exists(0, $ticket_types) ? $ticket_types[0]['id'] : 'adult';
 					/************************/
 					$start_place = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 					$end_place = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
@@ -905,17 +908,17 @@
 						$selected_seat = isset($_POST['wbtm_selected_seat']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat'])) : '';
 						$selected_seat = $selected_seat ? explode(',', $selected_seat) : [];
 						$selected_ticket_type = isset($_POST['wbtm_selected_seat_type']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_type'])) : '';
-						$selected_ticket_type = $selected_ticket_type ? explode(',', $selected_ticket_type) : [0];
+						$selected_ticket_type = $selected_ticket_type ? explode(',', $selected_ticket_type) : [$default_ticket_type];
 						if (sizeof($selected_seat) > 0 && sizeof($selected_ticket_type) > 0) {
 							foreach ($selected_seat as $key => $seat_name) {
-								$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : 0;
+								$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : $default_ticket_type;
 								if ($seat_name) {
 									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
 									}
-									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type);
+									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type, $post_id);
 									$ticket_info[$count]['ticket_type'] = $type;
 									$ticket_info[$count]['seat_name'] = $seat_name;
 									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
@@ -929,17 +932,17 @@
 						$selected_seat_dd = isset($_POST['wbtm_selected_seat_dd']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_dd'])) : '';
 						$selected_seat_dd = $selected_seat_dd ? explode(',', $selected_seat_dd) : [];
 						$selected_ticket_type_dd = isset($_POST['wbtm_selected_seat_dd_type']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_dd_type'])) : '';
-						$selected_ticket_type_dd = $selected_ticket_type_dd ? explode(',', $selected_ticket_type_dd) : [0];
+						$selected_ticket_type_dd = $selected_ticket_type_dd ? explode(',', $selected_ticket_type_dd) : [$default_ticket_type];
 						if (sizeof($selected_seat_dd) > 0 && sizeof($selected_ticket_type_dd) > 0) {
 							foreach ($selected_seat_dd as $key => $seat_name) {
-								$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : 0;
+								$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : $default_ticket_type;
 								if ($seat_name) {
 									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
 									}
-									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type);
+									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type, $post_id);
 									$ticket_info[$count]['ticket_type'] = $type;
 									$ticket_info[$count]['seat_name'] = $seat_name;
 									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
@@ -961,7 +964,7 @@
 							for ($i = 0; $i < count($passenger_type); $i++) {
 								if (isset($qty[$i]) && $qty[$i] > 0) {
 									$type = $passenger_type[$i] ?? '';
-									$ticket_name = WBTM_Functions::get_ticket_name($type);
+									$ticket_name = WBTM_Functions::get_ticket_name($type, $post_id);
 									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
 									// Fall back to the price submitted from the form when route name mismatch causes get_seat_price to return false
 									if ($seat_price === false || $seat_price < 0) {
@@ -1083,6 +1086,7 @@
 								$ticket_name = $wbtm_seat['ticket_name'] ?? $wbtm_seat['cabin_name'] ?? '';
 								$seat_name = $wbtm_seat['seat_name'] ?? '';
 								$seat_type = $wbtm_seat['seat_type'] ?? 0;
+								$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 								$ticket_price = $wbtm_seat['ticket_price'] ?? $wbtm_seat['price'] ?? 0;
 								$qty = isset($wbtm_seat['ticket_qty']) ? max(1, intval($wbtm_seat['ticket_qty'])) : 1;
 								// Cabin seats are always single-quantity entries.
@@ -1098,7 +1102,7 @@
 								<?php } ?>
                                 <li>
                                     <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_ticket_type()); ?> :</h6>
-                                    <span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type)); ?></span>
+                                    <span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type, $post_id)); ?></span>
                                 </li>
 								<?php if ($seat_name) { ?>
                                     <li>
