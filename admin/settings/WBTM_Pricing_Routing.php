@@ -17,7 +17,16 @@
 			public function tab_content($post_id) {
 				$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
 				$return_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_return_route_info', []);
+				if ( ! is_array( $return_route_infos ) ) {
+					$return_route_infos = [];
+				}
 				$same_bus_return_on = WBTM_Global_Function::get_post_info($post_id, 'wbtm_same_bus_return_enabled', 'no') === 'yes';
+				// When return schedule is empty but same-bus return is on, show reversed outbound in the form so admins can edit times and save (runtime still uses reverse if never saved).
+				$return_route_prefilled = false;
+				if ( $same_bus_return_on && count( $return_route_infos ) === 0 && is_array( $full_route_infos ) && count( $full_route_infos ) > 1 ) {
+					$return_route_infos      = WBTM_Functions::reverse_wbtm_route_infos( $full_route_infos );
+					$return_route_prefilled = true;
+				}
 				$bus_stop_lists = WBTM_Global_Function::get_all_term_data('wbtm_bus_stops');
 				$ticket_types = WBTM_Functions::get_ticket_types($post_id);
 				?>
@@ -61,7 +70,7 @@
                             <label>
 								<?php esc_html_e('Same bus return journey', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </label>
-                            <span><?php esc_html_e('Allow this bus to appear in return search (reverse direction). Custom return schedule rows appear as blue “Return” prices (separate fares even when the stop names match an outbound row). If the return schedule is empty, reverse legs of the main route each get a return price row.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            <span><?php esc_html_e('Allow this bus to appear in return search (reverse direction). Custom return schedule rows appear as blue “Return” prices (separate fares even when the stop names match an outbound row). If the return schedule is empty, the system still uses reversed outbound stops and times on the site; below you can load that reversal into the form, change times, and save.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                         </div>
                     </div>
                     <div class="_dLayout_padding">
@@ -71,12 +80,15 @@
 							<?php esc_html_e('Enable same bus for return trips', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </label>
                         <div class="wbtm_return_route_settings_area wbtm_settings_area">
-                            <p class="_textLight _mB_xs"><?php esc_html_e('Optional return schedule (leave empty to use reversed outbound stops & times). Add only the stops you sell on the return run — each boarding→dropping pair here creates one blue Return price row. For end-to-end return (e.g. city A to city B), set boarding to the return pickup and dropping to the return destination (often the opposite order of your main route).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                            <p class="_textLight _mB_xs"><?php esc_html_e('Return schedule: each boarding→dropping pair creates blue Return price rows. If you have no saved return schedule, this form is prefilled from your outbound route (reversed) so you can adjust times and click Update to save. To use a shorter return route, remove stops or add rows as needed.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+							<?php if ( $return_route_prefilled ) : ?>
+								<p class="notice notice-info inline _mB_xs" style="margin:0;padding:8px 12px;"><?php esc_html_e('Return stops below are a copy of your outbound route in reverse order with the same clock times—edit them as needed, then save the bus to store this return timetable.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+							<?php endif; ?>
                             <div class="mp_stop_items wbtm_sortable_area wbtm_return_item_insert">
 								<?php
-								if (is_array($return_route_infos) && sizeof($return_route_infos) > 0) {
-									foreach ($return_route_infos as $r_key => $return_row) {
-										$this->add_return_stops_item($bus_stop_lists, $return_row, $r_key);
+								if ( is_array( $return_route_infos ) && count( $return_route_infos ) > 0 ) {
+									foreach ( $return_route_infos as $r_key => $return_row ) {
+										$this->add_return_stops_item( $bus_stop_lists, $return_row, $r_key );
 									}
 								}
 								?>
@@ -123,7 +135,15 @@
                         </div>
                         <div class="_mT"></div>
                         <div class="wbtm_price_setting_area">
-							<?php $this->route_pricing($post_id, $full_route_infos, $ticket_types); ?>
+							<?php
+							$this->route_pricing(
+								$post_id,
+								$full_route_infos,
+								$ticket_types,
+								[],
+								$return_route_prefilled ? $return_route_infos : null
+							);
+							?>
                         </div>
                     </div>
 					<?php do_action('wbtm_add_return_discount', $post_id); ?>
@@ -432,7 +452,10 @@
 				return $rows;
 			}
 
-			public function route_pricing($post_id, $full_route_infos, $ticket_types = [], $request_price_map = []) {
+			/**
+			 * @param array|null $return_segments_display When set (e.g. prefilled reversed outbound in admin), use for return pricing rows instead of post meta so the table matches the form before first save.
+			 */
+			public function route_pricing( $post_id, $full_route_infos, $ticket_types = [], $request_price_map = [], $return_segments_display = null ) {
 				$ticket_types = $this->sanitize_ticket_types($ticket_types, $post_id);
 				$request_price_map = $this->sanitize_price_map($request_price_map);
 				$all_price_info = [];
@@ -448,6 +471,12 @@
 					// Same-bus return: optional return schedule rows (||return keys), or auto-reverse outbound pairs.
 					if ( sizeof( $all_price_info ) > 0 && WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) {
 						$return_segments = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+						if ( ! is_array( $return_segments ) ) {
+							$return_segments = [];
+						}
+						if ( is_array( $return_segments_display ) && sizeof( $return_segments_display ) > 1 ) {
+							$return_segments = $return_segments_display;
+						}
 						if ( is_array( $return_segments ) && sizeof( $return_segments ) > 1 ) {
 							$return_rows = $this->collect_route_pricing_rows( $return_segments, $price_infos, $ticket_types, $request_price_map, true );
 							foreach ( $return_rows as $row ) {
