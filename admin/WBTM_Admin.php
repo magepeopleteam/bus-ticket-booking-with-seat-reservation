@@ -326,6 +326,10 @@
 												$ticket_prices = [];
 												if (sizeof($price_infos) > 0) {
 													foreach ($price_infos as $price_info) {
+														$row_leg = isset($price_info['wbtm_price_leg']) ? $price_info['wbtm_price_leg'] : 'outbound';
+														if ($row_leg === 'return') {
+															continue;
+														}
 														if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)) {
 															foreach ($ticket_types as $ticket_type) {
 																$ticket_prices[$ticket_type['id']] = WBTM_Functions::get_ticket_price_by_type($price_info, $ticket_type['id']);
@@ -338,11 +342,18 @@
 													'wbtm_bus_bp_price_stop' => $bp,
 													'wbtm_bus_dp_price_stop' => $dp,
 													'wbtm_ticket_prices' => $ticket_prices,
+													'wbtm_price_leg' => 'outbound',
 												], $legacy_prices);
 											}
 										}
 									}
 								}
+							}
+						}
+						$existing_for_return = isset($price_infos) ? $price_infos : WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+						foreach ($existing_for_return as $keep_row) {
+							if (isset($keep_row['wbtm_price_leg']) && $keep_row['wbtm_price_leg'] === 'return') {
+								$all_price_info[] = $keep_row;
 							}
 						}
 						//$route_direction = array_unique($route_direction);

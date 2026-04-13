@@ -106,9 +106,10 @@
 					$pickup_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
 					$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 					if ($post_id > 0 && $start_route && $end_route && $date) {
-						$all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
-						$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route);
-						$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
+						$wbtm_price_leg = ( isset( $_POST['wbtm_price_leg'] ) && sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) ) === 'return' ) ? 'return' : 'outbound';
+						$all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route, $wbtm_price_leg);
+						$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, 0, false, $wbtm_price_leg);
+						$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route, $wbtm_price_leg);
 //                    $seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 //                    $seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 //                    $seat_infos = $seat_infos ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
@@ -142,6 +143,7 @@
                                     <input type="hidden" name='j_date' value='<?php echo esc_attr($j_date); ?>'/>
                                     <input type="hidden" name='r_date' value='<?php echo esc_attr($r_date); ?>'/>
                                     <input type="hidden" name='wbtm_cabin_mode_enabled' value='<?php echo esc_attr($cabin_mode_enabled); ?>'/>
+                                    <input type="hidden" name="wbtm_price_leg" value="<?php echo esc_attr( $wbtm_price_leg ); ?>"/>
 									<?php
 										wp_nonce_field('wbtm_form_nonce', 'wbtm_form_nonce');
 										// Check for cabin configuration or legacy seat plan

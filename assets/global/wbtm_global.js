@@ -296,6 +296,9 @@
 						date: date,
 						j_date: j_date,
 						r_date: r_date,
+						wbtm_price_leg:
+							parent.find('input[name="wbtm_price_leg"]').val() ||
+							"outbound",
 						backend_order: window.location.href.search("wbtm_backend_order"),
 					},
 					beforeSend: function () {
@@ -874,6 +877,7 @@
 			"action": "wbtm_ajax_add_to_cart",
 			"price_val": encodeURIComponent(priceVal),
 			"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
+			"wbtm_price_leg": form.find(':input[name=wbtm_price_leg]').val() || "outbound",
 			"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
 			"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
 			"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),

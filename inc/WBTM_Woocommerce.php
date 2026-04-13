@@ -179,6 +179,7 @@
 						$cart_item_data['wbtm_bp_time'] = $bp_time;
 						$cart_item_data['wbtm_dp_place'] = $dp;
 						$cart_item_data['wbtm_dp_time'] = isset($_POST['wbtm_dp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_time'])) : '';
+						$cart_item_data['wbtm_price_leg'] = WBTM_Functions::get_requested_price_leg();
 						$cart_item_data['wbtm_pickup_point'] = isset($_POST['wbtm_pickup_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_pickup_point'])) : '';
 						$cart_item_data['wbtm_drop_off_point'] = isset($_POST['wbtm_drop_off_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_drop_off_point'])) : '';
 						// Handle cabin-specific seat data
@@ -245,7 +246,7 @@
 					// Get ticket information for price calculation
 					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
-					$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp);
+					$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, WBTM_Functions::get_requested_price_leg());
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
 							continue;
@@ -514,6 +515,8 @@
 					$item->add_meta_data('_wbtm_bp_time', $bp_time);
 					$item->add_meta_data('_wbtm_dp', $dp_place);
 					$item->add_meta_data('_wbtm_dp_time', $dp_time);
+					$price_leg = array_key_exists('wbtm_price_leg', $values) && $values['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
+					$item->add_meta_data('_wbtm_price_leg', $price_leg);
 					$item->add_meta_data('_wbtm_start_point', $start_point);
 					$item->add_meta_data('_wbtm_start_time', $start_time);
 					$item->add_meta_data('_extra_services', $extra_service);
@@ -593,6 +596,8 @@
 					/*******************/
 					$ticket_infos = wc_get_order_item_meta($item_id, '_wbtm_ticket_info');
 					$ticket_infos = $ticket_infos ? WBTM_Global_Function::data_sanitize($ticket_infos) : [];
+					$order_price_leg = wc_get_order_item_meta($item_id, '_wbtm_price_leg', true);
+					$journey_leg     = ( $order_price_leg === 'return' ) ? 'return' : 'outbound';
 					/*************************/
 					if (sizeof($ticket_infos) > 0) {
 						$count = 0;
@@ -640,6 +645,7 @@
 								$data['wbtm_user_email'] = $billing_email;
 								$data['wbtm_user_phone'] = $billing_phone;
 								$data['wbtm_user_address'] = $billing_address;
+								$data['wbtm_price_leg']    = $journey_leg;
 								$booking_data = apply_filters('wbtm_add_booking_data', $data, $post_id, $count);
 								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 								$count++;
@@ -893,6 +899,7 @@
 			public static function get_cart_ticket_info($post_id) {
 				$ticket_info = [];
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
+					$price_leg = WBTM_Functions::get_requested_price_leg();
 					$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 					$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
@@ -913,7 +920,7 @@
 							foreach ($selected_seat as $key => $seat_name) {
 								$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : $default_ticket_type;
 								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $price_leg);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
@@ -937,7 +944,7 @@
 							foreach ($selected_seat_dd as $key => $seat_name) {
 								$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : $default_ticket_type;
 								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
+									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true, $price_leg);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
@@ -965,7 +972,7 @@
 								if (isset($qty[$i]) && $qty[$i] > 0) {
 									$type = $passenger_type[$i] ?? '';
 									$ticket_name = WBTM_Functions::get_ticket_name($type, $post_id);
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
+									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $price_leg);
 									// Fall back to the price submitted from the form when route name mismatch causes get_seat_price to return false
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = isset($submitted_prices[$i]) ? floatval($submitted_prices[$i]) : 0;
@@ -1348,6 +1355,7 @@
                     'wbtm_bp_time',
                     'wbtm_dp_time',
                     'wbtm_selected_seat',
+                    'wbtm_price_leg',
                     'price_val',
                     'cabinSeats',
                     'cabinSeatTypes',

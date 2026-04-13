@@ -42,16 +42,36 @@
 				return array_unique( $all_routes );
 			}
 			public static function single_bus_route( $post_id, $start_route = '' ) {
-				$all_routes       = [];
-				$count_next       = 0;
-				$full_route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				$forward = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				if ( ! $start_route ) {
+					return self::single_bus_route_from_infos( $forward, '' );
+				}
+				$r = self::single_bus_route_from_infos( $forward, $start_route );
+				if ( sizeof( $r ) === 0 && self::is_same_bus_return_enabled( $post_id ) ) {
+					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward ) as $infos ) {
+						$r = self::single_bus_route_from_infos( $infos, $start_route );
+						if ( sizeof( $r ) > 0 ) {
+							break;
+						}
+					}
+				}
+				return $r;
+			}
+
+			/**
+			 * @param array<int, array<string, mixed>> $full_route_infos
+			 * @return array<int, string>
+			 */
+			private static function single_bus_route_from_infos( $full_route_infos, $start_route = '' ) {
+				$all_routes = [];
+				$count_next = 0;
 				if ( sizeof( $full_route_infos ) > 0 ) {
 					foreach ( $full_route_infos as $info ) {
 						if ( $start_route ) {
 							if ( $count_next > 0 && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 								$all_routes[] = $info['place'];
 							}
-							if ( ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtolower( $info['place'] ) == strtolower( $start_route ) ) {
+							if ( ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtolower( (string) $info['place'] ) === strtolower( (string) $start_route ) ) {
 								$count_next = 1;
 							}
 						} else {
@@ -62,6 +82,172 @@
 					}
 				}
 				return $all_routes;
+			}
+
+			public static function is_same_bus_return_enabled( $post_id ) {
+				return WBTM_Global_Function::get_post_info( $post_id, 'wbtm_same_bus_return_enabled', 'no' ) === 'yes';
+			}
+
+			/**
+			 * Reverse outbound stops for return direction; swap bp/dp types.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<int, array<string, mixed>>
+			 */
+			public static function reverse_wbtm_route_infos( $route_infos ) {
+				if ( ! is_array( $route_infos ) || count( $route_infos ) < 2 ) {
+					return is_array( $route_infos ) ? $route_infos : [];
+				}
+				$rev = array_reverse( $route_infos );
+				foreach ( $rev as $k => $row ) {
+					if ( ! is_array( $row ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( $t === 'bp' ) {
+						$rev[ $k ]['type'] = 'dp';
+					} elseif ( $t === 'dp' ) {
+						$rev[ $k ]['type'] = 'bp';
+					}
+				}
+				return $rev;
+			}
+
+			/**
+			 * Ordered return-route definitions to try when same-bus return is on (custom timetable may be entered forward or reverse).
+			 *
+			 * @param array<int, array<string, mixed>> $forward_route_infos
+			 * @return array<int, array<int, array<string, mixed>>>
+			 */
+			private static function get_same_bus_return_route_candidates( $post_id, $forward_route_infos ) {
+				$custom = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+				$rev_forward = self::reverse_wbtm_route_infos( $forward_route_infos );
+				$out         = [];
+				if ( is_array( $custom ) && count( $custom ) > 1 ) {
+					$out[] = $custom;
+					$out[] = self::reverse_wbtm_route_infos( $custom );
+				}
+				$out[] = $rev_forward;
+				return $out;
+			}
+
+			/**
+			 * Whether this place can be used as a boarding point on the route row list.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function wbtm_route_infos_has_boarding_place( $route_infos, $place ) {
+				if ( ! is_array( $route_infos ) || $place === '' || $place === null ) {
+					return false;
+				}
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( ( $t === 'bp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $place ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+			 * Whether start can board before end can drop along the ordered route (bp/both then later dp/both).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function wbtm_route_infos_support_od_leg( $route_infos, $start_route, $end_route ) {
+				if ( ! is_array( $route_infos ) || $start_route === '' || $end_route === '' ) {
+					return false;
+				}
+				$started = false;
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( ! $started && ( $t === 'bp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $start_route ) ) {
+						$started = true;
+						continue;
+					}
+					if ( $started && ( $t === 'dp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $end_route ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+		 * @param array<int, string> $dir
+		 */
+			public static function route_place_index( $dir, $place ) {
+				if ( ! is_array( $dir ) || $place === '' || $place === null ) {
+					return null;
+				}
+				foreach ( $dir as $i => $p ) {
+					if ( strtolower( (string) $p ) === strtolower( (string) $place ) ) {
+						return (int) $i;
+					}
+				}
+				return null;
+			}
+
+			/**
+			 * Route rows used for date/time math (forward vs return leg).
+			 *
+			 * @param array<int, array<string, mixed>>|null $forward_route_infos
+			 * @return array<int, array<string, mixed>>
+			 */
+			public static function resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route, $forward_route_infos = null ) {
+				if ( $forward_route_infos === null ) {
+					$forward_route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				}
+				if ( ! is_array( $forward_route_infos ) || count( $forward_route_infos ) < 2 ) {
+					return is_array( $forward_route_infos ) ? $forward_route_infos : [];
+				}
+				$dir = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', [] );
+				if ( ! is_array( $dir ) || count( $dir ) < 2 ) {
+					return $forward_route_infos;
+				}
+				$sp = self::route_place_index( $dir, $start_route );
+				$ep = self::route_place_index( $dir, $end_route );
+				if ( $sp === null || $ep === null || $sp === $ep ) {
+					return $forward_route_infos;
+				}
+				if ( $sp > $ep && self::is_same_bus_return_enabled( $post_id ) ) {
+					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward_route_infos ) as $candidate ) {
+						if ( self::wbtm_route_infos_support_od_leg( $candidate, $start_route, $end_route ) ) {
+							return $candidate;
+						}
+					}
+					return self::reverse_wbtm_route_infos( $forward_route_infos );
+				}
+				return $forward_route_infos;
+			}
+
+			/**
+			 * Boarding dates from a given route definition (forward or return).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos_raw
+			 * @return array<int, string>
+			 */
+			private static function collect_boarding_dates_for_route_infos( $post_id, $date_infos, $route_infos_raw, $start_route ) {
+				$out = [];
+				if ( ! is_array( $route_infos_raw ) || count( $route_infos_raw ) === 0 || ! $start_route ) {
+					return $out;
+				}
+				$expanded = self::get_route_all_date_info( $post_id, $date_infos, $route_infos_raw );
+				foreach ( $expanded as $route_info ) {
+					if ( sizeof( $route_info ) > 0 ) {
+						foreach ( $route_info as $info ) {
+							if ( ( $info['type'] === 'bp' || $info['type'] === 'both' ) && strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) ) {
+								$out[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
+							}
+						}
+					}
+				}
+				return $out;
 			}
 
 			public static function default_ticket_types() {
@@ -186,15 +372,25 @@
 				];
 			}
 
-			public static function get_ticket_info( $post_id, $start_route, $end_route ) {
+			/**
+			 * Outbound vs return fares: rows with wbtm_price_leg === 'return' are used when $price_leg is 'return'.
+			 * Missing wbtm_price_leg on stored rows counts as outbound. If no return row matches, falls back to outbound.
+			 *
+			 * @param bool $try_reverse_return When leg is return, try swapped boarding/dropping on return-priced rows once (avoids recursion).
+			 */
+			public static function get_ticket_info( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
-					$price_infos   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
-					$ticket_types  = self::get_ticket_types( $post_id );
+					$price_infos  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					$ticket_types = self::get_ticket_types( $post_id );
 
 					if ( sizeof( $price_infos ) > 0 ) {
 						foreach ( $price_infos as $price_info ) {
-							if ( strtolower( $price_info['wbtm_bus_bp_price_stop'] ) == strtolower( $start_route ) && strtolower( $price_info['wbtm_bus_dp_price_stop'] ) == strtolower( $end_route ) ) {
+							$row_leg = ( isset( $price_info['wbtm_price_leg'] ) && $price_info['wbtm_price_leg'] === 'return' ) ? 'return' : 'outbound';
+							if ( $row_leg !== $price_leg ) {
+								continue;
+							}
+							if ( strtolower( (string) $price_info['wbtm_bus_bp_price_stop'] ) === strtolower( (string) $start_route ) && strtolower( (string) $price_info['wbtm_bus_dp_price_stop'] ) === strtolower( (string) $end_route ) ) {
 								foreach ( $ticket_types as $ticket_type ) {
 									$ticket_price = self::get_ticket_price_by_type( $price_info, $ticket_type['id'] );
 									if ( $ticket_price !== '' ) {
@@ -209,7 +405,25 @@
 						}
 					}
 				}
+				if ( $price_leg === 'return' && sizeof( $ticket_infos ) === 0 && $try_reverse_return ) {
+					$reverse_return = self::get_ticket_info( $post_id, $end_route, $start_route, 'return', false );
+					if ( sizeof( $reverse_return ) > 0 ) {
+						return $reverse_return;
+					}
+					return self::get_ticket_info( $post_id, $start_route, $end_route, 'outbound', false );
+				}
 				return $ticket_infos;
+			}
+
+			/**
+			 * From booking AJAX / add-to-cart POST.
+			 */
+			public static function get_requested_price_leg() {
+				if ( empty( $_POST['wbtm_price_leg'] ) ) {
+					return 'outbound';
+				}
+				$leg = sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) );
+				return $leg === 'return' ? 'return' : 'outbound';
 			}
 			public static function get_ticket_name( $type = 0, $post_id = 0 ) {
 				$ticket_type_map = self::get_ticket_type_map( $post_id );
@@ -228,11 +442,13 @@
 				}
 				return '';
 			}
-			public static function get_route_all_date_info( $post_id, $all_dates = [] ) {
+			public static function get_route_all_date_info( $post_id, $all_dates = [], $route_infos_override = null ) {
 				$all_dates   = sizeof( $all_dates ) > 0 ? $all_dates : self::get_post_date( $post_id );
 				$all_infos   = [];
-				$route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
-				
+				$route_infos = $route_infos_override !== null
+					? $route_infos_override
+					: WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+
 				if ( sizeof( $all_dates ) > 0 ) {
 					foreach ( $all_dates as $date ) {
 						if ( $date ) {
@@ -262,20 +478,21 @@
 				return $all_infos;
 		}
 
-			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route ) {
+			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route, $price_leg = 'outbound' ) {
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {
-					$all_dates   = WBTM_Functions::get_post_date( $post_id );
-					$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates );
-					if ( sizeof( $route_infos ) > 0 ) {
+					$all_dates        = WBTM_Functions::get_post_date( $post_id );
+					$resolved_leg     = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
+					$route_date_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates, $resolved_leg );
+					if ( sizeof( $route_date_infos ) > 0 ) {
 						$now_full = current_time( 'Y-m-d H:i' );
-						foreach ( $route_infos as $route_info ) {
+						foreach ( $route_date_infos as $route_info ) {
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
 								foreach ( $route_info as $info ) {
-									if ( strtolower( $start_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
+									if ( strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
 										$bp_date = $info['time'];
 									}
-									if ( $bp_date && strtolower( $end_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
+									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 										$slice_time = self::slice_buffer_time( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
 											$total_seat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
@@ -293,7 +510,7 @@
 												'bp_time'        => $bp_date,
 												'dp'             => $end_route,
 												'dp_time'        => $info['time'],
-												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route ),
+												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg ),
 												'total_seat'     => $total_seat,
 												'sold_seat'      => $sold_seat,
 												'available_seat' => max( 0, $available_seat ),
@@ -331,18 +548,29 @@
 			public static function get_route_date( $post_id, $start_route = '' ) {
 				$all_dates = [];
 				if ( $post_id > 0 ) {
-					$date_infos  = self::get_post_date( $post_id );
-					$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $date_infos );
-					if ( sizeof( $route_infos ) > 0 ) {
-						foreach ( $route_infos as $route_info ) {
-							if ( sizeof( $route_info ) > 0 ) {
-								foreach ( $route_info as $info ) {
-									if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
-										if ( $start_route ) {
-											if ( $start_route == $info['place'] ) {
-												$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
-											}
-										} else {
+					$date_infos   = self::get_post_date( $post_id );
+					$forward_ri   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+					$all_dates    = array_merge(
+						$all_dates,
+						self::collect_boarding_dates_for_route_infos( $post_id, $date_infos, $forward_ri, $start_route )
+					);
+					if ( self::is_same_bus_return_enabled( $post_id ) && $start_route ) {
+						foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward_ri ) as $return_ri ) {
+							if ( self::wbtm_route_infos_has_boarding_place( $return_ri, $start_route ) ) {
+								$all_dates = array_merge(
+									$all_dates,
+									self::collect_boarding_dates_for_route_infos( $post_id, $date_infos, $return_ri, $start_route )
+								);
+							}
+						}
+					}
+					if ( ! $start_route && sizeof( $all_dates ) === 0 ) {
+						$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $date_infos );
+						if ( sizeof( $route_infos ) > 0 ) {
+							foreach ( $route_infos as $route_info ) {
+								if ( sizeof( $route_info ) > 0 ) {
+									foreach ( $route_info as $info ) {
+										if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
 											$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 										}
 									}
@@ -465,9 +693,9 @@
 				return $date;
 			}
 			//==========================//
-			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false ) {
+			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound' ) {
 				if ( $post_id && $start_route && $end_route ) {
-					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route );
+					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route, $price_leg );
 					if ( sizeof( $ticket_infos ) > 0 ) {
 						$requested_seat_type = (string) $seat_type;
 						if ( $requested_seat_type === '' || $requested_seat_type === '0' ) {

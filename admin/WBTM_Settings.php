@@ -255,21 +255,71 @@
 							}
 						}
 					}
-					update_post_meta($post_id, 'wbtm_route_info', $route_infos);
-					update_post_meta($post_id, 'wbtm_bus_bp_stops', $bp);
-					update_post_meta($post_id, 'wbtm_bus_next_stops', $dp);
+					$route_direction = [];
 					if (sizeof($route_infos) > 0) {
-						$route_direction = [];
 						foreach ($route_infos as $route) {
 							$route_direction[] = $route['place'];
 						}
-						$route_direction = array_unique($route_direction);
+						$route_direction = array_values(array_unique($route_direction));
+					}
+
+					$same_return = (isset($_POST['wbtm_same_bus_return_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_same_bus_return_enabled'])) === 'yes') ? 'yes' : 'no';
+					update_post_meta($post_id, 'wbtm_same_bus_return_enabled', $same_return);
+
+					if ($same_return === 'yes' && sizeof($route_direction) > 1) {
+						$n = count($route_direction);
+						$return_bp_merge = [];
+						$return_dp_merge = [];
+						for ($ri = 1; $ri < $n; $ri++) {
+							$return_bp_merge[] = $route_direction[ $ri ];
+						}
+						for ($ri = 0; $ri < $n - 1; $ri++) {
+							$return_dp_merge[] = $route_direction[ $ri ];
+						}
+						$bp = array_values(array_unique(array_merge($bp, $return_bp_merge)));
+						$dp = array_values(array_unique(array_merge($dp, $return_dp_merge)));
+					}
+
+					$return_route_infos = [];
+					$r_stops = isset($_POST['wbtm_return_route_place']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_place'])) : [];
+					$r_times = isset($_POST['wbtm_return_route_time']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_time'])) : [];
+					$r_types = isset($_POST['wbtm_return_route_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_type'])) : [];
+					$r_next_days = isset($_POST['wbtm_return_route_next_day']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_next_day'])) : [];
+					if (sizeof($r_stops) > 0) {
+						foreach ($r_stops as $r_key => $r_stop) {
+							$r_time = isset($r_times[ $r_key ]) ? $r_times[ $r_key ] : '';
+							$r_type = isset($r_types[ $r_key ]) ? $r_types[ $r_key ] : '';
+							if ($r_stop && $r_time && $r_type) {
+								$r_nd = is_array($r_next_days) && array_key_exists($r_key, $r_next_days) ? $r_next_days[ $r_key ] : '0';
+								$return_route_infos[] = [
+									'place' => $r_stop,
+									'time' => $r_time,
+									'type' => $r_type,
+									'next_day' => $r_nd === '1' || $r_nd === 1 || $r_nd === true,
+								];
+							}
+						}
+					}
+					$r_count = sizeof($return_route_infos);
+					if ($r_count > 0) {
+						$return_route_infos[0]['type'] = 'bp';
+						$return_route_infos[ $r_count - 1 ]['type'] = 'dp';
+						update_post_meta($post_id, 'wbtm_return_route_info', $return_route_infos);
+					} else {
+						delete_post_meta($post_id, 'wbtm_return_route_info');
+					}
+
+					update_post_meta($post_id, 'wbtm_route_info', $route_infos);
+					update_post_meta($post_id, 'wbtm_bus_bp_stops', $bp);
+					update_post_meta($post_id, 'wbtm_bus_next_stops', $dp);
+					if (sizeof($route_direction) > 0) {
 						update_post_meta($post_id, 'wbtm_route_direction', $route_direction);
 					}
 					/********************************************/
 					$price_infos = [];
 					$stops_bps = isset($_POST['wbtm_price_bp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_bp'])) : [];
 					$stops_dps = isset($_POST['wbtm_price_dp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_dp'])) : [];
+					$price_legs = isset($_POST['wbtm_price_leg']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_leg'])) : [];
 					$ticket_type_ids = isset($_POST['wbtm_ticket_type_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_id'])) : [];
 					$ticket_type_labels = isset($_POST['wbtm_ticket_type_label']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_label'])) : [];
 					$ticket_price_rows = isset($_POST['wbtm_ticket_price']) ? wp_unslash($_POST['wbtm_ticket_price']) : [];
@@ -292,7 +342,7 @@
 					update_post_meta($post_id, 'wbtm_ticket_types', $ticket_types);
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
-							if ($stops_bp && $stops_dps[$key]) {
+							if ($stops_bp && isset($stops_dps[$key]) && $stops_dps[$key]) {
 								$ticket_prices = [];
 								foreach ($ticket_types as $ticket_type) {
 									$ticket_type_id = $ticket_type['id'];
@@ -309,10 +359,12 @@
 									$ticket_prices[$ticket_type_id] = $ticket_price;
 								}
 								$legacy_prices = WBTM_Functions::get_legacy_price_fields($ticket_prices);
+								$row_leg = (array_key_exists($key, $price_legs) && $price_legs[$key] === 'return') ? 'return' : 'outbound';
 								$price_infos[] = array_merge([
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
 									'wbtm_ticket_prices' => $ticket_prices,
+									'wbtm_price_leg' => $row_leg,
 								], $legacy_prices);
 							}
 						}

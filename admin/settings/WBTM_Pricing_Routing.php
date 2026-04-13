@@ -16,6 +16,8 @@
 			}
 			public function tab_content($post_id) {
 				$full_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_info', []);
+				$return_route_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_return_route_info', []);
+				$same_bus_return_on = WBTM_Global_Function::get_post_info($post_id, 'wbtm_same_bus_return_enabled', 'no') === 'yes';
 				$bus_stop_lists = WBTM_Global_Function::get_all_term_data('wbtm_bus_stops');
 				$ticket_types = WBTM_Functions::get_ticket_types($post_id);
 				?>
@@ -49,6 +51,43 @@
                                     <div class="wbtm_hidden_item">
 										<?php $this->add_stops_item($bus_stop_lists, [], 0); ?>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="_mT"></div>
+                    <div class="_dLayout_padding_bgLight">
+                        <div class="col_12 _dFlex_fdColumn">
+                            <label>
+								<?php esc_html_e('Same bus return journey', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </label>
+                            <span><?php esc_html_e('Allow this bus to appear in return search (reverse direction). Custom return schedule rows appear as blue “Return” prices (separate fares even when the stop names match an outbound row). If the return schedule is empty, reverse legs of the main route each get a return price row.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                        </div>
+                    </div>
+                    <div class="_dLayout_padding">
+                        <label class="_dFlex_alignCenter _mB_xs">
+                            <input type="hidden" name="wbtm_same_bus_return_enabled" value="no"/>
+                            <input type="checkbox" name="wbtm_same_bus_return_enabled" value="yes" <?php checked($same_bus_return_on); ?> class="_mR_xs"/>
+							<?php esc_html_e('Enable same bus for return trips', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </label>
+                        <div class="wbtm_return_route_settings_area wbtm_settings_area">
+                            <p class="_textLight _mB_xs"><?php esc_html_e('Optional return schedule (leave empty to use reversed outbound stops & times). Add only the stops you sell on the return run — each boarding→dropping pair here creates one blue Return price row. For end-to-end return (e.g. city A to city B), set boarding to the return pickup and dropping to the return destination (often the opposite order of your main route).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                            <div class="mp_stop_items wbtm_sortable_area wbtm_return_item_insert">
+								<?php
+								if (is_array($return_route_infos) && sizeof($return_route_infos) > 0) {
+									foreach ($return_route_infos as $r_key => $return_row) {
+										$this->add_return_stops_item($bus_stop_lists, $return_row, $r_key);
+									}
+								}
+								?>
+                                <div class="_mB_xs wbtm_return_item_insert_before"></div>
+                            </div>
+                            <div class="justifyCenter">
+								<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add return stop', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_add_return_route_item', '_themeButton_xs_fullHeight'); ?>
+                            </div>
+                            <div class="wbtm_return_hidden_content wbtm_hidden_content">
+                                <div class="wbtm_hidden_item">
+									<?php $this->add_return_stops_item($bus_stop_lists, [], 0); ?>
                                 </div>
                             </div>
                         </div>
@@ -184,6 +223,84 @@
                 </div>
 				<?php
 			}
+
+			/**
+			 * Return-leg stops (optional). Uses wbtm_return_* field names — not mixed into outbound pricing AJAX.
+			 */
+			public function add_return_stops_item($bus_stop_lists, $full_route_info = [], $key = 0) {
+				$palace = array_key_exists('place', $full_route_info) ? $full_route_info['place'] : '';
+				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
+				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
+				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
+				?>
+                <div class="wbtm_remove_area col_12_mB wbtm_return_stop_item">
+                    <div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
+						<?php
+						$location = '';
+						foreach ($bus_stop_lists as $bus_stop) {
+							if ($bus_stop == $palace) {
+								$location = $palace;
+							}
+						}
+						?>
+                        <div class="col_4 mp_zero">
+							<?php if (empty($location)) : ?>
+                                <label><?php esc_html_e('Return stop', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+							<?php else : ?>
+                                <label><?php echo esc_html($location); ?></label>
+                                <span>
+									<?php echo esc_html(($type == 'bp') ? ' (Bording) ' : ''); ?>
+									<?php echo esc_html(($type == 'dp') ? ' (Dropping) ' : ''); ?>
+									<?php echo esc_html(($type == 'both') ? ' (Bording+Dropping) ' : ''); ?>
+								</span>
+							<?php endif; ?>
+                        </div>
+                        <label class="col_4 _mp_zero _dFlex_alignCenter">
+							<?php if ($time) : ?>
+                                <i class="far fa-clock"></i> <input class="_zeroBorder_mp_zero" type="time" value="<?php echo esc_attr($time); ?>" readonly>
+							<?php else : ?>
+                                <i class="far fa-clock"></i>&nbsp;--:-- --
+							<?php endif; ?>
+                        </label>
+						<?php WBTM_Custom_Layout::edit_move_remove_button(); ?>
+                    </div>
+                    <div class="wbtm_stop_item_content" data-collapse="">
+                        <div class="_dFlex_justifyCenter_alignCenter ">
+                            <div class="col_4 _dFlex_justifyCenter_alignCenter">
+                                <label class="_mp_zero _mR"><?php esc_html_e('Stop : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                <select name="wbtm_return_route_place[]" class='formControl max_200 _mL_xs'>
+                                    <option selected disabled><?php esc_html_e('Select bus stop', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+									<?php foreach ($bus_stop_lists as $bus_stop) { ?>
+                                        <option value="<?php echo esc_attr($bus_stop); ?>" <?php selected($bus_stop, $palace); ?>><?php echo esc_html($bus_stop); ?></option>
+									<?php } ?>
+                                </select>
+                            </div>
+                            <div class="col_4 _dFlex_justifyCenter_alignCenter">
+                                <label class="mp_zero"><?php esc_html_e('Time : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                <input type="time" name="wbtm_return_route_time[]" class='formControl max_200 _mL_xs' value="<?php echo esc_attr($time); ?>"/>
+                            </div>
+                            <div class="col_4 _dFlex_justifyCenter_alignCenter">
+                                <label class="mp_zero"><?php esc_html_e('Type : ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                <select name="wbtm_return_route_type[]" class='formControl max_200 _mL_xs wbtm_return_route_type_select'>
+                                    <option selected disabled><?php esc_html_e('Select place type', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value="bp" <?php selected($type, 'bp'); ?>><?php esc_html_e('Boarding ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value="dp" <?php selected($type, 'dp'); ?>><?php esc_html_e('Dropping ', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                    <option value="both" <?php selected($type, 'both'); ?>><?php esc_html_e('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="_dFlex_justifyCenter_alignCenter ">
+                            <div class="col_12 _margin _dFlex_justifyCenter_alignCenter wbtm_return_next_day_dropping" style="display: <?php echo ($type == 'dp' || $type == 'both') ? 'block' : 'none'; ?>;">
+                                <label class="mp_zero"><?php esc_html_e('Next Day Dropping: ', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                <input type="hidden" name="wbtm_return_route_next_day[<?php echo esc_attr($key); ?>]" value="0"/>
+                                <input type="checkbox" name="wbtm_return_route_next_day[<?php echo esc_attr($key); ?>]" value="1" <?php checked($next_day); ?> />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<?php
+			}
+
 			public function ticket_type_item($ticket_type = []) {
 				$ticket_type = is_array($ticket_type) ? $ticket_type : [];
 				$ticket_type_id = array_key_exists('id', $ticket_type) ? $ticket_type['id'] : '';
@@ -202,8 +319,12 @@
                 </tr>
 				<?php
 			}
-			private function get_route_price_key($bp, $dp) {
-				return strtolower(trim($bp) . '||' . trim($dp));
+			/**
+			 * Map key for admin price grid + AJAX reload. Return legs use ||return suffix so they can share the same stop pair as outbound.
+			 */
+			private function get_route_price_key( $bp, $dp, $price_leg = 'outbound' ) {
+				$k = strtolower( trim( (string) $bp ) . '||' . trim( (string) $dp ) );
+				return ( $price_leg === 'return' ) ? $k . '||return' : $k;
 			}
 			private function sanitize_ticket_types($ticket_types, $post_id = 0) {
 				if (!is_array($ticket_types) || sizeof($ticket_types) === 0) {
@@ -246,12 +367,16 @@
 				}
 				return $sanitized_price_map;
 			}
-			private function find_route_price_info($price_infos, $bp, $dp) {
-				if (sizeof($price_infos) > 0) {
-					foreach ($price_infos as $price_info) {
+			private function find_route_price_info( $price_infos, $bp, $dp, $price_leg = 'outbound' ) {
+				if ( sizeof( $price_infos ) > 0 ) {
+					foreach ( $price_infos as $price_info ) {
+						$row_leg = ( isset( $price_info['wbtm_price_leg'] ) && $price_info['wbtm_price_leg'] === 'return' ) ? 'return' : 'outbound';
+						if ( $row_leg !== $price_leg ) {
+							continue;
+						}
 						if (
-							strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) &&
-							strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)
+							strtolower( (string) $price_info['wbtm_bus_bp_price_stop'] ) === strtolower( (string) $bp ) &&
+							strtolower( (string) $price_info['wbtm_bus_dp_price_stop'] ) === strtolower( (string) $dp )
 						) {
 							return $price_info;
 						}
@@ -259,35 +384,105 @@
 				}
 				return [];
 			}
+
+			/**
+			 * Build price table rows from one route definition (outbound or custom return schedule).
+			 *
+			 * @param array  $route_segments Same shape as wbtm_route_info.
+			 * @param array  $price_infos    Stored wbtm_bus_prices.
+			 * @param bool   $is_return_leg  Marks rows for styling; return-specific fares use bp/dp as on this leg.
+			 * @return array<int, array<string, mixed>>
+			 */
+			private function collect_route_pricing_rows( $route_segments, $price_infos, $ticket_types, $request_price_map, $is_return_leg ) {
+				$rows      = [];
+				$price_leg = $is_return_leg ? 'return' : 'outbound';
+				if ( ! is_array( $route_segments ) || sizeof( $route_segments ) === 0 ) {
+					return $rows;
+				}
+				foreach ( $route_segments as $key => $full_route_info ) {
+					if ( $full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both' ) {
+						$bp = $full_route_info['place'];
+						$next_infos = array_slice( $route_segments, $key + 1 );
+						if ( sizeof( $next_infos ) > 0 ) {
+							foreach ( $next_infos as $next_info ) {
+								if ( $next_info['type'] == 'dp' || $next_info['type'] == 'both' ) {
+									$dp                = $next_info['place'];
+									$route_price_key   = $this->get_route_price_key( $bp, $dp, $price_leg );
+									$route_prices      = [];
+									$stored_price_info = $this->find_route_price_info( $price_infos, $bp, $dp, $price_leg );
+									foreach ( $ticket_types as $ticket_type ) {
+										$ticket_type_id              = $ticket_type['id'];
+										$route_prices[ $ticket_type_id ] = array_key_exists( $route_price_key, $request_price_map ) && array_key_exists( $ticket_type_id, $request_price_map[ $route_price_key ] )
+											? $request_price_map[ $route_price_key ][ $ticket_type_id ]
+											: WBTM_Functions::get_ticket_price_by_type( $stored_price_info, $ticket_type_id );
+									}
+									$rows[] = [
+										'bp'              => $bp,
+										'dp'              => $dp,
+										'route_price_key' => $route_price_key,
+										'prices'          => $route_prices,
+										'is_return_leg'   => $is_return_leg,
+										'price_leg'       => $price_leg,
+									];
+								}
+							}
+						}
+					}
+				}
+				return $rows;
+			}
+
 			public function route_pricing($post_id, $full_route_infos, $ticket_types = [], $request_price_map = []) {
 				$ticket_types = $this->sanitize_ticket_types($ticket_types, $post_id);
 				$request_price_map = $this->sanitize_price_map($request_price_map);
 				$all_price_info = [];
 				if (sizeof($full_route_infos) > 0) {
 					$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
-					foreach ($full_route_infos as $key => $full_route_info) {
-						if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') {
-							$bp = $full_route_info['place'];
-							$next_infos = array_slice($full_route_infos, $key + 1);
-							if (sizeof($next_infos) > 0) {
-								foreach ($next_infos as $next_info) {
-									if ($next_info['type'] == 'dp' || $next_info['type'] == 'both') {
-										$dp = $next_info['place'];
-										$route_price_key = $this->get_route_price_key($bp, $dp);
-										$route_prices = [];
-										$stored_price_info = $this->find_route_price_info($price_infos, $bp, $dp);
-										foreach ($ticket_types as $ticket_type) {
-											$ticket_type_id = $ticket_type['id'];
-											$route_prices[$ticket_type_id] = array_key_exists($route_price_key, $request_price_map) && array_key_exists($ticket_type_id, $request_price_map[$route_price_key]) ? $request_price_map[$route_price_key][$ticket_type_id] : WBTM_Functions::get_ticket_price_by_type($stored_price_info, $ticket_type_id);
-											}
-										$all_price_info[] = [
-											'bp' => $bp,
-											'dp' => $dp,
-											'route_price_key' => $route_price_key,
-											'prices' => $route_prices,
-										];
-									}
+					$all_price_info  = $this->collect_route_pricing_rows( $full_route_infos, $price_infos, $ticket_types, $request_price_map, false );
+					$existing_keys   = [];
+					foreach ( $all_price_info as $row ) {
+						if ( ! empty( $row['route_price_key'] ) ) {
+							$existing_keys[ $row['route_price_key'] ] = true;
+						}
+					}
+					// Same-bus return: optional return schedule rows (||return keys), or auto-reverse outbound pairs.
+					if ( sizeof( $all_price_info ) > 0 && WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) {
+						$return_segments = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+						if ( is_array( $return_segments ) && sizeof( $return_segments ) > 1 ) {
+							$return_rows = $this->collect_route_pricing_rows( $return_segments, $price_infos, $ticket_types, $request_price_map, true );
+							foreach ( $return_rows as $row ) {
+								$existing_keys[ $row['route_price_key'] ] = true;
+								$all_price_info[]                         = $row;
+							}
+						} else {
+							$forward_rows = $all_price_info;
+							foreach ( $forward_rows as $row ) {
+								$bp = $row['bp'];
+								$dp = $row['dp'];
+								if ( ! $bp || ! $dp || strtolower( (string) $bp ) === strtolower( (string) $dp ) ) {
+									continue;
 								}
+								$rev_key = $this->get_route_price_key( $dp, $bp, 'return' );
+								if ( isset( $existing_keys[ $rev_key ] ) ) {
+									continue;
+								}
+								$existing_keys[ $rev_key ] = true;
+								$stored_price_info         = $this->find_route_price_info( $price_infos, $dp, $bp, 'return' );
+								$route_prices              = [];
+								foreach ( $ticket_types as $ticket_type ) {
+									$ticket_type_id = $ticket_type['id'];
+									$route_prices[ $ticket_type_id ] = array_key_exists( $rev_key, $request_price_map ) && array_key_exists( $ticket_type_id, $request_price_map[ $rev_key ] )
+										? $request_price_map[ $rev_key ][ $ticket_type_id ]
+										: WBTM_Functions::get_ticket_price_by_type( $stored_price_info, $ticket_type_id );
+								}
+								$all_price_info[] = [
+									'bp'              => $dp,
+									'dp'              => $bp,
+									'route_price_key' => $rev_key,
+									'prices'          => $route_prices,
+									'is_return_leg'   => true,
+									'price_leg'       => 'return',
+								];
 							}
 						}
 					}
@@ -319,16 +514,23 @@
                         </tr>
                         </thead>
                         <tbody>
-						<?php foreach ($all_price_info as $row_index => $price_info) { ?>
-                            <tr data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>">
+						<?php
+						foreach ( $all_price_info as $row_index => $price_info ) {
+							$is_return_row = ! empty( $price_info['is_return_leg'] );
+							$row_class       = $is_return_row ? 'wbtm_price_row_return' : 'wbtm_price_row_outbound';
+							?>
+                            <tr class="<?php echo esc_attr( $row_class ); ?>" data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>" data-wbtm-return-leg="<?php echo $is_return_row ? '1' : '0'; ?>">
                                 <td colspan="2">
-                                    <div class="_dFlex_justifyBetween_pT_xs">
+                                    <div class="_dFlex_justifyBetween_pT_xs _dFlex_alignCenter">
                                         <div class="col_5 _textLeft_pL_xs">
                                             <input type="hidden" name="wbtm_price_bp[]" value="<?php echo esc_attr($price_info['bp']); ?>"/>
+                                            <input type="hidden" name="wbtm_price_leg[]" value="<?php echo esc_attr( ! empty( $price_info['price_leg'] ) && $price_info['price_leg'] === 'return' ? 'return' : 'outbound' ); ?>"/>
+											<?php if ( $is_return_row ) { ?>
+                                                <span class="wbtm_price_leg_badge wbtm_price_leg_badge_return" title="<?php echo esc_attr__( 'Return journey fare', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php esc_html_e( 'Return', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+											<?php } ?>
                                             <span><?php echo esc_html($price_info['bp']); ?></span>
                                         </div>
-                                        <div class="col_2 long-arrow">
-                                        </div>
+                                        <div class="col_2 long-arrow <?php echo $is_return_row ? 'wbtm_price_arrow_return' : ''; ?>" aria-hidden="true"></div>
                                         <div class="col_5 _textRight_pR_xs">
                                             <input type="hidden" name="wbtm_price_dp[]" value="<?php echo esc_attr($price_info['dp']); ?>"/>
                                             <span><?php echo esc_html($price_info['dp']); ?></span>

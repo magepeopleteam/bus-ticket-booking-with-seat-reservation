@@ -42,9 +42,10 @@ if (sizeof($bus_ids) > 0) {
    
     $all_boarding_routes = [];
    
+    $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
     foreach ($bus_ids as $bus_id) {
        
-        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
            
             $bus_data[] = [
@@ -119,6 +120,7 @@ if (sizeof($bus_ids) > 0) {
         <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
         <input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
         <input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
+        <input type="hidden" name="wbtm_price_leg" value="<?php echo esc_attr( $wbtm_price_leg ); ?>" />
         <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
         <?php

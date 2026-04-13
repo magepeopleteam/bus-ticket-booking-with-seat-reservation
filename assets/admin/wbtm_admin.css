@@ -11,11 +11,17 @@
 	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
 	div.wbtm_settings_pricing_routing div.mp_stop_items {position: relative;}
 	div.wbtm_settings_pricing_routing div.mp_stop_items::before { position: absolute; content: ""; left: 0; top: -21px; height: 100%; border: 1px solid var(--wbtm_d_color); margin-left: 20px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item { position: relative; width: 98%; padding-left: 50px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
+	/* Outbound (.wbtm_stop_item) and same-bus return (.wbtm_return_stop_item): identical timeline + map pin (return must not use .wbtm_stop_item — pricing AJAX / collapse) */
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item { position: relative; width: 98%; padding-left: 50px; }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
@@ -58,6 +64,37 @@
 	background-size: contain;
 	width: 100%;
 	background-position: center center;
+	min-height: 22px;
+}
+/* Return-leg price rows: distinct background + reversed arrow */
+.wbtm_price_setting_area tbody tr.wbtm_price_row_return td {
+	background-color: #eef4ff;
+	border-top: 1px solid #c5d4f0;
+}
+.wbtm_price_setting_area tbody tr.wbtm_price_row_return:hover td {
+	background-color: #e2ebfb;
+}
+.wbtm_price_setting_area tbody tr.wbtm_price_row_outbound td {
+	background-color: transparent;
+}
+.wbtm_price_arrow_return.long-arrow {
+	transform: scaleX(-1);
+}
+.wbtm_price_leg_badge {
+	display: inline-block;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 2px 6px;
+	border-radius: 3px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+.wbtm_price_leg_badge_return {
+	background: #4a6cf7;
+	color: #fff;
 }
 
 /* Seat Rotation Styles */
