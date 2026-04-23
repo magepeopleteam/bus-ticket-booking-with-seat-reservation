@@ -1368,6 +1368,33 @@
                     }
                 }
 
+                /* -------------------------
+                 * Same-day return time validation
+                 * ------------------------- */
+                $price_leg = isset( $_POST['wbtm_price_leg'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) ) : 'outbound';
+                $j_date    = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '';
+                $r_date    = isset( $_POST['r_date'] ) ? sanitize_text_field( wp_unslash( $_POST['r_date'] ) ) : '';
+                if ( $price_leg === 'return' && $j_date && $r_date && $j_date === $r_date && function_exists( 'WC' ) && WC()->cart ) {
+                    $return_bp_time = isset( $_POST['wbtm_bp_time'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_time'] ) ) : '';
+                    $return_bp_place = isset( $_POST['wbtm_bp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ) ) : '';
+                    $return_dp_place = isset( $_POST['wbtm_dp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ) ) : '';
+                    foreach ( WC()->cart->get_cart() as $cart_item ) {
+                        if ( ( $cart_item['wbtm_price_leg'] ?? 'outbound' ) !== 'outbound' ) {
+                            continue;
+                        }
+                        $outbound_dp_time  = $cart_item['wbtm_dp_time'] ?? '';
+                        $outbound_dp_place = $cart_item['wbtm_dp_place'] ?? '';
+                        $outbound_bp_place = $cart_item['wbtm_bp_place'] ?? '';
+                        // Match the return leg to its corresponding outbound leg (reverse route)
+                        if ( strtolower( $return_bp_place ) !== strtolower( $outbound_dp_place ) ) {
+                            continue;
+                        }
+                        if ( $outbound_dp_time && $return_bp_time && strtotime( $return_bp_time ) < strtotime( $outbound_dp_time ) ) {
+                            wp_send_json_error( __( 'Return bus must depart after the outbound bus arrives. Please select a later return bus.', 'bus-ticket-booking-with-seat-reservation' ), 400 );
+                        }
+                    }
+                }
+
                 $post_id = isset( $_POST['wbtm_post_id'] )
                     ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) )
                     : '';
@@ -1423,6 +1450,7 @@
                 $selected_Data = [
                     'post_id'            => $post_id,
                     'j_date'             => sanitize_text_field( wp_unslash( $_POST['j_date'] ?? '' ) ),
+                    'r_date'             => sanitize_text_field( wp_unslash( $_POST['r_date'] ?? '' ) ),
                     'wbtm_selected_seat' => $selected_seats,
                     'wbtm_bp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ?? '' ) ),
                     'wbtm_dp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ?? '' ) ),

@@ -783,6 +783,39 @@
 		let parent = $(this).closest('.wbtm_return_bus_lists_holder');
 		let listHolder = $('#wbtm_return_container');
 		listHolder.fadeIn(200);
+		wbtm_filter_return_buses_by_outbound_time();
+	}
+
+	/**
+	 * Filter return buses so that, on same-day return journeys,
+	 * only buses departing AFTER the outbound bus arrives are shown.
+	 */
+	function wbtm_filter_return_buses_by_outbound_time() {
+		var outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
+		if (outboundCard.length === 0) {
+			// No outbound bus selected yet — show all return buses
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		var outboundDpTime = outboundCard.data('outbound-dp-time');
+		var jDate          = outboundCard.data('j-date');
+		var rDate          = outboundCard.data('r-date');
+
+		// Only filter when return date equals journey date and we know the arrival time
+		if (!outboundDpTime || !jDate || !rDate || jDate !== rDate) {
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		$('#wbtm_return_container .wtbm_bus_counter').each(function () {
+			var busBpTime = $(this).data('bp-time');
+			if (busBpTime && busBpTime < outboundDpTime) {
+				$(this).hide();
+			} else {
+				$(this).show();
+			}
+		});
 	}
 
 
@@ -921,6 +954,8 @@
 				if (response.success) {
 					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
 					$(document.body).trigger('wc_update_cart');
+					// Re-apply same-day return bus filter based on newly selected outbound bus
+					wbtm_filter_return_buses_by_outbound_time();
 				} else {
 					wbtm_set_loading_button_state(this_btn, false);
 					alert('Failed to add ticket ❌');

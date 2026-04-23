@@ -272,7 +272,7 @@
                 $checkout_url = wc_get_checkout_url();
 
 				?>
-                <div class="wbtm_selected_bus_card">
+                <div class="wbtm_selected_bus_card" data-outbound-dp-time="<?php echo esc_attr($data['wbtm_dp_time']); ?>" data-j-date="<?php echo esc_attr($data['j_date']); ?>" data-r-date="<?php echo esc_attr(isset($data['r_date']) ? $data['r_date'] : ''); ?>">
                     <div class="wbtm_selected_bus_image">
 						<?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
                     </div>
