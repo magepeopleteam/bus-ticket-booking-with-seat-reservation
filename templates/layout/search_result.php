@@ -44,6 +44,12 @@ if (sizeof($bus_ids) > 0) {
    
     $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
     foreach ($bus_ids as $bus_id) {
+        $wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair(
+            $bus_id,
+            $start_route,
+            $end_route,
+            ( $journey_type === 'return_journey' ) ? 'return' : 'outbound'
+        );
        
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
@@ -51,6 +57,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
+                'price_leg' => $wbtm_price_leg,
             ];
            
             $bus_titles[] = get_the_title($bus_id);
@@ -136,6 +143,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_id = $bus['bus_id'];
             $popup_tabs = WBTM_Functions::single_bus_details_tabs_filtered($bus_id);
             $all_info = $bus['all_info'];
+            $wbtm_price_leg = array_key_exists('price_leg', $bus) ? $bus['price_leg'] : $wbtm_price_leg;
             $bus_count++;
             $price = $all_info['price'];
             $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
@@ -171,7 +179,7 @@ if (sizeof($bus_ids) > 0) {
             );
             ?>
 
-            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list" data-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                
@@ -255,6 +263,7 @@ if (sizeof($bus_ids) > 0) {
                         <div class="wbtm-seat-book <?php echo esc_html( $btn_show ); ?>">
                             <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
                                     data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                                    data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
                                     data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
                                     data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
                                     data-add-class="mActive">

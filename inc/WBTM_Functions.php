@@ -193,6 +193,32 @@
 				return null;
 			}
 
+			public static function resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $fallback_leg = 'outbound' ) {
+				$fallback_leg = $fallback_leg === 'return' ? 'return' : 'outbound';
+				if ( ! $post_id || ! $start_route || ! $end_route ) {
+					return $fallback_leg;
+				}
+
+				$dir = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', [] );
+				if ( ! is_array( $dir ) || count( $dir ) < 2 ) {
+					return $fallback_leg;
+				}
+
+				$sp = self::route_place_index( $dir, $start_route );
+				$ep = self::route_place_index( $dir, $end_route );
+				if ( $sp === null || $ep === null || $sp === $ep ) {
+					return $fallback_leg;
+				}
+
+				// Fixed by Shahnur - 2026-04-23 02:50 PM (Asia/Dhaka)
+				// Use the searched stop direction to choose outbound vs return fare rows.
+				if ( $sp > $ep && self::is_same_bus_return_enabled( $post_id ) ) {
+					return 'return';
+				}
+
+				return 'outbound';
+			}
+
 			/**
 			 * Route rows used for date/time math (forward vs return leg).
 			 *
@@ -379,6 +405,7 @@
 			 * @param bool $try_reverse_return When leg is return, try swapped boarding/dropping on return-priced rows once (avoids recursion).
 			 */
 			public static function get_ticket_info( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				$price_leg    = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
 					$price_infos  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );

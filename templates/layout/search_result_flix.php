@@ -37,10 +37,17 @@ if (sizeof($bus_ids) > 0) {
     $bus_types = [];
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $all_boarding_routes = [];
-
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
+
     foreach ($bus_ids as $bus_id) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+        $wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair(
+            $bus_id,
+            $start_route,
+            $end_route,
+            ( $journey_type === 'return_journey' ) ? 'return' : 'outbound'
+        );
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
@@ -48,6 +55,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
+                'price_leg' => $wbtm_price_leg,
             ];
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_titles[] = get_the_title($bus_id);
@@ -135,6 +143,8 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$all_info = $bus['all_info'];
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $wbtm_price_leg = array_key_exists('price_leg', $bus) ? $bus['price_leg'] : $wbtm_price_leg;
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$bus_count++;
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$price = $all_info['price'];
@@ -177,7 +187,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>" data-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -252,6 +262,7 @@ if (sizeof($bus_ids) > 0) {
                     ?>
                     <button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
                             data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                            data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
                             data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
                             data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
                             data-add-class="mActive">

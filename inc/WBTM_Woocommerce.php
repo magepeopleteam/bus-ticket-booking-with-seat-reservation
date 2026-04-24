@@ -1374,7 +1374,10 @@
                 $price_leg = isset( $_POST['wbtm_price_leg'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) ) : 'outbound';
                 $j_date    = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '';
                 $r_date    = isset( $_POST['r_date'] ) ? sanitize_text_field( wp_unslash( $_POST['r_date'] ) ) : '';
-                if ( $price_leg === 'return' && $j_date && $r_date && $j_date === $r_date && function_exists( 'WC' ) && WC()->cart ) {
+                $post_id_for_return_validation = isset( $_POST['wbtm_post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) ) : '';
+                if ( $price_leg === 'return' && $post_id_for_return_validation && WBTM_Functions::is_same_bus_return_enabled( $post_id_for_return_validation ) && $j_date && $r_date && $j_date === $r_date && function_exists( 'WC' ) && WC()->cart ) {
+                    // Fixed by Shahnur - 2026-04-23 03:48 PM (Asia/Dhaka)
+                    // Apply same-day return-time validation only when the selected return bus enables same-bus return trips.
                     $return_bp_time = isset( $_POST['wbtm_bp_time'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_time'] ) ) : '';
                     $return_bp_place = isset( $_POST['wbtm_bp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ) ) : '';
                     $return_dp_place = isset( $_POST['wbtm_dp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ) ) : '';
@@ -1386,7 +1389,7 @@
                         $outbound_dp_place = $cart_item['wbtm_dp_place'] ?? '';
                         $outbound_bp_place = $cart_item['wbtm_bp_place'] ?? '';
                         // Match the return leg to its corresponding outbound leg (reverse route)
-                        if ( strtolower( $return_bp_place ) !== strtolower( $outbound_dp_place ) ) {
+                        if ( strtolower( $return_bp_place ) !== strtolower( $outbound_dp_place ) || strtolower( $return_dp_place ) !== strtolower( $outbound_bp_place ) ) {
                             continue;
                         }
                         if ( $outbound_dp_time && $return_bp_time && strtotime( $return_bp_time ) < strtotime( $outbound_dp_time ) ) {

@@ -107,6 +107,7 @@
 					$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 					if ($post_id > 0 && $start_route && $end_route && $date) {
 						$wbtm_price_leg = ( isset( $_POST['wbtm_price_leg'] ) && sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) ) === 'return' ) ? 'return' : 'outbound';
+						$wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $wbtm_price_leg );
 						$all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route, $wbtm_price_leg);
 						$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, 0, false, $wbtm_price_leg);
 						$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route, $wbtm_price_leg);
@@ -198,7 +199,7 @@
                                 </div>
 
                                 <?php  if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
-                                    <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start">
+                                    <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start" data-alert="<?php echo esc_attr__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                         <?php esc_attr_e( 'Return Bus', 'bus-ticket-booking-with-seat-reservation' )?>
                                     </div>
                                 <?php }?>
@@ -272,7 +273,7 @@
                 $checkout_url = wc_get_checkout_url();
 
 				?>
-                <div class="wbtm_selected_bus_card" data-outbound-dp-time="<?php echo esc_attr($data['wbtm_dp_time']); ?>" data-j-date="<?php echo esc_attr($data['j_date']); ?>" data-r-date="<?php echo esc_attr(isset($data['r_date']) ? $data['r_date'] : ''); ?>">
+                <div class="wbtm_selected_bus_card" data-outbound-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-outbound-bp-time="<?php echo esc_attr($data['wbtm_bp_time']); ?>" data-outbound-dp-time="<?php echo esc_attr($data['wbtm_dp_time']); ?>" data-j-date="<?php echo esc_attr($data['j_date']); ?>" data-r-date="<?php echo esc_attr(isset($data['r_date']) ? $data['r_date'] : ''); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>">
                     <div class="wbtm_selected_bus_image">
 						<?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
                     </div>

@@ -268,6 +268,7 @@
 	"use strict";
 	$(document).on("click", "#get_wbtm_bus_details", function () {
 		let parent = $(this).closest(".wbtm_bus_list_area");
+		let currentButton = $(this);
 		let post_id = $(this).attr("data-bus_id");
 		let target = parent.find("[data-row_id=" + post_id + "]");
 		$("body").find(".woocommerce-notices-wrapper").slideUp("fast");
@@ -296,7 +297,10 @@
 						date: date,
 						j_date: j_date,
 						r_date: r_date,
+						// Fixed by Shahnur - 2026-04-23 02:50 PM (Asia/Dhaka)
+						// Each bus row can resolve to a different fare leg, so read it from the clicked result.
 						wbtm_price_leg:
+							currentButton.attr("data-price-leg") ||
 							parent.find('input[name="wbtm_price_leg"]').val() ||
 							"outbound",
 						backend_order: window.location.href.search("wbtm_backend_order"),
@@ -770,7 +774,14 @@
 	});
 
 	$(document).on('click', '.wtbm_return_route', function (e) {
-
+		let outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
+		if (outboundCard.length === 0) {
+			e.preventDefault();
+			// Fixed by Shahnur - 2026-04-23 03:00 PM (Asia/Dhaka)
+			// Do not allow return-tab browsing before the outbound bus is placed.
+			wbtm_toast($(this).data('alert') || 'Please place departure bus first.');
+			return false;
+		}
 		wtbm_active_return_bus_tab_data();
 
 	});
@@ -786,6 +797,35 @@
 		wbtm_filter_return_buses_by_outbound_time();
 	}
 
+	function wbtm_parse_bus_datetime(value) {
+		if (!value) {
+			return null;
+		}
+
+		let normalized = String(value).trim();
+		if (!normalized) {
+			return null;
+		}
+
+		normalized = normalized.replace(' ', 'T');
+		if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)) {
+			normalized += ':00';
+		}
+
+		let timestamp = Date.parse(normalized);
+		return Number.isNaN(timestamp) ? null : timestamp;
+	}
+
+	function wbtm_normalize_date_only(value) {
+		let timestamp = wbtm_parse_bus_datetime(value);
+		if (timestamp !== null) {
+			return new Date(timestamp).toISOString().slice(0, 10);
+		}
+
+		let fallback = String(value || '').trim();
+		return fallback || null;
+	}
+
 	/**
 	 * Filter return buses so that, on same-day return journeys,
 	 * only buses departing AFTER the outbound bus arrives are shown.
@@ -798,19 +838,32 @@
 			return;
 		}
 
+		var outboundBpTime = outboundCard.data('outbound-bp-time');
 		var outboundDpTime = outboundCard.data('outbound-dp-time');
 		var jDate          = outboundCard.data('j-date');
 		var rDate          = outboundCard.data('r-date');
+		var normalizedJDate = wbtm_normalize_date_only(jDate);
+		var normalizedRDate = wbtm_normalize_date_only(rDate);
 
-		// Only filter when return date equals journey date and we know the arrival time
-		if (!outboundDpTime || !jDate || !rDate || jDate !== rDate) {
+		// Only filter when return date equals journey date and we know the outbound travel window.
+		if (!outboundBpTime || !outboundDpTime || !normalizedJDate || !normalizedRDate || normalizedJDate !== normalizedRDate) {
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		var outboundArrivalTimestamp = wbtm_parse_bus_datetime(outboundDpTime);
+		if (outboundArrivalTimestamp === null) {
 			$('#wbtm_return_container .wtbm_bus_counter').show();
 			return;
 		}
 
 		$('#wbtm_return_container .wtbm_bus_counter').each(function () {
 			var busBpTime = $(this).data('bp-time');
-			if (busBpTime && busBpTime < outboundDpTime) {
+			var sameBusReturn = String($(this).data('same-bus-return') || '0') === '1';
+			var busDepartureTimestamp = wbtm_parse_bus_datetime(busBpTime);
+			// Fixed by Shahnur - 2026-04-23 03:42 PM (Asia/Dhaka)
+			// Apply same-day time validation only to buses that explicitly enable same-bus return trips.
+			if (sameBusReturn && busDepartureTimestamp !== null && busDepartureTimestamp < outboundArrivalTimestamp) {
 				$(this).hide();
 			} else {
 				$(this).show();
