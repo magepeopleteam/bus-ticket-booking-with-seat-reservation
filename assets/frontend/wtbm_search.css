@@ -336,6 +336,9 @@
         box-sizing: border-box;
         border-top: 1px solid #eee;
     }
+    .wbtm_bus_details_tabs_holder.wbtm_no_tabs{
+        justify-content: flex-end;
+    }
 }
 @media (min-width: 540px) {
 

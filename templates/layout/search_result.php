@@ -42,14 +42,22 @@ if (sizeof($bus_ids) > 0) {
    
     $all_boarding_routes = [];
    
+    $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
     foreach ($bus_ids as $bus_id) {
+        $wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair(
+            $bus_id,
+            $start_route,
+            $end_route,
+            ( $journey_type === 'return_journey' ) ? 'return' : 'outbound'
+        );
        
-        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
            
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
+                'price_leg' => $wbtm_price_leg,
             ];
            
             $bus_titles[] = get_the_title($bus_id);
@@ -119,6 +127,7 @@ if (sizeof($bus_ids) > 0) {
         <input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
         <input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
         <input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
+        <input type="hidden" name="wbtm_price_leg" value="<?php echo esc_attr( $wbtm_price_leg ); ?>" />
         <input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
         <?php
@@ -134,6 +143,7 @@ if (sizeof($bus_ids) > 0) {
             $bus_id = $bus['bus_id'];
             $popup_tabs = WBTM_Functions::single_bus_details_tabs_filtered($bus_id);
             $all_info = $bus['all_info'];
+            $wbtm_price_leg = array_key_exists('price_leg', $bus) ? $bus['price_leg'] : $wbtm_price_leg;
             $bus_count++;
             $price = $all_info['price'];
             $next_day = isset($all_info['next_day']) ? $all_info['next_day'] : '0'; // Default to '0' if not set
@@ -169,7 +179,7 @@ if (sizeof($bus_ids) > 0) {
             );
             ?>
 
-            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list">
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? 'in_cart' : ''); ?>" id="wbtm_bust_list" data-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                
@@ -229,7 +239,11 @@ if (sizeof($bus_ids) > 0) {
                         </div>
 
                     </div>
-                    <div class="wbtm_bus_details_tabs_holder">
+                    <?php
+                    $show_details_tabs = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'show_hide_bus_details_tabs', 'show' );
+                    $details_tabs_class = $show_details_tabs === 'hide' ? ' wbtm_no_tabs' : '';
+                    ?>
+                    <div class="wbtm_bus_details_tabs_holder<?php echo esc_attr( $details_tabs_class ); ?>">
                         <!--<div class="wbtm_bus_popup_links">
                             <span class="wbtm_bus_popup_link" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                             <span class="wbtm_bus_popup_link" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
@@ -238,8 +252,9 @@ if (sizeof($bus_ids) > 0) {
                             <span class="wbtm_bus_popup_link" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         </div>-->
                         <?php
-                        
-                        echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                        if ( $show_details_tabs !== 'hide' ) {
+                            echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                        }
 
                         if ($btn_show == 'hide' and $all_info['regi_status'] == 'no') {
                             WBTM_Layout::trigger_view_seat_details();
@@ -248,6 +263,7 @@ if (sizeof($bus_ids) > 0) {
                         <div class="wbtm-seat-book <?php echo esc_html( $btn_show ); ?>">
                             <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
                                     data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                                    data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
                                     data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
                                     data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
                                     data-add-class="mActive">

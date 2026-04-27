@@ -314,6 +314,7 @@
 						$all_price_info = [];
 						if (sizeof($full_route_infos) > 0) {
 							$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+							$ticket_types = WBTM_Functions::get_ticket_types($post_id);
 							foreach ($full_route_infos as $key => $full_route_info) {
 								if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') {
 									$bp = $full_route_info['place'];
@@ -322,29 +323,37 @@
 										foreach ($next_infos as $next_info) {
 											if ($next_info['type'] == 'dp' || $next_info['type'] == 'both') {
 												$dp = $next_info['place'];
-												$adult_price = '';
-												$child_price = '';
-												$infant_price = '';
+												$ticket_prices = [];
 												if (sizeof($price_infos) > 0) {
 													foreach ($price_infos as $price_info) {
+														$row_leg = isset($price_info['wbtm_price_leg']) ? $price_info['wbtm_price_leg'] : 'outbound';
+														if ($row_leg === 'return') {
+															continue;
+														}
 														if (strtolower($price_info['wbtm_bus_bp_price_stop']) == strtolower($bp) && strtolower($price_info['wbtm_bus_dp_price_stop']) == strtolower($dp)) {
-															$adult_price = array_key_exists('wbtm_bus_price', $price_info) && $price_info['wbtm_bus_price'] ? (float)$price_info['wbtm_bus_price'] : '';
-															$child_price = array_key_exists('wbtm_bus_child_price', $price_info) && $price_info['wbtm_bus_child_price'] ? (float)$price_info['wbtm_bus_child_price'] : '';
-															$infant_price = array_key_exists('wbtm_bus_infant_price', $price_info) && $price_info['wbtm_bus_infant_price'] ? (float)$price_info['wbtm_bus_infant_price'] : '';
+															foreach ($ticket_types as $ticket_type) {
+																$ticket_prices[$ticket_type['id']] = WBTM_Functions::get_ticket_price_by_type($price_info, $ticket_type['id']);
+															}
 														}
 													}
 												}
-												$all_price_info[] = [
+												$legacy_prices = WBTM_Functions::get_legacy_price_fields($ticket_prices);
+												$all_price_info[] = array_merge([
 													'wbtm_bus_bp_price_stop' => $bp,
 													'wbtm_bus_dp_price_stop' => $dp,
-													'wbtm_bus_price' => $adult_price,
-													'wbtm_bus_child_price' => $child_price,
-													'wbtm_bus_infant_price' => $infant_price,
-												];
+													'wbtm_ticket_prices' => $ticket_prices,
+													'wbtm_price_leg' => 'outbound',
+												], $legacy_prices);
 											}
 										}
 									}
 								}
+							}
+						}
+						$existing_for_return = isset($price_infos) ? $price_infos : WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
+						foreach ($existing_for_return as $keep_row) {
+							if (isset($keep_row['wbtm_price_leg']) && $keep_row['wbtm_price_leg'] === 'return') {
+								$all_price_info[] = $keep_row;
 							}
 						}
 						//$route_direction = array_unique($route_direction);

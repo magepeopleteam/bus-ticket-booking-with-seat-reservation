@@ -3,9 +3,42 @@
 	"use strict";
 
 	let wbtm_bus_start_end = '';
+	function wbtm_set_search_button_state(parent, is_loading) {
+		parent.find('.wbtm_search_action_button:visible').each(function () {
+			let button = $(this);
+			let default_html = button.data('default-html');
+			let loading_text = button.data('loading-text') || 'Searching...';
+
+			if (!default_html) {
+				default_html = button.html();
+				button.data('default-html', default_html);
+			}
+
+			if (is_loading) {
+				button
+					.addClass('wbtm_is_loading')
+					.prop('disabled', true)
+					.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_search_button_text">' + loading_text + '</span>');
+			} else {
+				button
+					.removeClass('wbtm_is_loading')
+					.prop('disabled', false)
+					.html(default_html);
+			}
+		});
+	}
+
+	$(document).on("submit", "#wbtm_area form.mpForm", function () {
+		let parent = $(this).closest('#wbtm_area');
+		wbtm_set_search_button_state(parent, true);
+	});
+
 	$(document).on("click", "#wbtm_area button.get_wbtm_bus_list", function (e) {
 		e.preventDefault();
 		let parent = $(this).closest('#wbtm_area');
+		if ($(this).hasClass('wbtm_is_loading')) {
+			return false;
+		}
 		let start = parent.find('input[name="bus_start_route"]');
 		let end = parent.find('input[name="bus_end_route"]');
 		let j_date = parent.find('input[name="j_date"]');
@@ -26,14 +59,17 @@
 
 		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
 		if (!wbtm_check_required(start)) {
+			wbtm_set_search_button_state(parent, false);
 			start.trigger('click');
 			return false;
 		}
 		if (!wbtm_check_required(end)) {
+			wbtm_set_search_button_state(parent, false);
 			end.trigger('click');
 			return false;
 		}
 		if (!wbtm_check_required(j_date)) {
+			wbtm_set_search_button_state(parent, false);
 			j_date.siblings('input').focus();
 			return false;
 		} else {
@@ -57,6 +93,7 @@
 					// backend_order: window.location.href.search("wbtm_backend_order"),
 				},
 				beforeSend: function () {
+					wbtm_set_search_button_state(parent, true);
 					wbtm_loader(parent.find(".wbtm_search_result"));
 				},
 				success: function (data) {
@@ -66,10 +103,12 @@
 						.promise()
 						.done(function () {
 							wbtm_loaderRemove(parent.find(".wbtm_search_area"));
+							wbtm_set_search_button_state(parent, false);
 							wbtm_loadBgImage();
 						});
 				},
 				error: function (response) {
+					wbtm_set_search_button_state(parent, false);
 					console.log(response);
 				},
 			});
@@ -229,6 +268,7 @@
 	"use strict";
 	$(document).on("click", "#get_wbtm_bus_details", function () {
 		let parent = $(this).closest(".wbtm_bus_list_area");
+		let currentButton = $(this);
 		let post_id = $(this).attr("data-bus_id");
 		let target = parent.find("[data-row_id=" + post_id + "]");
 		$("body").find(".woocommerce-notices-wrapper").slideUp("fast");
@@ -257,6 +297,12 @@
 						date: date,
 						j_date: j_date,
 						r_date: r_date,
+						// Fixed by Shahnur - 2026-04-23 02:50 PM (Asia/Dhaka)
+						// Each bus row can resolve to a different fare leg, so read it from the clicked result.
+						wbtm_price_leg:
+							currentButton.attr("data-price-leg") ||
+							parent.find('input[name="wbtm_price_leg"]').val() ||
+							"outbound",
 						backend_order: window.location.href.search("wbtm_backend_order"),
 					},
 					beforeSend: function () {
@@ -297,6 +343,28 @@
 //====================================================================//
 (function ($) {
 	"use strict";
+	function wbtm_set_loading_button_state(button, is_loading) {
+		let default_html = button.data('default-html');
+		let loading_text = button.data('loading-text') || 'Loading...';
+
+		if (!default_html) {
+			default_html = button.html();
+			button.data('default-html', default_html);
+		}
+
+		if (is_loading) {
+			button
+				.addClass('wbtm_is_loading')
+				.prop('disabled', true)
+				.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_loading_button_text">' + loading_text + '</span>');
+		} else {
+			button
+				.removeClass('wbtm_is_loading')
+				.prop('disabled', false)
+				.html(default_html);
+		}
+	}
+
 	function wbtm_price_calculation(parent) {
 		let total_qty = wbtm_seat_qty(parent);
 		wbtm_seat_calculation(parent, total_qty);
@@ -706,7 +774,14 @@
 	});
 
 	$(document).on('click', '.wtbm_return_route', function (e) {
-
+		let outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
+		if (outboundCard.length === 0) {
+			e.preventDefault();
+			// Fixed by Shahnur - 2026-04-23 03:00 PM (Asia/Dhaka)
+			// Do not allow return-tab browsing before the outbound bus is placed.
+			wbtm_toast($(this).data('alert') || 'Please place departure bus first.');
+			return false;
+		}
 		wtbm_active_return_bus_tab_data();
 
 	});
@@ -719,6 +794,81 @@
 		let parent = $(this).closest('.wbtm_return_bus_lists_holder');
 		let listHolder = $('#wbtm_return_container');
 		listHolder.fadeIn(200);
+		wbtm_filter_return_buses_by_outbound_time();
+	}
+
+	function wbtm_parse_bus_datetime(value) {
+		if (!value) {
+			return null;
+		}
+
+		let normalized = String(value).trim();
+		if (!normalized) {
+			return null;
+		}
+
+		normalized = normalized.replace(' ', 'T');
+		if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)) {
+			normalized += ':00';
+		}
+
+		let timestamp = Date.parse(normalized);
+		return Number.isNaN(timestamp) ? null : timestamp;
+	}
+
+	function wbtm_normalize_date_only(value) {
+		let timestamp = wbtm_parse_bus_datetime(value);
+		if (timestamp !== null) {
+			return new Date(timestamp).toISOString().slice(0, 10);
+		}
+
+		let fallback = String(value || '').trim();
+		return fallback || null;
+	}
+
+	/**
+	 * Filter return buses so that, on same-day return journeys,
+	 * only buses departing AFTER the outbound bus arrives are shown.
+	 */
+	function wbtm_filter_return_buses_by_outbound_time() {
+		var outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
+		if (outboundCard.length === 0) {
+			// No outbound bus selected yet — show all return buses
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		var outboundBpTime = outboundCard.data('outbound-bp-time');
+		var outboundDpTime = outboundCard.data('outbound-dp-time');
+		var jDate          = outboundCard.data('j-date');
+		var rDate          = outboundCard.data('r-date');
+		var normalizedJDate = wbtm_normalize_date_only(jDate);
+		var normalizedRDate = wbtm_normalize_date_only(rDate);
+
+		// Only filter when return date equals journey date and we know the outbound travel window.
+		if (!outboundBpTime || !outboundDpTime || !normalizedJDate || !normalizedRDate || normalizedJDate !== normalizedRDate) {
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		var outboundArrivalTimestamp = wbtm_parse_bus_datetime(outboundDpTime);
+		if (outboundArrivalTimestamp === null) {
+			$('#wbtm_return_container .wtbm_bus_counter').show();
+			return;
+		}
+
+		$('#wbtm_return_container .wtbm_bus_counter').each(function () {
+			var busBpTime = $(this).data('bp-time');
+			var sameBusReturn = String($(this).data('same-bus-return') || '0') === '1';
+			var busDepartureTimestamp = wbtm_parse_bus_datetime(busBpTime);
+			// Fixed by Shahnur - 2026-04-23 03:42 PM (Asia/Dhaka)
+			// Apply same-day time validation only to buses that explicitly enable same-bus return trips.
+			if (sameBusReturn && busDepartureTimestamp !== null && busDepartureTimestamp < outboundArrivalTimestamp) {
+				$(this).hide();
+			} else {
+				$(this).show();
+			}
+		});
 	}
 
 
@@ -726,6 +876,9 @@
 		e.preventDefault();
 
 		let this_btn = $(this);
+		if (this_btn.hasClass('wbtm_is_loading')) {
+			return false;
+		}
 		let form = this_btn.closest('form');
 
 		let isValid = true;
@@ -741,6 +894,7 @@
 			alert('Please fill all required fields ❗');
 			return;
 		}
+		wbtm_set_loading_button_state(this_btn, true);
 		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
@@ -809,6 +963,7 @@
 			"action": "wbtm_ajax_add_to_cart",
 			"price_val": encodeURIComponent(priceVal),
 			"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
+			"wbtm_price_leg": form.find(':input[name=wbtm_price_leg]').val() || "outbound",
 			"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
 			"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
 			"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
@@ -851,16 +1006,21 @@
 
 				if (response.success) {
 					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
-					this_btn.text('Added to Cart ✅');
 					$(document.body).trigger('wc_update_cart');
+					// Re-apply same-day return bus filter based on newly selected outbound bus
+					wbtm_filter_return_buses_by_outbound_time();
 				} else {
+					wbtm_set_loading_button_state(this_btn, false);
 					alert('Failed to add ticket ❌');
 				}
 			},
+			error: function () {
+				wbtm_set_loading_button_state(this_btn, false);
+			},
 			complete: function () {
-				this_btn.text('Book Now');
 				if (burPosition === 'start_bus') {
 					if (numberOfBuses > 0) {
+						wbtm_set_loading_button_state(this_btn, false);
 						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
 						/*$("#start_bus").fadeOut();
 						$("#wbtm_return_container").fadeIn();

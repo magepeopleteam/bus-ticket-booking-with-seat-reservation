@@ -170,6 +170,43 @@ function wbtm_load_sortable_datepicker(parent, item) {
         parent.find(".wbtm_item_insert").find(".wbtm_add_select2").select2({});
         return true;
     });
+    // Optional return-route rows (same bus return); not .wbtm_stop_item so pricing reload ignores them.
+    $(document).on("click", ".wbtm_add_return_route_item", function () {
+        let parent = $(this).closest(".wbtm_return_route_settings_area");
+        let item = parent
+            .find(".wbtm_return_hidden_content .wbtm_hidden_item")
+            .html();
+        if (!item || item === "undefined" || item === " ") {
+            return true;
+        }
+        if (parent.find(".wbtm_return_item_insert_before").length > 0) {
+            jQuery(item)
+                .insertBefore(parent.find(".wbtm_return_item_insert_before").first())
+                .promise()
+                .done(function () {
+                    parent.find(".wbtm_sortable_area").sortable({
+                        handle: jQuery(this).find(".wbtm_sortable_button"),
+                    });
+                    wbtm_load_date_picker(parent);
+                });
+        }
+        return true;
+    });
+    $(document).on(
+        "change",
+        ".wbtm_return_route_settings_area .wbtm_return_route_type_select",
+        function () {
+            var type = $(this).val();
+            var box = $(this)
+                .closest(".wbtm_return_stop_item")
+                .find(".wbtm_return_next_day_dropping");
+            if (type == "dp" || type == "both") {
+                box.show();
+            } else {
+                box.hide();
+            }
+        }
+    );
 })(jQuery);
 (function ($) {
     "use strict";

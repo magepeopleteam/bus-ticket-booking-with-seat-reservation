@@ -112,6 +112,46 @@
                 return $total_count;
             }
 
+			/**
+			 * Same-bus return: boarding index may be after dropping index on stored wbtm_route_direction.
+			 * Reverse a copy so overlap queries match forward logic.
+			 *
+			 * @param array<int, string> $routes
+			 * @return array{routes: array<int, string>, sp: int|false, ep: int|false}
+			 */
+			private static function wbtm_normalize_route_for_booking_query( $routes, $start, $end ) {
+				if ( ! is_array( $routes ) || count( $routes ) === 0 ) {
+					return [ 'routes' => $routes, 'sp' => false, 'ep' => false ];
+				}
+				$sp = false;
+				$ep = false;
+				foreach ( $routes as $idx => $place ) {
+					if ( strtolower( (string) $place ) === strtolower( (string) $start ) ) {
+						$sp = (int) $idx;
+					}
+					if ( strtolower( (string) $place ) === strtolower( (string) $end ) ) {
+						$ep = (int) $idx;
+					}
+				}
+				if ( $sp === false || $ep === false ) {
+					return [ 'routes' => $routes, 'sp' => $sp, 'ep' => $ep ];
+				}
+				if ( $sp > $ep ) {
+					$routes = array_reverse( $routes );
+					$sp     = false;
+					$ep     = false;
+					foreach ( $routes as $idx => $place ) {
+						if ( strtolower( (string) $place ) === strtolower( (string) $start ) ) {
+							$sp = (int) $idx;
+						}
+						if ( strtolower( (string) $place ) === strtolower( (string) $end ) ) {
+							$ep = (int) $idx;
+						}
+					}
+				}
+				return [ 'routes' => $routes, 'sp' => $sp, 'ep' => $ep ];
+			}
+
             public static function query_total_booked($post_id, $start, $end, $date, $ticket_name = '', $seat_name = '') {
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
@@ -119,6 +159,13 @@
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
+						$norm = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
+						$routes = $norm['routes'];
+						$sp = $norm['sp'];
+						$ep = $norm['ep'];
+						if ( $sp === false || $ep === false ) {
+							return 0;
+						}
 						$seat_query = !empty($seat_name) ? array(
 							'key' => 'wbtm_seat',
 							'value' => $seat_name,
@@ -129,8 +176,6 @@
 							'value' => $ticket_name,
 							'compare' => '='
 						) : '';
-						$sp = array_search($start, $routes);
-						$ep = array_search($end, $routes);
 						$args = array(
 							'post_type' => 'wbtm_bus_booking',
 							'posts_per_page' => -1,
@@ -181,8 +226,13 @@
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
-						$sp = array_search($start, $routes);
-						$ep = array_search($end, $routes);
+						$norm = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
+						$routes = $norm['routes'];
+						$sp = $norm['sp'];
+						$ep = $norm['ep'];
+						if ( $sp === false || $ep === false ) {
+							return $seat_booked;
+						}
 						$args = array(
 							'post_type' => 'wbtm_bus_booking',
 							'posts_per_page' => -1,

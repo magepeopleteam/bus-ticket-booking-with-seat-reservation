@@ -1,14 +1,43 @@
 //==========Price settings=================//
 (function ($) {
     "use strict";
+    function wbtm_collect_ticket_types(parent) {
+        let ticketTypes = [];
+        parent.find('.wbtm_ticket_type_item').each(function () {
+            let label = $(this).find('[name="wbtm_ticket_type_label[]"]').val();
+            if (!label) {
+                return;
+            }
+            ticketTypes.push({
+                id: $(this).find('[name="wbtm_ticket_type_id[]"]').val(),
+                label: label
+            });
+        });
+        return ticketTypes;
+    }
+    function wbtm_collect_price_map(parent) {
+        let priceMap = {};
+        parent.find('.wbtm_price_setting_area tr[data-price-key]').each(function () {
+            let routeKey = $(this).attr('data-price-key');
+            if (!routeKey) {
+                return;
+            }
+            priceMap[routeKey] = {};
+            $(this).find('[data-ticket-type]').each(function () {
+                priceMap[routeKey][$(this).attr('data-ticket-type')] = $(this).val();
+            });
+        });
+        return priceMap;
+    }
     function wbtm_reload_pricing(parent) {
         let post_id = $('[name="wbtm_post_id"]').val();
         let target = parent.find(".wbtm_price_setting_area");
         let places = {};
         let types = {};
+        let ticketTypes = wbtm_collect_ticket_types(parent);
+        let priceMap = wbtm_collect_price_map(parent);
         let count = 0;
         parent.find(".wbtm_stop_item").each(function () {
-            let infos = {};
             let place = $(this).find('[name="wbtm_route_place[]"]').val();
             let time = $(this).find('[name="wbtm_route_time[]"]').val();
             let type = $(this).find('[name="wbtm_route_type[]"]').val();
@@ -28,6 +57,8 @@
                         post_id: post_id,
                         places: places,
                         types: types,
+                        ticket_types_json: JSON.stringify(ticketTypes),
+                        price_map_json: JSON.stringify(priceMap),
                         nonce: wbtm_admin_var.nonce
                     },
                     beforeSend: function () {
@@ -48,16 +79,16 @@
     }
     $(document).on(
         "click",
-        ".wbtm_settings_pricing_routing .wbtm_stop_item .wbtm_item_remove",
-        function (e) {
-            if (e.result) {
+        ".wbtm_settings_pricing_routing .wbtm_stop_item .wbtm_item_remove, .wbtm_settings_pricing_routing .wbtm_ticket_type_item .wbtm_item_remove",
+        function () {
+            setTimeout(function () {
                 wbtm_reload_pricing($(".wbtm_settings_pricing_routing"));
-            }
+            }, 300);
         }
     );
     $(document).on(
         "change",
-        '.wbtm_settings_pricing_routing [name="wbtm_route_place[]"],.wbtm_settings_pricing_routing [name="wbtm_route_type[]"]',
+        '.wbtm_settings_pricing_routing [name="wbtm_route_place[]"], .wbtm_settings_pricing_routing [name="wbtm_route_type[]"], .wbtm_settings_pricing_routing [name="wbtm_ticket_type_label[]"]',
         function () {
             wbtm_reload_pricing($(".wbtm_settings_pricing_routing"));
         }

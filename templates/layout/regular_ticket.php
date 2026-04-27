@@ -12,9 +12,11 @@ $start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start
 $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 $date = $_POST['date'] ?? '';*/
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-$all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
+$wbtm_pl = isset( $wbtm_price_leg ) ? $wbtm_price_leg : WBTM_Functions::get_requested_price_leg();
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
+$all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route, $wbtm_pl);
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route, $wbtm_pl);
 ?>
 
 <table class="_layoutFixed_textCenter">

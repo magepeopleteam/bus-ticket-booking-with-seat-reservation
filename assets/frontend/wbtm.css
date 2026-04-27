@@ -161,13 +161,25 @@
     width: 100% !important;
   }
 
-  .search_button_holder {
-    width: 100%;
-  }
+.search_button_holder {
+  width: 100%;
+}
 
-  .search_button_holder span {
-    display: none !important;
-  }
+.wbtm_search_action_button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.wbtm_search_action_button.wbtm_is_loading {
+  cursor: wait;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.search_button_holder > .wbtm_search_button_spacer {
+  display: none !important;
+}
 
   .wbtm_bus_submit,
   .get_wbtm_bus_list {
@@ -1063,6 +1075,24 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_input_fields_holder{
   display: flex;
   width: calc( 100% - 140px );
+}
+.wbtm_search_action_button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.wbtm_search_action_button.wbtm_is_loading{
+  cursor: wait;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.wbtm_search_action_button .wbtm_search_button_text{
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .wtbm_bus_search_button_holder{
