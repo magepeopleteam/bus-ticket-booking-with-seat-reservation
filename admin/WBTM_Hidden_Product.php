@@ -24,6 +24,12 @@
 				}
 			}
 			public function run_link_product_on_save( $post_id ) {
+				// Fixed by Shahnur — 2026-05-04 02:35 PM (Asia/Dhaka)
+				// Guard against WooCommerce being listed as active but not actually loaded
+				// (e.g. plugin folder deleted). Avoids fatal "Call to undefined function is_product()".
+				if ( ! function_exists( 'is_product' ) ) {
+					return;
+				}
 				if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
 					if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['wbtm_type_nonce'])), 'wbtm_type_nonce' ) ) {
 						return;
@@ -75,6 +81,11 @@
 				}
 			}
 			public function hide_hidden_wc_product_from_frontend() {
+				// Fixed by Shahnur — 2026-05-04 02:35 PM (Asia/Dhaka)
+				// is_product() is a WooCommerce conditional; bail if WC isn't actually loaded.
+				if ( ! function_exists( 'is_product' ) ) {
+					return;
+				}
 				global $post, $wp_query;
 				if ( is_product() ) {
 					$post_id    = $post->ID;
@@ -130,6 +141,11 @@
 			}
 			//**************Google search url hidden*********************//
 			public function url_exclude_search_engine() {
+				// Fixed by Shahnur — 2026-05-04 02:35 PM (Asia/Dhaka)
+				// is_product() is a WooCommerce conditional; bail if WC isn't actually loaded.
+				if ( ! function_exists( 'is_product' ) ) {
+					return;
+				}
 				global $post;
 				if (is_single() && is_product()) {
 					$post_id = $post->ID;

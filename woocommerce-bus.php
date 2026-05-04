@@ -45,7 +45,10 @@
 		require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woo_Installer.php';
 	}
 
-	if (is_plugin_active('woocommerce/woocommerce.php')) {
+	// Fixed by Shahnur — 2026-05-04 03:15 PM (Asia/Dhaka)
+	// Also verify WooCommerce files exist to handle ghost-active state
+	// (plugin marked active in DB but folder deleted manually).
+	if ( is_plugin_active('woocommerce/woocommerce.php') && file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
 
 		if (!class_exists('Wbtm_Woocommerce_bus')) {
 			class Wbtm_Woocommerce_bus {
