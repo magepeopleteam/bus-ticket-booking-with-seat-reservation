@@ -60,6 +60,16 @@
 			}
 
 			public function admin_init() {
+				// Only register settings sections/fields on WBTM settings pages to avoid
+				// unnecessary DB writes (add_option / register_setting) on every admin page load.
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
+				$is_wbtm_page = ( $post_type === 'wbtm_bus' || strpos( $page, 'wbtm_' ) === 0 );
+				if ( ! $is_wbtm_page ) {
+					return;
+				}
 				$this->settings_api->set_sections( $this->get_settings_sections() );
 				$this->settings_api->set_fields( $this->get_settings_fields() );
 				$this->settings_api->admin_init();

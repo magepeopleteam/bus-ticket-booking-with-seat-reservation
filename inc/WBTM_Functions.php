@@ -1010,7 +1010,7 @@
 				$bus_logo = !empty($bus_logo)?wp_get_attachment_url( $bus_logo):$thumbnail;
 				$default_logo = WBTM_PLUGIN_URL . '/assets/images/bus-logo.svg';
 				?>
-				<img src="<?php echo $bus_logo; ?>" onerror="this.onerror=null; this.src='<?php echo $default_logo; ?>';">
+				<img src="<?php echo esc_url($bus_logo); ?>" onerror="this.onerror=null; this.src='<?php echo esc_url($default_logo); ?>';">
 				<?php
 			}
 			public static function single_bus_details_tabs( $bus_id) {
