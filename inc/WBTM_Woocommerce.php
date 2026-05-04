@@ -291,45 +291,69 @@
 				foreach ($cart_object->cart_contents as $key => $value) {
 					$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-						// Get stored total price
-						$total_price = isset($value['wbtm_tp']) ? floatval($value['wbtm_tp']) : 0;
-						// Check if we have cabin seats
+						// Security: always re-derive the canonical price from the DB
+						$bp        = array_key_exists('wbtm_bp_place', $value) ? $value['wbtm_bp_place'] : '';
+						$dp        = array_key_exists('wbtm_dp_place', $value) ? $value['wbtm_dp_place'] : '';
+						$price_leg = array_key_exists('wbtm_price_leg', $value) && $value['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
+						$seat_price = 0;
 						$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
-						// Recalculate price if it's missing, zero, or we need to recalculate from seat data
-						if (empty($total_price) || $total_price <= 0) {
-							$seat_price = 0;
-							if ($has_cabin_seats) {
-								// Calculate price from cabin seats
-								foreach ($value['wbtm_cabin_seats'] as $cabin_seat) {
-									$ticket_price = isset($cabin_seat['ticket_price']) ? floatval($cabin_seat['ticket_price']) : 0;
-									$seat_price += $ticket_price;
-								}
-							} else {
-								// Try to use stored base price first
-								$base_price = isset($value['wbtm_base_price']) ? floatval($value['wbtm_base_price']) : 0;
-								if ($base_price > 0) {
-									$seat_price = $base_price;
-								} else {
-									// Calculate from seat ticket info
-									$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
+						if ($has_cabin_seats) {
+							$ticket_infos  = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, $price_leg);
+							$cabin_config  = isset($value['wbtm_cabin_config']) && is_array($value['wbtm_cabin_config']) ? $value['wbtm_cabin_config'] : [];
+							foreach ($value['wbtm_cabin_seats'] as $idx => $cabin_seat) {
+								$seat_type = isset($cabin_seat['seat_type']) ? $cabin_seat['seat_type'] : 0;
+								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
+								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
+								foreach ($ticket_infos as $ti) {
+									if ((string) $ti['type'] === (string) $seat_type) {
+										$canonical_price = floatval($ti['price']) * $price_multiplier;
+										$seat_price += $canonical_price;
+										$cart_object->cart_contents[$key]['wbtm_cabin_seats'][$idx]['ticket_price'] = $canonical_price;
+										break;
+									}
 								}
 							}
-							// Get extra service price
-							$ex_base_price = isset($value['wbtm_base_ex_price']) ? floatval($value['wbtm_base_ex_price']) : 0;
-							if ($ex_base_price > 0) {
-								$ex_service_price = $ex_base_price;
-							} else {
-								$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
+						} else {
+							$legacy_seats = isset($value['wbtm_seats']) && is_array($value['wbtm_seats']) ? $value['wbtm_seats'] : [];
+							if (!empty($legacy_seats)) {
+								$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, $price_leg);
+								foreach ($legacy_seats as $idx => $seat_info) {
+									$seat_type = isset($seat_info['ticket_type']) ? $seat_info['ticket_type'] : 0;
+									$qty       = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
+									foreach ($ticket_infos as $ti) {
+										if ((string) $ti['type'] === (string) $seat_type) {
+											$canonical_unit = floatval($ti['price']);
+											$seat_price += $canonical_unit * $qty;
+											$cart_object->cart_contents[$key]['wbtm_seats'][$idx]['ticket_price'] = $canonical_unit;
+											break;
+										}
+									}
+								}
 							}
-							// Calculate total price
-							$total_price = floatval($seat_price) + floatval($ex_service_price);
-							// Ensure price is not negative
-							$total_price = max(0, $total_price);
-							// Update the cart item data with the calculated price
-							$cart_object->cart_contents[$key]['wbtm_tp'] = $total_price;
-							$cart_object->cart_contents[$key]['line_total'] = $total_price;
-							$cart_object->cart_contents[$key]['line_subtotal'] = $total_price;
 						}
+						// Re-derive extra-service prices from DB
+						$ex_service_price = 0;
+						$ex_services = isset($value['wbtm_extra_services']) && is_array($value['wbtm_extra_services']) ? $value['wbtm_extra_services'] : [];
+						foreach ($ex_services as $idx => $svc) {
+							$svc_name = isset($svc['name']) ? $svc['name'] : '';
+							$svc_qty  = isset($svc['qty']) ? max(1, intval($svc['qty'])) : 1;
+							$canonical_svc_price = WBTM_Functions::get_ex_service_price($post_id, $svc_name);
+							if ($canonical_svc_price !== false) {
+								$ex_service_price += floatval($canonical_svc_price) * $svc_qty;
+								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = floatval($canonical_svc_price);
+							} else {
+								// Fallback: service disabled/removed in DB, keep the cached session price
+								$fallback_price = isset($svc['price']) ? floatval($svc['price']) : 0;
+								$ex_service_price += $fallback_price * $svc_qty;
+							}
+						}
+						$total_price = max(0, floatval($seat_price) + floatval($ex_service_price));
+						// Update all cached price fields
+						$cart_object->cart_contents[$key]['wbtm_tp']           = $total_price;
+						$cart_object->cart_contents[$key]['wbtm_base_price']   = $seat_price;
+						$cart_object->cart_contents[$key]['wbtm_base_ex_price'] = $ex_service_price;
+						$cart_object->cart_contents[$key]['line_total']         = $total_price;
+						$cart_object->cart_contents[$key]['line_subtotal']      = $total_price;
 						// Always set the price on the product object (WooCommerce uses this for display)
 						$value['data']->set_price($total_price);
 						$value['data']->set_regular_price($total_price);
