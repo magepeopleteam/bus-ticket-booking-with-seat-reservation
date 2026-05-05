@@ -94,7 +94,13 @@
 					let wbtm_date_format_without_year = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format_without_year', 'D d M')); ?>";
 				</script>
 				<?php
-				if (WBTM_Global_Function::check_woocommerce() == 1) {
+				// Fixed by Shahnur — 2026-05-04 01:35 PM (Asia/Dhaka)
+				// check_woocommerce() only checks the active-plugins option, not whether WooCommerce
+				// actually loaded its functions. Verify the functions exist to avoid a fatal at admin_head.
+				if ( WBTM_Global_Function::check_woocommerce() == 1
+					&& function_exists( 'get_woocommerce_currency_symbol' )
+					&& function_exists( 'wc_get_price_decimal_separator' )
+					&& function_exists( 'wc_get_price_thousand_separator' ) ) {
 					?>
 					<script type="text/javascript">
 						wbtm_currency_symbol = "<?php echo esc_html( get_woocommerce_currency_symbol() ); ?>";

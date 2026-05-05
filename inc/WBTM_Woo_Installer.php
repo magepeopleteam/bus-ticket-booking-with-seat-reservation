@@ -42,13 +42,16 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 		}
 
 		/**
-		 * Check if WooCommerce is active.
+		 * Check if WooCommerce is truly active (listed as active AND files exist).
 		 *
 		 * @return bool
 		 */
+		// Fixed by Shahnur — 2026-05-04 03:15 PM (Asia/Dhaka)
+		// is_plugin_active can return true even if WC folder was deleted manually.
+		// Verify the file actually exists to avoid ghost-active state.
 		private function is_woo_active() {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
-			return is_plugin_active( 'woocommerce/woocommerce.php' );
+			return is_plugin_active( 'woocommerce/woocommerce.php' ) && $this->is_woo_installed();
 		}
 
 		/**
@@ -79,13 +82,13 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 
 		/**
 		 * Should we show the popup on this page load?
-		 * Always show when WooCommerce is not active and our plugin is active.
+		 * Show when WooCommerce is not active OR when its files are missing.
 		 *
 		 * @return bool
 		 */
 		private function should_show_popup() {
-			// Always show the popup when WooCommerce is not active
-			return ! $this->is_woo_active();
+			// Show the popup if WooCommerce is not active or files are missing (e.g. deleted manually)
+			return ! $this->is_woo_active() || ! $this->is_woo_installed();
 		}
 
 		/**
