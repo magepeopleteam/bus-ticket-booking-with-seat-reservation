@@ -323,6 +323,9 @@
 					$ticket_type_ids = isset($_POST['wbtm_ticket_type_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_id'])) : [];
 					$ticket_type_labels = isset($_POST['wbtm_ticket_type_label']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_label'])) : [];
 					$ticket_price_rows = isset($_POST['wbtm_ticket_price']) ? wp_unslash($_POST['wbtm_ticket_price']) : [];
+					$full_bus_enabled = WBTM_Functions::is_full_bus_feature_enabled();
+					$full_bus_price_rows = $full_bus_enabled && isset($_POST['wbtm_full_bus_price']) ? wp_unslash($_POST['wbtm_full_bus_price']) : [];
+					$full_bus_discount_rows = $full_bus_enabled && isset($_POST['wbtm_full_bus_discount']) ? wp_unslash($_POST['wbtm_full_bus_discount']) : [];
 					$ticket_types = [];
 					$used_ticket_type_ids = [];
 					foreach ($ticket_type_labels as $ticket_type_index => $ticket_type_label) {
@@ -360,12 +363,33 @@
 								}
 								$legacy_prices = WBTM_Functions::get_legacy_price_fields($ticket_prices);
 								$row_leg = (array_key_exists($key, $price_legs) && $price_legs[$key] === 'return') ? 'return' : 'outbound';
-								$price_infos[] = array_merge([
+								$full_bus_price = '';
+								if ($full_bus_enabled && is_array($full_bus_price_rows) && array_key_exists($key, $full_bus_price_rows)) {
+									$raw_full_bus_price = sanitize_text_field((string) $full_bus_price_rows[$key]);
+									$full_bus_price = $raw_full_bus_price === '' ? '' : (float) $raw_full_bus_price;
+								}
+								$full_bus_discount = '';
+								if ($full_bus_enabled && is_array($full_bus_discount_rows) && array_key_exists($key, $full_bus_discount_rows)) {
+									$raw_full_bus_discount = sanitize_text_field((string) $full_bus_discount_rows[$key]);
+									if ($raw_full_bus_discount !== '') {
+										$is_percent_discount = substr(trim($raw_full_bus_discount), -1) === '%';
+										$discount_number = max(0, (float) str_replace('%', '', $raw_full_bus_discount));
+										$full_bus_discount = $is_percent_discount ? $discount_number . '%' : $discount_number;
+									}
+								}
+								// Fixed by Shahnur — full bus route pricing and fixed/percent discount 2026-05-07 12:01 PM
+								$price_info_row = array_merge([
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
 									'wbtm_ticket_prices' => $ticket_prices,
 									'wbtm_price_leg' => $row_leg,
 								], $legacy_prices);
+								if ($full_bus_enabled) {
+									// Fixed by Shahnur — Pro-only full bus route pricing and discount save 2026-05-07 01:55 PM
+									$price_info_row['wbtm_full_bus_price'] = $full_bus_price;
+									$price_info_row['wbtm_full_bus_discount'] = $full_bus_discount;
+								}
+								$price_infos[] = $price_info_row;
 							}
 						}
 					}
