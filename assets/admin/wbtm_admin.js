@@ -131,7 +131,7 @@
                     },
                 });
             } else {
-                alert("Number  of row & column must be greater than 0");
+                alert(typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_row_col_error ? wbtm_admin_var.seat_row_col_error : 'Number of rows & columns must be greater than 0');
             }
         }
     );
@@ -196,7 +196,7 @@
                     },
                 });
             } else {
-                alert("Number  of row & column must be greater than 0");
+                alert(typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_row_col_error ? wbtm_admin_var.seat_row_col_error : 'Number of rows & columns must be greater than 0');
             }
         }
     );
