@@ -7,7 +7,7 @@
 		parent.find('.wbtm_search_action_button:visible').each(function () {
 			let button = $(this);
 			let default_html = button.data('default-html');
-			let loading_text = button.data('loading-text') || 'Searching...';
+			let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.searching : 'Searching...');
 
 			if (!default_html) {
 				default_html = button.html();
@@ -345,7 +345,7 @@
 	"use strict";
 	function wbtm_set_loading_button_state(button, is_loading) {
 		let default_html = button.data('default-html');
-		let loading_text = button.data('loading-text') || 'Loading...';
+		let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.loading : 'Loading...');
 
 		if (!default_html) {
 			default_html = button.html();
@@ -779,7 +779,7 @@
 			e.preventDefault();
 			// Fixed by Shahnur - 2026-04-23 03:00 PM (Asia/Dhaka)
 			// Do not allow return-tab browsing before the outbound bus is placed.
-			wbtm_toast($(this).data('alert') || 'Please place departure bus first.');
+			wbtm_toast($(this).data('alert') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.place_departure_first : 'Please place departure bus first.'));
 			return false;
 		}
 		wtbm_active_return_bus_tab_data();
@@ -891,7 +891,7 @@
 			}
 		});
 		if (!isValid) {
-			alert('Please fill all required fields ❗');
+			alert(typeof wbtm_strings !== 'undefined' ? wbtm_strings.fill_required_fields : 'Please fill all required fields');
 			return;
 		}
 		wbtm_set_loading_button_state(this_btn, true);
@@ -1011,7 +1011,7 @@
 					wbtm_filter_return_buses_by_outbound_time();
 				} else {
 					wbtm_set_loading_button_state(this_btn, false);
-					alert('Failed to add ticket ❌');
+					alert(typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket');
 				}
 			},
 			error: function () {

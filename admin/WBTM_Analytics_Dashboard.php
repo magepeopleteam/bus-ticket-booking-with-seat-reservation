@@ -13,7 +13,7 @@
 					'edit.php?post_type=wbtm_bus',
 					__('Analytics Dashboard', 'bus-ticket-booking-with-seat-reservation'),
 					__('Analytics', 'bus-ticket-booking-with-seat-reservation'),
-					'manage_options',
+					'wbtm_staff_access',
 					'wbtm-analytics',
 					array($this, 'analytics_dashboard_page')
 				);

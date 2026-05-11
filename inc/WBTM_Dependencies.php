@@ -79,7 +79,11 @@
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), time());
-				wp_localize_script( 'wbtm_admin', 'wbtm_admin_var', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'wbtm_admin_nonce' ) ) );
+				wp_localize_script( 'wbtm_admin', 'wbtm_admin_var', array(
+					'url'               => admin_url( 'admin-ajax.php' ),
+					'nonce'             => wp_create_nonce( 'wbtm_admin_nonce' ),
+					'seat_row_col_error' => esc_html__( 'Number of rows & columns must be greater than 0', 'bus-ticket-booking-with-seat-reservation' ),
+				) );
 				do_action('wbtm_add_admin_script');
 			}
 			public function appsero_init_tracker() {
@@ -99,6 +103,13 @@
 				wp_localize_script('jquery', 'wbtm_wc_vars', array(
 					'checkout_url' => wc_get_checkout_url()
 				));
+				wp_localize_script( 'wbtm_global', 'wbtm_strings', array(
+					'searching'             => esc_html__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ),
+					'loading'               => esc_html__( 'Loading...', 'bus-ticket-booking-with-seat-reservation' ),
+					'place_departure_first' => esc_html__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ),
+					'fill_required_fields'  => esc_html__( 'Please fill all required fields', 'bus-ticket-booking-with-seat-reservation' ),
+					'failed_add_ticket'     => esc_html__( 'Failed to add ticket', 'bus-ticket-booking-with-seat-reservation' ),
+				) );
 				do_action('wbtm_add_frontend_script');
 			}
 			public function load_single_template($template) {
