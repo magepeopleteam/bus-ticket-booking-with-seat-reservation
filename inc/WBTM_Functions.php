@@ -15,6 +15,18 @@
 				$file_path     = $dir . $file_name;
 				return locate_template( array( 'templates/' . $file_name ) ) ? $file_path : $default_dir . $file_name;
 			}
+			// Fixed by Shahnur — Pro-only full bus feature gate 2026-05-07 01:55 PM
+			public static function is_full_bus_feature_enabled() {
+				if ( class_exists( 'WBTM_Dependencies_Pro' ) || class_exists( 'Wbtm_Woocommerce_bus_Pro' ) ) {
+					return true;
+				}
+				if ( ! function_exists( 'is_plugin_active' ) && defined( 'ABSPATH' ) && file_exists( ABSPATH . 'wp-admin/includes/plugin.php' ) ) {
+					include_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+				return function_exists( 'is_plugin_active' )
+					&& is_plugin_active( 'addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' )
+					&& file_exists( WP_PLUGIN_DIR . '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' );
+			}
 			//==========================//
 			public static function get_bus_route( $post_id = 0, $start_route = '' ) {
 				$all_routes = [];
@@ -442,6 +454,120 @@
 				return $ticket_infos;
 			}
 
+			public static function get_full_bus_pricing( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				if ( ! self::is_full_bus_feature_enabled() ) {
+					return [];
+				}
+				$price_leg = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
+				if ( $post_id && $start_route && $end_route ) {
+					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					if ( sizeof( $price_infos ) > 0 ) {
+						foreach ( $price_infos as $price_info ) {
+							$row_leg = ( isset( $price_info['wbtm_price_leg'] ) && $price_info['wbtm_price_leg'] === 'return' ) ? 'return' : 'outbound';
+							if ( $row_leg !== $price_leg ) {
+								continue;
+							}
+							if (
+								strtolower( (string) $price_info['wbtm_bus_bp_price_stop'] ) === strtolower( (string) $start_route ) &&
+								strtolower( (string) $price_info['wbtm_bus_dp_price_stop'] ) === strtolower( (string) $end_route ) &&
+								isset( $price_info['wbtm_full_bus_price'] ) &&
+								$price_info['wbtm_full_bus_price'] !== ''
+							) {
+								$base_price = WBTM_Global_Function::get_wc_raw_price( $post_id, (float) $price_info['wbtm_full_bus_price'] );
+								$discount = self::calculate_full_bus_discount( $post_id, $base_price, isset( $price_info['wbtm_full_bus_discount'] ) ? $price_info['wbtm_full_bus_discount'] : '' );
+								$discount = min( (float) $base_price, max( 0, (float) $discount ) );
+								return [
+									'base_price' => (float) $base_price,
+									'discount'   => $discount,
+									'final_price' => max( 0, (float) $base_price - $discount ),
+								];
+							}
+						}
+					}
+				}
+				if ( $price_leg === 'return' && $try_reverse_return ) {
+					$reverse_return_price = self::get_full_bus_pricing( $post_id, $end_route, $start_route, 'return', false );
+					if ( sizeof( $reverse_return_price ) > 0 ) {
+						return $reverse_return_price;
+					}
+					return self::get_full_bus_pricing( $post_id, $start_route, $end_route, 'outbound', false );
+				}
+				return [];
+			}
+
+			public static function get_full_bus_price( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				$pricing = self::get_full_bus_pricing( $post_id, $start_route, $end_route, $price_leg, $try_reverse_return );
+				return sizeof( $pricing ) > 0 ? $pricing['final_price'] : '';
+			}
+
+			public static function calculate_full_bus_discount( $post_id, $base_price, $discount_value ) {
+				$discount_value = trim( (string) $discount_value );
+				if ( $discount_value === '' ) {
+					return 0;
+				}
+				if ( substr( $discount_value, -1 ) === '%' ) {
+					$percent = max( 0, (float) str_replace( '%', '', $discount_value ) );
+					$percent = min( 100, $percent );
+					return ( (float) $base_price * $percent ) / 100;
+				}
+				return WBTM_Global_Function::get_wc_raw_price( $post_id, max( 0, (float) $discount_value ) );
+			}
+
+			public static function full_bus_booking_button( $post_id, $all_info, $date, $price_leg = 'outbound', $btn_show = '' ) {
+				if ( ! self::is_full_bus_feature_enabled() ) {
+					return '';
+				}
+				if ( ! is_array( $all_info ) || empty( $all_info['bp'] ) || empty( $all_info['dp'] ) || empty( $all_info['available_seat'] ) || empty( $all_info['total_seat'] ) ) {
+					return '';
+				}
+				if ( (int) $all_info['available_seat'] < (int) $all_info['total_seat'] ) {
+					return '';
+				}
+				$full_bus_pricing = self::get_full_bus_pricing( $post_id, $all_info['bp'], $all_info['dp'], $price_leg );
+				$full_bus_price = sizeof( $full_bus_pricing ) > 0 ? $full_bus_pricing['final_price'] : '';
+				if ( $full_bus_price === '' || (float) $full_bus_price <= 0 ) {
+					return '';
+				}
+				ob_start();
+				?>
+				<div class="wbtm-full-bus-booking <?php echo esc_attr( $btn_show ); ?>">
+					<button
+						type="button"
+						class="_themeButton_xs wbtm_full_bus_book_now"
+						data-bus-id="<?php echo esc_attr( $post_id ); ?>"
+						data-start-point="<?php echo esc_attr( $all_info['start_point'] ); ?>"
+						data-start-time="<?php echo esc_attr( $all_info['start_time'] ); ?>"
+						data-bp-place="<?php echo esc_attr( $all_info['bp'] ); ?>"
+						data-bp-time="<?php echo esc_attr( $all_info['bp_time'] ); ?>"
+						data-dp-place="<?php echo esc_attr( $all_info['dp'] ); ?>"
+						data-dp-time="<?php echo esc_attr( $all_info['dp_time'] ); ?>"
+						data-date="<?php echo esc_attr( $date ); ?>"
+						data-price-leg="<?php echo esc_attr( $price_leg ); ?>"
+						data-price="<?php echo esc_attr( $full_bus_price ); ?>"
+						data-available-seat="<?php echo esc_attr( $all_info['available_seat'] ); ?>"
+						data-form-nonce="<?php echo esc_attr( wp_create_nonce( 'wbtm_form_nonce' ) ); ?>"
+						data-loading-text="<?php echo esc_attr__( 'Booking full bus...', 'bus-ticket-booking-with-seat-reservation' ); ?>"
+					>
+						<?php esc_html_e( 'Book Full Bus', 'bus-ticket-booking-with-seat-reservation' ); ?>
+					</button>
+					<div class="wbtm-full-bus-tooltip">
+						<button type="button" class="wbtm-full-bus-tooltip-toggle" aria-expanded="false" aria-label="<?php esc_attr_e( 'Full bus price details', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+							<span aria-hidden="true">?</span>
+						</button>
+						<div class="wbtm-full-bus-tooltip-panel" role="status">
+							<span><?php esc_html_e( 'Full Bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<?php if ( ! empty( $full_bus_pricing['discount'] ) ) { ?>
+								<del><?php echo wp_kses_post( wc_price( $full_bus_pricing['base_price'] ) ); ?></del>
+								<small><?php echo esc_html( sprintf( __( 'Discount %s', 'bus-ticket-booking-with-seat-reservation' ), wp_strip_all_tags( wc_price( $full_bus_pricing['discount'] ) ) ) ); ?></small>
+							<?php } ?>
+							<strong><?php echo wp_kses_post( wc_price( $full_bus_price ) ); ?></strong>
+						</div>
+					</div>
+				</div>
+				<?php
+				return ob_get_clean();
+			}
+
 			/**
 			 * From booking AJAX / add-to-cart POST.
 			 */
@@ -525,7 +651,10 @@
 											$total_seat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 											if ( $seat_type == 'wbtm_seat_plan' ) {
-												$sold_seat = sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) );
+												$sold_seat = max(
+													sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) ),
+													WBTM_Query::query_total_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] )
+												);
 											} else {
 												$sold_seat = WBTM_Query::query_total_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] );
 											}

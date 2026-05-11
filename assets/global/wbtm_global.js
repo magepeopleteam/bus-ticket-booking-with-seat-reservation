@@ -1041,6 +1041,75 @@
 
 	});
 
+	$(document).on('click', '.wbtm_full_bus_book_now', function () {
+		let this_btn = $(this);
+		let parent = this_btn.closest('.wbtm_bus_list_area');
+		let defaultHtml = this_btn.html();
+		let startDate = parent.find(':input[name=j_date]').val() || this_btn.attr('data-date') || '';
+		let returnDate = parent.find(':input[name=r_date]').val() || '';
+		let requestData = {
+			"action": "wbtm_ajax_add_to_cart",
+			"wbtm_booking_mode": "full_bus",
+			"price_val": encodeURIComponent(this_btn.attr('data-price') || 0),
+			"wbtm_post_id": this_btn.attr('data-bus-id'),
+			"wbtm_price_leg": this_btn.attr('data-price-leg') || "outbound",
+			"wbtm_start_point": this_btn.attr('data-start-point'),
+			"wbtm_start_time": this_btn.attr('data-start-time'),
+			"wbtm_bp_place": this_btn.attr('data-bp-place'),
+			"wbtm_bp_time": this_btn.attr('data-bp-time'),
+			"wbtm_dp_place": this_btn.attr('data-dp-place'),
+			"wbtm_dp_time": this_btn.attr('data-dp-time'),
+			"bus_start_route": parent.find(':input[name=bus_start_route]').val(),
+			"bus_end_route": parent.find(':input[name=bus_end_route]').val(),
+			"j_date": startDate,
+			"r_date": returnDate,
+			"wbtm_form_nonce": this_btn.attr('data-form-nonce'),
+			"wbtm_selected_seat": "",
+			"wbtm_cabin_mode_enabled": "no"
+		};
+
+		this_btn.prop('disabled', true).html(this_btn.attr('data-loading-text') || 'Loading...');
+		$.ajax({
+			url: woocommerce_params.ajax_url,
+			type: 'POST',
+			data: requestData,
+			success: function (response) {
+				if (response.success) {
+					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
+					$(document.body).trigger('wc_update_cart');
+					wbtm_filter_return_buses_by_outbound_time();
+					if (this_btn.closest('#start_bus').length && $('#return_bus .wtbm_bus_counter').length > 0) {
+						wtbm_active_return_bus_tab_data();
+					} else {
+						window.location.href = wbtm_wc_vars.checkout_url;
+					}
+				} else {
+					alert(response.data || 'Failed to add ticket');
+				}
+			},
+			error: function () {
+				alert('Failed to add ticket');
+			},
+			complete: function () {
+				this_btn.prop('disabled', false).html(defaultHtml);
+			}
+		});
+	});
+
+	$(document).on('click', '.wbtm-full-bus-tooltip-toggle', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let tooltip = $(this).closest('.wbtm-full-bus-tooltip');
+		let isOpen = tooltip.hasClass('is-open');
+		$('.wbtm-full-bus-tooltip.is-open').removeClass('is-open').find('.wbtm-full-bus-tooltip-toggle').attr('aria-expanded', 'false');
+		tooltip.toggleClass('is-open', !isOpen);
+		$(this).attr('aria-expanded', !isOpen ? 'true' : 'false');
+	});
+
+	$(document).on('click', function () {
+		$('.wbtm-full-bus-tooltip.is-open').removeClass('is-open').find('.wbtm-full-bus-tooltip-toggle').attr('aria-expanded', 'false');
+	});
+
 
 }(jQuery));
 

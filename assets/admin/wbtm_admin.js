@@ -26,6 +26,8 @@
             $(this).find('[data-ticket-type]').each(function () {
                 priceMap[routeKey][$(this).attr('data-ticket-type')] = $(this).val();
             });
+            priceMap[routeKey].__full_bus = $(this).find('[data-full-bus-price]').val() || "";
+            priceMap[routeKey].__full_bus_discount = $(this).find('[data-full-bus-discount]').val() || "";
         });
         return priceMap;
     }

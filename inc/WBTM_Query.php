@@ -179,6 +179,7 @@
 						$args = array(
 							'post_type' => 'wbtm_bus_booking',
 							'posts_per_page' => -1,
+							'fields' => 'ids',
 							'meta_query' => array(
 								array(
 									'relation' => 'AND',
@@ -213,7 +214,15 @@
 							),
 						);
 						$q = new WP_Query($args);
-						$total_booked = $q->found_posts;
+						$total_booked = 0;
+						if (sizeof($q->posts) > 0) {
+							foreach ($q->posts as $booking_id) {
+								// Fixed by Shahnur — count one full bus ticket as all covered seats 2026-05-07 01:25 PM
+								$booking_mode = WBTM_Global_Function::get_post_info($booking_id, 'wbtm_booking_mode');
+								$full_bus_seat_count = (int) WBTM_Global_Function::get_post_info($booking_id, 'wbtm_full_bus_seat_count');
+								$total_booked += ($booking_mode === 'full_bus' && $full_bus_seat_count > 0) ? $full_bus_seat_count : 1;
+							}
+						}
                         wp_reset_postdata();
 					}
 				}

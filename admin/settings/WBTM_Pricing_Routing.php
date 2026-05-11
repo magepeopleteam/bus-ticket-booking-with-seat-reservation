@@ -382,7 +382,11 @@
 					$sanitized_route_key = sanitize_text_field($route_key);
 					foreach ($route_prices as $ticket_type_id => $ticket_price) {
 						$sanitized_ticket_type_id = sanitize_key($ticket_type_id);
-						$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = $ticket_price === '' ? '' : (float) sanitize_text_field((string) $ticket_price);
+						if ($sanitized_ticket_type_id === '__full_bus_discount') {
+							$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = sanitize_text_field((string) $ticket_price);
+						} else {
+							$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = $ticket_price === '' ? '' : (float) sanitize_text_field((string) $ticket_price);
+						}
 					}
 				}
 				return $sanitized_price_map;
@@ -441,6 +445,12 @@
 										'dp'              => $dp,
 										'route_price_key' => $route_price_key,
 										'prices'          => $route_prices,
+										'full_bus_price'  => array_key_exists( $route_price_key, $request_price_map ) && array_key_exists( '__full_bus', $request_price_map[ $route_price_key ] )
+											? $request_price_map[ $route_price_key ]['__full_bus']
+											: ( isset( $stored_price_info['wbtm_full_bus_price'] ) ? $stored_price_info['wbtm_full_bus_price'] : '' ),
+										'full_bus_discount' => array_key_exists( $route_price_key, $request_price_map ) && array_key_exists( '__full_bus_discount', $request_price_map[ $route_price_key ] )
+											? $request_price_map[ $route_price_key ]['__full_bus_discount']
+											: ( isset( $stored_price_info['wbtm_full_bus_discount'] ) ? $stored_price_info['wbtm_full_bus_discount'] : '' ),
 										'is_return_leg'   => $is_return_leg,
 										'price_leg'       => $price_leg,
 									];
@@ -458,6 +468,7 @@
 			public function route_pricing( $post_id, $full_route_infos, $ticket_types = [], $request_price_map = [], $return_segments_display = null ) {
 				$ticket_types = $this->sanitize_ticket_types($ticket_types, $post_id);
 				$request_price_map = $this->sanitize_price_map($request_price_map);
+				$full_bus_enabled = WBTM_Functions::is_full_bus_feature_enabled();
 				$all_price_info = [];
 				if (sizeof($full_route_infos) > 0) {
 					$price_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_prices', []);
@@ -509,6 +520,12 @@
 									'dp'              => $bp,
 									'route_price_key' => $rev_key,
 									'prices'          => $route_prices,
+									'full_bus_price'  => array_key_exists( $rev_key, $request_price_map ) && array_key_exists( '__full_bus', $request_price_map[ $rev_key ] )
+										? $request_price_map[ $rev_key ]['__full_bus']
+										: ( isset( $stored_price_info['wbtm_full_bus_price'] ) ? $stored_price_info['wbtm_full_bus_price'] : '' ),
+									'full_bus_discount' => array_key_exists( $rev_key, $request_price_map ) && array_key_exists( '__full_bus_discount', $request_price_map[ $rev_key ] )
+										? $request_price_map[ $rev_key ]['__full_bus_discount']
+										: ( isset( $stored_price_info['wbtm_full_bus_discount'] ) ? $stored_price_info['wbtm_full_bus_discount'] : '' ),
 									'is_return_leg'   => true,
 									'price_leg'       => 'return',
 								];
@@ -539,6 +556,10 @@
                                         <sup class="required">*</sup>
 									<?php } ?>
                                 </th>
+							<?php } ?>
+							<?php if ($full_bus_enabled) { ?>
+                                <th><?php esc_html_e('Full Bus Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                <th><?php esc_html_e('Full Bus Discount', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 							<?php } ?>
                         </tr>
                         </thead>
@@ -578,6 +599,34 @@
                                                 name="wbtm_ticket_price[<?php echo esc_attr($row_index); ?>][<?php echo esc_attr($ticket_type['id']); ?>]"
                                                 placeholder="Ex: 10"
                                                 value="<?php echo esc_attr(array_key_exists($ticket_type['id'], $price_info['prices']) ? $price_info['prices'][$ticket_type['id']] : ''); ?>"
+                                            />
+                                        </label>
+                                    </td>
+								<?php } ?>
+								<?php if ($full_bus_enabled) { ?>
+                                    <td>
+                                        <label>
+                                            <input
+                                                type="number"
+                                                pattern="[0-9]*"
+                                                step="0.01"
+                                                class="formControl"
+                                                data-full-bus-price="1"
+                                                name="wbtm_full_bus_price[<?php echo esc_attr($row_index); ?>]"
+                                                placeholder="<?php esc_attr_e('Ex: 1200', 'bus-ticket-booking-with-seat-reservation'); ?>"
+                                                value="<?php echo esc_attr(isset($price_info['full_bus_price']) ? $price_info['full_bus_price'] : ''); ?>"
+                                            />
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input
+                                                type="text"
+                                                class="formControl"
+                                                data-full-bus-discount="1"
+                                                name="wbtm_full_bus_discount[<?php echo esc_attr($row_index); ?>]"
+                                                placeholder="<?php esc_attr_e('Ex: 100 or 20%', 'bus-ticket-booking-with-seat-reservation'); ?>"
+                                                value="<?php echo esc_attr(isset($price_info['full_bus_discount']) ? $price_info['full_bus_discount'] : ''); ?>"
                                             />
                                         </label>
                                     </td>

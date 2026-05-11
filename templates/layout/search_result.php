@@ -261,6 +261,7 @@ if (sizeof($bus_ids) > 0) {
                         }
                         ?>
                         <div class="wbtm-seat-book <?php echo esc_html( $btn_show ); ?>">
+							<?php echo WBTM_Functions::full_bus_booking_button( $bus_id, $all_info, $date, $wbtm_price_leg ); ?>
                             <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
                                     data-bus_id="<?php echo esc_attr($bus_id); ?>"
                                     data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"

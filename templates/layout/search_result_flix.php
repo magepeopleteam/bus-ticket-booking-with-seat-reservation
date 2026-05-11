@@ -260,14 +260,17 @@ if (sizeof($bus_ids) > 0) {
                         WBTM_Layout::trigger_view_seat_details();
                     }
                     ?>
-                    <button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
-                            data-bus_id="<?php echo esc_attr($bus_id); ?>"
-                            data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
-                            data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-                            data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-                            data-add-class="mActive">
-                        <?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
-                    </button>
+                    <div class="wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>">
+						<?php echo WBTM_Functions::full_bus_booking_button( $bus_id, $all_info, $date, $wbtm_price_leg ); ?>
+                        <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
+                                data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                                data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
+                                data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+                                data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+                                data-add-class="mActive">
+                            <?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
+                        </button>
+                    </div>
                 </div>
 			</div>
 
