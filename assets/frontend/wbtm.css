@@ -2604,3 +2604,51 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     width: 25%;
   }
 }
+
+/* ===== Non-Seat Items (Frontend) ===== */
+.wbtm_non_seat_item {
+  text-align: center;
+  vertical-align: middle;
+  cursor: default !important;
+  user-select: none;
+  pointer-events: none;
+  padding: 6px 4px;
+  min-width: 50px;
+}
+
+.wbtm_non_seat_item .wbtm_non_seat_icon {
+  display: block;
+  font-size: 18px;
+  color: #6c757d;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+
+.wbtm_non_seat_item .wbtm_non_seat_label {
+  display: block;
+  font-size: 10px;
+  color: #868e96;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wbtm_seat_plan_area table td.wbtm_non_seat_item,
+.wbtm_seat_plan_upper table td.wbtm_non_seat_item,
+.wbtm_cabin_seat_plan table td.wbtm_non_seat_item {
+  background-color: #f1f3f5 !important;
+  border: 1px dashed #ced4da !important;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+
+@media only screen and (max-width: 768px) {
+  .wbtm_non_seat_item .wbtm_non_seat_icon {
+    font-size: 14px;
+  }
+  .wbtm_non_seat_item .wbtm_non_seat_label {
+    font-size: 8px;
+  }
+}

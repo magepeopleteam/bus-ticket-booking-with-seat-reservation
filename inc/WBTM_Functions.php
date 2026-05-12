@@ -402,6 +402,60 @@
 				return '';
 			}
 
+			/**
+			 * Passenger types for the per-seat pricing modal: any type with at least one route fare in
+			 * wbtm_bus_prices, or a non-empty saved per-seat override (so existing overrides stay editable).
+			 *
+			 * @param int $post_id Bus post ID.
+			 * @return array<int, array{id: string, label: string}>
+			 */
+			public static function get_ticket_types_for_seat_price_modal( $post_id ) {
+				$post_id = absint( $post_id );
+				if ( ! $post_id ) {
+					return [];
+				}
+				$all_types = self::get_ticket_types( $post_id );
+				if ( empty( $all_types ) ) {
+					return [];
+				}
+				$has_route = [];
+				$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+				if ( is_array( $price_infos ) && sizeof( $price_infos ) > 0 ) {
+					foreach ( $all_types as $tt ) {
+						$tid = (string) $tt['id'];
+						foreach ( $price_infos as $row ) {
+							$p = self::get_ticket_price_by_type( $row, $tid );
+							if ( $p !== '' ) {
+								$has_route[ $tid ] = true;
+								break;
+							}
+						}
+					}
+				}
+				$has_override = [];
+				$overrides    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_price_overrides', [] );
+				if ( is_array( $overrides ) && sizeof( $overrides ) > 0 ) {
+					foreach ( $overrides as $row ) {
+						if ( ! is_array( $row ) ) {
+							continue;
+						}
+						foreach ( $row as $tid => $val ) {
+							if ( $val !== '' && $val !== null ) {
+								$has_override[ (string) $tid ] = true;
+							}
+						}
+					}
+				}
+				$out = [];
+				foreach ( $all_types as $tt ) {
+					$tid = (string) $tt['id'];
+					if ( ! empty( $has_route[ $tid ] ) || ! empty( $has_override[ $tid ] ) ) {
+						$out[] = $tt;
+					}
+				}
+				return $out;
+			}
+
 			public static function get_legacy_price_fields( $ticket_prices = [] ) {
 				return [
 					'wbtm_bus_price'        => array_key_exists( 'adult', $ticket_prices ) ? $ticket_prices['adult'] : '',
@@ -648,8 +702,12 @@
 									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 										$slice_time = self::slice_buffer_time( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
-											$total_seat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
+											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
+												$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
+											} else {
+												$total_seat = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+											}
 											if ( $seat_type == 'wbtm_seat_plan' ) {
 												$sold_seat = max(
 													sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) ),
@@ -849,7 +907,47 @@
 				return $date;
 			}
 			//==========================//
-			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound' ) {
+			/**
+			 * Storage key for per-seat ticket price overrides (post meta wbtm_seat_price_overrides).
+			 * Lower deck: l|{seatLabel}, upper: u|{seatLabel}, cabin: c|{index}|{seatLabel}.
+			 *
+			 * @param string       $seat_name     Seat label (e.g. A1).
+			 * @param bool         $is_upper_deck Upper deck leg uses u| prefix when $cabin_index is null.
+			 * @param int|null     $cabin_index   Null for lower/upper; integer cabin index for cabin coaches.
+			 */
+			public static function seat_price_override_storage_key( $seat_name, $is_upper_deck, $cabin_index ) {
+				$seat_name = trim( (string) $seat_name );
+				if ( $seat_name === '' ) {
+					return '';
+				}
+				if ( null !== $cabin_index && $cabin_index !== '' ) {
+					return 'c|' . (int) $cabin_index . '|' . $seat_name;
+				}
+				return ( $is_upper_deck ? 'u' : 'l' ) . '|' . $seat_name;
+			}
+
+			/**
+			 * @param string $storage_key From seat_price_override_storage_key().
+			 * @param string $ticket_type_id Ticket type id (slug) as used in wbtm_ticket_types.
+			 * @return float|null Override amount in store raw price units, or null to use route fare.
+			 */
+			public static function get_seat_price_override_raw( $post_id, $storage_key, $ticket_type_id ) {
+				if ( ! $post_id || $storage_key === '' ) {
+					return null;
+				}
+				$map = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_price_overrides', [] );
+				if ( ! is_array( $map ) || ! isset( $map[ $storage_key ] ) || ! is_array( $map[ $storage_key ] ) ) {
+					return null;
+				}
+				$row  = $map[ $storage_key ];
+				$tkey = (string) $ticket_type_id;
+				if ( ! isset( $row[ $tkey ] ) || $row[ $tkey ] === '' || $row[ $tkey ] === null ) {
+					return null;
+				}
+				return max( 0, (float) $row[ $tkey ] );
+			}
+
+			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound', $seat_name = '', $cabin_index = null ) {
 				if ( $post_id && $start_route && $end_route ) {
 					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route, $price_leg );
 					if ( sizeof( $ticket_infos ) > 0 ) {
@@ -860,6 +958,11 @@
 						foreach ( $ticket_infos as $ticket_info ) {
 							if ( (string) $ticket_info['type'] === $requested_seat_type ) {
 								$price          = $ticket_info['price'];
+								$key            = self::seat_price_override_storage_key( $seat_name, (bool) $dd, $cabin_index );
+								$override_price = self::get_seat_price_override_raw( $post_id, $key, $requested_seat_type );
+								if ( null !== $override_price ) {
+									$price = $override_price;
+								}
 								$seat_plan_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 								if ( $seat_plan_type == 'wbtm_seat_plan' && $dd ) {
 									$seat_dd_increase = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_dd_price_parcent', 0 );

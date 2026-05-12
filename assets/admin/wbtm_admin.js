@@ -126,6 +126,7 @@
                         parent.find('[name="wbtm_seat_cols_hidden"]').val(column);
                         parent.find('[name="wbtm_seat_rows_hidden"]').val(row);
                         target.html(data);
+                        $(document).trigger("wbtm_seat_plan_dom_updated");
                         //wbtm_loaderRemove(parent);
                     },
                     error: function (response) {
@@ -191,6 +192,7 @@
                         parent.find('[name="wbtm_seat_cols_dd_hidden"]').val(column);
                         parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(row);
                         target.html(data);
+                        $(document).trigger("wbtm_seat_plan_dom_updated");
                         //wbtm_loaderRemove(parent);
                     },
                     error: function (response) {
@@ -367,5 +369,300 @@
             $('.wbtm_cabin_settings_area').addClass('wbtm_enable_rotation');
             $('.wbtm_seat_rotation_controls').show();
         }
+    });
+})(jQuery);
+//==========Seat Plan Drag & Drop Non-Seat Items=================//
+(function ($) {
+    "use strict";
+
+    let nonSeatItems = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.non_seat_items) ? wbtm_admin_var.non_seat_items : {};
+
+    function isNonSeatItem(val) {
+        return val && nonSeatItems.hasOwnProperty(val.toLowerCase().trim());
+    }
+
+    function getNonSeatIcon(val) {
+        let key = val.toLowerCase().trim();
+        return nonSeatItems[key] || '';
+    }
+
+    function applyBadge($container, itemType) {
+        $container.find('.wbtm_nonseat_badge').remove();
+        if (!itemType) {
+            $container.removeClass('wbtm_has_nonseat');
+            return;
+        }
+        let icon = getNonSeatIcon(itemType);
+        if (!icon) return;
+        let $badge = $('<span class="wbtm_nonseat_badge"><span class="fas ' + icon + '"></span></span>');
+        $container.addClass('wbtm_has_nonseat').append($badge);
+    }
+
+    function refreshAllBadges($scope) {
+        ($scope || $(document)).find('.wbtm_seat_container').each(function () {
+            let $c = $(this);
+            let val = $c.find('input.formControl').val();
+            if (val && isNonSeatItem(val)) {
+                applyBadge($c, val);
+            } else {
+                $c.find('.wbtm_nonseat_badge').remove();
+                $c.removeClass('wbtm_has_nonseat');
+            }
+        });
+    }
+
+    function initDragDrop($scope) {
+        $scope = $scope || $(document);
+
+        $scope.find('.wbtm_draggable_item').each(function () {
+            if ($(this).hasClass('ui-draggable')) return;
+            $(this).draggable({
+                helper: 'clone',
+                appendTo: 'body',
+                zIndex: 10000,
+                revert: 'invalid',
+                revertDuration: 200,
+                cursor: 'grabbing',
+                start: function () {
+                    $('.wbtm_seat_container').addClass('wbtm_drop_highlight');
+                },
+                stop: function () {
+                    $('.wbtm_seat_container').removeClass('wbtm_drop_highlight');
+                }
+            });
+        });
+
+        $scope.find('.wbtm_seat_container').each(function () {
+            if ($(this).hasClass('ui-droppable')) return;
+            $(this).droppable({
+                accept: '.wbtm_draggable_item',
+                hoverClass: 'wbtm_drop_hover',
+                tolerance: 'pointer',
+                drop: function (event, ui) {
+                    let itemType = ui.draggable.attr('data-item-type');
+                    let $input = $(this).find('input.formControl');
+                    $input.val(itemType).trigger('change');
+                    applyBadge($(this), itemType);
+                }
+            });
+        });
+
+        refreshAllBadges($scope);
+    }
+
+    $(document).ready(function () {
+        initDragDrop();
+        wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+    });
+
+    $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd, .wbtm_cabin_seat_plan', function () {
+        setTimeout(function () {
+            initDragDrop();
+            wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+        }, 50);
+    });
+
+    $(document).on('click', '.wbtm_generate_cabin_seats', function () {
+        setTimeout(function () {
+            initDragDrop();
+            wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+        }, 150);
+    });
+
+    $(document).on('change', '.wbtm_seat_container input.formControl', function () {
+        let $c = $(this).closest('.wbtm_seat_container');
+        let val = $(this).val();
+        if (val && isNonSeatItem(val)) {
+            applyBadge($c, val);
+        } else {
+            $c.find('.wbtm_nonseat_badge').remove();
+            $c.removeClass('wbtm_has_nonseat');
+        }
+        if ($(this).closest('.wbtm_settings_seat').length) {
+            wbtmSyncSeatPriceBadges($(this).closest('.wbtm_settings_seat'));
+        }
+    });
+
+    $(document).on('dblclick', '.wbtm_nonseat_badge', function () {
+        let $c = $(this).closest('.wbtm_seat_container');
+        $c.find('input.formControl').val('').trigger('change');
+        $(this).remove();
+        $c.removeClass('wbtm_has_nonseat');
+    });
+
+    // Per-seat ticket price overrides (Seat Configuration admin).
+    function wbtmGetOverridesField() {
+        let $scoped = $('.wbtm_settings_seat #wbtm_seat_price_overrides_field');
+        if ($scoped.length) {
+            return $scoped;
+        }
+        return $('#wbtm_seat_price_overrides_field');
+    }
+    function wbtmReadOverridesState() {
+        let $f = wbtmGetOverridesField();
+        if (!$f.length) {
+            return {};
+        }
+        try {
+            let parsed = JSON.parse($f.val() || '{}');
+            if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+                return {};
+            }
+            return parsed;
+        } catch (err) {
+            return {};
+        }
+    }
+    function wbtmWriteOverridesState(obj) {
+        let $f = wbtmGetOverridesField();
+        if ($f.length) {
+            $f.val(JSON.stringify(obj));
+        }
+    }
+    function wbtmBuildScopeKey(scope, cabinIndex, seatName) {
+        seatName = (seatName || '').trim();
+        if (!seatName) {
+            return '';
+        }
+        if (scope === 'c') {
+            return 'c|' + String(parseInt(cabinIndex, 10)) + '|' + seatName;
+        }
+        return scope + '|' + seatName;
+    }
+    function wbtmGetSavedPriceForType(row, typeId) {
+        if (!row || typeof row !== 'object') {
+            return '';
+        }
+        let id = String(typeId);
+        if (Object.prototype.hasOwnProperty.call(row, id)) {
+            let v = row[id];
+            if (v != null && String(v) !== '') {
+                return String(v);
+            }
+        }
+        return '';
+    }
+    function wbtmCountOverridesForKey(all, key) {
+        if (!key || !all || typeof all !== 'object' || !all[key] || typeof all[key] !== 'object') {
+            return 0;
+        }
+        let row = all[key];
+        let n = 0;
+        $.each(row, function (tid, val) {
+            if (val !== '' && val !== null && val !== undefined && !isNaN(parseFloat(val))) {
+                n++;
+            }
+        });
+        return n;
+    }
+    function wbtmSyncSeatPriceBadges($root) {
+        $root = $root && $root.length ? $root : $('.wbtm_settings_seat');
+        if (!$root || !$root.length) {
+            return;
+        }
+        let all = wbtmReadOverridesState();
+        $root.find('.wbtm_seat_price_view').each(function () {
+            let $btn = $(this);
+            if ($btn.hasClass('wbtm_seat_price_view_disabled')) {
+                $btn.find('.wbtm_seat_price_badge').remove();
+                return;
+            }
+            let $container = $btn.closest('.wbtm_seat_container');
+            let seatName = $.trim($container.find('input.formControl').first().val() || '');
+            if (!seatName) {
+                $btn.find('.wbtm_seat_price_badge').remove();
+                return;
+            }
+            let scope = $btn.attr('data-override-scope') || 'l';
+            let cabinIdx = $btn.attr('data-cabin-index');
+            let key = wbtmBuildScopeKey(scope, cabinIdx, seatName);
+            let c = wbtmCountOverridesForKey(all, key);
+            let $badge = $btn.find('.wbtm_seat_price_badge');
+            if (c > 0) {
+                if (!$badge.length) {
+                    $badge = $('<span class="wbtm_seat_price_badge" aria-hidden="true"></span>');
+                    $btn.append($badge);
+                }
+                $badge.text(String(c));
+            } else {
+                $badge.remove();
+            }
+        });
+    }
+
+    $(document).on('wbtm_seat_plan_dom_updated', function () {
+        wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+    });
+
+    var wbtmPriceModalKey = '';
+    $(document).on('click', '.wbtm_seat_price_view:not(:disabled)', function (e) {
+        e.preventDefault();
+        if ($(this).hasClass('wbtm_seat_price_view_disabled')) {
+            return;
+        }
+        let ticketTypes = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.ticket_types) ? wbtm_admin_var.ticket_types : [];
+        if (!ticketTypes.length) {
+            alert((wbtm_admin_var && wbtm_admin_var.seat_price_no_types) ? wbtm_admin_var.seat_price_no_types : '');
+            return;
+        }
+        let $btn = $(this);
+        let $container = $btn.closest('.wbtm_seat_container');
+        let seatName = $.trim($container.find('input.formControl').first().val() || '');
+        if (!seatName) {
+            alert((wbtm_admin_var && wbtm_admin_var.seat_price_need_name) ? wbtm_admin_var.seat_price_need_name : '');
+            return;
+        }
+        let scope = $btn.attr('data-override-scope') || 'l';
+        let cabinIdx = $btn.attr('data-cabin-index');
+        wbtmPriceModalKey = wbtmBuildScopeKey(scope, cabinIdx, seatName);
+        if (!wbtmPriceModalKey) {
+            return;
+        }
+        let all = wbtmReadOverridesState();
+        let row = all[wbtmPriceModalKey] || {};
+        let $modal = $('#wbtm_seat_price_modal');
+        let $body = $modal.find('.wbtm_seat_price_modal_body');
+        $body.empty();
+        $modal.find('.wbtm_seat_price_modal_seat_name').text(seatName);
+        ticketTypes.forEach(function (tt) {
+            let v = wbtmGetSavedPriceForType(row, tt.id);
+            let $r = $('<div class="wbtm_seat_price_row"/>');
+            $r.append($('<label class="wbtm_seat_price_label"/>').text(tt.label + ' (' + tt.id + ')'));
+            let $inp = $('<input type="number" class="formControl wbtm_seat_price_input" step="0.01" min="0"/>');
+            $inp.attr('data-type-id', String(tt.id));
+            if (v !== '') {
+                $inp.val(v);
+            }
+            $r.append($inp);
+            $body.append($r);
+        });
+        $modal.show();
+    });
+    $(document).on('click', '.wbtm_seat_price_modal_close, .wbtm_seat_price_modal_cancel, .wbtm_seat_price_modal_overlay', function (e) {
+        e.preventDefault();
+        $('#wbtm_seat_price_modal').hide();
+    });
+    $(document).on('click', '.wbtm_seat_price_modal_save', function (e) {
+        e.preventDefault();
+        if (!wbtmPriceModalKey) {
+            return;
+        }
+        let all = wbtmReadOverridesState();
+        let newRow = {};
+        $('#wbtm_seat_price_modal .wbtm_seat_price_input').each(function () {
+            let tid = $(this).attr('data-type-id');
+            let val = $.trim($(this).val());
+            if (val !== '' && !isNaN(parseFloat(val))) {
+                newRow[String(tid)] = String(Math.max(0, parseFloat(val)));
+            }
+        });
+        if ($.isEmptyObject(newRow)) {
+            delete all[wbtmPriceModalKey];
+        } else {
+            all[wbtmPriceModalKey] = newRow;
+        }
+        wbtmWriteOverridesState(all);
+        wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+        $('#wbtm_seat_price_modal').hide();
     });
 })(jQuery);

@@ -8,6 +8,90 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Seat_Configuration')) {
 		class WBTM_Seat_Configuration {
+			private static $non_seat_items = [
+				'door'           => ['icon' => 'fa-door-open',       'label' => 'Door'],
+				'toilet'         => ['icon' => 'fa-restroom',        'label' => 'Toilet'],
+				'wc'             => ['icon' => 'fa-restroom',        'label' => 'Toilet'],
+				'driver'         => ['icon' => 'fa-user-tie',        'label' => 'Driver'],
+				'window'         => ['icon' => 'fa-window-maximize', 'label' => 'Window'],
+				'food_stall'     => ['icon' => 'fa-utensils',        'label' => 'Food Stall'],
+				'luggage'        => ['icon' => 'fa-suitcase',        'label' => 'Luggage'],
+				'stairs'         => ['icon' => 'fa-level-up-alt',    'label' => 'Stairs'],
+				'aisle'          => ['icon' => 'fa-arrows-alt-h',    'label' => 'Aisle'],
+				'emergency_exit' => ['icon' => 'fa-sign-out-alt',    'label' => 'Exit'],
+			];
+			public static function is_non_seat_item($value) {
+				return isset(self::$non_seat_items[strtolower(trim($value))]);
+			}
+			public static function get_non_seat_item_data($value) {
+				$key = strtolower(trim($value));
+				return self::$non_seat_items[$key] ?? null;
+			}
+			public static function get_non_seat_keywords() {
+				return array_keys(self::$non_seat_items);
+			}
+			public static function get_toolbar_items() {
+				$toolbar = [];
+				$seen = [];
+				foreach (self::$non_seat_items as $keyword => $data) {
+					if ($keyword === 'wc') {
+						continue;
+					}
+					if (in_array($data['label'], $seen, true)) {
+						continue;
+					}
+					$toolbar[$keyword] = $data;
+					$seen[] = $data['label'];
+				}
+				return $toolbar;
+			}
+			public static function count_actual_seats($post_id) {
+				$total = 0;
+				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
+				if ($seat_type !== 'wbtm_seat_plan') {
+					return (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+				}
+				$cabin_mode = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				$has_cabin = $cabin_mode === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function ($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+				if ($has_cabin) {
+					foreach ($cabin_config as $index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
+						$cabin_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
+						foreach ($cabin_seats as $row) {
+							foreach ($row as $key => $val) {
+								if (strpos($key, '_rotation') !== false) continue;
+								if (!empty($val) && !self::is_non_seat_item($val)) {
+									$total++;
+								}
+							}
+						}
+					}
+				} else {
+					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+					foreach ($seat_infos as $row) {
+						foreach ($row as $key => $val) {
+							if (strpos($key, '_rotation') !== false) continue;
+							if (!empty($val) && !self::is_non_seat_item($val)) {
+								$total++;
+							}
+						}
+					}
+					$show_upper = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
+					if ($show_upper === 'yes') {
+						$upper_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+						foreach ($upper_seats as $row) {
+							foreach ($row as $key => $val) {
+								if (strpos($key, '_rotation') !== false) continue;
+								if (!empty($val) && !self::is_non_seat_item($val)) {
+									$total++;
+								}
+							}
+						}
+					}
+				}
+				return $total;
+			}
 			public function __construct() {
 				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
@@ -26,6 +110,31 @@
                 <div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
                     <h3><?php esc_html_e('Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <p><?php esc_html_e('Configure seats for bus/train with support for multiple cabins/coaches.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+					<?php
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+					$wbtm_price_overrides = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_price_overrides', []);
+					if (!is_array($wbtm_price_overrides)) {
+						$wbtm_price_overrides = [];
+					}
+					?>
+					<?php // Textarea avoids HTML attribute size/encoding limits for JSON; value is synced only via JS. ?>
+					<textarea name="wbtm_seat_price_overrides" id="wbtm_seat_price_overrides_field" class="wbtm_seat_price_overrides_field" rows="1" cols="40" autocomplete="off" tabindex="-1" aria-hidden="true"><?php echo esc_textarea(!empty($wbtm_price_overrides) ? wp_json_encode($wbtm_price_overrides) : '{}'); ?></textarea>
+					<div id="wbtm_seat_price_modal" class="wbtm_seat_price_modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="wbtm_seat_price_modal_title">
+						<div class="wbtm_seat_price_modal_overlay"></div>
+						<div class="wbtm_seat_price_modal_box">
+							<div class="wbtm_seat_price_modal_header">
+								<h4 id="wbtm_seat_price_modal_title"><?php esc_html_e('Per-seat ticket prices', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
+								<button type="button" class="wbtm_seat_price_modal_close" aria-label="<?php esc_attr_e('Close', 'bus-ticket-booking-with-seat-reservation'); ?>">&times;</button>
+							</div>
+							<p class="wbtm_seat_price_modal_hint"><?php esc_html_e('Leave a field empty to use the route default fare for that ticket type. Prices are in store currency (same as routing & pricing).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+							<p class="wbtm_seat_price_modal_seat_label"><strong><?php esc_html_e('Seat:', 'bus-ticket-booking-with-seat-reservation'); ?></strong> <span class="wbtm_seat_price_modal_seat_name"></span></p>
+							<div class="wbtm_seat_price_modal_body"></div>
+							<div class="wbtm_seat_price_modal_footer">
+								<button type="button" class="button button-primary wbtm_seat_price_modal_save"><?php esc_html_e('Save', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+								<button type="button" class="button wbtm_seat_price_modal_cancel"><?php esc_html_e('Cancel', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+							</div>
+						</div>
+					</div>
                     <div class="">
                         <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight">
                             <div class="col_6 _dFlex_fdColumn">
@@ -248,6 +357,26 @@
                 </div>
 				<?php
 			}
+			public function render_seat_item_toolbar() {
+				$items = self::get_toolbar_items();
+				?>
+				<div class="wbtm_seat_toolbar">
+					<div class="wbtm_seat_toolbar_label"><?php esc_html_e('Drag items to seat grid:', 'bus-ticket-booking-with-seat-reservation'); ?></div>
+					<div class="wbtm_seat_toolbar_items">
+						<?php foreach ($items as $keyword => $data) : ?>
+							<div class="wbtm_draggable_item" data-item-type="<?php echo esc_attr($keyword); ?>" title="<?php echo esc_attr($data['label']); ?>">
+								<span class="fas <?php echo esc_attr($data['icon']); ?>"></span>
+								<span class="wbtm_toolbar_item_label"><?php echo esc_html($data['label']); ?></span>
+							</div>
+						<?php endforeach; ?>
+						<div class="wbtm_draggable_item wbtm_draggable_eraser" data-item-type="" title="<?php esc_attr_e('Eraser - clear cell', 'bus-ticket-booking-with-seat-reservation'); ?>">
+							<span class="fas fa-eraser"></span>
+							<span class="wbtm_toolbar_item_label"><?php esc_html_e('Clear', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
 			public function create_seat_plan($post_id, $seat_row, $seat_column, $dd = false) {
 				if ($seat_row > 0 && $seat_column > 0) {
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
@@ -256,6 +385,7 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<?php $this->render_seat_item_toolbar(); ?>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_item_insert wbtm_sortable_area">
@@ -296,6 +426,10 @@
                                            value="<?php echo esc_attr($seat_name); ?>"
                                     />
                                 </label>
+								<button type="button" class="button button-small wbtm_seat_price_view" data-override-scope="<?php echo esc_attr($dd ? 'u' : 'l'); ?>"
+									title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+									<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</button>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -324,6 +458,7 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<?php $this->render_seat_item_toolbar(); ?>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
@@ -346,7 +481,7 @@
 									<?php for ($j = 1; $j <= $cols; $j++) { ?>
 										<?php $key = 'cabin_' . $cabin_index . '_seat' . $j; ?>
                                         <th>
-                                            <div class="wbtm_seat_container">
+                                                                <div class="wbtm_seat_container">
                                                 <label>
                                                     <input type="text" class="formControl wbtm_id_validation"
                                                            name="wbtm_template_<?php echo esc_attr($key); ?>[]"
@@ -355,6 +490,10 @@
                                                            disabled
                                                     />
                                                 </label>
+												<button type="button" class="button button-small wbtm_seat_price_view wbtm_seat_price_view_disabled" disabled data-override-scope="c" data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
+													title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+													<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
+												</button>
 												<?php if ($enable_rotation == 'yes') { ?>
                                                     <div class="wbtm_seat_rotation_controls">
                                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -400,6 +539,10 @@
                                            value="<?php echo esc_attr($seat_name); ?>"
                                     />
                                 </label>
+								<button type="button" class="button button-small wbtm_seat_price_view" data-override-scope="c" data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
+									title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
+									<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</button>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -438,7 +581,7 @@
                         <div class="mpPanel wbtm_cabin_item" data-cabin-index="<?php echo esc_attr($index); ?>">
                             <div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
                                 <div class="_dFlex_fdColumn">
-                                    <label><?php printf('Cabin %d Configuration', esc_html($index + 1)); ?></label>
+                                    <label><?php echo esc_html(sprintf('Cabin %d Configuration', $index + 1)); ?></label>
                                     <span><?php esc_html_e('Configure seat layout for this cabin.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>
                             </div>
@@ -478,7 +621,7 @@
                                     </div>
                                     <div class="col_6 wbtm_cabin_fields">
                                         <div class="wbtm_cabin_seat_preview" data-cabin-index="<?php echo esc_attr($index); ?>">
-                                            <label><?php printf('Cabin %d Preview', esc_html($index + 1)); ?></label>
+                                            <label><?php echo esc_html(sprintf('Cabin %d Preview', $index + 1)); ?></label>
                                             <div class="wbtm_cabin_seat_plan">
 												<?php
 													$cabin_rows = $cabin['rows'] ?? 0;
@@ -502,7 +645,7 @@
 				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
 					wp_send_json_error( 'Invalid nonce!' );
 				}
-				if ( ! current_user_can( 'edit_posts' ) ) {
+				if ( ! current_user_can( 'manage_options' ) ) {
 					wp_send_json_error( 'Unauthorized' );
 				}
 				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
@@ -518,7 +661,7 @@
 				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
 					wp_send_json_error( 'Invalid nonce!' );
 				}
-				if ( ! current_user_can( 'edit_posts' ) ) {
+				if ( ! current_user_can( 'manage_options' ) ) {
 					wp_send_json_error( 'Unauthorized' );
 				}
 				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;

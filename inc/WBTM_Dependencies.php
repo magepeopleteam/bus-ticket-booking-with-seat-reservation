@@ -79,10 +79,36 @@
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), time());
+				$non_seat_icon_map = [];
+				if (class_exists('WBTM_Seat_Configuration')) {
+					foreach (WBTM_Seat_Configuration::get_toolbar_items() as $kw => $d) {
+						$non_seat_icon_map[$kw] = $d['icon'];
+					}
+					$non_seat_icon_map['wc'] = 'fa-restroom';
+				}
+				$ticket_types_payload = [];
+				if (function_exists('get_current_screen')) {
+					$screen = get_current_screen();
+					if ($screen && $screen->post_type === 'wbtm_bus' && isset($_GET['post'])) {
+						$bus_pid = absint($_GET['post']);
+						if ($bus_pid > 0 && class_exists('WBTM_Functions')) {
+							foreach (WBTM_Functions::get_ticket_types_for_seat_price_modal($bus_pid) as $tt) {
+								$ticket_types_payload[] = [
+									'id' => (string) $tt['id'],
+									'label' => $tt['label'],
+								];
+							}
+						}
+					}
+				}
 				wp_localize_script( 'wbtm_admin', 'wbtm_admin_var', array(
 					'url'               => admin_url( 'admin-ajax.php' ),
 					'nonce'             => wp_create_nonce( 'wbtm_admin_nonce' ),
 					'seat_row_col_error' => esc_html__( 'Number of rows & columns must be greater than 0', 'bus-ticket-booking-with-seat-reservation' ),
+					'non_seat_items'    => $non_seat_icon_map,
+					'ticket_types'      => $ticket_types_payload,
+					'seat_price_need_name' => esc_html__( 'Enter a seat label first (e.g. A1).', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_price_no_types' => esc_html__( 'Add a route fare for at least one passenger type under Routing & Pricing, or save a per-seat price first.', 'bus-ticket-booking-with-seat-reservation' ),
 				) );
 				do_action('wbtm_add_admin_script');
 			}

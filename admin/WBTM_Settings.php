@@ -115,7 +115,13 @@
 				}
 			}
 			public function save_settings($post_id) {
-				if (!isset($_POST['wbtm_type_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_type_nonce'])), 'wbtm_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
+				if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_type_nonce'] ) ), 'wbtm_type_nonce' ) ) {
+					return;
+				}
+				if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+					return;
+				}
+				if ( ! current_user_can( 'manage_options' ) ) {
 					return;
 				}
 				//General settings
@@ -460,7 +466,7 @@
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$cabin_mode_enabled = isset($_POST['wbtm_cabin_mode_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_cabin_mode_enabled'])) ? 'yes' : 'no';
 					update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
-					$cabin_count = isset($_POST['wbtm_cabin_count']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_count'])) : 1;
+					$cabin_count = isset($_POST['wbtm_cabin_count']) ? max(1, min(20, absint(wp_unslash($_POST['wbtm_cabin_count'])))) : 1;
 					$cabin_names = isset($_POST['wbtm_cabin_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_name'])) : [];
 					$cabin_enabled = isset($_POST['wbtm_cabin_enabled']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_enabled'])) : [];
 					$cabin_rows = isset($_POST['wbtm_cabin_rows']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_rows'])) : [];
@@ -491,10 +497,12 @@
 							$cabin_seat_info = [];
 							if ($rows > 0 && $cols > 0) {
 								for ($j = 1; $j <= $cols; $j++) {
-									/*$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])) : null;
-									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])) : null;*/
-									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ?$_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j] : null;
-									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'] : null;
+									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])
+										? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]))
+										: null;
+									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])
+										? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']))
+										: null;
 									if ($col_infos === null) {
 										$col_infos = [];
 									} elseif (is_array($col_infos)) {
@@ -517,7 +525,7 @@
 											if ($enable_rotation == 'yes') {
 												$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j . '_rotation'] = $rotation_value;
 											}
-											if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+											if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 												$total_seat++;
 											}
 										}
@@ -545,11 +553,12 @@
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
-							/*$col_infos = isset($_POST['wbtm_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j])) : '';
-							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j . '_rotation'])) : '';*/
-
-                            $col_infos = isset($_POST['wbtm_seat' . $j]) ? $_POST['wbtm_seat' . $j] : '';
-                            $col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? $_POST['wbtm_seat' . $j . '_rotation'] : '';
+							$col_infos = isset($_POST['wbtm_seat' . $j])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_seat' . $j]))
+								: [];
+							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation'])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_seat' . $j . '_rotation']))
+								: [];
 
 							if ($col_infos === null) {
 								$col_infos = [];
@@ -572,7 +581,7 @@
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$lower_deck_info[$i]['seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 									$total_seat++;
 								}
 							}
@@ -583,7 +592,7 @@
 					$wbtm_show_upper_desk = isset($_POST['wbtm_show_upper_desk']) && sanitize_text_field(wp_unslash($_POST['wbtm_show_upper_desk'])) ? 'yes' : 'no';
 					$rows_dd = isset($_POST['wbtm_seat_rows_dd_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_dd_hidden'])) : 0;
 					$cols_dd = isset($_POST['wbtm_seat_cols_dd_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_cols_dd_hidden'])) : 0;
-					$wbtm_seat_dd_price_parcent = isset($_POST['wbtm_seat_dd_price_parcent']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_dd_price_parcent'])) : '';
+					$wbtm_seat_dd_price_parcent = isset($_POST['wbtm_seat_dd_price_parcent']) ? max(0, absint(wp_unslash($_POST['wbtm_seat_dd_price_parcent']))) : 0;
 					update_post_meta($post_id, 'show_upper_desk', $wbtm_show_upper_desk);
 					update_post_meta($post_id, 'wbtm_seat_rows_dd', $rows_dd);
 					update_post_meta($post_id, 'wbtm_seat_cols_dd', $cols_dd);
@@ -591,11 +600,12 @@
 					$upper_deck_info = [];
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
-							/*$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j])) : null;
-							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j . '_rotation'])) : null;*/
-
-							$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ?$_POST['wbtm_dd_seat' . $j] : null;
-							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? $_POST['wbtm_dd_seat' . $j . '_rotation'] : null;
+							$col_infos = isset($_POST['wbtm_dd_seat' . $j])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_dd_seat' . $j]))
+								: null;
+							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation'])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_dd_seat' . $j . '_rotation']))
+								: null;
 							if ($col_infos === null) {
 								$col_infos = [];
 							} elseif (is_array($col_infos)) {
@@ -617,7 +627,7 @@
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc' && $wbtm_show_upper_desk == 'yes') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value) && $wbtm_show_upper_desk == 'yes') {
 									$total_seat++;
 								}
 							}
@@ -630,6 +640,38 @@
 						$current_seat = isset($_POST['wbtm_get_total_seat']) ? sanitize_text_field(wp_unslash($_POST['wbtm_get_total_seat'])) : 0;
 						$total_seat = $seat_type == 'wbtm_seat_plan' ? $total_seat : $current_seat;
 						update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
+					}
+					// Per-seat ticket price overrides (modal in seat plan admin; JSON object of scope key => [ type_id => raw price ]).
+					if (array_key_exists('wbtm_seat_price_overrides', $_POST)) {
+						$raw = wp_unslash((string) $_POST['wbtm_seat_price_overrides']);
+						if ($raw !== '') {
+							$decoded = json_decode($raw, true);
+							if (JSON_ERROR_NONE === json_last_error() && is_array($decoded)) {
+								$clean = [];
+								foreach ($decoded as $scope => $rows) {
+									$scope_s = (string) $scope;
+									// Keys must match l|Seat, u|Seat, or c|N|Seat — reject anything malformed.
+									if ( ! preg_match( '/^(l|u)\|[^|]+$|^c\|\d+\|[^|]+$/', $scope_s ) || ! is_array( $rows ) ) {
+										continue;
+									}
+									$clean[ $scope_s ] = [];
+									foreach ($rows as $tid => $price) {
+										$t_s = sanitize_text_field((string) $tid);
+										if ($t_s === '' || $price === '' || $price === null) {
+											continue;
+										}
+										if (!is_numeric($price)) {
+											continue;
+										}
+										$clean[ $scope_s ][ $t_s ] = (string) max(0, floatval($price));
+									}
+									if (empty($clean[ $scope_s ])) {
+										unset($clean[ $scope_s ]);
+									}
+								}
+								update_post_meta($post_id, 'wbtm_seat_price_overrides', $clean);
+							}
+						}
 					}
 				}
 				//Extra service configuration
