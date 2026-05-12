@@ -369,3 +369,112 @@
         }
     });
 })(jQuery);
+//==========Seat Plan Drag & Drop Non-Seat Items=================//
+(function ($) {
+    "use strict";
+
+    let nonSeatItems = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.non_seat_items) ? wbtm_admin_var.non_seat_items : {};
+
+    function isNonSeatItem(val) {
+        return val && nonSeatItems.hasOwnProperty(val.toLowerCase().trim());
+    }
+
+    function getNonSeatIcon(val) {
+        let key = val.toLowerCase().trim();
+        return nonSeatItems[key] || '';
+    }
+
+    function applyBadge($container, itemType) {
+        $container.find('.wbtm_nonseat_badge').remove();
+        if (!itemType) {
+            $container.removeClass('wbtm_has_nonseat');
+            return;
+        }
+        let icon = getNonSeatIcon(itemType);
+        if (!icon) return;
+        let $badge = $('<span class="wbtm_nonseat_badge"><span class="fas ' + icon + '"></span></span>');
+        $container.addClass('wbtm_has_nonseat').append($badge);
+    }
+
+    function refreshAllBadges($scope) {
+        ($scope || $(document)).find('.wbtm_seat_container').each(function () {
+            let $c = $(this);
+            let val = $c.find('input.formControl').val();
+            if (val && isNonSeatItem(val)) {
+                applyBadge($c, val);
+            } else {
+                $c.find('.wbtm_nonseat_badge').remove();
+                $c.removeClass('wbtm_has_nonseat');
+            }
+        });
+    }
+
+    function initDragDrop($scope) {
+        $scope = $scope || $(document);
+
+        $scope.find('.wbtm_draggable_item').each(function () {
+            if ($(this).hasClass('ui-draggable')) return;
+            $(this).draggable({
+                helper: 'clone',
+                appendTo: 'body',
+                zIndex: 10000,
+                revert: 'invalid',
+                revertDuration: 200,
+                cursor: 'grabbing',
+                start: function () {
+                    $('.wbtm_seat_container').addClass('wbtm_drop_highlight');
+                },
+                stop: function () {
+                    $('.wbtm_seat_container').removeClass('wbtm_drop_highlight');
+                }
+            });
+        });
+
+        $scope.find('.wbtm_seat_container').each(function () {
+            if ($(this).hasClass('ui-droppable')) return;
+            $(this).droppable({
+                accept: '.wbtm_draggable_item',
+                hoverClass: 'wbtm_drop_hover',
+                tolerance: 'pointer',
+                drop: function (event, ui) {
+                    let itemType = ui.draggable.attr('data-item-type');
+                    let $input = $(this).find('input.formControl');
+                    $input.val(itemType).trigger('change');
+                    applyBadge($(this), itemType);
+                }
+            });
+        });
+
+        refreshAllBadges($scope);
+    }
+
+    $(document).ready(function () {
+        initDragDrop();
+    });
+
+    $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd, .wbtm_cabin_seat_plan', function () {
+        setTimeout(function () { initDragDrop(); }, 50);
+    });
+
+    $(document).on('click', '.wbtm_generate_cabin_seats', function () {
+        setTimeout(function () { initDragDrop(); }, 150);
+    });
+
+    $(document).on('change', '.wbtm_seat_container input.formControl', function () {
+        let $c = $(this).closest('.wbtm_seat_container');
+        let val = $(this).val();
+        if (val && isNonSeatItem(val)) {
+            applyBadge($c, val);
+        } else {
+            $c.find('.wbtm_nonseat_badge').remove();
+            $c.removeClass('wbtm_has_nonseat');
+        }
+    });
+
+    $(document).on('dblclick', '.wbtm_nonseat_badge', function () {
+        let $c = $(this).closest('.wbtm_seat_container');
+        $c.find('input.formControl').val('').trigger('change');
+        $(this).remove();
+        $c.removeClass('wbtm_has_nonseat');
+    });
+})(jQuery);

@@ -8,6 +8,90 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Seat_Configuration')) {
 		class WBTM_Seat_Configuration {
+			private static $non_seat_items = [
+				'door'           => ['icon' => 'fa-door-open',       'label' => 'Door'],
+				'toilet'         => ['icon' => 'fa-restroom',        'label' => 'Toilet'],
+				'wc'             => ['icon' => 'fa-restroom',        'label' => 'Toilet'],
+				'driver'         => ['icon' => 'fa-user-tie',        'label' => 'Driver'],
+				'window'         => ['icon' => 'fa-window-maximize', 'label' => 'Window'],
+				'food_stall'     => ['icon' => 'fa-utensils',        'label' => 'Food Stall'],
+				'luggage'        => ['icon' => 'fa-suitcase',        'label' => 'Luggage'],
+				'stairs'         => ['icon' => 'fa-level-up-alt',    'label' => 'Stairs'],
+				'aisle'          => ['icon' => 'fa-arrows-alt-h',    'label' => 'Aisle'],
+				'emergency_exit' => ['icon' => 'fa-sign-out-alt',    'label' => 'Exit'],
+			];
+			public static function is_non_seat_item($value) {
+				return isset(self::$non_seat_items[strtolower(trim($value))]);
+			}
+			public static function get_non_seat_item_data($value) {
+				$key = strtolower(trim($value));
+				return self::$non_seat_items[$key] ?? null;
+			}
+			public static function get_non_seat_keywords() {
+				return array_keys(self::$non_seat_items);
+			}
+			public static function get_toolbar_items() {
+				$toolbar = [];
+				$seen = [];
+				foreach (self::$non_seat_items as $keyword => $data) {
+					if ($keyword === 'wc') {
+						continue;
+					}
+					if (in_array($data['label'], $seen, true)) {
+						continue;
+					}
+					$toolbar[$keyword] = $data;
+					$seen[] = $data['label'];
+				}
+				return $toolbar;
+			}
+			public static function count_actual_seats($post_id) {
+				$total = 0;
+				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
+				if ($seat_type !== 'wbtm_seat_plan') {
+					return (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+				}
+				$cabin_mode = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				$has_cabin = $cabin_mode === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function ($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
+				if ($has_cabin) {
+					foreach ($cabin_config as $index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
+						$cabin_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
+						foreach ($cabin_seats as $row) {
+							foreach ($row as $key => $val) {
+								if (strpos($key, '_rotation') !== false) continue;
+								if (!empty($val) && !self::is_non_seat_item($val)) {
+									$total++;
+								}
+							}
+						}
+					}
+				} else {
+					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
+					foreach ($seat_infos as $row) {
+						foreach ($row as $key => $val) {
+							if (strpos($key, '_rotation') !== false) continue;
+							if (!empty($val) && !self::is_non_seat_item($val)) {
+								$total++;
+							}
+						}
+					}
+					$show_upper = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
+					if ($show_upper === 'yes') {
+						$upper_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info_dd', []);
+						foreach ($upper_seats as $row) {
+							foreach ($row as $key => $val) {
+								if (strpos($key, '_rotation') !== false) continue;
+								if (!empty($val) && !self::is_non_seat_item($val)) {
+									$total++;
+								}
+							}
+						}
+					}
+				}
+				return $total;
+			}
 			public function __construct() {
 				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
 				/*********************/
@@ -248,6 +332,26 @@
                 </div>
 				<?php
 			}
+			public function render_seat_item_toolbar() {
+				$items = self::get_toolbar_items();
+				?>
+				<div class="wbtm_seat_toolbar">
+					<div class="wbtm_seat_toolbar_label"><?php esc_html_e('Drag items to seat grid:', 'bus-ticket-booking-with-seat-reservation'); ?></div>
+					<div class="wbtm_seat_toolbar_items">
+						<?php foreach ($items as $keyword => $data) : ?>
+							<div class="wbtm_draggable_item" data-item-type="<?php echo esc_attr($keyword); ?>" title="<?php echo esc_attr($data['label']); ?>">
+								<span class="fas <?php echo esc_attr($data['icon']); ?>"></span>
+								<span class="wbtm_toolbar_item_label"><?php echo esc_html($data['label']); ?></span>
+							</div>
+						<?php endforeach; ?>
+						<div class="wbtm_draggable_item wbtm_draggable_eraser" data-item-type="" title="<?php esc_attr_e('Eraser - clear cell', 'bus-ticket-booking-with-seat-reservation'); ?>">
+							<span class="fas fa-eraser"></span>
+							<span class="wbtm_toolbar_item_label"><?php esc_html_e('Clear', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
 			public function create_seat_plan($post_id, $seat_row, $seat_column, $dd = false) {
 				if ($seat_row > 0 && $seat_column > 0) {
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
@@ -256,6 +360,7 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<?php $this->render_seat_item_toolbar(); ?>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_item_insert wbtm_sortable_area">
@@ -324,6 +429,7 @@
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
+						<?php $this->render_seat_item_toolbar(); ?>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">

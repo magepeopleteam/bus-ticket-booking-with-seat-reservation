@@ -57,6 +57,36 @@
         }
     }
 
+    if (!function_exists('wbtm_is_non_seat_item_check')) {
+        function wbtm_is_non_seat_item_check($value) {
+            if (class_exists('WBTM_Seat_Configuration')) {
+                return WBTM_Seat_Configuration::is_non_seat_item($value);
+            }
+            $non_seat_keys = ['door','toilet','wc','driver','window','food_stall','luggage','stairs','aisle','emergency_exit'];
+            return in_array(strtolower(trim($value)), $non_seat_keys, true);
+        }
+    }
+    if (!function_exists('wbtm_get_non_seat_data_check')) {
+        function wbtm_get_non_seat_data_check($value) {
+            if (class_exists('WBTM_Seat_Configuration')) {
+                return WBTM_Seat_Configuration::get_non_seat_item_data($value);
+            }
+            $items = [
+                'door' => ['icon' => 'fa-door-open', 'label' => 'Door'],
+                'toilet' => ['icon' => 'fa-restroom', 'label' => 'Toilet'],
+                'wc' => ['icon' => 'fa-restroom', 'label' => 'Toilet'],
+                'driver' => ['icon' => 'fa-user-tie', 'label' => 'Driver'],
+                'window' => ['icon' => 'fa-window-maximize', 'label' => 'Window'],
+                'food_stall' => ['icon' => 'fa-utensils', 'label' => 'Food Stall'],
+                'luggage' => ['icon' => 'fa-suitcase', 'label' => 'Luggage'],
+                'stairs' => ['icon' => 'fa-level-up-alt', 'label' => 'Stairs'],
+                'aisle' => ['icon' => 'fa-arrows-alt-h', 'label' => 'Aisle'],
+                'emergency_exit' => ['icon' => 'fa-sign-out-alt', 'label' => 'Exit'],
+            ];
+            return $items[strtolower(trim($value))] ?? null;
+        }
+    }
+
     if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
     //		$date = $_POST['date'] ?? '';
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -79,8 +109,11 @@
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             foreach ($seat_infos as $seats) {
                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                foreach ($seats as $seat) {
-                    if (!empty($seat)) {
+                foreach ($seats as $seat_key_tmp => $seat) {
+                    if (strpos($seat_key_tmp, '_rotation') !== false) {
+                        continue;
+                    }
+                    if (!empty($seat) && !wbtm_is_non_seat_item_check($seat)) {
                         $seat_count++;
                     }
                 }
@@ -169,8 +202,14 @@
                                                         }
                                                         ?>
                                                         <?php if ($seat_name): ?>
-                                                            <?php if ($seat_name == 'door' || $seat_name == 'wc'): ?>
-                                                                <td><?php echo esc_html($seat_name); ?></td>
+                                                            <?php if (wbtm_is_non_seat_item_check($seat_name)):
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $ns_data = wbtm_get_non_seat_data_check($seat_name);
+                                                            ?>
+                                                                <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data['label']); ?>">
+                                                                    <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data['icon']); ?>"></span>
+                                                                    <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data['label']); ?></span>
+                                                                </td>
                                                             <?php else: ?>
                                                                 <?php
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -182,8 +221,6 @@
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
-                                                                // Enhanced by Shahnur Alam - 2025-10-08
-                                                                // Fix cabin seat availability check - use cabin-specific identifiers
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -291,8 +328,14 @@
                                             }
                                             ?>
                                             <?php if ($seat_name) { ?>
-                                                <?php if ($seat_name == 'door' || $seat_name == 'wc') { ?>
-                                                    <td><?php echo esc_html($seat_name); ?></td>
+                                                <?php if (wbtm_is_non_seat_item_check($seat_name)) {
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $ns_data_lower = wbtm_get_non_seat_data_check($seat_name);
+                                                ?>
+                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_lower['label']); ?>">
+                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_lower['icon']); ?>"></span>
+                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_lower['label']); ?></span>
+                                                    </td>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -307,8 +350,6 @@
                                                     <th>
                                                         <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
                                                             <?php
-                                                            // Enhanced by Shahnur Alam - 2025-10-08
-                                                            // Check both legacy seat names and cabin-specific identifiers for backward compatibility
                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $is_booked_legacy = in_array($seat_name, $seat_booked);
                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -398,8 +439,14 @@
                                             }
                                             ?>
                                             <?php if ($info) { ?>
-                                                <?php if ($info == 'door' || $info == 'wc') { ?>
-                                                    <td><?php echo esc_html($info) ?></td>
+                                                <?php if (wbtm_is_non_seat_item_check($info)) {
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $ns_data_upper = wbtm_get_non_seat_data_check($info);
+                                                ?>
+                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_upper['label']); ?>">
+                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_upper['icon']); ?>"></span>
+                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_upper['label']); ?></span>
+                                                    </td>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -411,8 +458,6 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
-                                                    // Enhanced by Shahnur Alam - 2025-10-08
-                                                    // Fix upper deck seat availability check - support cabin-specific identifiers
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
                                                     ?>

@@ -280,7 +280,10 @@
 						$guest_ids= get_posts($args);
 						if(sizeof($guest_ids)>0){
 							foreach ($guest_ids as $guest_id){
-								$seat_booked[]=WBTM_Global_Function::get_post_info($guest_id,'wbtm_seat');
+								$seat_name = WBTM_Global_Function::get_post_info($guest_id,'wbtm_seat');
+								if ($seat_name && !(class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::is_non_seat_item($seat_name))) {
+									$seat_booked[] = $seat_name;
+								}
 							}
 						}
 					}

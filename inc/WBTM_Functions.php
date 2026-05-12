@@ -648,8 +648,12 @@
 									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 										$slice_time = self::slice_buffer_time( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
-											$total_seat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
+											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
+												$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
+											} else {
+												$total_seat = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+											}
 											if ( $seat_type == 'wbtm_seat_plan' ) {
 												$sold_seat = max(
 													sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) ),

@@ -79,10 +79,18 @@
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), time());
+				$non_seat_icon_map = [];
+				if (class_exists('WBTM_Seat_Configuration')) {
+					foreach (WBTM_Seat_Configuration::get_toolbar_items() as $kw => $d) {
+						$non_seat_icon_map[$kw] = $d['icon'];
+					}
+					$non_seat_icon_map['wc'] = 'fa-restroom';
+				}
 				wp_localize_script( 'wbtm_admin', 'wbtm_admin_var', array(
 					'url'               => admin_url( 'admin-ajax.php' ),
 					'nonce'             => wp_create_nonce( 'wbtm_admin_nonce' ),
 					'seat_row_col_error' => esc_html__( 'Number of rows & columns must be greater than 0', 'bus-ticket-booking-with-seat-reservation' ),
+					'non_seat_items'    => $non_seat_icon_map,
 				) );
 				do_action('wbtm_add_admin_script');
 			}

@@ -517,7 +517,7 @@
 											if ($enable_rotation == 'yes') {
 												$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j . '_rotation'] = $rotation_value;
 											}
-											if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+											if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 												$total_seat++;
 											}
 										}
@@ -572,7 +572,7 @@
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$lower_deck_info[$i]['seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 									$total_seat++;
 								}
 							}
@@ -617,7 +617,7 @@
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc' && $wbtm_show_upper_desk == 'yes') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value) && $wbtm_show_upper_desk == 'yes') {
 									$total_seat++;
 								}
 							}

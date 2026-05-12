@@ -54,6 +54,8 @@
 				wp_enqueue_media();
 				//admin script
 				wp_enqueue_script('jquery-ui-sortable');
+				wp_enqueue_script('jquery-ui-draggable');
+				wp_enqueue_script('jquery-ui-droppable');
 				wp_enqueue_style('wp-color-picker');
 				wp_enqueue_script('wp-color-picker');
 				wp_enqueue_style('wp-codemirror');

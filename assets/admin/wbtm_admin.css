@@ -208,6 +208,107 @@
 	flex-wrap: wrap;
 }
 
+/* ===== Seat Plan Drag & Drop Toolbar ===== */
+.wbtm_seat_toolbar {
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+	padding: 10px 12px;
+	margin-bottom: 12px;
+}
+.wbtm_seat_toolbar_label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #495057;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.wbtm_seat_toolbar_items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.wbtm_draggable_item {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	background: #ffffff;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 12px;
+	color: #495057;
+	cursor: grab;
+	transition: all 0.15s ease;
+	user-select: none;
+}
+.wbtm_draggable_item:hover {
+	background: #e9ecef;
+	border-color: #adb5bd;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.wbtm_draggable_item:active {
+	cursor: grabbing;
+}
+.wbtm_draggable_item .fas {
+	font-size: 13px;
+	color: #6c757d;
+}
+.wbtm_draggable_eraser {
+	border-color: #dc3545;
+	color: #dc3545;
+}
+.wbtm_draggable_eraser .fas {
+	color: #dc3545;
+}
+.wbtm_draggable_eraser:hover {
+	background: #fff5f5;
+	border-color: #dc3545;
+}
+.wbtm_toolbar_item_label {
+	white-space: nowrap;
+}
+
+/* Drop target highlighting */
+.wbtm_seat_container.wbtm_drop_highlight {
+	outline: 2px dashed #4a6cf7;
+	outline-offset: -2px;
+	border-radius: 4px;
+}
+.wbtm_seat_container.wbtm_drop_hover {
+	background-color: #e8f0fe !important;
+	outline-color: #1a73e8;
+}
+
+/* Non-seat badge overlay on admin cells */
+.wbtm_nonseat_badge {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 22px;
+	height: 22px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #6c757d;
+	color: #fff;
+	border-radius: 50%;
+	font-size: 10px;
+	pointer-events: auto;
+	cursor: pointer;
+	z-index: 2;
+	line-height: 1;
+}
+.wbtm_nonseat_badge:hover {
+	background: #dc3545;
+}
+.wbtm_seat_container.wbtm_has_nonseat input.formControl {
+	background-color: #f1f3f5;
+	color: #868e96;
+	font-style: italic;
+}
+
 /* Responsive adjustments */
 @media only screen and (max-width: 768px) {
 	.wbtm_seat_container {
@@ -223,5 +324,16 @@
 	.wbtm_seat_plan_settings table th {
 		min-height: 60px;
 		padding: 4px 2px;
+	}
+
+	.wbtm_seat_toolbar_items {
+		gap: 4px;
+	}
+	.wbtm_draggable_item {
+		padding: 4px 6px;
+		font-size: 11px;
+	}
+	.wbtm_toolbar_item_label {
+		display: none;
 	}
 }

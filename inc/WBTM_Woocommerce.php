@@ -456,7 +456,7 @@
 						if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 							$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 							if (isset($cart_item['wbtm_booking_mode']) && $cart_item['wbtm_booking_mode'] === 'full_bus') {
-								$total_seat = (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+								$total_seat = class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::count_actual_seats($post_id) : (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 							$full_bus_seat_count = isset($cart_item['wbtm_full_bus_seat_count']) ? (int) $cart_item['wbtm_full_bus_seat_count'] : 0;
 							if ($sold_seat > 0 || $full_bus_seat_count < $total_seat) {
@@ -493,7 +493,7 @@
 								}
 								do_action('wbtm_something');
 							} else {
-								$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+								$total_seat = class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::count_actual_seats($post_id) : (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 								$available_seat = max(0, $total_seat - $sold_seat);
 								if ($available_seat < $seats_qty) {
