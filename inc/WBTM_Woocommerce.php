@@ -239,6 +239,9 @@
             public static function get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config) {
 				$total_price = 0;
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
+					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
+					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
+					$price_leg = WBTM_Functions::get_requested_price_leg();
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
 							continue;
@@ -251,18 +254,12 @@
 							$seat_types = $seat_types ? explode(',', $seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								// Find the corresponding ticket info
-								foreach ($ticket_infos as $ticket_info) {
-                                    /*if ($ticket_info['type'] == $
-                                    seat_type) {
-                                        $base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);*/
-									if ($ticket_info['seat_type'] == $seat_type) {
-										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['ticket_price']);
-										$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-										$total_price += $base_price * $price_multiplier;
-										break;
-									}
+								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index);
+								if ($base === false || $base < 0) {
+									$base = 0;
 								}
+								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+								$total_price += floatval($base) * floatval($price_multiplier);
 							}
 						}
 					}
@@ -275,7 +272,7 @@
 					// Get ticket information for price calculation
 					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
-					$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, WBTM_Functions::get_requested_price_leg());
+					$price_leg_cart = WBTM_Functions::get_requested_price_leg();
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
 							continue;
@@ -288,16 +285,12 @@
 							$seat_types = $selected_seat_types ? explode(',', $selected_seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								// Find the ticket price for this seat type
-								$ticket_price = 0;
-								foreach ($ticket_infos as $ticket_info) {
-									if ($ticket_info['type'] == $seat_type) {
-										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);
-										$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-										$ticket_price = $base_price * $price_multiplier;
-										break;
-									}
+								$base_price = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg_cart, $seat_name, $cabin_index);
+								if ($base_price === false || $base_price < 0) {
+									$base_price = 0;
 								}
+								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+								$ticket_price = floatval($base_price) * floatval($price_multiplier);
 								$cabin_seats[] = [
 									'cabin_index' => $cabin_index,
 									'cabin_name' => $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1),
@@ -349,36 +342,35 @@
 						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus') {
 							// Full-bus price is already re-derived from the route price row above.
 						} elseif ($has_cabin_seats) {
-							$ticket_infos  = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, $price_leg);
 							$cabin_config  = isset($value['wbtm_cabin_config']) && is_array($value['wbtm_cabin_config']) ? $value['wbtm_cabin_config'] : [];
 							foreach ($value['wbtm_cabin_seats'] as $idx => $cabin_seat) {
 								$seat_type = isset($cabin_seat['seat_type']) ? $cabin_seat['seat_type'] : 0;
 								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
+								$seat_label = isset($cabin_seat['seat_name']) ? $cabin_seat['seat_name'] : '';
 								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
-								foreach ($ticket_infos as $ti) {
-									if ((string) $ti['type'] === (string) $seat_type) {
-										$canonical_price = floatval($ti['price']) * $price_multiplier;
-										$seat_price += $canonical_price;
-										$cart_object->cart_contents[$key]['wbtm_cabin_seats'][$idx]['ticket_price'] = $canonical_price;
-										break;
-									}
+								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index);
+								if ($unit === false || $unit < 0) {
+									$unit = 0;
 								}
+								$canonical_price = floatval($unit) * floatval($price_multiplier);
+								$seat_price += $canonical_price;
+								$cart_object->cart_contents[$key]['wbtm_cabin_seats'][$idx]['ticket_price'] = $canonical_price;
 							}
 						} else {
 							$legacy_seats = isset($value['wbtm_seats']) && is_array($value['wbtm_seats']) ? $value['wbtm_seats'] : [];
 							if (!empty($legacy_seats)) {
-								$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp, $price_leg);
 								foreach ($legacy_seats as $idx => $seat_info) {
 									$seat_type = isset($seat_info['ticket_type']) ? $seat_info['ticket_type'] : 0;
-									$qty       = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
-									foreach ($ticket_infos as $ti) {
-										if ((string) $ti['type'] === (string) $seat_type) {
-											$canonical_unit = floatval($ti['price']);
-											$seat_price += $canonical_unit * $qty;
-											$cart_object->cart_contents[$key]['wbtm_seats'][$idx]['ticket_price'] = $canonical_unit;
-											break;
-										}
+									$seat_label = isset($seat_info['seat_name']) ? $seat_info['seat_name'] : '';
+									$is_dd = !empty($seat_info['dd']);
+									$qty = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
+									$canonical_unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $is_dd, $price_leg, $seat_label, null);
+									if ($canonical_unit === false || $canonical_unit < 0) {
+										$canonical_unit = 0;
 									}
+									$canonical_unit = floatval($canonical_unit);
+									$seat_price += $canonical_unit * $qty;
+									$cart_object->cart_contents[$key]['wbtm_seats'][$idx]['ticket_price'] = $canonical_unit;
 								}
 							}
 						}
@@ -1030,7 +1022,7 @@
 							foreach ($selected_seat as $key => $seat_name) {
 								$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : $default_ticket_type;
 								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $price_leg);
+									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $price_leg, $seat_name, null);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;
@@ -1054,7 +1046,7 @@
 							foreach ($selected_seat_dd as $key => $seat_name) {
 								$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : $default_ticket_type;
 								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true, $price_leg);
+									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true, $price_leg, $seat_name, null);
 									// Handle false return value from get_seat_price
 									if ($seat_price === false || $seat_price < 0) {
 										$seat_price = 0;

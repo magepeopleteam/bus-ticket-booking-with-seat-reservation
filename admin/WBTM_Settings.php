@@ -631,6 +631,38 @@
 						$total_seat = $seat_type == 'wbtm_seat_plan' ? $total_seat : $current_seat;
 						update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 					}
+					// Per-seat ticket price overrides (modal in seat plan admin; JSON object of scope key => [ type_id => raw price ]).
+					if (array_key_exists('wbtm_seat_price_overrides', $_POST)) {
+						$raw = wp_unslash((string) $_POST['wbtm_seat_price_overrides']);
+						if ($raw !== '') {
+							$decoded = json_decode($raw, true);
+							if (JSON_ERROR_NONE === json_last_error() && is_array($decoded)) {
+								$clean = [];
+								foreach ($decoded as $scope => $rows) {
+									$scope_s = (string) $scope;
+									// Keys are generated in JS/PHP as l|Seat, u|Seat, c|index|Seat — avoid altering pipe/format.
+									if ($scope_s === '' || !is_array($rows)) {
+										continue;
+									}
+									$clean[ $scope_s ] = [];
+									foreach ($rows as $tid => $price) {
+										$t_s = sanitize_text_field((string) $tid);
+										if ($t_s === '' || $price === '' || $price === null) {
+											continue;
+										}
+										if (!is_numeric($price)) {
+											continue;
+										}
+										$clean[ $scope_s ][ $t_s ] = (string) max(0, floatval($price));
+									}
+									if (empty($clean[ $scope_s ])) {
+										unset($clean[ $scope_s ]);
+									}
+								}
+								update_post_meta($post_id, 'wbtm_seat_price_overrides', $clean);
+							}
+						}
+					}
 				}
 				//Extra service configuration
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {

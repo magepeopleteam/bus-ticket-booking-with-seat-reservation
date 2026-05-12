@@ -140,8 +140,6 @@
                             $cabin_seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
 
                             if ($cabin_rows > 0 && $cabin_cols > 0 && !empty($cabin_seat_infos)) {
-                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                $cabin_price = $adult_price * $price_multiplier;
                                 ?>
                                 <div class="wbtm_cabin_section">
                                     <div class="wbtm_cabin_header wbtm_cabin_toggle" data-cabin-index="<?php echo esc_attr($cabin_index); ?>" style="cursor: pointer;">
@@ -227,6 +225,13 @@
                                                                 $is_booked = in_array($cabin_seat_identifier, $seat_booked) || in_array($seat_name, $seat_booked);
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $is_in_cart = !$is_booked && (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier) || WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name));
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $cell_base_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, $cabin_index);
+                                                                if ($cell_base_cabin === false) {
+                                                                    $cell_base_cabin = 0;
+                                                                }
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $cabin_price = floatval($cell_base_cabin) * floatval($price_multiplier);
                                                                 ?>
                                                                 <th>
                                                                     <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
@@ -259,9 +264,12 @@
                                                                                         foreach ($ticket_infos as $key => $ticket_info): ?>
                                                                                             <?php
                                                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                            $ticket_price = $key > 0 ? $ticket_info['price'] : $adult_price;
+                                                                                            $cell_t_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, $cabin_index);
+                                                                                            if ($cell_t_cabin === false) {
+                                                                                                $cell_t_cabin = 0;
+                                                                                            }
                                                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                            $ticket_price = $ticket_price * $price_multiplier;
+                                                                                            $ticket_price = floatval($cell_t_cabin) * floatval($price_multiplier);
                                                                                             ?>
                                                                                             <li class="justifyBetween"
                                                                                                 data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
@@ -346,6 +354,11 @@
                                                     }
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $cell_lower = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, null);
+                                                    if ($cell_lower === false) {
+                                                        $cell_lower = 0;
+                                                    }
                                                     ?>
                                                     <th>
                                                         <div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
@@ -370,7 +383,7 @@
                                                                     data-seat_name="<?php echo esc_attr($seat_name); ?>"
                                                                     data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                     data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
-                                                                    data-seat_price="<?php echo esc_attr($adult_price); ?>"
+                                                                    data-seat_price="<?php echo esc_attr($cell_lower); ?>"
                                                                 >
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
@@ -382,7 +395,11 @@
                                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                             foreach ($ticket_infos as $key => $ticket_info) {
                                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                 $ticket_price = $key > 0 ? $ticket_info['price'] : $adult_price; ?>
+                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, null);
+                                                                                if ($ticket_price === false) {
+                                                                                    $ticket_price = 0;
+                                                                                }
+                                                                                ?>
                                                                                 <li class="justifyBetween"
                                                                                     data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
                                                                                     data-seat_type="<?php echo esc_attr($ticket_info['type']); ?>"
@@ -411,12 +428,6 @@
                         </div>
                     <?php } ?>
                     <?php if ($show_upper_desk == 'yes' && sizeof($seat_infos_dd) > 0) { ?>
-                        <?php
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                        $seat_dd_increase = (int)WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_dd_price_parcent', 0);
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                        $adult_price_dd = $adult_price + ($adult_price * $seat_dd_increase / 100);
-                        ?>
                         <div class="wbtm_seat_plan_upper ovAuto">
                             <input type="hidden" name="wbtm_selected_seat_dd" value=""/>
                             <input type="hidden" name="wbtm_selected_seat_dd_type" value=""/>
@@ -459,6 +470,12 @@
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $cell_upper = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], true, $wbtm_pl, $info, null);
+                                                    if ($cell_upper === false) {
+                                                        $cell_upper = 0;
+                                                    }
+
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
                                                     ?>
                                                     <th>
@@ -478,7 +495,7 @@
                                                                     data-seat_name="<?php echo esc_attr($info); ?>"
                                                                     data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                     data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
-                                                                    data-seat_price="<?php echo esc_attr($adult_price_dd); ?>"
+                                                                    data-seat_price="<?php echo esc_attr($cell_upper); ?>"
                                                                 >
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($info); ?></div>
@@ -491,9 +508,10 @@
                                                                             foreach ($ticket_infos as $key => $ticket_info) { ?>
                                                                                 <?php
                                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                $ticket_price = $key > 0 ? WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']) : $adult_price;
-                                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                $ticket_price = $ticket_price + ($ticket_price * $seat_dd_increase / 100);
+                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], true, $wbtm_pl, $info, null);
+                                                                                if ($ticket_price === false) {
+                                                                                    $ticket_price = 0;
+                                                                                }
                                                                                 ?>
                                                                                 <li class="justifyBetween"
                                                                                     data-seat_label="<?php echo esc_attr($ticket_info['name']); ?>"
