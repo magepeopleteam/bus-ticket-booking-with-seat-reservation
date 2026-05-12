@@ -103,7 +103,11 @@
 										WC()->cart->remove_cart_item($key);
 //									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name, $seat_info['cabin_name']), 'error');
 										wc_add_notice(
-											sprintf('Seat %1$s in %2$s has already been booked by another user. Please choose another seat.',$seat_name,$seat_info['cabin_name']),
+											sprintf(
+												esc_html__( 'Seat %1$s in %2$s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+												esc_html( $seat_name ),
+												esc_html( $seat_info['cabin_name'] )
+											),
 											'error'
 										);
 									}
@@ -114,7 +118,13 @@
 									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 									if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 										WC()->cart->remove_cart_item($key);
-										wc_add_notice(sprintf("Seat %s has already been booked by another user. Please choose another seat.", $seat_name), 'error');
+										wc_add_notice(
+											sprintf(
+												esc_html__( 'Seat %s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+												esc_html( $seat_name )
+											),
+											'error'
+										);
 									}
 								}
 							}
@@ -385,9 +395,8 @@
 								$ex_service_price += floatval($canonical_svc_price) * $svc_qty;
 								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = floatval($canonical_svc_price);
 							} else {
-								// Fallback: service disabled/removed in DB, keep the cached session price
-								$fallback_price = isset($svc['price']) ? floatval($svc['price']) : 0;
-								$ex_service_price += $fallback_price * $svc_qty;
+								// Service removed from DB — zero out rather than trust stale session data.
+								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = 0;
 							}
 						}
 						$total_price = max(0, floatval($seat_price) + floatval($ex_service_price));
@@ -464,7 +473,7 @@
 										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 											WC()->cart->empty_cart();
-											wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
+											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 										}
 									}
 								}
@@ -1075,9 +1084,9 @@
 									$type = $passenger_type[$i] ?? '';
 									$ticket_name = WBTM_Functions::get_ticket_name($type, $post_id);
 									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, false, $price_leg);
-									// Fall back to the price submitted from the form when route name mismatch causes get_seat_price to return false
+									// Reject ticket if the route price cannot be determined — never trust user-submitted price.
 									if ($seat_price === false || $seat_price < 0) {
-										$seat_price = isset($submitted_prices[$i]) ? floatval($submitted_prices[$i]) : 0;
+										continue;
 									}
 									$ticket_info[$i]['ticket_name'] = $ticket_name;
 									$ticket_info[$i]['seat_name'] = $ticket_name;

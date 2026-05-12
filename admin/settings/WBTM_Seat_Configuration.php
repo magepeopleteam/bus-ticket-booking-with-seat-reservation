@@ -581,7 +581,7 @@
                         <div class="mpPanel wbtm_cabin_item" data-cabin-index="<?php echo esc_attr($index); ?>">
                             <div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
                                 <div class="_dFlex_fdColumn">
-                                    <label><?php printf('Cabin %d Configuration', esc_html($index + 1)); ?></label>
+                                    <label><?php echo esc_html(sprintf('Cabin %d Configuration', $index + 1)); ?></label>
                                     <span><?php esc_html_e('Configure seat layout for this cabin.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>
                             </div>
@@ -621,7 +621,7 @@
                                     </div>
                                     <div class="col_6 wbtm_cabin_fields">
                                         <div class="wbtm_cabin_seat_preview" data-cabin-index="<?php echo esc_attr($index); ?>">
-                                            <label><?php printf('Cabin %d Preview', esc_html($index + 1)); ?></label>
+                                            <label><?php echo esc_html(sprintf('Cabin %d Preview', $index + 1)); ?></label>
                                             <div class="wbtm_cabin_seat_plan">
 												<?php
 													$cabin_rows = $cabin['rows'] ?? 0;
@@ -645,7 +645,7 @@
 				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
 					wp_send_json_error( 'Invalid nonce!' );
 				}
-				if ( ! current_user_can( 'edit_posts' ) ) {
+				if ( ! current_user_can( 'manage_options' ) ) {
 					wp_send_json_error( 'Unauthorized' );
 				}
 				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
@@ -661,7 +661,7 @@
 				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wbtm_admin_nonce' ) ) {
 					wp_send_json_error( 'Invalid nonce!' );
 				}
-				if ( ! current_user_can( 'edit_posts' ) ) {
+				if ( ! current_user_can( 'manage_options' ) ) {
 					wp_send_json_error( 'Unauthorized' );
 				}
 				$post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
