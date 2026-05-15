@@ -13,12 +13,13 @@
 			}
 			public function quick_setup_menu() {
 				$status = WBTM_Global_Function::check_woocommerce();
+				$menu_icon = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_icon() : 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>' );
 				if ($status == 1) {
 					add_submenu_page('edit.php?post_type=wbtm_bus', __('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 					add_submenu_page('wbtm_bus', esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 				}
 				else {
-					add_menu_page(esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_bus', array($this, 'quick_setup'), 'bus-icon.svg', 6);
+					add_menu_page(esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation'), 'manage_options', 'wbtm_bus', array($this, 'quick_setup'), $menu_icon, 6);
 					add_submenu_page('wbtm_bus', esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'bus-ticket-booking-with-seat-reservation') . '</span>', 'manage_options', 'wbtm_quick_setup', array($this, 'quick_setup'));
 				}
 			}
