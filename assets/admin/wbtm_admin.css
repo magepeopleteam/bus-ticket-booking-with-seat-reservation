@@ -369,6 +369,9 @@ textarea.wbtm_seat_price_overrides_field {
 	text-align: center;
 	position: relative;
 }
+.wbtm_seat_container .wbtm_seat_price_view_disabled {
+	display: none;
+}
 .wbtm_seat_price_view .wbtm_seat_price_badge {
 	position: absolute;
 	top: -7px;

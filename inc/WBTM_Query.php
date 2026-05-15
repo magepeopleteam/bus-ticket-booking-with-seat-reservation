@@ -281,6 +281,9 @@
 						if(sizeof($guest_ids)>0){
 							foreach ($guest_ids as $guest_id){
 								$seat_name = WBTM_Global_Function::get_post_info($guest_id,'wbtm_seat');
+								if (class_exists('WBTM_Seat_Configuration')) {
+									$seat_name = WBTM_Seat_Configuration::normalize_saved_seat_value($seat_name);
+								}
 								if ($seat_name && !(class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::is_non_seat_item($seat_name))) {
 									$seat_booked[] = $seat_name;
 								}
