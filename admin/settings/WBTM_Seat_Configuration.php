@@ -20,15 +20,41 @@
 				'aisle'          => ['icon' => 'fa-arrows-alt-h',    'label' => 'Aisle'],
 				'emergency_exit' => ['icon' => 'fa-sign-out-alt',    'label' => 'Exit'],
 			];
-			public static function is_non_seat_item($value) {
+			private static function is_non_seat_keyword($value) {
 				return isset(self::$non_seat_items[strtolower(trim($value))]);
 			}
+			public static function is_non_seat_item($value) {
+				return self::has_pro_seat_features() && self::is_non_seat_keyword($value);
+			}
 			public static function get_non_seat_item_data($value) {
+				if (!self::has_pro_seat_features()) {
+					return null;
+				}
 				$key = strtolower(trim($value));
 				return self::$non_seat_items[$key] ?? null;
 			}
 			public static function get_non_seat_keywords() {
 				return array_keys(self::$non_seat_items);
+			}
+			public static function normalize_saved_seat_value($value) {
+				$value = trim((string) $value);
+				if ($value !== '' && !self::has_pro_seat_features() && self::is_non_seat_keyword($value)) {
+					return '';
+				}
+				return $value;
+			}
+			public static function is_seat_price_override_enabled($post_id) {
+				/**
+				 * FIX: Add a backward-compatible seat-wise price override feature toggle.
+				 * AUTHOR: shahnur alam
+				 * ISSUE: #WBTM-SEAT-002
+				 * SOLVED: 2026-05-15
+				 * CONTEXT: Seat-specific pricing already existed in production, so the new enable/disable control must default to ON for older buses while still allowing admins to turn the feature off explicitly.
+				 */
+				return self::has_pro_seat_features() && WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_price_override', 'yes') === 'yes';
+			}
+			public static function has_pro_seat_features() {
+				return class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
 			}
 			public static function get_toolbar_items() {
 				$toolbar = [];
@@ -44,6 +70,47 @@
 					$seen[] = $data['label'];
 				}
 				return $toolbar;
+			}
+			/**
+			 * FIX: Disable seat-price actions for non-sellable seat-grid items.
+			 * AUTHOR: shahnur alam
+			 * ISSUE: #WBTM-SEAT-001
+			 * SOLVED: 2026-05-15
+			 * CONTEXT: Drag-and-drop items like Door, Window, and Aisle are layout markers, not sellable seats, so the per-seat ticket-price button must not appear active for them.
+			 */
+			private static function render_seat_price_button($scope, $seat_name = '', $cabin_index = null, $is_template = false, $is_feature_enabled = true) {
+				$is_non_seat = !$is_template && !empty($seat_name) && self::is_non_seat_item($seat_name);
+				$is_disabled = $is_template || !$is_feature_enabled || $is_non_seat;
+				$classes = ['button', 'button-small', 'wbtm_seat_price_view'];
+				if ($is_disabled) {
+					$classes[] = 'wbtm_seat_price_view_disabled';
+				}
+				if (!$is_feature_enabled) {
+					$title = esc_attr__('Enable Seat-wise Price Override to manage custom seat fares', 'bus-ticket-booking-with-seat-reservation');
+				} elseif ($is_non_seat) {
+					$title = esc_attr__('Price overrides apply only to sellable seats', 'bus-ticket-booking-with-seat-reservation');
+				} else {
+					$title = esc_attr__('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation');
+				}
+				?>
+				<button type="button"
+						class="<?php echo esc_attr(implode(' ', $classes)); ?>"
+						data-override-scope="<?php echo esc_attr($scope); ?>"
+						data-seat-price-feature-enabled="<?php echo esc_attr($is_feature_enabled ? '1' : '0'); ?>"
+						data-default-title="<?php echo esc_attr__('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>"
+						data-disabled-title="<?php echo esc_attr__('Price overrides apply only to sellable seats', 'bus-ticket-booking-with-seat-reservation'); ?>"
+						data-feature-disabled-title="<?php echo esc_attr__('Enable Seat-wise Price Override to manage custom seat fares', 'bus-ticket-booking-with-seat-reservation'); ?>"
+						<?php if ($cabin_index !== null) { ?>
+						data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
+						<?php } ?>
+						<?php if ($is_template) { ?>
+						data-price-view-template="1"
+						<?php } ?>
+						title="<?php echo $title; ?>"
+						<?php echo $is_disabled ? 'disabled' : ''; ?>>
+					<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
+				</button>
+				<?php
 			}
 			public static function count_actual_seats($post_id) {
 				$total = 0;
@@ -61,6 +128,7 @@
 						foreach ($cabin_seats as $row) {
 							foreach ($row as $key => $val) {
 								if (strpos($key, '_rotation') !== false) continue;
+								$val = self::normalize_saved_seat_value($val);
 								if (!empty($val) && !self::is_non_seat_item($val)) {
 									$total++;
 								}
@@ -72,6 +140,7 @@
 					foreach ($seat_infos as $row) {
 						foreach ($row as $key => $val) {
 							if (strpos($key, '_rotation') !== false) continue;
+							$val = self::normalize_saved_seat_value($val);
 							if (!empty($val) && !self::is_non_seat_item($val)) {
 								$total++;
 							}
@@ -83,6 +152,7 @@
 						foreach ($upper_seats as $row) {
 							foreach ($row as $key => $val) {
 								if (strpos($key, '_rotation') !== false) continue;
+								$val = self::normalize_saved_seat_value($val);
 								if (!empty($val) && !self::is_non_seat_item($val)) {
 									$total++;
 								}
@@ -113,28 +183,31 @@
 					<?php
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 					$wbtm_price_overrides = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_price_overrides', []);
+					$has_pro_seat_features = self::has_pro_seat_features();
 					if (!is_array($wbtm_price_overrides)) {
 						$wbtm_price_overrides = [];
 					}
 					?>
-					<?php // Textarea avoids HTML attribute size/encoding limits for JSON; value is synced only via JS. ?>
-					<textarea name="wbtm_seat_price_overrides" id="wbtm_seat_price_overrides_field" class="wbtm_seat_price_overrides_field" rows="1" cols="40" autocomplete="off" tabindex="-1" aria-hidden="true"><?php echo esc_textarea(!empty($wbtm_price_overrides) ? wp_json_encode($wbtm_price_overrides) : '{}'); ?></textarea>
-					<div id="wbtm_seat_price_modal" class="wbtm_seat_price_modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="wbtm_seat_price_modal_title">
-						<div class="wbtm_seat_price_modal_overlay"></div>
-						<div class="wbtm_seat_price_modal_box">
-							<div class="wbtm_seat_price_modal_header">
-								<h4 id="wbtm_seat_price_modal_title"><?php esc_html_e('Per-seat ticket prices', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
-								<button type="button" class="wbtm_seat_price_modal_close" aria-label="<?php esc_attr_e('Close', 'bus-ticket-booking-with-seat-reservation'); ?>">&times;</button>
-							</div>
-							<p class="wbtm_seat_price_modal_hint"><?php esc_html_e('Leave a field empty to use the route default fare for that ticket type. Prices are in store currency (same as routing & pricing).', 'bus-ticket-booking-with-seat-reservation'); ?></p>
-							<p class="wbtm_seat_price_modal_seat_label"><strong><?php esc_html_e('Seat:', 'bus-ticket-booking-with-seat-reservation'); ?></strong> <span class="wbtm_seat_price_modal_seat_name"></span></p>
-							<div class="wbtm_seat_price_modal_body"></div>
-							<div class="wbtm_seat_price_modal_footer">
-								<button type="button" class="button button-primary wbtm_seat_price_modal_save"><?php esc_html_e('Save', 'bus-ticket-booking-with-seat-reservation'); ?></button>
-								<button type="button" class="button wbtm_seat_price_modal_cancel"><?php esc_html_e('Cancel', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+					<?php if ($has_pro_seat_features) { ?>
+						<?php // Textarea avoids HTML attribute size/encoding limits for JSON; value is synced only via JS. ?>
+						<textarea name="wbtm_seat_price_overrides" id="wbtm_seat_price_overrides_field" class="wbtm_seat_price_overrides_field" rows="1" cols="40" autocomplete="off" tabindex="-1" aria-hidden="true"><?php echo esc_textarea(!empty($wbtm_price_overrides) ? wp_json_encode($wbtm_price_overrides) : '{}'); ?></textarea>
+						<div id="wbtm_seat_price_modal" class="wbtm_seat_price_modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="wbtm_seat_price_modal_title">
+							<div class="wbtm_seat_price_modal_overlay"></div>
+							<div class="wbtm_seat_price_modal_box">
+								<div class="wbtm_seat_price_modal_header">
+									<h4 id="wbtm_seat_price_modal_title"><?php esc_html_e('Per-seat ticket prices', 'bus-ticket-booking-with-seat-reservation'); ?></h4>
+									<button type="button" class="wbtm_seat_price_modal_close" aria-label="<?php esc_attr_e('Close', 'bus-ticket-booking-with-seat-reservation'); ?>">&times;</button>
+								</div>
+								<p class="wbtm_seat_price_modal_hint"><?php esc_html_e('If you set a specific price, it will override the default route fare. Seat-wise pricing remains fixed and is not affected by route settings. Leaving the field empty will apply the default route fare automatically.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+								<p class="wbtm_seat_price_modal_seat_label"><strong><?php esc_html_e('Seat:', 'bus-ticket-booking-with-seat-reservation'); ?></strong> <span class="wbtm_seat_price_modal_seat_name"></span></p>
+								<div class="wbtm_seat_price_modal_body"></div>
+								<div class="wbtm_seat_price_modal_footer">
+									<button type="button" class="button button-primary wbtm_seat_price_modal_save"><?php esc_html_e('Save', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+									<button type="button" class="button wbtm_seat_price_modal_cancel"><?php esc_html_e('Cancel', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+								</div>
 							</div>
 						</div>
-					</div>
+					<?php } ?>
                     <div class="">
                         <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight">
                             <div class="col_6 _dFlex_fdColumn">
@@ -227,6 +300,9 @@
 				/***************************/
 				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 				$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
+				$has_pro_seat_features = self::has_pro_seat_features();
+				$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
+				$checked_seat_price_override = $enable_seat_price_override ? 'checked' : '';
 				?>
                 <div class="mpPanel mT">
                     <div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
@@ -247,6 +323,18 @@
 								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
                             </div>
                             <div class="divider"></div>
+							<?php if ($has_pro_seat_features) { ?>
+                            <div class="_dFlex_justifyBetween_alignCenter">
+                                <div class="col_6 _dFlex_fdColumn">
+                                    <label>
+										<?php esc_html_e('Enable Seat-wise Price Override', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    </label>
+                                    <span><?php esc_html_e('Turn on to set a custom fare for individual sellable seats.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                </div>
+								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_price_override', $checked_seat_price_override); ?>
+                            </div>
+                            <div class="divider"></div>
+							<?php } ?>
                             <div class="_dFlex_justifyBetween_alignCenter">
                                 <div class="col_6 _dFlex_fdColumn">
                                     <label>
@@ -358,6 +446,9 @@
 				<?php
 			}
 			public function render_seat_item_toolbar() {
+				if (!self::has_pro_seat_features()) {
+					return;
+				}
 				$items = self::get_toolbar_items();
 				?>
 				<div class="wbtm_seat_toolbar">
@@ -382,6 +473,7 @@
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
 					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+					$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_settings_area <?php echo esc_attr($rotation_class); ?>">
@@ -391,7 +483,7 @@
                                 <tbody class="wbtm_item_insert wbtm_sortable_area">
 								<?php for ($i = 0; $i < $seat_row; $i++) { ?>
 									<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
-									<?php $this->seat_plan_row($seat_column, $dd, $row_info); ?>
+									<?php $this->seat_plan_row($seat_column, $dd, $row_info, $enable_seat_price_override); ?>
 								<?php } ?>
                                 </tbody>
                             </table>
@@ -400,14 +492,14 @@
                         <div class="wbtm_hidden_content">
                             <table>
                                 <tbody class="wbtm_hidden_item">
-								<?php $this->seat_plan_row($seat_column, $dd); ?>
+								<?php $this->seat_plan_row($seat_column, $dd, [], $enable_seat_price_override); ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 				<?php }
 			}
-			public function seat_plan_row($seat_column, $dd, $row_info = []) {
+			public function seat_plan_row($seat_column, $dd, $row_info = [], $enable_seat_price_override = true) {
 				$seat_key = $dd ? 'dd_seat' : 'seat';
 				$post_id = get_the_ID();
 				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
@@ -415,7 +507,7 @@
                 <tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $seat_column; $j++) { ?>
 						<?php $key = $seat_key . $j; ?>
-						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
+						<?php $seat_name = array_key_exists($key, $row_info) ? self::normalize_saved_seat_value($row_info[$key]) : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
                         <th>
                             <div class="wbtm_seat_container">
@@ -426,10 +518,7 @@
                                            value="<?php echo esc_attr($seat_name); ?>"
                                     />
                                 </label>
-								<button type="button" class="button button-small wbtm_seat_price_view" data-override-scope="<?php echo esc_attr($dd ? 'u' : 'l'); ?>"
-									title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
-									<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
-								</button>
+								<?php self::render_seat_price_button($dd ? 'u' : 'l', $seat_name, null, false, $enable_seat_price_override); ?>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -455,6 +544,7 @@
 					$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
 					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+					$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
                     <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
@@ -464,7 +554,7 @@
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
 								<?php for ($i = 0; $i < $rows; $i++) { ?>
 									<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
-									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info); ?>
+									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info, $enable_seat_price_override); ?>
 								<?php } ?>
                                 </tbody>
                             </table>
@@ -488,12 +578,9 @@
                                                            placeholder="<?php esc_attr_e('Blank', 'bus-ticket-booking-with-seat-reservation'); ?>"
                                                            value=""
                                                            disabled
-                                                    />
+                                                   />
                                                 </label>
-												<button type="button" class="button button-small wbtm_seat_price_view wbtm_seat_price_view_disabled" disabled data-override-scope="c" data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
-													title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
-													<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
-												</button>
+												<?php self::render_seat_price_button('c', '', $cabin_index, true, $enable_seat_price_override); ?>
 												<?php if ($enable_rotation == 'yes') { ?>
                                                     <div class="wbtm_seat_rotation_controls">
                                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -520,7 +607,7 @@
 					<?php
 				}
 			}
-			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = []) {
+			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = [], $enable_seat_price_override = true) {
 				$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
 				$post_id = get_the_ID();
 				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
@@ -528,7 +615,7 @@
                 <tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $cols; $j++) { ?>
 						<?php $key = $seat_key_prefix . $j; ?>
-						<?php $seat_name = array_key_exists($key, $row_info) ? $row_info[$key] : ''; ?>
+						<?php $seat_name = array_key_exists($key, $row_info) ? self::normalize_saved_seat_value($row_info[$key]) : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
                         <th>
                             <div class="wbtm_seat_container">
@@ -539,10 +626,7 @@
                                            value="<?php echo esc_attr($seat_name); ?>"
                                     />
                                 </label>
-								<button type="button" class="button button-small wbtm_seat_price_view" data-override-scope="c" data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
-									title="<?php esc_attr_e('View or override ticket prices for this seat', 'bus-ticket-booking-with-seat-reservation'); ?>">
-									<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
-								</button>
+								<?php self::render_seat_price_button('c', $seat_name, $cabin_index, false, $enable_seat_price_override); ?>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"

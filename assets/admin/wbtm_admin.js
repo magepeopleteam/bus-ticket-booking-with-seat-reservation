@@ -375,6 +375,7 @@
 (function ($) {
     "use strict";
 
+    let proSeatFeaturesEnabled = !!(typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.pro_seat_features_enabled);
     let nonSeatItems = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.non_seat_items) ? wbtm_admin_var.non_seat_items : {};
 
     function isNonSeatItem(val) {
@@ -388,6 +389,10 @@
 
     function applyBadge($container, itemType) {
         $container.find('.wbtm_nonseat_badge').remove();
+        if (!proSeatFeaturesEnabled) {
+            $container.removeClass('wbtm_has_nonseat');
+            return;
+        }
         if (!itemType) {
             $container.removeClass('wbtm_has_nonseat');
             return;
@@ -399,6 +404,11 @@
     }
 
     function refreshAllBadges($scope) {
+        if (!proSeatFeaturesEnabled) {
+            ($scope || $(document)).find('.wbtm_nonseat_badge').remove();
+            ($scope || $(document)).find('.wbtm_seat_container').removeClass('wbtm_has_nonseat');
+            return;
+        }
         ($scope || $(document)).find('.wbtm_seat_container').each(function () {
             let $c = $(this);
             let val = $c.find('input.formControl').val();
@@ -412,6 +422,9 @@
     }
 
     function initDragDrop($scope) {
+        if (!proSeatFeaturesEnabled) {
+            return;
+        }
         $scope = $scope || $(document);
 
         $scope.find('.wbtm_draggable_item').each(function () {
@@ -478,6 +491,7 @@
             $c.find('.wbtm_nonseat_badge').remove();
             $c.removeClass('wbtm_has_nonseat');
         }
+        wbtmSyncSeatPriceButtonState($c);
         if ($(this).closest('.wbtm_settings_seat').length) {
             wbtmSyncSeatPriceBadges($(this).closest('.wbtm_settings_seat'));
         }
@@ -519,6 +533,12 @@
             $f.val(JSON.stringify(obj));
         }
     }
+    function wbtmSeatPriceOverrideFeatureEnabled() {
+        if (!proSeatFeaturesEnabled) {
+            return false;
+        }
+        return $('input[name="wbtm_enable_seat_price_override"]').is(':checked');
+    }
     function wbtmBuildScopeKey(scope, cabinIndex, seatName) {
         seatName = (seatName || '').trim();
         if (!seatName) {
@@ -555,6 +575,31 @@
         });
         return n;
     }
+    function wbtmSyncSeatPriceButtonState($container) {
+        let $btn = $container.find('.wbtm_seat_price_view').first();
+        if (!$btn.length || $btn.attr('data-price-view-template') === '1') {
+            return false;
+        }
+        let seatName = $.trim($container.find('input.formControl').first().val() || '');
+        let featureEnabled = wbtmSeatPriceOverrideFeatureEnabled();
+        let isNonSeat = seatName && isNonSeatItem(seatName);
+        let isDisabled = !featureEnabled || !!isNonSeat;
+        let defaultTitle = $btn.attr('data-default-title') || '';
+        let disabledTitle = $btn.attr('data-disabled-title') || defaultTitle;
+        let featureDisabledTitle = $btn.attr('data-feature-disabled-title') || defaultTitle;
+        $btn.attr('data-seat-price-feature-enabled', featureEnabled ? '1' : '0');
+        $btn.prop('disabled', isDisabled);
+        $btn.toggleClass('wbtm_seat_price_view_disabled', isDisabled);
+        if (!featureEnabled) {
+            $btn.attr('title', featureDisabledTitle);
+        } else {
+            $btn.attr('title', isNonSeat ? disabledTitle : defaultTitle);
+        }
+        if (isDisabled) {
+            $btn.find('.wbtm_seat_price_badge').remove();
+        }
+        return isDisabled;
+    }
     function wbtmSyncSeatPriceBadges($root) {
         $root = $root && $root.length ? $root : $('.wbtm_settings_seat');
         if (!$root || !$root.length) {
@@ -563,11 +608,14 @@
         let all = wbtmReadOverridesState();
         $root.find('.wbtm_seat_price_view').each(function () {
             let $btn = $(this);
-            if ($btn.hasClass('wbtm_seat_price_view_disabled')) {
+            if ($btn.attr('data-price-view-template') === '1') {
                 $btn.find('.wbtm_seat_price_badge').remove();
                 return;
             }
             let $container = $btn.closest('.wbtm_seat_container');
+            if (wbtmSyncSeatPriceButtonState($container)) {
+                return;
+            }
             let seatName = $.trim($container.find('input.formControl').first().val() || '');
             if (!seatName) {
                 $btn.find('.wbtm_seat_price_badge').remove();
@@ -592,6 +640,13 @@
 
     $(document).on('wbtm_seat_plan_dom_updated', function () {
         wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+    });
+    $(document).on('change', 'input[name="wbtm_enable_seat_price_override"]', function () {
+        wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+        if (!wbtmSeatPriceOverrideFeatureEnabled()) {
+            $('#wbtm_seat_price_modal').hide();
+            wbtmPriceModalKey = '';
+        }
     });
 
     var wbtmPriceModalKey = '';

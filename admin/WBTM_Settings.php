@@ -519,7 +519,7 @@
 									}
 									for ($i = 0; $i < $rows; $i++) {
 										if (isset($col_infos[$i])) {
-											$seat_value = $col_infos[$i];
+											$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i]);
 											$rotation_value = $col_rotation_infos[$i] ?? '0';
 											$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j] = $seat_value;
 											if ($enable_rotation == 'yes') {
@@ -545,10 +545,12 @@
 					$rows = isset($_POST['wbtm_seat_rows_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_hidden'])) : 0;
 					$columns = isset($_POST['wbtm_seat_cols_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_cols_hidden'])) : 0;
 					$wbtm_enable_seat_rotation = isset($_POST['wbtm_enable_seat_rotation']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation'])) ? 'yes' : 'no';
+					$wbtm_enable_seat_price_override = isset($_POST['wbtm_enable_seat_price_override']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_price_override'])) ? 'yes' : 'no';
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
 					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+					update_post_meta($post_id, 'wbtm_enable_seat_price_override', $wbtm_enable_seat_price_override);
 					$lower_deck_info = [];
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {
@@ -575,7 +577,7 @@
 								$col_rotation_infos = [$col_rotation_infos];
 							}
 							for ($i = 0; $i < $rows; $i++) {
-								$seat_value = $col_infos[$i] ?? '';
+								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
 								$lower_deck_info[$i]['seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {
@@ -621,7 +623,7 @@
 								$col_rotation_infos = [$col_rotation_infos];
 							}
 							for ($i = 0; $i < $rows_dd; $i++) {
-								$seat_value = $col_infos[$i] ?? '';
+								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
 								$upper_deck_info[$i]['dd_seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {

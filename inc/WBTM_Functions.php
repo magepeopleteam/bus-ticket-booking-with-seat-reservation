@@ -8,15 +8,7 @@
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'WBTM_Functions' ) ) {
 		class WBTM_Functions {
-			public static function template_path( $file_name ): string {
-				$template_path = get_stylesheet_directory() . '/templates/';
-				$default_dir   = WBTM_PLUGIN_DIR . '/templates/';
-				$dir           = is_dir( $template_path ) ? $template_path : $default_dir;
-				$file_path     = $dir . $file_name;
-				return locate_template( array( 'templates/' . $file_name ) ) ? $file_path : $default_dir . $file_name;
-			}
-			// Fixed by Shahnur — Pro-only full bus feature gate 2026-05-07 01:55 PM
-			public static function is_full_bus_feature_enabled() {
+			public static function is_pro_active() {
 				if ( class_exists( 'WBTM_Dependencies_Pro' ) || class_exists( 'Wbtm_Woocommerce_bus_Pro' ) ) {
 					return true;
 				}
@@ -26,6 +18,17 @@
 				return function_exists( 'is_plugin_active' )
 					&& is_plugin_active( 'addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' )
 					&& file_exists( WP_PLUGIN_DIR . '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' );
+			}
+			public static function template_path( $file_name ): string {
+				$template_path = get_stylesheet_directory() . '/templates/';
+				$default_dir   = WBTM_PLUGIN_DIR . '/templates/';
+				$dir           = is_dir( $template_path ) ? $template_path : $default_dir;
+				$file_path     = $dir . $file_name;
+				return locate_template( array( 'templates/' . $file_name ) ) ? $file_path : $default_dir . $file_name;
+			}
+			// Fixed by Shahnur — Pro-only full bus feature gate 2026-05-07 01:55 PM
+			public static function is_full_bus_feature_enabled() {
+				return self::is_pro_active();
 			}
 			//==========================//
 			public static function get_bus_route( $post_id = 0, $start_route = '' ) {
@@ -411,7 +414,7 @@
 			 */
 			public static function get_ticket_types_for_seat_price_modal( $post_id ) {
 				$post_id = absint( $post_id );
-				if ( ! $post_id ) {
+				if ( ! $post_id || ! self::is_pro_active() ) {
 					return [];
 				}
 				$all_types = self::get_ticket_types( $post_id );
@@ -932,7 +935,10 @@
 			 * @return float|null Override amount in store raw price units, or null to use route fare.
 			 */
 			public static function get_seat_price_override_raw( $post_id, $storage_key, $ticket_type_id ) {
-				if ( ! $post_id || $storage_key === '' ) {
+				if ( ! $post_id || $storage_key === '' || ! self::is_pro_active() ) {
+					return null;
+				}
+				if ( class_exists( 'WBTM_Seat_Configuration' ) && ! WBTM_Seat_Configuration::is_seat_price_override_enabled( $post_id ) ) {
 					return null;
 				}
 				$map = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_price_overrides', [] );

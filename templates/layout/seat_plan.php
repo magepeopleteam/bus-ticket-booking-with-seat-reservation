@@ -66,6 +66,14 @@
             return in_array(strtolower(trim($value)), $non_seat_keys, true);
         }
     }
+    if (!function_exists('wbtm_normalize_seat_value_check')) {
+        function wbtm_normalize_seat_value_check($value) {
+            if (class_exists('WBTM_Seat_Configuration')) {
+                return WBTM_Seat_Configuration::normalize_saved_seat_value($value);
+            }
+            return trim((string) $value);
+        }
+    }
     if (!function_exists('wbtm_get_non_seat_data_check')) {
         function wbtm_get_non_seat_data_check($value) {
             if (class_exists('WBTM_Seat_Configuration')) {
@@ -113,6 +121,7 @@
                     if (strpos($seat_key_tmp, '_rotation') !== false) {
                         continue;
                     }
+                    $seat = wbtm_normalize_seat_value_check($seat);
                     if (!empty($seat) && !wbtm_is_non_seat_item_check($seat)) {
                         $seat_count++;
                     }
@@ -198,6 +207,7 @@
                                                         if (strpos($seat_key, '_rotation') !== false) {
                                                             continue;
                                                         }
+                                                        $seat_name = wbtm_normalize_seat_value_check($seat_name);
                                                         ?>
                                                         <?php if ($seat_name): ?>
                                                             <?php if (wbtm_is_non_seat_item_check($seat_name)):
@@ -334,6 +344,7 @@
                                             if (strpos($seat_key, '_rotation') !== false) {
                                                 continue;
                                             }
+                                            $seat_name = wbtm_normalize_seat_value_check($seat_name);
                                             ?>
                                             <?php if ($seat_name) { ?>
                                                 <?php if (wbtm_is_non_seat_item_check($seat_name)) {
@@ -448,6 +459,7 @@
                                             if (strpos($seat_key, '_rotation') !== false) {
                                                 continue;
                                             }
+                                            $info = wbtm_normalize_seat_value_check($info);
                                             ?>
                                             <?php if ($info) { ?>
                                                 <?php if (wbtm_is_non_seat_item_check($info)) {

@@ -87,6 +87,7 @@
 					$non_seat_icon_map['wc'] = 'fa-restroom';
 				}
 				$ticket_types_payload = [];
+				$pro_seat_features_enabled = class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
 				if (function_exists('get_current_screen')) {
 					$screen = get_current_screen();
 					if ($screen && $screen->post_type === 'wbtm_bus' && isset($_GET['post'])) {
@@ -106,6 +107,7 @@
 					'nonce'             => wp_create_nonce( 'wbtm_admin_nonce' ),
 					'seat_row_col_error' => esc_html__( 'Number of rows & columns must be greater than 0', 'bus-ticket-booking-with-seat-reservation' ),
 					'non_seat_items'    => $non_seat_icon_map,
+					'pro_seat_features_enabled' => $pro_seat_features_enabled,
 					'ticket_types'      => $ticket_types_payload,
 					'seat_price_need_name' => esc_html__( 'Enter a seat label first (e.g. A1).', 'bus-ticket-booking-with-seat-reservation' ),
 					'seat_price_no_types' => esc_html__( 'Add a route fare for at least one passenger type under Routing & Pricing, or save a per-seat price first.', 'bus-ticket-booking-with-seat-reservation' ),
