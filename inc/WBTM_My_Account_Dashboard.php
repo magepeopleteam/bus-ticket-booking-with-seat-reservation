@@ -205,6 +205,38 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
         }
 
         /**
+         * FIX: Restrict dashboard order fetches to the current customer
+         * AUTHOR: shahnur alam
+         * ISSUE: #WBTM-DASH-001
+         * SOLVED: 2026-05-15
+         * CONTEXT: Grouped rows and modal details must keep the same user scope as the main dashboard query.
+         */
+        private function get_order_booking_meta_query($order_id, $user_id = 0)
+        {
+            $meta_query = array(
+                array(
+                    'key' => 'wbtm_order_id',
+                    'value' => $order_id,
+                    'compare' => '='
+                )
+            );
+
+            if (!$user_id) {
+                $user_id = get_current_user_id();
+            }
+
+            if ($user_id && !current_user_can('manage_options')) {
+                $meta_query[] = array(
+                    'key' => 'wbtm_user_id',
+                    'value' => $user_id,
+                    'compare' => '='
+                );
+            }
+
+            return $meta_query;
+        }
+
+        /**
          * Get user bookings via AJAX
          */
         public function get_user_bookings()
@@ -532,15 +564,13 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                 // Get all bookings for this order
                 $order_bookings = get_posts(array(
                     'post_type' => 'wbtm_bus_booking',
-                    'meta_query' => array(
-                        array(
-                            'key' => 'wbtm_order_id',
-                            'value' => $order_id,
-                            'compare' => '='
-                        )
-                    ),
+                    'meta_query' => $this->get_order_booking_meta_query($order_id),
                     'posts_per_page' => -1
                 ));
+
+                if (empty($order_bookings)) {
+                    return null;
+                }
 
                 $attendees = array();
                 $has_extra_services = false;
@@ -577,6 +607,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                     'has_extra_services' => $has_extra_services,
                     'pdf_url' => $pdf_url
                 );
+
                 
                 return $processed_orders[$order_id];
             }
@@ -619,13 +650,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             $bookings = get_posts(array(
                 'post_type' => 'wbtm_bus_booking',
                 'post_status' => 'publish',
-                'meta_query' => array(
-                    array(
-                        'key' => 'wbtm_order_id',
-                        'value' => $order_id,
-                        'compare' => '='
-                    )
-                ),
+                'meta_query' => $this->get_order_booking_meta_query($order_id, $user_id),
                 'posts_per_page' => -1
             ));
 
