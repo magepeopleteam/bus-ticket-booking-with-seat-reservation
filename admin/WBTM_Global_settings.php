@@ -66,7 +66,10 @@
 				$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
-				$is_wbtm_page = ( $post_type === 'wbtm_bus' || strpos( $page, 'wbtm_' ) === 0 );
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$option_page = isset( $_POST['option_page'] ) ? sanitize_text_field( wp_unslash( $_POST['option_page'] ) ) : '';
+				
+				$is_wbtm_page = ( $post_type === 'wbtm_bus' || strpos( $page, 'wbtm_' ) === 0 || strpos( $option_page, 'wbtm_' ) === 0 );
 				if ( ! $is_wbtm_page ) {
 					return;
 				}
@@ -246,6 +249,17 @@
 							'name'    => 'make_processing_completed',
 							'label'   => esc_html__( 'Turn order status processing to completed automatically', 'bus-ticket-booking-with-seat-reservation' ),
 							'desc'    => esc_html__( 'If you want to make woocommerce processing status to completed automatically select ON', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on'  => esc_html__( 'ON', 'bus-ticket-booking-with-seat-reservation' ),
+								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
+							)
+						),
+						array(
+							'name'    => 'auto_complete_paid_orders',
+							'label'   => esc_html__( 'Auto Complete Paid Orders', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Automatically mark WooCommerce orders as Completed when a successful payment is received (fixes stuck Pending/Processing orders).', 'bus-ticket-booking-with-seat-reservation' ),
 							'type'    => 'select',
 							'default' => 'off',
 							'options' => array(

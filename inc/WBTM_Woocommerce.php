@@ -24,6 +24,9 @@
 				/**********************************************/
 				add_filter('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
 				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				// Added hooks for robust auto-completion of successful payments
+				add_action('woocommerce_payment_complete', array($this, 'auto_complete_paid_order'));
+				add_action('woocommerce_order_status_processing', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
 				// Add redirect logic after adding to cart
 				add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
@@ -420,13 +423,55 @@
 					if (!$order_id) {
 						return;
 					}
-					$order = new WC_Order($order_id);
-					if ('processing' == $order->status) {
+					$order = wc_get_order($order_id);
+					if (!$order) {
+						return;
+					}
+					
+					// Security: Do not auto-complete offline payments where cash is not yet received
+					$offline_gateways = array( 'cod', 'bacs', 'cheque' );
+					if ( in_array( $order->get_payment_method(), $offline_gateways ) ) {
+						return;
+					}
+					
+					if ('processing' == $order->get_status()) {
 						$order->update_status('completed');
 					}
-					return;
 				}
 			}
+			
+			public function auto_complete_paid_order($order_id) {
+				if (!$order_id) {
+					return;
+				}
+				$auto_complete_setting = WBTM_Global_Function::get_settings('wbtm_general_settings', 'auto_complete_paid_orders', 'off');
+				if ($auto_complete_setting == 'on') {
+					$order = wc_get_order($order_id);
+					if (!$order || $order->has_status('completed')) {
+						return;
+					}
+					
+					// Security: Do not auto-complete offline payments where cash is not yet received
+					$offline_gateways = array( 'cod', 'bacs', 'cheque' );
+					if ( in_array( $order->get_payment_method(), $offline_gateways ) ) {
+						return;
+					}
+					
+					$has_bus_ticket = false;
+					foreach ($order->get_items() as $item_id => $item) {
+						$post_id = wc_get_order_item_meta($item_id, '_wbtm_bus_id');
+						if ($post_id && get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+							$has_bus_ticket = true;
+							break;
+						}
+					}
+					
+					if ($has_bus_ticket) {
+						$order->update_status('completed');
+					}
+				}
+			}
+			
 			public function cart_item_thumbnail($thumbnail, $cart_item) {
 				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
