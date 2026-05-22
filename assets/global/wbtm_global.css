@@ -11,6 +11,13 @@
     margin-right: auto;
   }
 }
+/* Single bus page: wbtm_container sits directly inside <body> (not inside TT5's
+   constrained 645px content wrapper), so the negative margin-left breakout calc
+   produces -347.5px and shifts content far left.  Reset to auto centering. */
+body.single-wbtm_bus div.wbtm_container {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
 /* On mobile collapse the breakout — full width, no negative margin */
 @media only screen and (max-width: 768px) {
   div.wbtm_container {
