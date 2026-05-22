@@ -1,6 +1,25 @@
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {
-  div.wbtm_container {    width: 100%;    max-width: 1200px;    margin: var(--wbtm_dmp) auto;  }
+  /* Break out of WordPress block theme narrow content width (e.g. Twenty Twenty-Five contentSize: 645px).
+     Falls back to width:100% / margin:0 on classic themes that don't define these variables. */
+  div.wbtm_container {
+    width: var(--wp--style--global--wide-size, 100%);
+    max-width: var(--wp--style--global--wide-size, 1200px);
+    margin-top: var(--wbtm_dmp);
+    margin-bottom: var(--wbtm_dmp);
+    margin-left: calc((var(--wp--style--global--content-size, 100%) - var(--wp--style--global--wide-size, 100%)) / 2);
+    margin-right: auto;
+  }
+}
+/* On mobile collapse the breakout — full width, no negative margin */
+@media only screen and (max-width: 768px) {
+  div.wbtm_container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+  }
 }
 /********************************************************************************************************************/
 @media only screen and (min-width: 10px) {

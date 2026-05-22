@@ -349,3 +349,65 @@
     }
 }
 @media (min-width: 1240px) {}
+
+/* ---- Mobile fixes for search results ---- */
+@media only screen and (max-width: 768px) {
+    /* Popup inner full-width on mobile */
+    .wbtm-bus-popup-inner {
+        width: 95% !important;
+        margin: 3% auto !important;
+        padding: 14px !important;
+        max-height: 90vh;
+    }
+    .wbtm-popup-content {
+        max-width: 100% !important;
+    }
+    /* Popup tab bar scrolls horizontally */
+    .wbtm_bus_detail_popup_tabs {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .wbtm_bus_detail_popup_tab {
+        flex-shrink: 0 !important;
+    }
+    /* Bus popup links always visible on touch */
+    .wbtm_bus_list_area .wbtm_bus_popup_links {
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+    /* Route search result header */
+    .wbtm_search_result .wbtm-date-route,
+    .wbtm-date-return-route {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px;
+    }
+    /* Tab switcher full width on mobile */
+    .wbtm_bus_tab_wrapper {
+        gap: 6px;
+        padding: 2px;
+    }
+    .wbtm_bus_tab_wrapper .wtbm_start_route,
+    .wbtm_bus_tab_wrapper .wtbm_return_route {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    /* Route city sections side by side on small phones */
+    .wbtm_search_route_city_section,
+    .wbtm_search_route_city_section_right {
+        width: 50% !important;
+        padding: 6px !important;
+    }
+    .wbtm_search_route_label {
+        font-size: 12px;
+    }
+    .wbtm_search_route_city {
+        font-size: 11px;
+    }
+}

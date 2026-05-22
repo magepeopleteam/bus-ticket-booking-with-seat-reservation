@@ -1,6 +1,7 @@
 /* ===== FEATURE IMAGE ===== */
 .wbtm_car_details_feature_image {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     margin: auto;
     border-radius: 10px;
     border: 1px solid #ddd;
