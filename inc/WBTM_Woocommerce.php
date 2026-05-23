@@ -22,8 +22,11 @@
 				add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
 				//add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
 				/**********************************************/
-				add_filter('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
-				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				add_action('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
+				add_action('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				// make_processing_completed: also fire when order actually enters processing (async gateways)
+				add_action('woocommerce_order_status_processing', array($this, 'update_order_status'), 20);
+				add_action('woocommerce_payment_complete', array($this, 'update_order_status'), 20);
 				// Added hooks for robust auto-completion of successful payments
 				add_action('woocommerce_payment_complete', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_order_status_processing', array($this, 'auto_complete_paid_order'));
