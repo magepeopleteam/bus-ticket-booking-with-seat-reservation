@@ -1,21 +1,138 @@
 jQuery(document).ready(function ($) {
-    $(document).on("click", ".wbtm_gallery_image", function() {
-        let feature_image = $('#wbtm_car_details_feature_image');
-        let gallery_image = $(this);
-        let gallery_url = gallery_image.attr('src');
-        let feature_url = feature_image.attr('src');
-        feature_image.addClass('wbtm_gallery_image_fade_out');
-        gallery_image.addClass('wbtm_gallery_image_fade_out');
-        setTimeout(function() {
-            feature_image.attr('src', gallery_url).removeClass('wbtm_gallery_image_fade_out').addClass('wbtm_gallery_image_fade_in');
-            gallery_image.attr('src', feature_url).removeClass('wbtm_gallery_image_fade_out').addClass('wbtm_gallery_image_fade_in');
-
-            setTimeout(function() {
-                feature_image.removeClass('wbtm_gallery_image_fade_in');
-                gallery_image.removeClass('wbtm_gallery_image_fade_in');
-            }, 300);
-        }, 300);
+    // ===== GALLERY SLIDER FUNCTIONALITY =====
+    $(document).on('click', '.wbtm_gallery_slider_prev', function(e) {
+        e.preventDefault();
+        var $slider = $(this).closest('.wbtm_gallery_slider');
+        var $slides = $slider.find('.wbtm_gallery_slide');
+        var $dots = $slider.find('.wbtm_gallery_slider_dot');
+        var $current = $slides.filter('.active');
+        var currentIndex = parseInt($current.data('index'));
+        var total = parseInt($slider.data('total'));
+        var newIndex = (currentIndex - 1 + total) % total;
+        
+        $slides.removeClass('active');
+        $dots.removeClass('active');
+        $slides.filter('[data-index="' + newIndex + '"]').addClass('active');
+        $dots.filter('[data-index="' + newIndex + '"]').addClass('active');
+        $slider.find('.wbtm_gallery_slider_current').text(newIndex + 1);
     });
+
+    $(document).on('click', '.wbtm_gallery_slider_next', function(e) {
+        e.preventDefault();
+        var $slider = $(this).closest('.wbtm_gallery_slider');
+        var $slides = $slider.find('.wbtm_gallery_slide');
+        var $dots = $slider.find('.wbtm_gallery_slider_dot');
+        var $current = $slides.filter('.active');
+        var currentIndex = parseInt($current.data('index'));
+        var total = parseInt($slider.data('total'));
+        var newIndex = (currentIndex + 1) % total;
+        
+        $slides.removeClass('active');
+        $dots.removeClass('active');
+        $slides.filter('[data-index="' + newIndex + '"]').addClass('active');
+        $dots.filter('[data-index="' + newIndex + '"]').addClass('active');
+        $slider.find('.wbtm_gallery_slider_current').text(newIndex + 1);
+    });
+
+    $(document).on('click', '.wbtm_gallery_slider_dot', function(e) {
+        e.preventDefault();
+        var $dot = $(this);
+        var $slider = $dot.closest('.wbtm_gallery_slider');
+        var $slides = $slider.find('.wbtm_gallery_slide');
+        var $dots = $slider.find('.wbtm_gallery_slider_dot');
+        var newIndex = parseInt($dot.data('index'));
+        
+        $slides.removeClass('active');
+        $dots.removeClass('active');
+        $slides.filter('[data-index="' + newIndex + '"]').addClass('active');
+        $dot.addClass('active');
+        $slider.find('.wbtm_gallery_slider_current').text(newIndex + 1);
+    });
+
+    // Auto-play slider (optional - advances every 5 seconds)
+    function initAutoPlay($slider) {
+        var interval = setInterval(function() {
+            if (!$slider.is(':visible')) return;
+            var $slides = $slider.find('.wbtm_gallery_slide');
+            var $dots = $slider.find('.wbtm_gallery_slider_dot');
+            var $current = $slides.filter('.active');
+            var currentIndex = parseInt($current.data('index'));
+            var total = parseInt($slider.data('total'));
+            var newIndex = (currentIndex + 1) % total;
+            
+            $slides.removeClass('active');
+            $dots.removeClass('active');
+            $slides.filter('[data-index="' + newIndex + '"]').addClass('active');
+            $dots.filter('[data-index="' + newIndex + '"]').addClass('active');
+            $slider.find('.wbtm_gallery_slider_current').text(newIndex + 1);
+        }, 5000);
+        
+        $slider.data('autoplay-interval', interval);
+    }
+
+    // Initialize auto-play for all sliders
+    $('.wbtm_gallery_slider').each(function() {
+        initAutoPlay($(this));
+    });
+
+    // Pause auto-play on hover
+    $(document).on('mouseenter', '.wbtm_gallery_slider', function() {
+        var interval = $(this).data('autoplay-interval');
+        if (interval) clearInterval(interval);
+    });
+
+    $(document).on('mouseleave', '.wbtm_gallery_slider', function() {
+        initAutoPlay($(this));
+    });
+
+    // ===== POPUP LIGHTBOX FUNCTIONALITY =====
+    let currentIndex = 0;
+    const $popup = $('.wbtm_gallery_image_popup_wrapper');
+    const $popupImages = $('.wbtm_gallery_image_popup_item');
+
+    $(document).on('click', '.wbtm_gallery_slide img', function() {
+        var $slider = $(this).closest('.wbtm_gallery_slider');
+        var $activeSlide = $slider.find('.wbtm_gallery_slide.active');
+        currentIndex = parseInt($activeSlide.data('index'));
+        $popup.fadeIn(300);
+        showPopupImage(currentIndex);
+    });
+
+    $(document).on('click', '.wbtm_gallery_image_popup_next', function() {
+        currentIndex = (currentIndex + 1) % $popupImages.length;
+        showPopupImage(currentIndex);
+    });
+
+    $(document).on('click', '.wbtm_gallery_image_popup_prev', function() {
+        currentIndex = (currentIndex - 1 + $popupImages.length) % $popupImages.length;
+        showPopupImage(currentIndex);
+    });
+
+    $(document).on('click', '.wbtm_gallery_image_popup_close, .wbtm_gallery_image_popup_overlay', function() {
+        $popup.fadeOut(300);
+    });
+
+    function showPopupImage(index) {
+        $popupImages.removeClass('active').css({ opacity: 0 });
+        $popupImages.eq(index).addClass('active').animate({ opacity: 1 }, 300);
+    }
+
+    // Keyboard navigation for popup
+    $(document).on('keydown', function(e) {
+        if ($popup.is(':visible')) {
+            if (e.key === 'ArrowRight') {
+                currentIndex = (currentIndex + 1) % $popupImages.length;
+                showPopupImage(currentIndex);
+            } else if (e.key === 'ArrowLeft') {
+                currentIndex = (currentIndex - 1 + $popupImages.length) % $popupImages.length;
+                showPopupImage(currentIndex);
+            } else if (e.key === 'Escape') {
+                $popup.fadeOut(300);
+            }
+        }
+    });
+
+    // ===== TABS FUNCTIONALITY =====
     $(".wbtm_car_details_tabs button").on("click", function(){
         var tabId = $(this).data('tab');
 
@@ -34,36 +151,7 @@ jQuery(document).ready(function ($) {
         }, 800);
     });
 
-
-    let currentIndex = 0;
-    const $popup = $('.wbtm_gallery_image_popup_wrapper');
-    const $images = $('.wbtm_gallery_image_popup_item');
-
-    $(document).on('click', '.wbtm_car_image_details', function() {
-        $popup.fadeIn(300);
-        showImage(currentIndex);
-    });
-
-    $(document).on('click', '.wbtm_gallery_image_popup_next', function() {
-        currentIndex = (currentIndex + 1) % $images.length;
-        showImage(currentIndex);
-    });
-
-    $(document).on('click', '.wbtm_gallery_image_popup_prev', function() {
-        currentIndex = (currentIndex - 1 + $images.length) % $images.length;
-        showImage(currentIndex);
-    });
-
-    $(document).on('click', '.wbtm_gallery_image_popup_close, .wbtm_gallery_image_popup_overlay', function() {
-        $popup.fadeOut(300);
-    });
-
-    function showImage(index) {
-        $images.removeClass('active').css({ opacity: 0 });
-        $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);
-    }
-
-
+    // ===== AJAX POPUP FOR BUS DETAILS =====
     $(document).on('click','.wbtm_bus_popup_link', function () {
         let post_id = $(this).data('post-id');
         let tab_id = $(this).attr('id');
@@ -94,6 +182,7 @@ jQuery(document).ready(function ($) {
             $('#wbtm-bus-popup').fadeOut();
         }
     });
+
     // popup tabs target content
     $(document).on('click', '.wbtm_bus_detail_popup_tab', function () {
         $('.wbtm_bus_detail_popup_tab').removeClass('active');

@@ -87,7 +87,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
                             return false;
                         });
                         $('#media_clear_<?php echo esc_attr($post_id); ?>').click(function() {
-                            $('.media-list-<?php echo esc_attr($post_id); ?> .gallery-image').remove();
+                            $('.media-list-<?php echo esc_attr($post_id); ?> .wbtm_gallery-image').remove();
                         })
                     });
                 </script>
@@ -112,7 +112,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
 
             if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
 
-                $gallery_images = isset( $_POST['wbtm_gallery_images'] ) ? array_map( 'esc_url', (array) $_POST['wbtm_gallery_images'] ) : [];
+                $gallery_images = isset( $_POST['wbtm_gallery_images'] ) ? array_map( 'intval', (array) $_POST['wbtm_gallery_images'] ) : [];
                 update_post_meta( $post_id, 'wbtm_gallery_images', $gallery_images );
 
             }

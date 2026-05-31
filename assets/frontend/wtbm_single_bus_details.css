@@ -1,62 +1,170 @@
-/* ===== FEATURE IMAGE ===== */
-.wbtm_car_details_feature_image {
+/* ===== FEATURE IMAGE (Single Image Mode) ===== */
+.wbtm_car_details_images {
     width: 100%;
     max-width: 400px;
     margin: auto;
+}
+.wbtm_car_details_feature_image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
     border-radius: 10px;
     border: 1px solid #ddd;
-}
-/* ===== GALLERY ===== */
-.wbtm_car_details_gallery {
+    overflow: hidden;
+    background: #f5f5f5;
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
 }
-.wbtm_car_details_gallery img {
-    width: 100px !important;
-    height: 80px !important;
-    object-fit: contain;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid;
+.wbtm_car_details_feature_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.wbtm_gallery_image {
-    cursor: pointer;
-    border-radius: 6px;
+/* ===== GALLERY SLIDER ===== */
+.wbtm_gallery_slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f5;
     border: 1px solid #ddd;
-    transition: transform 0.3s ease;
-}
-.wbtm_gallery_image:hover {
-    border: 1px solid var(--wbtm_color_theme);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.wbtm_gallery_image.active {
-    border:1px solid var(--wbtm_color_theme);
 }
 
-
-.wbtm_car_details_view_more {
-    background: var(--color_theme);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+.wbtm_gallery_slider_track {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-/* Smooth fade image animation */
-.wbtm_gallery_image_fade_out {
+.wbtm_gallery_slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.wbtm_gallery_image_fade_in{
-    opacity: 1;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease-in-out;
+    pointer-events: none;
 }
 
+.wbtm_gallery_slide.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.wbtm_gallery_slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Coach Type Badge */
+.wbtm_coach_badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff4757;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Navigation Arrows */
+.wbtm_gallery_slider_arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #333;
+}
+
+.wbtm_gallery_slider_arrow:hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.wbtm_gallery_slider_arrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+.wbtm_gallery_slider_prev {
+    left: 10px;
+}
+
+.wbtm_gallery_slider_next {
+    right: 10px;
+}
+
+/* Dot Indicators */
+.wbtm_gallery_slider_dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.wbtm_gallery_slider_dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.wbtm_gallery_slider_dot.active {
+    background: #ff4757;
+    transform: scale(1.3);
+}
+
+.wbtm_gallery_slider_dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Slide Counter */
+.wbtm_gallery_slider_counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+    z-index: 10;
+    letter-spacing: 0.5px;
+}
+
+/* ===== POPUP LIGHTBOX ===== */
 .wbtm_gallery_image_popup_wrapper {
     display: none;
     position: fixed;
@@ -115,10 +223,6 @@
     border-radius: 50%;
     cursor: pointer;
     transition: 0.3s;
-}
-
-.wbtm_car_image_details{
-    cursor: pointer;
 }
 
 .wbtm_gallery_image_popup_prev:hover,

@@ -219,7 +219,7 @@
 						array(
 							'name'    => 'show_hide_bus_details_tabs',
 							'label'   => esc_html__( 'Show/hide bus details tabs', 'bus-ticket-booking-with-seat-reservation' ),
-							'desc'    => esc_html__( 'Show or hide the Bus Details / Boarding-Dripping Points tabs in the search result list.', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Show or hide the Bus Details / Boarding-Dropping Points tabs in the search result list.', 'bus-ticket-booking-with-seat-reservation' ),
 							'type'    => 'select',
 							'default' => 'show',
 							'options' => array(

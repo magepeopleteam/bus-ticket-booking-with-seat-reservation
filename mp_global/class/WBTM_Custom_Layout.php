@@ -192,11 +192,19 @@
                         return wp_get_attachment_url( $id );
                     }, $gallery_images );
                 }
+                // Fallback: use first gallery image as feature image if no featured image is set
+                if ( !$thumbnail_url && !empty( $gallery_image_urls ) ) {
+                    $thumbnail_url = $gallery_image_urls[0];
+                }
                 $all_image_urls = $gallery_image_urls;
                 if( $thumbnail_url ){
                     array_push( $all_image_urls, $thumbnail_url );
                 }
+                // Remove duplicates and empty values
+                $all_image_urls = array_filter(array_unique($all_image_urls));
+                $total_images = count($all_image_urls);
                 $car_name = get_the_title( $post_id );
+                $coach_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_category', '');
 				?>
                <!-- <div class="bg_image_area" data-href="<?php /*echo esc_attr( $post_url ); */?>" data-placeholder>
                     <div data-bg-image="<?php /*echo esc_attr( $thumbnail_url ); */?>"></div>
@@ -228,34 +236,40 @@
 
 
                 <div class="wbtm_car_details_images">
-                    <div class="wbtm_car_details_feature_image">
-                        <?php if( $thumbnail_url ){?>
-                            <img class="wbtm_car_image_details" id="wbtm_car_details_feature_image" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $post_id );?>">
-                        <?php }?>
-                    </div>
-                    <?php
-                    if (!empty( $gallery_images ) && is_array( $gallery_images ) ) { ?>
-                        <div class="wbtm_car_details_gallery">
-                            <?php
-                            $counter = 0;
-
-                            foreach ( $gallery_image_urls as $gallery_image_url ) {
-                                if ( !$gallery_image_url ) continue;
-                                if ( $counter < 4 ) { ?>
-                                    <img class="wbtm_gallery_image" src=" <?php echo esc_url( $gallery_image_url );?> " alt="<?php echo esc_attr( $car_name )?> Gallery Image">
-                                    <?php
-                                }
-                                $counter++;
-                            }
-                            if ( count( $all_image_urls ) > 4) { ?>
-                                <button class="wbtm_car_image_details mpcrbm_car_details_view_more"><?php esc_attr_e( 'View More', 'car-rental-manager' );?> →</button>
-                                <?php
-                            }
-                            ?>
+                    <?php if ($total_images > 1) : ?>
+                        <!-- SLIDER MODE: Multiple images -->
+                        <div class="wbtm_gallery_slider" data-total="<?php echo esc_attr($total_images); ?>">
+                            <?php if ($coach_type) : ?>
+                                <span class="wbtm_coach_badge"><?php echo esc_html($coach_type); ?></span>
+                            <?php endif; ?>
+                            <div class="wbtm_gallery_slider_track">
+                                <?php foreach ($all_image_urls as $index => $img_url) : ?>
+                                    <div class="wbtm_gallery_slide <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo esc_attr($index); ?>">
+                                        <img src="<?php echo esc_url($img_url); ?>" alt="<?php echo esc_attr($car_name); ?> Gallery Image <?php echo esc_attr($index + 1); ?>">
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_prev" aria-label="Previous image">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_next" aria-label="Next image">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                            <div class="wbtm_gallery_slider_dots">
+                                <?php foreach ($all_image_urls as $index => $img_url) : ?>
+                                    <button class="wbtm_gallery_slider_dot <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo esc_attr($index); ?>" aria-label="Go to image <?php echo esc_attr($index + 1); ?>"></button>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="wbtm_gallery_slider_counter">
+                                <span class="wbtm_gallery_slider_current">1</span> / <span class="wbtm_gallery_slider_total"><?php echo esc_html($total_images); ?></span>
+                            </div>
                         </div>
-                        <?php
-                    }
-                    ?>
+                    <?php elseif ($total_images === 1) : ?>
+                        <!-- SINGLE IMAGE MODE: Only one image -->
+                        <div class="wbtm_car_details_feature_image">
+                            <img class="wbtm_car_image_details" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $post_id );?>">
+                        </div>
+                    <?php endif; ?>
                 </div>
 
 				<?php
