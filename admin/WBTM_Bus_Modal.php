@@ -247,62 +247,17 @@ if (!class_exists('WBTM_Bus_Modal')) {
                                 <button type="button" class="wbtm-step-tab" data-step="1">
                                     <span class="wbtm-step-num">2</span>
                                     <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Seat Config</span>
+                                    <span class="wbtm-step-label">All Settings</span>
                                 </button>
                                 <button type="button" class="wbtm-step-tab" data-step="2">
                                     <span class="wbtm-step-num">3</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Pricing & Route</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="3">
-                                    <span class="wbtm-step-num">4</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Extra Services</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="4">
-                                    <span class="wbtm-step-num">5</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Pickup & Drop</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="5">
-                                    <span class="wbtm-step-num">6</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Date & Deposit</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="6">
-                                    <span class="wbtm-step-num">7</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Registration</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="7">
-                                    <span class="wbtm-step-num">8</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Tax</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="8">
-                                    <span class="wbtm-step-num">9</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Features</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="9">
-                                    <span class="wbtm-step-num">10</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Gallery</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="10">
-                                    <span class="wbtm-step-num">11</span>
-                                    <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    <span class="wbtm-step-label">Terms</span>
-                                </button>
-                                <button type="button" class="wbtm-step-tab" data-step="11">
-                                    <span class="wbtm-step-num">12</span>
                                     <svg class="wbtm-step-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                                     <span class="wbtm-step-label">Review</span>
                                 </button>
                             </div>
                             
                             <div class="wbtm-progress-bar">
-                                <div class="wbtm-progress-fill" id="wbtmProgressFill" style="width: 11.11%"></div>
+                                <div class="wbtm-progress-fill" id="wbtmProgressFill" style="width: 33.33%"></div>
                             </div>
                         </div>
                         
@@ -312,58 +267,19 @@ if (!class_exists('WBTM_Bus_Modal')) {
                                 <?php $this->render_general_step($post_id, $bus_name, $bus_no, $bus_category, $bus_logo, $reservation_on, $bus_categories); ?>
                             </div>
                             
-                            <!-- Step 1: Seat Configuration -->
+                            <!-- Step 1: All Settings (Original Full Settings Tabs) -->
                             <div class="wbtm-step-panel" data-step="1" id="wbtmStep1">
-                                <?php $this->render_seat_step($post_id, $seat_type, $seat_cols, $seat_rows, $total_seat); ?>
+                                <div class="wbtm-original-settings">
+                                    <?php 
+                                    // Render the original settings tabs with ALL functionality
+                                    wp_nonce_field('wbtm_type_nonce', 'wbtm_type_nonce');
+                                    do_action('wbtm_add_settings_tab_content', $post_id); 
+                                    ?>
+                                </div>
                             </div>
                             
-                            <!-- Step 2: Pricing & Route -->
+                            <!-- Step 2: Review -->
                             <div class="wbtm-step-panel" data-step="2" id="wbtmStep2">
-                                <?php $this->render_pricing_step($post_id, $route_info, $bus_prices, $bus_stops, $ticket_types, $same_bus_return); ?>
-                            </div>
-                            
-                            <!-- Step 3: Extra Services -->
-                            <div class="wbtm-step-panel" data-step="3" id="wbtmStep3">
-                                <?php $this->render_services_step($post_id, $extra_services, $show_extra_service); ?>
-                            </div>
-                            
-                            <!-- Step 4: Pickup & Drop -->
-                            <div class="wbtm-step-panel" data-step="4" id="wbtmStep4">
-                                <?php $this->render_pickup_step($post_id, $pickup_points, $bus_stops, $show_pickup, $show_boarding_time, $show_dropping_time); ?>
-                            </div>
-                            
-                            <!-- Step 5: Date & Deposit -->
-                            <div class="wbtm-step-panel" data-step="5" id="wbtmStep5">
-                                <?php $this->render_date_step($post_id, $date_type, $repeated_start, $repeated_end, $repeated_after, $off_days, $particular_dates); ?>
-                            </div>
-                            
-                            <!-- Step 6: Registration -->
-                            <div class="wbtm-step-panel" data-step="6" id="wbtmStep6">
-                                <?php $this->render_registration_step($post_id); ?>
-                            </div>
-                            
-                            <!-- Step 7: Tax Configure -->
-                            <div class="wbtm-step-panel" data-step="7" id="wbtmStep7">
-                                <?php $this->render_tax_step($post_id); ?>
-                            </div>
-                            
-                            <!-- Step 8: Bus Features -->
-                            <div class="wbtm-step-panel" data-step="8" id="wbtmStep8">
-                                <?php $this->render_features_step($post_id); ?>
-                            </div>
-                            
-                            <!-- Step 9: Gallery -->
-                            <div class="wbtm-step-panel" data-step="9" id="wbtmStep9">
-                                <?php $this->render_gallery_step($post_id, $gallery_images, $feature_image_id); ?>
-                            </div>
-                            
-                            <!-- Step 10: Term & Condition -->
-                            <div class="wbtm-step-panel" data-step="10" id="wbtmStep10">
-                                <?php $this->render_terms_step($post_id); ?>
-                            </div>
-                            
-                            <!-- Step 11: Review -->
-                            <div class="wbtm-step-panel" data-step="11" id="wbtmStep11">
                                 <?php $this->render_review_step($post_id); ?>
                             </div>
                             

@@ -1495,6 +1495,88 @@ select.wbtm-form-control {
   font-style: italic;
 }
 
+/* Original Settings Embedded in Modal */
+.wbtm-original-settings {
+  padding: 0;
+}
+
+.wbtm-original-settings .wbtm_tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  min-height: 60vh;
+  max-height: 65vh;
+  overflow: hidden;
+}
+
+.wbtm-original-settings .wbtm_tabs.leftTabs {
+  display: flex;
+  flex-direction: row;
+}
+
+.wbtm-original-settings .tabLists {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  background: #f8f9fc;
+  border-right: 1px solid var(--wbtm-border);
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+  overflow-y: auto;
+  max-height: 65vh;
+}
+
+.wbtm-original-settings .tabLists li {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wbtm-ink2);
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.wbtm-original-settings .tabLists li:hover {
+  background: rgba(29, 78, 216, 0.06);
+  color: var(--wbtm-blue);
+}
+
+.wbtm-original-settings .tabLists li.active {
+  background: rgba(29, 78, 216, 0.1);
+  color: var(--wbtm-blue);
+  border-left-color: var(--wbtm-blue);
+}
+
+.wbtm-original-settings .tabsContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-height: 65vh;
+}
+
+.wbtm-original-settings .tabsItem {
+  display: none;
+}
+
+.wbtm-original-settings .tabsItem.active {
+  display: block;
+}
+
+/* Ensure form elements in original settings are styled */
+.wbtm-original-settings input[type="text"],
+.wbtm-original-settings input[type="number"],
+.wbtm-original-settings input[type="date"],
+.wbtm-original-settings input[type="time"],
+.wbtm-original-settings select,
+.wbtm-original-settings textarea {
+  max-width: 100%;
+}
+
 /* WordPress Admin Specific */
 #poststuff .wbtm-modal-wrapper .inside {
   margin: 0;

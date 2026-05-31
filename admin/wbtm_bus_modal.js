@@ -8,7 +8,7 @@
 
     const WBTMModal = {
         currentStep: 0,
-        totalSteps: 12,
+        totalSteps: 3,
         isEditing: false,
         hasChanges: false,
 
@@ -25,6 +25,7 @@
             this.updateProgress();
             this.initAutocomplete();
             this.syncReviewData();
+            this.initOriginalSettingsTabs();
             
             // Auto-open modal on bus add/edit pages
             if ($('.wbtm-modal-wrapper').length) {
@@ -33,6 +34,33 @@
                 // IMPORTANT: Actually open the modal!
                 this.openModal();
             }
+        },
+
+        initOriginalSettingsTabs: function() {
+            // Initialize original settings tabs inside modal step 1
+            const $settingsContainer = $('.wbtm-original-settings');
+            if (!$settingsContainer.length) return;
+            
+            const $tabLists = $settingsContainer.find('.tabLists li');
+            const $tabContents = $settingsContainer.find('.tabsItem');
+            
+            if (!$tabLists.length || !$tabContents.length) return;
+            
+            // Show first tab by default
+            $tabLists.first().addClass('active');
+            $tabContents.first().addClass('active');
+            
+            $tabLists.on('click', function(e) {
+                e.preventDefault();
+                const target = $(this).data('tabs-target');
+                if (!target) return;
+                
+                $tabLists.removeClass('active');
+                $(this).addClass('active');
+                
+                $tabContents.removeClass('active');
+                $settingsContainer.find('.tabsItem[data-tabs="' + target + '"]').addClass('active');
+            });
         },
 
         bindEvents: function() {
