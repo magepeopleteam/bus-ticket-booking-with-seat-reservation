@@ -1,0 +1,98 @@
+/*
+ * Multi-step wizard skin for the REAL bus add/edit screen (screen id wbtm_bus).
+ * It restyles the existing settings metabox (#wbtm_meta_box_panel ->
+ * .wbtm_style > .wbtm_tabs.leftTabs > ul.tabLists[li data-tabs-target] +
+ * .tabsContent > .tabsItem) into the mockup's stepper, and bus-edit-wizard.js
+ * adds the progress bar + Back/Continue/Publish footer that drive the
+ * EXISTING tabs. Every field and the native Publish/Update save are untouched.
+ * The body class wbtm-bus-wizard is added server-side, so the stepper layout
+ * is applied at first paint (no flash of the old left-tabs).
+ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+body.wbtm-bus-wizard{
+  --red:#e63946;--green:#16a34a;--ink:#0f1523;--ink2:#3a3f55;--muted:#8b93b0;--border:#e4e7f0;
+}
+body.wbtm-bus-wizard #wpcontent,body.wbtm-bus-wizard #wpbody-content{background:#f0f2f7}
+
+/* single-column: push the publish/side box below the wizard card */
+body.wbtm-bus-wizard #post-body.columns-2 #postbox-container-1{float:none;width:auto;margin:16px 0 0}
+body.wbtm-bus-wizard #post-body-content{margin-right:0 !important}
+body.wbtm-bus-wizard #poststuff{min-width:0}
+
+/* ---- card ---- */
+body.wbtm-bus-wizard #wbtm_meta_box_panel{border:none;background:transparent;box-shadow:none;margin-top:6px}
+body.wbtm-bus-wizard #wbtm_meta_box_panel .postbox-header{
+  background:linear-gradient(135deg,#0f1523 0%,#1e2640 100%);border:none;border-radius:14px 14px 0 0;
+}
+body.wbtm-bus-wizard #wbtm_meta_box_panel .postbox-header h2,
+body.wbtm-bus-wizard #wbtm_meta_box_panel .postbox-header .hndle{
+  color:#fff !important;font-weight:700;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;padding:16px 22px;font-size:16px;
+}
+body.wbtm-bus-wizard #wbtm_meta_box_panel .postbox-header .handle-actions .dashicons,
+body.wbtm-bus-wizard #wbtm_meta_box_panel .postbox-header button{color:rgba(255,255,255,.6)}
+body.wbtm-bus-wizard #wbtm_meta_box_panel .inside{
+  margin:0;padding:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;
+}
+body.wbtm-bus-wizard .wbtm_style{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+
+/* ---- stepper (was left vertical nav) ---- */
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs{display:block}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs::after{content:"";display:table;clear:both}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists{
+  float:none;width:100%;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;
+  margin:0;padding:16px 20px;list-style:none;counter-reset:wz;
+  background:linear-gradient(135deg,#0f1523 0%,#1e2640 100%);
+}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists::-webkit-scrollbar{height:0}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li{
+  float:none;width:auto;flex:0 0 auto;counter-increment:wz;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;margin:0;
+  padding:8px 14px;border-radius:10px;border:1px solid transparent;
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.5);transition:all .2s;
+}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li .mi,
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li [class^="mi-"],
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li .dashicons{display:none}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li::before{
+  content:counter(wz);width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.55);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;
+}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li:hover{color:#fff;background:rgba(255,255,255,.06)}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li.active{background:rgba(230,57,70,.16);color:#fff;border-color:rgba(230,57,70,.3)}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li.active::before{background:var(--red);border-color:var(--red);color:#fff}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists li.wbtm-done::before{content:"\2713";background:var(--green);border-color:var(--green);color:#fff}
+
+/* progress bar (injected) */
+body.wbtm-bus-wizard .wbtm-wz-progress{height:3px;background:#0f1523;overflow:hidden}
+body.wbtm-bus-wizard .wbtm-wz-fill{height:100%;width:11%;background:linear-gradient(90deg,var(--red),#ff6b78);transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* content area */
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabsContent{float:none;width:100%;padding:26px 30px}
+body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabsItem.active{animation:wbtmWzIn .3s ease both}
+@keyframes wbtmWzIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+
+/* footer (injected) */
+body.wbtm-bus-wizard .wbtm-wz-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px 30px;border-top:1px solid var(--border);background:#fff}
+body.wbtm-bus-wizard .wbtm-wz-left{display:flex;align-items:center;gap:12px}
+body.wbtm-bus-wizard .wbtm-wz-dots{display:flex;gap:5px}
+body.wbtm-bus-wizard .wbtm-wz-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .2s}
+body.wbtm-bus-wizard .wbtm-wz-dot.active{background:var(--red);width:18px;border-radius:3px}
+body.wbtm-bus-wizard .wbtm-wz-dot.done{background:var(--green)}
+body.wbtm-bus-wizard .wbtm-wz-indicator{font-size:12px;color:var(--muted);font-weight:500}
+body.wbtm-bus-wizard .wbtm-wz-right{display:flex;gap:10px}
+body.wbtm-bus-wizard .wbtm-wz-btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;border-radius:10px;padding:10px 22px;border:1.5px solid var(--border);line-height:1;transition:all .2s}
+body.wbtm-bus-wizard .wbtm-wz-back{background:#fff;color:var(--ink2)}
+body.wbtm-bus-wizard .wbtm-wz-back:hover{border-color:var(--ink);color:var(--ink)}
+body.wbtm-bus-wizard .wbtm-wz-next{background:var(--red);border-color:var(--red);color:#fff}
+body.wbtm-bus-wizard .wbtm-wz-next:hover{background:#c62a35;border-color:#c62a35;transform:translateY(-1px)}
+body.wbtm-bus-wizard .wbtm-wz-next.is-publish{background:var(--green);border-color:var(--green)}
+body.wbtm-bus-wizard .wbtm-wz-next.is-publish:hover{background:#15803d;border-color:#15803d}
+
+@media screen and (max-width:782px){
+  body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabLists{padding:12px}
+  body.wbtm-bus-wizard .wbtm_style .wbtm_tabs.leftTabs .tabsContent{padding:18px 14px}
+  body.wbtm-bus-wizard .wbtm-wz-footer{padding:14px}
+  body.wbtm-bus-wizard .wbtm-wz-indicator{display:none}
+}

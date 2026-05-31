@@ -61,6 +61,8 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Dummy_Import.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Analytics_Dashboard.php';
 				//==================//
+				// Modern Modal Interface
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Bus_Modal.php';
 			}
 			public function add_dummy_data() {
 				new WBTM_Dummy_Import();

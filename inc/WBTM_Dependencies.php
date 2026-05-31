@@ -22,6 +22,7 @@
 				// Privacy protection for booking pages
 				add_action('wp_head', array($this, 'add_privacy_meta_tags'));
 				add_filter('robots_txt', array($this, 'add_robots_txt_rules'));
+				add_filter('admin_body_class', array($this, 'wbtm_list_body_class'));
 				// Add admin cleanup tool
 				//add_action('admin_init', array($this, 'handle_privacy_cleanup'));
 				//add_action('admin_notices', array($this, 'show_privacy_notice'));
@@ -65,6 +66,19 @@
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Installer.php';
 				//==================//
 			}
+			public function wbtm_list_body_class($classes) {
+				// Activate the modern list skin at first paint so the native
+				// table never flashes before the JS swaps in the card UI.
+				if (function_exists('get_current_screen')) {
+					$wbtm_s = get_current_screen();
+					if ($wbtm_s && $wbtm_s->id === 'edit-wbtm_bus') {
+						$classes .= ' wbtm-bus-modern wbtm-bus-loading';
+					} elseif ($wbtm_s && $wbtm_s->id === 'wbtm_bus') {
+						$classes .= ' wbtm-bus-wizard wbtm-bus-wz-loading';
+					}
+				}
+				return $classes;
+			}
 			public function global_enqueue() {
 				wp_enqueue_style('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.css', array(), time());
 				wp_enqueue_style('mage-icon', WBTM_PLUGIN_URL . '/assets/mage-icon/css/mage-icon.css', array(), time());
@@ -79,6 +93,64 @@
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), time(), true);
 				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), time());
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), time());
+				//===== Modern admin skins (non-destructive enhancement layers) =====//
+				$wbtm_scr_id = function_exists('get_current_screen') && get_current_screen() ? get_current_screen()->id : '';
+				if ($wbtm_scr_id === 'edit-wbtm_bus') {
+					// Card-grid skin for the bus list table.
+					wp_enqueue_style('wbtm-bus-list-modern', WBTM_PLUGIN_URL . '/assets/admin/css/bus-list-modern.css', array('wbtm_admin'), time());
+					wp_enqueue_script('wbtm-bus-list-modern', WBTM_PLUGIN_URL . '/assets/admin/js/bus-list-modern.js', array(), time(), true);
+					$wbtm_bus_imgs = array();
+					foreach (get_posts(array('post_type' => 'wbtm_bus', 'post_status' => 'any', 'posts_per_page' => 200, 'fields' => 'ids')) as $wbtm_bid) {
+						$wbtm_iu = '';
+						$wbtm_logo = get_post_meta($wbtm_bid, 'wbtm_bus_logo', true);
+						if ($wbtm_logo) { $wbtm_iu = wp_get_attachment_image_url($wbtm_logo, 'medium'); }
+						if (!$wbtm_iu && has_post_thumbnail($wbtm_bid)) { $wbtm_iu = get_the_post_thumbnail_url($wbtm_bid, 'medium'); }
+						if (!$wbtm_iu) {
+							$wbtm_gal = get_post_meta($wbtm_bid, 'wbtm_gallery_images', true);
+							if (is_array($wbtm_gal) && !empty($wbtm_gal)) { $wbtm_iu = wp_get_attachment_image_url($wbtm_gal[0], 'medium'); }
+						}
+						if ($wbtm_iu) { $wbtm_bus_imgs[(string) $wbtm_bid] = $wbtm_iu; }
+					}
+					wp_localize_script('wbtm-bus-list-modern', 'wbtmBusList', array('images' => $wbtm_bus_imgs, 'i18n' => array(
+						'title'          => WBTM_Functions::get_name() . ' ' . esc_html__('List', 'bus-ticket-booking-with-seat-reservation'),
+						'grid'           => esc_html__('Grid view', 'bus-ticket-booking-with-seat-reservation'),
+						'list'           => esc_html__('List view', 'bus-ticket-booking-with-seat-reservation'),
+						'add'            => esc_html__('Add New', 'bus-ticket-booking-with-seat-reservation') . ' ' . WBTM_Functions::get_name(),
+						'total'          => esc_html__('Total Buses', 'bus-ticket-booking-with-seat-reservation'),
+						'published'      => esc_html__('Published', 'bus-ticket-booking-with-seat-reservation'),
+						'ac'             => esc_html__('AC Coach', 'bus-ticket-booking-with-seat-reservation'),
+						'nonac'          => esc_html__('Non AC Coach', 'bus-ticket-booking-with-seat-reservation'),
+						'searchPh'       => esc_html__('Search buses...', 'bus-ticket-booking-with-seat-reservation'),
+						'allTypes'       => esc_html__('All Types', 'bus-ticket-booking-with-seat-reservation'),
+						'acOpt'          => esc_html__('AC', 'bus-ticket-booking-with-seat-reservation'),
+						'nonacOpt'       => esc_html__('Non AC', 'bus-ticket-booking-with-seat-reservation'),
+						'empty'          => esc_html__('No buses found.', 'bus-ticket-booking-with-seat-reservation'),
+						'edit'           => esc_html__('Edit', 'bus-ticket-booking-with-seat-reservation'),
+						'trash'          => esc_html__('Trash', 'bus-ticket-booking-with-seat-reservation'),
+						'publishedLabel' => esc_html__('Published', 'bus-ticket-booking-with-seat-reservation'),
+						'draftLabel'     => esc_html__('Draft', 'bus-ticket-booking-with-seat-reservation'),
+						'cName'          => esc_html__('Bus Name', 'bus-ticket-booking-with-seat-reservation'),
+						'cCoach'         => esc_html__('Coach No', 'bus-ticket-booking-with-seat-reservation'),
+						'cType'          => esc_html__('Bus Type', 'bus-ticket-booking-with-seat-reservation'),
+						'cCoachType'     => esc_html__('Coach Type', 'bus-ticket-booking-with-seat-reservation'),
+						'cStatus'        => esc_html__('Status', 'bus-ticket-booking-with-seat-reservation'),
+						'cActions'       => esc_html__('Actions', 'bus-ticket-booking-with-seat-reservation'),
+						/* translators: %1 shown count, %2 total count */
+						'showing'        => esc_html__('Showing %1 of %2 buses', 'bus-ticket-booking-with-seat-reservation'),
+					)));
+				}
+				if ($wbtm_scr_id === 'wbtm_bus') {
+					// Multi-step wizard skin for the real add/edit screen (native save kept).
+					wp_enqueue_style('wbtm-bus-edit-wizard', WBTM_PLUGIN_URL . '/assets/admin/css/bus-edit-wizard.css', array('wbtm_admin'), time());
+					wp_enqueue_script('wbtm-bus-edit-wizard', WBTM_PLUGIN_URL . '/assets/admin/js/bus-edit-wizard.js', array('jquery'), time(), true);
+					wp_localize_script('wbtm-bus-edit-wizard', 'wbtmBusWizard', array('i18n' => array(
+						'back'     => esc_html__('Back', 'bus-ticket-booking-with-seat-reservation'),
+						'continue' => esc_html__('Continue', 'bus-ticket-booking-with-seat-reservation'),
+						'publish'  => esc_html__('Publish', 'bus-ticket-booking-with-seat-reservation'),
+						/* translators: %1 current step, %2 total steps */
+						'stepOf'   => esc_html__('Step %1 of %2', 'bus-ticket-booking-with-seat-reservation'),
+					)));
+				}
 				$non_seat_icon_map = [];
 				if (class_exists('WBTM_Seat_Configuration')) {
 					foreach (WBTM_Seat_Configuration::get_toolbar_items() as $kw => $d) {
