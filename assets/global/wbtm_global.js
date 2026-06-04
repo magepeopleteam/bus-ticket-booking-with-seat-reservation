@@ -383,6 +383,9 @@
 			parent.find('.wbtm_form_submit_area').slideUp('fast');
 			target_summary.html(wbtm_price_format(total));
 		}
+		// Added by Shahnur 2026-06-02 — keep the raw numeric total so it can be sent to the
+		// server without depending on locale-formatted text (e.g. "39,00 lei" was collapsing to 3900).
+		target_summary.attr('data-raw-total', total);
 	}
 	function wbtm_ticket_price(parent) {
 		let total = 0;
@@ -895,7 +898,21 @@
 			return;
 		}
 		wbtm_set_loading_button_state(this_btn, true);
-		let priceVal = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total').text();
+		// Fixed by Shahnur 2026-06-02 — send the raw numeric total, not the locale-formatted text.
+		// Reading ".wbtm_total" text (e.g. "39,00 lei") corrupted the value server-side (39 -> 3900).
+		let priceTotalEl = $(this).closest('.wbtm_form_submit_area').find('.wbtm_total');
+		let priceVal = priceTotalEl.attr('data-raw-total');
+		if (typeof priceVal === 'undefined' || priceVal === '') {
+			// Fallback: strip everything except digits, separators and minus, then normalise to a dot decimal.
+			let raw = (priceTotalEl.text() || '').replace(/[^0-9.,-]/g, '');
+			if (wbtm_currency_thousands_separator) {
+				raw = raw.split(wbtm_currency_thousands_separator).join('');
+			}
+			if (wbtm_currency_decimal && wbtm_currency_decimal !== '.') {
+				raw = raw.replace(wbtm_currency_decimal, '.');
+			}
+			priceVal = parseFloat(raw) || 0;
+		}
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
 		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
