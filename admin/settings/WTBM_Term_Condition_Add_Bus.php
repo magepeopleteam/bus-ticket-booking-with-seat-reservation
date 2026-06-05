@@ -82,7 +82,7 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
                         </div>
                     </div>
                 </div>
-                <input type="hidden" id="wtbm_added_term_condition_input" name="wtbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_terms_data)); ?>">
+                <input type="hidden" id="wtbm_added_term_input" name="wtbm_added_term_condition" value="<?php echo esc_attr(json_encode(array_keys($selected_terms_data))); ?>">
             </div>
 
         <?php }
@@ -103,20 +103,13 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
             }
 
             if ( $post_id && is_array( $data ) ) {
-                // Sanitize the term data array
-                $sanitized_data = [];
-                foreach ( $data as $term ) {
-                    if ( is_array( $term ) ) {
-                        $sanitized_term = [
-                            'title'   => isset( $term['title'] ) ? sanitize_text_field( wp_unslash( $term['title'] ) ) : '',
-                            'answer'  => isset( $term['answer'] ) ? wp_kses_post( wp_unslash( $term['answer'] ) ) : '',
-                        ];
-                        $sanitized_data[] = $sanitized_term;
-                    }
-                }
+                // The frontend sends an array of term keys referencing the global
+                // term list option. Store the sanitized keys, not full term arrays.
+                $sanitized_data = array_values( array_filter( array_map( 'sanitize_text_field', $data ) ) );
+
                 update_post_meta( $post_id, $this->term_option_key, $sanitized_data );
 
-                wp_send_json_success( [ 'message' => 'FAQ saved successfully!', 'data' => $sanitized_data ] );
+                wp_send_json_success( [ 'message' => 'Term & Condition saved successfully!', 'data' => $sanitized_data ] );
             } else {
                 wp_send_json_error( [ 'message' => 'Invalid data' ] );
             }

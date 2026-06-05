@@ -855,6 +855,14 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                     'nonce' => wp_create_nonce('wbtm_dashboard_nonce'),
                     'pdf_nonce' => wp_create_nonce('wbtm_generate_pdf'),
                     'pdf_enabled' => class_exists('WBTM_Pro_Pdf'),
+                    // Added by Shahnur — expose WooCommerce currency so dashboard prices use the store currency (e.g. lei) instead of a hardcoded $ 2026-06-02
+                    'currency' => array(
+                        'symbol'    => function_exists('get_woocommerce_currency_symbol') ? html_entity_decode(get_woocommerce_currency_symbol()) : '$',
+                        'decimals'  => function_exists('wc_get_price_decimals') ? wc_get_price_decimals() : 2,
+                        'decimal_sep'  => function_exists('wc_get_price_decimal_separator') ? wc_get_price_decimal_separator() : '.',
+                        'thousand_sep' => function_exists('wc_get_price_thousand_separator') ? wc_get_price_thousand_separator() : ',',
+                        'format'    => function_exists('get_woocommerce_price_format') ? get_woocommerce_price_format() : '%1$s%2$s',
+                    ),
                     'strings' => array(
                         'loading' => __('Loading...', 'bus-ticket-booking-with-seat-reservation'),
                         'error' => __('An error occurred. Please try again.', 'bus-ticket-booking-with-seat-reservation'),

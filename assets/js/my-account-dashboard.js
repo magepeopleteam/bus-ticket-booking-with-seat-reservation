@@ -12,6 +12,24 @@ jQuery(document).ready(function ($) {
             this.loadBookings();
         },
 
+        // Added by Shahnur — format a raw amount using the WooCommerce store currency 2026-06-02
+        formatPrice: function (amount) {
+            const c = (typeof wbtm_dashboard_ajax !== 'undefined' && wbtm_dashboard_ajax.currency) ? wbtm_dashboard_ajax.currency : null;
+            const num = parseFloat(amount);
+            if (isNaN(num)) {
+                return 'N/A';
+            }
+            if (!c) {
+                return '$' + num.toFixed(2);
+            }
+            const decimals = parseInt(c.decimals, 10);
+            let fixed = num.toFixed(isNaN(decimals) ? 2 : decimals);
+            let parts = fixed.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.thousand_sep || ',');
+            const formatted = parts.join(c.decimal_sep || '.');
+            return (c.format || '%1$s%2$s').replace('%1$s', c.symbol || '$').replace('%2$s', formatted);
+        },
+
         bindEvents: function () {
             // Search functionality
             $('#wbtm-search-btn').on('click', this.handleSearch.bind(this));
@@ -104,7 +122,7 @@ jQuery(document).ready(function ($) {
             const route = booking.boarding_point && booking.dropping_point
                 ? `${booking.boarding_point} → ${booking.dropping_point}`
                 : 'Route not specified';
-            const price = booking.total ? `$${parseFloat(booking.total).toFixed(2)}` : 'N/A';
+            const price = booking.total ? this.formatPrice(booking.total) : 'N/A';
 
             return `
                 <div class="wbtm-booking-item" data-order-id="${booking.order_id}">
@@ -339,7 +357,7 @@ jQuery(document).ready(function ($) {
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Total Amount</div>
-                            <div class="wbtm-detail-value">$${data.order.total}</div>
+                            <div class="wbtm-detail-value">${WBTMDashboard.formatPrice(data.order.total)}</div>
                         </div>
                     </div>
                 </div>
@@ -392,7 +410,7 @@ jQuery(document).ready(function ($) {
                             <div class="wbtm-attendee-info">
                                 <div class="wbtm-detail-item">
                                     <div class="wbtm-detail-label">Fare</div>
-                                    <div class="wbtm-detail-value">$${attendee.fare || '0.00'}</div>
+                                    <div class="wbtm-detail-value">${WBTMDashboard.formatPrice(attendee.fare || 0)}</div>
                                 </div>
                     `;
 
@@ -433,7 +451,7 @@ jQuery(document).ready(function ($) {
                                 <div class="wbtm-service-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
                                     <div class="wbtm-service-name" style="font-weight: 500; color: #111827;">${serviceName}</div>
                                     <div class="wbtm-service-details" style="color: #6b7280; font-size: 0.9rem;">
-                                        x${serviceQty} | $${parseFloat(servicePrice).toFixed(2)} = $${parseFloat(totalPrice).toFixed(2)}
+                                        x${serviceQty} | ${WBTMDashboard.formatPrice(servicePrice)} = ${WBTMDashboard.formatPrice(totalPrice)}
                                     </div>
                                 </div>
                             `;
