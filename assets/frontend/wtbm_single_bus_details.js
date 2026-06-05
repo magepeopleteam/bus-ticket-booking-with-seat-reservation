@@ -152,11 +152,25 @@ jQuery(document).ready(function ($) {
     });
 
     // ===== AJAX POPUP FOR BUS DETAILS =====
+    // NOTE: the search_result template (which holds #wbtm-bus-popup) is rendered
+    // once for the outbound list and once for the return list, so #wbtm-bus-popup
+    // exists twice in the DOM. A global $('#wbtm-bus-popup') only ever matches the
+    // first (outbound) one, which gets hidden once an outbound bus is selected --
+    // that is why the return-trip Details/Stops/Features buttons stopped working.
+    // Scope every popup lookup to the holder the clicked link actually lives in.
+    function wbtm_get_popup_for($el) {
+        let $scope = $el.closest('.wbtm_search_result_holder');
+        let $popup = $scope.find('#wbtm-bus-popup');
+        return $popup.length ? $popup : $('#wbtm-bus-popup').first();
+    }
+
     $(document).on('click','.wbtm_bus_popup_link', function () {
         let post_id = $(this).data('post-id');
         let tab_id = $(this).attr('id');
-        $('#wbtm-bus-popup').fadeIn();
-        $('.wbtm-popup-content').html('<p>Loading...</p>');
+        let $popup = wbtm_get_popup_for($(this));
+        let $content = $popup.find('.wbtm-popup-content');
+        $popup.fadeIn();
+        $content.html('<p>Loading...</p>');
 
         $.ajax({
             url: wbtm_ajax_url,
@@ -167,11 +181,11 @@ jQuery(document).ready(function ($) {
                 nonce: wbtm_nonce,
             },
             success: function (response) {
-                $('.wbtm-popup-content').html(response);
-                $('.wbtm_bus_detail_popup_tab').removeClass('active');
-                $('.wbtm_bus_popup_holder').removeClass('active');
-                $('#' + tab_id + '_popup_tab').addClass('active').trigger('click');
-                $("#" + tab_id + '_content').addClass('active').show();
+                $content.html(response);
+                $content.find('.wbtm_bus_detail_popup_tab').removeClass('active');
+                $content.find('.wbtm_bus_popup_holder').removeClass('active');
+                $content.find('#' + tab_id + '_popup_tab').addClass('active').trigger('click');
+                $content.find('#' + tab_id + '_content').addClass('active').show();
             }
         });
     });
@@ -179,19 +193,21 @@ jQuery(document).ready(function ($) {
     // Close popup
     $(document).on('click', '.wbtm-popup-close, #wbtm-bus-popup', function (e) {
         if ($(e.target).is('#wbtm-bus-popup, .wbtm-popup-close')) {
-            $('#wbtm-bus-popup').fadeOut();
+            $(e.target).closest('#wbtm-bus-popup').fadeOut();
         }
     });
 
     // popup tabs target content
     $(document).on('click', '.wbtm_bus_detail_popup_tab', function () {
-        $('.wbtm_bus_detail_popup_tab').removeClass('active');
-        $('.wbtm_bus_popup_holder').removeClass('active');
-        $('.wbtm_bus_popup_holder').hide();
+        let $content = $(this).closest('.wbtm-popup-content');
+        let $scope = $content.length ? $content : $(document);
+        $scope.find('.wbtm_bus_detail_popup_tab').removeClass('active');
+        $scope.find('.wbtm_bus_popup_holder').removeClass('active');
+        $scope.find('.wbtm_bus_popup_holder').hide();
         $(this).addClass('active');
         let targetId = $(this).data('tab-id');
         if (targetId) {
-            let $target = $('#' + targetId);
+            let $target = $scope.find('#' + targetId);
             if ($target.length) {
                 $target.addClass('active');
                 $target.show();
