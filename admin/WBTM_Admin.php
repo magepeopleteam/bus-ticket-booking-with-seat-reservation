@@ -57,6 +57,7 @@
 
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Bus_List.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Status.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Dummy_Import.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Analytics_Dashboard.php';
