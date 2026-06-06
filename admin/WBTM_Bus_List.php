@@ -179,11 +179,12 @@
 						'is_nonac'     => $is_nonac,
 						'type'         => $is_ac ? 'AC' : ( $is_nonac ? 'Non AC' : '' ),
 						'bus_type'     => $seat_conf === 'wbtm_seat_plan'
-							? esc_html__( 'Seal Plan', 'bus-ticket-booking-with-seat-reservation' )
-							: esc_html__( 'Without Seal Plan', 'bus-ticket-booking-with-seat-reservation' ),
+							? esc_html__( 'Seat Plan', 'bus-ticket-booking-with-seat-reservation' )
+							: esc_html__( 'Without Seat Plan', 'bus-ticket-booking-with-seat-reservation' ),
 						'status'       => $post->post_status,
 						'thumb'        => get_the_post_thumbnail_url( $pid, 'medium_large' ),
 						'author'       => get_the_author_meta( 'display_name', $post->post_author ),
+						'view_link'    => get_permalink( $pid ),
 						'edit_link'    => get_edit_post_link( $pid, 'raw' ),
 						'trash_link'   => get_delete_post_link( $pid ),
 						'restore_link' => wp_nonce_url( admin_url( sprintf( 'post.php?post=%d&action=untrash', $pid ) ), 'untrash-post_' . $pid ),
@@ -384,6 +385,11 @@
 													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
 												</a>
 											<?php else : ?>
+												<?php if ( $b['view_link'] ) : ?>
+												<a class="wbtm-act-btn view" href="<?php echo esc_url( $b['view_link'] ); ?>" target="_blank" rel="noopener" title="<?php esc_attr_e( 'View on frontend', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+												</a>
+												<?php endif; ?>
 												<a class="wbtm-act-btn edit" href="<?php echo esc_url( $b['edit_link'] ); ?>" title="<?php esc_attr_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 												</a>
@@ -438,6 +444,7 @@
 												<a class="wbtm-table-edit" href="<?php echo esc_url( $b['restore_link'] ); ?>"><?php esc_html_e( 'Restore', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
 												<a class="wbtm-table-del" href="<?php echo esc_url( $b['delete_link'] ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Permanently delete this bus? This cannot be undone.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');"><?php esc_html_e( 'Delete', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
 											<?php else : ?>
+												<?php if ( $b['view_link'] ) : ?><a class="wbtm-table-view" href="<?php echo esc_url( $b['view_link'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'View', 'bus-ticket-booking-with-seat-reservation' ); ?></a><?php endif; ?>
 												<a class="wbtm-table-edit" href="<?php echo esc_url( $b['edit_link'] ); ?>"><?php esc_html_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
 												<a class="wbtm-table-del" href="<?php echo esc_url( $b['trash_link'] ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Move this bus to Trash?', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');"><?php esc_html_e( 'Trash', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
 											<?php endif; ?>
