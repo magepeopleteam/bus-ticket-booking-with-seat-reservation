@@ -134,7 +134,7 @@
 			}
 			public function custom_column_data($column, $post_id) {
 				$seat_plan = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seal Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seal Plan', 'bus-ticket-booking-with-seat-reservation');
+				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seat Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation');
 				switch ($column) {
 					case 'wbtm_bus_no':
 						echo wp_kses_post("<span class=''>" . WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no') . "</span>");
