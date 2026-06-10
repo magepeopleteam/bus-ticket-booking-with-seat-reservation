@@ -165,9 +165,9 @@
 						array(
 							'name'    => 'icon',
 							'label'   => $label . ' ' . esc_html__( 'Icon', 'bus-ticket-booking-with-seat-reservation' ),
-							'desc'    => esc_html__( 'If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'bus-ticket-booking-with-seat-reservation' ) . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__( 'Dashicons Library.', 'bus-ticket-booking-with-seat-reservation' ) . '</a>' . esc_html__( 'and copy your icon code and paste it here.', 'bus-ticket-booking-with-seat-reservation' ),
-							'type'    => 'text',
-							'default' => ''
+							'desc'    => esc_html__( 'If you want to change the icon in the dashboard menu, you can change it from here. Select a FontAwesome icon or enter a Dashicons class. Go to ', 'bus-ticket-booking-with-seat-reservation' ) . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__( 'Dashicons Library', 'bus-ticket-booking-with-seat-reservation' ) . '</a>' . esc_html__( ' and copy your icon code and paste it here.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'icon',
+							'default' => 'fas fa-bus'
 						),
 						array(
 							'name'    => 'bus_return_show',
@@ -292,9 +292,9 @@
 						array(
 							'name'    => 'bus_search_list_direction_icon',
 							'label'   => esc_html__( 'Bus search list direction icon', 'bus-ticket-booking-with-seat-reservation' ),
-                            'desc'  => esc_html__( 'Enable this option to automatically clear the cart whenever a user performs a new search, ensuring only the latest selection is added.', 'bus-ticket-booking-with-seat-reservation' ),
-							'type'    => 'file',
-							'default' => '',
+                            'desc'  => esc_html__( 'Select a FontAwesome icon or upload an image to display as the direction icon in the bus search list.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'icon_image',
+							'default' => 'fas fa-bus',
 						),
                         array(
                             'name'    => 'next_date_showing_search',

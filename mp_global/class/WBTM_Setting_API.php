@@ -281,6 +281,23 @@
 				$label       = $args['options']['button_label'] ?? esc_html_e( 'Choose File', 'bus-ticket-booking-with-seat-reservation' );
 				do_action( 'wbtm_add_single_image', $name, $value );
 			}
+			function callback_icon( $args ) {
+				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
+				$name  = $args['section'] . '[' . $args['id'] . ']';
+				do_action( 'wbtm_input_add_icon', $name, $value );
+			}
+			function callback_icon_image( $args ) {
+				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
+				$name  = $args['section'] . '[' . $args['id'] . ']';
+				$icon  = '';
+				$image = '';
+				if ( $value && is_numeric( $value ) ) {
+					$image = $value;
+				} elseif ( $value ) {
+					$icon = $value;
+				}
+				do_action( 'wbtm_add_icon_image', $name, $icon, $image );
+			}
 			function callback_password( $args ) {
 				$value       = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
