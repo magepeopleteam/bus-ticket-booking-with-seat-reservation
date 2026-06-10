@@ -409,12 +409,19 @@
                             </div>
                             <div class="wbtm_search_route_icon_wrapper">
 								<?php
-									$default_icon = WBTM_PLUGIN_URL."/assets/images/bus.svg";
-									$redirect_icon = WBTM_Global_Function::get_settings('wbtm_general_settings', 'bus_search_list_direction_icon', '');
-									$icon =  $redirect_icon!='' ? wp_get_attachment_url($redirect_icon) : $default_icon;
+									$default_icon_class = 'fas fa-bus';
+									$redirect_icon = WBTM_Global_Function::get_settings('wbtm_general_settings', 'bus_search_list_direction_icon', 'fas fa-bus');
+									$is_fa_icon = ( $redirect_icon && preg_match( '/^(fa[srlbdt]?)\s+fa-/', $redirect_icon ) );
+									$is_image_id = ( $redirect_icon && is_numeric( $redirect_icon ) );
 								?>
                                 <span class="wbtm_search_route_bus_icon">
-									<img src="<?php echo esc_attr($icon); ?>" alt="">
+									<?php if ( $is_fa_icon ) : ?>
+										<i class="<?php echo esc_attr( $redirect_icon ); ?>"></i>
+									<?php elseif ( $is_image_id ) : ?>
+										<img src="<?php echo esc_url( wp_get_attachment_url( $redirect_icon ) ); ?>" alt="">
+									<?php else : ?>
+										<i class="<?php echo esc_attr( $default_icon_class ); ?>"></i>
+									<?php endif; ?>
 								</span>
                             </div>
                             <div class="wbtm_search_route_city_section wbtm_search_route_city_section_right">

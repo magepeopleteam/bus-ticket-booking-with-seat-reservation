@@ -179,6 +179,13 @@
         width: 80px;
         height: auto;
     }
+    .wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon i{
+        font-size: 40px;
+        color: var(--wbtm_color_theme, #ff4500);
+        display: inline-block;
+        text-align: center;
+        width: 80px;
+    }
     .wbtm_search_route_icon_wrapper {
         width: 30%;
     }

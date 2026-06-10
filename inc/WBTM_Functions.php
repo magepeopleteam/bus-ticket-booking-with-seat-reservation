@@ -1094,17 +1094,21 @@
 				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus', 'bus' );
 			}
 			public static function get_icon() {
-				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', '' );
+				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'fas fa-bus' );
 				if ( $icon ) {
+					// If it's a dashicons class, return as-is for WP menu
+					if ( strpos( $icon, 'dashicons' ) === 0 ) {
+						return $icon;
+					}
+					// If it's a FontAwesome class (fa, fas, far, fab), convert to SVG data URI for WP menu
+					if ( preg_match( '/^(fa[srlbdt]?)\s+fa-/', $icon ) ) {
+						$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>';
+						return 'data:image/svg+xml;base64,' . base64_encode( $svg );
+					}
+					// Otherwise return as-is (could be a data URI or URL)
 					return $icon;
 				}
-				/**
-				 * FIX: Use a compact WordPress menu-safe bus SVG fallback.
-				 * AUTHOR: shahnur alam
-				 * ISSUE: #WBTM-ICON-001
-				 * SOLVED: 2026-05-15
-				 * CONTEXT: A raw SVG asset URL rendered at full image size in the admin menu, while the earlier oversized data URI was brittle. A compact 20x20 data URI keeps the menu icon bus-shaped and sized correctly.
-				 */
+				// Fallback SVG bus icon
 				$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>';
 				return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 			}
