@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Global_Function')) {
 		class WBTM_Global_Function {
 			public function __construct() {
-				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 2);
+				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 3);
 			}
 			public static function query_post_type($post_type, $show = -1, $page = 1): WP_Query {
 				$args = array(
@@ -110,7 +110,7 @@
 				$date_format = $format == 'M d , yy' ? 'M  j, Y' : $date_format;
 				return $format == 'D M d , yy' ? 'D M  j, Y' : $date_format;
 			}
-			public function date_picker_js($selector, $dates) {
+			public function date_picker_js($selector, $dates, $soldout_dates = []) {
 
                 $empty_dates = 0;
                 if( empty( $dates ) ){
@@ -133,7 +133,46 @@
                     }
                 }
 
+				$soldout_date_arr = [];
+				if ( ! empty( $soldout_dates ) && is_array( $soldout_dates ) ) {
+					foreach ( $soldout_dates as $so_date ) {
+						$soldout_date_arr[] = '"' . gmdate('j-n-Y', strtotime($so_date)) . '"';
+					}
+				}
+
 				?>
+                <style>
+                    td.wbtm-soldout-date a {
+                        background: #dc3545 !important;
+                        color: #fff !important;
+                        border-color: #dc3545 !important;
+                        cursor: not-allowed !important;
+                        position: relative;
+                        opacity: 0.85;
+                    }
+                    td.wbtm-soldout-date a:after {
+                        content: '';
+                        display: block;
+                    }
+                    td.wbtm-soldout-date span.ui-state-default {
+                        color: #fff !important;
+                    }
+                    .wbtm-soldout-legend {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        margin-top: 8px;
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    .wbtm-soldout-legend-box {
+                        display: inline-block;
+                        width: 14px;
+                        height: 14px;
+                        background: #dc3545;
+                        border-radius: 2px;
+                    }
+                </style>
                 <script>
                     jQuery(document).ready(function () {
                         jQuery("<?php echo esc_attr($selector); ?>").datepicker({
@@ -151,8 +190,11 @@
                         });
                         function WorkingDates(date) {
                             let availableDates = [<?php echo wp_kses_post(implode(',', $all_date)); ?>];
+                            let soldoutDates = [<?php echo wp_kses_post(implode(',', $soldout_date_arr)); ?>];
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-                            if (jQuery.inArray(dmy, availableDates) !== -1) {
+                            if (jQuery.inArray(dmy, soldoutDates) !== -1) {
+                                return [false, "wbtm-soldout-date", "<?php echo esc_js(__( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' )); ?>"];
+                            } else if (jQuery.inArray(dmy, availableDates) !== -1) {
                                 return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
                             } else {
                                 return [false, "", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];

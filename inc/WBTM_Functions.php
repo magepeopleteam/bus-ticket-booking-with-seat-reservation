@@ -742,6 +742,56 @@
 				}
 				return [];
 			}
+			/**
+			 * Get dates where the bus is fully booked (no available seats).
+			 *
+			 * @param int    $post_id     Bus post ID (0 for general search).
+			 * @param string $start_route Starting route/boarding point.
+			 * @param string $end_route   Ending route/dropping point.
+			 * @return array Array of sold-out dates in Y-m-d format.
+			 */
+			public static function get_soldout_dates( $post_id = 0, $start_route = '', $end_route = '' ) {
+				$soldout_dates = [];
+				$all_dates     = self::get_all_dates( $post_id, $start_route, $end_route );
+
+				if ( empty( $all_dates ) || ! $start_route || ! $end_route ) {
+					return $soldout_dates;
+				}
+
+				// For specific bus (single bus page)
+				if ( $post_id > 0 ) {
+					foreach ( $all_dates as $date ) {
+						$all_info = self::get_bus_all_info( $post_id, $date, $start_route, $end_route );
+						if ( ! empty( $all_info ) && isset( $all_info['available_seat'] ) && (int) $all_info['available_seat'] <= 0 ) {
+							$soldout_dates[] = $date;
+						}
+					}
+				} else {
+					// For general search (multiple buses) — a date is sold out only if ALL buses on that date are sold out
+					$bus_ids = WBTM_Query::get_bus_id( $start_route, $end_route );
+					if ( sizeof( $bus_ids ) > 0 ) {
+						foreach ( $all_dates as $date ) {
+							$all_buses_soldout = true;
+							foreach ( $bus_ids as $bus_id ) {
+								$bus_dates = self::get_route_date( $bus_id, $start_route );
+								if ( ! in_array( $date, $bus_dates ) ) {
+									continue;
+								}
+								$all_info = self::get_bus_all_info( $bus_id, $date, $start_route, $end_route );
+								if ( empty( $all_info ) || ! isset( $all_info['available_seat'] ) || (int) $all_info['available_seat'] > 0 ) {
+									$all_buses_soldout = false;
+									break;
+								}
+							}
+							if ( $all_buses_soldout ) {
+								$soldout_dates[] = $date;
+							}
+						}
+					}
+				}
+
+				return array_unique( $soldout_dates );
+			}
 			//==========================//
 			public static function get_all_dates( $post_id = 0, $start_route = '' ,$end_route='') {
 				$all_dates = [];
