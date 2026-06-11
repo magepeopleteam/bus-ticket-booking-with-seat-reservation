@@ -80,6 +80,13 @@
 							<?php esc_html_e('Enable same bus for return trips', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </label>
                         <div class="wbtm_return_route_settings_area wbtm_settings_area">
+                            <div class="wbtm_return_time_warning">
+                                <span class="wbtm_return_time_warning_icon dashicons dashicons-warning"></span>
+                                <div class="wbtm_return_time_warning_text">
+                                    <strong><?php esc_html_e('Important: Rearrange the return timetable!', 'bus-ticket-booking-with-seat-reservation'); ?></strong>
+                                    <span><?php esc_html_e('The return stops below are auto-generated from your outbound route in reverse order, but they keep the same outbound clock times. You MUST rearrange the times so they match the actual return journey, then save the bus.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                </div>
+                            </div>
                             <p class="_textLight _mB_xs"><?php esc_html_e('Return schedule: each boarding→dropping pair creates blue Return price rows. If you have no saved return schedule, this form is prefilled from your outbound route (reversed) so you can adjust times and click Update to save. To use a shorter return route, remove stops or add rows as needed.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 							<?php if ( $return_route_prefilled ) : ?>
 								<p class="notice notice-info inline _mB_xs" style="margin:0;padding:8px 12px;"><?php esc_html_e('Return stops below are a copy of your outbound route in reverse order with the same clock times—edit them as needed, then save the bus to store this return timetable.', 'bus-ticket-booking-with-seat-reservation'); ?></p>

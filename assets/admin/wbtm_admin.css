@@ -463,3 +463,37 @@ textarea.wbtm_seat_price_overrides_field {
 	border-top: 1px solid #eee;
 	background: #fafafa;
 }
+/* Same bus return - rearrange timetable highlight */
+.wbtm_return_time_warning {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 14px;
+	padding: 12px 14px;
+	border: 1px solid #f0c36d;
+	border-left: 4px solid #f0a000;
+	border-radius: 8px;
+	background: #fff8e5;
+	box-shadow: 0 1px 4px rgba(240, 160, 0, .12);
+}
+.wbtm_return_time_warning_icon {
+	color: #e08a00;
+	font-size: 22px;
+	line-height: 1;
+	flex: 0 0 auto;
+	margin-top: 1px;
+}
+.wbtm_return_time_warning_text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+.wbtm_return_time_warning_text strong {
+	font-size: 14px;
+	color: #8a5a00;
+}
+.wbtm_return_time_warning_text span {
+	font-size: 13px;
+	color: #6b5520;
+	line-height: 1.45;
+}

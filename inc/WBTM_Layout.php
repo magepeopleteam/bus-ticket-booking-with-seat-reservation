@@ -455,11 +455,12 @@
                     </div>
                 </label>
 				<?php
-				if ($start_route) {
-					$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
-					do_action('wbtm_load_date_picker_js', '#wbtm_journey_date', $all_dates);
-				}
+			if ($start_route) {
+				$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
+				$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $start_route, $end_route);
+				do_action('wbtm_load_date_picker_js', '#wbtm_journey_date', $all_dates, $soldout_dates);
 			}
+		}
 			public static function return_date_picker($post_id = '', $end_route = '', $start_route = '', $j_date = '', $date = '') {
 				$date_format = WBTM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
@@ -475,19 +476,26 @@
                     </div>
                 </label>
 				<?php
-				if ($end_route && $j_date) {
-					$all_dates = WBTM_Functions::get_all_dates($post_id, $end_route, $start_route);
-					if (sizeof($all_dates) > 0) {
-						$j_date = strtotime($j_date);
-						$date_list = [];
-						foreach ($all_dates as $date) {
-							if (strtotime($date) >= $j_date) {
-								$date_list[] = $date;
-							}
+			if ($end_route && $j_date) {
+				$all_dates = WBTM_Functions::get_all_dates($post_id, $end_route, $start_route);
+				if (sizeof($all_dates) > 0) {
+					$j_date = strtotime($j_date);
+					$date_list = [];
+					foreach ($all_dates as $date) {
+						if (strtotime($date) >= $j_date) {
+							$date_list[] = $date;
 						}
-						do_action('wbtm_load_date_picker_js', '#wbtm_return_date', $date_list);
 					}
+					$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $end_route, $start_route);
+					$soldout_dates_filtered = [];
+					foreach ($soldout_dates as $so_date) {
+						if (strtotime($so_date) >= $j_date) {
+							$soldout_dates_filtered[] = $so_date;
+						}
+					}
+					do_action('wbtm_load_date_picker_js', '#wbtm_return_date', $date_list, $soldout_dates_filtered);
 				}
+			}
 			}
 			public static function msg($msg, $class = '') {
 				?>
