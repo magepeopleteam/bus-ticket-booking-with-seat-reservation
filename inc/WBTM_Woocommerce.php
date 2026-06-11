@@ -496,45 +496,23 @@
 					$base_price = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : 0;
 					$ex_services = array_key_exists('wbtm_extra_services', $cart_item) ? $cart_item['wbtm_extra_services'] : [];
 
-					$ico = 'display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;flex-shrink:0;font-size:7px;font-weight:700;color:#fff;';
-					$row = 'display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:2px;font-size:12px;line-height:1.4;';
-					$lbl = 'font-weight:600;color:#333;white-space:nowrap;';
-					$plc = 'font-weight:500;color:#222;';
-					$time_c = 'color:#999;font-size:11px;';
-					$h5 = 'font-size:12px;font-weight:600;color:#333;margin:6px 0 3px;';
-					$li = 'display:flex;align-items:center;gap:4px;font-size:12px;line-height:1.4;padding:1px 0;';
-					$badge = 'display:inline-block;background:#eaf4ff;color:#2980b9;border:1px solid #bddcf5;border-radius:3px;padding:0 5px;font-size:11px;font-weight:500;line-height:1.5;white-space:nowrap;margin:0 3px 2px 0;';
-					$seat_c = 'color:#666;font-weight:400;';
-					$divider = 'border-top:1px dashed #e0e0e0;margin:4px 0;';
-
-					$v = '<div style="font-size:12px;line-height:1.5;color:#444;">';
-
-					// Route
+					$parts = [];
 					if ($bp) {
-						$v .= '<div style="' . esc_attr($row) . '">';
-						$v .= '<span style="' . esc_attr($ico . 'background:#27ae60;') . '">B</span>';
-						$v .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_bp()) . ':</span> ';
-						$v .= '<span style="' . esc_attr($plc) . '">' . esc_html($bp) . '</span>';
+						$t = esc_html(WBTM_Translations::text_bp()) . ': ' . esc_html($bp);
 						if ($bp_time) {
-							$v .= ' <span style="' . esc_attr($time_c) . '">(' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')</span>';
+							$t .= ' (' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')';
 						}
-						$v .= '</div>';
+						$parts[] = $t;
 					}
 					if ($dp) {
-						$v .= '<div style="' . esc_attr($row) . '">';
-						$v .= '<span style="' . esc_attr($ico . 'background:#e74c3c;') . '">D</span>';
-						$v .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_dp()) . ':</span> ';
-						$v .= '<span style="' . esc_attr($plc) . '">' . esc_html($dp) . '</span>';
+						$t = esc_html(WBTM_Translations::text_dp()) . ': ' . esc_html($dp);
 						if ($dp_time) {
-							$v .= ' <span style="' . esc_attr($time_c) . '">(' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')</span>';
+							$t .= ' (' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')';
 						}
-						$v .= '</div>';
+						$parts[] = $t;
 					}
-
-					// Tickets
 					if ($booking_mode === 'full_bus') {
-						$v .= '<div style="' . esc_attr($divider) . '"></div>';
-						$v .= '<div style="' . esc_attr($li) . '"><span style="' . esc_attr($badge) . '">' . esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation') . '</span></div>';
+						$parts[] = esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation');
 					} else {
 						$all_seats = [];
 						if (is_array($seats) && !empty($seats)) {
@@ -543,46 +521,38 @@
 							$all_seats = $cabin_seats;
 						}
 						if (!empty($all_seats)) {
-							$v .= '<div style="' . esc_attr($divider) . '"></div>';
-							$v .= '<div style="display:flex;flex-wrap:wrap;gap:0;">';
+							$names = [];
 							foreach ($all_seats as $s) {
 								$n = $s['ticket_name'] ?? $s['cabin_name'] ?? '';
 								$sn = $s['seat_name'] ?? '';
-								$p = $s['ticket_price'] ?? $s['price'] ?? 0;
-								$q = isset($s['ticket_qty']) ? max(1, intval($s['ticket_qty'])) : 1;
 								if ($n) {
-									$v .= '<span style="' . esc_attr($badge) . '">' . esc_html($n);
-									if ($sn) {
-										$v .= ' <span style="' . esc_attr($seat_c) . '">(' . esc_html($sn) . ')</span>';
-									}
-									$v .= '</span>';
+									$names[] = $n . ($sn ? " ($sn)" : '');
 								}
 							}
-							$v .= '</div>';
+							if (!empty($names)) {
+								$parts[] = implode(', ', $names);
+							}
 						}
 					}
-
-					// Extra services
 					if (is_array($ex_services) && !empty($ex_services)) {
-						$v .= '<div style="' . esc_attr($divider) . '"></div>';
-						$v .= '<div style="' . esc_attr($h5) . '">' . esc_html__('Extra Services', 'bus-ticket-booking-with-seat-reservation') . '</div>';
+						$ex_names = [];
 						foreach ($ex_services as $ex) {
 							$name = $ex['name'] ?? '';
 							$qty = $ex['qty'] ?? 1;
-							$price = $ex['price'] ?? 0;
 							if ($name) {
-								$v .= '<div style="' . esc_attr($li) . '">' . esc_html($name) . ' &times; ' . intval($qty) . ' = ' . wp_kses_post(wc_price($price * $qty)) . '</div>';
+								$ex_names[] = $name . ' &times; ' . intval($qty);
 							}
 						}
+						if (!empty($ex_names)) {
+							$parts[] = esc_html__('Extras', 'bus-ticket-booking-with-seat-reservation') . ': ' . implode(', ', $ex_names);
+						}
 					}
-
-					// Total
 					if ($base_price > 0) {
-						$v .= '<div style="margin-top:4px;font-weight:600;color:#222;font-size:13px;">' . wp_kses_post(wc_price($base_price)) . '</div>';
+						$parts[] = wp_kses_post(wc_price($base_price));
 					}
 
-					$v .= '</div>';
-					$item_data[] = array('key' => esc_html__('Booking Details', 'bus-ticket-booking-with-seat-reservation'), 'value' => $v);
+					$value = implode(' &bull; ', $parts);
+					$item_data[] = array('key' => esc_html__('Booking Details', 'bus-ticket-booking-with-seat-reservation'), 'value' => $value);
 				}
 				return $item_data;
 			}
