@@ -486,6 +486,17 @@
 			public function get_item_data($item_data, $cart_item) {
 				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					ob_start();
+					$this->show_cart_item($cart_item, $post_id);
+					do_action('wbtm_show_cart_item', $cart_item, $post_id);
+					$html = ob_get_clean();
+					$item_data[] = array('key' => esc_html__('Booking Details', 'bus-ticket-booking-with-seat-reservation'), 'value' => $html);
+				}
+				return $item_data;
+			}
+			public function minicart_bus_details($html, $cart_item, $cart_item_key) {
+				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$bp = array_key_exists('wbtm_bp_place', $cart_item) ? $cart_item['wbtm_bp_place'] : '';
 					$bp_time = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
 					$dp = array_key_exists('wbtm_dp_place', $cart_item) ? $cart_item['wbtm_dp_place'] : '';
@@ -493,81 +504,71 @@
 					$seats = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
 					$cabin_seats = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : [];
 					$booking_mode = array_key_exists('wbtm_booking_mode', $cart_item) ? $cart_item['wbtm_booking_mode'] : 'seat';
+					$base_price = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : 0;
 
-					$s = 'font-size:12px;line-height:1.5;color:#444;';
-					$row = 'display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:3px;';
-					$ico = 'display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;flex-shrink:0;font-size:8px;font-weight:700;color:#fff;';
+					$ico = 'display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;flex-shrink:0;font-size:7px;font-weight:700;color:#fff;';
 					$lbl = 'font-weight:600;color:#333;white-space:nowrap;';
 					$plc = 'font-weight:500;color:#222;';
-					$time = 'color:#999;font-size:11px;';
-					$badge = 'display:inline-block;background:#eaf4ff;color:#2980b9;border:1px solid #bddcf5;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:500;line-height:1.4;white-space:nowrap;margin-right:4px;margin-bottom:2px;';
-					$seat = 'color:#666;font-weight:400;';
+					$time_c = 'color:#999;font-size:11px;';
+					$badge = 'display:inline-block;background:#eaf4ff;color:#2980b9;border:1px solid #bddcf5;border-radius:3px;padding:0 5px;font-size:10px;font-weight:500;line-height:1.5;white-space:nowrap;margin-right:3px;margin-bottom:2px;';
+					$seat_c = 'color:#666;font-weight:400;';
+					$row = 'display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:2px;font-size:11px;line-height:1.4;';
+					$divider = 'border-top:1px dashed #e0e0e0;margin:4px 0;';
 
-					$value = '<div style="' . esc_attr($s) . '">';
+					$out = '<div style="font-size:11px;line-height:1.5;color:#444;padding:4px 0;">';
+
+					// Route
 					if ($bp) {
-						$value .= '<div style="' . esc_attr($row) . '">';
-						$value .= '<span style="' . esc_attr($ico . 'background:#27ae60;') . '">B</span>';
-						$value .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_bp()) . ':</span> ';
-						$value .= '<span style="' . esc_attr($plc) . '">' . esc_html($bp) . '</span>';
+						$out .= '<div style="' . esc_attr($row) . '">';
+						$out .= '<span style="' . esc_attr($ico . 'background:#27ae60;') . '">B</span>';
+						$out .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_bp()) . ':</span> ';
+						$out .= '<span style="' . esc_attr($plc) . '">' . esc_html($bp) . '</span>';
 						if ($bp_time) {
-							$value .= ' <span style="' . esc_attr($time) . '">(' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')</span>';
+							$out .= ' <span style="' . esc_attr($time_c) . '">(' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')</span>';
 						}
-						$value .= '</div>';
+						$out .= '</div>';
 					}
 					if ($dp) {
-						$value .= '<div style="' . esc_attr($row) . '">';
-						$value .= '<span style="' . esc_attr($ico . 'background:#e74c3c;') . '">D</span>';
-						$value .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_dp()) . ':</span> ';
-						$value .= '<span style="' . esc_attr($plc) . '">' . esc_html($dp) . '</span>';
+						$out .= '<div style="' . esc_attr($row) . '">';
+						$out .= '<span style="' . esc_attr($ico . 'background:#e74c3c;') . '">D</span>';
+						$out .= '<span style="' . esc_attr($lbl) . '">' . esc_html(WBTM_Translations::text_dp()) . ':</span> ';
+						$out .= '<span style="' . esc_attr($plc) . '">' . esc_html($dp) . '</span>';
 						if ($dp_time) {
-							$value .= ' <span style="' . esc_attr($time) . '">(' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')</span>';
+							$out .= ' <span style="' . esc_attr($time_c) . '">(' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')</span>';
 						}
-						$value .= '</div>';
+						$out .= '</div>';
 					}
-					if ($booking_mode === 'full_bus') {
-						$value .= '<div style="margin-top:2px;"><span style="' . esc_attr($badge) . '">' . esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation') . '</span></div>';
-					} elseif ($booking_mode === 'cabin' && is_array($cabin_seats) && !empty($cabin_seats)) {
-						$value .= '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;">';
-						foreach ($cabin_seats as $cs) {
-							$n = isset($cs['ticket_name']) ? $cs['ticket_name'] : '';
-							$s2 = isset($cs['seat_name']) ? $cs['seat_name'] : '';
+
+					// Tickets
+					$all_seats = [];
+					if (is_array($seats) && !empty($seats)) {
+						$all_seats = $seats;
+					} elseif (is_array($cabin_seats) && !empty($cabin_seats)) {
+						$all_seats = $cabin_seats;
+					}
+					if (!empty($all_seats)) {
+						$out .= '<div style="' . esc_attr($divider) . '"></div>';
+						$out .= '<div style="display:flex;flex-wrap:wrap;gap:3px;">';
+						foreach ($all_seats as $s) {
+							$n = $s['ticket_name'] ?? $s['cabin_name'] ?? '';
+							$sn = $s['seat_name'] ?? '';
+							$p = $s['ticket_price'] ?? $s['price'] ?? 0;
+							$q = isset($s['ticket_qty']) ? max(1, intval($s['ticket_qty'])) : 1;
 							if ($n) {
-								$value .= '<span style="' . esc_attr($badge) . '">' . esc_html($n);
-								if ($s2) {
-									$value .= ' <span style="' . esc_attr($seat) . '">(' . esc_html($s2) . ')</span>';
-								}
-								$value .= '</span>';
-							}
-						}
-						$value .= '</div>';
-					} elseif (is_array($seats) && !empty($seats)) {
-						$value .= '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;">';
-						foreach ($seats as $s3) {
-							$n = isset($s3['ticket_name']) ? $s3['ticket_name'] : '';
-							$sn = isset($s3['seat_name']) ? $s3['seat_name'] : '';
-							if ($n) {
-								$value .= '<span style="' . esc_attr($badge) . '">' . esc_html($n);
+								$out .= '<span style="' . esc_attr($badge) . '">' . esc_html($n);
 								if ($sn) {
-									$value .= ' <span style="' . esc_attr($seat) . '">(' . esc_html($sn) . ')</span>';
+									$out .= ' <span style="' . esc_attr($seat_c) . '">(' . esc_html($sn) . ')</span>';
 								}
-								$value .= '</span>';
+								$out .= '</span>';
 							}
 						}
-						$value .= '</div>';
+						$out .= '</div>';
+						if ($base_price > 0) {
+							$out .= '<div style="margin-top:3px;font-weight:600;color:#333;">' . wp_kses_post(wc_price($base_price)) . '</div>';
+						}
 					}
-					$value .= '</div>';
-					$item_data[] = array('key' => '&nbsp;', 'value' => $value, 'hidden' => false);
-				}
-				return $item_data;
-			}
-			public function minicart_bus_details($html, $cart_item, $cart_item_key) {
-				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
-				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-					ob_start();
-					$this->show_cart_item($cart_item, $post_id);
-					do_action('wbtm_show_cart_item', $cart_item, $post_id);
-					$bus_html = ob_get_clean();
-					return $html . '<div class="wbtm_minicart_details">' . $bus_html . '</div>';
+					$out .= '</div>';
+					return $html . $out;
 				}
 				return $html;
 			}
