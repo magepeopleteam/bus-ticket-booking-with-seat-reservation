@@ -139,7 +139,7 @@
                                 <div class="wtbm_inputList wbtm_journey_date">
                                     <?php WBTM_Layout::journey_date_picker( $post_id, $start_route, $end_route, $start_time ); ?>
                                 </div>
-                                <?php if ( $return_date_show == 'enable' && $post_id == 0 ) { ?>
+                                <?php if ( $return_date_show == 'enable' && ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) ) { ?>
                                     <div class="wtbm_inputList wbtm_return_date">
                                         <?php WBTM_Layout::return_date_picker( $post_id, $end_route, $start_route, $start_time, $end_time ); ?>
                                     </div>
