@@ -493,43 +493,62 @@
 					$seats = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
 					$cabin_seats = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : [];
 					$booking_mode = array_key_exists('wbtm_booking_mode', $cart_item) ? $cart_item['wbtm_booking_mode'] : 'seat';
-					$value = '';
+					$value = '<div class="wbtm-cart-booking-details">';
 					if ($bp) {
-						$value .= esc_html(WBTM_Translations::text_bp()) . ': ' . esc_html($bp);
+						$value .= '<div class="wbtm-cart-route-row">';
+						$value .= '<span class="wbtm-cart-icon wbtm-cart-icon-bp"></span>';
+						$value .= '<span class="wbtm-cart-label">' . esc_html(WBTM_Translations::text_bp()) . ':</span> ';
+						$value .= '<span class="wbtm-cart-place">' . esc_html($bp) . '</span>';
 						if ($bp_time) {
-							$value .= ' (' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')';
+							$value .= ' <span class="wbtm-cart-time">(' . esc_html(WBTM_Global_Function::date_format($bp_time, 'full')) . ')</span>';
 						}
-						$value .= '<br>';
+						$value .= '</div>';
 					}
 					if ($dp) {
-						$value .= esc_html(WBTM_Translations::text_dp()) . ': ' . esc_html($dp);
+						$value .= '<div class="wbtm-cart-route-row">';
+						$value .= '<span class="wbtm-cart-icon wbtm-cart-icon-dp"></span>';
+						$value .= '<span class="wbtm-cart-label">' . esc_html(WBTM_Translations::text_dp()) . ':</span> ';
+						$value .= '<span class="wbtm-cart-place">' . esc_html($dp) . '</span>';
 						if ($dp_time) {
-							$value .= ' (' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')';
+							$value .= ' <span class="wbtm-cart-time">(' . esc_html(WBTM_Global_Function::date_format($dp_time, 'full')) . ')</span>';
 						}
-						$value .= '<br>';
+						$value .= '</div>';
 					}
 					if ($booking_mode === 'full_bus') {
-						$value .= esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation');
+						$value .= '<div class="wbtm-cart-tickets-row">';
+						$value .= '<span class="wbtm-cart-ticket-badge">' . esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation') . '</span>';
+						$value .= '</div>';
 					} elseif ($booking_mode === 'cabin' && is_array($cabin_seats) && !empty($cabin_seats)) {
-						$names = [];
+						$value .= '<div class="wbtm-cart-tickets-row">';
 						foreach ($cabin_seats as $cs) {
 							$n = isset($cs['ticket_name']) ? $cs['ticket_name'] : '';
 							$s = isset($cs['seat_name']) ? $cs['seat_name'] : '';
-							$names[] = $n . ($s ? " ($s)" : '');
+							if ($n) {
+								$value .= '<span class="wbtm-cart-ticket-badge">' . esc_html($n);
+								if ($s) {
+									$value .= ' <span class="wbtm-cart-seat">' . esc_html($s) . '</span>';
+								}
+								$value .= '</span>';
+							}
 						}
-						$value .= esc_html(implode(', ', array_filter($names)));
+						$value .= '</div>';
 					} elseif (is_array($seats) && !empty($seats)) {
-						$names = [];
+						$value .= '<div class="wbtm-cart-tickets-row">';
 						foreach ($seats as $s) {
 							$n = isset($s['ticket_name']) ? $s['ticket_name'] : '';
 							$sn = isset($s['seat_name']) ? $s['seat_name'] : '';
-							$names[] = $n . ($sn ? " ($sn)" : '');
+							if ($n) {
+								$value .= '<span class="wbtm-cart-ticket-badge">' . esc_html($n);
+								if ($sn) {
+									$value .= ' <span class="wbtm-cart-seat">' . esc_html($sn) . '</span>';
+								}
+								$value .= '</span>';
+							}
 						}
-						$value .= esc_html(implode(', ', array_filter($names)));
+						$value .= '</div>';
 					}
-					if ($value) {
-						$item_data[] = array('key' => esc_html__('Booking Details', 'bus-ticket-booking-with-seat-reservation'), 'value' => $value);
-					}
+					$value .= '</div>';
+					$item_data[] = array('key' => '', 'value' => $value);
 				}
 				return $item_data;
 			}

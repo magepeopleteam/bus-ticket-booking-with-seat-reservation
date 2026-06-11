@@ -3714,3 +3714,129 @@
 .wbtm_style .wbtm_pagination_main_area .pagination_area[data-pagination-style="page_numbers"] .pagination_load_more {
     display: none !important;
 }
+
+/* =============================================
+   Cart & Minicart Booking Details
+   ============================================= */
+.wbtm-cart-booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 0 2px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #555;
+}
+.wbtm-cart-route-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.wbtm-cart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-size: 9px;
+    color: #fff;
+}
+.wbtm-cart-icon-bp {
+    background: #27ae60;
+}
+.wbtm-cart-icon-bp::after {
+    content: "B";
+    font-weight: 700;
+}
+.wbtm-cart-icon-dp {
+    background: #e74c3c;
+}
+.wbtm-cart-icon-dp::after {
+    content: "D";
+    font-weight: 700;
+}
+.wbtm-cart-label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+.wbtm-cart-place {
+    font-weight: 500;
+    color: #222;
+}
+.wbtm-cart-time {
+    color: #888;
+    font-size: 11px;
+}
+.wbtm-cart-tickets-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+}
+.wbtm-cart-ticket-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #eaf4ff;
+    color: #2980b9;
+    border: 1px solid #bddcf5;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.wbtm-cart-seat {
+    color: #666;
+    font-weight: 400;
+}
+
+/* Block theme minicart overrides */
+.wc-block-components-product-details__value .wbtm-cart-booking-details {
+    padding: 4px 0 0;
+    font-size: 11px;
+}
+.wc-block-components-product-details__value .wbtm-cart-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 8px;
+}
+.wc-block-components-product-details__value .wbtm-cart-ticket-badge {
+    font-size: 10px;
+    padding: 0 5px;
+}
+
+/* Classic widget minicart overrides */
+.widget_shopping_cart .wbtm-cart-booking-details,
+.woocommerce-mini-cart .wbtm-cart-booking-details {
+    padding: 4px 0 0;
+    font-size: 11px;
+}
+.widget_shopping_cart .wbtm-cart-icon,
+.woocommerce-mini-cart .wbtm-cart-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+}
+.widget_shopping_cart .wbtm-cart-ticket-badge,
+.woocommerce-mini-cart .wbtm-cart-ticket-badge {
+    font-size: 10px;
+}
+
+/* Full cart & checkout page */
+.woocommerce-cart .wbtm-cart-booking-details,
+.woocommerce-checkout .wbtm-cart-booking-details {
+    font-size: 13px;
+    padding: 8px 0 4px;
+}
+.woocommerce-cart .wbtm-cart-icon,
+.woocommerce-checkout .wbtm-cart-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+}
