@@ -198,7 +198,7 @@
                                     <?php esc_attr_e( 'Departure Bus', 'bus-ticket-booking-with-seat-reservation' )?>
                                 </div>
 
-                                <?php  if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
+                                <?php  if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) { ?>
                                     <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start" data-alert="<?php echo esc_attr__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                         <?php esc_attr_e( 'Return Bus', 'bus-ticket-booking-with-seat-reservation' )?>
                                     </div>
@@ -222,7 +222,7 @@
                     </div>
                     <div class="wbtm_return_bus_lists_holder" id="wbtm_return_bus_lists_holder">
                         <?php }
-                        if ($post_id == 0 && $start_route && $end_route && $r_date) { ?>
+                        if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) { ?>
                         <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: <?php echo esc_attr( $return_bus );?>">
                             <?php if( $next_date === 'yes' ){?>
                                 <div class="wbtm-date-suggetion">
@@ -235,7 +235,7 @@
                                 </div>-->
                                  <?php self::route_title('Return', $start_route, $end_route, $j_date, $r_date, true); ?>
                                 <div class="wbtm-bus-lists" id="return_bus">
-                                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, '', $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
+                                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, $post_id == 0 ? '' : $post_id, $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
                                 </div>
                             </div>
                         </div>
