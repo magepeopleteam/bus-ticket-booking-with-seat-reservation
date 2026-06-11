@@ -15,6 +15,7 @@
 				add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
 				add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
 				add_filter('woocommerce_get_item_data', array($this, 'get_item_data'), 20, 2);
+				add_filter('woocommerce_widget_cart_item_quantity', array($this, 'minicart_bus_details'), 10, 3);
 				/**********************************************/
 				add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 				add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 10, 4);
@@ -488,9 +489,21 @@
 					ob_start();
 					$this->show_cart_item($cart_item, $post_id);
 					do_action('wbtm_show_cart_item', $cart_item, $post_id);
-					$item_data[] = array('key' => esc_html__('Booking Details ', 'bus-ticket-booking-with-seat-reservation'), 'value' => ob_get_clean());
+					$html = ob_get_clean();
+					$item_data[] = array('key' => esc_html__('Booking Details', 'bus-ticket-booking-with-seat-reservation'), 'value' => $html);
 				}
 				return $item_data;
+			}
+			public function minicart_bus_details($html, $cart_item, $cart_item_key) {
+				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
+				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+					ob_start();
+					$this->show_cart_item($cart_item, $post_id);
+					do_action('wbtm_show_cart_item', $cart_item, $post_id);
+					$bus_html = ob_get_clean();
+					return $html . '<div class="wbtm_minicart_details">' . $bus_html . '</div>';
+				}
+				return $html;
 			}
 			/*********************/
 			public function after_checkout_validation() {
