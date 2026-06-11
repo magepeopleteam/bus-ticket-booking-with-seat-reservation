@@ -336,6 +336,12 @@ Made compatiable with some of the major caching plugin
 = 5.5.3 =
 Translation Issue fixed
 
+
+= 5.5.6 =
+Cabin booking functionality added
+Bus default available seat selection added
+Seat number rotation stopped
+
 = 5.5.7 =
 *Release Date - 11 Jun 2026*
 
@@ -386,7 +392,3 @@ Translation Issue fixed
 * 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
 * Shortcode reference table updated with PRO shortcodes
 
-= 5.5.6 =
-Cabin booking functionality added
-Bus default available seat selection added
-Seat number rotation stopped
