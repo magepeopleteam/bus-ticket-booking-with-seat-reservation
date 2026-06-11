@@ -548,7 +548,7 @@
 						$value .= '</div>';
 					}
 					$value .= '</div>';
-					$item_data[] = array('key' => '', 'value' => $value);
+					$item_data[] = array('key' => 'wbtm_booking_info', 'value' => $value, 'hidden' => false);
 				}
 				return $item_data;
 			}
