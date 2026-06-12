@@ -216,6 +216,11 @@
 						$cart_item_data['wbtm_dp_place'] = $dp;
 						$cart_item_data['wbtm_dp_time'] = isset($_POST['wbtm_dp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_time'])) : '';
 						$cart_item_data['wbtm_price_leg'] = WBTM_Functions::get_requested_price_leg();
+						// Journey role (departure vs return) is which tab the customer booked from.
+						// It is independent of the fare leg, which can be inverted on bidirectional
+						// same-bus-return routes (e.g. a "departure" trip that uses the return fares).
+						$journey_type_raw = isset( $_POST['wbtm_journey_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_journey_type'] ) ) : '';
+						$cart_item_data['wbtm_journey_type'] = $journey_type_raw === 'return' ? 'return' : 'departure';
 						$cart_item_data['wbtm_booking_mode'] = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
 						$cart_item_data['wbtm_pickup_point'] = isset($_POST['wbtm_pickup_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_pickup_point'])) : '';
 						$cart_item_data['wbtm_drop_off_point'] = isset($_POST['wbtm_drop_off_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_drop_off_point'])) : '';
@@ -668,6 +673,8 @@
 					$item->add_meta_data('_wbtm_full_bus_seat_count', array_key_exists('wbtm_full_bus_seat_count', $values) ? (int) $values['wbtm_full_bus_seat_count'] : 0);
 					$price_leg = array_key_exists('wbtm_price_leg', $values) && $values['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
 					$item->add_meta_data('_wbtm_price_leg', $price_leg);
+					$journey_type = array_key_exists('wbtm_journey_type', $values) && $values['wbtm_journey_type'] === 'return' ? 'return' : 'departure';
+					$item->add_meta_data('_wbtm_journey_type', $journey_type);
 					$item->add_meta_data('_wbtm_start_point', $start_point);
 					$item->add_meta_data('_wbtm_start_time', $start_time);
 					$item->add_meta_data('_extra_services', $extra_service);
@@ -749,6 +756,8 @@
 					$ticket_infos = $ticket_infos ? WBTM_Global_Function::data_sanitize($ticket_infos) : [];
 					$order_price_leg = wc_get_order_item_meta($item_id, '_wbtm_price_leg', true);
 					$journey_leg     = ( $order_price_leg === 'return' ) ? 'return' : 'outbound';
+					$order_journey_type = wc_get_order_item_meta($item_id, '_wbtm_journey_type', true);
+					$journey_type_value = ( $order_journey_type === 'return' ) ? 'return' : 'departure';
 					/*************************/
 					if (sizeof($ticket_infos) > 0) {
 						$count = 0;
@@ -805,6 +814,7 @@
 								$data['wbtm_user_phone'] = $billing_phone;
 								$data['wbtm_user_address'] = $billing_address;
 								$data['wbtm_price_leg']    = $journey_leg;
+								$data['wbtm_journey_type'] = $journey_type_value;
 								$booking_data = apply_filters('wbtm_add_booking_data', $data, $post_id, $count);
 								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 								$count++;
@@ -1181,7 +1191,42 @@
                 </div>
 				<?php
 			}
+			/**
+			 * Whether the cart currently holds an explicit return-leg ticket.
+			 */
+			public static function cart_has_return_leg() {
+				if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+					return false;
+				}
+				foreach ( WC()->cart->get_cart() as $ci ) {
+					if ( ( $ci['wbtm_journey_type'] ?? '' ) === 'return' ) {
+						return true;
+					}
+				}
+				return false;
+			}
+			/**
+			 * Journey badge (Outbound / Return) for a cart line on a round trip. Returns ''
+			 * for a one-way cart so single trips stay uncluttered. Mirrors the ticket/PDF badge.
+			 */
+			public static function cart_journey_badge_html( $cart_item ) {
+				$journey_type = $cart_item['wbtm_journey_type'] ?? '';
+				if ( $journey_type === 'return' ) {
+					$kind = 'return';
+				} elseif ( $journey_type === 'departure' && self::cart_has_return_leg() ) {
+					$kind = 'outbound';
+				} else {
+					return '';
+				}
+				$map = [
+					'return'   => [ esc_html__( 'Return', 'bus-ticket-booking-with-seat-reservation' ), '#2271b1' ],
+					'outbound' => [ esc_html__( 'Outbound', 'bus-ticket-booking-with-seat-reservation' ), '#2e7d32' ],
+				];
+				list( $label, $color ) = $map[ $kind ];
+				return '<span class="wbtm-journey-leg-badge wbtm-journey-leg-' . esc_attr( $kind ) . '" style="display:inline-block;margin:0 0 6px 0;background:' . esc_attr( $color ) . ';color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;line-height:1.3;">' . $label . '</span>';
+			}
 			public function show_cart_route_details($cart_item) {
+				echo wp_kses_post( self::cart_journey_badge_html( $cart_item ) );
 				$bp = array_key_exists('wbtm_bp_place', $cart_item) ? $cart_item['wbtm_bp_place'] : '';
 				$bp_time = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
 				$dp = array_key_exists('wbtm_dp_place', $cart_item) ? $cart_item['wbtm_dp_place'] : '';

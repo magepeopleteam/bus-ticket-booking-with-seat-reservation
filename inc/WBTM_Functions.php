@@ -61,16 +61,72 @@
 				if ( ! $start_route ) {
 					return self::single_bus_route_from_infos( $forward, '' );
 				}
-				$r = self::single_bus_route_from_infos( $forward, $start_route );
-				if ( sizeof( $r ) === 0 && self::is_same_bus_return_enabled( $post_id ) ) {
+				$forward_dests = self::single_bus_route_from_infos( $forward, $start_route );
+				$r             = $forward_dests;
+
+				if ( self::is_same_bus_return_enabled( $post_id ) ) {
+					// Destinations reachable on the return leg from this same boarding point.
+					$return_dests = [];
 					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward ) as $infos ) {
-						$r = self::single_bus_route_from_infos( $infos, $start_route );
-						if ( sizeof( $r ) > 0 ) {
+						$candidate = self::single_bus_route_from_infos( $infos, $start_route );
+						if ( sizeof( $candidate ) > 0 ) {
+							$return_dests = $candidate;
 							break;
 						}
 					}
+
+					/**
+					 * Bidirectional stop search (Pro feature).
+					 *
+					 * When TRUE, a passenger boarding at an intermediate stop can pick a
+					 * destination in EITHER direction, so the forward and return
+					 * destination lists are merged (e.g. from Nelspruit you can reach both
+					 * O.R. Tambo outbound and Marloth Park on the return leg).
+					 *
+					 * When FALSE (default / free), behaviour is unchanged: the return leg
+					 * is only used as a fallback for terminal stops that have no forward
+					 * destination (e.g. the final stop of the outbound route).
+					 *
+					 * @param bool   $enabled     Default false.
+					 * @param int    $post_id     Bus post ID.
+					 * @param string $start_route Selected boarding point.
+					 */
+					$bidirectional = (bool) apply_filters( 'wbtm_enable_bidirectional_route_search', false, $post_id, $start_route );
+
+					if ( $bidirectional ) {
+						// Offer every stop reachable later on EITHER physical leg (by position) so
+						// intermediate->intermediate trips work even when stops are boarding-only.
+						$merged = [];
+						foreach ( self::get_same_bus_physical_legs( $post_id, $forward ) as $leg ) {
+							$merged = self::merge_unique_routes( $merged, self::dests_after_by_position( $leg, $start_route ) );
+						}
+						$r = $merged;
+					} elseif ( sizeof( $forward_dests ) === 0 ) {
+						$r = $return_dests;
+					}
 				}
 				return $r;
+			}
+
+			/**
+			 * Merge two route-place lists, preserving order and removing
+			 * case-insensitive duplicates.
+			 *
+			 * @param array<int, string> $a
+			 * @param array<int, string> $b
+			 * @return array<int, string>
+			 */
+			private static function merge_unique_routes( $a, $b ) {
+				$out  = [];
+				$seen = [];
+				foreach ( array_merge( (array) $a, (array) $b ) as $place ) {
+					$key = strtolower( (string) $place );
+					if ( $place !== '' && $place !== null && ! isset( $seen[ $key ] ) ) {
+						$seen[ $key ] = true;
+						$out[]        = $place;
+					}
+				}
+				return $out;
 			}
 
 			/**
@@ -213,25 +269,8 @@
 				if ( ! $post_id || ! $start_route || ! $end_route ) {
 					return $fallback_leg;
 				}
-
-				$dir = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', [] );
-				if ( ! is_array( $dir ) || count( $dir ) < 2 ) {
-					return $fallback_leg;
-				}
-
-				$sp = self::route_place_index( $dir, $start_route );
-				$ep = self::route_place_index( $dir, $end_route );
-				if ( $sp === null || $ep === null || $sp === $ep ) {
-					return $fallback_leg;
-				}
-
-				// Fixed by Shahnur - 2026-04-23 02:50 PM (Asia/Dhaka)
-				// Use the searched stop direction to choose outbound vs return fare rows.
-				if ( $sp > $ep && self::is_same_bus_return_enabled( $post_id ) ) {
-					return 'return';
-				}
-
-				return 'outbound';
+				$resolved = self::resolve_od_leg( $post_id, $start_route, $end_route );
+				return $resolved['leg'] !== null ? $resolved['leg'] : $fallback_leg;
 			}
 
 			/**
@@ -241,30 +280,210 @@
 			 * @return array<int, array<string, mixed>>
 			 */
 			public static function resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route, $forward_route_infos = null ) {
+				$resolved = self::resolve_od_leg( $post_id, $start_route, $end_route, $forward_route_infos );
+				return $resolved['route_infos'];
+			}
+
+			/**
+			 * Decide which leg (outbound vs return) and which route-row set serves an
+			 * origin/destination pair, choosing the leg that connects the two stops with
+			 * the SHORTEST forward (non day-wrapping) travel time.
+			 *
+			 * This is more robust than ordering stops via the stored `wbtm_route_direction`
+			 * list: on a bidirectional "same bus return" trip a pair such as Berlin -> Hamburg
+			 * exists on BOTH legs (outbound 07:00->08:00 and the reversed return 14:00->13:00+1d).
+			 * We always want the natural same-day leg, regardless of how the direction array
+			 * happens to be ordered.
+			 *
+			 * @param array<int, array<string, mixed>>|null $forward_route_infos
+			 * @return array{leg: string|null, route_infos: array<int, array<string, mixed>>}
+			 */
+			private static function resolve_od_leg( $post_id, $start_route, $end_route, $forward_route_infos = null ) {
 				if ( $forward_route_infos === null ) {
 					$forward_route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
 				}
-				if ( ! is_array( $forward_route_infos ) || count( $forward_route_infos ) < 2 ) {
-					return is_array( $forward_route_infos ) ? $forward_route_infos : [];
+				if ( ! is_array( $forward_route_infos ) ) {
+					$forward_route_infos = [];
 				}
-				$dir = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', [] );
-				if ( ! is_array( $dir ) || count( $dir ) < 2 ) {
-					return $forward_route_infos;
+				$result = [ 'leg' => null, 'route_infos' => $forward_route_infos ];
+				if ( count( $forward_route_infos ) < 2 || ! $start_route || ! $end_route ) {
+					return $result;
 				}
-				$sp = self::route_place_index( $dir, $start_route );
-				$ep = self::route_place_index( $dir, $end_route );
-				if ( $sp === null || $ep === null || $sp === $ep ) {
-					return $forward_route_infos;
+
+				$same_bus_return = $post_id && self::is_same_bus_return_enabled( $post_id );
+
+				// Physical legs the bus actually runs (index 0 = outbound, 1 = return).
+				$candidates = $same_bus_return
+					? self::get_same_bus_physical_legs( $post_id, $forward_route_infos )
+					: [ $forward_route_infos ];
+
+				$ref_date = current_time( 'Y-m-d' );
+				$best_dur = null;
+				foreach ( $candidates as $index => $candidate_rows ) {
+					// Same-bus-return (bidirectional) buses connect any stop to a later stop on a
+					// leg regardless of bp/dp type; normal buses honour the configured types.
+					$supported = $same_bus_return
+						? self::route_infos_support_od_by_position( $candidate_rows, $start_route, $end_route )
+						: self::wbtm_route_infos_support_od_leg( $candidate_rows, $start_route, $end_route );
+					if ( ! $supported ) {
+						continue;
+					}
+					$times = self::od_leg_times_from_infos( $post_id, $candidate_rows, $start_route, $end_route, $ref_date );
+					if ( empty( $times ) ) {
+						continue;
+					}
+					$duration = strtotime( $times['dp_time'] ) - strtotime( $times['bp_time'] );
+					// Strict "<" so the outbound leg (checked first) wins ties.
+					if ( $best_dur === null || $duration < $best_dur ) {
+						$best_dur               = $duration;
+						$result['leg']         = $index === 0 ? 'outbound' : 'return';
+						$result['route_infos'] = $candidate_rows;
+					}
 				}
-				if ( $sp > $ep && self::is_same_bus_return_enabled( $post_id ) ) {
-					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward_route_infos ) as $candidate ) {
-						if ( self::wbtm_route_infos_support_od_leg( $candidate, $start_route, $end_route ) ) {
-							return $candidate;
+				return $result;
+			}
+
+			/**
+			 * The two physical legs a same-bus-return bus runs: [outbound, return].
+			 * The return leg is the custom return timetable when set, else the reversed outbound.
+			 *
+			 * @param array<int, array<string, mixed>> $forward_route_infos
+			 * @return array<int, array<int, array<string, mixed>>>
+			 */
+			private static function get_same_bus_physical_legs( $post_id, $forward_route_infos ) {
+				$legs   = [ $forward_route_infos ];
+				$custom = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+				if ( is_array( $custom ) && count( $custom ) > 1 ) {
+					$legs[] = $custom;
+				} else {
+					$legs[] = self::reverse_wbtm_route_infos( $forward_route_infos );
+				}
+				return $legs;
+			}
+
+			/**
+			 * Stops reachable after $start_route on a leg, by position (ignoring bp/dp type).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<int, string>
+			 */
+			private static function dests_after_by_position( $route_infos, $start_route ) {
+				$out     = [];
+				$started = false;
+				if ( is_array( $route_infos ) ) {
+					foreach ( $route_infos as $row ) {
+						if ( ! is_array( $row ) || ! isset( $row['place'] ) || $row['place'] === '' ) {
+							continue;
+						}
+						if ( $started ) {
+							$out[] = $row['place'];
+						} elseif ( strtolower( (string) $row['place'] ) === strtolower( (string) $start_route ) ) {
+							$started = true;
 						}
 					}
-					return self::reverse_wbtm_route_infos( $forward_route_infos );
 				}
-				return $forward_route_infos;
+				return $out;
+			}
+
+			/**
+			 * Whether $end_route appears after $start_route on a leg, by position (type-agnostic).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function route_infos_support_od_by_position( $route_infos, $start_route, $end_route ) {
+				if ( ! is_array( $route_infos ) || $start_route === '' || $end_route === '' ) {
+					return false;
+				}
+				$started = false;
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$place = strtolower( (string) $row['place'] );
+					if ( ! $started && $place === strtolower( (string) $start_route ) ) {
+						$started = true;
+						continue;
+					}
+					if ( $started && $place === strtolower( (string) $end_route ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+			 * Boarding/dropping datetimes for an OD pair within a specific set of route rows on a
+			 * given date, honouring day-wrapping. Same-bus-return buses match stops by position
+			 * (type-agnostic) so a boarding-only intermediate stop still yields times when used as
+			 * a drop point in the opposite direction.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<string, string>
+			 */
+			private static function od_leg_times_from_infos( $post_id, $route_infos, $start_route, $end_route, $date ) {
+				if ( ! is_array( $route_infos ) || count( $route_infos ) < 2 || ! $start_route || ! $end_route || ! $date ) {
+					return [];
+				}
+				$ignore_types = $post_id && self::is_same_bus_return_enabled( $post_id );
+				$expanded = self::get_route_all_date_info( $post_id, [ gmdate( 'Y-m-d', strtotime( $date ) ) ], $route_infos );
+				foreach ( $expanded as $rows ) {
+					$bp_time = '';
+					foreach ( $rows as $info ) {
+						$is_bp = $ignore_types || $info['type'] === 'bp' || $info['type'] === 'both';
+						$is_dp = $ignore_types || $info['type'] === 'dp' || $info['type'] === 'both';
+						if ( ! $bp_time && $is_bp && strtolower( (string) $info['place'] ) === strtolower( (string) $start_route ) ) {
+							$bp_time = $info['time'];
+							continue;
+						}
+						if ( $bp_time && $is_dp && strtolower( (string) $info['place'] ) === strtolower( (string) $end_route ) ) {
+							return [ 'bp_time' => $bp_time, 'dp_time' => $info['time'] ];
+						}
+					}
+				}
+				return [];
+			}
+
+			/**
+			 * Public: boarding/dropping datetimes for an OD pair on a date, using the
+			 * automatically resolved leg (outbound vs return).
+			 *
+			 * @return array<string, string>
+			 */
+			public static function get_od_leg_datetimes( $post_id, $start_route, $end_route, $date ) {
+				if ( ! $post_id || ! $start_route || ! $end_route || ! $date ) {
+					return [];
+				}
+				$route_infos = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
+				return self::od_leg_times_from_infos( $post_id, $route_infos, $start_route, $end_route, $date );
+			}
+
+			/**
+			 * Earliest operational date on/after $r_date whose return bus departs at or after
+			 * $floor_ts (the outbound arrival). Lets a same-day round trip whose mirror leg only
+			 * runs earlier in the day roll forward to the next available day.
+			 *
+			 * @param int $floor_ts Unix timestamp the return boarding must be >=.
+			 * @return string Y-m-d
+			 */
+			public static function resolve_return_date_after( $post_id, $return_start, $return_end, $r_date, $floor_ts ) {
+				$base = $r_date ? gmdate( 'Y-m-d', strtotime( $r_date ) ) : '';
+				if ( ! $post_id || ! $return_start || ! $return_end || ! $base || ! $floor_ts ) {
+					return $base;
+				}
+				$dates = self::get_route_date( $post_id, $return_start );
+				$dates = array_unique( is_array( $dates ) ? $dates : [] );
+				usort( $dates, 'WBTM_Global_Function::sort_date' );
+				foreach ( $dates as $date ) {
+					$date = gmdate( 'Y-m-d', strtotime( $date ) );
+					if ( strtotime( $date ) < strtotime( $base ) ) {
+						continue;
+					}
+					$times = self::get_od_leg_datetimes( $post_id, $return_start, $return_end, $date );
+					if ( ! empty( $times ) && strtotime( $times['bp_time'] ) >= $floor_ts ) {
+						return $date;
+					}
+				}
+				return $base;
 			}
 
 			/**
@@ -501,12 +720,18 @@
 						}
 					}
 				}
-				if ( $price_leg === 'return' && sizeof( $ticket_infos ) === 0 && $try_reverse_return ) {
-					$reverse_return = self::get_ticket_info( $post_id, $end_route, $start_route, 'return', false );
-					if ( sizeof( $reverse_return ) > 0 ) {
-						return $reverse_return;
+				if ( sizeof( $ticket_infos ) === 0 && $try_reverse_return
+					&& ( $price_leg === 'return' || self::is_same_bus_return_enabled( $post_id ) ) ) {
+					// On a same-bus-return bus a city-pair is the same physical segment in both
+					// directions, so when this direction has no fare row configured, fall back to
+					// the mirror pair's fare (resolve_price_leg picks the right leg for it).
+					$reverse = self::get_ticket_info( $post_id, $end_route, $start_route, $price_leg, false );
+					if ( sizeof( $reverse ) > 0 ) {
+						return $reverse;
 					}
-					return self::get_ticket_info( $post_id, $start_route, $end_route, 'outbound', false );
+					if ( $price_leg !== 'outbound' ) {
+						return self::get_ticket_info( $post_id, $start_route, $end_route, 'outbound', false );
+					}
 				}
 				return $ticket_infos;
 			}
@@ -692,6 +917,9 @@
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {
 					$all_dates        = WBTM_Functions::get_post_date( $post_id );
 					$resolved_leg     = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
+					// Same-bus-return buses connect stops by position, so a boarding-only intermediate
+					// stop can still serve as a drop point on the opposite-direction leg.
+					$ignore_types     = self::is_same_bus_return_enabled( $post_id );
 					$route_date_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates, $resolved_leg );
 					if ( sizeof( $route_date_infos ) > 0 ) {
 						$now_full = current_time( 'Y-m-d H:i' );
@@ -699,10 +927,10 @@
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
 								foreach ( $route_info as $info ) {
-									if ( strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
+									if ( strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
 										$bp_date = $info['time'];
 									}
-									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
+									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 										$slice_time = self::slice_buffer_time( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );

@@ -874,6 +874,80 @@
 		});
 	}
 
+	/**
+	 * Editable Return Route (Pro): the return "From" is fixed to the outbound
+	 * destination (you return from where you arrived), so only the "To" is editable.
+	 * When the customer picks the return "To", reload the return bus list for the
+	 * fixed From -> chosen To.
+	 */
+	$(document).on('mp_change', '#wbtm_return_container .wbtm_return_dropping_point input.formControl', function () {
+		let container = $(this).closest('#wbtm_return_container');
+		wbtm_reload_return_bus_list(container);
+	});
+
+	function wbtm_reload_return_bus_list(container) {
+		let return_start = container.find('.wbtm_return_start_point input.formControl').val();
+		let return_end = container.find('.wbtm_return_dropping_point input.formControl').val();
+		if (!return_start || !return_end) {
+			return;
+		}
+		// Guard against selecting the same place for From and To.
+		if (return_start === return_end) {
+			let alertMsg = container.find('.wbtm_return_dropping_point').data('alert') || 'You select Wrong Route !';
+			wbtm_toast(alertMsg);
+			return;
+		}
+		let listContainer = container.find('.wbtm_return_bus_lists_container');
+		let leftFilter = container.data('left-filter');
+		try {
+			leftFilter = (typeof leftFilter === 'string') ? leftFilter : JSON.stringify(leftFilter || {});
+		} catch (e) {
+			leftFilter = '{}';
+		}
+		// On a same-day round trip, tell the server the outbound arrival time so it can
+		// roll the return forward to the next day when no same-day bus departs after it.
+		let outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
+		let floorTime = '';
+		if (outboundCard.length) {
+			let jd = wbtm_normalize_date_only(outboundCard.data('j-date'));
+			let rd = wbtm_normalize_date_only(container.data('r-date'));
+			if (jd && rd && jd === rd) {
+				floorTime = outboundCard.data('outbound-dp-time') || '';
+			}
+		}
+		$.ajax({
+			type: 'POST',
+			url: wbtm_ajax_url,
+			data: {
+				action: 'get_wbtm_return_bus_list',
+				post_id: container.data('post-id'),
+				return_start: return_start,
+				return_end: return_end,
+				j_date: container.data('j-date'),
+				r_date: container.data('r-date'),
+				style: container.data('style'),
+				btn_show: container.data('btn-show'),
+				left_filter_show: leftFilter,
+				floor_time: floorTime,
+				nonce: wbtm_nonce
+			},
+			beforeSend: function () {
+				wbtm_loader(listContainer);
+			},
+			success: function (data) {
+				listContainer.html(data).promise().done(function () {
+					wbtm_loaderRemove(listContainer);
+					// Re-apply same-day time filter against the selected outbound bus.
+					wbtm_filter_return_buses_by_outbound_time();
+				});
+			},
+			error: function (response) {
+				wbtm_loaderRemove(listContainer);
+				console.log(response);
+			}
+		});
+	}
+
 
 	$(document).on('click', '#wbtm_add_to_cart', function (e) {
 		e.preventDefault();
@@ -916,6 +990,13 @@
 
 		let burPosition = this_btn.closest('.wbtm-bus-lists').attr('id');
 		let numberOfBuses = $('#wbtm_return_container .wtbm_bus_counter').length;
+		// A round trip was requested whenever the return container is present (it only
+		// renders when a return date was chosen). We must show the Return tab in that
+		// case even if the default (exact-reverse) leg currently has no bus — e.g. a
+		// reverse-direction outbound whose mirror leg isn't bookable — so the customer
+		// can pick a valid return route (Editable Return Route) or "Checkout Without Return",
+		// instead of being silently redirected to checkout.
+		let returnRequested = $('#wbtm_return_container').length > 0;
 
 		let wbtm_cabin_mode_enabled = form.find(':input[name=wbtm_cabin_mode_enabled]').val();
 
@@ -981,6 +1062,8 @@
 			"price_val": encodeURIComponent(priceVal),
 			"wbtm_post_id": form.find(':input[name=wbtm_post_id]').val(),
 			"wbtm_price_leg": form.find(':input[name=wbtm_price_leg]').val() || "outbound",
+			// Journey role (which tab booked from), independent of the internal fare leg.
+			"wbtm_journey_type": (burPosition === 'return_bus') ? 'return' : 'departure',
 			"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
 			"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
 			"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
@@ -1036,15 +1119,13 @@
 			},
 			complete: function () {
 				if (burPosition === 'start_bus') {
-					if (numberOfBuses > 0) {
+					if (returnRequested) {
 						wbtm_set_loading_button_state(this_btn, false);
-						// $('#wbtm_return_container').find('#wbtm_selected_bus_notification').slideDown('fast');
-						/*$("#start_bus").fadeOut();
-						$("#wbtm_return_container").fadeIn();
-
-						// $("#wbtm_date_return_route_start").fadeOut();
-						$("#wbtm_date_return_route_return").fadeIn();*/
-
+						// Show the Return tab so the customer can choose a return bus (or
+						// change the return route when Editable Return Route is on, or use
+						// "Checkout Without Return"). Previously this checked the return bus
+						// count and silently jumped to checkout when the default reverse leg
+						// had no bus — breaking round trips for reverse-direction searches.
 						wtbm_active_return_bus_tab_data();
 
 					} else {
@@ -1064,12 +1145,14 @@
 		let defaultHtml = this_btn.html();
 		let startDate = parent.find(':input[name=j_date]').val() || this_btn.attr('data-date') || '';
 		let returnDate = parent.find(':input[name=r_date]').val() || '';
+		let fullBusJourneyType = this_btn.closest('#return_bus').length ? 'return' : 'departure';
 		let requestData = {
 			"action": "wbtm_ajax_add_to_cart",
 			"wbtm_booking_mode": "full_bus",
 			"price_val": encodeURIComponent(this_btn.attr('data-price') || 0),
 			"wbtm_post_id": this_btn.attr('data-bus-id'),
 			"wbtm_price_leg": this_btn.attr('data-price-leg') || "outbound",
+			"wbtm_journey_type": fullBusJourneyType,
 			"wbtm_start_point": this_btn.attr('data-start-point'),
 			"wbtm_start_time": this_btn.attr('data-start-time'),
 			"wbtm_bp_place": this_btn.attr('data-bp-place'),
