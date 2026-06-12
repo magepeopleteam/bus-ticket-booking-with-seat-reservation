@@ -2085,3 +2085,90 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     overflow-x: hidden;
   }
 }
+
+/* Editable Return Route (Pro): style the return From/To selectors to match the
+   plugin's main search inputs (boxed input with an inline marker icon), and show
+   the locked "From" (fixed to the outbound destination) as read-only. */
+.wbtm_return_route_selectors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+  margin: 12px 0 10px;
+  padding: 12px 14px;
+  background-color: var(--wbtm_color_white, #ffffff);
+  border: 1px solid var(--wbtm_color_border, #e5e7eb);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+.wbtm_return_route_selectors .wtbm_inputList {
+  position: relative;
+  flex: 1 1 calc(50% - 10px);
+  min-width: 180px;
+  margin: 0;
+}
+.wbtm_return_route_selectors .wtbm_fdColumn {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+  font-size: var(--wbtm_fs_label, 14px);
+  color: #555;
+}
+.wbtm_return_route_selectors .marker {
+  position: relative;
+}
+.wbtm_return_route_selectors .marker > i.fa-map-marker-alt {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+}
+.wbtm_return_route_selectors input.formControl {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px 0 32px;
+  font-size: 16px;
+  color: #333;
+  background-color: var(--wbtm_color_white, #ffffff);
+  border: 1px solid #7d7979;
+  border-radius: 6px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wbtm_return_route_selectors input.formControl:focus {
+  border-color: var(--wbtm_color_theme, #2271b1);
+  box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.12);
+}
+/* Locked "From" — read-only, with a lock icon on the right. */
+.wbtm_return_route_selectors .wbtm_return_from_fixed input.formControl {
+  padding-right: 30px;
+  cursor: not-allowed;
+  background-color: #f4f5f7;
+  color: #555;
+  pointer-events: none;
+}
+.wbtm_return_route_selectors .wbtm_return_from_fixed .wbtm_return_from_lock {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #9aa0a6;
+  pointer-events: none;
+}
+/* Reuse the main search dropdown look for the editable "To" list. */
+.wbtm_return_route_selectors ul.wbtm_input_select_list {
+  width: 100%;
+}
+@media only screen and (max-width: 767px) {
+  .wbtm_return_route_selectors .wtbm_inputList {
+    flex: 1 1 100%;
+  }
+}

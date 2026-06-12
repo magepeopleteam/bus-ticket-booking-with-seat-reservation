@@ -23,6 +23,9 @@
 				add_action('wp_ajax_get_wbtm_bus_list', [$this, 'get_wbtm_bus_list']);
 				add_action('wp_ajax_nopriv_get_wbtm_bus_list', [$this, 'get_wbtm_bus_list']);
 				/**************************/
+				add_action('wp_ajax_get_wbtm_return_bus_list', [$this, 'get_wbtm_return_bus_list']);
+				add_action('wp_ajax_nopriv_get_wbtm_return_bus_list', [$this, 'get_wbtm_return_bus_list']);
+				/**************************/
 				add_action('wp_ajax_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				/**************************/
@@ -83,6 +86,42 @@
 					$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
 					if ($redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
 						WC()->cart->empty_cart();
+					}
+					die();
+				}
+			}
+			/**
+			 * Re-render only the Return leg's title + bus list for a customer-chosen
+			 * return From/To (Pro: Editable Return Route).
+			 */
+			public function get_wbtm_return_bus_list() {
+				if ( isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wtbm_ajax_nonce' ) ) {
+					$post_id      = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
+					$return_start = isset( $_POST['return_start'] ) ? sanitize_text_field( wp_unslash( $_POST['return_start'] ) ) : '';
+					$return_end   = isset( $_POST['return_end'] ) ? sanitize_text_field( wp_unslash( $_POST['return_end'] ) ) : '';
+					$j_date       = isset( $_POST['j_date'] ) ? sanitize_text_field( wp_unslash( $_POST['j_date'] ) ) : '';
+					$r_date       = isset( $_POST['r_date'] ) ? sanitize_text_field( wp_unslash( $_POST['r_date'] ) ) : '';
+					$style        = isset( $_POST['style'] ) ? sanitize_text_field( wp_unslash( $_POST['style'] ) ) : '';
+					$btn_show     = isset( $_POST['btn_show'] ) ? sanitize_text_field( wp_unslash( $_POST['btn_show'] ) ) : '';
+					$left_filter_show = isset( $_POST['left_filter_show'] )
+						? json_decode( sanitize_text_field( wp_unslash( $_POST['left_filter_show'] ) ), true )
+						: [];
+					if ( ! is_array( $left_filter_show ) ) {
+						$left_filter_show = [];
+					}
+					// Only honour this endpoint when the Pro feature is on.
+					if ( ! self::is_editable_return_enabled( $post_id ) ) {
+						die();
+					}
+					if ( $return_start && $return_end && $r_date ) {
+						$search_info = array(
+							'bus_start_route' => $return_start,
+							'bus_end_route'   => $return_end,
+							'j_date'          => $j_date,
+							'r_date'          => $r_date,
+						);
+						$floor_time = isset( $_POST['floor_time'] ) ? sanitize_text_field( wp_unslash( $_POST['floor_time'] ) ) : '';
+					self::render_return_bus_list_inner( $post_id, $return_start, $return_end, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show, $floor_time );
 					}
 					die();
 				}
@@ -222,25 +261,115 @@
                     </div>
                     <div class="wbtm_return_bus_lists_holder" id="wbtm_return_bus_lists_holder">
                         <?php }
-                        if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) { ?>
-                        <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: <?php echo esc_attr( $return_bus );?>">
+                        if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) {
+                            // Return leg defaults to the exact reverse of the outbound trip.
+                            $return_start = $end_route;
+                            $return_end   = $start_route;
+                            $editable_return = self::is_editable_return_enabled( $post_id );
+                            ?>
+                        <div class="wbtm-bus-lists" id="wbtm_return_container" style="display: <?php echo esc_attr( $return_bus );?>"
+                             data-post-id="<?php echo esc_attr( $post_id ); ?>"
+                             data-j-date="<?php echo esc_attr( $j_date ); ?>"
+                             data-r-date="<?php echo esc_attr( $r_date ); ?>"
+                             data-style="<?php echo esc_attr( $style ); ?>"
+                             data-btn-show="<?php echo esc_attr( $btn_show ); ?>"
+                             data-left-filter="<?php echo esc_attr( wp_json_encode( $left_filter_show ) ); ?>">
                             <?php if( $next_date === 'yes' ){?>
                                 <div class="wbtm-date-suggetion">
                                     <?php self::next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, true); ?>
                                 </div>
-                            <?php }?>
+                            <?php }
+                            if ( $editable_return ) {
+                                self::render_return_route_selectors( $post_id, $return_start, $return_end );
+                            }
+                            ?>
                              <div class="wbtm_return_bus_lists_container" >
-                                <!--<div class="wbtm-date-route_title" id="wbtm_date_return_route_return" style="display: none">
-                                    <?php /*self::route_title( 'Return', $start_route, $end_route, $j_date, $r_date, true); */?>
-                                </div>-->
-                                 <?php self::route_title('Return', $start_route, $end_route, $j_date, $r_date, true); ?>
-                                <div class="wbtm-bus-lists" id="return_bus">
-                                    <?php do_action('wbtm_search_result', $end_route, $start_route, $r_date, $post_id == 0 ? '' : $post_id, $style, $btn_show, $search_info, 'return_journey', $left_filter_show); ?>
-                                </div>
+                                 <?php self::render_return_bus_list_inner( $post_id, $return_start, $return_end, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show ); ?>
                             </div>
                         </div>
                     </div>
 				    <?php }
+			}
+			/**
+			 * Whether the editable return-route feature (Pro) is enabled.
+			 *
+			 * @param int $post_id Bus post ID (0 for global search).
+			 */
+			public static function is_editable_return_enabled( $post_id = 0 ) {
+				return (bool) apply_filters( 'wbtm_enable_editable_return_route', false, $post_id );
+			}
+			/**
+			 * Render the title + bus list for the return leg.
+			 *
+			 * @param array<string, mixed> $search_info
+			 * @param array<string, mixed> $left_filter_show
+			 */
+			public static function render_return_bus_list_inner( $post_id, $return_start, $return_end, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = [], $floor_time = null ) {
+				$effective_r_date = $r_date;
+				// Same-bus-return round trips: the mirror leg must depart AFTER the outbound
+				// arrives. If the requested (same-day) return date has no such bus, roll forward
+				// to the next operational day that does.
+				if ( $post_id > 0 && WBTM_Functions::is_same_bus_return_enabled( $post_id ) && $j_date && $r_date
+					&& gmdate( 'Y-m-d', strtotime( $j_date ) ) === gmdate( 'Y-m-d', strtotime( $r_date ) ) ) {
+					$floor_ts = null;
+					if ( $floor_time ) {
+						$floor_ts = strtotime( $floor_time );
+					} else {
+						$out_start = isset( $search_info['bus_start_route'] ) ? $search_info['bus_start_route'] : '';
+						$out_end   = isset( $search_info['bus_end_route'] ) ? $search_info['bus_end_route'] : '';
+						if ( $out_start && $out_end ) {
+							$out_times = WBTM_Functions::get_od_leg_datetimes( $post_id, $out_start, $out_end, $j_date );
+							if ( ! empty( $out_times['dp_time'] ) ) {
+								$floor_ts = strtotime( $out_times['dp_time'] );
+							}
+						}
+					}
+					if ( $floor_ts ) {
+						$effective_r_date = WBTM_Functions::resolve_return_date_after( $post_id, $return_start, $return_end, $r_date, $floor_ts );
+					}
+				}
+				// Keep the return booking's date metadata aligned with what is displayed.
+				$search_info['r_date'] = $effective_r_date;
+				// route_title() with $return=true displays $end_route -> $start_route, so pass them
+				// reversed to render "$return_start -> $return_end" with return styling.
+				self::route_title( 'Return', $return_end, $return_start, $j_date, $effective_r_date, true );
+				?>
+                <div class="wbtm-bus-lists" id="return_bus">
+                    <?php do_action( 'wbtm_search_result', $return_start, $return_end, $effective_r_date, $post_id == 0 ? '' : $post_id, $style, $btn_show, $search_info, 'return_journey', $left_filter_show ); ?>
+                </div>
+				<?php
+			}
+			/**
+			 * Render editable From / To selectors for the return leg (Pro feature).
+			 * Reuses the same markup/behaviour as the main search From/To inputs.
+			 */
+			public static function render_return_route_selectors( $post_id, $return_start, $return_end ) {
+				$placeholder_text = WBTM_Translations::text_please_select();
+				?>
+                <div class="wbtm_return_route_selectors">
+                    <div class="wtbm_inputList wbtm_return_start_point wbtm_return_from_fixed">
+                        <label class="wtbm_fdColumn">
+                            <?php echo esc_html( WBTM_Translations::text_from() ); ?>
+                            <div class="marker">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <!-- Return "From" is fixed to the outbound destination (you return from where you arrived); only "To" is editable. -->
+                                <input type="text" class="formControl" name="wbtm_return_start_route" value="<?php echo esc_attr( $return_start ); ?>" readonly="readonly" tabindex="-1" autocomplete="off"/>
+                                <i class="fas fa-lock wbtm_return_from_lock" aria-hidden="true"></i>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="wtbm_inputList wbtm_input_select wbtm_return_dropping_point" data-alert="<?php echo esc_attr( WBTM_Translations::text_select_wrong_route() ); ?>">
+                        <label class="wtbm_fdColumn">
+                            <?php echo esc_html( WBTM_Translations::text_to() ); ?>
+                            <div class="marker">
+                                <i class="fas fa-map-marker-alt wtbm_icon_margin"></i>
+                                <input type="text" class="formControl" name="wbtm_return_end_route" value="<?php echo esc_attr( $return_end ); ?>" placeholder="<?php echo esc_attr( $placeholder_text ); ?>" autocomplete="off"/>
+                            </div>
+                        </label>
+                        <?php self::route_list( $post_id, $return_start ); ?>
+                    </div>
+                </div>
+				<?php
 			}
 			public static function wbtm_get_time_diff($start_time, $end_time) {
 				$start = new DateTime($start_time);
@@ -378,7 +507,8 @@
                 $end = $return ? $start_route : $end_route;
                 $date = $return ? $r_date : $j_date;
 
-                $day = date_i18n("l", strtotime($j_date));
+                // Weekday must match the leg's own date (the return leg may be rolled to a later day).
+                $day = date_i18n("l", strtotime($date));
                 $start_loc = strtoupper(substr($start, 0, 3));
                 $end_loc = strtoupper(substr($end, 0, 3));
 

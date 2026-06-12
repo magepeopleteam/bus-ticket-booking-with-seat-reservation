@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin , hamidxazad
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.5.7
+Stable tag: 5.7.8
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -391,4 +391,24 @@ Seat number rotation stopped
 * New "Documents" tab with 24 sub-tabs organized by bus settings
 * 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
 * Shortcode reference table updated with PRO shortcodes
+
+= 5.7.8 =
+*Release Date - 12 Jun 2026*
+
+**Bidirectional Stop Search & Editable Return Route (enabled via PRO toggles)**
+* Bidirectional stop search: on "same bus return" routes a passenger boarding at an intermediate stop can now choose a destination in EITHER direction (outbound or return). The "To" list merges every stop reachable on either physical leg.
+* Reworked origin/destination resolution to pick the natural same-day leg by stop position and real times, instead of relying on the stored route-direction order. Fixes the return leg showing reversed times with a wrong multi-hour duration (e.g. "23 H 0 M").
+* Boarding-only intermediate stops can now be used as a drop point in the opposite direction, so a return such as Paris -> Frankfurt uses the real outbound times (11:00 -> 12:30) instead of the reversed return.
+* Editable Return Route: the Return tab gets its own From / To selectors. The "From" is fixed (locked) to the outbound destination; only the "To" is editable, and the return bus list reloads for the chosen route.
+* Next-day return fallback: when a same-day round trip's return leg only departs before the outbound arrives, the return automatically rolls forward to the next available operational day.
+* Mirror-fare fallback: on same-bus-return routes a city-pair with no fare row configured for its direction now uses the reverse pair's fare instead of showing 0 / Free.
+
+**Journey Badge (Departure vs Return)**
+* The journey role (which tab a ticket was booked from) is now recorded separately from the internal fare leg, so the badge stays correct even when the fare leg is inverted on bidirectional routes.
+* Cart and checkout now show an "Outbound" / "Return" badge per leg on round trips.
+* The same role drives the PRO ticket PDF, passenger list and booking calendar so they no longer mislabel bidirectional or reverse-direction one-way trips.
+
+**Bug Fixes & UI**
+* Fixed the return route title weekday showing the outbound day instead of the return leg's own date.
+* Styled the editable Return From / To selectors to match the main search form (boxed inputs, inline marker icon, locked-field styling, responsive layout).
 
