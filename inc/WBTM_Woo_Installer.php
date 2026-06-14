@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 /**
  * WBTM WooCommerce Installer
  * Handles WooCommerce dependency check, beautiful popup display,

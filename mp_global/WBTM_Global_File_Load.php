@@ -44,11 +44,44 @@
 				wp_enqueue_script('mp_select_2', WBTM_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.js', array(), '4.0.13');
 				wp_enqueue_style('mp_owl_carousel', WBTM_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
 				wp_enqueue_script('mp_owl_carousel', WBTM_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
-				wp_enqueue_style('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.css', array(), time());
-				wp_enqueue_script('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.js', array('jquery'), time(), true);
+				wp_enqueue_style('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.css', array(), WBTM_VERSION);
+				wp_enqueue_script('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.js', array('jquery'), WBTM_VERSION, true);
 				do_action('wbtm_add_global_enqueue');
 			}
+			/**
+			 * Decide whether the (heavy) admin asset bundle should load on the current screen.
+			 * Performance: previously these libraries (select2, owl, codemirror, media, editor,
+			 * timepicker, plugin JS/CSS) loaded on EVERY wp-admin page site-wide. We now load
+			 * them only on plugin / WooCommerce / relevant editor screens. A filter escape hatch
+			 * (wbtm_load_admin_assets) lets site owners force-load on any edge screen.
+			 */
+			private function should_load_admin_assets(): bool {
+				// Never gate the custom MagePeople panel hook — it always needs the assets.
+				if ( current_action() !== 'admin_enqueue_scripts' ) {
+					return true;
+				}
+				$load = false;
+				$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+				if ( $screen ) {
+					$id   = (string) $screen->id;
+					$base = (string) $screen->base;
+					$pt   = (string) $screen->post_type;
+					if ( $pt === 'wbtm_bus' || $pt === 'wbtm_bus_booking' ) {
+						$load = true;
+					} elseif ( stripos( $id, 'wbtm' ) !== false || stripos( $id, 'mep' ) !== false || stripos( $id, 'mage' ) !== false ) {
+						$load = true;
+					} elseif ( stripos( $id, 'woocommerce' ) !== false || stripos( $id, 'wc-' ) !== false || $pt === 'shop_order' ) {
+						$load = true;
+					} elseif ( ( $base === 'edit-tags' || $base === 'term' ) && isset( $_GET['taxonomy'] ) && stripos( sanitize_key( wp_unslash( $_GET['taxonomy'] ) ), 'wbtm' ) !== false ) {
+						$load = true;
+					}
+				}
+				return (bool) apply_filters( 'wbtm_load_admin_assets', $load, $screen );
+			}
 			public function admin_enqueue() {
+				if ( ! $this->should_load_admin_assets() ) {
+					return;
+				}
 				$this->global_enqueue();
 				wp_enqueue_editor();
 				wp_enqueue_media();
@@ -67,8 +100,8 @@
 				//=====================//
 				wp_enqueue_script('form-field-dependency', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);
 				// admin setting global
-				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), time(), true);
-				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), time());
+				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), WBTM_VERSION, true);
+				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), WBTM_VERSION);
 				do_action('wbtm_add_admin_enqueue');
 			}
 			public function frontend_enqueue() {

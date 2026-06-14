@@ -106,7 +106,7 @@
 						<?php if ($is_template) { ?>
 						data-price-view-template="1"
 						<?php } ?>
-						title="<?php echo $title; ?>"
+						title="<?php echo esc_attr($title); ?>"
 						<?php echo $is_disabled ? 'disabled' : ''; ?>>
 					<?php esc_html_e('View', 'bus-ticket-booking-with-seat-reservation'); ?>
 				</button>

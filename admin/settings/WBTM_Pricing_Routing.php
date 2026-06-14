@@ -576,7 +576,7 @@
 							$is_return_row = ! empty( $price_info['is_return_leg'] );
 							$row_class       = $is_return_row ? 'wbtm_price_row_return' : 'wbtm_price_row_outbound';
 							?>
-                            <tr class="<?php echo esc_attr( $row_class ); ?>" data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>" data-wbtm-return-leg="<?php echo $is_return_row ? '1' : '0'; ?>">
+                            <tr class="<?php echo esc_attr( $row_class ); ?>" data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>" data-wbtm-return-leg="<?php echo esc_attr( $is_return_row ? '1' : '0' ); ?>">
                                 <td colspan="2">
                                     <div class="_dFlex_justifyBetween_pT_xs _dFlex_alignCenter">
                                         <div class="col_5 _textLeft_pL_xs">
@@ -652,6 +652,9 @@
 			public function wbtm_reload_pricing() {
 				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
+				}
+				if (!current_user_can('edit_post', (isset($_POST['post_id']) ? intval(wp_unslash($_POST['post_id'])) : 0))) {
+					wp_send_json_error('You do not have permission to perform this action.');
 				}
 				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
 				$places = isset($_POST['places']) ? array_map('sanitize_text_field', wp_unslash($_POST['places'])) : [];

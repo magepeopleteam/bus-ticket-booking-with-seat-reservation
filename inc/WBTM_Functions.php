@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	/*
 * @Author 		engr.sumonazma@gmail.com
 * Copyright: 	mage-people.com
@@ -1581,7 +1584,7 @@
 			?>
                 <div class="wbtm_bus_popup_links">
 					<?php foreach ( $popup_tabs as $key => $tab ):?>
-						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo $bus_id; ?>"><?php echo esc_html( $tab );?></span>
+						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo esc_attr( $bus_id ); ?>"><?php echo esc_html( $tab );?></span>
 					<?php endforeach ?>
                 </div>
             <?php
