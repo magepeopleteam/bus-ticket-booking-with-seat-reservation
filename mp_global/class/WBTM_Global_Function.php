@@ -59,10 +59,26 @@
 			public static function get_submit_info_get_method($key, $default = '') {
 				return isset($_GET[$key]) ? sanitize_text_field(wp_unslash($_GET[$key])) : $default;
 			}
+			/**
+			 * SECURITY FIX: unserialize user input without allowing object instantiation.
+			 */
+			public static function safe_unserialize($data) {
+				if (!is_string($data) || '' === $data) {
+					return $data;
+				}
+				$data = trim($data);
+				if ('a:' === substr($data, 0, 2) || 's:' === substr($data, 0, 2) || 'b:' === substr($data, 0, 2) || 'i:' === substr($data, 0, 2) || 'd:' === substr($data, 0, 2) || 'N;' === $data) {
+					$unserialized = @unserialize($data, array('allowed_classes' => false));
+					if (false !== $unserialized || $data === serialize(false)) {
+						return $unserialized;
+					}
+				}
+				return $data;
+			}
 			public static function data_sanitize($data) {
-				$data = maybe_unserialize($data);
+				$data = self::safe_unserialize($data);
 				if (is_string($data)) {
-					$data = maybe_unserialize($data);
+					$data = self::safe_unserialize($data);
 					if (is_array($data)) {
 						$data = self::data_sanitize($data);
 					} else {

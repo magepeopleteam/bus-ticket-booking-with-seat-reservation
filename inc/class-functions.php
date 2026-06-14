@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	function wbtm_myaccount_query_vars($vars) {
 		$vars[] = 'bus-panel';
 		return $vars;

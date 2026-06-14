@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	/**
 	 * Plugin Name: Bus Ticket Booking with Seat Reservation
 	 * Plugin URI: http://mage-people.com
@@ -23,6 +26,10 @@
 	}
 	if (!defined('WBTM_PLUGIN_URL')) {
 		define('WBTM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
+	}
+	// Stable asset version for cache-busting (replaces time()-based versioning).
+	if (!defined('WBTM_VERSION')) {
+		define('WBTM_VERSION', '5.7.8');
 	}
 
 	require_once WBTM_PLUGIN_DIR . '/mp_global/WBTM_Global_File_Load.php';

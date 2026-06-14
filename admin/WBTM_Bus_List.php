@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	/*
    * @Author 		engr.sumonazma@gmail.com
    * Copyright: 	mage-people.com
@@ -147,8 +150,8 @@
 					array(),
 					null
 				);
-				wp_enqueue_style( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.css', array(), time() );
-				wp_enqueue_script( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.js', array( 'jquery' ), time(), true );
+				wp_enqueue_style( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.css', array(), WBTM_VERSION );
+				wp_enqueue_script( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.js', array( 'jquery' ), WBTM_VERSION, true );
 			}
 
 			/**

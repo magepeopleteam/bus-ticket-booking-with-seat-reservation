@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 /*
 	   * @Author 		MagePeople Team
 	   * Copyright: 	mage-people.com
@@ -51,6 +54,10 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
         public function wtbm_save_bus_features() {
 
             check_ajax_referer( 'wtbm_ajax_nonce', 'nonce' );
+
+            if ( ! current_user_can( 'edit_post', ( isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0 ) ) ) {
+                wp_send_json_error( __( 'You do not have permission to perform this action.', 'bus-ticket-booking-with-seat-reservation' ) );
+            }
 
             $post_id  = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : '';
             $features  = isset( $_POST['features'] ) ? sanitize_text_field( wp_unslash( $_POST['features'] ) ) : '';

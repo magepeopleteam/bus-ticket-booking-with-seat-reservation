@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 /*
 	   * @Author 		MagePeople Team
 	   * Copyright: 	mage-people.com

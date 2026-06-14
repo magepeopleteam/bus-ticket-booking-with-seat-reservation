@@ -41,7 +41,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
                         <div class='button upload' id='media_upload_<?php echo esc_attr($post_id); ?>'>
                             <?php echo __('Upload','pickplugins-options-framework');?>
                         </div>
-                        <div class='button clear' id='media_clear_<?php echo $post_id; ?>'>
+                        <div class='button clear' id='media_clear_<?php echo esc_attr($post_id); ?>'>
                             <?php echo __('Clear','pickplugins-options-framework');?>
                         </div>
                         <div class="wbtm_gallery-images-lists media-list-<?php echo esc_attr($post_id); ?> ">
