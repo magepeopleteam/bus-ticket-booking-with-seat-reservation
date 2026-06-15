@@ -991,6 +991,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 
 				// For specific bus (single bus page)
 				if ( $post_id > 0 ) {
+					// Batch every date's booking counts into one query up-front; the per-date
+					// availability checks below then resolve from cache instead of hitting the DB.
+					WBTM_Query::prime_booked_map( $post_id, $start_route, $end_route );
 					foreach ( $all_dates as $date ) {
 						$all_info = self::get_bus_all_info( $post_id, $date, $start_route, $end_route );
 						if ( ! empty( $all_info ) && isset( $all_info['available_seat'] ) && (int) $all_info['available_seat'] <= 0 ) {
@@ -1001,6 +1004,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					// For general search (multiple buses) — a date is sold out only if ALL buses on that date are sold out
 					$bus_ids = WBTM_Query::get_bus_id( $start_route, $end_route );
 					if ( sizeof( $bus_ids ) > 0 ) {
+						// Batch each bus's booking counts once before the date loop, so the
+						// dates × buses availability checks resolve from cache (no per-cell query).
+						foreach ( $bus_ids as $bus_id ) {
+							WBTM_Query::prime_booked_map( $bus_id, $start_route, $end_route );
+						}
 						foreach ( $all_dates as $date ) {
 							$all_buses_soldout = true;
 							foreach ( $bus_ids as $bus_id ) {

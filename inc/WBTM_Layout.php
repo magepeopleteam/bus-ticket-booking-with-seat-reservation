@@ -587,10 +587,19 @@
 				<?php
 			if ($start_route) {
 				$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
-				$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $start_route, $end_route);
+				$soldout_dates = self::soldout_highlight_enabled() ? WBTM_Functions::get_soldout_dates($post_id, $start_route, $end_route) : [];
 				do_action('wbtm_load_date_picker_js', '#wbtm_journey_date', $all_dates, $soldout_dates);
 			}
 		}
+			/**
+			 * Whether sold-out dates should be greyed-out in the date picker.
+			 *
+			 * Computing this scans seat availability for every date in the sales window,
+			 * so it is opt-in (default OFF) to keep the calendar/schedule load fast.
+			 */
+			public static function soldout_highlight_enabled() {
+				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'calendar_soldout_highlight', 'off' ) === 'on';
+			}
 			public static function return_date_picker($post_id = '', $end_route = '', $start_route = '', $j_date = '', $date = '') {
 				$date_format = WBTM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
@@ -616,7 +625,7 @@
 							$date_list[] = $date;
 						}
 					}
-					$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $end_route, $start_route);
+					$soldout_dates = self::soldout_highlight_enabled() ? WBTM_Functions::get_soldout_dates($post_id, $end_route, $start_route) : [];
 					$soldout_dates_filtered = [];
 					foreach ($soldout_dates as $so_date) {
 						if (strtotime($so_date) >= $j_date) {
