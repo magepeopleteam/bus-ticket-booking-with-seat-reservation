@@ -431,6 +431,85 @@
 				}
 				return $seat_booked;
 			}
+			/**
+			 * Fetch every booking for a bus + boarding/dropping pair from a given date
+			 * forward, in ONE query. Used by the async sold-out scan so a whole calendar
+			 * window resolves from a single round of joins instead of two queries per date.
+			 *
+			 * Returns raw rows (date string + seat + full-bus info); callers bucket and
+			 * apply the seat-normalization rules. No caching — fresh every call.
+			 *
+			 * @return array<int,object> rows with ->start_time, ->seat, ->booking_mode, ->full_count
+			 */
+			public static function query_booking_rows_for_route( $post_id, $start, $end, $min_date = '' ) {
+				global $wpdb;
+				$rows = array();
+				if ( ! ( $post_id && $start && $end ) ) {
+					return $rows;
+				}
+				$routes = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', array() );
+				if ( sizeof( $routes ) === 0 ) {
+					return $rows;
+				}
+				$norm   = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
+				$routes = $norm['routes'];
+				$sp     = $norm['sp'];
+				$ep     = $norm['ep'];
+				if ( $sp === false || $ep === false ) {
+					return $rows;
+				}
+				$boarding_in = array_slice( $routes, 0, $ep );
+				$dropping_in = array_slice( $routes, $sp + 1 );
+				if ( empty( $boarding_in ) || empty( $dropping_in ) ) {
+					return $rows;
+				}
+				$statuses = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'set_book_status', array( 'processing', 'completed' ) );
+				// Keep pending in sync with the per-date queries: pending orders reserve seats.
+				$statuses = array_values( array_filter( array_unique( array_merge( (array) $statuses, array( 'pending' ) ) ) ) );
+				if ( empty( $statuses ) ) {
+					return $rows;
+				}
+
+				$bp_ph   = implode( ',', array_fill( 0, count( $boarding_in ), '%s' ) );
+				$dp_ph   = implode( ',', array_fill( 0, count( $dropping_in ), '%s' ) );
+				$stat_ph = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+
+				// wbtm_start_time is stored as ISO "Y-m-d H:i", so a lexicographic >= floor
+				// safely limits the scan to the future sales window.
+				$date_floor = '';
+				if ( $min_date ) {
+					$date_floor = ' AND pm_time.meta_value >= %s ';
+				}
+
+				$sql = "
+					SELECT p.ID AS booking_id,
+					       pm_time.meta_value AS start_time,
+					       pm_seat.meta_value AS seat,
+					       pm_mode.meta_value AS booking_mode,
+					       pm_full.meta_value AS full_count
+					FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm_bus  ON pm_bus.post_id  = p.ID AND pm_bus.meta_key  = 'wbtm_bus_id'         AND pm_bus.meta_value  = %d
+					INNER JOIN {$wpdb->postmeta} pm_stat ON pm_stat.post_id = p.ID AND pm_stat.meta_key = 'wbtm_order_status'   AND pm_stat.meta_value IN ($stat_ph)
+					INNER JOIN {$wpdb->postmeta} pm_bp   ON pm_bp.post_id   = p.ID AND pm_bp.meta_key   = 'wbtm_boarding_point' AND pm_bp.meta_value   IN ($bp_ph)
+					INNER JOIN {$wpdb->postmeta} pm_dp   ON pm_dp.post_id   = p.ID AND pm_dp.meta_key   = 'wbtm_dropping_point' AND pm_dp.meta_value   IN ($dp_ph)
+					INNER JOIN {$wpdb->postmeta} pm_time ON pm_time.post_id = p.ID AND pm_time.meta_key = 'wbtm_start_time' $date_floor
+					LEFT  JOIN {$wpdb->postmeta} pm_seat ON pm_seat.post_id = p.ID AND pm_seat.meta_key = 'wbtm_seat'
+					LEFT  JOIN {$wpdb->postmeta} pm_mode ON pm_mode.post_id = p.ID AND pm_mode.meta_key = 'wbtm_booking_mode'
+					LEFT  JOIN {$wpdb->postmeta} pm_full ON pm_full.post_id = p.ID AND pm_full.meta_key = 'wbtm_full_bus_seat_count'
+					WHERE p.post_type = 'wbtm_bus_booking'
+				";
+
+				$params = array();
+				$params[] = (int) $post_id;
+				$params   = array_merge( $params, $statuses, $boarding_in, $dropping_in );
+				if ( $date_floor ) {
+					$params[] = $min_date;
+				}
+
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders built from fixed counts above.
+				$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+				return is_array( $rows ) ? $rows : array();
+			}
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
 				if ($post_id && $date && $ex_name) {

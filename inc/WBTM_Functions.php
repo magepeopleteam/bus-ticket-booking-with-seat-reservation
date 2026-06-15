@@ -1031,6 +1031,104 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 
 				return array_unique( $soldout_dates );
 			}
+			/**
+			 * Fast sold-out date scan for the async calendar "chunk".
+			 *
+			 * Same result as get_soldout_dates() but built from ONE booking query per bus
+			 * (future dates only) instead of two queries per date. No caching — fresh on
+			 * every call — so it is safe to drive a live calendar from it.
+			 */
+			public static function get_soldout_dates_fast( $post_id = 0, $start_route = '', $end_route = '' ) {
+				$soldout_dates = [];
+				$all_dates     = self::get_all_dates( $post_id, $start_route, $end_route );
+				if ( empty( $all_dates ) || ! $start_route || ! $end_route ) {
+					return $soldout_dates;
+				}
+				$min_date = current_time( 'Y-m-d' );
+
+				if ( $post_id > 0 ) {
+					$avail = self::bus_availability_map( $post_id, $start_route, $end_route, $min_date );
+					foreach ( $all_dates as $date ) {
+						if ( isset( $avail[ $date ] ) && (int) $avail[ $date ] <= 0 ) {
+							$soldout_dates[] = $date;
+						}
+					}
+				} else {
+					$bus_ids = WBTM_Query::get_bus_id( $start_route, $end_route );
+					if ( sizeof( $bus_ids ) > 0 ) {
+						$bus_avail = [];
+						foreach ( $bus_ids as $bus_id ) {
+							$bus_avail[ $bus_id ] = self::bus_availability_map( $bus_id, $start_route, $end_route, $min_date );
+						}
+						foreach ( $all_dates as $date ) {
+							$all_buses_soldout = true;
+							foreach ( $bus_ids as $bus_id ) {
+								if ( ! in_array( $date, self::get_route_date( $bus_id, $start_route ) ) ) {
+									continue;
+								}
+								// No booking entry for the date => seats free; otherwise check availability.
+								if ( ! isset( $bus_avail[ $bus_id ][ $date ] ) || (int) $bus_avail[ $bus_id ][ $date ] > 0 ) {
+									$all_buses_soldout = false;
+									break;
+								}
+							}
+							if ( $all_buses_soldout ) {
+								$soldout_dates[] = $date;
+							}
+						}
+					}
+				}
+				return array_unique( $soldout_dates );
+			}
+			/**
+			 * Build a [ date => available_seat ] map for a single bus/route from a single
+			 * booking query. Mirrors get_bus_all_info()'s seat-count rules exactly
+			 * (seat-plan: max(distinct booked seats, total booked units); else total units).
+			 * Only dates that have bookings appear in the map.
+			 */
+			private static function bus_availability_map( $post_id, $start, $end, $min_date ) {
+				$map = [];
+				$seat_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
+				if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
+					$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
+				} else {
+					$total_seat = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+				}
+				$rows = WBTM_Query::query_booking_rows_for_route( $post_id, $start, $end, $min_date );
+				if ( empty( $rows ) ) {
+					return $map;
+				}
+				$units   = [];
+				$seats   = [];
+				$counted = []; // booking_id => true, so a booking counts once even if meta rows duplicate
+				foreach ( $rows as $row ) {
+					if ( empty( $row->start_time ) ) {
+						continue;
+					}
+					$date = gmdate( 'Y-m-d', strtotime( $row->start_time ) );
+					if ( empty( $counted[ $row->booking_id ] ) ) {
+						$counted[ $row->booking_id ] = true;
+						$full = (int) $row->full_count;
+						$units[ $date ] = ( isset( $units[ $date ] ) ? $units[ $date ] : 0 ) + ( ( $row->booking_mode === 'full_bus' && $full > 0 ) ? $full : 1 );
+					}
+					$seat_name = $row->seat;
+					if ( class_exists( 'WBTM_Seat_Configuration' ) ) {
+						$seat_name = WBTM_Seat_Configuration::normalize_saved_seat_value( $seat_name );
+					}
+					if ( $seat_name && ! ( class_exists( 'WBTM_Seat_Configuration' ) && WBTM_Seat_Configuration::is_non_seat_item( $seat_name ) ) ) {
+						if ( ! isset( $seats[ $date ] ) ) {
+							$seats[ $date ] = [];
+						}
+						$seats[ $date ][ $seat_name ] = true;
+					}
+				}
+				$is_seat_plan = ( $seat_type == 'wbtm_seat_plan' );
+				foreach ( $units as $date => $u ) {
+					$sold = $is_seat_plan ? max( ( isset( $seats[ $date ] ) ? count( $seats[ $date ] ) : 0 ), $u ) : $u;
+					$map[ $date ] = $total_seat - $sold;
+				}
+				return $map;
+			}
 			//==========================//
 			public static function get_all_dates( $post_id = 0, $start_route = '' ,$end_route='') {
 				$all_dates = [];
