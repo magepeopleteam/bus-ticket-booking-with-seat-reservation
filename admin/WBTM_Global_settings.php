@@ -17,11 +17,42 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$this->settings_api = new WBTM_Setting_API;
 				add_action( 'admin_menu', array( $this, 'global_settings_menu' ) );
 				add_action( 'admin_init', array( $this, 'admin_init' ) );
+				add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_new_settings_assets' ) );
+				add_action( 'admin_head', array( $this, 'dynamic_menu_icon' ) );
 				add_filter( 'wbtm_settings_sec_reg', array( $this, 'settings_sec_reg' ) );
 				add_filter( 'wbtm_settings_sec_fields', array( $this, 'settings_sec_fields' ) );
 				add_filter( 'wbtm_settings_sec_reg', array( $this, 'global_sec_reg' ), 90 );
 				add_action( 'wbtm_wsa_form_bottom_wbtm_license_settings', [ $this, 'license_settings' ] );
 				add_action( 'wbtm_basic_license_list', [ $this, 'licence_area' ] );
+			}
+
+			public function dynamic_menu_icon() {
+				WBTM_Functions::output_dynamic_menu_icon_css();
+			}
+
+			public function enqueue_new_settings_assets($hook) {
+				// Only load on global settings page
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+				if ($page !== 'wbtm_settings_page') return;
+
+				wp_enqueue_style(
+					'wbtm-global-settings',
+					WBTM_PLUGIN_URL . '/assets/admin/css/wbtm-global-settings.css',
+					[],
+					WBTM_VERSION
+				);
+				wp_enqueue_script(
+					'wbtm-global-settings-js',
+					WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-global-settings.js',
+					['jquery'],
+					WBTM_VERSION,
+					true
+				);
+				wp_enqueue_style('wp-color-picker');
+				wp_enqueue_script('wp-color-picker');
+				wp_enqueue_editor();
+				wp_enqueue_script('jquery-ui-datepicker');
 			}
 
 			public function global_settings_menu() {
@@ -31,21 +62,748 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 
 			public function settings_page() {
+				$this->render_new_settings_page();
+			}
+
+			public function render_new_settings_page() {
+				$sections_raw = $this->settings_api->get_sections();
+				$fields       = $this->settings_api->get_fields();
+
+				// Sections are numeric-indexed; convert to associative by 'id'
+				$sections = [];
+				if (is_array($sections_raw)) {
+					foreach ($sections_raw as $sec) {
+						if (isset($sec['id'])) {
+							$sections[$sec['id']] = $sec;
+						}
+					}
+				}
+
+				$tab_configs  = $this->get_tab_configs();
+
+				// Track which section IDs are handled by tab_configs
+				$handled_section_ids = [];
+				foreach ($tab_configs as $tab_id => $config) {
+					if (isset($config['section_id'])) {
+						$handled_section_ids[] = $config['section_id'];
+					}
+				}
+
+				// Build visible tabs from configs that match registered sections
+				$visible_tabs = [];
+				foreach ($tab_configs as $tab_id => $config) {
+					$section_id = isset($config['section_id']) ? $config['section_id'] : $tab_id;
+					$is_license = ($section_id === 'wbtm_license_settings');
+					if (isset($sections[$section_id]) || $is_license) {
+						$visible_tabs[$tab_id] = $config;
+					}
+				}
+
+				// Fallback: add any registered section not already handled
+				foreach ($sections as $section_id => $section) {
+					if (!in_array($section_id, $handled_section_ids, true)) {
+						$visible_tabs[$section_id] = [
+							'title'      => $section['title'],
+							'icon'       => 'fas fa-cog',
+							'subtitle'   => '',
+							'section_id' => $section_id,
+						];
+					}
+				}
+
+				$first_tab = !empty($visible_tabs) ? array_key_first($visible_tabs) : '';
+				$label = WBTM_Functions::get_name();
+
+				// Enqueue assets
+				add_action('admin_footer', function() use ($tab_configs, $first_tab) {
+					$meta = [];
+					foreach ($tab_configs as $id => $cfg) {
+						$meta[$id] = [$cfg['title'], isset($cfg['subtitle']) ? $cfg['subtitle'] : ''];
+					}
+
+					// Build AI provider map if the section exists
+					$ai_provider_map = [];
+					$ai_provider_all = [];
+					if (class_exists('WBTM_AI_Settings')) {
+						$providers = WBTM_AI_Settings::get_providers();
+						foreach ($providers as $slug => $cfg) {
+							if ($slug === 'rule_based' || empty($cfg['models'])) {
+								$ai_provider_map[$slug] = [];
+							} else {
+								$cls = [$slug . '_api_key'];
+								if (!empty($cfg['has_custom_endpoint'])) $cls[] = $slug . '_endpoint';
+								$cls[] = $slug . '_model';
+								$ai_provider_map[$slug] = $cls;
+							}
+						}
+						foreach ($ai_provider_map as $classes) {
+							foreach ($classes as $cls) $ai_provider_all[] = $cls;
+						}
+					}
+					$has_ai = !empty($ai_provider_all);
+					?>
+					<style>
+						.bm-gs__field-row.wbtm-hidden { display: none !important; }
+						.wbtm_add_icon_image_area .wbtm_icon_remove,
+						.wbtm_add_icon_image_area .wbtm_image_remove { cursor: pointer; z-index: 2; position: relative; }
+					</style>
+					<script>
+						window.bmGs = window.bmGs || {};
+						window.bmGs.tabMeta = <?php echo wp_json_encode($meta); ?>;
+						window.bmGs.defaultTab = <?php echo wp_json_encode($first_tab); ?>;
+						jQuery(function($){
+							// Save button — find and submit the active tab's form.
+							// Uses HTMLFormElement.prototype.submit to avoid the "id=submit"
+							// shadow bug (WP's submit_button() creates <input id="submit">).
+							$('#bm-save-btn').on('click', function(e){
+								e.preventDefault();
+								var $f = $('.bm-gs__tab-panel.bm-gs--active').find('form').first();
+								if ($f.length) { HTMLFormElement.prototype.submit.call($f[0]); }
+							});
+							// Icon / image remove — instant hide + show add buttons
+							$(document).on('click', '.wbtm_add_icon_image_area .wbtm_icon_remove', function(e){
+								e.stopPropagation();
+								var p = $(this).closest('.wbtm_add_icon_image_area');
+								p.find('input[type="hidden"]').val('');
+								p.find('[data-add-icon]').removeAttr('class');
+								p.find('.wbtm_icon_item').removeClass('dNone').hide();
+								p.find('.wbtm_add_icon_image_button_area').removeClass('dNone').show();
+							});
+							$(document).on('click', '.wbtm_add_icon_image_area .wbtm_image_remove', function(e){
+								e.stopPropagation();
+								var p = $(this).closest('.wbtm_add_icon_image_area');
+								p.find('input[type="hidden"]').val('');
+								p.find('img').attr('src', '');
+								p.find('.wbtm_image_item').removeClass('dNone').hide();
+								p.find('.wbtm_add_icon_image_button_area').removeClass('dNone').show();
+							});
+							// Color pickers — standard WP picker, init once per field
+							$('.wbtm-color-field').each(function(){
+								var $field = $(this);
+								if (!$field.closest('.wp-picker-container').length) {
+									$field.wpColorPicker();
+								}
+							});
+							// File upload triggers
+							$('.wbtm-file-upload-trigger').on('click', function(e){
+								e.preventDefault();
+								var btn = $(this), target = btn.data('target');
+								var input = $('input[name="'+target+'"]');
+								var frame = wp.media({ title: '<?php echo esc_js(__('Select File', 'bus-ticket-booking-with-seat-reservation')); ?>', multiple: false });
+								frame.on('select', function(){
+									var attachment = frame.state().get('selection').first().toJSON();
+									input.val(attachment.url);
+									input.trigger('change');
+								});
+								frame.open();
+							});
+							// Datepicker
+							$('.wbtm-datepicker').datepicker({
+								dateFormat: 'dd-mm-yy',
+								changeMonth: true,
+								changeYear: true,
+							});
+							<?php if ($has_ai): ?>
+							// AI Chatbot provider toggle
+							var aiMap = <?php echo wp_json_encode($ai_provider_map); ?>;
+							var aiAll = <?php echo wp_json_encode($ai_provider_all); ?>;
+							var $aiProvider = $('select[name="wbtm_ai_chatbot_settings[ai_provider]"]');
+							function applyAiVisibility(selected) {
+								aiAll.forEach(function(cls){
+									$('.wbtm-field-' + cls).addClass('wbtm-hidden');
+								});
+								var toShow = aiMap[selected] || [];
+								toShow.forEach(function(cls){
+									$('.wbtm-field-' + cls).removeClass('wbtm-hidden');
+								});
+							}
+							if ($aiProvider.length) {
+								applyAiVisibility($aiProvider.val());
+								$aiProvider.on('change', function(){ applyAiVisibility($(this).val()); });
+							}
+							<?php endif; ?>
+						});
+					</script>
+					<?php
+				}, 1);
+
 				?>
-                <div class="wbtm_style wbtm_global_settings">
-                    <div class="mpPanel">
-                        <div class="mpPanelHeader"><?php esc_html_e( ' Global Settings', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
-                        <div class="mpPanelBody mp_zero">
-                            <div class="wbtm_tabs leftTabs">
-								<?php $this->settings_api->show_navigation(); ?>
-                                <div class="tabsContent">
-									<?php $this->settings_api->show_forms(); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				<div class="bm-gs__root">
+					<div class="bm-gs__wrap">
+						<!-- Mobile overlay -->
+						<div class="bm-gs__overlay" id="bm-overlay"></div>
+
+						<!-- SIDEBAR -->
+						<div class="bm-gs__sidebar" id="bm-sidebar">
+							<div class="bm-gs__sb-header">
+								<div class="bm-gs__sb-plugin-label"><?php echo esc_html($label); ?></div>
+								<div class="bm-gs__sb-title">
+									<span class="bm-gs__sb-dot"></span>
+									<?php esc_html_e('Global Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</div>
+							</div>
+							<nav class="bm-gs__sb-nav">
+								<?php foreach ($visible_tabs as $tab_id => $config): ?>
+									<button type="button" class="bm-gs__nav-item<?php echo $tab_id === $first_tab ? ' bm-gs--active' : ''; ?>" data-tab="<?php echo esc_attr($tab_id); ?>">
+										<span class="bm-gs__nav-icon <?php echo esc_attr(isset($config['icon']) ? $config['icon'] : 'fas fa-cog'); ?>"></span>
+										<?php echo esc_html($config['title']); ?>
+									</button>
+								<?php endforeach; ?>
+							</nav>
+							<div class="bm-gs__sb-footer">
+								<?php 
+								$has_pro = class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
+								$badge_class = $has_pro ? 'bm-gs--pro' : '';
+								$badge_text  = $has_pro 
+									? esc_html__('PRO plan active', 'bus-ticket-booking-with-seat-reservation')
+									: esc_html__('Free plan active', 'bus-ticket-booking-with-seat-reservation');
+								?>
+								<div class="bm-gs__lic-badge <?php echo $badge_class; ?>">
+									<span class="bm-gs__lic-dot"></span>
+									<span class="bm-gs__lic-text"><?php echo $badge_text; ?></span>
+								</div>
+							</div>
+						</div>
+
+						<!-- MAIN -->
+						<div class="bm-gs__main">
+							<div class="bm-gs__topbar">
+								<button type="button" class="bm-gs__menu-btn" id="bm-menu-btn" aria-label="<?php esc_attr_e('Open menu', 'bus-ticket-booking-with-seat-reservation'); ?>">
+									<span class="fas fa-bars"></span>
+								</button>
+								<span class="bm-gs__topbar-title" id="bm-topbar-title"><?php 
+									echo esc_html(isset($visible_tabs[$first_tab]) ? $visible_tabs[$first_tab]['title'] : '');
+								?></span>
+								<span class="bm-gs__topbar-sep">&rsaquo;</span>
+								<span class="bm-gs__topbar-sub" id="bm-topbar-sub"><?php 
+									echo esc_html(isset($visible_tabs[$first_tab]) ? (isset($visible_tabs[$first_tab]['subtitle']) ? $visible_tabs[$first_tab]['subtitle'] : '') : '');
+								?></span>
+								<?php if (!empty($visible_tabs)): ?>
+								<button type="button" class="bm-gs__save-btn" id="bm-save-btn">
+									<span class="fas fa-save"></span>
+									<span class="bm-gs__save-text"><?php esc_html_e('Save Changes', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+								</button>
+								<?php endif; ?>
+							</div>
+							<div class="bm-gs__content">
+								<?php 
+								foreach ($visible_tabs as $tab_id => $config):
+									$section_id = isset($config['section_id']) ? $config['section_id'] : $tab_id;
+									$is_license = ($section_id === 'wbtm_license_settings');
+								?>
+								<div class="bm-gs__tab-panel<?php echo $tab_id === $first_tab ? ' bm-gs--active' : ''; ?>" id="bm-tab-<?php echo esc_attr($tab_id); ?>">
+									<?php if ($is_license): ?>
+										<div class="bm-gs__section-card">
+											<div class="bm-gs__section-head">
+												<span class="bm-gs__section-icon fas fa-key"></span>
+												<span class="bm-gs__section-head-label"><?php esc_html_e('Mage-People License', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+											</div>
+											<div class="bm-gs__info-note">
+												<p><?php esc_html_e('Some plugins are free and require no license. Additional addons require a valid license key entered below to unlock their features.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+											</div>
+											<div class="bm-gs__table-wrap">
+												<table class="bm-gs__lic-table">
+													<thead><tr>
+														<th colspan="4"><?php esc_html_e('Plugin', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th><?php esc_html_e('Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th><?php esc_html_e('Order No', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th colspan="2"><?php esc_html_e('Expires', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th colspan="3"><?php esc_html_e('License Key', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th><?php esc_html_e('Status', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+														<th colspan="2"><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+													</tr></thead>
+													<tbody>
+														<?php do_action('wbtm_license_page_plugin_list'); ?>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									<?php elseif (isset($sections[$section_id]) && isset($fields[$section_id])): ?>
+										<form method="post" action="options.php">
+											<?php 
+												settings_fields($section_id);
+												$this->render_section_cards($section_id, $fields[$section_id]);
+											?>
+											<div style="display:none;"><?php submit_button(); ?></div>
+										</form>
+									<?php endif; ?>
+								</div>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					</div>
+				</div>
 				<?php
+			}
+
+			private function get_tab_configs() {
+				$label = WBTM_Functions::get_name();
+				return [
+					'bus' => [
+						'title'      => $label . ' ' . esc_html__('Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-bus',
+						'subtitle'   => esc_html__('General booking behavior', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_general_settings',
+					],
+					'global' => [
+						'title'      => esc_html__('General', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-sliders-h',
+						'subtitle'   => esc_html__('Date & editor settings', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_global_settings',
+					],
+					'deposit' => [
+						'title'      => esc_html__('Deposit / Partial Pay', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-wallet',
+						'subtitle'   => esc_html__('Partial payment configuration', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_deposit_settings',
+					],
+					'pdf' => [
+						'title'      => esc_html__('PDF Settings', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-file-pdf',
+						'subtitle'   => esc_html__('Ticket PDF customization', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_pdf_settings',
+					],
+					'pdflist' => [
+						'title'      => esc_html__('PDF Passenger List', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-list-check',
+						'subtitle'   => esc_html__('Column visibility for PDF export', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_passenger_pdf_settings',
+					],
+					'csv' => [
+						'title'      => esc_html__('CSV Settings', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-file-csv',
+						'subtitle'   => esc_html__('Column visibility for CSV export', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_passenger_csv_settings',
+					],
+					'email' => [
+						'title'      => esc_html__('Email Settings', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-envelope',
+						'subtitle'   => esc_html__('Ticket & notification emails', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_email_settings',
+					],
+					'chatbot' => [
+						'title'      => esc_html__('AI Chatbot', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-robot',
+						'subtitle'   => esc_html__('Chatbot configuration', 'addon-bus--ticket-booking-with-seat-pro'),
+						'section_id' => 'wbtm_ai_chatbot_settings',
+					],
+					'slider' => [
+						'title'      => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-images',
+						'subtitle'   => esc_html__('Search slider display', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_slider_settings',
+					],
+					'style' => [
+						'title'      => esc_html__('Style Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-palette',
+						'subtitle'   => esc_html__('Colors & typography', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_style_settings',
+					],
+					'license' => [
+						'title'      => esc_html__('License', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-key',
+						'subtitle'   => esc_html__('Plugin license keys', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_license_settings',
+					],
+				];
+			}
+
+			private function get_card_groups($section_id) {
+				$groups = [
+					'wbtm_general_settings' => [
+						'booking' => [
+							'icon'     => 'fas fa-calendar-check',
+							'label'    => esc_html__('Booking behavior', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['set_book_status', 'label', 'slug', 'icon', 'bus_buffer_time'],
+						],
+						'search' => [
+							'icon'     => 'fas fa-search',
+							'label'    => esc_html__('Search & display', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['bus_return_show', 'ticket_sale_close_date', 'ticket_sale_max_date', 'show_hide_view_seats_button', 'show_hide_bus_details_tabs', 'next_date_showing_search', 'calendar_soldout_highlight', 'bus_search_list_direction_icon'],
+						],
+						'checkout' => [
+							'icon'     => 'fas fa-shopping-cart',
+							'label'    => esc_html__('Checkout & cart', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['active_redirect_page', 'search_page_redirect', 'checkout_redirect_after_booking', 'cart_empty_after_search', 'auto_complete_paid_orders', 'make_processing_completed'],
+						],
+					],
+					'wbtm_global_settings' => [
+						'general' => [
+							'icon'     => 'fas fa-calendar',
+							'label'    => esc_html__('Date & editor', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['disable_block_editor', 'date_format', 'date_format_short'],
+						],
+					],
+					'wbtm_style_settings' => [
+						'colors' => [
+							'icon'     => 'fas fa-palette',
+							'label'    => esc_html__('Colors', 'bus-ticket-booking-with-seat-reservation'),
+							'layout'   => 'compact',
+							'field_names' => ['theme_color', 'theme_alternate_color', 'default_text_color', 'button_color', 'button_bg', 'warning_color', 'section_bg'],
+						],
+						'typography' => [
+							'icon'     => 'fas fa-text-height',
+							'label'    => esc_html__('Typography (px)', 'bus-ticket-booking-with-seat-reservation'),
+							'layout'   => 'compact',
+							'field_names' => ['default_font_size', 'font_size_h1', 'font_size_h2', 'font_size_h3', 'font_size_h4', 'font_size_h5', 'font_size_h6', 'button_font_size', 'font_size_label'],
+						],
+					],
+					'wbtm_passenger_pdf_settings' => [
+						'checklist' => [
+							'icon'   => 'fas fa-list-check',
+							'label'  => esc_html__('PDF passenger list – column visibility', 'addon-bus--ticket-booking-with-seat-pro'),
+							'layout' => 'checklist',
+							'field_names' => [], // auto: all fields go into checklist grid
+						],
+					],
+					'wbtm_passenger_csv_settings' => [
+						'checklist' => [
+							'icon'   => 'fas fa-file-csv',
+							'label'  => esc_html__('CSV export – column visibility', 'addon-bus--ticket-booking-with-seat-pro'),
+							'layout' => 'checklist',
+							'field_names' => [],
+						],
+					],
+				];
+				return isset($groups[$section_id]) ? $groups[$section_id] : [];
+			}
+
+			private function render_section_cards($section_id, $fields) {
+				if (empty($fields)) return;
+
+				$card_groups = $this->get_card_groups($section_id);
+				$assigned    = [];
+
+				if (!empty($card_groups)) {
+					// Render fields in their defined card groups
+					foreach ($card_groups as $card_key => $card) {
+						$is_checklist = (isset($card['layout']) && $card['layout'] === 'checklist');
+
+						if ($is_checklist) {
+							// Checklist layout: all remaining/unassigned checkbox fields in a grid
+							$checklist_fields = [];
+							foreach ($fields as $field) {
+								$fname = isset($field['name']) ? $field['name'] : '';
+								$checklist_fields[] = $field;
+								if ($fname) $assigned[] = $fname;
+							}
+							if (empty($checklist_fields)) continue;
+							?>
+							<div class="bm-gs__section-card">
+								<div class="bm-gs__section-head">
+									<span class="bm-gs__section-icon <?php echo esc_attr($card['icon']); ?>"></span>
+									<span class="bm-gs__section-head-label"><?php echo esc_html($card['label']); ?></span>
+								</div>
+								<div class="bm-gs__checklist-grid">
+									<?php foreach ($checklist_fields as $field): 
+										$this->render_checklist_item($section_id, $field);
+									endforeach; ?>
+								</div>
+							</div>
+							<?php
+							continue;
+						}
+
+						$is_compact = (isset($card['layout']) && $card['layout'] === 'compact');
+
+						$card_fields = [];
+						foreach ($card['field_names'] as $fname) {
+							foreach ($fields as $field) {
+								if (isset($field['name']) && $field['name'] === $fname) {
+									$card_fields[] = $field;
+									$assigned[]    = $fname;
+									break;
+								}
+							}
+						}
+						if (empty($card_fields)) continue;
+						?>
+						<div class="bm-gs__section-card">
+							<div class="bm-gs__section-head">
+								<span class="bm-gs__section-icon <?php echo esc_attr($card['icon']); ?>"></span>
+								<span class="bm-gs__section-head-label"><?php echo esc_html($card['label']); ?></span>
+							</div>
+							<?php if ($is_compact): ?>
+								<div class="bm-gs__compact-grid">
+									<?php foreach ($card_fields as $field): 
+										$this->render_compact_item($section_id, $field);
+									endforeach; ?>
+								</div>
+							<?php else: ?>
+								<?php foreach ($card_fields as $field): 
+									$this->render_field_row($section_id, $field);
+								endforeach; ?>
+							<?php endif; ?>
+						</div>
+						<?php
+					}
+				}
+
+				// Render any remaining unassigned fields in their own card(s)
+				$remaining = [];
+				foreach ($fields as $field) {
+					$fname = isset($field['name']) ? $field['name'] : '';
+					if ($fname && !in_array($fname, $assigned, true)) {
+						$remaining[] = $field;
+					} elseif (!$fname) {
+						$remaining[] = $field;
+					}
+				}
+				if (!empty($remaining)) {
+					// Determine card label from section title
+					$sections = $this->settings_api->get_sections();
+					$card_label = '';
+					if (is_array($sections)) {
+						foreach ($sections as $sec) {
+							if (isset($sec['id']) && $sec['id'] === $section_id) {
+								$card_label = isset($sec['title']) ? $sec['title'] : '';
+								break;
+							}
+						}
+					}
+					?>
+					<div class="bm-gs__section-card">
+						<?php if ($card_label): ?>
+						<div class="bm-gs__section-head">
+							<span class="bm-gs__section-icon fas fa-sliders-h"></span>
+							<span class="bm-gs__section-head-label"><?php echo esc_html($card_label); ?></span>
+						</div>
+						<?php endif; ?>
+						<?php foreach ($remaining as $field): 
+							$this->render_field_row($section_id, $field);
+						endforeach; ?>
+					</div>
+					<?php
+				}
+			}
+
+			private function render_field_row($section_id, $field) {
+				$label = isset($field['label']) ? $field['label'] : '';
+				$desc  = isset($field['desc']) ? $field['desc'] : '';
+				$type  = isset($field['type']) ? $field['type'] : 'text';
+				$name  = isset($field['name']) ? $field['name'] : '';
+				$options = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : '');
+				$row_class = 'wbtm-field-' . esc_attr($name);
+
+				// Mark provider-specific rows for AI Chatbot toggle
+				$is_ai_provider_row = false;
+				if ($section_id === 'wbtm_ai_chatbot_settings' && !in_array($name, ['chatbot_enabled','ai_provider','chatbot_name','welcome_message','primary_color','chatbot_position','show_on_pages'], true)) {
+					$is_ai_provider_row = true;
+					$row_class .= ' wbtm-ai-provider-row';
+				}
+
+				if ($type === 'html') {
+					echo wp_kses_post(isset($field['html']) ? $field['html'] : '');
+					return;
+				}
+				?>
+				<div class="bm-gs__field-row <?php echo $row_class; ?>">
+					<div class="bm-gs__field-label-cell">
+						<?php if ($label): ?>
+							<div class="bm-gs__field-label"><?php echo esc_html($label); ?></div>
+						<?php endif; ?>
+						<?php if ($desc): ?>
+							<div class="bm-gs__field-hint"><?php echo wp_kses_post($desc); ?></div>
+						<?php endif; ?>
+					</div>
+					<div class="bm-gs__field-control-cell">
+						<?php $this->render_form_control($section_id, $field, $options); ?>
+					</div>
+				</div>
+				<?php
+			}
+
+			private function render_compact_item($section_id, $field) {
+				$label   = isset($field['label']) ? $field['label'] : '';
+				$name    = isset($field['name']) ? $field['name'] : '';
+				$type    = isset($field['type']) ? $field['type'] : 'text';
+				$value   = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : '');
+				$id      = $section_id . '[' . $name . ']';
+				$id_attr = esc_attr($id);
+				?>
+				<div class="bm-gs__compact-item">
+					<label class="bm-gs__compact-label"><?php echo esc_html($label); ?></label>
+					<?php if ($type === 'color'): ?>
+						<input type="text" class="bm-gs__color-field wbtm-color-field" name="<?php echo $id_attr; ?>" value="<?php echo esc_attr($value); ?>" data-default-color="<?php echo esc_attr(isset($field['default']) ? $field['default'] : ''); ?>" style="width:100%;max-width:100%;box-sizing:border-box;">
+					<?php elseif ($type === 'number'): ?>
+						<input class="bm-gs__input bm-gs__input--sm" type="number" name="<?php echo $id_attr; ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;max-width:100%;">
+					<?php else: ?>
+						<input class="bm-gs__input" type="text" name="<?php echo $id_attr; ?>" value="<?php echo esc_attr($value); ?>">
+					<?php endif; ?>
+				</div>
+				<?php
+			}
+
+			private function render_checklist_item($section_id, $field) {
+				$label = isset($field['label']) ? $field['label'] : '';
+				$name  = isset($field['name']) ? $field['name'] : '';
+				$value = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : '');
+				$id    = $section_id . '[' . $name . ']';
+				$checked = ($value === 'yes' || $value === '1' || $value === 'on') ? ' checked' : '';
+				?>
+				<label class="bm-gs__checklist-item">
+					<input type="checkbox" name="<?php echo esc_attr($id); ?>" value="yes"<?php echo $checked; ?>>
+					<span><?php echo esc_html($label); ?></span>
+				</label>
+				<?php
+			}
+
+			private function render_form_control($section_id, $field, $value) {
+				$type  = isset($field['type']) ? $field['type'] : 'text';
+				$name  = isset($field['name']) ? $field['name'] : '';
+				$id    = $section_id . '[' . $name . ']';
+				$id_attr = esc_attr($id);
+				$class = isset($field['class']) ? $field['class'] : '';
+				$placeholder = isset($field['placeholder']) ? $field['placeholder'] : '';
+
+				switch ($type) {
+					case 'multicheck':
+						$field_options = isset($field['options']) ? $field['options'] : [];
+						$value = is_array($value) ? $value : (array) $value;
+						echo '<div class="bm-gs__checkbox-group">';
+						foreach ($field_options as $opt_key => $opt_label) {
+							$checked = in_array($opt_key, $value) ? ' checked' : '';
+							echo '<label class="bm-gs__checkbox-item">';
+							echo '<input type="checkbox" name="' . esc_attr($id) . '[]" value="' . esc_attr($opt_key) . '"' . $checked . '>';
+							echo esc_html($opt_label) . '</label>';
+						}
+						echo '</div>';
+						break;
+
+					case 'select':
+					case 'pages':
+					case 'wbtm_select2':
+					case 'wbtm_select2_role':
+						$field_options = isset($field['options']) ? $field['options'] : [];
+						if ($type === 'pages') {
+							$field_options = [];
+							$pages = get_pages();
+							foreach ($pages as $page) {
+								$field_options[$page->ID] = $page->post_title;
+							}
+						}
+						echo '<select class="bm-gs__select ' . esc_attr($class) . '" name="' . $id_attr . '">';
+						foreach ($field_options as $opt_key => $opt_label) {
+							$selected = ((string) $opt_key === (string) $value) ? ' selected' : '';
+							echo '<option value="' . esc_attr($opt_key) . '"' . $selected . '>' . esc_html($opt_label) . '</option>';
+						}
+						echo '</select>';
+						break;
+
+					case 'text':
+					case 'url':
+					case 'password':
+					case 'email':
+						$input_type = ($type === 'password') ? 'password' : (($type === 'email') ? 'email' : (($type === 'url') ? 'url' : 'text'));
+						echo '<input class="bm-gs__input ' . esc_attr($class) . '" type="' . esc_attr($input_type) . '" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '">';
+						break;
+
+					case 'number':
+						echo '<input class="bm-gs__input bm-gs__input--sm ' . esc_attr($class) . '" type="number" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '">';
+						break;
+
+					case 'textarea':
+						echo '<textarea class="bm-gs__textarea ' . esc_attr($class) . '" name="' . $id_attr . '" placeholder="' . esc_attr($placeholder) . '" rows="4">' . esc_textarea($value) . '</textarea>';
+						break;
+
+					case 'color':
+						// Standard WP color picker on a single text input. wpColorPicker()
+						// builds its own swatch + "Select Color" control on init, so we must
+						// NOT also render a custom trigger button (that produced a duplicate picker).
+						$default_color = isset($field['default']) ? $field['default'] : '';
+						echo '<input type="text" class="bm-gs__color-field wbtm-color-field" name="' . $id_attr . '" value="' . esc_attr($value) . '" data-default-color="' . esc_attr($default_color) . '">';
+						break;
+
+					case 'file':
+						$file_url = is_string($value) ? $value : (is_array($value) && isset($value['url']) ? $value['url'] : '');
+						$file_id  = is_array($value) && isset($value['id']) ? $value['id'] : '';
+						echo '<button type="button" class="bm-gs__img-btn wbtm-file-upload-trigger" data-target="' . $id_attr . '">';
+						echo '<span class="fas fa-upload"></span> ';
+						$file_url ? esc_html_e('Change File', 'bus-ticket-booking-with-seat-reservation') : esc_html_e('Choose File', 'bus-ticket-booking-with-seat-reservation');
+						echo '</button>';
+						echo '<input type="hidden" class="wbtm-file-url" name="' . $id_attr . '" value="' . esc_attr($file_url) . '">';
+						if ($file_url) {
+							echo '<span class="bm-gs__badge bm-gs__badge--active" style="margin-left:8px;">' . esc_html(basename($file_url)) . '</span>';
+						}
+						break;
+
+					case 'wysiwyg':
+						echo '<div class="bm-gs__wysiwyg">';
+						wp_editor($value, str_replace(['[',']'], ['_',''], $id), [
+							'textarea_name' => $id,
+							'textarea_rows' => 6,
+							'media_buttons' => false,
+							'teeny' => true,
+						]);
+						echo '</div>';
+						break;
+
+					case 'datepicker':
+						echo '<input class="bm-gs__input wbtm-datepicker ' . esc_attr($class) . '" type="text" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" autocomplete="off">';
+						break;
+
+					case 'checkbox':
+						$checked = ($value == 'on' || $value == '1') ? ' checked' : '';
+						echo '<label class="bm-gs__checkbox-item">';
+						echo '<input type="checkbox" name="' . $id_attr . '" value="1"' . $checked . '>';
+						echo esc_html(isset($field['checkbox_label']) ? $field['checkbox_label'] : '');
+						echo '</label>';
+						break;
+
+					case 'radio':
+						$field_options = isset($field['options']) ? $field['options'] : [];
+						echo '<div class="bm-gs__checkbox-group">';
+						foreach ($field_options as $opt_key => $opt_label) {
+							$checked = ((string) $opt_key === (string) $value) ? ' checked' : '';
+							echo '<label class="bm-gs__checkbox-item">';
+							echo '<input type="radio" name="' . $id_attr . '" value="' . esc_attr($opt_key) . '"' . $checked . '>';
+							echo esc_html($opt_label) . '</label>';
+						}
+						echo '</div>';
+						break;
+
+					case 'switch_button':
+						$checked = ($value == 'on' || $value == '1' || $value == 'yes') ? ' checked' : '';
+						echo '<label class="bm-gs__checkbox-item">';
+						echo '<input type="checkbox" name="' . $id_attr . '" value="1"' . $checked . '>';
+						echo '</label>';
+						break;
+
+					case 'icon':
+						// Wrap in .wbtm_style so the icon-picker popup & button CSS applies.
+						// WBTM_Select_Icon_image outputs classes (_mpBtn_xs, dNone, fdColumn etc.)
+						// that are scoped under .wbtm_style in wbtm_plugin_global.css.
+						echo '<div class="wbtm_style" style="display:inline-block;">';
+						if ( has_action( 'wbtm_input_add_icon' ) ) {
+							do_action( 'wbtm_input_add_icon', $id, $value );
+						} else {
+							echo '<input class="bm-gs__input bm-gs__input--sm" type="text" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="fas fa-bus">';
+						}
+						echo '</div>';
+						break;
+
+					case 'icon_image':
+						// Wrap in .wbtm_style so old CSS classes apply
+						echo '<div class="wbtm_style" style="display:inline-block;">';
+						if ( has_action( 'wbtm_add_icon_image' ) ) {
+							$icon  = '';
+							$image = '';
+							if ( $value && is_numeric( $value ) ) {
+								$image = $value;
+							} elseif ( $value ) {
+								$icon = $value;
+							}
+							do_action( 'wbtm_add_icon_image', $id, $icon, $image );
+						} else {
+							echo '<input class="bm-gs__input" type="text" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="fas fa-bus or image URL">';
+						}
+						echo '</div>';
+						break;
+
+					default:
+						echo '<input class="bm-gs__input ' . esc_attr($class) . '" type="text" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '">';
+						break;
+				}
 			}
 			public function wbtm_term_and_condition() {
 				?>
@@ -168,8 +926,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						array(
 							'name'    => 'icon',
 							'label'   => $label . ' ' . esc_html__( 'Icon', 'bus-ticket-booking-with-seat-reservation' ),
-							'desc'    => esc_html__( 'If you want to change the icon in the dashboard menu, you can change it from here. Select a FontAwesome icon or enter a Dashicons class. Go to ', 'bus-ticket-booking-with-seat-reservation' ) . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__( 'Dashicons Library', 'bus-ticket-booking-with-seat-reservation' ) . '</a>' . esc_html__( ' and copy your icon code and paste it here.', 'bus-ticket-booking-with-seat-reservation' ),
-							'type'    => 'icon',
+							'desc'    => esc_html__( 'Choose a FontAwesome/Dashicons icon or upload an image to use as the dashboard menu icon. Go to ', 'bus-ticket-booking-with-seat-reservation' ) . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__( 'Dashicons Library', 'bus-ticket-booking-with-seat-reservation' ) . '</a>' . esc_html__( ' to copy an icon code.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'icon_image',
 							'default' => 'fas fa-bus'
 						),
 						array(

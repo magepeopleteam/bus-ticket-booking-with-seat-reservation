@@ -1,0 +1,812 @@
+/* ============================================================
+   BUS MANAGER GLOBAL SETTINGS UI
+   All classes prefixed with .bm-gs__ to prevent conflicts
+   with WordPress, WooCommerce, or any theme CSS.
+   ============================================================ */
+
+.bm-gs__root, .bm-gs__root * { box-sizing: border-box; }
+.bm-gs__root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  color: #1e293b;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── LAYOUT ──
+   Single, natural page scroll (the WordPress admin body). The sidebar and
+   topbar are made sticky below the admin bar so they stay in view, instead of
+   nesting an inner scroll inside a fixed-height wrap (which produced a second
+   scrollbar on top of the admin page scroll). */
+.bm-gs__wrap {
+  display: flex;
+  min-height: calc(100vh - 32px);
+  position: relative;
+  margin: 0;
+  background: #fff;
+}
+
+/* ── MOBILE OVERLAY ── */
+.bm-gs__overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99998;
+}
+.bm-gs__overlay.bm-gs--open { display: block; }
+
+/* ── SIDEBAR ── */
+.bm-gs__sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+  z-index: 99999;
+  position: sticky;
+  top: 32px;
+  align-self: flex-start;
+  height: calc(100vh - 32px);
+}
+.bm-gs__sb-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.bm-gs__sb-plugin-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 5px;
+}
+.bm-gs__sb-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bm-gs__sb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6366f1;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.bm-gs__sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+.bm-gs__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: inherit;
+  transition: background .12s, color .12s;
+  margin-bottom: 1px;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.bm-gs__nav-item:hover { background: #f8fafc; color: #334155; }
+.bm-gs__nav-item.bm-gs--active { background: #eef2ff; color: #4f46e5; font-weight: 500; }
+.bm-gs__nav-item .bm-gs__nav-icon { font-size: 15px; flex-shrink: 0; color: #94a3b8; width: 20px; text-align: center; }
+.bm-gs__nav-item.bm-gs--active .bm-gs__nav-icon { color: #6366f1; }
+.bm-gs__sb-footer {
+  padding: 10px 8px;
+  border-top: 1px solid #f1f5f9;
+}
+.bm-gs__lic-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #bbf7d0;
+}
+.bm-gs__lic-badge.bm-gs--pro {
+  background: #f5f3ff;
+  border-color: #c7d2fe;
+}
+.bm-gs__lic-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  flex-shrink: 0;
+}
+.bm-gs__lic-badge.bm-gs--pro .bm-gs__lic-dot { background: #6366f1; }
+.bm-gs__lic-text { font-size: 11px; color: #059669; font-weight: 500; }
+.bm-gs__lic-badge.bm-gs--pro .bm-gs__lic-text { color: #4f46e5; }
+
+/* ── MAIN ── */
+.bm-gs__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #f1f5f9;
+  border-left: 1px solid #e2e8f0;
+}
+
+/* ── TOPBAR ── */
+.bm-gs__topbar {
+  height: 54px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 8px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 32px;
+  z-index: 30;
+}
+.bm-gs__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: none;
+  cursor: pointer;
+  color: #64748b;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.bm-gs__topbar-title { font-size: 15px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bm-gs__topbar-sep { color: #cbd5e1; font-size: 14px; flex-shrink: 0; }
+.bm-gs__topbar-sub { font-size: 13px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.bm-gs__save-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.bm-gs__save-btn:hover { background: #4f46e5; }
+
+/* ── CONTENT ── */
+.bm-gs__content { flex: 1; padding: 20px; }
+.bm-gs__tab-panel { display: none; }
+.bm-gs__tab-panel.bm-gs--active { display: block; }
+
+/* ── SECTION CARDS ── */
+.bm-gs__section-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.bm-gs__section-head {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bm-gs__section-head .bm-gs__section-icon { font-size: 15px; color: #6366f1; }
+.bm-gs__section-head-label { font-size: 16px; font-weight: 600; color: #334155; }
+
+/* ── FIELD ROWS ── */
+.bm-gs__field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  border-bottom: 1px solid #f8fafc;
+}
+.bm-gs__field-row:last-child { border-bottom: none; }
+.bm-gs__field-label-cell { padding: 12px 18px; background: #fafafa; }
+.bm-gs__field-label { font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 2px; }
+.bm-gs__field-hint { font-size: 11px; color: #94a3b8; line-height: 1.5; margin-top: 2px; }
+.bm-gs__field-control-cell { padding: 10px 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+/* ── FORM CONTROLS ── */
+.bm-gs__select,
+.bm-gs__input {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #1e293b;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  min-height: 38px;
+  line-height: 1.4;
+}
+.bm-gs__select:focus,
+.bm-gs__input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+}
+.bm-gs__input--sm { width: 100px; min-width: 100px; max-width: 140px; }
+.bm-gs__textarea {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #1e293b;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.bm-gs__textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+}
+
+/* ── CHECKBOXES ── */
+.bm-gs__checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; }
+.bm-gs__checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; }
+.bm-gs__checkbox-item input[type="checkbox"] { accent-color: #6366f1; width: 14px; height: 14px; cursor: pointer; margin: 0; }
+
+/* ── BUTTONS ── */
+.bm-gs__color-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #64748b;
+  font-family: inherit;
+  transition: border-color .12s, color .12s;
+}
+.bm-gs__color-btn:hover { border-color: #c7d2fe; color: #4f46e5; }
+.bm-gs__color-swatch { width: 20px; height: 20px; border-radius: 4px; border: 1px solid #e2e8f0; flex-shrink: 0; }
+.bm-gs__img-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .12s;
+}
+.bm-gs__img-btn:hover { background: #e0e7ff; }
+
+/* ── BADGES ── */
+.bm-gs__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.bm-gs__badge--active   { background: #dcfce7; color: #166534; }
+.bm-gs__badge--inactive { background: #fee2e2; color: #991b1b; }
+.bm-gs__badge--free     { background: #f0f9ff; color: #075985; }
+.bm-gs__badge--pro      { background: #f5f3ff; color: #5b21b6; }
+
+/* ── LICENSE TABLE ── */
+.bm-gs__table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.bm-gs__lic-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+.bm-gs__lic-table th {
+  background: #f8fafc;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+.bm-gs__lic-table td { padding: 12px 14px; border-bottom: 1px solid #f8fafc; color: #334155; vertical-align: middle; }
+.bm-gs__lic-table tr:last-child td { border-bottom: none; }
+.bm-gs__lic-key-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  width: 140px;
+  color: #1e293b;
+  background: #fff;
+  font-family: inherit;
+  outline: none;
+}
+.bm-gs__lic-key-input:focus { border-color: #6366f1; }
+.bm-gs__act-btn {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background .12s;
+}
+.bm-gs__act-btn:hover { background: #059669; }
+
+/* Override old license table styles to match new design */
+.bm-gs__lic-table input[type="text"],
+.bm-gs__lic-table input[type="password"] {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  width: 140px !important;
+  min-height: 34px !important;
+  color: #1e293b !important;
+  background: #fff !important;
+  font-family: inherit !important;
+  outline: none !important;
+  box-shadow: none !important;
+  line-height: 1.4 !important;
+  transition: border-color .15s, box-shadow .15s;
+}
+.bm-gs__lic-table input[type="text"]:focus,
+.bm-gs__lic-table input[type="password"]:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1) !important;
+}
+.bm-gs__lic-table button,
+.bm-gs__lic-table .button {
+  background: #10b981 !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 7px 14px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  white-space: nowrap !important;
+  min-height: auto !important;
+  line-height: 1.4 !important;
+  transition: background .12s !important;
+}
+.bm-gs__lic-table button:hover,
+.bm-gs__lic-table .button:hover {
+  background: #059669 !important;
+  color: #fff !important;
+}
+
+/* ── WYSIWYG ── */
+.bm-gs__wysiwyg { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; width: 100%; max-width: 600px; }
+.bm-gs__wysiwyg .wp-editor-container { border: none !important; border-radius: 0 !important; }
+.bm-gs__wysiwyg .wp-editor-tabs { border-bottom: 1px solid #f1f5f9; }
+.bm-gs__wysiwyg .quicktags-toolbar { background: #f8fafc; border-bottom: 1px solid #f1f5f9; padding: 4px 6px; }
+.bm-gs__wysiwyg .wp-editor-area { border: none !important; border-radius: 0 !important; }
+
+/* ── INFO NOTE ── */
+.bm-gs__info-note { padding: 12px 18px; background: #eff6ff; border-bottom: 1px solid #dbeafe; }
+.bm-gs__info-note p { font-size: 12px; color: #3b82f6; line-height: 1.6; margin: 0; }
+
+/* ── PLUGIN LABEL BADGE (free/pro indicator in sidebar) ── */
+.bm-gs__plugin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+.bm-gs__plugin-badge--free { background: #f0f9ff; color: #075985; }
+.bm-gs__plugin-badge--pro  { background: #f5f3ff; color: #5b21b6; }
+
+/* ── WORDPRESS NOTICE HIDE INSIDE SETTINGS ── */
+.bm-gs__root .notice,
+.bm-gs__root .update-nag,
+.bm-gs__root .updated { display: none !important; }
+
+/* ── AI CHATBOT PROVIDER TOGGLE ── */
+.wbtm-ai-provider-row { transition: opacity 0.2s ease; }
+.wbtm-ai-provider-row.wbtm-hidden { display: none !important; }
+.bm-gs__field-row.wbtm-hidden { display: none !important; }
+
+
+/* ── COMPACT GRID (Style Settings — Colors & Typography) ──
+   Modern card-grid: each setting is a small rounded chip with a tight,
+   inline control. The default WP colour picker is slimmed down to a swatch
+   chip + hex field + compact reset, instead of the bulky stacked buttons. */
+.bm-gs__compact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 16px 18px;
+}
+.bm-gs__compact-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+.bm-gs__compact-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #1e1e1e;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+/* Typography number inputs — compact, fill the chip */
+.bm-gs__compact-item .bm-gs__input {
+  width: 100%;
+  max-width: 100%;
+  min-height: 34px;
+}
+
+/* Colour picker → compact inline swatch + hex (+ small reset) */
+.bm-gs__compact-item .wp-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.bm-gs__compact-item .wp-picker-container .wp-color-result.button {
+  margin: 0;
+  width: 40px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+.bm-gs__compact-item .wp-color-result .wp-color-result-text { display: none; }
+.bm-gs__compact-item .wp-picker-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.bm-gs__compact-item .wp-picker-input-wrap input[type="text"] {
+  width: 86px !important;
+  height: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+.bm-gs__compact-item .wp-picker-default,
+.bm-gs__compact-item .wp-picker-clear {
+  height: 34px;
+  min-height: 34px;
+  line-height: 1;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+/* Iris panel spans the chip width when opened */
+.bm-gs__compact-item .wp-picker-holder { flex: 0 0 100%; }
+
+@media (max-width: 1100px) {
+  .bm-gs__compact-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .bm-gs__compact-grid { grid-template-columns: 1fr; }
+}
+
+/* ── CHECKLIST GRID (PDF / CSV columns) ── */
+.bm-gs__checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 0;
+}
+.bm-gs__checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: #334155;
+  cursor: pointer;
+  border-bottom: 1px solid #f8fafc;
+}
+.bm-gs__checklist-item:hover { background: #fafafa; }
+.bm-gs__checklist-item input[type="checkbox"] {
+  accent-color: #6366f1;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .bm-gs__checklist-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .bm-gs__checklist-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+/* ══════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .bm-gs__topbar-sub { display: none; }
+  .bm-gs__topbar-sep { display: none; }
+}
+
+@media (max-width: 782px) {
+  .bm-gs__sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  .bm-gs__sidebar.bm-gs--open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  }
+  .bm-gs__menu-btn { display: flex; }
+  .bm-gs__content { padding: 14px; }
+  .bm-gs__field-row { grid-template-columns: 1fr; }
+  .bm-gs__field-label-cell { padding: 12px 14px 6px; background: #fafafa; border-bottom: none; }
+  .bm-gs__field-control-cell { padding: 8px 14px 12px; background: #fff; }
+  .bm-gs__save-btn .bm-gs__save-text { display: none; }
+  /* On mobile the sidebar is an off-canvas drawer and the admin bar is 46px and
+     scrolls, so drop the sticky topbar + full-height divider here. */
+  .bm-gs__main { border-left: none; }
+  .bm-gs__topbar { padding: 0 14px; gap: 8px; position: static; }
+  .bm-gs__section-head { padding: 10px 14px; }
+  .bm-gs__section-head-label { font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .bm-gs__wrap { min-height: 100vh; overflow: visible; }
+  .bm-gs__main { height: auto; overflow: visible; }
+  .bm-gs__content { overflow: visible; height: auto; }
+  .bm-gs__topbar-title { font-size: 13px; }
+  .bm-gs__save-btn { padding: 8px 12px; }
+  .bm-gs__input--sm { width: 80px; }
+  .bm-gs__checkbox-group { gap: 8px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WORDPRESS ADMIN OVERRIDES
+   This UI renders inside <body class="wp-admin wp-core-ui">, where
+   wp-admin/css/forms.css styles every native control. In particular
+   `.wp-core-ui select` (specificity 0,1,1) out-ranks `.bm-gs__select`
+   (0,1,0) and repaints our dropdowns with WP's grey border, 2px radius,
+   40px height and its own arrow — so the right-hand controls stop
+   matching the design. Re-scoping each rule under `.bm-gs__root` raises
+   specificity to (0,2,0)+, so the intended styling wins. Text colours
+   are pinned for the same reason (links inherit the admin blue).
+   ══════════════════════════════════════════════════════════════ */
+
+/* Dropdowns: re-assert the design over `.wp-core-ui select` */
+.bm-gs__root .bm-gs__select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 400px;
+  min-height: 38px;
+  height: auto;
+  line-height: 1.4;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #1e293b;
+  padding: 8px 32px 8px 10px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  box-shadow: none;
+  cursor: pointer;
+}
+.bm-gs__root .bm-gs__select:hover { border-color: #cbd5e1; color: #1e293b; }
+.bm-gs__root .bm-gs__select:focus {
+  border-color: #6366f1;
+  color: #1e293b;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+  outline: none;
+}
+
+/* Text inputs / textarea: keep border, radius and height consistent with
+   the dropdowns and immune to the active admin colour scheme */
+.bm-gs__root .bm-gs__input,
+.bm-gs__root .bm-gs__textarea {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #1e293b;
+  min-height: 38px;
+  box-shadow: none;
+}
+.bm-gs__root .bm-gs__textarea { min-height: 80px; }
+.bm-gs__root .bm-gs__input:focus,
+.bm-gs__root .bm-gs__textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+  outline: none;
+}
+
+/* Pin text colours so nothing inherits the admin colour scheme */
+.bm-gs__root .bm-gs__section-head-label,
+.bm-gs__root .bm-gs__field-label { color: #334155; }
+.bm-gs__root .bm-gs__field-hint { color: #000; }
+.bm-gs__root .bm-gs__field-hint a { color: #6366f1; text-decoration: none; }
+.bm-gs__root .bm-gs__field-hint a:hover { text-decoration: underline; }
+.bm-gs__root .bm-gs__checkbox-item { color: #475569; }
+
+/* ══════════════════════════════════════════════════════════════
+   ICON / IMAGE PICKER  (Bus Icon, Bus search list direction icon)
+   These controls come from WBTM_Select_Icon_image and are normally
+   styled inside a `.wbtm_style` wrapper. This redesigned screen has
+   no such wrapper, so the classic layout/`.dNone`/remove-button rules
+   never apply (giant 40px ×, preview + add-button shown together).
+   We restyle them here to match the modern design and — critically —
+   re-implement `.dNone` so the picker's show/hide state toggling
+   (handled by wbtm_admin_settings.js) keeps working.
+   The popup itself carries `.wbtm_style`, so it is left untouched.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Preview tile toggling (only the empty icon/image tile is hidden by `.dNone`).
+   We deliberately scope this to the tiles so the add-button row below is NOT
+   hidden when an icon/image is already selected. */
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_icon_item.dNone,
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_image_item.dNone { display: none !important; }
+
+/* Keep the "Icon" / "Image" buttons always reachable, even when an icon or
+   image is already set (the classic JS hides them via .dNone / slideUp, which
+   forced the user to remove the current icon before they could upload). */
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_add_icon_image_button_area {
+  display: block !important;
+  margin-top: 2px;
+}
+
+/* Container */
+.bm-gs__root .wbtm_add_icon_image_area {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border: none;
+  max-width: none;
+  background: none;
+  padding: 0;
+}
+
+/* Preview tile (icon or image) */
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_icon_item,
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_image_item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 30px;
+  color: #334155;
+  overflow: visible;
+}
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_icon_item .allCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_icon_item [data-add-icon] {
+  font-size: 30px;
+  line-height: 1;
+}
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_image_item img {
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+/* Remove (×) badge — small circle in the top-right corner of the tile */
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_remove_icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 1;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  transition: color .12s, border-color .12s, background .12s;
+}
+.bm-gs__root .wbtm_add_icon_image_area .wbtm_remove_icon:hover {
+  color: #fff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+/* "Icon" / "Image" add buttons — match the design's upload button */
+.bm-gs__root .wbtm_add_icon_image_button_area .flexEqual {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bm-gs__root .wbtm_add_icon_image_button_area button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.4;
+  min-height: 0;
+  cursor: pointer;
+  transition: background .12s;
+}
+.bm-gs__root .wbtm_add_icon_image_button_area button:hover { background: #e0e7ff; }
+.bm-gs__root .wbtm_add_icon_image_button_area button span { margin: 0; }
