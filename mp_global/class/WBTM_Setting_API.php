@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			protected $settings_sections = array();
 			protected $settings_fields = array();
 			public function __construct() { }
+			public function get_sections() { return $this->settings_sections; }
+			public function get_fields()   { return $this->settings_fields; }
 			function set_sections( $sections ) {
 				$this->settings_sections = $sections;
 				return $this;

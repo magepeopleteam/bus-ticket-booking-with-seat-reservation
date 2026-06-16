@@ -1482,22 +1482,282 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 			public static function get_icon() {
 				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'fas fa-bus' );
+				// Default bus icon as an SVG data URI. WP admin menus cannot render a
+				// FontAwesome class directly, so FA values fall back to this too.
+				$fallback = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>' );
 				if ( $icon ) {
-					// If it's a dashicons class, return as-is for WP menu
+					// Uploaded image (icon_image stores the attachment ID) → resolve to URL.
+					// If the attachment was deleted, use the default icon.
+					if ( is_numeric( $icon ) ) {
+						$url = wp_get_attachment_url( (int) $icon );
+						return $url ? $url : $fallback;
+					}
+					// Dashicons class → WP menus render it natively.
 					if ( strpos( $icon, 'dashicons' ) === 0 ) {
 						return $icon;
 					}
-					// If it's a FontAwesome class (fa, fas, far, fab), convert to SVG data URI for WP menu
+					// FontAwesome class → not renderable by WP menus, use the bus SVG.
 					if ( preg_match( '/^(fa[srlbdt]?)\s+fa-/', $icon ) ) {
-						$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>';
-						return 'data:image/svg+xml;base64,' . base64_encode( $svg );
+						return $fallback;
 					}
-					// Otherwise return as-is (could be a data URI or URL)
+					// Otherwise it's already a data URI or image URL → use as-is.
 					return $icon;
 				}
-				// Fallback SVG bus icon
-				$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>';
-				return 'data:image/svg+xml;base64,' . base64_encode( $svg );
+				return $fallback;
+			}
+
+			public static function output_dynamic_menu_icon_css() {
+				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', '' );
+				// Target all possible WP admin menu item IDs for this CPT
+				$item_ids = [
+					'#adminmenu #menu-posts-wbtm_bus .wp-menu-image',
+					'#adminmenu #toplevel_page_wbtm_bus .wp-menu-image',
+					'#adminmenu li.menu-top.wp-has-submenu.wp-menu-open .wp-menu-image',
+				];
+				$img_sel    = implode( ', ', array_map( function($s){ return $s . ' img'; }, $item_ids ) );
+				$before_sel = implode( ', ', $item_ids );
+
+				// ── FontAwesome class → render via :before + FA font ──
+				if ( $icon && preg_match( '/^(fa[srlbdt]?)\s+fa-(.+)$/', $icon, $m ) ) {
+					$style   = $m[1];
+					$unicode = self::fa_unicode( $m[2] );
+					if ( $unicode ) {
+						$weight = ( $style === 'fas' || $style === 'fa' ) ? 900 : 400;
+						echo '<style>'
+							. esc_html( $img_sel ) . ' { display: none !important; }'
+							. esc_html( $before_sel ) . ':before {'
+							. 'content: "\\' . esc_attr( $unicode ) . '" !important;'
+							. 'font-family: "Font Awesome 6 Free" !important;'
+							. 'font-weight: ' . esc_attr( (string) $weight ) . ' !important;'
+							. 'font-size: 20px !important;'
+							. 'padding-top: 4px !important;'
+							. '}'
+							. '</style>' . "\n";
+					}
+					return;
+				}
+
+				// ── Dashicons class ──
+				if ( $icon && strpos( $icon, 'dashicons' ) === 0 ) {
+					echo '<style>' . esc_html( $img_sel ) . ' { display: none !important; }'
+						. esc_html( $before_sel ) . '.dashicons-before:before {'
+						. 'content: "\\' . esc_attr( self::dashicon_unicode( $icon ) ) . '" !important;'
+						. 'font-family: dashicons !important; }'
+						. '</style>' . "\n";
+					return;
+				}
+
+				// ── Image URL / attachment ID / data URI ──
+				if ( $icon && ( filter_var( $icon, FILTER_VALIDATE_URL ) || strpos( $icon, 'data:image' ) === 0 || is_numeric( $icon ) ) ) {
+					if ( is_numeric( $icon ) ) {
+						$url = wp_get_attachment_url( (int) $icon );
+						if ( ! $url ) return;
+						$icon = $url;
+					}
+					echo '<style>'
+						. esc_html( $before_sel ) . '.dashicons-before:before { content: none !important; }'
+						. esc_html( $img_sel ) . ' { width: 20px !important; height: 20px !important; padding: 7px 0 0 !important; display: inline-block !important; }'
+						. '</style>' . "\n";
+					echo '<script>jQuery(function($){'
+						. 'var s=' . wp_json_encode( $img_sel ) . ';'
+						. '$(s).attr("src",' . wp_json_encode( $icon ) . ').show();'
+						. '});</script>' . "\n";
+					return;
+				}
+			}
+
+			private static function fa_unicode( $name ) {
+				// Frequently used Font Awesome icons — Unicode private-use area codes
+				$map = [
+					'bus' => 'f207', 'bus-simple' => 'f55e', 'bus-alt' => 'f55e',
+					'train' => 'f238', 'train-subway' => 'f239', 'train-tram' => 'f8b4',
+					'car' => 'f1b9', 'car-side' => 'f5e4', 'car-alt' => 'f5de',
+					'taxi' => 'f1ba', 'truck' => 'f0d1', 'truck-moving' => 'f4df',
+					'ship' => 'f21a', 'plane' => 'f072', 'plane-departure' => 'f5af',
+					'bicycle' => 'f206', 'motorcycle' => 'f21c', 'walking' => 'f554',
+					'shuttle-van' => 'f5b6', 'shuttle-space' => 'f197',
+					'ticket' => 'f145', 'ticket-alt' => 'f3ff', 'tickets' => 'e658',
+					'location-dot' => 'f3c5', 'map-marker-alt' => 'f3c5', 'map-marker' => 'f041',
+					'map-pin' => 'f276', 'map' => 'f279', 'location-arrow' => 'f124',
+					'route' => 'f4d7', 'road' => 'f018', 'signs-post' => 'f277',
+					'calendar' => 'f133', 'calendar-alt' => 'f073', 'calendar-days' => 'f073',
+					'calendar-check' => 'f274', 'calendar-plus' => 'f271', 'calendar-week' => 'f784',
+					'clock' => 'f017', 'clock-four' => 'f017', 'hourglass' => 'f254',
+					'user' => 'f007', 'users' => 'f0c0', 'user-check' => 'f4fc',
+					'user-plus' => 'f234', 'user-tie' => 'f508', 'address-card' => 'f2bb',
+					'id-card' => 'f2c2', 'id-badge' => 'f2c1', 'passport' => 'f5ab',
+					'credit-card' => 'f09d', 'credit-card-alt' => 'f283', 'money-bill' => 'f0d6',
+					'money-check' => 'f53c', 'dollar-sign' => 'f155', 'wallet' => 'f555',
+					'shopping-cart' => 'f07a', 'cart-shopping' => 'f07a', 'basket-shopping' => 'f291',
+					'store' => 'f54e', 'shop' => 'f54f', 'bag-shopping' => 'f290',
+					'gear' => 'f013', 'cog' => 'f013', 'gears' => 'f085', 'cogs' => 'f085',
+					'wrench' => 'f0ad', 'tools' => 'f7d9', 'screwdriver-wrench' => 'f7d9',
+					'sliders' => 'f1de', 'sliders-h' => 'f1de', 'toggle-on' => 'f205',
+					'check' => 'f00c', 'check-circle' => 'f058', 'check-square' => 'f14a',
+					'xmark' => 'f00d', 'times' => 'f00d', 'circle-xmark' => 'f057',
+					'exclamation' => 'f12a', 'exclamation-circle' => 'f06a', 'exclamation-triangle' => 'f071',
+					'triangle-exclamation' => 'f071', 'circle-exclamation' => 'f06a',
+					'info' => 'f129', 'info-circle' => 'f05a', 'circle-info' => 'f05a',
+					'question' => 'f128', 'question-circle' => 'f059', 'circle-question' => 'f059',
+					'plus' => '2b', 'plus-circle' => 'f055', 'minus' => 'f068', 'minus-circle' => 'f056',
+					'star' => 'f005', 'star-half' => 'f089', 'star-half-stroke' => 'f5c0',
+					'heart' => 'f004', 'thumbs-up' => 'f164', 'thumbs-down' => 'f165',
+					'home' => 'f015', 'house' => 'f015', 'building' => 'f1ad',
+					'globe' => 'f0ac', 'earth-americas' => 'f0ac', 'earth' => 'f57d',
+					'phone' => 'f095', 'phone-flip' => 'f879', 'envelope' => 'f0e0',
+					'at' => '40', 'hashtag' => '23', 'signal' => 'f012',
+					'wifi' => 'f1eb', 'bluetooth' => 'f293', 'bluetooth-b' => 'f294',
+					'battery-full' => 'f240', 'battery-three-quarters' => 'f241',
+					'battery-half' => 'f242', 'battery-quarter' => 'f243', 'battery-empty' => 'f244',
+					'plug' => 'f1e6', 'charging-station' => 'f5e7', 'gas-pump' => 'f52f',
+					'leaf' => 'f06c', 'tree' => 'f1bb', 'seedling' => 'f4d8',
+					'sun' => 'f185', 'moon' => 'f186', 'cloud' => 'f0c2', 'cloud-sun' => 'f6c4',
+					'snowflake' => 'f2dc', 'umbrella' => 'f0e9', 'bolt' => 'f0e7',
+					'fire' => 'f06d', 'shield' => 'f132', 'shield-halved' => 'f3ed',
+					'lock' => 'f023', 'unlock' => 'f09c', 'key' => 'f084',
+					'eye' => 'f06e', 'eye-slash' => 'f070', 'fingerprint' => 'f577',
+					'magnifying-glass' => 'f002', 'search' => 'f002', 'filter' => 'f0b0',
+					'bars' => 'f0c9', 'list' => 'f03a', 'table' => 'f0ce', 'grip' => 'f58d',
+					'print' => 'f02f', 'download' => 'f019', 'upload' => 'f093',
+					'cloud-arrow-up' => 'f0ee', 'cloud-arrow-down' => 'f0ed',
+					'link' => 'f0c1', 'paperclip' => 'f0c6', 'copy' => 'f0c5',
+					'paste' => 'f0ea', 'clipboard' => 'f328', 'scissors' => 'f0c4',
+					'trash' => 'f1f8', 'trash-can' => 'f2ed', 'trash-alt' => 'f2ed',
+					'pen' => 'f304', 'pen-to-square' => 'f044', 'edit' => 'f044',
+					'pencil' => 'f303', 'pencil-alt' => 'f303', 'eraser' => 'f12d',
+					'file' => 'f15b', 'file-lines' => 'f15c', 'file-alt' => 'f15c',
+					'file-pdf' => 'f1c1', 'file-word' => 'f1c2', 'file-excel' => 'f1c3',
+					'file-image' => 'f1c5', 'file-video' => 'f1c8', 'file-audio' => 'f1c7',
+					'file-csv' => 'f6dd', 'file-code' => 'f1c9', 'file-zipper' => 'f1c6',
+					'folder' => 'f07b', 'folder-open' => 'f07c', 'folder-plus' => 'f65e',
+					'image' => 'f03e', 'images' => 'f302', 'camera' => 'f030',
+					'video' => 'f03d', 'film' => 'f008', 'music' => 'f001',
+					'headphones' => 'f025', 'volume-high' => 'f028', 'volume-xmark' => 'f6a9',
+					'microphone' => 'f130', 'microphone-slash' => 'f131',
+					'desktop' => 'f108', 'laptop' => 'f109', 'tablet' => 'f3fa',
+					'mobile' => 'f3cd', 'mobile-screen' => 'f3cf', 'display' => 'e163',
+					'server' => 'f233', 'database' => 'f1c0', 'hard-drive' => 'f0a0',
+					'circle' => 'f111', 'square' => 'f0c8', 'ban' => 'f05e',
+					'play' => 'f04b', 'pause' => 'f04c', 'stop' => 'f04d',
+					'backward' => 'f04a', 'forward' => 'f04e', 'backward-step' => 'f048',
+					'forward-step' => 'f051', 'rotate' => 'f2f1', 'rotate-right' => 'f2f9',
+					'arrows-rotate' => 'f021', 'sync' => 'f021', 'refresh' => 'f021',
+					'arrow-right' => 'f061', 'arrow-left' => 'f060', 'arrow-up' => 'f062', 'arrow-down' => 'f063',
+					'chevron-right' => 'f054', 'chevron-left' => 'f053', 'chevron-up' => 'f077', 'chevron-down' => 'f078',
+					'angle-right' => 'f105', 'angle-left' => 'f104', 'angle-up' => 'f106', 'angle-down' => 'f107',
+					'caret-right' => 'f0da', 'caret-left' => 'f0d9', 'caret-up' => 'f0d8', 'caret-down' => 'f0d7',
+					'arrow-up-right-from-square' => 'f08e', 'external-link-alt' => 'f08e',
+					'spinner' => 'f110', 'circle-notch' => 'f1ce', 'compass' => 'f14e',
+					'bell' => 'f0f3', 'bell-slash' => 'f1f6', 'comment' => 'f075',
+					'comments' => 'f086', 'message' => 'f27a', 'envelope-open' => 'f2b6',
+					'rocket' => 'f135', 'paper-plane' => 'f1d8', 'tag' => 'f02b', 'tags' => 'f02c',
+					'bookmark' => 'f02e', 'book' => 'f02d', 'book-open' => 'f518',
+					'newspaper' => 'f1ea', 'scroll' => 'f70e', 'sticky-note' => 'f249',
+					'cube' => 'f1b2', 'cubes' => 'f1b3', 'box' => 'f466', 'boxes' => 'f468',
+					'inbox' => 'f01c', 'outbox' => 'e6bf', 'archive' => 'f187',
+					'palette' => 'f53f', 'paint-brush' => 'f1fc', 'droplet' => 'f043',
+					'bug' => 'f188', 'code' => 'f121', 'terminal' => 'f120',
+					'quote-right' => 'f10e', 'quote-left' => 'f10d', 'language' => 'f1ab',
+					'barcode' => 'f02a', 'qrcode' => 'f029', 'rss' => 'f09e',
+					'glasses' => 'f530', 'graduation-cap' => 'f19d', 'school' => 'f549',
+					'briefcase' => 'f0b1', 'suitcase' => 'f0f2', 'suitcase-rolling' => 'f5c1',
+					'gift' => 'f06b', 'award' => 'f559', 'trophy' => 'f091',
+					'hand' => 'f256', 'handshake' => 'f2b5', 'hand-holding-heart' => 'f4be',
+					'person' => 'f183', 'people-group' => 'e533', 'people-arrows' => 'e068',
+					'wheelchair' => 'f193', 'wheelchair-move' => 'e2ce', 'accessible-icon' => 'f368',
+					'child' => 'f1ae', 'baby' => 'f77c', 'dog' => 'f6d3', 'cat' => 'f6be',
+					'crow' => 'f520', 'fish' => 'f578', 'paw' => 'f1b0',
+					'smoking' => 'f48d', 'ban-smoking' => 'f54d', 'wine-glass' => 'f4e3',
+					'mug-saucer' => 'f0f4', 'coffee' => 'f0f4', 'beer-mug-empty' => 'f0fc',
+					'utensils' => 'f2e7', 'pizza-slice' => 'f818', 'hamburger' => 'f805',
+					'apple-whole' => 'f5d1', 'lemon' => 'f094', 'carrot' => 'f787',
+				];
+				return isset( $map[ $name ] ) ? $map[ $name ] : '';
+			}
+
+			private static function dashicon_unicode( $class ) {
+				$map = [
+					'dashicons-menu' => 'f333', 'dashicons-admin-site' => 'f319', 'dashicons-dashboard' => 'f226',
+					'dashicons-admin-post' => 'f109', 'dashicons-admin-media' => 'f104', 'dashicons-admin-links' => 'f103',
+					'dashicons-admin-page' => 'f105', 'dashicons-admin-comments' => 'f101', 'dashicons-admin-appearance' => 'f100',
+					'dashicons-admin-plugins' => 'f106', 'dashicons-admin-users' => 'f110', 'dashicons-admin-tools' => 'f107',
+					'dashicons-admin-settings' => 'f108', 'dashicons-admin-network' => 'f112', 'dashicons-admin-home' => 'f102',
+					'dashicons-admin-generic' => 'f111', 'dashicons-admin-collapse' => 'f148', 'dashicons-filter' => 'f536',
+					'dashicons-admin-customizer' => 'f540', 'dashicons-admin-multisite' => 'f541',
+					'dashicons-welcome-write-blog' => 'f119', 'dashicons-welcome-add-page' => 'f133', 'dashicons-welcome-view-site' => 'f115',
+					'dashicons-welcome-widgets-menus' => 'f116', 'dashicons-welcome-comments' => 'f117', 'dashicons-welcome-learn-more' => 'f118',
+					'dashicons-format-aside' => 'f123', 'dashicons-format-image' => 'f128', 'dashicons-format-gallery' => 'f161',
+					'dashicons-format-video' => 'f126', 'dashicons-format-status' => 'f130', 'dashicons-format-quote' => 'f122',
+					'dashicons-format-chat' => 'f125', 'dashicons-format-audio' => 'f127', 'dashicons-camera' => 'f306',
+					'dashicons-images-alt' => 'f232', 'dashicons-images-alt2' => 'f233', 'dashicons-video-alt' => 'f234',
+					'dashicons-video-alt2' => 'f235', 'dashicons-video-alt3' => 'f236', 'dashicons-media-archive' => 'f501',
+					'dashicons-media-audio' => 'f500', 'dashicons-media-code' => 'f499', 'dashicons-media-default' => 'f498',
+					'dashicons-media-document' => 'f497', 'dashicons-media-interactive' => 'f496', 'dashicons-media-spreadsheet' => 'f495',
+					'dashicons-media-text' => 'f491', 'dashicons-media-video' => 'f490', 'dashicons-playlist-audio' => 'f492',
+					'dashicons-playlist-video' => 'f493', 'dashicons-controls-play' => 'f522', 'dashicons-controls-pause' => 'f523',
+					'dashicons-controls-forward' => 'f519', 'dashicons-controls-skipforward' => 'f517', 'dashicons-controls-back' => 'f518',
+					'dashicons-controls-skipback' => 'f516', 'dashicons-controls-repeat' => 'f515', 'dashicons-controls-volumeon' => 'f521',
+					'dashicons-controls-volumeoff' => 'f520', 'dashicons-image-crop' => 'f165', 'dashicons-image-rotate' => 'f531',
+					'dashicons-image-rotate-left' => 'f166', 'dashicons-image-rotate-right' => 'f167', 'dashicons-image-flip-vertical' => 'f168',
+					'dashicons-image-flip-horizontal' => 'f169', 'dashicons-image-filter' => 'f533', 'dashicons-undo' => 'f171',
+					'dashicons-redo' => 'f172', 'dashicons-editor-bold' => 'f200', 'dashicons-editor-italic' => 'f201',
+					'dashicons-editor-ul' => 'f203', 'dashicons-editor-ol' => 'f204', 'dashicons-editor-quote' => 'f205',
+					'dashicons-editor-alignleft' => 'f206', 'dashicons-editor-aligncenter' => 'f207', 'dashicons-editor-alignright' => 'f208',
+					'dashicons-editor-insertmore' => 'f209', 'dashicons-editor-spellcheck' => 'f210', 'dashicons-editor-expand' => 'f211',
+					'dashicons-editor-contract' => 'f506', 'dashicons-editor-kitchensink' => 'f212', 'dashicons-editor-underline' => 'f213',
+					'dashicons-editor-justify' => 'f214', 'dashicons-editor-textcolor' => 'f215', 'dashicons-editor-paste-word' => 'f216',
+					'dashicons-editor-paste-text' => 'f217', 'dashicons-editor-removeformatting' => 'f218', 'dashicons-editor-video' => 'f219',
+					'dashicons-editor-customchar' => 'f220', 'dashicons-editor-outdent' => 'f221', 'dashicons-editor-indent' => 'f222',
+					'dashicons-editor-help' => 'f223', 'dashicons-editor-strikethrough' => 'f224', 'dashicons-editor-unlink' => 'f225',
+					'dashicons-editor-rtl' => 'f320', 'dashicons-editor-break' => 'f474', 'dashicons-editor-code' => 'f475',
+					'dashicons-editor-paragraph' => 'f476', 'dashicons-editor-table' => 'f535',
+					'dashicons-align-left' => 'f135', 'dashicons-align-right' => 'f136', 'dashicons-align-center' => 'f134',
+					'dashicons-align-none' => 'f138', 'dashicons-lock' => 'f160', 'dashicons-unlock' => 'f528',
+					'dashicons-calendar' => 'f145', 'dashicons-calendar-alt' => 'f508', 'dashicons-visibility' => 'f177',
+					'dashicons-hidden' => 'f530', 'dashicons-post-status' => 'f173', 'dashicons-edit' => 'f464',
+					'dashicons-trash' => 'f182', 'dashicons-sticky' => 'f537', 'dashicons-external' => 'f504',
+					'dashicons-arrow-up' => 'f142', 'dashicons-arrow-down' => 'f140', 'dashicons-arrow-right' => 'f139',
+					'dashicons-arrow-left' => 'f141', 'dashicons-arrow-up-alt' => 'f342', 'dashicons-arrow-down-alt' => 'f346',
+					'dashicons-arrow-right-alt' => 'f344', 'dashicons-arrow-left-alt' => 'f340', 'dashicons-arrow-up-alt2' => 'f343',
+					'dashicons-arrow-down-alt2' => 'f347', 'dashicons-arrow-right-alt2' => 'f345', 'dashicons-arrow-left-alt2' => 'f341',
+					'dashicons-sort' => 'f156', 'dashicons-leftright' => 'f229', 'dashicons-randomize' => 'f503',
+					'dashicons-list-view' => 'f163', 'dashicons-exerpt-view' => 'f164', 'dashicons-grid-view' => 'f509',
+					'dashicons-move' => 'f545', 'dashicons-share' => 'f237', 'dashicons-share-alt' => 'f240',
+					'dashicons-share-alt2' => 'f242', 'dashicons-twitter' => 'f301', 'dashicons-rss' => 'f303',
+					'dashicons-email' => 'f465', 'dashicons-email-alt' => 'f466', 'dashicons-facebook' => 'f304',
+					'dashicons-facebook-alt' => 'f305', 'dashicons-googleplus' => 'f462', 'dashicons-networking' => 'f325',
+					'dashicons-hammer' => 'f308', 'dashicons-art' => 'f309', 'dashicons-migrate' => 'f310',
+					'dashicons-performance' => 'f311', 'dashicons-universal-access' => 'f483', 'dashicons-universal-access-alt' => 'f507',
+					'dashicons-tickets' => 'f486', 'dashicons-nametag' => 'f484', 'dashicons-clipboard' => 'f481',
+					'dashicons-heart' => 'f487', 'dashicons-megaphone' => 'f488', 'dashicons-schedule' => 'f489',
+					'dashicons-wordpress' => 'f120', 'dashicons-wordpress-alt' => 'f324', 'dashicons-pressthis' => 'f157',
+					'dashicons-update' => 'f463', 'dashicons-screenoptions' => 'f180', 'dashicons-info' => 'f348',
+					'dashicons-cart' => 'f174', 'dashicons-feedback' => 'f175', 'dashicons-cloud' => 'f176',
+					'dashicons-translation' => 'f326', 'dashicons-tag' => 'f323', 'dashicons-category' => 'f318',
+					'dashicons-archive' => 'f480', 'dashicons-tagcloud' => 'f479', 'dashicons-text' => 'f478',
+					'dashicons-yes' => 'f147', 'dashicons-no' => 'f158', 'dashicons-no-alt' => 'f335',
+					'dashicons-plus' => 'f132', 'dashicons-plus-alt' => 'f502', 'dashicons-minus' => 'f460',
+					'dashicons-dismiss' => 'f153', 'dashicons-marker' => 'f159', 'dashicons-star-filled' => 'f155',
+					'dashicons-star-half' => 'f459', 'dashicons-star-empty' => 'f154', 'dashicons-flag' => 'f227',
+					'dashicons-warning' => 'f534', 'dashicons-location' => 'f230', 'dashicons-location-alt' => 'f231',
+					'dashicons-vault' => 'f178', 'dashicons-shield' => 'f332', 'dashicons-shield-alt' => 'f334',
+					'dashicons-sos' => 'f468', 'dashicons-search' => 'f179', 'dashicons-slides' => 'f181',
+					'dashicons-analytics' => 'f183', 'dashicons-chart-pie' => 'f184', 'dashicons-chart-bar' => 'f185',
+					'dashicons-chart-line' => 'f238', 'dashicons-chart-area' => 'f239', 'dashicons-groups' => 'f307',
+					'dashicons-businessman' => 'f338', 'dashicons-id' => 'f336', 'dashicons-id-alt' => 'f337',
+					'dashicons-products' => 'f312', 'dashicons-awards' => 'f313', 'dashicons-forms' => 'f314',
+					'dashicons-testimonial' => 'f473', 'dashicons-portfolio' => 'f322', 'dashicons-book' => 'f330',
+					'dashicons-book-alt' => 'f331', 'dashicons-download' => 'f316', 'dashicons-upload' => 'f317',
+					'dashicons-backup' => 'f321', 'dashicons-clock' => 'f469', 'dashicons-lightbulb' => 'f339',
+					'dashicons-microphone' => 'f482', 'dashicons-desktop' => 'f472', 'dashicons-laptop' => 'f547',
+					'dashicons-tablet' => 'f471', 'dashicons-smartphone' => 'f470', 'dashicons-phone' => 'f525',
+					'dashicons-index-card' => 'f510', 'dashicons-carrot' => 'f511', 'dashicons-building' => 'f512',
+					'dashicons-store' => 'f513', 'dashicons-album' => 'f514', 'dashicons-palmtree' => 'f527',
+					'dashicons-tickets-alt' => 'f524', 'dashicons-money' => 'f526', 'dashicons-smiley' => 'f328',
+					'dashicons-thumbs-up' => 'f529', 'dashicons-thumbs-down' => 'f542', 'dashicons-layout' => 'f538',
+					'dashicons-paperclip' => 'f546', 'dashicons-rest-api' => 'f124', 'dashicons-code-standards' => 'f13a',
+				];
+				return isset( $map[ $class ] ) ? $map[ $class ] : 'f333';
 			}
 
             public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box, $left_filter_show ): void {

@@ -252,6 +252,9 @@ function wbtm_load_sortable_datepicker(parent, item) {
 
     // Popup open
     $(document).on("click", ".wbtm_icon_add", function () {
+        // Remember which icon-area opened the popup so the selection
+        // only updates that specific field (not every field on the page).
+        window._wbtm_active_icon_area = $(this).closest(".wbtm_add_icon_image_area");
         $(".wbtm_add_icon_popup").addClass("active");
     });
     $(document).on("click", ".wbtm_add_icon_popup .popupClose", function () {
@@ -264,7 +267,9 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let iconClass = $(this).data("icon-class");
         if (!iconClass) return;
 
-        let parent = $(".wbtm_add_icon_image_area"); // সহজভাবে parent ধরা
+        let parent = (window._wbtm_active_icon_area && window._wbtm_active_icon_area.length)
+            ? window._wbtm_active_icon_area
+            : $(this).closest(".wbtm_add_icon_image_area");
 
         parent.find('input[type="hidden"]').val(iconClass);
         parent.find(".wbtm_add_icon_image_button_area, .wbtm_image_item").hide();
