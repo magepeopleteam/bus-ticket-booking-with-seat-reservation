@@ -13,8 +13,7 @@
  * -------------------------- */
 @font-face {
   font-family: mageicon;
-  src: url("../fonts/mage-icon.eot?v=1.0.0");
-  src: url("../fonts/mage-icon.woff2?v=1.0.0") format("woff2"), url("../fonts/mage-icon.ttf?v=1.0.0") format("truetype"), url("../fonts/mage-icon.woff?v=1.0.0") format("woff");
+  src: url("../fonts/mage-icon.woff2?v=1.0.0") format("woff2"), url("../fonts/mage-icon.woff?v=1.0.0") format("woff");
   font-weight: normal;
   font-style: normal;
 }

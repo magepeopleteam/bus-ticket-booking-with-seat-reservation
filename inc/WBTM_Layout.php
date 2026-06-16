@@ -29,6 +29,33 @@
 				add_action('wp_ajax_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				add_action('wp_ajax_nopriv_get_wbtm_bus_details', [$this, 'get_wbtm_bus_details']);
 				/**************************/
+				// Async "chunk" that greys out sold-out dates after the calendar is already shown.
+				add_action('wp_ajax_get_wbtm_soldout_dates', [$this, 'get_wbtm_soldout_dates']);
+				add_action('wp_ajax_nopriv_get_wbtm_soldout_dates', [$this, 'get_wbtm_soldout_dates']);
+				/**************************/
+			}
+			public function get_wbtm_soldout_dates() {
+				if ( isset($_POST['nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wtbm_ajax_nonce') ) {
+					if ( ! self::soldout_highlight_enabled() ) {
+						wp_send_json_success(['soldout' => []]);
+					}
+					$post_id     = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
+					$start_route = isset($_POST['start_route']) ? sanitize_text_field(wp_unslash($_POST['start_route'])) : '';
+					$end_route   = isset($_POST['end_route']) ? sanitize_text_field(wp_unslash($_POST['end_route'])) : '';
+					$leg         = isset($_POST['leg']) ? sanitize_text_field(wp_unslash($_POST['leg'])) : 'outbound';
+					$j_date      = isset($_POST['j_date']) ? sanitize_text_field(wp_unslash($_POST['j_date'])) : '';
+					$soldout     = WBTM_Functions::get_soldout_dates_fast($post_id, $start_route, $end_route);
+					$out = [];
+					foreach ( $soldout as $so_date ) {
+						// Return leg can only be on/after the outbound date.
+						if ( $leg === 'return' && $j_date && strtotime($so_date) < strtotime($j_date) ) {
+							continue;
+						}
+						$out[] = gmdate('j-n-Y', strtotime($so_date)); // datepicker d-m-Y key
+					}
+					wp_send_json_success(['soldout' => array_values(array_unique($out))]);
+				}
+				wp_send_json_error();
 			}
 			public function search_result($start_route, $end_route, $date, $post_id = '', $style = '', $btn_show = '', $search_info = [], $journey_type = '', $left_filter_show = [] ) {
 				if ($style == 'flix') {
@@ -587,10 +614,24 @@
 				<?php
 			if ($start_route) {
 				$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
-				$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $start_route, $end_route);
-				do_action('wbtm_load_date_picker_js', '#wbtm_journey_date', $all_dates, $soldout_dates);
+				// Render the calendar instantly; sold-out greying loads as a separate async
+				// "chunk" (see get_wbtm_soldout_dates) so the heavy availability scan never
+				// blocks the date picker.
+				$async = self::soldout_highlight_enabled()
+					? ['post_id' => $post_id, 'start' => $start_route, 'end' => $end_route, 'leg' => 'outbound']
+					: [];
+				do_action('wbtm_load_date_picker_js', '#wbtm_journey_date', $all_dates, [], $async);
 			}
 		}
+			/**
+			 * Whether sold-out dates should be greyed-out in the date picker.
+			 *
+			 * Computing this scans seat availability for every date in the sales window,
+			 * so it is opt-in (default OFF) to keep the calendar/schedule load fast.
+			 */
+			public static function soldout_highlight_enabled() {
+				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'calendar_soldout_highlight', 'off' ) === 'on';
+			}
 			public static function return_date_picker($post_id = '', $end_route = '', $start_route = '', $j_date = '', $date = '') {
 				$date_format = WBTM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
@@ -616,14 +657,12 @@
 							$date_list[] = $date;
 						}
 					}
-					$soldout_dates = WBTM_Functions::get_soldout_dates($post_id, $end_route, $start_route);
-					$soldout_dates_filtered = [];
-					foreach ($soldout_dates as $so_date) {
-						if (strtotime($so_date) >= $j_date) {
-							$soldout_dates_filtered[] = $so_date;
-						}
-					}
-					do_action('wbtm_load_date_picker_js', '#wbtm_return_date', $date_list, $soldout_dates_filtered);
+					// Instant render; sold-out greying arrives via the async chunk, filtered
+					// server-side to dates on/after the outbound journey date.
+					$async = self::soldout_highlight_enabled()
+						? ['post_id' => $post_id, 'start' => $end_route, 'end' => $start_route, 'leg' => 'return', 'j_date' => gmdate('Y-m-d', $j_date)]
+						: [];
+					do_action('wbtm_load_date_picker_js', '#wbtm_return_date', $date_list, [], $async);
 				}
 			}
 			}

@@ -9,7 +9,7 @@
 	if (!class_exists('WBTM_Global_Function')) {
 		class WBTM_Global_Function {
 			public function __construct() {
-				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 3);
+				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 4);
 			}
 			public static function query_post_type($post_type, $show = -1, $page = 1): WP_Query {
 				$args = array(
@@ -126,7 +126,7 @@
 				$date_format = $format == 'M d , yy' ? 'M  j, Y' : $date_format;
 				return $format == 'D M d , yy' ? 'D M  j, Y' : $date_format;
 			}
-			public function date_picker_js($selector, $dates, $soldout_dates = []) {
+			public function date_picker_js($selector, $dates, $soldout_dates = [], $async = []) {
 
                 $empty_dates = 0;
                 if( empty( $dates ) ){
@@ -191,7 +191,12 @@
                 </style>
                 <script>
                     jQuery(document).ready(function () {
-                        jQuery("<?php echo esc_attr($selector); ?>").datepicker({
+                        var wbtmPicker = jQuery("<?php echo esc_attr($selector); ?>");
+                        var availableDates = [<?php echo wp_kses_post(implode(',', $all_date)); ?>];
+                        // Mutable: starts with whatever was rendered inline (usually empty) and is
+                        // replaced when the async sold-out "chunk" returns.
+                        var soldoutDates = [<?php echo wp_kses_post(implode(',', $soldout_date_arr)); ?>];
+                        wbtmPicker.datepicker({
                             dateFormat: wbtm_date_format,
                             minDate: new Date(<?php echo esc_attr($start_year); ?>, <?php echo esc_attr($start_month); ?>, <?php echo esc_attr($start_day); ?>),
                             maxDate: new Date(<?php echo esc_attr($end_year); ?>, <?php echo esc_attr($end_month); ?>, <?php echo esc_attr($end_day); ?>),
@@ -205,8 +210,6 @@
                             }
                         });
                         function WorkingDates(date) {
-                            let availableDates = [<?php echo wp_kses_post(implode(',', $all_date)); ?>];
-                            let soldoutDates = [<?php echo wp_kses_post(implode(',', $soldout_date_arr)); ?>];
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
                             if (jQuery.inArray(dmy, soldoutDates) !== -1) {
                                 return [false, "wbtm-soldout-date", "<?php echo esc_js(__( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' )); ?>"];
@@ -216,6 +219,26 @@
                                 return [false, "", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
                             }
                         }
+						<?php if ( ! empty( $async ) && isset( $async['post_id'], $async['start'], $async['end'] ) ) : ?>
+                        // Load sold-out dates as a separate, non-blocking request and re-paint
+                        // the already-visible calendar once it arrives.
+                        jQuery.post(wbtm_ajax_url, {
+                            action: 'get_wbtm_soldout_dates',
+                            nonce: wbtm_nonce,
+                            post_id: <?php echo wp_json_encode( (string) $async['post_id'] ); ?>,
+                            start_route: <?php echo wp_json_encode( (string) $async['start'] ); ?>,
+                            end_route: <?php echo wp_json_encode( (string) $async['end'] ); ?>,
+                            leg: <?php echo wp_json_encode( isset($async['leg']) ? (string) $async['leg'] : 'outbound' ); ?>,
+                            j_date: <?php echo wp_json_encode( isset($async['j_date']) ? (string) $async['j_date'] : '' ); ?>
+                        }).done(function (res) {
+                            if (res && res.success && res.data && Array.isArray(res.data.soldout) && res.data.soldout.length) {
+                                soldoutDates = res.data.soldout;
+                                if (wbtmPicker.hasClass('hasDatepicker')) {
+                                    wbtmPicker.datepicker('refresh');
+                                }
+                            }
+                        });
+						<?php endif; ?>
                     });
                 </script>
 				<?php

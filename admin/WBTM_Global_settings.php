@@ -293,6 +293,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							)
 						),
 						array(
+							'name'    => 'calendar_soldout_highlight',
+							'label'   => esc_html__( 'Highlight sold-out dates in calendar', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Grey-out fully booked dates in the date picker. This checks seat availability for every date in the sales window, so on busy sites it can slow down how fast the calendar and schedules open. Leave OFF if the calendar feels slow.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'off',
+							'options' => array(
+								'on'  => esc_html__( 'ON', 'bus-ticket-booking-with-seat-reservation' ),
+								'off' => esc_html__( 'OFF', 'bus-ticket-booking-with-seat-reservation' )
+							)
+						),
+						array(
 							'name'    => 'bus_search_list_direction_icon',
 							'label'   => esc_html__( 'Bus search list direction icon', 'bus-ticket-booking-with-seat-reservation' ),
                             'desc'  => esc_html__( 'Select a FontAwesome icon or upload an image to display as the direction icon in the bus search list.', 'bus-ticket-booking-with-seat-reservation' ),

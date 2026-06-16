@@ -8,7 +8,126 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Query')) {
 		class WBTM_Query {
-			public function __construct() {}
+			public function __construct() {
+				// Drop the per-request booked map whenever booking data changes mid-request,
+				// so a later availability check can never read a stale count.
+				add_action( 'wbtm_order_status_change', array( __CLASS__, 'flush_booked_map' ) );
+				add_action( 'save_post_wbtm_bus_booking', array( __CLASS__, 'flush_booked_map' ) );
+				add_action( 'deleted_post_wbtm_bus_booking', array( __CLASS__, 'flush_booked_map' ) );
+			}
+			public static function flush_booked_map() {
+				self::$booked_map_cache = array();
+			}
+			/**
+			 * Request-scoped cache of booked seats/counts, grouped by date, for a given
+			 * bus + boarding/dropping pair. Lets the calendar's sold-out scan resolve
+			 * every date from a single query instead of two DB queries per date.
+			 * Shape: [ "<post_id>|<start>|<end>" => [ 'totals' => [date=>int], 'seats' => [date=>array] ] ]
+			 *
+			 * Deliberately per-request (static) rather than a transient: booking counts
+			 * drive duplicate-sale prevention, so we never want to serve a stale count
+			 * across requests.
+			 */
+			private static $booked_map_cache = [];
+			private static function booked_map_key( $post_id, $start, $end ) {
+				return $post_id . '|' . strtolower( (string) $start ) . '|' . strtolower( (string) $end );
+			}
+			/**
+			 * Build the per-date booked map for a bus/route in ONE query and memoise it
+			 * for the rest of the request. query_total_booked()/query_seat_booked() then
+			 * read straight from it for any date, with no further DB hits.
+			 *
+			 * Mirrors exactly the meta_query, status set and counting rules of those two
+			 * methods (minus the date filter) so results are identical.
+			 */
+			public static function prime_booked_map( $post_id, $start, $end ) {
+				$key = self::booked_map_key( $post_id, $start, $end );
+				if ( isset( self::$booked_map_cache[ $key ] ) ) {
+					return;
+				}
+				$map = array( 'totals' => array(), 'seats' => array() );
+				self::$booked_map_cache[ $key ] = $map; // mark primed up-front (covers the no-result / invalid-route case)
+				if ( ! ( $post_id && $start && $end ) ) {
+					return;
+				}
+				$seat_booked_status = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'set_book_status', array( 'processing', 'completed' ) );
+				// Keep pending in sync with the per-date queries: pending orders reserve seats.
+				$seat_booked_status = array_filter( array_unique( array_merge( (array) $seat_booked_status, array( 'pending' ) ) ) );
+				$routes = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', array() );
+				if ( sizeof( $routes ) === 0 ) {
+					return;
+				}
+				$norm   = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
+				$routes = $norm['routes'];
+				$sp     = $norm['sp'];
+				$ep     = $norm['ep'];
+				if ( $sp === false || $ep === false ) {
+					return;
+				}
+				$args = array(
+					'post_type'      => 'wbtm_bus_booking',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_query'     => array(
+						array(
+							'relation' => 'AND',
+							array( 'key' => 'wbtm_boarding_point', 'value' => array_slice( $routes, 0, $ep ), 'compare' => 'IN' ),
+							array( 'key' => 'wbtm_dropping_point', 'value' => array_slice( $routes, $sp + 1 ), 'compare' => 'IN' ),
+							array( 'key' => 'wbtm_bus_id', 'value' => $post_id, 'compare' => '=' ),
+							array( 'key' => 'wbtm_order_status', 'value' => $seat_booked_status, 'compare' => 'IN' ),
+						),
+					),
+				);
+				$booking_ids = get_posts( $args );
+				if ( sizeof( $booking_ids ) === 0 ) {
+					return;
+				}
+				// Prime the meta cache once so the per-booking reads below don't each hit the DB (avoids N+1).
+				update_meta_cache( 'post', $booking_ids );
+				foreach ( $booking_ids as $booking_id ) {
+					$start_time = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_start_time' );
+					if ( ! $start_time ) {
+						continue;
+					}
+					$date = gmdate( 'Y-m-d', strtotime( $start_time ) );
+					// Total booked — full-bus bookings cover all their seats (matches query_total_booked()).
+					$booking_mode        = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_booking_mode' );
+					$full_bus_seat_count = (int) WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_full_bus_seat_count' );
+					$units               = ( $booking_mode === 'full_bus' && $full_bus_seat_count > 0 ) ? $full_bus_seat_count : 1;
+					$map['totals'][ $date ] = ( isset( $map['totals'][ $date ] ) ? $map['totals'][ $date ] : 0 ) + $units;
+					// Booked seat names (matches query_seat_booked()).
+					$seat_name = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_seat' );
+					if ( class_exists( 'WBTM_Seat_Configuration' ) ) {
+						$seat_name = WBTM_Seat_Configuration::normalize_saved_seat_value( $seat_name );
+					}
+					if ( $seat_name && ! ( class_exists( 'WBTM_Seat_Configuration' ) && WBTM_Seat_Configuration::is_non_seat_item( $seat_name ) ) ) {
+						if ( ! isset( $map['seats'][ $date ] ) ) {
+							$map['seats'][ $date ] = array();
+						}
+						$map['seats'][ $date ][] = $seat_name;
+					}
+				}
+				self::$booked_map_cache[ $key ] = $map;
+			}
+			/** Read a primed total for a date, or null when nothing is primed for this route. */
+			private static function booked_map_total( $post_id, $start, $end, $date ) {
+				$key = self::booked_map_key( $post_id, $start, $end );
+				if ( ! isset( self::$booked_map_cache[ $key ] ) ) {
+					return null;
+				}
+				$date = gmdate( 'Y-m-d', strtotime( $date ) );
+				return isset( self::$booked_map_cache[ $key ]['totals'][ $date ] ) ? (int) self::$booked_map_cache[ $key ]['totals'][ $date ] : 0;
+			}
+			/** Read primed seat names for a date, or null when nothing is primed for this route. */
+			private static function booked_map_seats( $post_id, $start, $end, $date ) {
+				$key = self::booked_map_key( $post_id, $start, $end );
+				if ( ! isset( self::$booked_map_cache[ $key ] ) ) {
+					return null;
+				}
+				$date = gmdate( 'Y-m-d', strtotime( $date ) );
+				return isset( self::$booked_map_cache[ $key ]['seats'][ $date ] ) ? self::$booked_map_cache[ $key ]['seats'][ $date ] : array();
+			}
             public static function get_bus_id($start = '', $end = '', $cat = '', $posts_per_page = -1) {
                 $bus_ids = [];
                 $start_route_query = !empty($start) ? array(
@@ -156,6 +275,14 @@
 				$total_booked = 0;
 				if ($post_id && $start && $end && $date) {
 					$date = gmdate('Y-m-d', strtotime($date));
+					// Serve from the request-scoped batch map when one was primed for this route
+					// (calendar sold-out scan). Only the unfiltered totals are batched.
+					if ( empty( $ticket_name ) && empty( $seat_name ) ) {
+						$cached = self::booked_map_total( $post_id, $start, $end, $date );
+						if ( $cached !== null ) {
+							return $cached;
+						}
+					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					// Pending orders have already reserved seats during checkout, so they must be
 					// counted as booked to prevent duplicate sales while payment is finalised.
@@ -235,6 +362,11 @@
 				$seat_booked=[];
 				if ($post_id && $start && $end && $date) {
 					$date = gmdate('Y-m-d', strtotime($date));
+					// Serve from the request-scoped batch map when one was primed for this route.
+					$cached = self::booked_map_seats( $post_id, $start, $end, $date );
+					if ( $cached !== null ) {
+						return $cached;
+					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					// Pending orders have already reserved seats during checkout, so they must be
 					// reflected in the seat map to keep the frontend and backend views consistent.
@@ -298,6 +430,85 @@
 					}
 				}
 				return $seat_booked;
+			}
+			/**
+			 * Fetch every booking for a bus + boarding/dropping pair from a given date
+			 * forward, in ONE query. Used by the async sold-out scan so a whole calendar
+			 * window resolves from a single round of joins instead of two queries per date.
+			 *
+			 * Returns raw rows (date string + seat + full-bus info); callers bucket and
+			 * apply the seat-normalization rules. No caching — fresh every call.
+			 *
+			 * @return array<int,object> rows with ->start_time, ->seat, ->booking_mode, ->full_count
+			 */
+			public static function query_booking_rows_for_route( $post_id, $start, $end, $min_date = '' ) {
+				global $wpdb;
+				$rows = array();
+				if ( ! ( $post_id && $start && $end ) ) {
+					return $rows;
+				}
+				$routes = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_direction', array() );
+				if ( sizeof( $routes ) === 0 ) {
+					return $rows;
+				}
+				$norm   = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
+				$routes = $norm['routes'];
+				$sp     = $norm['sp'];
+				$ep     = $norm['ep'];
+				if ( $sp === false || $ep === false ) {
+					return $rows;
+				}
+				$boarding_in = array_slice( $routes, 0, $ep );
+				$dropping_in = array_slice( $routes, $sp + 1 );
+				if ( empty( $boarding_in ) || empty( $dropping_in ) ) {
+					return $rows;
+				}
+				$statuses = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'set_book_status', array( 'processing', 'completed' ) );
+				// Keep pending in sync with the per-date queries: pending orders reserve seats.
+				$statuses = array_values( array_filter( array_unique( array_merge( (array) $statuses, array( 'pending' ) ) ) ) );
+				if ( empty( $statuses ) ) {
+					return $rows;
+				}
+
+				$bp_ph   = implode( ',', array_fill( 0, count( $boarding_in ), '%s' ) );
+				$dp_ph   = implode( ',', array_fill( 0, count( $dropping_in ), '%s' ) );
+				$stat_ph = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+
+				// wbtm_start_time is stored as ISO "Y-m-d H:i", so a lexicographic >= floor
+				// safely limits the scan to the future sales window.
+				$date_floor = '';
+				if ( $min_date ) {
+					$date_floor = ' AND pm_time.meta_value >= %s ';
+				}
+
+				$sql = "
+					SELECT p.ID AS booking_id,
+					       pm_time.meta_value AS start_time,
+					       pm_seat.meta_value AS seat,
+					       pm_mode.meta_value AS booking_mode,
+					       pm_full.meta_value AS full_count
+					FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm_bus  ON pm_bus.post_id  = p.ID AND pm_bus.meta_key  = 'wbtm_bus_id'         AND pm_bus.meta_value  = %d
+					INNER JOIN {$wpdb->postmeta} pm_stat ON pm_stat.post_id = p.ID AND pm_stat.meta_key = 'wbtm_order_status'   AND pm_stat.meta_value IN ($stat_ph)
+					INNER JOIN {$wpdb->postmeta} pm_bp   ON pm_bp.post_id   = p.ID AND pm_bp.meta_key   = 'wbtm_boarding_point' AND pm_bp.meta_value   IN ($bp_ph)
+					INNER JOIN {$wpdb->postmeta} pm_dp   ON pm_dp.post_id   = p.ID AND pm_dp.meta_key   = 'wbtm_dropping_point' AND pm_dp.meta_value   IN ($dp_ph)
+					INNER JOIN {$wpdb->postmeta} pm_time ON pm_time.post_id = p.ID AND pm_time.meta_key = 'wbtm_start_time' $date_floor
+					LEFT  JOIN {$wpdb->postmeta} pm_seat ON pm_seat.post_id = p.ID AND pm_seat.meta_key = 'wbtm_seat'
+					LEFT  JOIN {$wpdb->postmeta} pm_mode ON pm_mode.post_id = p.ID AND pm_mode.meta_key = 'wbtm_booking_mode'
+					LEFT  JOIN {$wpdb->postmeta} pm_full ON pm_full.post_id = p.ID AND pm_full.meta_key = 'wbtm_full_bus_seat_count'
+					WHERE p.post_type = 'wbtm_bus_booking'
+				";
+
+				$params = array();
+				$params[] = (int) $post_id;
+				$params   = array_merge( $params, $statuses, $boarding_in, $dropping_in );
+				if ( $date_floor ) {
+					$params[] = $min_date;
+				}
+
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders built from fixed counts above.
+				$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+				return is_array( $rows ) ? $rows : array();
 			}
 			public static function query_ex_service_sold($post_id, $date, $ex_name) {
 				$total_booked = 0;
