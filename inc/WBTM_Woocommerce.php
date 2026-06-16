@@ -910,48 +910,57 @@
 					$order = wc_get_order($order_id);
 					$order_status = $order->get_status();
 					if ($order_status != 'failed') {
-						$check_attendee = WBTM_Query::query_check_order($order_id)->post_count;
-						if ($check_attendee == 0) {
-							$locks = [];
-							try {
-								foreach ( $order->get_items() as $item_id => $item ) {
-									$post_id = wc_get_order_item_meta( $item_id, '_wbtm_bus_id' );
-									if ( get_post_type( $post_id ) != WBTM_Functions::get_cpt() ) {
-										continue;
-									}
-									$bp           = wc_get_order_item_meta( $item_id, '_wbtm_bp' );
-									$dp           = wc_get_order_item_meta( $item_id, '_wbtm_dp' );
-									$date         = wc_get_order_item_meta( $item_id, '_wbtm_bp_time' );
-									$booking_mode = wc_get_order_item_meta( $item_id, '_wbtm_booking_mode' );
-									$ticket_infos = wc_get_order_item_meta( $item_id, '_wbtm_ticket_info' );
-									$full_bus_seat_count = (int) wc_get_order_item_meta( $item_id, '_wbtm_full_bus_seat_count' );
-									$lock_key = self::get_trip_lock_key( $post_id, $bp, $dp, $date );
-									if ( ! isset( $locks[ $lock_key ] ) ) {
-										if ( ! self::acquire_trip_lock( $post_id, $bp, $dp, $date, 30 ) ) {
-											$failed_message = esc_html__( 'The system is busy. Please try again in a moment.', 'bus-ticket-booking-with-seat-reservation' );
+						$order_lock_key = 'wbtm_order_processing_' . $order_id;
+						if ( get_transient( $order_lock_key ) ) {
+							return;
+						}
+						set_transient( $order_lock_key, 1, MINUTE_IN_SECONDS );
+						try {
+							$check_attendee = WBTM_Query::query_check_order($order_id)->post_count;
+							if ($check_attendee == 0) {
+								$locks = [];
+								try {
+									foreach ( $order->get_items() as $item_id => $item ) {
+										$post_id = wc_get_order_item_meta( $item_id, '_wbtm_bus_id' );
+										if ( get_post_type( $post_id ) != WBTM_Functions::get_cpt() ) {
+											continue;
+										}
+										$bp           = wc_get_order_item_meta( $item_id, '_wbtm_bp' );
+										$dp           = wc_get_order_item_meta( $item_id, '_wbtm_dp' );
+										$date         = wc_get_order_item_meta( $item_id, '_wbtm_bp_time' );
+										$booking_mode = wc_get_order_item_meta( $item_id, '_wbtm_booking_mode' );
+										$ticket_infos = wc_get_order_item_meta( $item_id, '_wbtm_ticket_info' );
+										$full_bus_seat_count = (int) wc_get_order_item_meta( $item_id, '_wbtm_full_bus_seat_count' );
+										$lock_key = self::get_trip_lock_key( $post_id, $bp, $dp, $date );
+										if ( ! isset( $locks[ $lock_key ] ) ) {
+											if ( ! self::acquire_trip_lock( $post_id, $bp, $dp, $date, 30 ) ) {
+												$failed_message = esc_html__( 'The system is busy. Please try again in a moment.', 'bus-ticket-booking-with-seat-reservation' );
+												wc_add_notice( $failed_message, 'error' );
+												$order->update_status( 'failed', $failed_message );
+												return;
+											}
+											$locks[ $lock_key ] = [ $post_id, $bp, $dp, $date ];
+										}
+										$valid = self::validate_bus_availability( $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, [], $full_bus_seat_count );
+										if ( is_wp_error( $valid ) ) {
+											$failed_message = $valid->get_error_message();
 											wc_add_notice( $failed_message, 'error' );
 											$order->update_status( 'failed', $failed_message );
 											return;
 										}
-										$locks[ $lock_key ] = [ $post_id, $bp, $dp, $date ];
 									}
-									$valid = self::validate_bus_availability( $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, [], $full_bus_seat_count );
-									if ( is_wp_error( $valid ) ) {
-										$failed_message = $valid->get_error_message();
-										wc_add_notice( $failed_message, 'error' );
-										$order->update_status( 'failed', $failed_message );
-										return;
+									foreach ($order->get_items() as $item_id => $item) {
+										self::add_billing_data($item_id, $order_id);
 									}
-								}
-								foreach ($order->get_items() as $item_id => $item) {
-									self::add_billing_data($item_id, $order_id);
-								}
-								do_action('wbtm_send_mail', $order_id);
-							} finally {
-								foreach ( $locks as $lock_args ) {
-									self::release_trip_lock( $lock_args[0], $lock_args[1], $lock_args[2], $lock_args[3] );
+									do_action('wbtm_send_mail', $order_id);
+								} finally {
+									foreach ( $locks as $lock_args ) {
+										self::release_trip_lock( $lock_args[0], $lock_args[1], $lock_args[2], $lock_args[3] );
+									}
 								}
 							}
+						} finally {
+							delete_transient( $order_lock_key );
 						}
 					}
 				}
