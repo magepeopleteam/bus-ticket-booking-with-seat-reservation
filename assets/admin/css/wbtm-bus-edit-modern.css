@@ -426,10 +426,12 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item_content .formControl{height:36px;font-size:12.5px;}
 
 /* ---------- Step 3 professional polish ---------- */
-/* Section header bands: brand accent bar + refined typography. */
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"]{position:relative;padding-left:22px;}
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"]::before{content:"";position:absolute;left:9px;top:13px;bottom:13px;width:4px;border-radius:3px;background:linear-gradient(180deg,var(--brand),var(--brand-600));}
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] label{font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--ink);}
+/* Section headers: clean flat style — colored bottom border, no accent bar. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"]{
+	background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--brand);
+	border-radius:10px 10px 0 0;padding:12px 16px;margin:14px 0 0;
+}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] label{font-size:14px;font-weight:700;color:var(--ink);}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] span{font-size:12px;color:var(--muted);line-height:1.55;}
 
 /* Native checkboxes branded; "Enable same bus return" + its settings card. */
@@ -594,13 +596,12 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area td .wbtm_settings_area tbody td{padding:5px 8px;font-size:12px;}
 
-/* ---- Step 4 section band headers: brand accent bar (same as Step 3) ---- */
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"]{position:relative;padding-left:22px;}
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"]::before{
-	content:"";position:absolute;left:9px;top:13px;bottom:13px;width:4px;border-radius:3px;
-	background:linear-gradient(180deg,var(--brand),var(--brand-600));
+/* ---- Step 4 section headers: clean flat style — colored bottom border, no accent bar ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"]{
+	background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--brand);
+	border-radius:10px 10px 0 0;padding:12px 16px;margin:14px 0 0;
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] label{font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--ink);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] label{font-size:14px;font-weight:700;color:var(--ink);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] span{font-size:12px;color:var(--muted);line-height:1.55;}
 
 /* ---- Step 4: toggle rows (show/hide sections) ---- */
