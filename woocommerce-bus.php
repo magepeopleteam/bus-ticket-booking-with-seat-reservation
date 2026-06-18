@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	 * Plugin URI: http://mage-people.com
 	 * Description: A Complete Bus Ticketing System for WordPress & WooCommerce
 	 * Version: 5.7.8
+	 * Requires PHP: 8.0
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
 	 * Text Domain: bus-ticket-booking-with-seat-reservation

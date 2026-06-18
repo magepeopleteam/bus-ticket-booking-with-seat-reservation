@@ -104,7 +104,50 @@
 				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), WBTM_VERSION);
 				do_action('wbtm_add_admin_enqueue');
 			}
+			/**
+			 * Decide whether the (heavy) frontend asset bundle should load on the current page.
+			 * Performance: previously these libraries (jQuery UI, Select2, Owl Carousel, Font Awesome,
+			 * timepicker) plus the plugin JS/CSS loaded on EVERY frontend page site-wide. We now load
+			 * them only where the booking UI can actually appear: the bus / booking single pages, the
+			 * search-results template, the WooCommerce cart / checkout / account pages, and any page
+			 * whose content embeds one of the plugin shortcodes. A filter escape hatch
+			 * (wbtm_load_frontend_assets) lets site owners force-load on page-builder / widget layouts
+			 * that inject the booking UI outside normal post content.
+			 *
+			 * NOTE: always-on, self-contained features (e.g. the AI chatbot) enqueue their own
+			 * dependency-free assets directly on wp_enqueue_scripts and are unaffected by this gate.
+			 */
+			private function should_load_frontend_assets(): bool {
+				$load = false;
+				// Bus / booking single pages and the dedicated search-results template.
+				if ( is_singular( array( 'wbtm_bus', 'wbtm_bus_booking' ) ) || get_query_var( 'bussearchlist' ) ) {
+					$load = true;
+				}
+				// WooCommerce cart / checkout / account pages render bus cart items, the booking
+				// dashboard, deposits and ticket views.
+				if ( ! $load && function_exists( 'is_cart' ) ) {
+					if ( is_cart() || is_checkout() || is_account_page() ) {
+						$load = true;
+					}
+				}
+				// Any singular post/page whose content embeds one of the plugin shortcodes.
+				if ( ! $load && is_singular() ) {
+					$current = get_post();
+					if ( $current instanceof WP_Post && ! empty( $current->post_content ) ) {
+						foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
+							if ( has_shortcode( $current->post_content, $shortcode ) ) {
+								$load = true;
+								break;
+							}
+						}
+					}
+				}
+				return (bool) apply_filters( 'wbtm_load_frontend_assets', $load );
+			}
 			public function frontend_enqueue() {
+				if ( ! $this->should_load_frontend_assets() ) {
+					return;
+				}
 				$this->global_enqueue();
 				do_action('wbtm_add_frontend_enqueue');
 			}

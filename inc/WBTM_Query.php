@@ -213,10 +213,11 @@
                 }
                 $args = array(
                     'post_type' => array('wbtm_bus'),
-                    'posts_per_page' => -1,
+                    // Only the match count is needed: found_posts reflects the full total
+                    // regardless of posts_per_page, so fetch a single row instead of every ID,
+                    // and skip the (orderless) sort that does not affect a count.
+                    'posts_per_page' => 1,
                     'fields' => 'ids',
-                    'order' => 'ASC',
-                    'orderby' => 'meta_value',
                     'post_status' => 'publish',
                     'meta_query' => array(
                         'relation' => 'AND',
