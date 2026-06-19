@@ -10,6 +10,13 @@
 		class WBTM_Global_Function {
 			public function __construct() {
 				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 4);
+				// Keep the per-request get_post_info() sanitize cache coherent: drop a cached entry
+				// the moment its underlying post meta is added/updated/deleted (all plugin writes
+				// go through these), plus a full-post purge whenever a post's cache is cleared.
+				add_action('added_post_meta',   [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('updated_post_meta',  [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('deleted_post_meta',  [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('clean_post_cache',   [__CLASS__, 'purge_info_cache_post'], 10, 1);
 			}
 			public static function query_post_type($post_type, $show = -1, $page = 1): WP_Query {
 				$args = array(
@@ -30,9 +37,50 @@
 				));
 				return array_unique($all_data);
 			}
+			/**
+			 * Per-request memo of get_post_info() results, keyed "post_id|meta_key".
+			 * data_sanitize() is pure, so caching its output for a given raw meta value is safe;
+			 * entries are invalidated on any meta change (see __construct) so they never go stale.
+			 */
+			private static $info_cache = array();
 			public static function get_post_info($post_id, $key, $default = '') {
-				$data = get_post_meta($post_id, $key, true) ?: $default;
-				return self::data_sanitize($data);
+				$cache_key = $post_id . '|' . $key;
+				if ( ! array_key_exists( $cache_key, self::$info_cache ) ) {
+					$raw = get_post_meta( $post_id, $key, true );
+					self::$info_cache[ $cache_key ] = array(
+						'raw'       => $raw,
+						// Only the truthy-meta branch uses this; falsy meta falls back to $default below.
+						'sanitized' => $raw ? self::data_sanitize( $raw ) : '',
+					);
+				}
+				$entry = self::$info_cache[ $cache_key ];
+				// Preserve original semantics exactly: `get_post_meta() ?: $default` — a falsy stored
+				// value ('' / 0 / '0' / false / []) falls back to the (sanitized) caller default.
+				if ( $entry['raw'] ) {
+					return $entry['sanitized'];
+				}
+				return self::data_sanitize( $default );
+			}
+			/** Invalidate one cached entry when its meta is added/updated/deleted. */
+			public static function purge_info_cache_meta( $meta_id, $object_id = 0, $meta_key = '' ) {
+				if ( $object_id && $meta_key ) {
+					unset( self::$info_cache[ $object_id . '|' . $meta_key ] );
+				}
+			}
+			/** Invalidate every cached entry for a post when its object cache is cleared. */
+			public static function purge_info_cache_post( $post_id ) {
+				$post_id = (int) $post_id;
+				if ( ! $post_id ) {
+					self::$info_cache = array();
+					return;
+				}
+				$prefix = $post_id . '|';
+				$len    = strlen( $prefix );
+				foreach ( array_keys( self::$info_cache ) as $cache_key ) {
+					if ( strncmp( (string) $cache_key, $prefix, $len ) === 0 ) {
+						unset( self::$info_cache[ $cache_key ] );
+					}
+				}
 			}
 			//***********************************//
 			public static function get_taxonomy($name) {
