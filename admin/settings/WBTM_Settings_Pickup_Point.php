@@ -62,7 +62,9 @@
                                             <label><?php esc_html_e('Boarding point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                                             <span><?php esc_html_e('Turn On or Off Boarding point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                         </div>
-										<?php WBTM_Custom_Layout::switch_button('wbtm_pickup_point_required', $checked_wbtm_pickup_point_required); ?>
+                                        <div class="col_2_dFlex _justifyEnd">
+											<?php WBTM_Custom_Layout::switch_button('wbtm_pickup_point_required', $checked_wbtm_pickup_point_required); ?>
+                                        </div>
                                     </div>
                                     <div class="_dLayout">
                                         <div class="ovAuto">
@@ -217,7 +219,9 @@
                                             <label><?php esc_html_e('Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                                             <span><?php esc_html_e('Turn On or Off Dropping point Required?', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                         </div>
-										<?php WBTM_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
+                                        <div class="col_2_dFlex _justifyEnd">
+											<?php WBTM_Custom_Layout::switch_button('wbtm_dropping_point_required', $checked_wbtm_dropping_point_required); ?>
+                                        </div>
                                     </div>
                                     <div class="_dLayout">
                                         <div class="ovAuto">

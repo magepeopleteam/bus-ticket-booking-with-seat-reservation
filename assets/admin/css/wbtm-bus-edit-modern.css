@@ -124,7 +124,9 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__panel{display:none;}
 .wbtm-bme__panel.active{display:block;animation:wbtmBmeFade .25s ease;}
 @keyframes wbtmBmeFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-.wbtm-bme__card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:22px;}
+/* Cards: overflow:visible so the roundSwitch toggle is never clipped at
+ * the border-radius corners. The box-shadow + border still render correctly. */
+.wbtm-bme__card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:visible;margin-bottom:22px;}
 .wbtm-bme__card-head{padding:18px 24px;border-bottom:1px solid var(--band-line);background:linear-gradient(180deg,#fbfcfe,var(--band));}
 .wbtm-bme__card-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;}
 .wbtm-bme__dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);display:inline-block;}
@@ -631,7 +633,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 /* Collapsible content areas */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse]{
-	border-radius:0 0 12px 12px;overflow:hidden;
+	border-radius:0 0 12px 12px;overflow:visible; /* overflow:visible prevents toggle clipping */
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse].mActive{
 	background:linear-gradient(180deg,#fbfcfe,#fff);
@@ -685,11 +687,18 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,var(--brand),var(--brand-600));border-color:transparent;color:#fff;
 	box-shadow:0 4px 12px var(--brand-ring);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckbox{
-	padding:0;font-size:inherit;font-weight:inherit;color:inherit;background:transparent;border:0;
+/* Reset the legacy .customCheckbox span completely inside modern pills.
+ * Legacy CSS uses ::before as a small checkbox square and ::after as a tick.
+ * In the modern pill context these overlap the pill gradient — suppress both. */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox .customCheckbox{
+	position:static !important;padding:0 !important;font-size:inherit !important;
+	font-weight:inherit !important;color:inherit !important;background:transparent !important;
+	border:0 !important;display:inline !important;width:auto !important;height:auto !important;
+	min-width:0 !important;line-height:inherit !important;
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel:has(input:checked) .customCheckbox::before{
-	content:"✓ ";font-weight:800;
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox .customCheckbox::before,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox .customCheckbox::after{
+	content:none !important;display:none !important;
 }
 
 /* ---- 4e. Gallery Image — modern upload zone ---- */
@@ -813,9 +822,469 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 /* ---- Step 4: hidden content templates stay hidden ---- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_hidden_content{display:none;}
 
+/* ==================================================================== *
+ *  STEP 4 · Advanced — per-section colour identity
+ *  Each of the 7 cards gets a distinct accent: left border, card-head
+ *  tint, dot colour, and a very subtle body wash.  All 7 use
+ *  nth-child() on .wbtm-bme__card inside the advanced panel.
+ *
+ *  Section order:
+ *   1 Extra Services   → indigo  #6366f1
+ *   2 Pickup/Drop-Off  → sky     #0ea5e9
+ *   3 Date Settings    → emerald #10b981
+ *   4 Tax Configure    → amber   #f59e0b
+ *   5 Gallery Image    → purple  #8b5cf6
+ *   6 Term & Condition → teal    #14b8a6
+ *   7 Bus Feature      → rose    #f43f5e  (brand)
+ * ==================================================================== */
+
+/* --- 1. Extra Services — indigo --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(99,102,241,.06) 0%,rgba(99,102,241,.02) 100%);
+	border-bottom:1px solid rgba(99,102,241,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1) .wbtm-bme__dot{background:#6366f1;box-shadow:0 0 0 4px rgba(99,102,241,.12);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1) .wbtm-bme__card-body{background:rgba(99,102,241,.018);}
+
+/* --- 2. Pickup / Drop-Off — sky blue --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(14,165,233,.06) 0%,rgba(14,165,233,.02) 100%);
+	border-bottom:1px solid rgba(14,165,233,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2) .wbtm-bme__dot{background:#0ea5e9;box-shadow:0 0 0 4px rgba(14,165,233,.12);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2) .wbtm-bme__card-body{background:rgba(14,165,233,.018);}
+
+/* --- 3. Date Settings — emerald --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(16,185,129,.06) 0%,rgba(16,185,129,.02) 100%);
+	border-bottom:1px solid rgba(16,185,129,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3) .wbtm-bme__dot{background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.12);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3) .wbtm-bme__card-body{background:rgba(16,185,129,.018);}
+
+/* --- 4. Tax Configure — amber --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(245,158,11,.07) 0%,rgba(245,158,11,.02) 100%);
+	border-bottom:1px solid rgba(245,158,11,.18);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4) .wbtm-bme__dot{background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.14);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4) .wbtm-bme__card-body{background:rgba(245,158,11,.018);}
+
+/* --- 5. Gallery Image — purple --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(139,92,246,.06) 0%,rgba(139,92,246,.02) 100%);
+	border-bottom:1px solid rgba(139,92,246,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5) .wbtm-bme__dot{background:#8b5cf6;box-shadow:0 0 0 4px rgba(139,92,246,.12);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5) .wbtm-bme__card-body{background:rgba(139,92,246,.018);}
+
+/* --- 6. Term & Condition — teal --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6){
+
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(20,184,166,.06) 0%,rgba(20,184,166,.02) 100%);
+	border-bottom:1px solid rgba(20,184,166,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6) .wbtm-bme__dot{background:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.12);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6) .wbtm-bme__card-body{background:rgba(20,184,166,.018);}
+
+/* --- 7. Bus Feature — rose (brand) --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7){
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7) .wbtm-bme__card-head{
+	background:linear-gradient(135deg,rgba(225,29,72,.06) 0%,rgba(225,29,72,.02) 100%);
+	border-bottom:1px solid rgba(225,29,72,.14);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7) .wbtm-bme__dot{background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7) .wbtm-bme__card-body{background:rgba(225,29,72,.014);}
+
 /* ---- Step 4: add-new / sortable buttons polish ---- */
+/* Buttons should be compact, not full-width */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_add_item{
-	margin-top:10px;width:100%;justify-content:center;
+	margin-top:10px;width:auto !important;justify-content:center;min-width:150px;
+}
+/* Containers that hold add-new buttons — right-align them */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dFlex_justifyEnd{
+	display:flex;justify-content:flex-end;padding:10px 12px 14px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dFlex_justifyEnd .wbtm_add_item{
+	margin-top:0;
+}
+
+/* ==================================================================== *
+ *  ICON FIX — replace FA5 icon spans with inline SVG background images
+ *  The PHP generates <span class="fas fa-*"> but FA5 may not be loaded
+ *  (plugin uses its own mageicon font which only applies to .mi classes).
+ *  Font-family overrides are unreliable when another plugin loads FA5.
+ *  Definitive fix: hide the .fas span, add ::after with SVG on the button.
+ * ==================================================================== */
+
+/* --- Hide ALL .fas spans inside our action buttons --- */
+.wbtm-bme.wbtm_style .wbtm_sortable_button .fas,
+.wbtm-bme.wbtm_style .wbtm_sortable_button .mi,
+.wbtm-bme.wbtm_style .wbtm_item_remove .fas,
+.wbtm-bme.wbtm_style .wbtm_item_remove .mi{
+	display:none !important;
+	width:0 !important;
+	height:0 !important;
+}
+
+/* --- Sort / drag handle — 6-dot grip SVG --- */
+.wbtm-bme.wbtm_style .wbtm_sortable_button{
+	color:var(--ink-2) !important;
+	background:#fff !important;
+	border:1px solid var(--line) !important;
+	cursor:grab !important;
+	display:inline-flex !important;
+	align-items:center !important;
+	justify-content:center !important;
+	width:30px !important;
+	height:30px !important;
+	border-radius:8px !important;
+	padding:0 !important;
+	min-width:0 !important;
+}
+.wbtm-bme.wbtm_style .wbtm_sortable_button:active{cursor:grabbing !important;}
+.wbtm-bme.wbtm_style .wbtm_sortable_button:hover{border-color:var(--blue) !important;}
+.wbtm-bme.wbtm_style .wbtm_sortable_button::after{
+	content:"" !important;
+	display:block !important;
+	width:12px !important;
+	height:14px !important;
+	flex:none !important;
+	/* 6-dot grip icon (2 columns × 3 rows) */
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Ccircle cx='3' cy='2' r='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='7' cy='2' r='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='3' cy='8' r='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='7' cy='8' r='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='3' cy='14' r='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='7' cy='14' r='1.5' fill='%2394a3b8'/%3E%3C/svg%3E") !important;
+	background-repeat:no-repeat !important;
+	background-position:center !important;
+	background-size:contain !important;
+}
+.wbtm-bme.wbtm_style .wbtm_sortable_button:hover::after{
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Ccircle cx='3' cy='2' r='1.5' fill='%232563eb'/%3E%3Ccircle cx='7' cy='2' r='1.5' fill='%232563eb'/%3E%3Ccircle cx='3' cy='8' r='1.5' fill='%232563eb'/%3E%3Ccircle cx='7' cy='8' r='1.5' fill='%232563eb'/%3E%3Ccircle cx='3' cy='14' r='1.5' fill='%232563eb'/%3E%3Ccircle cx='7' cy='14' r='1.5' fill='%232563eb'/%3E%3C/svg%3E") !important;
+}
+
+/* --- Delete / trash — SVG trash can --- */
+.wbtm-bme.wbtm_style .wbtm_item_remove{
+	display:inline-flex !important;
+	align-items:center !important;
+	justify-content:center !important;
+	width:30px !important;
+	height:30px !important;
+	border-radius:8px !important;
+	padding:0 !important;
+	min-width:0 !important;
+}
+.wbtm-bme.wbtm_style .wbtm_item_remove::after{
+	content:"" !important;
+	display:block !important;
+	width:14px !important;
+	height:14px !important;
+	flex:none !important;
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e11d48' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2'/%3E%3C/svg%3E") !important;
+	background-repeat:no-repeat !important;
+	background-position:center !important;
+	background-size:contain !important;
+}
+.wbtm-bme.wbtm_style .wbtm_item_remove:hover::after{
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23be123c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2'/%3E%3C/svg%3E") !important;
+}
+
+/* ==================================================================== *
+ *  TOGGLE FIX
+ *  Root cause 1: Legacy CSS adds border:1px solid on EVERY [class*="_dLayout"]
+ *    element. The right border of a flex-row appears as a vertical line cutting
+ *    through the toggle when the toggle is flush-right.
+ *  Root cause 2: overflow:hidden on .wbtm_settings_area clips the toggle at the
+ *    border-radius corner.
+ *  Fix: strip all borders from _dLayout rows inside the advanced area's
+ *    wbtm_settings_area; keep only border-bottom dividers. Also set
+ *    overflow:visible on the settings area.
+ * ==================================================================== */
+
+/* Remove legacy full-border from ALL _dLayout rows inside advanced settings areas */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area [class*="_dLayout"],
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .dLayout{
+	border:0 !important;
+	border-bottom:1px solid var(--band-line) !important;
+	margin-top:0 !important;
+	background:transparent !important;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area [class*="_dLayout"]:last-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .dLayout:last-child{
+	border-bottom:0 !important;
+}
+
+/* Allow the toggle to render fully — border-radius still clips the border visually */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area{
+	overflow:visible !important;
+}
+
+/* Ensure toggle rows have generous right padding so toggle is never edge-clipped */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area ._dLayout.dFlex._justifyBetween,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area [class*="_dLayout_dFlex_justifyBetween"]{
+	padding:13px 20px 13px 16px !important;
+}
+
+/* The label wrapper: clean size, no clipping margin */
+.wbtm-bme.wbtm_style .roundSwitchLabel{
+	position:relative !important;
+	display:inline-block !important;
+	width:46px !important;
+	height:26px !important;
+	flex:none !important;
+	cursor:pointer !important;
+	margin:0 !important;
+	vertical-align:middle !important;
+}
+
+/* Belt-and-suspenders toggle track override (highest specificity) */
+.wbtm-bme.wbtm_style.wbtm-bme .roundSwitch{
+	width:46px !important;
+	height:26px !important;
+	min-width:0 !important;
+	position:absolute !important;
+	inset:0 !important;
+	border-radius:999px !important;
+	background:#cbd5e1 !important;
+	transition:.2s !important;
+}
+.wbtm-bme.wbtm_style.wbtm-bme .roundSwitch::before{
+	content:"" !important;
+	position:absolute !important;
+	left:3px !important;top:3px !important;bottom:auto !important;
+	width:20px !important;height:20px !important;
+	background:#fff !important;
+	border-radius:50% !important;
+	box-shadow:0 1px 3px rgba(0,0,0,.25) !important;
+	transition:.2s !important;
+}
+.wbtm-bme.wbtm_style.wbtm-bme .roundSwitch::after{content:none !important;display:none !important;}
+.wbtm-bme.wbtm_style.wbtm-bme .roundSwitchLabel input:checked + .roundSwitch{
+	background:linear-gradient(135deg,var(--brand),#fb7185) !important;
+}
+.wbtm-bme.wbtm_style.wbtm-bme .roundSwitchLabel input:checked + .roundSwitch::before{
+	transform:translateX(20px) !important;
+}
+
+/* Fallback: general right padding on toggle container cells */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_2.dFlex._justifyEnd,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_2_dFlex._justifyEnd{
+	padding-right:4px;
+}
+
+/* ==================================================================== *
+ *  STEP 4 · Advanced — layout corrections v2  (fixes col_X flex fights,
+ *  pill-stretch bug, and general visual-hierarchy improvements)
+ * ==================================================================== */
+
+/* ----
+ * Root cause of "Saturday/Sunday full-width red bars":
+ *   .groupCheckBox is display:flex but has no align-items, so it defaults
+ *   to "stretch".  Every flex item (the day-pill labels) therefore stretches
+ *   to the full cross-axis height of its flex line.  When the :has(:checked)
+ *   gradient fires on a stretched label, it looks like a full-width bar.
+ * Fix: force align-items:flex-start so pills size to their own content.
+ * ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox{
+	align-items:flex-start;    /* KEY: prevents pill stretch                */
+	justify-content:flex-end;  /* keep right-aligned on desktop             */
+}
+/* Belt-and-suspenders: each pill must never grow or stretch */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox > .customCheckboxLabel{
+	flex:0 0 auto !important;
+	align-self:flex-start !important;
+	width:auto !important;
+}
+
+/* ----
+ * Fix: legacy col_X percentage widths fight the parent flex layout.
+ * Inside a flex row, col_2/col_10/col_6/col_8 etc. set explicit % widths
+ * that can squeeze the label column or over-stretch the control column.
+ * Override them with proper flex values so each row is always two zones:
+ *   - Left (label + description): grows to fill available space
+ *   - Right (control / toggle):   auto-width, never forced wide
+ * ---- */
+
+/* Remove legacy % widths from ALL direct children of the flex rows */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter > *,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart > *,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween > *,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_ > *{
+	width:auto !important;
+}
+/* Left child: grow to fill */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter > :first-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart > :first-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween > :first-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_ > :first-child{
+	flex:1 1 auto;
+	min-width:0;
+}
+/* Right child: shrink to content, never forced wide */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter > :last-child:not(:first-child),
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_ > :last-child:not(:first-child),
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween > :last-child:not(:first-child){
+	flex:0 0 auto;
+	min-width:0;
+	max-width:clamp(160px,50%,380px);
+}
+/* Align-start rows (date lists, off-date range) — right child fills half */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart > :last-child:not(:first-child){
+	flex:0 0 48%;
+	min-width:200px;
+	max-width:480px;
+}
+/* Constrain date inputs in right columns */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter input.date_type,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter input.formControl,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter select.formControl{
+	min-width:140px;
+	max-width:260px;
+	width:100%;
+}
+
+/* ---- Pickup / Drop-off: handle multi-class space-separated flex rows ---- */
+/* These use ._dLayout dFlex _justifyBetween (space-separated, not compound) */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout.dFlex._justifyBetween{
+	display:flex;justify-content:space-between;align-items:center;gap:16px;
+	padding:13px 16px;border-bottom:1px solid var(--band-line);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout.dFlex._justifyBetween > *{width:auto !important;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout.dFlex._justifyBetween > :first-child{flex:1 1 auto;min-width:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout.dFlex._justifyBetween > :last-child:not(:first-child){flex:0 0 auto;}
+/* Single-class column helpers used in Pickup section */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_10_dFlex_fdColumn,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="col_10_dFlex"]{
+	display:flex;flex-direction:column;gap:3px;flex:1 1 auto;min-width:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_10_dFlex_fdColumn label{
+	font-weight:600;font-size:13.5px;color:var(--ink);margin:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_10_dFlex_fdColumn span,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_10_dFlex_fdColumn .info_text{
+	font-size:12px;color:var(--muted);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_2_dFlex,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="col_2_dFlex"]{
+	display:flex;justify-content:flex-end;align-items:center;flex:0 0 auto;
+}
+
+/* ---- Sub-section "band" headers — styled like a labelled divider ---- */
+/* Replaces flat gray box with a left-accent stripe + cleaner typography  */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"]{
+	background:linear-gradient(90deg,var(--brand-soft) 0%,var(--band) 100%);
+	border:1px solid var(--band-line);
+	border-left:3px solid var(--brand);
+	border-radius:0 8px 8px 0;
+	padding:10px 16px;
+	margin:16px 0 0;
+	display:flex;
+	align-items:flex-start;
+	gap:10px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] > *{flex:1;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] label{
+	font-size:13px;font-weight:700;color:var(--ink);display:block;margin:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] span{
+	font-size:12px;color:var(--muted);line-height:1.5;display:block;margin-top:2px;
+}
+/* First row after a _bgLight header: remove its top border (already separated) */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] + [class*="_dLayout"]{
+	border-top:0 !important;
+}
+
+/* ---- Tax configure info notice ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyCenter{
+	display:flex;justify-content:center;align-items:center;gap:10px;
+	padding:22px 20px;
+	background:var(--blue-soft);
+	border:1px dashed #93c5fd;
+	border-radius:12px;
+	font-size:13.5px;font-weight:500;color:var(--blue);
+	text-align:center;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyCenter a{color:var(--brand);font-weight:600;text-decoration:underline;}
+
+/* ---- Date Settings: "Off Dates" sortable list polish ---- */
+/* The list items (.wbtm_remove_area .justifyBetween) inside the date settings */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area .justifyBetween{
+	display:flex;align-items:center;gap:8px;padding:8px 12px;
+	border-bottom:1px solid var(--band-line);transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area:last-child .justifyBetween{border-bottom:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area:hover .justifyBetween{background:var(--inset);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area .justifyBetween ._fullWidth_mR{flex:1;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area .divider{margin:0;}
+/* Date input inside the list: compact */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area .wbtm_remove_area .date_type{
+	height:36px;font-size:13px;padding:5px 10px;
+}
+
+/* ---- Repeating section: date field right column — constrain + align ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"] .textRight{
+	display:flex;justify-content:flex-end;align-items:center;
+}
+
+/* ---- Gallery: upload zone intro row ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper{
+	gap:16px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper > div:first-child{
+	display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+
+/* ---- Section info text beneath toggles ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .info_text{
+	font-size:12px;color:var(--muted);line-height:1.45;margin-top:2px;display:block;
+}
+
+/* ---- Ensure the add-new button inside date-list areas doesn't overflow ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area._fullWidth{width:100%;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dFlex_justifyEnd{
+	display:flex;justify-content:flex-end;padding:8px 12px 12px;
+}
+
+/* ---- Collapse regions: ensure rounded bottom when attached to _bgLight ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] + [data-collapse].mActive,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] ~ [data-collapse].mActive{
+	border-radius:0 0 12px 12px;
+	border:1px solid var(--line);
+	border-top:0;
+	overflow:hidden;
+}
+
+/* ---- Off-dates in range: two date pickers side-by-side ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_remove_area .justifyBetween:has(.date_type ~ .date_type),
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_remove_area .justifyBetween.range-row{
+	gap:6px;
+}
+
+/* ---- wbtm_settings_area "max_400" class — full width in modern context ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area.max_400,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area._fullWidth{
+	max-width:none;width:100%;
+}
+
+/* ---- Table action column: tighter width ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] tbody .wbtm_remove_area > td:last-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] tbody .wbtm_remove_area > td._w_100{
+	width:1%;white-space:nowrap;text-align:center;
 }
 
 /* -------------------------------------------------------------------- *
@@ -832,8 +1301,26 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween,
 	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_,
 	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter,
-	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart{flex-direction:column;align-items:stretch;}
-	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox{justify-content:flex-start;}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout.dFlex._justifyBetween{
+		flex-direction:column;align-items:stretch;
+	}
+	/* On mobile the pill group should left-align and wrap freely */
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox{
+		justify-content:flex-start;max-width:none;
+	}
+	/* Release column flex constraints on mobile */
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter > :last-child:not(:first-child),
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart > :last-child:not(:first-child),
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter > *,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart > *{
+		flex:1 1 auto;max-width:none;min-width:0;
+	}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter input.date_type,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter input.formControl,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter select.formControl{
+		max-width:none;
+	}
 	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .max_300{max-width:100% !important;}
 }
 @media(max-width:480px){
