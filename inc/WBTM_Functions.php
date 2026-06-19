@@ -1496,9 +1496,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					if ( strpos( $icon, 'dashicons' ) === 0 ) {
 						return $icon;
 					}
-					// FontAwesome class → not renderable by WP menus, use the bus SVG.
+					// FontAwesome class → register a plain dashicon as the CPT menu_icon
+					// so WP uses :before (not an <img>) for the slot. The admin_head CSS
+					// then overrides :before with the correct FA glyph. This prevents the
+					// SVG data URI from being rendered as an <img> simultaneously with the
+					// FA :before content (the "double icon" bug).
 					if ( preg_match( '/^(fa[srlbdt]?)\s+fa-/', $icon ) ) {
-						return $fallback;
+						return 'dashicons-admin-generic';
 					}
 					// Otherwise it's already a data URI or image URL → use as-is.
 					return $icon;
@@ -1512,7 +1516,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$item_ids = [
 					'#adminmenu #menu-posts-wbtm_bus .wp-menu-image',
 					'#adminmenu #toplevel_page_wbtm_bus .wp-menu-image',
-					'#adminmenu li.menu-top.wp-has-submenu.wp-menu-open .wp-menu-image',
+					// Broad fallback: any menu item whose submenu anchor href contains the CPT slug.
+					// Applied via a JS class added below so CSS can target it.
 				];
 				$img_sel    = implode( ', ', array_map( function($s){ return $s . ' img'; }, $item_ids ) );
 				$before_sel = implode( ', ', $item_ids );
@@ -1523,14 +1528,21 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$unicode = self::fa_unicode( $m[2] );
 					if ( $unicode ) {
 						$weight = ( $style === 'fas' || $style === 'fa' ) ? 900 : 400;
+						// JS: find the correct menu <li> by href, add a known class so CSS targets it reliably.
+						echo '<script>jQuery(function($){'
+							. '$("#adminmenu a[href*=\"post_type=wbtm_bus\"]").closest("li.menu-top").addClass("wbtm-bus-menu-item");'
+							. '});</script>' . "\n";
 						echo '<style>'
+							. '#adminmenu .wbtm-bus-menu-item .wp-menu-image img,'
 							. esc_html( $img_sel ) . ' { display: none !important; }'
+							. '#adminmenu .wbtm-bus-menu-item .wp-menu-image:before,'
 							. esc_html( $before_sel ) . ':before {'
 							. 'content: "\\' . esc_attr( $unicode ) . '" !important;'
-							. 'font-family: "Font Awesome 6 Free" !important;'
+							. 'font-family: "Font Awesome 6 Free","Font Awesome 5 Free" !important;'
 							. 'font-weight: ' . esc_attr( (string) $weight ) . ' !important;'
-							. 'font-size: 20px !important;'
-							. 'padding-top: 4px !important;'
+							. 'font-size: 18px !important;'
+							. 'width: 20px !important;'
+							. 'text-align: center !important;'
 							. '}'
 							. '</style>' . "\n";
 					}
