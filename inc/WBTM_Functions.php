@@ -1547,12 +1547,19 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						. '}'
 						. '});</script>' . "\n";
 					echo '<style>'
-						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image:before { content: none !important; }'
+						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image:before { content: none !important; display: none !important; }'
 						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image img { display: none !important; }'
+						// Make .wp-menu-image a flex container so the <i> centres perfectly
+						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image {'
+						. 'display: flex !important; align-items: center !important; justify-content: center !important;'
+						. '}'
 						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image .wbtm-fa-menu-icon {'
-						. 'display: block !important; font-size: 18px !important;'
-						. 'line-height: 1 !important; padding-top: 7px !important;'
-						. 'text-align: center !important; color: inherit !important;'
+						. 'display: inline-block !important;'
+						. 'font-size: 18px !important;'
+						. 'line-height: 1 !important;'
+						. 'width: auto !important; height: auto !important;'
+						. 'color: inherit !important;'
+						. 'float: none !important; margin: 0 !important; padding: 0 !important;'
 						. '}'
 						. '</style>' . "\n";
 					return;
