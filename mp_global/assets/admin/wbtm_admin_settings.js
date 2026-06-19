@@ -302,7 +302,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             let parent = $(this).closest(".wbtm_add_icon_image_area");
             parent.find('input[type="hidden"]').val("");
             parent.find("[data-add-icon]").removeAttr("class");
-            parent.find(".wbtm_icon_item").slideUp("fast");
+            parent.find(".wbtm_icon_item, .wbtm_image_item").slideUp("fast");
             parent.find(".wbtm_add_icon_image_button_area").slideDown("fast");
         }
     );
@@ -326,7 +326,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             let parent = $(this).closest(".wbtm_add_icon_image_area");
             parent.find('input[type="hidden"]').val("");
             parent.find("img").attr("src", "");
-            parent.find(".wbtm_image_item").slideUp("fast");
+            parent.find(".wbtm_icon_item, .wbtm_image_item").slideUp("fast");
             parent.find(".wbtm_add_icon_image_button_area").slideDown("fast");
         }
     );

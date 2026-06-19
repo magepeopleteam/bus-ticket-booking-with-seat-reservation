@@ -166,7 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								var p = $(this).closest('.wbtm_add_icon_image_area');
 								p.find('input[type="hidden"]').val('');
 								p.find('[data-add-icon]').removeAttr('class');
-								p.find('.wbtm_icon_item').removeClass('dNone').hide();
+								p.find('.wbtm_icon_item, .wbtm_image_item').removeClass('dNone').hide();
 								p.find('.wbtm_add_icon_image_button_area').removeClass('dNone').show();
 							});
 							$(document).on('click', '.wbtm_add_icon_image_area .wbtm_image_remove', function(e){
@@ -174,7 +174,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								var p = $(this).closest('.wbtm_add_icon_image_area');
 								p.find('input[type="hidden"]').val('');
 								p.find('img').attr('src', '');
-								p.find('.wbtm_image_item').removeClass('dNone').hide();
+								p.find('.wbtm_icon_item, .wbtm_image_item').removeClass('dNone').hide();
 								p.find('.wbtm_add_icon_image_button_area').removeClass('dNone').show();
 							});
 							// Color pickers — standard WP picker, init once per field
