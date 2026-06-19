@@ -1522,30 +1522,38 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$img_sel    = implode( ', ', array_map( function($s){ return $s . ' img'; }, $item_ids ) );
 				$before_sel = implode( ', ', $item_ids );
 
-				// ── FontAwesome class → render via :before + FA font ──
+				// ── FontAwesome class → inject <i class="fas fa-xxx"> directly ──
+				// FA 5 (all.min.css) is already enqueued by the plugin for admin pages.
+				// Unicode lookup tables are incomplete and font-family names differ
+				// between FA 5/6. The reliable approach is to let FA render its own
+				// <i> element by appending it to .wp-menu-image via JS.
 				if ( $icon && preg_match( '/^(fa[srlbdt]?)\s+fa-(.+)$/', $icon, $m ) ) {
-					$style   = $m[1];
-					$unicode = self::fa_unicode( $m[2] );
-					if ( $unicode ) {
-						$weight = ( $style === 'fas' || $style === 'fa' ) ? 900 : 400;
-						// JS: find the correct menu <li> by href, add a known class so CSS targets it reliably.
-						echo '<script>jQuery(function($){'
-							. '$("#adminmenu a[href*=\"post_type=wbtm_bus\"]").closest("li.menu-top").addClass("wbtm-bus-menu-item");'
-							. '});</script>' . "\n";
-						echo '<style>'
-							. '#adminmenu .wbtm-bus-menu-item .wp-menu-image img,'
-							. esc_html( $img_sel ) . ' { display: none !important; }'
-							. '#adminmenu .wbtm-bus-menu-item .wp-menu-image:before,'
-							. esc_html( $before_sel ) . ':before {'
-							. 'content: "\\' . esc_attr( $unicode ) . '" !important;'
-							. 'font-family: "Font Awesome 6 Free","Font Awesome 5 Free" !important;'
-							. 'font-weight: ' . esc_attr( (string) $weight ) . ' !important;'
-							. 'font-size: 18px !important;'
-							. 'width: 20px !important;'
-							. 'text-align: center !important;'
-							. '}'
-							. '</style>' . "\n";
-					}
+					$icon_js = esc_js( $icon ); // e.g. "fas fa-bed"
+					echo '<script>jQuery(function($){'
+						// Find the bus CPT menu item reliably by href
+						. 'var $li = $("#adminmenu a[href*=\'post_type=wbtm_bus\']").first().closest("li.menu-top");'
+						. 'if($li.length){'
+						.   '$li.addClass("wbtm-bus-menu-item");'
+						.   'var $img = $li.find(".wp-menu-image");'
+						// Hide any existing img and the dashicons :before by switching
+						// the container to plain display (no dashicons class)
+						.   '$img.find("img").hide();'
+						.   '$img.removeClass("dashicons-before dashicons-admin-generic");'
+						// Remove any existing injected icon first (prevent duplicates on AJAX nav)
+						.   '$img.find(".wbtm-fa-menu-icon").remove();'
+						// Append the FA <i> element — FA 5 renders it via its own CSS
+						.   '$img.append(\'<i class="wbtm-fa-menu-icon ' . $icon_js . '" aria-hidden="true"></i>\');'
+						. '}'
+						. '});</script>' . "\n";
+					echo '<style>'
+						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image:before { content: none !important; }'
+						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image img { display: none !important; }'
+						. '#adminmenu .wbtm-bus-menu-item .wp-menu-image .wbtm-fa-menu-icon {'
+						. 'display: block !important; font-size: 18px !important;'
+						. 'line-height: 1 !important; padding-top: 7px !important;'
+						. 'text-align: center !important; color: inherit !important;'
+						. '}'
+						. '</style>' . "\n";
 					return;
 				}
 
