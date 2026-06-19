@@ -1523,25 +1523,26 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$before_sel = implode( ', ', $item_ids );
 
 				// ── FontAwesome class → inject <i class="fas fa-xxx"> directly ──
-				// FA 5 (all.min.css) is already enqueued by the plugin for admin pages.
-				// Unicode lookup tables are incomplete and font-family names differ
-				// between FA 5/6. The reliable approach is to let FA render its own
-				// <i> element by appending it to .wp-menu-image via JS.
+				// FA 5 (all.min.css) is loaded only on plugin screens via should_load_admin_assets().
+				// For the admin menu icon we need FA on EVERY admin page, so we output
+				// a <link> tag directly here (admin_head). The browser caches it from
+				// plugin pages so there is no real extra network cost.
 				if ( $icon && preg_match( '/^(fa[srlbdt]?)\s+fa-(.+)$/', $icon, $m ) ) {
+					$fa_url  = esc_url( WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/all.min.css' );
 					$icon_js = esc_js( $icon ); // e.g. "fas fa-bed"
+					// Output FA stylesheet unconditionally for this admin page.
+					echo '<link rel="stylesheet" id="wbtm-fa-menu-icon-css" href="' . $fa_url . '" />' . "\n";
 					echo '<script>jQuery(function($){'
 						// Find the bus CPT menu item reliably by href
 						. 'var $li = $("#adminmenu a[href*=\'post_type=wbtm_bus\']").first().closest("li.menu-top");'
 						. 'if($li.length){'
 						.   '$li.addClass("wbtm-bus-menu-item");'
 						.   'var $img = $li.find(".wp-menu-image");'
-						// Hide any existing img and the dashicons :before by switching
-						// the container to plain display (no dashicons class)
-						.   '$img.find("img").hide();'
+						// Remove dashicons classes so only our <i> renders
 						.   '$img.removeClass("dashicons-before dashicons-admin-generic");'
-						// Remove any existing injected icon first (prevent duplicates on AJAX nav)
+						// Remove any previously injected icon (prevent duplicates)
 						.   '$img.find(".wbtm-fa-menu-icon").remove();'
-						// Append the FA <i> element — FA 5 renders it via its own CSS
+						// Append FA <i> — rendered by FA CSS loaded above
 						.   '$img.append(\'<i class="wbtm-fa-menu-icon ' . $icon_js . '" aria-hidden="true"></i>\');'
 						. '}'
 						. '});</script>' . "\n";
