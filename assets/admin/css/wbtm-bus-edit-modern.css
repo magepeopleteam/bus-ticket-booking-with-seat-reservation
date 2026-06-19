@@ -1,0 +1,845 @@
+/* =====================================================================
+ * Modern Bus Editor  ·  wbtm-bus-edit-modern.css
+ * Adapts the approved mockup design. Scoped under .wbtm-bme (shell) or
+ * body.wbtm-bme-active (WP chrome takeover) so the classic editor and the
+ * rest of wp-admin are never affected.
+ *
+ * The shell reuses the existing classic section markup for the step
+ * bodies. That markup also carries the legacy `wbtm_style` class (on the
+ * root) so classic JS keeps working; therefore rules that restyle reused
+ * elements are prefixed `.wbtm-bme.wbtm_style` to win specificity over the
+ * legacy `div.wbtm_style ...` rules (and this file also loads later).
+ * ===================================================================== */
+
+.wbtm-bme{
+	--bg:#eef1f6; --surface:#fff; --inset:#f8fafc;
+	--band:#f1f5f9; --band-line:#e6ebf2;
+	--ink:#0f172a; --ink-2:#475569; --muted:#94a3b8; --line:#e4e9f0;
+	--brand:#e11d48; --brand-600:#be123c; --brand-soft:#fff1f4; --brand-ring:rgba(225,29,72,.16);
+	--blue:#2563eb; --blue-soft:#eff5ff; --ok:#16a34a; --ok-soft:#ecfdf3;
+	--shadow-sm:0 1px 2px rgba(15,23,42,.05),0 1px 3px rgba(15,23,42,.04);
+	--radius:14px;
+	font-family:'Inter',system-ui,-apple-system,sans-serif;
+	color:var(--ink-2);font-size:14px;line-height:1.5;
+	-webkit-font-smoothing:antialiased;background:var(--bg);margin:0;
+}
+.wbtm-bme *,
+.wbtm-bme *::before,
+.wbtm-bme *::after{box-sizing:border-box;}
+.wbtm-bme h1,.wbtm-bme h2,.wbtm-bme h3,.wbtm-bme h4{
+	font-family:'Plus Jakarta Sans','Inter',sans-serif;color:var(--ink);margin:0;
+}
+
+/* -------------------------------------------------------------------- *
+ *  Full-screen takeover (only when modern editor is active) — hides ALL
+ *  WP chrome so the editor matches the mockup edge to edge.
+ * -------------------------------------------------------------------- */
+html.wbtm-bme-html.wp-toolbar{padding-top:0 !important;}
+html.wbtm-bme-html,
+body.wbtm-bme-active{background:#eef1f6 !important;}
+body.wbtm-bme-active #wpadminbar,
+body.wbtm-bme-active #adminmenumain,
+body.wbtm-bme-active #adminmenuback,
+body.wbtm-bme-active #adminmenuwrap,
+body.wbtm-bme-active #screen-meta,
+body.wbtm-bme-active #screen-meta-links,
+body.wbtm-bme-active #wpfooter,
+body.wbtm-bme-active .wrap > h1.wp-heading-inline,
+body.wbtm-bme-active .wrap > .page-title-action,
+body.wbtm-bme-active .wrap > hr.wp-header-end,
+body.wbtm-bme-active #post-body-content,
+body.wbtm-bme-active #postbox-container-1,
+body.wbtm-bme-active #poststuff #postbox-container-2 .postbox:not(#wbtm_modern_meta_box_panel){
+	display:none !important;
+}
+body.wbtm-bme-active #titlediv{position:absolute;left:-9999px;top:-9999px;}
+body.wbtm-bme-active #wpcontent{margin-left:0 !important;padding-left:0 !important;}
+body.wbtm-bme-active #wpbody-content{padding:0 !important;float:none;}
+body.wbtm-bme-active div.wrap{margin:0 !important;padding:0 !important;max-width:none !important;}
+body.wbtm-bme-active #poststuff{margin:0 !important;padding:0 !important;min-width:0;}
+body.wbtm-bme-active #post-body{margin:0 !important;padding:0 !important;}
+body.wbtm-bme-active #post-body.columns-2 #postbox-container-2{width:100% !important;float:none !important;margin:0 !important;}
+body.wbtm-bme-active #wbtm_modern_meta_box_panel{border:0;background:transparent;box-shadow:none;margin:0;}
+body.wbtm-bme-active #wbtm_modern_meta_box_panel > .postbox-header{display:none;}
+body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
+
+/* ==================================================================== *
+ *  SHELL (unique class names — no conflict with classic)
+ * ==================================================================== */
+
+/* Topbar */
+.wbtm-bme__topbar{
+	position:sticky;top:0;z-index:30;
+	background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+	border-bottom:1px solid var(--line);
+	display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:12px 26px;
+}
+.wbtm-bme__back{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-weight:500;font-size:13.5px;padding:7px 11px;border-radius:9px;text-decoration:none;}
+.wbtm-bme__back:hover{background:var(--band);color:var(--ink);}
+.wbtm-bme__back .dashicons{font-size:17px;width:17px;height:17px;}
+.wbtm-bme__ttl{justify-self:center;font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);font-family:'Plus Jakarta Sans','Inter',sans-serif;}
+/* editable title in the topbar (replaces the static mockup title) */
+.wbtm-bme.wbtm_style .wbtm-bme__topbar input.wbtm-bme__ttl-input{
+	justify-self:center;width:auto;min-width:160px;max-width:460px;text-align:center;
+	font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);
+	background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 12px;transition:.15s;box-shadow:none;min-height:0;height:auto;
+}
+.wbtm-bme.wbtm_style .wbtm-bme__topbar input.wbtm-bme__ttl-input:hover{background:var(--band);}
+.wbtm-bme.wbtm_style .wbtm-bme__topbar input.wbtm-bme__ttl-input:focus{outline:none;background:#fff;border-color:var(--line);box-shadow:0 0 0 3px var(--brand-ring);text-transform:none;letter-spacing:normal;}
+.wbtm-bme__acts{justify-self:end;display:flex;gap:10px;}
+
+/* On/Off badge next to the reservation toggle (mockup) */
+.wbtm-bme__onoff{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-right:8px;vertical-align:middle;}
+.wbtm-bme__onoff.on{background:var(--ok-soft);color:var(--ok) !important;}
+.wbtm-bme__onoff.on::before{content:"✓";font-weight:800;}
+.wbtm-bme__onoff.off{background:#f1f5f9;color:var(--muted);}
+
+.wbtm-bme__btn{
+	font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:10px;
+	padding:9px 16px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+	display:inline-flex;align-items:center;gap:7px;transition:.15s;line-height:1.2;text-decoration:none;height:auto;
+}
+.wbtm-bme__btn:hover{background:var(--band);color:var(--ink);}
+.wbtm-bme__btn:disabled{opacity:.45;cursor:not-allowed;}
+.wbtm-bme__btn--primary,
+.wbtm-bme__btn--primary:hover{
+	background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff;border-color:transparent;box-shadow:0 6px 16px var(--brand-ring);
+}
+.wbtm-bme__btn--primary:hover{filter:brightness(1.05);}
+
+/* Wrap + stepper */
+.wbtm-bme__wrap{max-width:1320px;margin:0 auto;padding:26px;}
+.wbtm-bme__stepper{display:flex;align-items:flex-start;justify-content:center;margin:6px 0 26px;}
+.wbtm-bme__step{display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;text-align:center;cursor:pointer;}
+.wbtm-bme__num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:#fff;border:2px solid var(--line);color:var(--muted);transition:.2s;}
+.wbtm-bme__lab{font-size:12.5px;font-weight:600;color:var(--muted);}
+.wbtm-bme__step.done .wbtm-bme__num{background:#fff;border-color:var(--brand);color:var(--brand);}
+.wbtm-bme__step.done .wbtm-bme__lab{color:var(--ink-2);}
+.wbtm-bme__step.active .wbtm-bme__num{background:linear-gradient(135deg,var(--brand),var(--brand-600));border-color:transparent;color:#fff;box-shadow:0 6px 16px var(--brand-ring);}
+.wbtm-bme__step.active .wbtm-bme__lab{color:var(--ink);}
+.wbtm-bme__conn{flex:1;height:2px;background:var(--line);margin-top:16px;min-width:30px;max-width:80px;}
+.wbtm-bme__conn.done{background:var(--brand);}
+
+/* Panels + cards */
+.wbtm-bme__panel{display:none;}
+.wbtm-bme__panel.active{display:block;animation:wbtmBmeFade .25s ease;}
+@keyframes wbtmBmeFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.wbtm-bme__card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:22px;}
+.wbtm-bme__card-head{padding:18px 24px;border-bottom:1px solid var(--band-line);background:linear-gradient(180deg,#fbfcfe,var(--band));}
+.wbtm-bme__card-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.wbtm-bme__dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);display:inline-block;}
+.wbtm-bme__card-head p{margin:4px 0 0 18px;font-size:13px;color:var(--ink-2);}
+.wbtm-bme__card-body{padding:20px 24px 24px;}
+
+/* Body = main column + sticky preview rail */
+.wbtm-bme__body{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start;}
+.wbtm-bme__main{min-width:0;}
+.wbtm-bme__rail{position:sticky;top:84px;display:flex;flex-direction:column;gap:18px;}
+.wbtm-bme__rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;}
+.wbtm-bme__rail-hero{position:relative;height:150px;background:linear-gradient(135deg,#1e293b,#334155);display:grid;place-items:center;color:#cbd5e1;overflow:hidden;}
+.wbtm-bme__rail-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.wbtm-bme__rail-hero-ph{font-size:46px;width:46px;height:46px;opacity:.7;}
+.wbtm-bme__rail-badge{position:absolute;top:10px;left:10px;z-index:2;background:rgba(255,255,255,.92);color:var(--ink);font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;box-shadow:var(--shadow-sm);}
+.wbtm-bme__rail-hero-acts{position:absolute;right:8px;bottom:8px;z-index:2;display:flex;gap:6px;}
+.wbtm-bme__hero-btn{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#fff;background:rgba(15,23,42,.72);border:0;border-radius:8px;padding:5px 9px;cursor:pointer;line-height:1;}
+.wbtm-bme__hero-btn:hover{background:rgba(15,23,42,.92);}
+.wbtm-bme__hero-btn .dashicons{font-size:14px;width:14px;height:14px;}
+.wbtm-bme__hero-btn--rm{background:rgba(225,29,72,.85);}
+.wbtm-bme__hero-btn--rm:hover{background:rgba(190,18,60,.95);}
+.wbtm-bme__rail-info{padding:14px 16px 16px;}
+.wbtm-bme__rail-name{font-size:15px;font-weight:800;color:var(--ink);margin:0 0 12px;word-break:break-word;}
+.wbtm-bme__rail-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.wbtm-bme__rail-stats > div{background:var(--inset);border:1px solid var(--band-line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;}
+.wbtm-bme__rail-stats span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.wbtm-bme__rail-stats strong{font-size:16px;color:var(--ink);font-weight:800;}
+.wbtm-bme__rail-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ink);padding:13px 16px;border-bottom:1px solid var(--band-line);background:linear-gradient(180deg,#fbfcfe,var(--band));}
+.wbtm-bme__rail-title .dashicons{font-size:16px;width:16px;height:16px;color:var(--brand);}
+.wbtm-bme__rail-manage{margin-left:auto;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--blue);background:var(--blue-soft);border:1px solid #cfe0ff;border-radius:8px;padding:4px 10px;cursor:pointer;}
+.wbtm-bme__rail-manage:hover{background:#e2edff;}
+.wbtm-bme__rail-empty{padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.5;}
+.wbtm-bme__rail-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:14px 16px;}
+.wbtm-bme__rail-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;border:1px solid var(--line);}
+.wbtm-bme__rail-features{display:flex;flex-wrap:wrap;gap:7px;padding:14px 16px;}
+.wbtm-bme__chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-2);background:var(--inset);border:1px solid var(--line);border-radius:999px;padding:5px 11px;}
+.wbtm-bme__chip i{color:var(--brand);font-size:13px;}
+@media(max-width:1100px){
+	.wbtm-bme__body{grid-template-columns:1fr;}
+	.wbtm-bme__rail{position:static;flex-direction:row;flex-wrap:wrap;}
+	.wbtm-bme__rail-card{flex:1 1 240px;}
+}
+/* Config-heavy steps (seat / pricing / advanced) -> hide rail, go full width.
+ * The preview rail stays on General where the overview is most useful. */
+.wbtm-bme[data-step="seat"] .wbtm-bme__body,
+.wbtm-bme[data-step="pricing"] .wbtm-bme__body,
+.wbtm-bme[data-step="advanced"] .wbtm-bme__body{grid-template-columns:1fr;}
+.wbtm-bme[data-step="seat"] .wbtm-bme__rail,
+.wbtm-bme[data-step="pricing"] .wbtm-bme__rail,
+.wbtm-bme[data-step="advanced"] .wbtm-bme__rail{display:none;}
+
+/* Our own primitive rows (Bus Name) */
+.wbtm-bme__frow{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--band-line);}
+.wbtm-bme__frow:last-child{border-bottom:0;}
+.wbtm-bme__lbl{font-weight:600;color:var(--ink);font-size:14px;}
+.wbtm-bme__lbl span{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px;}
+.wbtm-bme__ctl{justify-self:end;width:100%;max-width:320px;display:flex;justify-content:flex-end;gap:10px;align-items:center;}
+.wbtm-bme__ctl input{width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:var(--inset);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.wbtm-bme__ctl input:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--brand-ring);}
+
+/* Sticky bottom navbar */
+.wbtm-bme__navbar{position:sticky;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);margin-top:8px;}
+.wbtm-bme__navinner{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 26px;}
+.wbtm-bme__stepof{justify-self:center;font-size:13px;color:var(--muted);font-weight:500;}
+.wbtm-bme__nav-back{justify-self:start;}
+.wbtm-bme__navinner .wbtm-bme__btn--primary{justify-self:end;}
+
+/* Toast */
+.wbtm-bme__toast{position:fixed;bottom:90px;left:54%;transform:translate(-50%,16px);opacity:0;visibility:hidden;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:100001;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s ease,visibility .3s;}
+.wbtm-bme__toast.show{transform:translate(-50%,0);opacity:1;visibility:visible;pointer-events:auto;}
+.wbtm-bme__toast .dashicons{color:#4ade80;}
+
+/* ==================================================================== *
+ *  REUSED MARKUP MAPPING  (prefixed .wbtm-bme.wbtm_style to win over
+ *  legacy `div.wbtm_style ...` rules)
+ * ==================================================================== */
+
+/* Form controls */
+.wbtm-bme.wbtm_style input[type=text],
+.wbtm-bme.wbtm_style input[type=number],
+.wbtm-bme.wbtm_style input[type=time],
+.wbtm-bme.wbtm_style input[type=date],
+.wbtm-bme.wbtm_style input[type=email],
+.wbtm-bme.wbtm_style input[type=url],
+.wbtm-bme.wbtm_style select,
+.wbtm-bme.wbtm_style textarea,
+.wbtm-bme.wbtm_style .formControl{
+	width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:var(--inset);
+	border:1px solid var(--line);border-radius:10px;padding:10px 12px;transition:.15s;box-shadow:none;line-height:1.4;min-height:0;height:auto;
+}
+.wbtm-bme.wbtm_style input:focus,
+.wbtm-bme.wbtm_style select:focus,
+.wbtm-bme.wbtm_style textarea:focus,
+.wbtm-bme.wbtm_style .formControl:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--brand-ring);}
+.wbtm-bme.wbtm_style select.formControl,
+.wbtm-bme.wbtm_style select{
+	appearance:none;-webkit-appearance:none;
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+	background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;
+}
+.wbtm-bme.wbtm_style .max_300,
+.wbtm-bme.wbtm_style .max_200,
+.wbtm-bme.wbtm_style .max_100{max-width:none;}
+
+/* Toggle switch — drive the SAME ::before knob that classic uses (the
+ * classic knob is .roundSwitch::before, so we must override it, not add a
+ * second ::after knob, otherwise the toggle renders doubled). */
+.wbtm-bme.wbtm_style .roundSwitchLabel{position:relative;display:inline-block;width:46px;height:26px;flex:none;cursor:pointer;margin:0;vertical-align:middle;}
+.wbtm-bme.wbtm_style .roundSwitchLabel input[type="checkbox"]{display:none;opacity:0;width:0;height:0;position:absolute;margin:0;}
+.wbtm-bme.wbtm_style .roundSwitch{position:absolute;inset:0;width:46px;height:26px;min-width:0;background:#cbd5e1;border-radius:999px;transition:.2s;display:block;}
+.wbtm-bme.wbtm_style .roundSwitch::after{content:none;display:none;}
+.wbtm-bme.wbtm_style .roundSwitch::before{content:"";position:absolute;left:3px;top:3px;bottom:auto;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s;}
+.wbtm-bme.wbtm_style .roundSwitchLabel input:checked + .roundSwitch{background:linear-gradient(135deg,var(--brand),#fb7185);}
+.wbtm-bme.wbtm_style .roundSwitchLabel input:checked + .roundSwitch::before{transform:translateX(20px);}
+
+/* Section wrapper + dividers */
+.wbtm-bme.wbtm_style .tabsItem{display:block;}
+.wbtm-bme.wbtm_style .divider{height:1px;background:var(--band-line);margin:4px 0;border:0;}
+
+/* Row layout (label + control) */
+.wbtm-bme.wbtm_style [class*="_dFlex_justifyBetween"]{display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.wbtm-bme.wbtm_style [class*="_dFlex_fdColumn"]{display:flex;flex-direction:column;gap:2px;}
+.wbtm-bme.wbtm_style [class*="_dFlex_alignCenter"]{display:flex;align-items:center;gap:8px;}
+.wbtm-bme.wbtm_style .justifyCenter,
+.wbtm-bme.wbtm_style [class*="justifyCenter"]{display:flex;justify-content:center;}
+
+.wbtm-bme.wbtm_style [class*="_dLayout"]{border:0;background:transparent;}
+.wbtm-bme.wbtm_style .textRight{text-align:right;}
+.wbtm-bme.wbtm_style .textCenter{text-align:center;}
+.wbtm-bme.wbtm_style .col_6 > label,
+.wbtm-bme.wbtm_style [class*="_dFlex_fdColumn"] > label,
+.wbtm-bme.wbtm_style .tabsItem > div label{font-weight:600;color:var(--ink);font-size:14px;line-height:1.35;margin:0;padding:0;display:block;}
+.wbtm-bme.wbtm_style [class*="_dFlex_fdColumn"] > span,
+.wbtm-bme.wbtm_style .info_text,
+.wbtm-bme.wbtm_style .col_6 > span{color:var(--muted);font-weight:400;font-size:12.5px;line-height:1.45;margin:2px 0 0;padding:0;display:block;}
+
+/* Light "band" sub-headers */
+.wbtm-bme.wbtm_style [class*="_bgLight"]{
+	background:var(--band);border:1px solid var(--band-line);border-radius:12px;padding:13px 16px;margin:16px 0 12px;
+}
+.wbtm-bme.wbtm_style [class*="_bgLight"] label{font-size:13.5px;font-weight:700;}
+.wbtm-bme.wbtm_style [class*="_bgLight"] span{font-size:12px;color:var(--muted);}
+
+/* Collapse helper (global JS toggles .mActive) */
+.wbtm-bme.wbtm_style [data-collapse]:not(.mActive){display:none;}
+.wbtm-bme.wbtm_style [data-collapse].mActive{display:block;}
+
+/* Inner panels (seat / cabin) */
+.wbtm-bme.wbtm_style .mpPanel{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px;background:#fff;}
+.wbtm-bme.wbtm_style .mpPanelBody{padding:16px;}
+.wbtm-bme.wbtm_style .mpPanelBody.mp_zero{padding:0;}
+.wbtm-bme.wbtm_style .split2,
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:0;align-items:stretch;}
+/* Kill the legacy `col_6` 50%-width pin so each side fills its grid track
+   (this is what was leaving the big empty gap on the right of the preview). */
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > *{width:100%;max-width:none;flex:none;min-width:0;}
+/* left = settings column, right = seat preview */
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :first-child{padding:20px 22px;border-right:1px solid var(--band-line);background:var(--inset);}
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :last-child{padding:20px 22px;background:#fff;}
+/* tidy the settings-column rows: label left, compact control right, divider lines */
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :first-child [class*="_dFlex_justifyBetween"]{align-items:center;gap:14px;}
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :first-child .formControl{max-width:150px;}
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :first-child .divider{height:1px;background:var(--band-line);border:0;margin:14px 0;}
+@media(max-width:980px){
+	.wbtm-bme.wbtm_style .mpPanelBody._dFlex{grid-template-columns:1fr;}
+	.wbtm-bme.wbtm_style .mpPanelBody._dFlex > :first-child{border-right:0;border-bottom:1px solid var(--band-line);}
+}
+
+/* Buttons (reused helpers) */
+.wbtm-bme.wbtm_style [class*="_themeButton"],
+.wbtm-bme.wbtm_style .wbtm_add_item,
+.wbtm-bme.wbtm_style button.button-primary,
+.wbtm-bme.wbtm_style .wbtm_configure_cabins,
+.wbtm-bme.wbtm_style .wbtm_generate_cabin_seats{
+	font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;padding:9px 15px;border:1px solid transparent;
+	background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff;display:inline-flex;align-items:center;gap:6px;
+	box-shadow:0 6px 16px var(--brand-ring);margin-top:8px;line-height:1.2;height:auto;text-shadow:none;min-width:0;
+}
+.wbtm-bme.wbtm_style [class*="_themeButton"]:hover,
+.wbtm-bme.wbtm_style .wbtm_add_item:hover,
+.wbtm-bme.wbtm_style button.button-primary:hover{filter:brightness(1.05);color:#fff;}
+.wbtm-bme.wbtm_style [class*="_whiteButton"],
+.wbtm-bme.wbtm_style button.button-secondary,
+.wbtm-bme.wbtm_style .button.button-small{
+	background:#fff;color:var(--ink-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-weight:600;font-size:12px;cursor:pointer;box-shadow:none;height:auto;min-width:0;
+}
+.wbtm-bme.wbtm_style [class*="_whiteButton"]:hover{background:var(--band);}
+
+/* Move / remove icon buttons */
+.wbtm-bme.wbtm_style .buttonGroup{display:inline-flex;gap:6px;}
+.wbtm-bme.wbtm_style .wbtm_item_remove,
+.wbtm-bme.wbtm_style .wbtm_sortable_button,
+.wbtm-bme.wbtm_style .buttonGroup > *{
+	width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;background:#fff;color:var(--muted);font-size:12px;margin:0;
+}
+.wbtm-bme.wbtm_style .wbtm_item_remove{color:var(--brand);border-color:#fbd0da;}
+.wbtm-bme.wbtm_style .wbtm_item_remove:hover{background:var(--brand-soft);}
+
+/* Seat grid -> mockup seat cards. The real markup is a <table>; we make it
+   stretch to fill the whole preview (like the mockup's CSS grid) instead of
+   sitting at its natural width and leaving a big empty gap / overflow-scroll. */
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview,
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview_dd,
+.wbtm-bme.wbtm_style .wbtm_cabin_seat_plan{border:1px solid var(--line);border-radius:14px;background:var(--inset);padding:16px;}
+.wbtm-bme.wbtm_style .ovAuto{overflow-x:auto;padding-bottom:4px;}
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview table,
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview_dd table,
+.wbtm-bme.wbtm_style .wbtm_cabin_seat_plan table{width:100%;border-collapse:separate;border-spacing:9px;table-layout:auto;}
+/* seat cells share the row evenly; the trailing row-controls cell stays compact */
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview th,
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview_dd th,
+.wbtm-bme.wbtm_style .wbtm_cabin_seat_plan th{padding:0;vertical-align:top;}
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview tbody tr > th:last-child,
+.wbtm-bme.wbtm_style .wbtm_seat_plan_preview_dd tbody tr > th:last-child,
+.wbtm-bme.wbtm_style .wbtm_cabin_seat_plan tbody tr > th:last-child{width:1%;white-space:nowrap;}
+.wbtm-bme.wbtm_style .wbtm_seat_container{width:100%;max-width:104px;margin:0 auto;border:1.5px solid var(--line);border-radius:11px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;padding:9px 6px;transition:.12s;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+.wbtm-bme.wbtm_style .wbtm_seat_container:hover{border-color:var(--brand);box-shadow:0 4px 12px var(--brand-ring);}
+.wbtm-bme.wbtm_style .wbtm_seat_container > label{width:100%;margin:0;}
+.wbtm-bme.wbtm_style .wbtm_seat_container input[type=text]{border:0;background:transparent;text-align:center;font-weight:700;font-size:13px;color:var(--ink);padding:2px;width:100%;max-width:none;min-height:0;border-radius:6px;}
+.wbtm-bme.wbtm_style .wbtm_seat_container input[type=text]::placeholder{color:#cbd5e1;font-weight:500;}
+.wbtm-bme.wbtm_style .wbtm_seat_container input[type=text]:focus{background:var(--inset);box-shadow:0 0 0 2px var(--brand-ring);}
+.wbtm-bme.wbtm_style .wbtm_seat_price_view{color:var(--blue);border:1px solid #cfe0ff;background:#fff;border-radius:7px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;line-height:1.3;min-width:0;width:auto;height:auto;}
+.wbtm-bme.wbtm_style .wbtm_seat_price_view:hover{background:var(--blue-soft);}
+.wbtm-bme.wbtm_style .wbtm_seat_price_view_disabled{opacity:.45;cursor:not-allowed;}
+.wbtm-bme.wbtm_style .wbtm_rotate_seat{color:var(--brand);border:1px solid #fbd0da;background:#fff;border-radius:7px;width:28px;height:26px;display:grid;place-items:center;padding:0;cursor:pointer;min-width:0;}
+.wbtm-bme.wbtm_style .wbtm_rotate_seat:hover{background:var(--brand-soft);}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_controls{display:flex;justify-content:center;margin:0;}
+/* Blank / empty cell: no View (price) button, no rotate — it isn't a sellable
+   seat. JS toggles .wbtm-bme-blank live (see wbtm-bus-edit-modern.js). The hidden
+   wbtm_*_rotation[] input stays in the DOM (display:none still submits) so the
+   rotation array keeps the same length/order as the seat array on save. */
+.wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank .wbtm_seat_price_view,
+.wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank .wbtm_seat_rotation_controls{display:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank{border-style:dashed;background:transparent;box-shadow:none;justify-content:center;min-height:48px;}
+.wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank:hover{border-color:var(--line);box-shadow:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank input[type=text]{color:var(--muted);font-weight:500;}
+
+/* ---- Cabin / coach builder ----
+   The cabin split is `.mpPanelBody > ._dFlex` (a CHILD _dFlex), not
+   `.mpPanelBody._dFlex` like the decks, so it needs its own grid rule —
+   otherwise the legacy col_6 pins the preview to ~40% and squishes the seats. */
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody{padding:0;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:0;align-items:stretch;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > *{width:100%;max-width:none;flex:none;min-width:0;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :first-child{padding:20px 22px;border-right:1px solid var(--band-line);background:var(--inset);}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :last-child{padding:20px 22px;background:#fff;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :first-child [class*="_dFlex_justifyBetween"]{align-items:center;gap:14px;flex-wrap:wrap;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :first-child .formControl{max-width:160px;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :first-child .help-text{flex-basis:100%;font-size:11px;color:var(--muted);margin:4px 0 0;}
+.wbtm-bme.wbtm_style .wbtm_cabin_item .divider{height:1px;background:var(--band-line);border:0;margin:14px 0;}
+.wbtm-bme.wbtm_style .wbtm_cabin_seat_preview > label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.wbtm-bme.wbtm_style .wbtm_cabin_direction{display:flex;justify-content:center;margin-bottom:10px;}
+.wbtm-bme.wbtm_style .wbtm_direction_text{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;}
+@media(max-width:980px){
+	.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex{grid-template-columns:1fr;}
+	.wbtm-bme.wbtm_style .wbtm_cabin_item .mpPanelBody > ._dFlex > :first-child{border-right:0;border-bottom:1px solid var(--band-line);}
+}
+
+/* Seat item palette / toolbar */
+.wbtm-bme.wbtm_style .wbtm_seat_toolbar{margin-bottom:14px;}
+.wbtm-bme.wbtm_style .wbtm_seat_toolbar_label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.wbtm-bme.wbtm_style .wbtm_seat_toolbar_items{display:flex;flex-wrap:wrap;gap:6px;}
+.wbtm-bme.wbtm_style .wbtm_draggable_item{font-size:11.5px;font-weight:600;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 9px;display:inline-flex;align-items:center;gap:5px;cursor:grab;user-select:none;}
+.wbtm-bme.wbtm_style .wbtm_draggable_item:active{cursor:grabbing;}
+.wbtm-bme.wbtm_style .wbtm_draggable_eraser{color:var(--brand);border-color:#fbd0da;}
+.wbtm-bme.wbtm_style .wbtm_seat_plan_settings .textCenter label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+
+/* ===================== Step 3 · Pricing & Route (compact, modern) ===================== */
+/* Tighten the section content wrappers so the whole step reads compact. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_dLayout_padding"]{padding:14px 16px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > h3:first-child{margin-bottom:4px;}
+
+/* --- Stop timeline. Overrides the classic wbtm_admin.css 32px pin + line that
+   stay loaded under .wbtm_settings_pricing_routing (higher specificity wins). --- */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .mp_stop_items{position:relative;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .mp_stop_items::before{left:0;margin-left:13px;top:-12px;border:0;border-left:2px solid var(--band-line);}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item{position:relative;width:auto;padding-left:38px;margin-bottom:7px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item::before,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item::before{top:17px;left:0;width:26px;height:26px;border-radius:50%;background-color:#fff;border:1.5px solid var(--brand);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e11d48'%3E%3Cpath d='M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:14px;content:"";transform:none;box-shadow:0 0 0 3px var(--inset);}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item::before{border-color:var(--blue);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'%3E%3Cpath d='M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E");}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item::after,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item::after{top:30px;left:26px;width:8px;border:0;border-top:2px solid var(--band-line);}
+
+/* --- Compact stop header / collapsible content --- */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item .wbtm_stop_item_header,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item .wbtm_stop_item_header,
+.wbtm-bme.wbtm_style .wbtm_stop_item_header{background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 12px;cursor:pointer;border:1px solid var(--line);border-radius:10px;}
+.wbtm-bme.wbtm_style .wbtm_stop_item_header label{font-weight:700;font-size:13px;color:var(--ink);margin:0;}
+.wbtm-bme.wbtm_style .wbtm_stop_item_header span{font-size:11px;color:var(--muted);}
+.wbtm-bme.wbtm_style .wbtm_stop_item_header input[type=time]{font-size:12.5px;color:var(--ink-2);background:transparent;}
+.wbtm-bme.wbtm_style .wbtm_stop_item_header .buttonGroup > *{width:28px;height:28px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item .wbtm_stop_item_content,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_stop_item .wbtm_stop_item_content,
+.wbtm-bme.wbtm_style .wbtm_stop_item_content{padding:12px;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;background:var(--inset);margin-top:-3px;}
+/* When a stop is expanded, square the header's bottom so it joins the content. */
+.wbtm-bme.wbtm_style .wbtm_stop_item:has(.wbtm_stop_item_content.mActive) .wbtm_stop_item_header,
+.wbtm-bme.wbtm_style .wbtm_return_stop_item:has(.wbtm_stop_item_content.mActive) .wbtm_stop_item_header{border-radius:10px 10px 0 0;border-bottom:0;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_stop_item_content .formControl{height:36px;font-size:12.5px;}
+
+/* ---------- Step 3 professional polish ---------- */
+/* Section headers: clean flat style — colored bottom border, no accent bar. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"]{
+	background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--brand);
+	border-radius:10px 10px 0 0;padding:12px 16px;margin:14px 0 0;
+}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] label{font-size:14px;font-weight:700;color:var(--ink);}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] span{font-size:12px;color:var(--muted);line-height:1.55;}
+
+/* Native checkboxes branded; "Enable same bus return" + its settings card. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand);cursor:pointer;margin:0;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing label._dFlex_alignCenter{font-weight:600;font-size:13.5px;color:var(--ink);gap:9px;align-items:center;}
+.wbtm-bme.wbtm_style .wbtm_return_route_settings_area{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:8px;background:#fff;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .justifyCenter{display:flex;justify-content:center;margin-top:8px;}
+
+/* Warning callout refined. */
+.wbtm-bme.wbtm_style .wbtm_return_time_warning_icon{color:#d97706;font-size:18px;line-height:1;flex:none;margin-top:1px;}
+.wbtm-bme.wbtm_style .wbtm_return_time_warning_text strong{display:block;font-size:12.5px;margin-bottom:2px;}
+.wbtm-bme.wbtm_style .wbtm_return_time_warning_text span{font-size:11.5px;line-height:1.5;color:#9a3412;}
+
+/* Pricing matrix: professional header, route arrow, right-aligned fares, hover. */
+.wbtm-bme.wbtm_style .wbtm_price_setting_area{overflow-x:auto;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area thead th{text-align:center;vertical-align:middle;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area thead th:first-child{text-align:left;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area thead th span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td:first-child{min-width:210px;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td:first-child span{font-weight:600;font-size:12.5px;color:var(--ink);}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td{text-align:center;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td label{margin:0;display:block;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody input{text-align:right;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area .long-arrow{flex:1 1 auto;height:0;min-width:26px;border-top:2px dashed var(--line);background:transparent;position:relative;align-self:center;margin:0 10px;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area .long-arrow::after{content:"";position:absolute;right:-2px;top:50%;transform:translateY(-50%);border:5px solid transparent;border-left-color:var(--muted);}
+.wbtm-bme.wbtm_style .wbtm_price_arrow_return{border-top-color:#bcd0ff;}
+.wbtm-bme.wbtm_style .wbtm_price_arrow_return::after{border-left-color:var(--blue);}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody tr:hover{background:#fff5f7;}
+.wbtm-bme.wbtm_style .wbtm_price_row_return:hover{background:#e6edff;}
+.wbtm-bme.wbtm_style .wbtm_price_leg_badge_return{background:var(--blue);}
+
+/* Return Discount (Pro) section, if present, reads as a clean card. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_discount_area,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="return_discount"]{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:12px;background:#fff;}
+
+/* --- Passenger type + pricing matrix: compact tables --- */
+.wbtm-bme.wbtm_style .wbtm_price_setting_area table,
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area th,
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area th{background:var(--band);color:var(--ink);font-weight:700;font-size:11.5px;padding:8px 9px;text-align:left;border-bottom:1px solid var(--band-line);white-space:nowrap;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area td,
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area td{padding:5px 8px;border-bottom:1px solid var(--band-line);vertical-align:middle;font-size:12.5px;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area input,
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area input{height:34px;font-size:12.5px;padding:4px 9px;width:100%;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area td:last-child{width:1%;white-space:nowrap;text-align:center;}
+.wbtm-bme.wbtm_style .wbtm_price_row_return{background:var(--blue-soft);}
+.wbtm-bme.wbtm_style .wbtm_price_leg_badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--blue);color:#fff;margin-right:6px;}
+.wbtm-bme.wbtm_style .long-arrow{height:2px;background:var(--line);position:relative;margin:0 8px;}
+.wbtm-bme.wbtm_style .wbtm_return_time_warning{display:flex;gap:9px;align-items:flex-start;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:9px 12px;margin-bottom:10px;color:#9a3412;font-size:12px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .notice,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing ._textLight{font-size:12px;}
+
+/* Logo / single image (mockup: dashed thumb + blue Image button) */
+.wbtm-bme.wbtm_style .wbtm_add_single_image{display:flex;align-items:center;justify-content:flex-end;gap:12px;}
+.wbtm-bme.wbtm_style .wbtm_add_single_image button{
+	background:var(--blue);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:600;font-size:13px;
+	display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:none;height:auto;min-width:0;width:auto;text-shadow:none;
+}
+.wbtm-bme.wbtm_style .wbtm_add_single_image button:hover{filter:brightness(1.06);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm_single_image_item{position:relative;width:60px;height:60px;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:var(--inset);}
+.wbtm-bme.wbtm_style .wbtm_single_image_item img{width:100%;height:100%;object-fit:cover;border-radius:0;max-width:none;max-height:none;border:0;}
+.wbtm-bme.wbtm_style .wbtm_remove_single_image{position:absolute;top:2px;right:2px;background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;cursor:pointer;z-index:2;}
+.wbtm-bme.wbtm_style .wbtm_add_icon_image_area img{border-radius:12px;max-width:60px;max-height:60px;object-fit:cover;border:1.5px solid var(--line);}
+/* dashed thumbnail placeholder when no logo is set (mockup) */
+.wbtm-bme.wbtm_style .wbtm_add_single_image:not(:has(.wbtm_single_image_item))::before{
+	content:"";flex:none;width:60px;height:60px;border:1.5px dashed var(--line);border-radius:12px;
+	background:var(--inset) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='M21 15l-5-5L5 21'/%3E%3C/svg%3E") center/24px no-repeat;
+}
+
+/* General step rows -> match the mockup .frow (label left, control fixed ~320px right) */
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"]{align-items:center;gap:16px;}
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :first-child{flex:1 1 auto;min-width:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2){flex:0 0 320px;max-width:320px;display:flex;justify-content:flex-end;align-items:center;gap:10px;}
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) .formControl,
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) input,
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) select{width:100%;max-width:none;}
+
+/* Seat price-override modal (reused) */
+.wbtm-bme.wbtm_style .wbtm_seat_price_modal{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;}
+.wbtm-bme.wbtm_style .wbtm_seat_price_modal_overlay{position:absolute;inset:0;background:rgba(15,23,42,.5);}
+.wbtm-bme.wbtm_style .wbtm_seat_price_modal_box{position:relative;background:#fff;border-radius:14px;padding:22px;max-width:460px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,.3);z-index:1;}
+
+/* Hide the reused section's own leading heading (card head replaces it) */
+.wbtm-bme.wbtm_style .wbtm-bme__card[data-has-head] .tabsItem > h3:first-child,
+.wbtm-bme.wbtm_style .wbtm-bme__card[data-has-head] .tabsItem > h3:first-child + p,
+.wbtm-bme.wbtm_style .wbtm-bme__card[data-has-head] > .wbtm-bme__card-body > .tabsItem > h3,
+.wbtm-bme.wbtm_style .wbtm-bme__card[data-has-head] > .wbtm-bme__card-body > .tabsItem > h3 + p{display:none;}
+
+
+/* ==================================================================== *
+ *  STEP 3 · Pricing & Route — enhanced polish
+ * ==================================================================== */
+
+/* Outer spacing for the pricing/routing sections */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing{display:flex;flex-direction:column;gap:6px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .tabsItem{display:flex;flex-direction:column;gap:10px;}
+
+/* Card-like wrapper around each major pricing/routing block */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > .tabsItem > div > ._dLayout,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > .tabsItem > div > div > ._dLayout,
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{
+	border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;
+}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{padding:0;}
+
+/* Collapsible content areas get a subtle inset background */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [data-collapse]{
+	border-radius:10px;overflow:hidden;
+}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [data-collapse].mActive{
+	background:linear-gradient(180deg,#fbfcfe,#fff);
+}
+
+/* Badge for outbound/return legs */
+.wbtm-bme.wbtm_style .wbtm_price_leg_badge{
+	background:linear-gradient(135deg,var(--brand),#f43f5e);
+	box-shadow:0 2px 6px var(--brand-ring);
+}
+
+
+/* ==================================================================== *
+ *  STEP 4 · Advanced — full modern redesign for all 7 sections
+ * ==================================================================== */
+
+/* ---- Shared Step 4 table styling (matches pricing matrix quality) ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area{
+	padding:0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;margin-bottom:8px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area > ._dLayout{
+	padding:14px 16px;border-bottom:1px solid var(--band-line);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area > ._dLayout:last-child{border-bottom:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .ovAuto{overflow-x:auto;padding:2px;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area table{
+	width:100%;border-collapse:collapse;background:transparent;border:0;border-radius:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area > .ovAuto > table{
+	border:1px solid var(--line);border-radius:10px;overflow:hidden;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area thead th{
+	background:var(--band);color:var(--ink);font-weight:700;font-size:11.5px;padding:9px 10px;
+	text-align:left;border-bottom:1px solid var(--band-line);white-space:nowrap;text-transform:uppercase;letter-spacing:.03em;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area thead th.textCenter{text-align:center;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody td{
+	padding:7px 10px;border-bottom:1px solid var(--band-line);vertical-align:middle;font-size:13px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody tr:last-child td{border-bottom:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody tr:hover{background:var(--inset);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody input,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody select{
+	height:36px;font-size:12.5px;padding:5px 9px;width:100%;border-radius:8px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area td._w_100{width:1%;white-space:nowrap;text-align:center;}
+
+/* Nested tables inside pickup/drop-off (compact) */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area td .wbtm_settings_area{
+	border:1px solid var(--band-line);border-radius:8px;margin:4px 0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area td .wbtm_settings_area thead th{
+	font-size:10.5px;padding:6px 8px;background:var(--inset);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area td .wbtm_settings_area tbody td{padding:5px 8px;font-size:12px;}
+
+/* ---- Step 4 section headers: clean flat style — colored bottom border, no accent bar ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"]{
+	background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--brand);
+	border-radius:10px 10px 0 0;padding:12px 16px;margin:14px 0 0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] label{font-size:14px;font-weight:700;color:var(--ink);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_bgLight"] span{font-size:12px;color:var(--muted);line-height:1.55;}
+
+/* ---- Step 4: toggle rows (show/hide sections) ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart{
+	display:flex;justify-content:space-between;align-items:center;gap:16px;
+	padding:13px 16px;border-bottom:1px solid var(--band-line);background:#fff;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart{align-items:flex-start;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween:last-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter:last-child,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart:last-child{border-bottom:0;}
+
+/* Label column typography in toggle rows */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_dFlex_fdColumn"] label{
+	font-weight:600;font-size:13.5px;color:var(--ink);line-height:1.35;margin:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [class*="_dFlex_fdColumn"] span{
+	font-size:12px;color:var(--muted);margin-top:2px;line-height:1.45;
+}
+
+/* Toggle switch (same as general step, but ensure it applies here too) */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_2_dFlex,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .col_2.dFlex{display:flex;justify-content:flex-end;align-items:center;flex:0 0 auto;}
+
+/* Collapsible content areas */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse]{
+	border-radius:0 0 12px 12px;overflow:hidden;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse].mActive{
+	background:linear-gradient(180deg,#fbfcfe,#fff);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse] > ._dLayout{padding:14px 16px;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._mB{margin-bottom:16px;}
+
+/* ---- 4a. Extra Service ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_sortable_area .wbtm_remove_area > td:first-child{min-width:120px;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_sortable_area .wbtm_remove_area select{min-width:110px;}
+
+/* ---- 4c. Date Settings: particular vs repeated mode cards ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_particular"],
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"]{
+	border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:10px;background:#fff;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_particular"] > ._dLayout,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"] > div{
+	padding:14px 16px;border-bottom:1px solid var(--band-line);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"] > div:last-child{border-bottom:0;}
+
+/* Date picker inputs — branded with calendar feel */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .date_type{
+	cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e11d48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+	background-repeat:no-repeat;background-position:right 10px center;padding-right:34px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .date_type:hover{border-color:var(--brand);}
+
+/* Particular/off-date list items */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_remove_area .justifyBetween{
+	display:flex;align-items:center;gap:10px;padding:6px 0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_remove_area .justifyBetween ._fullWidth_mR{flex:1;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_remove_area .divider{margin:2px 0;}
+
+/* Off-day checkbox pills (groupCheckBox) */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox{
+	display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding-top:4px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel{
+	display:inline-flex !important;align-items:center;gap:6px;cursor:pointer;margin:0 !important;
+	background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600;
+	color:var(--ink-2);transition:.15s;user-select:none;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel input[type=checkbox]{
+	display:none;width:0;height:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel:hover{border-color:var(--brand);color:var(--ink);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel:has(input:checked){
+	background:linear-gradient(135deg,var(--brand),var(--brand-600));border-color:transparent;color:#fff;
+	box-shadow:0 4px 12px var(--brand-ring);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckbox{
+	padding:0;font-size:inherit;font-weight:inherit;color:inherit;background:transparent;border:0;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel:has(input:checked) .customCheckbox::before{
+	content:"✓ ";font-weight:800;
+}
+
+/* ---- 4e. Gallery Image — modern upload zone ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper{
+	display:flex;flex-direction:column;gap:14px;padding:16px;background:var(--inset);border:1px solid var(--line);border-radius:12px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper .bg-light,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper > section > .bg-light{
+	display:none; /* heading redundancy handled by card head */
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .button.upload{
+	display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;border:0;
+	border-radius:10px;padding:10px 18px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,.2);
+	align-self:flex-start;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .button.upload:hover{filter:brightness(1.06);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .button.upload::before{
+	content:"\f317";font-family:dashicons;font-size:16px;line-height:1;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .button.clear{
+	display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink-2);border:1px solid var(--line);
+	border-radius:10px;padding:10px 16px;font-weight:600;font-size:13px;cursor:pointer;align-self:flex-start;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .button.clear:hover{background:var(--brand-soft);color:var(--brand);border-color:#fbd0da;}
+
+/* Gallery image grid — polished thumbnails */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery-images-lists{
+	display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery-image{
+	width:auto !important;height:auto !important;margin:0 !important;position:relative;border-radius:12px;overflow:hidden;
+	border:1.5px solid var(--line);box-shadow:var(--shadow-sm);transition:.15s;background:#fff;aspect-ratio:4/3;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery-image:hover{border-color:var(--brand);box-shadow:0 6px 16px var(--brand-ring);transform:translateY(-2px);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery-image .wbtm_gallery-images{
+	width:100%;height:100%;object-fit:cover;display:block;max-width:none !important;max-height:none !important;border:0 !important;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery_image_remove{
+	position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(225,29,72,.92);color:#fff;
+	display:grid !important;place-items:center;font-size:12px;font-weight:700;cursor:pointer;z-index:2;line-height:1;
+	border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 8px rgba(0,0,0,.2);transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_gallery_image_remove:hover{background:var(--brand-600);transform:scale(1.1);}
+
+/* ---- 4f. Terms & Condition — dual-column transfer UI ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_all_selected_term_condition{
+	display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_all_term_condition,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_term_question_box{
+	border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;display:flex;flex-direction:column;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_all_term_condition > h3,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_term_question_box > h3{
+	font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink);
+	padding:12px 14px;margin:0;background:var(--band);border-bottom:1px solid var(--band-line);
+	font-family:'Plus Jakarta Sans','Inter',sans-serif;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_term_question_box > h3{color:var(--brand);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_term_all_question,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_term_condition{
+	padding:10px;display:flex;flex-direction:column;gap:6px;flex:1;overflow-y:auto;max-height:320px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_term_item,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_item{
+	display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;
+	background:var(--inset);border:1px solid var(--band-line);border-radius:8px;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_term_item:hover,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_item:hover{border-color:var(--brand);background:var(--brand-soft);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_term_title{font-size:13px;font-weight:600;color:var(--ink);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_add_term_condition{
+	background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff;border:0;border-radius:8px;padding:5px 12px;
+	font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_add_term_condition:hover{filter:brightness(1.08);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_remove_term_condition{
+	background:#fff;color:var(--brand);border:1px solid #fbd0da;border-radius:8px;padding:5px 12px;
+	font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_remove_term_condition:hover{background:var(--brand-soft);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_term_all_question > p,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_selected_term_condition > p{
+	padding:16px 12px;text-align:center;color:var(--muted);font-size:13px;margin:0;
+}
+
+/* ---- 4g. Features — checkbox chip grid ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features{
+	display:flex;flex-wrap:wrap;gap:8px;padding:14px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features label{
+	display:inline-flex !important;align-items:center;gap:7px;cursor:pointer;margin:0 !important;
+	background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;
+	color:var(--ink-2);transition:.15s;user-select:none;line-height:1.3;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features label br{display:none;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features input[type=checkbox]{display:none;width:0;height:0;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features label:hover{border-color:var(--brand);color:var(--ink);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features label:has(input:checked){
+	background:linear-gradient(135deg,var(--brand),var(--brand-600));border-color:transparent;color:#fff;
+	box-shadow:0 4px 12px var(--brand-ring);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_bus_feature_icon{font-size:15px;display:inline-flex;align-items:center;}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm-bus-features label:has(input:checked) .wbtm_bus_feature_icon{color:#fff;}
+
+/* ---- Step 4: info/warning message boxes ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_settings_area ._dLayout_dFlex_justifyCenter,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .warning,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .info,
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .notice{
+	border-radius:10px !important;padding:12px 16px;font-size:13px;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_settings_area ._dLayout_dFlex_justifyCenter{
+	background:var(--blue-soft);border:1px solid #cfe0ff;color:var(--blue);display:flex;justify-content:center;align-items:center;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._textLight{color:var(--muted);font-size:12px;}
+
+/* ---- Step 4: textRequired asterisk ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .textRequired{color:var(--brand);font-style:normal;font-weight:700;}
+
+/* ---- Step 4: hidden content templates stay hidden ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_hidden_content{display:none;}
+
+/* ---- Step 4: add-new / sortable buttons polish ---- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_add_item{
+	margin-top:10px;width:100%;justify-content:center;
+}
+
+/* -------------------------------------------------------------------- *
+ *  Responsive
+ * -------------------------------------------------------------------- */
+@media(max-width:760px){
+	.wbtm-bme__topbar{grid-template-columns:auto 1fr auto;padding:10px 16px;}
+	.wbtm-bme__wrap{padding:18px 16px;}
+	.wbtm-bme__stepper{overflow-x:auto;}
+	.wbtm-bme__frow{grid-template-columns:1fr;}
+	.wbtm-bme__ctl{max-width:none;justify-content:flex-start;}
+	/* Step 4 — stack dual columns and make tables scroll */
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wtbm_all_selected_term_condition{grid-template-columns:1fr;}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_dFlex_justifyBetween,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayoutd_dFlex_alignCenter_,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignCenter,
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dLayout_padding_dFlex_justifyBetween_alignStart{flex-direction:column;align-items:stretch;}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .groupCheckBox{justify-content:flex-start;}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .max_300{max-width:100% !important;}
+}
+@media(max-width:480px){
+	.wbtm-bme__step{width:64px;}
+	.wbtm-bme__lab{font-size:11px;}
+	.wbtm-bme__stepper{justify-content:flex-start;gap:0;}
+	.wbtm-bme__conn{min-width:10px;}
+	.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .customCheckboxLabel{font-size:11.5px;padding:6px 11px;}
+}

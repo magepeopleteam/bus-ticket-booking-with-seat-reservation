@@ -40,7 +40,7 @@
 	do_action('woocommerce_before_single_product');
 	//echo '<pre>';print_r($wp_roles->roles);echo '</pre>';
 ?>
-	<div class="wbtm_style wbtm_container">
+	<div class="wbtm_style wbtm_container wbtm_single_modern">
 		<?php require WBTM_Functions::template_path('layout/single_bus_details.php'); ?>
 		<?php require WBTM_Functions::template_path('layout/search_form.php'); ?>
 	</div>

@@ -54,6 +54,8 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Term_Condition_Setting.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WTBM_Term_Condition_Add_Bus.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WTBM_Features_Seating.php';
+				//========Modern bus editor (parallel to classic; per-user opt-in)==========//
+				require_once WBTM_PLUGIN_DIR . '/admin/settings-modern/WBTM_Settings_Modern.php';
 
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';

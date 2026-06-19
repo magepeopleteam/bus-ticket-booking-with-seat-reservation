@@ -315,3 +315,344 @@
     overflow: scroll;
     height: 60vh;
 }
+
+/* ============================================================
+   MODERN SINGLE BUS PAGE  (scoped to .wbtm_single_modern)
+   Matches the bus-service-card mockup. All rules are scoped so
+   no other page/shortcode is affected.
+   ============================================================ */
+.wbtm_single_modern {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    max-width: 1350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── UNIFIED CARD ── */
+.wbtm_single_modern .wbtm_single_modern_card {
+    background: #ffffff;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .04), 0 12px 40px rgba(0, 0, 0, .08);
+    overflow: hidden;
+    margin: 0;
+}
+
+/* ── TOP SECTION: slider + info ── */
+.wbtm_single_modern .wbtm_sm_top {
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    align-items: stretch;
+}
+
+/* ── IMAGE SLIDER (reuses bg_image_new gallery) ── */
+.wbtm_single_modern .wbtm_sm_slider {
+    position: relative;
+    background: #1a1a2e;
+    min-height: 320px;
+    overflow: hidden;
+}
+/* Absolutely fill the (grid-stretched) slider cell so the image always
+   covers the full section — no gray strip under it. */
+.wbtm_single_modern .wbtm_sm_slider .wbtm_car_details_images {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.wbtm_single_modern .wbtm_sm_slider .wbtm_gallery_slider,
+.wbtm_single_modern .wbtm_sm_slider .wbtm_car_details_feature_image {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    border: 0;
+    border-radius: 0;
+    background: #1a1a2e;
+}
+.wbtm_single_modern .wbtm_sm_slider .wbtm_gallery_slider_track,
+.wbtm_single_modern .wbtm_sm_slider .wbtm_gallery_slide {
+    height: 100%;
+}
+.wbtm_single_modern .wbtm_sm_slider .wbtm_gallery_slide img,
+.wbtm_single_modern .wbtm_sm_slider .wbtm_car_details_feature_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ── SERVICE INFO ── */
+.wbtm_single_modern .wbtm_sm_info {
+    padding: 28px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+.wbtm_single_modern .wbtm_sm_name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.25;
+    margin: 0;
+}
+.wbtm_single_modern .wbtm_sm_code {
+    font-size: 13px;
+    color: #9ca3af;
+    font-weight: 400;
+    margin-left: 4px;
+}
+.wbtm_single_modern .wbtm_sm_tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+.wbtm_single_modern .wbtm_sm_tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    line-height: 1;
+}
+.wbtm_single_modern .wbtm_sm_tag svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}
+.wbtm_single_modern .wbtm_sm_tag_gray  { background: #f3f4f6; color: #4b5563; }
+.wbtm_single_modern .wbtm_sm_tag_blue  { background: #eff6ff; color: #2563eb; }
+.wbtm_single_modern .wbtm_sm_tag_green { background: #f0fdf4; color: #16a34a; }
+
+/* ── ROUTE BOXES ── */
+.wbtm_single_modern .wbtm_sm_routes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.wbtm_single_modern .wbtm_sm_route_box {
+    background: #f9fafb;
+    border: 1px solid #f0f2f5;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+.wbtm_single_modern .wbtm_sm_route_title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.wbtm_single_modern .wbtm_sm_route_title svg { width: 13px; height: 13px; flex-shrink: 0; }
+.wbtm_single_modern .wbtm_sm_boarding .wbtm_sm_route_title { color: #2563eb; }
+.wbtm_single_modern .wbtm_sm_dropping .wbtm_sm_route_title { color: #dc2626; }
+
+.wbtm_single_modern .wbtm_sm_stop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed #e5e7eb;
+}
+.wbtm_single_modern .wbtm_sm_stop:last-child { border-bottom: none; padding-bottom: 0; }
+.wbtm_single_modern .wbtm_sm_pin {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.wbtm_single_modern .wbtm_sm_boarding .wbtm_sm_pin { background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .15); }
+.wbtm_single_modern .wbtm_sm_dropping .wbtm_sm_pin { background: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, .12); }
+.wbtm_single_modern .wbtm_sm_stop_name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+    flex: 1;
+    min-width: 0;
+}
+.wbtm_single_modern .wbtm_sm_stop_time {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+/* ── RETURN JOURNEY (sits inside the info column, aligned with outbound) ── */
+.wbtm_single_modern .wbtm_sm_return_section {
+    border-top: 1px dashed #e5e7eb;
+    padding-top: 16px;
+}
+.wbtm_single_modern .wbtm_sm_return_head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: #7c3aed;
+    margin-bottom: 12px;
+}
+.wbtm_single_modern .wbtm_sm_return_head svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* ── EXTRA SECTIONS (description / features / terms) ── */
+.wbtm_single_modern .wbtm_sm_description {
+    padding: 22px 30px;
+    border-top: 1px solid #f0f2f5;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.7;
+}
+.wbtm_single_modern .wbtm_sm_section {
+    padding: 6px 30px 22px;
+    margin: 0;
+    max-width: none;
+}
+.wbtm_single_modern .wbtm_sm_section > h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin: 18px 0 12px;
+}
+.wbtm_single_modern .wbtm_sm_feature_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+}
+.wbtm_single_modern .wbtm_sm_feature_grid .wbtm_bus_feature_items {
+    margin-bottom: 0;
+    box-shadow: none;
+    border: 1px solid #f0f2f5;
+    background: #f9fafb;
+    border-radius: 12px;
+}
+.wbtm_single_modern .wbtm_sm_feature_grid .wtbm_term_content { font-size: 13px; color: #374151; }
+
+/* ── BOOKING BAR (search form restyle, scoped — markup untouched) ── */
+.wbtm_single_modern #wbtm_area { margin: 0; }
+.wbtm_single_modern .wbtm_search_area {
+    background: #f8fafc;
+    border: 1px solid #f0f2f5;
+    border-top: 0;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .08);
+    margin: 0 0 24px;
+    padding: 22px 30px 26px;
+}
+.wbtm_single_modern .wbtm_search_area > h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin: 0 0 14px;
+}
+/* Input fields → clean white pills */
+.wbtm_single_modern .wbtm_search_area .marker,
+.wbtm_single_modern .wbtm_search_area .calendar {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    transition: border-color .2s, box-shadow .2s;
+}
+.wbtm_single_modern .wbtm_search_area .marker:focus-within,
+.wbtm_single_modern .wbtm_search_area .calendar:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, .1);
+}
+.wbtm_single_modern .wbtm_search_area .marker input,
+.wbtm_single_modern .wbtm_search_area .calendar input {
+    height: 46px;
+    border: 0;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+}
+.wbtm_single_modern .wbtm_search_area .wtbm_inputList label { font-weight: 600; color: #374151; font-size: 13px; }
+
+/* From / To / swap laid out as a clean flex row (swap is a real, clickable
+   in-flow item — not the base absolute overlap that was hard to click). */
+.wbtm_single_modern .wbtm_input_start_end_location {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    position: relative;
+}
+.wbtm_single_modern .wbtm_start_point,
+.wbtm_single_modern .wbtm_dropping_point {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+}
+/* Swap button → circular accent, in-flow between From and To */
+.wbtm_single_modern .wbtm_search_location_toggle {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    margin: 0;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    color: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    transition: border-color .2s, box-shadow .2s, transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.wbtm_single_modern .wbtm_search_location_toggle:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, .1);
+}
+/* Search button → solid blue CTA */
+.wbtm_single_modern .wbtm_search_area .wbtm_search_action_button {
+    background: #2563eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, .3);
+    transition: background .2s, box-shadow .2s, transform .1s;
+}
+.wbtm_single_modern .wbtm_search_area .wbtm_search_action_button:hover {
+    background: #1d4ed8;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, .35);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+    .wbtm_single_modern .wbtm_sm_top {
+        grid-template-columns: 1fr;
+    }
+    .wbtm_single_modern .wbtm_sm_slider {
+        min-height: 240px;
+        max-height: 340px;
+    }
+}
+@media (max-width: 560px) {
+    .wbtm_single_modern .wbtm_sm_routes {
+        grid-template-columns: 1fr;
+    }
+    .wbtm_single_modern .wbtm_sm_info,
+    .wbtm_single_modern .wbtm_search_area { padding-left: 18px; padding-right: 18px; }
+    .wbtm_single_modern .wbtm_sm_description,
+    .wbtm_single_modern .wbtm_sm_section { padding-left: 18px; padding-right: 18px; }
+}
