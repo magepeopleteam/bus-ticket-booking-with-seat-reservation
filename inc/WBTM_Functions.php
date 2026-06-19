@@ -1555,7 +1555,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						$icon = $url;
 					}
 					echo '<style>'
-						. esc_html( $before_sel ) . '.dashicons-before:before { content: none !important; }'
+						// Suppress ALL :before pseudo-elements on the menu image container,
+						// not just `.dashicons-before:before`, because WP adds dashicons-before
+						// regardless of what CPT menu_icon is set to (SVG data URI etc.).
+						. esc_html( $before_sel ) . ':before { content: none !important; display: none !important; }'
 						. esc_html( $img_sel ) . ' { width: 20px !important; height: 20px !important; padding: 7px 0 0 !important; display: inline-block !important; }'
 						. '</style>' . "\n";
 					echo '<script>jQuery(function($){'
