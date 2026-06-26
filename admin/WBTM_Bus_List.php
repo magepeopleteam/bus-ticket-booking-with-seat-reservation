@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				add_filter( 'wbtm_filter_general_settings', [ $this, 'register_setting' ] );
 				add_action( 'admin_menu', [ $this, 'register_page' ] );
 				add_action( 'load-edit.php', [ $this, 'maybe_redirect_to_new_design' ] );
+				add_action( 'admin_action_wbtm_duplicate_bus', [ $this, 'handle_duplicate' ] );
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 				add_filter( 'parent_file', [ $this, 'highlight_menu' ] );
 				add_filter( 'submenu_file', [ $this, 'highlight_submenu' ] );
@@ -138,6 +139,104 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 
 			/**
+			 * Handle the "Duplicate" row action.
+			 *
+			 * Fires on admin.php?action=wbtm_duplicate_bus (the core admin_action_{action}
+			 * hook). Validates the nonce + capability, clones the bus as a draft and then
+			 * sends the user straight to the new draft's edit screen — the same flow
+			 * WooCommerce uses for "Duplicate product".
+			 */
+			public function handle_duplicate() {
+				$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
+				if ( ! $post_id ) {
+					wp_die( esc_html__( 'No bus was specified to duplicate.', 'bus-ticket-booking-with-seat-reservation' ) );
+				}
+				check_admin_referer( 'wbtm_duplicate_bus_' . $post_id );
+
+				// Same capability gate the rest of this screen uses.
+				if ( ! current_user_can( 'edit_wbtm_buses' ) ) {
+					wp_die( esc_html__( 'You are not allowed to duplicate this item.', 'bus-ticket-booking-with-seat-reservation' ) );
+				}
+
+				$post = get_post( $post_id );
+				if ( ! $post || $post->post_type !== 'wbtm_bus' ) {
+					wp_die( esc_html__( 'The item you are trying to duplicate does not exist.', 'bus-ticket-booking-with-seat-reservation' ) );
+				}
+
+				$new_id = $this->duplicate_bus( $post );
+				if ( is_wp_error( $new_id ) || ! $new_id ) {
+					wp_die( esc_html__( 'Sorry, the item could not be duplicated. Please try again.', 'bus-ticket-booking-with-seat-reservation' ) );
+				}
+
+				wp_safe_redirect( admin_url( sprintf( 'post.php?post=%d&action=edit', $new_id ) ) );
+				exit;
+			}
+
+			/**
+			 * Create a draft copy of a bus, including its taxonomies, all meta and the
+			 * featured image. Returns the new post ID or a WP_Error.
+			 *
+			 * @param WP_Post $post Source bus post.
+			 * @return int|WP_Error
+			 */
+			private function duplicate_bus( $post ) {
+				/* translators: %s: original bus title */
+				$new_title = sprintf( esc_html__( '%s (Copy)', 'bus-ticket-booking-with-seat-reservation' ), $post->post_title );
+
+				$new_id = wp_insert_post( wp_slash( array(
+					'post_title'     => $new_title,
+					'post_content'   => $post->post_content,
+					'post_excerpt'   => $post->post_excerpt,
+					'post_status'    => 'draft', // Always a draft so an incomplete clone is never live.
+					'post_type'      => $post->post_type,
+					'post_author'    => get_current_user_id(),
+					'post_parent'    => $post->post_parent,
+					'menu_order'     => $post->menu_order,
+					'comment_status' => $post->comment_status,
+					'ping_status'    => $post->ping_status,
+				) ), true );
+
+				if ( is_wp_error( $new_id ) || ! $new_id ) {
+					return $new_id;
+				}
+
+				// Copy every taxonomy attached to the bus (categories, stops, pick/drop points, features).
+				foreach ( get_object_taxonomies( $post->post_type ) as $taxonomy ) {
+					$terms = wp_get_object_terms( $post->ID, $taxonomy, array( 'fields' => 'ids' ) );
+					if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+						wp_set_object_terms( $new_id, $terms, $taxonomy );
+					}
+				}
+
+				// Copy all custom fields (including _thumbnail_id, so the featured image carries over).
+				// Editor-internal keys are intentionally skipped so the clone starts clean.
+				$skip = array( '_edit_lock', '_edit_last', '_wp_old_slug', '_wp_old_date' );
+				$meta = get_post_meta( $post->ID );
+				if ( is_array( $meta ) ) {
+					foreach ( $meta as $key => $values ) {
+						if ( in_array( $key, $skip, true ) ) {
+							continue;
+						}
+						foreach ( $values as $value ) {
+							// get_post_meta() returns raw (still-serialized) values; unserialize then
+							// re-slash so add_post_meta() stores arrays/objects and special chars intact.
+							add_post_meta( $new_id, $key, wp_slash( maybe_unserialize( $value ) ) );
+						}
+					}
+				}
+
+				/**
+				 * Fires after a bus has been duplicated, so add-ons can copy their own data.
+				 *
+				 * @param int     $new_id New (draft) bus ID.
+				 * @param WP_Post $post   Original bus post.
+				 */
+				do_action( 'wbtm_bus_duplicated', $new_id, $post );
+
+				return $new_id;
+			}
+
+			/**
 			 * Load the dedicated CSS/JS only on the new design screen.
 			 */
 			public function enqueue_assets( $hook ) {
@@ -203,6 +302,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'trash_link'   => get_delete_post_link( $pid ),
 						'restore_link' => wp_nonce_url( admin_url( sprintf( 'post.php?post=%d&action=untrash', $pid ) ), 'untrash-post_' . $pid ),
 						'delete_link'  => get_delete_post_link( $pid, '', true ),
+						'duplicate_link' => wp_nonce_url(
+							admin_url( sprintf( 'admin.php?action=wbtm_duplicate_bus&post=%d', $pid ) ),
+							'wbtm_duplicate_bus_' . $pid
+						),
 					);
 				}
 
@@ -485,6 +588,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 												<a class="wbtm-act-btn edit" href="<?php echo esc_url( $b['edit_link'] ); ?>" title="<?php esc_attr_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 												</a>
+												<a class="wbtm-act-btn dup" href="<?php echo esc_url( $b['duplicate_link'] ); ?>" title="<?php esc_attr_e( 'Duplicate', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+												</a>
 												<a class="wbtm-act-btn del" href="<?php echo esc_url( $b['trash_link'] ); ?>" title="<?php esc_attr_e( 'Move to Trash', 'bus-ticket-booking-with-seat-reservation' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Move this bus to Trash?', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');">
 													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
 												</a>
@@ -569,6 +675,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 												<?php endif; ?>
 												<a class="wbtm-icon-btn edit" href="<?php echo esc_url( $b['edit_link'] ); ?>" title="<?php esc_attr_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?>" aria-label="<?php esc_attr_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 													<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+												</a>
+												<a class="wbtm-icon-btn dup" href="<?php echo esc_url( $b['duplicate_link'] ); ?>" title="<?php esc_attr_e( 'Duplicate', 'bus-ticket-booking-with-seat-reservation' ); ?>" aria-label="<?php esc_attr_e( 'Duplicate', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+													<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
 												</a>
 												<a class="wbtm-icon-btn del" href="<?php echo esc_url( $b['trash_link'] ); ?>" title="<?php esc_attr_e( 'Move to Trash', 'bus-ticket-booking-with-seat-reservation' ); ?>" aria-label="<?php esc_attr_e( 'Move to Trash', 'bus-ticket-booking-with-seat-reservation' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Move this bus to Trash?', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');">
 													<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>

@@ -132,6 +132,8 @@
 .wbtm-act-btn.restore:hover{background:var(--wbtm-green);color:#fff;}
 .wbtm-act-btn.view{background:rgba(37,99,235,.95);color:#fff;}
 .wbtm-act-btn.view:hover{background:var(--wbtm-blue);color:#fff;}
+.wbtm-act-btn.dup{background:rgba(234,88,12,.95);color:#fff;}
+.wbtm-act-btn.dup:hover{background:var(--wbtm-orange);color:#fff;}
 .wbtm-bus-body{padding:16px;}
 .wbtm-bus-name{display:block;font-size:15px;font-weight:700;color:var(--wbtm-ink) !important;margin-bottom:10px;line-height:1.3;text-decoration:none;}
 .wbtm-bus-name:hover{color:var(--wbtm-red) !important;}
@@ -173,6 +175,7 @@
 .wbtm-icon-btn.edit:hover{border-color:var(--wbtm-blue);color:var(--wbtm-blue) !important;background:var(--wbtm-blue-soft);}
 .wbtm-icon-btn.restore:hover{border-color:var(--wbtm-green);color:var(--wbtm-green) !important;background:var(--wbtm-green-soft);}
 .wbtm-icon-btn.del:hover{border-color:var(--wbtm-red);color:var(--wbtm-red) !important;background:var(--wbtm-red-soft);}
+.wbtm-icon-btn.dup:hover{border-color:var(--wbtm-orange);color:var(--wbtm-orange) !important;background:var(--wbtm-orange-soft);}
 
 /* NAME CELL (thumb + route / journey / return details) */
 .wbtm-name-wrap{display:flex;align-items:flex-start;gap:12px;}
