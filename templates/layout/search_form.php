@@ -132,7 +132,7 @@
                 flex:         1;
                 min-width:    110px;
                 position:     relative;
-                padding:      12px 22px;
+                padding:      30px 40px;
                 border-right: 1.5px solid #dde1e7;
                 display:      flex;
                 align-items:  center;
@@ -273,6 +273,14 @@
                 display:        flex;
                 flex-direction: column;
                 align-items:    stretch;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_button_spacer {
+                display: none !important;
+            }
+
+            /* ── Button holder: vertically center the button ────────── */
+            #wbtm_area .wbtm-bar-redesign .search_button_holder {
+                justify-content: center !important;
             }
             #wbtm_area .wbtm-bar-redesign .wbtm_search_button_spacer {
                 display: none !important;

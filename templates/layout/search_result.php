@@ -106,9 +106,8 @@ if (sizeof($bus_ids) > 0) {
 .wbtm_return_bus_lists_holder  { background: transparent; margin-bottom: 20px; border-radius: 12px; overflow: hidden; }
 
 /* Step indicator: "① Select Departure Bus ---- ② Select Return Bus".
-   Only shown for round-trip searches (when a return tab actually exists —
-   .wbtm_bus_tab_wrapper renders a single "Departure" tab for one-way
-   searches, where this stepper would be pointless). */
+   Only shown for round-trip searches (when a return tab actually exists).
+   A <span class="wbtm-step-connector"> is inserted between the two tabs in PHP. */
 .wbtm_bus_tab_wrapper {
     display: none !important;
 }
@@ -116,12 +115,13 @@ if (sizeof($bus_ids) > 0) {
     display:         flex !important;
     align-items:     center;
     justify-content: center;
-    gap:             16px;
-    padding:         18px 20px;
-    background:      linear-gradient(90deg, #ffffff 0%, #eef1f8 100%);
-    border:          1px solid #eceff4;
+    gap:             0;
+    padding:         14px 24px;
+    background:      #fff;
+    border:          1px solid #e8ecf0;
     border-radius:   12px;
     margin-bottom:   16px;
+    box-shadow:      0 1px 4px rgba(0,0,0,.04);
 }
 .wbtm_bus_tab_wrapper .wtbm_start_route,
 .wbtm_bus_tab_wrapper .wtbm_return_route {
@@ -130,49 +130,193 @@ if (sizeof($bus_ids) > 0) {
     gap:         10px;
     font-size:   14px;
     font-weight: 600;
-    color:       #b7bcc7;
+    color:       #9ca3af;
     cursor:      pointer;
     background:  none;
     border:      none;
-    padding:     0;
+    padding:     6px 0;
+    white-space: nowrap;
+    flex:        1;
     transition:  color 0.15s;
 }
-/* Numbered circle — "1" for Departure, "2" for Return */
+/* Numbered circle */
 .wbtm_bus_tab_wrapper .wtbm_start_route::before,
 .wbtm_bus_tab_wrapper .wtbm_return_route::before {
     content:         '1';
     display:         flex;
     align-items:     center;
     justify-content: center;
-    width:           24px;
-    height:          24px;
+    width:           26px;
+    height:          26px;
     border-radius:   50%;
-    background:      #e7e9ef;
-    color:           #aab0bd;
+    background:      #e9eaf0;
+    color:           #9ca3af;
     font-size:       12px;
     font-weight:     700;
     flex-shrink:     0;
     transition:      background 0.15s, color 0.15s;
 }
 .wbtm_bus_tab_wrapper .wtbm_return_route::before { content: '2'; }
+.wbtm_bus_tab_wrapper .wtbm_start_route { justify-content: flex-end; }
+div#wbtm_date_start_route { height: 50px; }
 
-/* Dotted connector between the two steps */
-.wbtm_bus_tab_wrapper .wtbm_start_route::after {
-    content:    '';
-    display:    inline-block;
-    width:      70px;
+/* Dotted connector — a real <span> inserted by PHP so it sits between the two tabs */
+.wbtm_bus_tab_wrapper .wbtm-step-connector {
+    flex:       0 0 100px;
     height:     0;
-    border-top: 2px dotted #d3d7e0;
-    margin-left: 6px;
+    border-top: 2px dashed #d1d5db;
+    margin:     0;
+    align-self: center;
 }
 
-/* Active step: dark navy circle (white number) + dark bold text */
-.wbtm_bus_tab_wrapper .wbtm_tab_active {
-    color: #16213e;
+/* Active step: dark navy circle + bold dark text */
+@media (min-width: 0px) {
+    .wbtm_bus_tab_wrapper .wbtm_tab_active {
+        color:      #111827;
+        box-shadow: none;
+    }
 }
 .wbtm_bus_tab_wrapper .wbtm_tab_active::before {
     background: #16213e;
     color:      #fff;
+}
+
+/* ── Selected bus summary card (FlixBus style) ──────────────────── */
+.wbtm_selected_bus_card {
+    display:       flex;
+    align-items:   stretch;
+    background:    #fff;
+    border:        1px solid #e2e6ea;
+    border-radius: 10px;
+    overflow:      hidden;
+    margin-bottom: 12px;
+    box-shadow:    0 1px 6px rgba(0,0,0,.06);
+}
+.wbtm_selbus_date_badge {
+    background:      #16213e;
+    color:           #fff;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    padding:         14px 18px;
+    min-width:       64px;
+    flex-shrink:     0;
+    text-align:      center;
+    border-radius:   10px;
+}
+.wbtm_selbus_month {
+    font-size:      11px;
+    font-weight:    700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    opacity:        0.75;
+}
+.wbtm_selbus_day {
+    font-size:   30px;
+    font-weight: 800;
+    line-height: 1;
+    margin-top:  3px;
+}
+.wbtm_selbus_body {
+    flex:           1;
+    padding:        12px 18px;
+    display:        flex;
+    flex-direction: column;
+    gap:            5px;
+    min-width:      0;
+}
+.wbtm_selbus_toprow {
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+    flex-wrap:   wrap;
+}
+.wbtm_selbus_trip_label {
+    background:    #dbeafe;
+    color:         #1d6eb5;
+    font-size:     11px;
+    font-weight:   700;
+    padding:       2px 9px;
+    border-radius: 20px;
+    white-space:   nowrap;
+}
+.wbtm_selbus_busname {
+    font-size:   13px;
+    color:       #444;
+    font-weight: 500;
+}
+.wbtm_selbus_busname em {
+    font-style: normal;
+    color:      #999;
+    margin-left: 4px;
+}
+.wbtm_selbus_change_btn {
+    margin-left:     auto;
+    font-size:       13px;
+    color:           #16213e;
+    font-weight:     600;
+    text-decoration: none;
+    white-space:     nowrap;
+    cursor:          pointer;
+}
+.wbtm_selbus_change_btn:hover { text-decoration: underline; }
+.wbtm_selbus_route {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+    font-size:   20px;
+    font-weight: 700;
+    color:       #111;
+    line-height: 1.2;
+}
+.wbtm_selbus_arrow { color: #555; font-size: 18px; }
+.wbtm_selbus_details {
+    display:     flex;
+    align-items: center;
+    gap:         14px;
+    flex-wrap:   wrap;
+}
+.wbtm_selbus_times,
+.wbtm_selbus_seat {
+    display:     flex;
+    align-items: center;
+    gap:         4px;
+    font-size:   13px;
+    color:       #555;
+}
+.wbtm_selbus_price {
+    font-size:   15px;
+    font-weight: 700;
+    color:       #16213e;
+}
+.wbtm_selbus_actions {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    gap:             6px;
+    padding:         12px 18px;
+    border-left:     1px solid #eee;
+    flex-shrink:     0;
+    min-width:       140px;
+}
+.wbtm_selected_bus_btn {
+    background:    var(--wbtm_color_theme, #e8510f);
+    color:         #fff;
+    border:        none;
+    border-radius: 6px;
+    padding:       8px 14px;
+    font-size:     13px;
+    font-weight:   600;
+    cursor:        pointer;
+    width:         100%;
+    text-align:    center;
+}
+.wbtm_selbus_cart_link {
+    font-size:       12px;
+    color:           #555;
+    text-decoration: underline;
 }
 
 /* ── Route summary card — hidden ────────────────────────────────── */

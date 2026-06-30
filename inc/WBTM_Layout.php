@@ -274,6 +274,7 @@
                                 </div>
 
                                 <?php  if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) { ?>
+                                    <span class="wbtm-step-connector"></span>
                                     <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start" data-alert="<?php echo esc_attr__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                         <?php
                                         echo esc_html( sprintf(
@@ -444,45 +445,51 @@
                 $checkout_url = wc_get_checkout_url();
 
 				?>
+                <?php
+                    $j_date_ts   = !empty($data['j_date']) ? strtotime($data['j_date']) : time();
+                    $badge_day   = date('d', $j_date_ts);
+                    $badge_month = strtoupper(date('M', $j_date_ts));
+                ?>
                 <div class="wbtm_selected_bus_card" data-outbound-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-outbound-bp-time="<?php echo esc_attr($data['wbtm_bp_time']); ?>" data-outbound-dp-time="<?php echo esc_attr($data['wbtm_dp_time']); ?>" data-j-date="<?php echo esc_attr($data['j_date']); ?>" data-r-date="<?php echo esc_attr(isset($data['r_date']) ? $data['r_date'] : ''); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>">
-                    <div class="wbtm_selected_bus_image">
-						<?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
+
+                    <div class="wbtm_selbus_date_badge">
+                        <span class="wbtm_selbus_month"><?php echo esc_html($badge_month); ?></span>
+                        <span class="wbtm_selbus_day"><?php echo esc_html($badge_day); ?></span>
                     </div>
-                    <div class="wbtm_selected_bus_img_name">
-						<?php echo esc_html($bus_title); ?> <span><?php echo esc_html($bus_number); ?></span>
-                    </div>
-                    <div class="wbtm_selected_bus_info">
-                        <div class="wbtm_selected_bus_date"><?php echo esc_attr($start_date_format); ?></div>
-                        <div class="wbtm_selected_bus_route">
-                            <div class="wbtm_selected_bus_left">
-                                <div class="wbtm_selected_bus_time"><?php echo esc_attr($start_time) ?></div>
-                                <div class="wbtm_selected_bus_city"><?php echo esc_attr($data['wbtm_bp_place']); ?></div>
-                            </div>
-                            <div class="wbtm_selected_bus_center">
-                                <div class="wbtm_selected_bus_icon">🚍</div>
-                                <div class="wbtm_selected_bus_duration"><?php echo esc_attr($time_diff); ?></div>
-                                <div class="wbtm_selected_bus_arrow">➜</div>
-                            </div>
-                            <div class="wbtm_selected_bus_right">
-                                <div class="wbtm_selected_bus_time"><?php echo esc_attr($end_time) ?></div>
-                                <div class="wbtm_selected_bus_city"><?php echo esc_attr($data['wbtm_dp_place']); ?></div>
-                            </div>
-                        </div>
-                        <div class="wbtm_selected_bus_seats">
-                            Seat: <?php echo esc_attr($data['wbtm_selected_seat']); ?>
-                        </div>
-                    </div>
-                    <div class="wbtm_selected_bus_payment">
-                        <div class="wbtm_selected_bus_label"><?php esc_html_e('Total Amount to be Paid', 'bus-ticket-booking-with-seat-reservation'); ?></div>
-                        <div class="wbtm_selected_bus_price"><?php echo wp_kses_post( wc_price( $data['price_val'] ) ); ?></div>
-                        <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_attr( $checkout_url );?>" style="text-decoration: none; color: #FFFFFF"><?php esc_html_e('Checkout Without Return', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
-                        <div class="" style="padding: 5px 0">
-                            <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-link">
-                                <?php esc_attr_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?>
+
+                    <div class="wbtm_selbus_body">
+                        <div class="wbtm_selbus_toprow">
+                            <span class="wbtm_selbus_trip_label"><?php esc_html_e('Outbound Trip', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            <span class="wbtm_selbus_busname"><?php echo esc_html($bus_title); ?> <em><?php echo esc_html($bus_number); ?></em></span>
+                            <a href="#" class="wbtm_selbus_change_btn" onclick="var s=document.getElementById('wbtm_seleced_start_bus');if(s){s.innerHTML='';}var b=document.getElementById('start_bus');if(b){b.style.display='block';}return false;">
+                                <?php esc_html_e('Change Departure', 'bus-ticket-booking-with-seat-reservation'); ?> &#8250;
                             </a>
                         </div>
 
+                        <div class="wbtm_selbus_route">
+                            <span class="wbtm_selbus_from"><?php echo esc_html($data['wbtm_bp_place']); ?></span>
+                            <span class="wbtm_selbus_arrow">&#8594;</span>
+                            <span class="wbtm_selbus_to"><?php echo esc_html($data['wbtm_dp_place']); ?></span>
+                        </div>
+
+                        <div class="wbtm_selbus_details">
+                            <span class="wbtm_selbus_times">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <?php echo esc_html($start_time); ?> &ndash; <?php echo esc_html($end_time); ?>
+                            </span>
+                            <span class="wbtm_selbus_seat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <?php echo esc_html('Seat ' . $data['wbtm_selected_seat']); ?>
+                            </span>
+                            <span class="wbtm_selbus_price"><?php echo wp_kses_post(wc_price($data['price_val'])); ?></span>
+                        </div>
                     </div>
+
+                    <div class="wbtm_selbus_actions">
+                        <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_url($checkout_url); ?>" style="text-decoration:none;color:#fff;"><?php esc_html_e('Checkout', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
+                        <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="wbtm_selbus_cart_link"><?php esc_html_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                    </div>
+
                 </div>
 				<?php
 				return ob_get_clean();
