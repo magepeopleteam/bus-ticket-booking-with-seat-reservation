@@ -67,7 +67,19 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$this->setBusPermission();
 					add_filter('plugin_action_links', array($this, 'wbtm_plugin_action_link'), 10, 2);
 					add_filter('plugin_row_meta', array($this, 'wbtm_plugin_row_meta'), 10, 2);
-					self::on_activation_page_create();
+					// Deferred to init: at this point in plugin loading $wp_rewrite isn't
+					// set up yet, so wp_insert_post()/flush_rewrite_rules() here would
+					// fatal ("Call to a member function get_page_permastruct() on null").
+					add_action( 'init', array( __CLASS__, 'on_activation_page_create' ) );
+					// Runs after every plugin/theme has finished registering its rewrite
+					// rules for this request (wp_loaded fires right after init completes),
+					// so the flush below — if one got queued — is based on the complete
+					// rule set instead of whatever had registered before our init callback ran.
+					add_action( 'wp_loaded', array( __CLASS__, 'maybe_flush_queued_rewrite_rules' ) );
+					// Belt-and-suspenders: also catch the queued flag on the *next*
+					// admin request in case something on this one (a redirect, an
+					// early exit elsewhere) ever prevented wp_loaded from completing.
+					add_action( 'admin_init', array( __CLASS__, 'maybe_flush_queued_rewrite_rules' ) );
 					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
 					add_action( 'admin_init', [ $this, 'flush_rules_wbtm_post_list_page' ] );
 				}
@@ -117,6 +129,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					}
 				}
 				public static function on_activation_page_create() {
+					$created_a_page = false;
+
 					if (!WBTM_Global_Function::get_page_by_slug('bus-global-search')) {
 						$bus_global_search_page = array(
 							'post_type' => 'page',
@@ -126,7 +140,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'post_status' => 'publish',
 						);
 						wp_insert_post($bus_global_search_page);
-						flush_rewrite_rules();
+						$created_a_page = true;
 					}
 					if (!WBTM_Global_Function::get_page_by_slug('bus-global-search-flix')) {
 						$bus_global_search_page = array(
@@ -137,7 +151,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'post_status' => 'publish',
 						);
 						wp_insert_post($bus_global_search_page);
-						flush_rewrite_rules();
+						$created_a_page = true;
 					}
 					if (!WBTM_Global_Function::get_page_by_slug('search-result')) {
 						$search_result= array(
@@ -148,6 +162,34 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'post_status' => 'publish',
 						);
 						wp_insert_post($search_result);
+						$created_a_page = true;
+					}
+
+					// Self-heal sites where these pages were already created by an
+					// earlier (buggy) run before this fix, whose rewrite rules may
+					// have been flushed incompletely — queue one corrective flush.
+					$needs_flush = $created_a_page || !get_option('wbtm_woo_pages_flush_done_v1');
+
+					if ($needs_flush) {
+						// Don't flush here directly: this init callback can run before
+						// other plugins (or this plugin's own CPTs) finish registering
+						// their rewrite rules/permastructs for the same request, which
+						// would bake an incomplete rewrite_rules option and 404 the new
+						// pages until someone manually resaves Settings > Permalinks.
+						// Queue it instead — maybe_flush_queued_rewrite_rules() performs
+						// the actual flush on wp_loaded, once every plugin's init has run.
+						update_option('wbtm_queue_flush_rewrite_rules', 'yes');
+						update_option('wbtm_woo_pages_flush_done_v1', 'yes');
+					}
+				}
+
+				// Performs a rewrite flush queued by on_activation_page_create(), but
+				// only once everything that contributes rewrite rules has finished
+				// registering for this request (wp_loaded fires right after the
+				// entire init action — across every plugin and priority — completes).
+				public static function maybe_flush_queued_rewrite_rules() {
+					if ('yes' === get_option('wbtm_queue_flush_rewrite_rules')) {
+						delete_option('wbtm_queue_flush_rewrite_rules');
 						flush_rewrite_rules();
 					}
 				}
