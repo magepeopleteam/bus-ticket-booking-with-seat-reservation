@@ -373,6 +373,23 @@
 				}
 				// Keep the return booking's date metadata aligned with what is displayed.
 				$search_info['r_date'] = $effective_r_date;
+				// Return journey header banner
+				$_r_weekday = date_i18n( 'l', strtotime( $effective_r_date ) );
+				$_r_date_fmt = date_i18n( 'F j', strtotime( $effective_r_date ) );
+				?>
+                <div class="wbtm-return-journey-header">
+                    <div class="wbtm-return-journey-title">
+                        <?php echo esc_html( sprintf(
+                            /* translators: %s: destination city */
+                            __( 'Select your return to %s', 'bus-ticket-booking-with-seat-reservation' ),
+                            $return_end
+                        ) ); ?>
+                    </div>
+                    <div class="wbtm-return-journey-sub">
+                        <?php echo esc_html( $return_start . ' to ' . $return_end . ' · ' . $_r_weekday . ', ' . $_r_date_fmt ); ?>
+                    </div>
+                </div>
+				<?php
 				// route_title() with $return=true displays $end_route -> $start_route, so pass them
 				// reversed to render "$return_start -> $return_end" with return styling.
 				self::route_title( 'Return', $return_end, $return_start, $j_date, $effective_r_date, true );

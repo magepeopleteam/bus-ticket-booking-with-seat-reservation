@@ -319,6 +319,24 @@ div#wbtm_date_start_route { height: 50px; }
     text-decoration: underline;
 }
 
+/* ── Return journey header banner ───────────────────────────────── */
+.wbtm-return-journey-header {
+    padding:       14px 0 12px;
+    margin-bottom: 6px;
+}
+.wbtm-return-journey-title {
+    font-size:   20px;
+    font-weight: 700;
+    color:       #111827;
+    line-height: 1.25;
+    margin:      0 0 4px;
+}
+.wbtm-return-journey-sub {
+    font-size:  13px;
+    color:      #6b7280;
+    margin:     0;
+}
+
 /* ── Route summary card — hidden ────────────────────────────────── */
 .wbtm_search_route_container { display: none !important; }
 .wbtm_search_route_container.__unused {
