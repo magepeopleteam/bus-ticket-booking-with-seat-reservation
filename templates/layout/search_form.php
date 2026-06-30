@@ -250,13 +250,108 @@
                 top:           calc(100% + 8px) !important;
                 left:          0 !important;
                 width:         max-content !important;
-                min-width:     100% !important;
+                min-width:     285px !important;
                 background:    #fff !important;
                 border:        1.5px solid #dde1e7 !important;
                 border-radius: 14px !important;
                 box-shadow:    0 8px 28px rgba(0,0,0,.13) !important;
                 z-index:       9999 !important;
                 margin:        0 !important;
+                padding:       0 !important;
+                overflow:      hidden !important;
+                max-height:    320px !important;
+                overflow-y:    auto !important;
+            }
+            /* Panel title sticky header via CSS ::before */
+            #wbtm_area .wbtm-bar-redesign .wbtm_start_point ul.wbtm_input_select_list::before {
+                content:        'Select Boarding Point' !important;
+                display:        block !important;
+                padding:        13px 16px 11px !important;
+                font-size:      11px !important;
+                font-weight:    700 !important;
+                color:          #6b7280 !important;
+                letter-spacing: 0.5px !important;
+                text-transform: uppercase !important;
+                border-bottom:  1px solid #f1f3f5 !important;
+                background:     #fff !important;
+                position:       sticky !important;
+                top:            0 !important;
+                z-index:        1 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_dropping_point ul.wbtm_input_select_list::before {
+                content:        'Select Dropping Point' !important;
+                display:        block !important;
+                padding:        13px 16px 11px !important;
+                font-size:      11px !important;
+                font-weight:    700 !important;
+                color:          #6b7280 !important;
+                letter-spacing: 0.5px !important;
+                text-transform: uppercase !important;
+                border-bottom:  1px solid #f1f3f5 !important;
+                background:     #fff !important;
+                position:       sticky !important;
+                top:            0 !important;
+                z-index:        1 !important;
+            }
+            /* List items — flex row: checkbox + city name + optional tick */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li {
+                display:       flex !important;
+                align-items:   center !important;
+                gap:           12px !important;
+                padding:       11px 16px !important;
+                font-size:     14px !important;
+                color:         #374151 !important;
+                border-bottom: 1px solid #f7f8fa !important;
+                margin:        0 !important;
+                cursor:        pointer !important;
+                transition:    background 0.1s !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li:last-child {
+                border-bottom: none !important;
+            }
+            /* Square checkbox on the left */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li::before {
+                content:       '' !important;
+                display:       inline-block !important;
+                width:         16px !important;
+                height:        16px !important;
+                min-width:     16px !important;
+                border:        2px solid #d1d5db !important;
+                border-radius: 4px !important;
+                background:    #fff !important;
+                box-sizing:    border-box !important;
+                flex-shrink:   0 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li:hover {
+                background: #f8f9fa !important;
+            }
+            /* Selected item — filled checkbox + right blue tick badge */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected {
+                font-weight: 600 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected::before {
+                background:   #16213e !important;
+                border-color: #16213e !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected::after {
+                content:         '✓' !important;
+                margin-left:     auto !important;
+                display:         inline-flex !important;
+                align-items:     center !important;
+                justify-content: center !important;
+                width:           20px !important;
+                height:          20px !important;
+                min-width:       20px !important;
+                border-radius:   50% !important;
+                background:      #dbeafe !important;
+                color:           #1d4ed8 !important;
+                font-size:       11px !important;
+                font-weight:     700 !important;
+                flex-shrink:     0 !important;
+            }
+
+            .wtbm_inputList.wbtm_input_select.wbtm_dropping_point {
+                border-right: 1px solid #e9e5e5 !important;
             }
 
             /* ── Search button section ───────────────────────────── */
@@ -342,6 +437,23 @@
                 }
             }
             </style>
+            <script>
+            jQuery(document).ready(function($) {
+                // Mark the currently-selected li when the dropdown opens
+                $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select input.formControl', function() {
+                    var currentVal = $(this).val().toLowerCase().trim();
+                    $(this).closest('.wbtm_input_select').find('.wbtm_input_select_list li').each(function() {
+                        var liVal = ($(this).attr('data-value') || '').toLowerCase().trim();
+                        $(this).toggleClass('wbtm_city_selected', liVal === currentVal && currentVal !== '');
+                    });
+                });
+                // Update selected state when an li is clicked
+                $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select_list li', function() {
+                    $(this).closest('.wbtm_input_select_list').find('li').removeClass('wbtm_city_selected');
+                    $(this).addClass('wbtm_city_selected');
+                });
+            });
+            </script>
 
             <div class="_dLayout wbtm_search_area wbtm-bar-redesign <?php echo esc_attr($form_style_class); ?>">
 				<?php if ($buy_ticket_text) { ?>
