@@ -264,12 +264,24 @@
                         <div class="wbtm_departure_bus_lists_holder">
                             <div class="wbtm_bus_tab_wrapper">
                                 <div class=" wtbm_start_route <?php echo esc_attr( $start_bus_tab );?>" id="wbtm_date_start_route" >
-                                    <?php echo esc_html( esc_html__( 'Departure', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $bus_label ); ?>
+                                    <?php
+                                    echo esc_html( sprintf(
+                                        /* translators: %s: "Departure Bus" (or configured transport label) */
+                                        __( 'Select %s', 'bus-ticket-booking-with-seat-reservation' ),
+                                        __( 'Departure', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $bus_label
+                                    ) );
+                                    ?>
                                 </div>
 
                                 <?php  if ( ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) && $start_route && $end_route && $r_date) { ?>
                                     <div class="wtbm_return_route <?php echo esc_attr( $return_bus_tab );?>" id="wbtm_date_return_route_start" data-alert="<?php echo esc_attr__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-                                        <?php echo esc_html( esc_html__( 'Return', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $bus_label ); ?>
+                                        <?php
+                                        echo esc_html( sprintf(
+                                            /* translators: %s: "Return Bus" (or configured transport label) */
+                                            __( 'Select %s', 'bus-ticket-booking-with-seat-reservation' ),
+                                            __( 'Return', 'bus-ticket-booking-with-seat-reservation' ) . ' ' . $bus_label
+                                        ) );
+                                        ?>
                                     </div>
                                 <?php }?>
                             </div>

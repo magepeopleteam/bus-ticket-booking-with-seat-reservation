@@ -99,6 +99,9 @@
                 background: transparent;
                 padding: 0;
             }
+            #wbtm_area .wbtm-bar-redesign h4 {
+                display: none;
+            }
 
             /* ── Pill container ──────────────────────────────────── */
             #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
@@ -106,7 +109,7 @@
                 flex-wrap:    nowrap;
                 align-items:  stretch;
                 background:   #ffffff;
-                border-radius: 60px;
+                border-radius: 10px;
                 border:       1.5px solid #dde1e7;
                 box-shadow:   0 2px 16px rgba(0,0,0,.09);
                 min-height:   64px;
@@ -143,7 +146,7 @@
                 background: #f5f7fb;
             }
             #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location .wtbm_inputList:first-child:hover {
-                border-radius: 58px 0 0 58px;
+                border-radius: 9px 0 0 9px;
             }
 
             /* ── Field label ("From", "Journey Date" …) ──────────── */
@@ -162,40 +165,49 @@
             }
 
             /* ── Icon + value row ────────────────────────────────── */
+            /* wbtm.css sets .wbtm_search_area .marker i { position: absolute; left: 10px }
+               and compensates with input { padding-left: 30px }.
+               We reset both here so the flex gap controls spacing instead. */
             #wbtm_area .wbtm-bar-redesign .marker,
             #wbtm_area .wbtm-bar-redesign .calendar {
-                display:     flex;
-                align-items: center;
-                gap:         7px;
+                position:    static !important;  /* override position:relative used as absolute-icon parent */
+                display:     flex !important;
+                align-items: center !important;
+                gap:         7px !important;
                 margin-top:  5px;
                 font-size:   15px;
                 color:       #1a1a1a;
             }
             #wbtm_area .wbtm-bar-redesign .marker > i,
             #wbtm_area .wbtm-bar-redesign .calendar > i {
-                font-size:   15px;
-                color:       #666;
-                flex-shrink: 0;
-                width:       16px;
-                text-align:  center;
+                position:    static !important;  /* reset from position:absolute */
+                top:         auto !important;
+                left:        auto !important;
+                transform:   none !important;
+                font-size:   15px !important;
+                color:       #666 !important;
+                flex-shrink: 0 !important;
+                width:       16px !important;
+                text-align:  center !important;
             }
 
             /* ── Input styled as plain readable text ─────────────── */
             #wbtm_area .wbtm-bar-redesign .formControl {
-                border:      0 !important;
-                background:  transparent !important;
-                padding:     0 !important;
-                margin:      0 !important;
-                font-size:   15px !important;
-                font-weight: 600 !important;
-                color:       #1a1a1a !important;
-                box-shadow:  none !important;
-                outline:     none !important;
-                height:      auto !important;
-                line-height: 1.3 !important;
-                width:       100%;
-                min-width:   0;
-                cursor:      pointer;
+                border:       0 !important;
+                background:   transparent !important;
+                padding:      0 !important;         /* removes original 30px-left that accommodated absolute icon */
+                padding-left: 0 !important;
+                margin:       0 !important;
+                font-size:    15px !important;
+                font-weight:  600 !important;
+                color:        #1a1a1a !important;
+                box-shadow:   none !important;
+                outline:      none !important;
+                height:       auto !important;
+                line-height:  1.3 !important;
+                width:        100%;
+                min-width:    0;
+                cursor:       pointer;
             }
             #wbtm_area .wbtm-bar-redesign .formControl::placeholder {
                 color:       #aaa !important;
@@ -254,15 +266,21 @@
                 padding:     6px;
                 flex-shrink: 0;
             }
+            /* Stack both buttons inside the holder; PHP inline style="display:none/block"
+               controls which one is visible — we must NOT override display with !important
+               or both buttons would show at once. */
             #wbtm_area .wbtm-bar-redesign .search_button_holder {
-                display:     flex;
-                align-items: center;
+                display:        flex;
+                flex-direction: column;
+                align-items:    stretch;
             }
             #wbtm_area .wbtm-bar-redesign .wbtm_search_button_spacer {
                 display: none !important;
             }
 
-            /* ── Search button ────────────────────────────────────── */
+            /* ── Search / Modify button ───────────────────────────── */
+            /* No "display" property here — PHP inline style="display:none/block" controls
+               which of the two buttons is shown. We only restyle the visible one. */
             #wbtm_area .wbtm-bar-redesign .wbtm_search_action_button {
                 border-radius: 50px !important;
                 padding:       13px 26px !important;
@@ -271,18 +289,18 @@
                 white-space:   nowrap !important;
                 height:        auto !important;
                 line-height:   1.3 !important;
-                display:       inline-flex !important;
                 align-items:   center !important;
                 gap:           7px !important;
                 border:        none !important;
                 cursor:        pointer;
+                text-align:    center;
             }
 
             /* ── Mobile: stack vertically ────────────────────────── */
             @media (max-width: 767px) {
                 #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
                     flex-direction: column;
-                    border-radius:  16px;
+                    border-radius:  10px;
                 }
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_fields_holder,
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location,
@@ -325,7 +343,8 @@
 
                     <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
                     <input type="hidden" name='wbtm_list_btn_show' value="<?php echo esc_attr($btn_show); ?>"/>
-                    <input type="hidden" name='wbtm_left_filter_show' value="<?php echo esc_attr($left_filter); ?>"/>
+                    <?php /* Redesigned bar always enables the left filter sidebar regardless of is_page() context */ ?>
+                    <input type="hidden" name='wbtm_left_filter_show' value="on"/>
                     <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr($left_filter_type); ?>"/>
                     <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr($left_filter_operator); ?>"/>
                     <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr($left_filter_boarding); ?>"/>
