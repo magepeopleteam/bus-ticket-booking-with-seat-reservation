@@ -3,14 +3,56 @@
   /* Break out of WordPress block theme narrow content width (e.g. Twenty Twenty-Five contentSize: 645px).
      Falls back to width:100% / margin:0 on classic themes that don't define these variables. */
   div.wbtm_container {
-    width: var(--wp--style--global--wide-size, 100%);
-    max-width: var(--wp--style--global--wide-size, 1200px);
+    width: 1340px;
+    max-width: 1340px;
     margin-top: var(--wbtm_dmp);
     margin-bottom: var(--wbtm_dmp);
-    margin-left: calc((var(--wp--style--global--content-size, 100%) - var(--wp--style--global--wide-size, 100%)) / 2);
+    margin-left: auto;
     margin-right: auto;
+    padding: 0;
   }
 }
+/* ── Plugin page: align post title / page title with the 1340px plugin container ──
+   body.wbtm-plugin-page is added by PHP whenever a plugin shortcode is on the page.
+   Targets the most common title selectors across block themes and classic themes. */
+body.wbtm-plugin-page .wp-block-post-title,
+body.wbtm-plugin-page .entry-title,
+body.wbtm-plugin-page h1.page-title,
+body.wbtm-plugin-page .page-title,
+body.wbtm-plugin-page .post-title {
+  width: 1340px !important;
+  max-width: 100% !important;
+  margin-left:  auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+/* Block themes wrap content with has-global-padding which adds side padding.
+   Remove it on plugin pages so the title left edge matches the container. */
+body.wbtm-plugin-page .has-global-padding > .wp-block-post-title,
+body.wbtm-plugin-page .has-global-padding > h1 {
+  padding-left:  0 !important;
+  padding-right: 0 !important;
+}
+/* Also align the post content block itself on plugin pages */
+body.wbtm-plugin-page .wp-block-post-content,
+body.wbtm-plugin-page .entry-content {
+  max-width: 1340px !important;
+  margin-left:  auto !important;
+  margin-right: auto !important;
+}
+@media only screen and (max-width: 768px) {
+  body.wbtm-plugin-page .wp-block-post-title,
+  body.wbtm-plugin-page .entry-title,
+  body.wbtm-plugin-page h1.page-title,
+  body.wbtm-plugin-page .wp-block-post-content,
+  body.wbtm-plugin-page .entry-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left:  0 !important;
+    margin-right: 0 !important;
+  }
+}
+
 /* Single bus page: wbtm_container sits directly inside <body> (not inside TT5's
    constrained 645px content wrapper), so the negative margin-left breakout calc
    produces -347.5px and shifts content far left.  Reset to auto centering. */
@@ -264,6 +306,184 @@ body.single-wbtm_bus div.wbtm_container {
     top: 100%;
     border-top-color: var(--wbtm_color_theme);
     border-bottom-color: transparent;
+  }
+}
+/********************************************************************************************************************/
+/* ── jQuery UI Datepicker — clean minimal redesign ───────────────────────────── */
+@media only screen and (min-width: 10px) {
+
+  /* Container */
+  #ui-datepicker-div {
+    width: 300px !important;
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.12) !important;
+    padding: 0 !important;
+    overflow: hidden;
+    font-size: 13px !important;
+  }
+
+  /* Header bar */
+  #ui-datepicker-div .ui-datepicker-header {
+    background: #16213e !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 12px 14px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Prev / Next arrows */
+  #ui-datepicker-div .ui-datepicker-prev,
+  #ui-datepicker-div .ui-datepicker-next {
+    top: 10px !important;
+    width: 28px !important;
+    height: 28px !important;
+    background: rgba(255,255,255,.12) !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer;
+  }
+  #ui-datepicker-div .ui-datepicker-prev { left: 10px !important; }
+  #ui-datepicker-div .ui-datepicker-next { right: 10px !important; }
+
+  #ui-datepicker-div .ui-datepicker-prev:hover,
+  #ui-datepicker-div .ui-datepicker-prev:focus,
+  #ui-datepicker-div .ui-datepicker-next:hover,
+  #ui-datepicker-div .ui-datepicker-next:focus {
+    background: rgba(255,255,255,.25) !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-prev::before,
+  #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-next::before {
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+  #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-prev::before { content: "‹" !important; }
+  #ui-datepicker-div .ui-datepicker-header a.ui-datepicker-next::before { content: "›" !important; }
+
+  #ui-datepicker-div .ui-datepicker-header .ui-icon { display: none !important; }
+
+  /* Month / Year title & selects */
+  #ui-datepicker-div .ui-datepicker-title {
+    background: transparent !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px;
+    line-height: 1 !important;
+    margin: 0 !important;
+  }
+  #ui-datepicker-div .ui-datepicker-title select {
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    height: auto !important;
+    padding: 2px 4px !important;
+    cursor: pointer;
+    outline: none !important;
+    min-width: auto !important;
+  }
+  #ui-datepicker-div .ui-datepicker-header .ui-state-hover {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+  }
+
+  /* Calendar table */
+  #ui-datepicker-div table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    padding: 10px 12px 14px !important;
+    margin: 0 !important;
+  }
+
+  /* Day-name headers (M T W T F S S) */
+  #ui-datepicker-div th {
+    color: #94a3b8 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 6px 2px !important;
+    text-align: center !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Day cells */
+  #ui-datepicker-div.ui-datepicker td {
+    background: transparent !important;
+    border: none !important;
+    padding: 2px !important;
+    text-align: center !important;
+  }
+
+  /* Day links */
+  #ui-datepicker-div .ui-state-default {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    color: #374151 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    margin: 0 auto !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    transition: background 0.12s, color 0.12s !important;
+  }
+
+  /* Hover */
+  #ui-datepicker-div a.ui-state-default:hover {
+    background: #f1f5f9 !important;
+    color: #16213e !important;
+  }
+
+  /* Selected */
+  #ui-datepicker-div .ui-state-active {
+    background: #16213e !important;
+    background-image: none !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+  }
+
+  /* Today */
+  #ui-datepicker-div .ui-state-highlight {
+    background: transparent !important;
+    background-image: none !important;
+    color: var(--wbtm_color_theme, #e8510f) !important;
+    font-weight: 700 !important;
+    border: 1.5px solid var(--wbtm_color_theme, #e8510f) !important;
+    border-radius: 8px !important;
+  }
+
+  /* Other-month and disabled dates */
+  #ui-datepicker-div .ui-datepicker-other-month .ui-state-default {
+    color: #cbd5e1 !important;
+  }
+  #ui-datepicker-div td.ui-datepicker-unselectable .ui-state-default,
+  #ui-datepicker-div td.ui-state-disabled .ui-state-default {
+    color: #e2e8f0 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
   }
 }
 /********************************************************************************************************************/

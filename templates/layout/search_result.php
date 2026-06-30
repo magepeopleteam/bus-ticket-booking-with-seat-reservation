@@ -432,7 +432,7 @@ div#wbtm_date_start_route { height: 50px; }
     align-items: flex-start;
 }
 .wbtm_bus_left_filter_holder {
-    flex:         0 0 250px;
+    flex:         0 0 270px;
     min-width:    0;
     border:       none !important;
     background:   transparent !important;
@@ -561,7 +561,7 @@ div#wbtm_date_start_route { height: 50px; }
     margin-bottom:   14px;
 }
 .wbtm-list-count {
-    font-size:   21px;
+    font-size:   16px;
     color:       #444;
 }
 .wbtm-list-count strong {
@@ -586,98 +586,85 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-sort-label i { font-size: 11px; }
 
 /* ── Bus card ───────────────────────────────────────────────────── */
-/* wbtm.css: .wbtm_search_result .wbtm-bus-list { display:flex; justify-content:space-between }
-   Override with a more-specific selector (3 tokens vs 2) so we don't need !important.
-   IMPORTANT: must NOT use !important here — jQuery's fadeOut() sets display:none via inline
-   style, and any CSS !important on display would prevent hiding, breaking the filter. */
+/* Must NOT use !important on display — jQuery fadeOut() sets display:none inline
+   and !important would block the filter animation. Use higher specificity instead. */
 .wbtm_bus_list_area .wbtm_search_result_holder .wbtm-bus-list {
     display:         block;
     justify-content: unset;
 }
 .wbtm-bus-list {
     background:    #fff;
-    border:        1px solid #e8ecf0;
-    border-radius: 14px;
-    margin-bottom: 12px;
+    border:        1px solid #eaecf2;
+    border-radius: 16px;
+    margin-bottom: 10px;
     padding:       0;
     overflow:      hidden;
-    transition:    box-shadow 0.15s ease, border-color 0.15s ease;
+    box-shadow:    0 1px 4px rgba(0,0,0,.04);
 }
-.wbtm-bus-list:hover {
-    box-shadow:   0 4px 20px rgba(0,0,0,.08);
-    border-color: #cdd3db;
+.wbtm-bus-list,
+.wbtm_search_result .wbtm-bus-list,
+.wbtm-bus-list *,
+.wbtm_search_result .wbtm-bus-list * {
+    transition: none !important;
+    animation:  none !important;
 }
+
+.wbtm-bus-list { box-shadow: 0 1px 4px rgba(0,0,0,.04) !important; }
 .wbtm-bus-list.in_cart {
-    border-color: var(--wbtm_color_theme, #e8510f);
+    border-color: #16a34a;
+    box-shadow:   0 0 0 2px rgba(22,163,74,.15);
 }
 
 /* 3-column card row */
 .wbtm-card-wrap {
-    display:        flex;
-    align-items:    stretch;
-    min-height:     110px;
+    display:     flex;
+    align-items: stretch;
+    min-height:  110px;
 }
 
-/* ── LEFT: departure/arrival times + duration visual ──────────────
-   The whole block reads as one row, but city sits tucked directly under
-   its own time (2 grid rows per side) instead of inline next to it.
-   Grid: col1 = depart (time row1 / city row2), col2 = track (spans both
-   rows), col3 = arrive (time row1 / city row2). No HTML changes needed —
-   DOM order (time-depart, city-depart, track, time-arrive, city-arrive)
-   is placed explicitly. */
+/* ── LEFT: times + duration track ───────────────────────────────── */
 .wbtm-card-times {
-    flex:                  0 0 230px;
+    flex:                  0 0 340px;
     display:               grid;
     grid-template-columns: auto 1fr auto;
     grid-template-rows:    auto auto;
     align-items:           center;
-    /* .wbtm-card-times stretches to match the tallest sibling column
-       (.wbtm-card-info), which is much taller. Without this, the grid's
-       default row distribution (stretch) spreads the 2 auto rows across
-       that full height, creating a big gap between time and city. Keep
-       the rows packed tight and centred as one unit instead. */
     align-content:         center;
     row-gap:               0;
     column-gap:            10px;
-    padding:               18px 14px;
-    border-right:          1px solid #e8ecf0;
+    padding:               20px 18px;
+    background:            #ffffff;
+    border-right:          1px solid #e3e5e9;
 }
-.wbtm-time-depart {
-    grid-column: 1;
-    grid-row:    1;
-    font-size:   18px;
-    font-weight: 700;
-    color:       #111;
-    line-height: 1;
-}
+.wbtm-time-depart,
 .wbtm-time-arrive {
-    grid-column: 3;
-    grid-row:    1;
-    font-size:   18px;
-    font-weight: 700;
-    color:       #111;
+    font-size:   20px;
+    font-weight: 800;
+    color:       #0f172a;
     line-height: 1;
-    text-align:  right;
+    letter-spacing: -0.5px;
 }
+.wbtm-time-depart { grid-column: 1; grid-row: 1; }
+.wbtm-time-arrive { grid-column: 3; grid-row: 1; text-align: right; }
 .wbtm-city-depart {
     grid-column: 1;
     grid-row:    2;
-    font-size:   12px;
-    color:       #888;
-    margin-top:  2px; /* closely under the time above it */
+    font-size:   11px;
+    font-weight: 500;
+    color:       #94a3b8;
+    margin-top:  3px;
+    letter-spacing: 0.2px;
 }
 .wbtm-city-arrive {
     grid-column: 3;
     grid-row:    2;
-    font-size:   12px;
-    color:       #888;
-    margin-top:  2px;
+    font-size:   11px;
+    font-weight: 500;
+    color:       #94a3b8;
+    margin-top:  3px;
     text-align:  right;
+    letter-spacing: 0.2px;
 }
-
-/* Centre track: dot — dashed line (bus icon centred on it) — dot, with the
-   duration label sitting just above the line. Spans both rows so it's
-   vertically centred between the depart/arrive time+city stacks. */
 .wbtm-duration-track-wrap {
     grid-column:     2;
     grid-row:        1 / span 2;
@@ -686,38 +673,40 @@ div#wbtm_date_start_route { height: 50px; }
     flex-direction:  column;
     align-items:     center;
     justify-content: center;
-    gap:             3px; /* little spacing between dot and line */
+    gap:             3px;
     min-width:       70px;
 }
 .wbtm-track-duration {
-    position:    absolute;
-    bottom:      100%;
-    left:        50%;
-    transform:   translateX(-50%);
+    position:      absolute;
+    bottom:        100%;
+    left:          50%;
+    transform:     translateX(-50%);
     margin-bottom: 4px;
-    font-size:   11px;
-    font-weight: 700;
-    color:       var(--wbtm_color_theme, #e8510f);
-    white-space: nowrap;
-    line-height: 1;
+    font-size:     10px;
+    font-weight:   700;
+    color:         var(--wbtm_color_theme, #e8510f);
+    white-space:   nowrap;
+    line-height:   1;
+    background:    #fff3ee;
+    padding:       2px 6px;
+    border-radius: 20px;
 }
 .wbtm-track-dot {
-    width:         6px;
-    height:        6px;
+    width:         7px;
+    height:        7px;
     border-radius: 50%;
-    background:    #ccc;
+    background:    #fff;
+    border:        2px solid #c8d0dc;
     flex-shrink:   0;
 }
 .wbtm-track-line {
-    position:    relative;
-    width:       100%;
-    height:      0;
-    min-width:   30px;
-    border-top:  2px dashed #d8dde3;
+    position:   relative;
+    width:      100%;
+    height:     0;
+    min-width:  30px;
+    border-top: 2px dashed #c8d0dc;
 }
 .wbtm-track-line::after {
-    /* Font Awesome 5 "bus" glyph (\f207) — NOT the 🚌 emoji, which carries its
-       own built-in colors that clash with the background and ignore `color`. */
     content:         '\f207';
     font-family:     'Font Awesome 5 Free';
     font-weight:     900;
@@ -725,8 +714,8 @@ div#wbtm_date_start_route { height: 50px; }
     top:             50%;
     left:            50%;
     transform:       translate(-50%, -50%);
-    width:           20px;
-    height:          20px;
+    width:           22px;
+    height:          22px;
     border-radius:   50%;
     background:      var(--wbtm_color_theme, #e8510f);
     display:         flex;
@@ -734,160 +723,183 @@ div#wbtm_date_start_route { height: 50px; }
     justify-content: center;
     color:           #fff;
     font-size:       9px;
-    line-height:     1;
+    line-height:     22px;
+    box-shadow:      0 2px 6px rgba(232,81,15,.35);
 }
 
-/* ── MIDDLE: bus info + amenities + popup links ─────────────────── */
+/* ── MIDDLE: bus info ────────────────────────────────────────────── */
 .wbtm-card-info {
-    flex:    1;
-    padding: 18px 20px;
-    display: flex;
+    flex:           1;
+    padding:        18px 15px;
+    display:        flex;
     flex-direction: column;
-    gap:     8px;
-    border-right: 1px solid #e8ecf0;
+    gap:            8px;
+    border-right:   1px solid #eaecf2;
 }
 .wbtm-operator-row {
     display:     flex;
     align-items: center;
-    gap:         10px;
+    gap:         8px;
     flex-wrap:   wrap;
 }
 .wbtm-operator-name {
     font-size:   15px;
     font-weight: 700;
-    color:       #111;
+    color:       #0f172a;
+    cursor:      pointer;
 }
 .wbtm-type-badge {
-    font-size:     11px;
-    font-weight:   600;
-    padding:       2px 9px;
+    font-size:     10px;
+    font-weight:   700;
+    padding:       3px 10px;
     border-radius: 20px;
     white-space:   nowrap;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
 }
 .wbtm-type-badge--top {
-    background: #e0f7ef;
-    color:      #0d8a5b;
+    background: #dcfce7;
+    color:      #15803d;
 }
 .wbtm-type-badge--std {
-    background: #f0f0f0;
-    color:      #666;
+    background: #f1f5f9;
+    color:      #64748b;
 }
 .wbtm-amenities {
     display:  flex;
     flex-wrap: wrap;
-    gap:      8px;
+    gap:      6px;
 }
 .wbtm-amenity {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           5px;
+    font-size:     11px;
+    font-weight:   500;
+    color:         #475569;
+    background:    #f1f5f9;
+    padding:       3px 9px;
+    border-radius: 20px;
+    border:        1px solid #e2e8f0;
+}
+.wbtm-amenity i {
+    color:     #64748b;
+    font-size: 11px;
+}
+.wbtm-seats-avail {
     display:     inline-flex;
     align-items: center;
-    gap:         4px;
+    gap:         6px;
     font-size:   12px;
-    color:       #555;
+    font-weight: 600;
+    color:       #15803d;
+    background:  #f0fdf4;
+    padding:     4px 10px;
+    border-radius: 20px;
+    align-self:  flex-start;
+    border:      1px solid #bbf7d0;
 }
-.wbtm-amenity i { color: #888; font-size: 13px; }
-.wbtm-seats-avail {
-    font-size:  13px;
-    color:      #444;
-    display:    flex;
-    align-items: center;
-    gap:        5px;
-}
-.wbtm-seats-avail i { color: #888; }
-
-/* Popup tabs: move below seats, styled as small text links */
+.wbtm-seats-avail i { color: #16a34a; font-size: 11px; }
 .wbtm-card-info .wbtm_bus_details_tabs_holder {
-    margin-top: auto;
-    padding-top: 6px;
+    margin-top:  auto;
+    padding-top: 8px;
+    border-top:  1px dashed #e8ecf0;
 }
-/* wtbm_search.css hides .wbtm_bus_popup_links (visibility:hidden; opacity:0) and only
-   reveals it on .wbtm-bus-list:hover. Force it permanently visible here instead. */
 .wbtm-card-info .wbtm_bus_popup_links {
     display:    flex !important;
     flex-wrap:  wrap;
-    gap:        10px;
+    gap:        6px;
     visibility: visible !important;
     opacity:    1 !important;
     transform:  none !important;
 }
 .wbtm-card-info .wbtm_bus_popup_link {
-    font-size:       12px;
-    color:           var(--wbtm_color_theme, #e8510f);
-    text-decoration: underline;
-    cursor:          pointer;
+    font-size:     11px;
+    font-weight:   500;
+    color:         #475569;
+    background:    #f8fafc;
+    border:        1px solid #e2e8f0;
+    border-radius: 6px;
+    padding:       3px 10px;
+    cursor:        pointer;
+    transition:    background 0.15s, color 0.15s;
 }
 
-/* ── RIGHT: price + book seat button ────────────────────────────── */
+/* ── RIGHT: price + book ─────────────────────────────────────────── */
 .wbtm-card-price {
-    flex:            0 0 180px;
+    flex:            0 0 325px;
     padding:         18px 20px;
     display:         flex;
     flex-direction:  column;
-    align-items:     flex-end;
+    align-items:     center;
     justify-content: center;
-    gap:             6px;
+    gap:             8px;
+    background:      #fafbfd;
 }
 .wbtm-starting-from {
-    font-size:  11px;
-    color:      #888;
-    text-align: right;
+    font-size:     10px;
+    font-weight:   600;
+    color:         #94a3b8;
+    text-align:    center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .wbtm-price-value {
-    font-size:   26px;
-    font-weight: 700;
-    color:       #111;
-    text-align:  right;
+    font-size:   28px;
+    font-weight: 800;
+    color:       #0f172a;
+    text-align:  center;
     line-height: 1;
+    letter-spacing: -1px;
 }
 .wbtm-price-value .woocommerce-Price-amount {
     font-size: inherit !important;
     color:     inherit !important;
 }
-
-/* Book Seat button — reuse existing JS hook but restyle */
 .wbtm-card-price .wbtm-seat-book {
-    width: 100%;
-    margin-top: 4px;
+    width:      100%;
+    margin-top: 2px;
 }
 .wbtm-card-price .wbtm-seat-book._themeButton_xs,
 .wbtm-card-price ._themeButton_xs,
 .wbtm-card-price #get_wbtm_bus_details {
-    width:         100% !important;
-    border-radius: 50px !important;
-    padding:       11px 18px !important;
-    font-size:     14px !important;
-    font-weight:   600 !important;
-    text-align:    center !important;
-    display:       flex !important;
-    align-items:   center !important;
+    width:           100% !important;
+    border-radius:   50px !important;
+    padding:         11px 18px !important;
+    font-size:       14px !important;
+    font-weight:     700 !important;
+    text-align:      center !important;
+    display:         flex !important;
+    align-items:     center !important;
     justify-content: center !important;
-    gap:           6px !important;
-    cursor:        pointer;
-    white-space:   nowrap;
-    border:        none !important;
+    gap:             6px !important;
+    cursor:          pointer;
+    white-space:     nowrap;
+    border:          none !important;
+    box-shadow:      0 3px 10px rgba(232,81,15,.3) !important;
+    transition:      box-shadow 0.15s, opacity 0.15s !important;
 }
 
-/* Seat-expansion area — full width below card row */
-.wbtm_bus_details {
-    border-top: 1px dashed #e8ecf0;
-}
+/* Seat-expansion area */
+.wbtm_bus_details { border-top: 1px solid #eaecf2; }
+
 
 /* ── Mobile ─────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-    .wbtm_search_result_holder { flex-direction: column; }
+    .wbtm_search_result_holder  { flex-direction: column; }
     .wbtm_bus_left_filter_holder { flex: none; width: 100%; }
     .wbtm-card-wrap { flex-direction: column; }
-    /* Grid layout from desktop already reads left-to-right at any width —
-       just tighten spacing/sizing for small screens. */
     .wbtm-card-times {
         border-right:  none;
-        border-bottom: 1px solid #e8ecf0;
+        border-bottom: 1px solid #eaecf2;
         padding:       14px 16px;
         column-gap:    8px;
+        background:    #f9fafb;
     }
-    .wbtm-time-depart, .wbtm-time-arrive { font-size: 16px; }
+    .wbtm-time-depart, .wbtm-time-arrive { font-size: 17px; }
     .wbtm-duration-track-wrap { min-width: 40px; }
-    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #e8ecf0; }
-    .wbtm-card-price { flex: none; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
+    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #eaecf2; }
+    .wbtm-card-price { flex: none; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 16px; background: #fafbfd; }
     .wbtm-card-price .wbtm-seat-book { width: auto; margin-top: 0; }
     .wbtm-card-price #get_wbtm_bus_details { width: auto !important; padding: 10px 20px !important; }
 }

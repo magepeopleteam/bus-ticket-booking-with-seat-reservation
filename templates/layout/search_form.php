@@ -261,9 +261,10 @@
 
             /* ── Search button section ───────────────────────────── */
             #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
-                display:     flex;
-                align-items: center;
-                padding:     6px;
+                display:      flex;
+                align-items:  center;
+                padding:      6px;
+                margin-right: 20px;
                 flex-shrink: 0;
             }
             /* Stack both buttons inside the holder; PHP inline style="display:none/block"

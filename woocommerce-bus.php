@@ -82,6 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					add_action( 'admin_init', array( __CLASS__, 'maybe_flush_queued_rewrite_rules' ) );
 					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Dependencies.php';
 					add_action( 'admin_init', [ $this, 'flush_rules_wbtm_post_list_page' ] );
+					add_filter( 'body_class', array( __CLASS__, 'add_wbtm_body_class' ) );
 				}
 				function flush_rules_wbtm_post_list_page() {
 					// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -192,6 +193,20 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						delete_option('wbtm_queue_flush_rewrite_rules');
 						flush_rewrite_rules();
 					}
+				}
+
+				public static function add_wbtm_body_class( $classes ) {
+					global $post;
+					if (
+						is_a( $post, 'WP_Post' ) && (
+							has_shortcode( $post->post_content, 'wbtm-bus-search-form' ) ||
+							has_shortcode( $post->post_content, 'wbtm-bus-search' )      ||
+							has_shortcode( $post->post_content, 'wbtm-bus-list' )
+						)
+					) {
+						$classes[] = 'wbtm-plugin-page';
+					}
+					return $classes;
 				}
 			}
 			new Wbtm_Woocommerce_bus();
