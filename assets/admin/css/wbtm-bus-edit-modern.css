@@ -209,8 +209,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme__feat-modal-submit:hover{filter:brightness(1.08);}
 .wbtm-bme__feat-modal-submit:disabled{opacity:.6;cursor:not-allowed;}
-/* Icon picker popup must stack above the Add Feature modal */
-.wbtm_add_icon_popup.wbtm_popup{z-index:1000001 !important;}
+/* Icon picker popup must stack above the Add Feature modal (full redesign below) */
 /* Icon area inside modal — tighten spacing so it feels native */
 .wbtm-bme__feat-icon-area .wbtm_add_icon_image_button_area{margin-top:0;}
 .wbtm-bme__feat-icon-area .wbtm_icon_item .allCenter{flex:1;}
@@ -1562,3 +1561,168 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 /* Hide original WP post editor when modern shell is active — our wp_editor() instance submits instead */
 html.wbtm-bme-html #postdivrich,
 html.wbtm-bme-html #post-status-info{display:none !important;}
+
+/* ================================================================= *
+ *  Icon Picker Popup — minimal redesign                              *
+ *  Overrides the legacy dark theme in wbtm_admin_settings.css.       *
+ * ================================================================= */
+
+/* Overlay backdrop */
+div.wbtm_add_icon_popup.wbtm_popup{
+    align-items:center !important;justify-content:center !important;
+    padding:20px !important;
+    background:rgba(15,23,42,.6) !important;
+    backdrop-filter:blur(2px);
+    z-index:1000001 !important;
+}
+/* Dialog box */
+div.wbtm_add_icon_popup .popupMainArea{
+    min-width:0 !important;max-width:760px !important;width:100% !important;
+    border-radius:16px !important;overflow:hidden !important;
+    background:#fff !important;
+    box-shadow:0 24px 64px rgba(15,23,42,.22),0 4px 16px rgba(15,23,42,.1) !important;
+    display:flex !important;flex-direction:column !important;flex-flow:column !important;
+    max-height:min(700px,88vh) !important;
+}
+
+/* ---- Header: search + close ---- */
+div.wbtm_add_icon_popup .popupHeader{
+    display:flex !important;align-items:center !important;gap:10px !important;
+    background:#fff !important;padding:13px 16px !important;
+    border-bottom:1px solid #e5e7eb !important;
+    height:auto !important;min-height:0 !important;flex-shrink:0 !important;
+}
+div.wbtm_add_icon_popup .popupHeader h2{display:none !important;}
+/* Search wrapper */
+div.wbtm_add_icon_popup .popupHeader label.min_300{
+    flex:1 !important;min-width:0 !important;width:auto !important;margin:0 !important;
+    display:flex !important;align-items:center !important;gap:8px !important;
+    background:#f1f5f9 !important;border:1.5px solid #e4e9f0 !important;
+    border-radius:10px !important;padding:0 12px !important;
+    transition:.15s !important;
+}
+div.wbtm_add_icon_popup .popupHeader label.min_300:focus-within{
+    background:#fff !important;border-color:#e11d48 !important;
+    box-shadow:0 0 0 3px rgba(225,29,72,.1) !important;
+}
+div.wbtm_add_icon_popup .popupHeader label.min_300::before{
+    content:"\f002";font-family:"Font Awesome 5 Free";font-weight:900;
+    color:#94a3b8;font-size:12px;flex-shrink:0;line-height:1;
+}
+/* Search input */
+div.wbtm_add_icon_popup .popupHeader input[name="mp_select_icon_name"]{
+    all:unset !important;
+    flex:1 !important;width:100% !important;
+    font-size:13px !important;color:#0f172a !important;font-family:inherit !important;
+    padding:9px 0 !important;line-height:1.4 !important;
+}
+div.wbtm_add_icon_popup .popupHeader input[name="mp_select_icon_name"]::placeholder{
+    color:#94a3b8 !important;
+}
+/* Close button */
+div.wbtm_add_icon_popup .popupClose{
+    position:static !important;z-index:auto !important;
+    top:auto !important;right:auto !important;
+    flex-shrink:0 !important;
+    width:34px !important;height:34px !important;
+    border-radius:9px !important;
+    border:1.5px solid #e4e9f0 !important;
+    background:#f8fafc !important;color:#64748b !important;
+    font-size:12px !important;
+    display:flex !important;align-items:center !important;justify-content:center !important;
+    cursor:pointer !important;transition:.15s !important;
+}
+div.wbtm_add_icon_popup .popupClose:hover{
+    background:#e11d48 !important;color:#fff !important;border-color:#e11d48 !important;
+}
+
+/* ---- Body: sidebar + grid ---- */
+div.wbtm_add_icon_popup .popupBody{
+    display:flex !important;flex:1 1 auto !important;
+    min-height:0 !important;padding:0 !important;overflow:hidden !important;
+}
+div.wbtm_add_icon_popup .popupBody > .dFlex{
+    display:flex !important;flex:1 !important;min-height:0 !important;width:100% !important;
+}
+
+/* Category sidebar */
+div.wbtm_add_icon_popup ul.popupIconMenu{
+    width:162px !important;min-width:162px !important;max-width:162px !important;
+    background:#f8fafc !important;
+    border-right:1px solid #e5e7eb !important;
+    overflow:hidden auto !important;max-height:none !important;
+    padding:6px 0 !important;margin:0 !important;
+}
+div.wbtm_add_icon_popup .popupIconMenu li{
+    display:block !important;
+    padding:7px 11px !important;margin:2px 6px !important;
+    border-bottom:none !important;
+    color:#64748b !important;font-size:11.5px !important;font-weight:500 !important;
+    cursor:pointer !important;border-radius:7px !important;line-height:1.4 !important;
+    transition:.12s !important;
+}
+div.wbtm_add_icon_popup .popupIconMenu li strong{
+    color:inherit !important;font-weight:inherit !important;font-size:inherit !important;
+}
+div.wbtm_add_icon_popup .popupIconMenu li:hover{
+    background:#e2e8f0 !important;color:#0f172a !important;
+}
+div.wbtm_add_icon_popup .popupIconMenu li.active{
+    background:#fff1f4 !important;color:#e11d48 !important;font-weight:600 !important;
+}
+div.wbtm_add_icon_popup .popupIconMenu li.active:hover{
+    background:#ffe4ea !important;color:#e11d48 !important;
+}
+
+/* Icon grid */
+div.wbtm_add_icon_popup .popup_all_icon{
+    flex:1 !important;min-width:0 !important;
+    padding:10px 12px !important;background:#fff !important;
+    overflow:hidden auto !important;max-height:none !important;
+}
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem{width:100% !important;}
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem h5{
+    font-size:10px !important;font-weight:700 !important;
+    text-transform:uppercase !important;letter-spacing:.06em !important;
+    color:#94a3b8 !important;margin:10px 0 5px !important;
+    padding-bottom:5px !important;border-bottom:1px solid #f1f5f9 !important;
+    position:sticky !important;top:0 !important;background:#fff !important;
+    z-index:1 !important;
+}
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem:first-child h5{margin-top:0 !important;}
+div.wbtm_add_icon_popup .popup_all_icon .divider{display:none !important;}
+div.wbtm_add_icon_popup .popup_all_icon .itemIconArea{
+    display:flex !important;flex-wrap:wrap !important;gap:4px !important;width:100% !important;
+}
+
+/* Individual icon cells */
+div.wbtm_add_icon_popup .iconItem{
+    width:46px !important;height:46px !important;
+    font-size:18px !important;margin:0 !important;
+    border:1.5px solid #e4e9f0 !important;
+    background:#f8fafc !important;border-radius:9px !important;
+    box-shadow:none !important;cursor:pointer !important;
+    display:flex !important;align-items:center !important;justify-content:center !important;
+    color:#64748b !important;transition:border-color .12s,background .12s,color .12s,transform .1s !important;
+}
+div.wbtm_add_icon_popup .iconItem:hover{
+    border-color:#e11d48 !important;background:#fff1f4 !important;
+    color:#e11d48 !important;transform:scale(1.12) !important;z-index:1 !important;
+}
+div.wbtm_add_icon_popup .iconItem.active{
+    border-color:#e11d48 !important;background:#fff1f4 !important;
+    color:#e11d48 !important;border-radius:9px !important;
+    box-shadow:0 0 0 2px rgba(225,29,72,.18) !important;
+}
+
+/* No-results state */
+.wbtm-bme-icon-noresults{
+    display:none;text-align:center;
+    padding:52px 20px;color:#94a3b8;
+}
+.wbtm-bme-icon-noresults .wbtm-bme-nores-icon{
+    font-size:30px;display:block;margin-bottom:12px;opacity:.35;
+}
+.wbtm-bme-icon-noresults p{
+    font-size:13px;color:#64748b;margin:0;line-height:1.55;
+}

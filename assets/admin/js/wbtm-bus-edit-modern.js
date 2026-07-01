@@ -652,6 +652,80 @@
 		setTimeout(function () { toast(cfg.savedTxt || 'Saved'); }, 350);
 	}
 
+
+	/* ---------------------------------------------------------------- *
+	 *  Icon picker popup — live search + "no results" state            *
+	 *  Piggybacks on the existing popup HTML rendered via admin_footer. *
+	 * ---------------------------------------------------------------- */
+	(function initIconPickerSearch() {
+		var $popup = $('.wbtm_add_icon_popup');
+		if (!$popup.length) { return; }
+
+		// Inject no-results message into the grid once
+		$popup.find('.popup_all_icon').append(
+			'<div class="wbtm-bme-icon-noresults">' +
+				'<span class="fas fa-search wbtm-bme-nores-icon"></span>' +
+				'<p>No icons match <strong class="q"></strong></p>' +
+			'</div>'
+		);
+
+		function resetSearch() {
+			var $input = $popup.find('input[name="mp_select_icon_name"]');
+			if ($input.val()) {
+				$input.val('');
+				$popup.find('.popupTabItem').show();
+				$popup.find('.iconItem').show();
+				$popup.find('.wbtm-bme-icon-noresults').hide();
+			}
+		}
+
+		// Clear on open
+		$(document).on('click', '.wbtm_icon_add', resetSearch);
+
+		// Clear on category click (runs after existing handler via setTimeout)
+		$(document).on('click', '.wbtm_add_icon_popup [data-icon-menu]', function () {
+			if ($popup.find('input[name="mp_select_icon_name"]').val()) {
+				setTimeout(function () {
+					$popup.find('.popupTabItem').each(function () {
+						$(this).find('.iconItem').show();
+					});
+					$popup.find('.wbtm-bme-icon-noresults').hide();
+					$popup.find('input[name="mp_select_icon_name"]').val('');
+				}, 0);
+			}
+		});
+
+		// Live search
+		$(document).on('input', '.wbtm_add_icon_popup input[name="mp_select_icon_name"]', function () {
+			var q = $(this).val().toLowerCase().trim();
+			var $grid = $popup.find('.popup_all_icon');
+			var $nr   = $popup.find('.wbtm-bme-icon-noresults');
+
+			if (!q) {
+				$grid.find('.popupTabItem').show();
+				$grid.find('.iconItem').show();
+				$nr.hide();
+				return;
+			}
+
+			var total = 0;
+			$grid.find('.popupTabItem').each(function () {
+				var matched = 0;
+				$(this).find('.iconItem').each(function () {
+					var name = ($(this).data('icon-name') || $(this).attr('title') || '').toLowerCase();
+					var cls  = ($(this).data('icon-class') || '').toLowerCase();
+					var ok   = name.indexOf(q) >= 0 || cls.indexOf(q) >= 0;
+					$(this).toggle(ok);
+					if (ok) { matched++; }
+				});
+				$(this).toggle(matched > 0);
+				total += matched;
+			});
+
+			$nr.find('.q').text('"' + q + '"');
+			$nr.toggle(total === 0);
+		});
+	})();
 	// Initialise.
 	goStep(0);
 
