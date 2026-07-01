@@ -34,10 +34,14 @@
 			 *  Preference helpers
 			 * ------------------------------------------------------------------ */
 
-			/** Current user's editor preference. Defaults to classic so nothing changes until opt-in. */
+			/**
+			 * Current user's editor preference. Defaults to modern until the
+			 * user explicitly switches to classic — once they do, that choice
+			 * (like an explicit modern choice) sticks across reloads.
+			 */
 			public static function current_ui() {
 				$ui = get_user_meta( get_current_user_id(), self::USER_META, true );
-				return $ui === 'modern' ? 'modern' : 'classic';
+				return $ui === 'classic' ? 'classic' : 'modern';
 			}
 
 			private function is_modern() {
@@ -212,6 +216,10 @@
 											if ( $section[0] === 'WBTM_Gallery_Image_Settings' ) {
 												continue;
 											}
+											// Term & Condition removed from the modern editor on request.
+											if ( $section[0] === 'WTBM_Term_Condition_Add_Bus' ) {
+												continue;
+											}
 											$this->render_section_card( $section, $post_id );
 										}
 										?>
@@ -244,16 +252,11 @@
 			 * A live snapshot of the bus the admin is editing (data from post meta).
 			 */
 			private function render_preview_rail( $post_id ) {
-				$bus_name = get_the_title( $post_id );
-				$bus_no   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_no' );
 				$coach    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' );
-				$seats    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 
 				$logo_id  = (int) get_post_meta( $post_id, 'wbtm_bus_logo', true );
 				$gallery  = get_post_meta( $post_id, 'wbtm_gallery_images', true );
 				$gallery  = is_array( $gallery ) ? array_values( array_filter( array_map( 'intval', $gallery ) ) ) : array();
-				$feat_ids = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
-				$feat_ids = is_array( $feat_ids ) ? array_values( array_filter( array_map( 'intval', $feat_ids ) ) ) : array();
 
 				// Existing posts had no explicit flag yet, so an unset meta still means "on".
 				$gallery_enabled_meta = get_post_meta( $post_id, 'wbtm_gallery_enabled', true );
@@ -286,13 +289,11 @@
 							<button type="button" class="wbtm-bme__feat-link" data-bme-feat-set><?php echo esc_html( $thumb_id ? __( 'Change image', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Set image', 'bus-ticket-booking-with-seat-reservation' ) ); ?></button>
 							<button type="button" class="wbtm-bme__feat-link wbtm-bme__feat-link--rm" data-bme-feat-remove style="<?php echo $thumb_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
 						</div>
-						<div class="wbtm-bme__rail-info">
-							<h3 class="wbtm-bme__rail-name" id="wbtm-bme-rail-name"><?php echo esc_html( $bus_name !== '' ? $bus_name : __( 'Untitled bus', 'bus-ticket-booking-with-seat-reservation' ) ); ?></h3>
-							<div class="wbtm-bme__rail-stats">
-								<div><span><?php esc_html_e( 'Bus No', 'bus-ticket-booking-with-seat-reservation' ); ?></span><strong><?php echo esc_html( $bus_no !== '' ? $bus_no : '—' ); ?></strong></div>
-								<div><span><?php esc_html_e( 'Seats', 'bus-ticket-booking-with-seat-reservation' ); ?></span><strong><?php echo esc_html( $seats ? $seats : '0' ); ?></strong></div>
-							</div>
-						</div>
+					</div>
+
+					<div class="wbtm-bme__rail-card">
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Bus Logo', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__logo-slot" data-bme-logo-slot></div>
 					</div>
 
 					<div class="wbtm-bme__rail-card">
@@ -304,8 +305,9 @@
 							</label>
 						</div>
 						<div class="wbtm-bme__rail-gallery-section" data-bme-gallery-section style="<?php echo $gallery_enabled ? '' : 'display:none;'; ?>">
-							<div class="wbtm-bme__rail-title">
-								<span class="dashicons dashicons-format-gallery"></span><?php esc_html_e( 'Gallery Images', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							<div class="wbtm-bme__gallery-head">
+								<?php esc_html_e( 'Gallery Images', 'bus-ticket-booking-with-seat-reservation' ); ?>
+								<span class="dashicons dashicons-editor-help" tabindex="0" title="<?php esc_attr_e( 'Upload images shown in this bus\'s photo gallery.', 'bus-ticket-booking-with-seat-reservation' ); ?>"></span>
 							</div>
 							<div class="wbtm-bme__rail-gallery" id="wbtm-bme-gallery-grid" data-bme-gallery-list>
 								<?php foreach ( $gallery as $gid ) :
@@ -326,28 +328,6 @@
 							</button>
 						</div>
 					</div>
-
-					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-title">
-							<span class="dashicons dashicons-star-filled"></span><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<button type="button" class="wbtm-bme__rail-manage" data-bme-goto="advanced" data-bme-scroll="#wbtm_bus_feature_settings"><?php esc_html_e( 'Manage', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-						</div>
-						<?php if ( ! empty( $feat_ids ) ) : ?>
-							<div class="wbtm-bme__rail-features">
-								<?php foreach ( $feat_ids as $tid ) :
-									$term = get_term( $tid, 'wbtm_bus_feature' );
-									if ( ! $term || is_wp_error( $term ) ) {
-										continue;
-									}
-									$icon = get_term_meta( $tid, 'wbtm_bus_feature_icon', true );
-									?>
-									<span class="wbtm-bme__chip"><?php if ( $icon ) : ?><i class="<?php echo esc_attr( $icon ); ?>"></i><?php endif; ?><?php echo esc_html( $term->name ); ?></span>
-								<?php endforeach; ?>
-							</div>
-						<?php else : ?>
-							<div class="wbtm-bme__rail-empty"><?php esc_html_e( 'No features selected yet. Click Manage to add.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
-						<?php endif; ?>
-					</div>
 				</aside>
 				<?php
 			}
@@ -360,16 +340,80 @@
 					return;
 				}
 				?>
-				<div class="wbtm-bme__card" data-has-head>
+				<div class="wbtm-bme__card" data-has-head data-bme-section="<?php echo esc_attr( $class ); ?>">
 					<div class="wbtm-bme__card-head">
-						<h2><span class="wbtm-bme__dot"></span><?php echo esc_html( $title ); ?></h2>
+						<h2><?php echo esc_html( $title ); ?></h2>
 						<?php if ( $subtitle ) : ?>
 							<p><?php echo esc_html( $subtitle ); ?></p>
 						<?php endif; ?>
 					</div>
 					<div class="wbtm-bme__card-body">
-						<?php $instance->$method( $post_id ); ?>
+						<?php
+						$instance->$method( $post_id );
+						// The Bus Features chips used to live in the rail's Bus Information
+						// card; moved here (right after Reservation on/off) on request. Added
+						// only in the modern shell — WBTM_Settings_General::tab_content() is
+						// shared with the classic editor and stays untouched.
+						if ( $class === 'WBTM_Settings_General' ) {
+							// Rendered here, then repositioned by JS to sit right after the
+							// "Bus Information" band (data-bme-postfields) — same relocation
+							// technique as the Bus Logo row, so the real #title input and the
+							// real #postdivrich editor stay the single source of truth (no
+							// duplicate wbtm_bus_logo/content fields on submit).
+							$this->render_post_fields_subsection( $post_id );
+							$this->render_bus_features_subsection( $post_id );
+						}
+						?>
 					</div>
+				</div>
+				<?php
+			}
+
+			/**
+			 * "Post Title" / "Post Content" fields, placed right after the "Bus
+			 * Information" band. #wbtm-bme-title-inline just mirrors the real
+			 * #title input (kept in sync by JS, same as the topbar title); the
+			 * content slot is where JS relocates the real #postdivrich editor,
+			 * so WordPress' own Visual/Text tabs, Add Media button and autosave
+			 * keep working against the one true #content textarea.
+			 */
+			private function render_post_fields_subsection( $post_id ) {
+				$title = get_the_title( $post_id );
+				?>
+				<div class="wbtm-bme__postfields" data-bme-postfields>
+					<div class="wbtm-bme__subsection-label">
+						<label><?php esc_html_e( 'Title', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						<span><?php esc_html_e( 'The bus title shown across the site', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+					</div>
+					<input type="text" class="formControl" id="wbtm-bme-title-inline" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
+
+					<div class="wbtm-bme__subsection-label wbtm-bme__postfields-content-label">
+						<label><?php esc_html_e( 'Content', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						<span><?php esc_html_e( 'Full description shown on the bus details page', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+					</div>
+					<div class="wbtm-bme__content-slot" data-bme-content-slot></div>
+				</div>
+				<?php
+			}
+
+			/** "Bus Features" read-only chip list, appended after General Settings in the modern shell. */
+			/**
+			 * "Bus Features" — a slot JS relocates the REAL classic checkbox
+			 * list into (from WTBM_Features_Seating::term_tab_content(), whose
+			 * card is hidden in the Advanced step once its content moves here —
+			 * see [data-bme-section="WTBM_Features_Seating"] in the CSS). The
+			 * checkbox change handler is delegated on document by class name
+			 * (wtbm_bus_feature_checkbox), so it keeps saving via its existing
+			 * AJAX call regardless of where the markup lives in the DOM.
+			 */
+			private function render_bus_features_subsection( $post_id ) {
+				?>
+				<div class="wbtm-bme__subsection">
+					<div class="wbtm-bme__subsection-label" data-bme-features-label>
+						<label><?php esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						<span><?php esc_html_e( 'Select the amenities and features to highlight for this bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+					</div>
+					<div class="wbtm-bme__features-slot" data-bme-features-slot></div>
 				</div>
 				<?php
 			}

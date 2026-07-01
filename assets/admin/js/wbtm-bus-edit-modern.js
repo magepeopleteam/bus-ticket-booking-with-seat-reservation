@@ -118,23 +118,96 @@
 	});
 
 	/* ---------------------------------------------------------------- *
-	 *  Bus name <-> hidden WP #title sync (title box is CSS-hidden)
+	 *  Bus name <-> hidden WP #title sync (title box is CSS-hidden).
+	 *  Two visual proxies (topbar + the inline "Post Title" field under
+	 *  the Bus Information band) both mirror the one real #title input.
 	 * ---------------------------------------------------------------- */
 	var $title = $('#title');
 	var $busName = $('#wbtm-bme-title'); // the editable topbar title
-	if ($busName.length && $title.length) {
-		// Seed the topbar title from the real WP title if empty.
-		if (!$busName.val() && $title.val()) {
+	var $busNameInline = $('#wbtm-bme-title-inline'); // inline "Post Title" field
+	if ($title.length && ($busName.length || $busNameInline.length)) {
+		// Seed both proxies from the real WP title if they're empty.
+		if ($busName.length && !$busName.val() && $title.val()) {
 			$busName.val($title.val());
 		}
-		$busName.on('input', function () {
-			$title.val($busName.val());
+		if ($busNameInline.length && !$busNameInline.val() && $title.val()) {
+			$busNameInline.val($title.val());
+		}
+		$busName.add($busNameInline).on('input', function () {
+			var val = $(this).val();
+			$title.val(val);
+			$busName.add($busNameInline).not(this).val(val);
 			// Clear WP's "Enter title here" prompt state so the title saves.
 			$('#title-prompt-text').addClass('screen-reader-text');
-			// Live-update the preview rail name.
-			$('#wbtm-bme-rail-name').text($busName.val() || 'Untitled bus');
 		});
 	}
+
+	/* ---------------------------------------------------------------- *
+	 *  Relocate the "Post Title"/"Post Content" block to sit right after
+	 *  the "Bus Information" band, and move the REAL WP content editor
+	 *  (#postdivrich) into its content slot — reusing the same editor
+	 *  instance (TinyMCE, Add Media, Visual/Text tabs) rather than a
+	 *  duplicate, so #content is submitted exactly once.
+	 * ---------------------------------------------------------------- */
+	(function relocatePostFields() {
+		var $band = $root.find('[data-bme-panel="general"] [class*="_bgLight"]').first();
+		var $postFields = $root.find('[data-bme-postfields]');
+		if ($band.length && $postFields.length) {
+			$postFields.insertAfter($band);
+		}
+		var $contentSlot = $root.find('[data-bme-content-slot]');
+		var $editor = $('#postdivrich');
+		if ($contentSlot.length && $editor.length) {
+			$editor.appendTo($contentSlot);
+		}
+	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  Move "Add Media" out of its own toolbar row and into whichever
+	 *  editor toolbar is currently active: after the kitchen-sink toggle
+	 *  in Visual mode, after the distraction-free toggle in Text mode.
+	 *  WP's switchEditors.js only shows/hides TinyMCE (it doesn't destroy
+	 *  it on every toggle), so once we've found the real toolbar buttons
+	 *  we just move the same node back and forth — no cloning, no risk
+	 *  of a duplicate/orphaned "Add Media" button.
+	 * ---------------------------------------------------------------- */
+	(function relocateAddMediaButton() {
+		var $mediaWrap = $('#wp-content-media-buttons');
+		if (!$mediaWrap.length) { return; }
+		$mediaWrap.addClass('wbtm-bme__media-btn-compact');
+
+		function forVisual() {
+			var $advToggle = $('.mce-i-wp_adv').closest('.mce-btn');
+			if ($advToggle.length) {
+				$mediaWrap.insertAfter($advToggle);
+			}
+		}
+		function forCode() {
+			var $dfw = $('#qt_content_dfw');
+			if ($dfw.length) {
+				$mediaWrap.insertAfter($dfw);
+			}
+		}
+
+		// TinyMCE builds its toolbar asynchronously; position once it's ready,
+		// and re-position defensively if it ever reinitializes.
+		$(document).on('tinymce-editor-init', function (e, editor) {
+			if (!editor || editor.id === 'content') { forVisual(); }
+		});
+		// Initial placement: whichever mode is actually active right now —
+		// TinyMCE may already be initialized, or the user's last-used mode
+		// (baked server-side into #wp-content-wrap's class) may be Text.
+		if ($('#wp-content-wrap').hasClass('html-active')) {
+			forCode();
+		} else if (window.tinymce && tinymce.get('content')) {
+			forVisual();
+		}
+
+		// Re-position on every Visual/Code switch (the inactive toolbar is
+		// hidden as a whole, so "Add Media" would disappear with it otherwise).
+		$(document).on('click', '#content-tmce', function () { setTimeout(forVisual, 0); });
+		$(document).on('click', '#content-html', function () { setTimeout(forCode, 0); });
+	})();
 
 	/* ---------------------------------------------------------------- *
 	 *  Live toast feedback on real interactions (mirrors the mockup)
@@ -223,6 +296,110 @@
 		setHero('', '');
 		toast(cfg.featRemoved || 'Feature image removed');
 	});
+
+	/* ---------------------------------------------------------------- *
+	 *  Relocate the classic "Bus Logo" row (from the reused General
+	 *  Settings body) into its own rail card, right after Featured Image.
+	 *  We move the actual DOM node (not a copy) so its existing upload
+	 *  button/hidden input keep working unchanged and nothing gets
+	 *  submitted twice — the classic General Settings render method
+	 *  itself is untouched.
+	 * ---------------------------------------------------------------- */
+	(function relocateBusLogoRow() {
+		var $logoSlot = $root.find('[data-bme-logo-slot]');
+		var $logoRow = $root.find('input[name="wbtm_bus_logo"]').closest('._dLayout_padding_dFlex_justifyBetween_alignCenter');
+		if (!$logoSlot.length || !$logoRow.length) { return; }
+
+		$logoRow.addClass('wbtm-bme__logo-row').appendTo($logoSlot);
+
+		var $box = $logoRow.find('.wbtm_add_single_image');
+		// Placeholder icon shown inside the box only while empty (button is
+		// visible); hidden automatically once classic JS hides the button.
+		$box.find('> button').html('<span class="dashicons dashicons-media-default wbtm-bme__logo-drop-icon"></span>');
+
+		// "Change image"/"Remove" text links below the box, matching the
+		// Featured Image card. They trigger the SAME classic handlers
+		// (delegated on .wbtm_add_single_image / .wbtm_remove_single_image)
+		// rather than duplicating any upload logic.
+		var $acts = $(
+			'<div class="wbtm-bme__logo-acts">' +
+				'<button type="button" class="wbtm-bme__feat-link" data-bme-logo-set>Change image</button>' +
+				'<button type="button" class="wbtm-bme__feat-link wbtm-bme__feat-link--rm" data-bme-logo-remove style="display:none">Remove</button>' +
+			'</div>'
+		).appendTo($logoSlot);
+
+		function syncActs() {
+			var hasImage = $box.find('.wbtm_single_image_item').length > 0;
+			$acts.find('[data-bme-logo-set]').text(hasImage ? 'Change image' : 'Upload image');
+			$acts.find('[data-bme-logo-remove]').toggle(hasImage);
+		}
+		$acts.on('click', '[data-bme-logo-set]', function (e) {
+			e.preventDefault();
+			$box.trigger('click');
+		});
+		$acts.on('click', '[data-bme-logo-remove]', function (e) {
+			e.preventDefault();
+			$box.find('.wbtm_remove_single_image').trigger('click');
+		});
+		// The classic upload JS adds/removes .wbtm_single_image_item and
+		// shows/hides the button on its own — watch for that instead of
+		// duplicating its logic.
+		if (window.MutationObserver) {
+			new MutationObserver(syncActs).observe($box.get(0), { childList: true, attributes: true, subtree: true, attributeFilter: ['style', 'class'] });
+		}
+		syncActs();
+	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  Wrap the remaining classic General Settings rows (Bus No, Coach
+	 *  Type, Reservation on/off) in a bordered box. Runs after the Bus
+	 *  Logo relocation above, so that row is already gone from this set —
+	 *  only these three are left in the General Info step at this point.
+	 * ---------------------------------------------------------------- */
+	(function wrapGeneralInfoRows() {
+		var $rows = $root.find('[data-bme-panel="general"] ._dLayout_padding_dFlex_justifyBetween_alignCenter');
+		if (!$rows.length) { return; }
+		$rows.wrapAll('<div class="wbtm-bme__general-rows-box"></div>');
+		$rows.first().parent().prepend('<div class="wbtm-bme__general-rows-title">Specifications &amp; Configuration</div>');
+		// Small icon per row label (Bus No, Coach Type, Reservation on/off),
+		// matched by the row's real field name so order changes can't mismatch.
+		var icons = {
+			wbtm_bus_no: 'dashicons-id-alt',
+			wbtm_bus_category: 'dashicons-bus',
+			wbtm_registration: 'dashicons-yes-alt'
+		};
+		$rows.each(function () {
+			var $row = $(this);
+			var name = $row.find('input, select').first().attr('name');
+			var icon = icons[name];
+			var $label = $row.find('> :first-child label').first();
+			if (icon && $label.length && !$label.find('.wbtm-bme__row-icon').length) {
+				$label.prepend('<span class="dashicons ' + icon + ' wbtm-bme__row-icon"></span>');
+			}
+		});
+	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  Relocate the classic "Available Feature" checkbox list (from the
+	 *  Advanced step's Bus Feature tab) into the General Info step's Bus
+	 *  Features slot. Its change handler is delegated on document by class
+	 *  name (wtbm_bus_feature_checkbox) and saves via its own AJAX call, so
+	 *  moving the markup doesn't touch that behaviour at all.
+	 * ---------------------------------------------------------------- */
+	(function relocateFeatureChecklist() {
+		var $slot = $root.find('[data-bme-features-slot]');
+		var $checklist = $root.find('.wtbm_all_selected_term_condition');
+		var $label = $root.find('[data-bme-features-label]');
+		if ($slot.length && $checklist.length) {
+			$checklist.appendTo($slot);
+			// Move the "Bus Features" label/description inside the classic
+			// wrapper too, right before its "Available Feature" heading.
+			var $inner = $checklist.find('.wtbm_all_term_condition').first();
+			if ($label.length && $inner.length) {
+				$label.prependTo($inner);
+			}
+		}
+	})();
 
 	/* ---------------------------------------------------------------- *
 	 *  Gallery — enable/disable toggle + inline add/remove in the rail

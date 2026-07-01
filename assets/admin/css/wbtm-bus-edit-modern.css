@@ -57,6 +57,9 @@ body.wbtm-bme-active #wpcontent{margin-left:0 !important;padding-left:0 !importa
 body.wbtm-bme-active #wpbody-content{padding:0 !important;float:none;}
 body.wbtm-bme-active div.wrap{margin:0 !important;padding:0 !important;max-width:none !important;}
 body.wbtm-bme-active #poststuff{margin:0 !important;padding:0 !important;min-width:0;}
+body.wbtm-bme-active #poststuff .stuffbox>h3,
+body.wbtm-bme-active #poststuff h2,
+body.wbtm-bme-active #poststuff h3.hndle{padding:8px 0px;}
 body.wbtm-bme-active #post-body{margin:0 !important;padding:0 !important;}
 body.wbtm-bme-active #post-body.columns-2 #postbox-container-2{width:100% !important;float:none !important;margin:0 !important;}
 body.wbtm-bme-active #wbtm_modern_meta_box_panel{border:0;background:transparent;box-shadow:none;margin:0;}
@@ -129,37 +132,152 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:visible;margin-bottom:22px;}
 .wbtm-bme__card-head{padding:18px 24px;border-bottom:1px solid var(--band-line);background:linear-gradient(180deg,#fbfcfe,var(--band));}
 .wbtm-bme__card-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;}
-.wbtm-bme__dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);display:inline-block;}
 .wbtm-bme__card-head p{margin:4px 0 0 18px;font-size:13px;color:var(--ink-2);}
 .wbtm-bme__card-body{padding:20px 24px 24px;}
 
+/* "Bus Features" — real classic checkbox list relocated here by JS (see
+   [data-bme-features-slot]); its old card in the Advanced step is hidden
+   once emptied out (data-bme-section rule further down). */
+.wbtm-bme__subsection{margin-top:18px;padding-top:18px;border-top:1px solid var(--band-line);}
+.wbtm-bme__subsection-label{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;}
+.wbtm-bme__subsection-label label{font-size:13.5px;font-weight:700;color:var(--ink);}
+.wbtm-bme__subsection-label span{font-size:12px;color:var(--ink-2);}
+.wbtm-bme__features-slot .wtbm_all_selected_term_condition h3{display:none;}
+.wbtm-bme__features-slot .wtbm-bus-features{display:flex;flex-wrap:wrap;gap:8px;max-height:220px;overflow-y:hidden;}
+.wbtm-bme__features-slot .wtbm-bus-features label{
+	display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--ink-2);
+	background:var(--inset);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;margin:0;
+}
+.wbtm-bme__features-slot .wtbm-bus-features label:has(input:checked){background:var(--brand-soft);border-color:var(--brand);color:var(--brand-600);}
+.wbtm-bme__features-slot .wtbm-bus-features br{display:none;}
+
+/* "Post Title"/"Post Content", relocated by JS to sit right after the Bus
+   Information band. Labels stack above their field here (not beside it). */
+.wbtm-bme__postfields{margin:16px 0 20px;}
+.wbtm-bme__postfields-content-label{margin-top:18px;}
+.wbtm-bme__postfields #wbtm-bme-title-inline{width:100%;}
+.wbtm-bme__content-slot{margin-top:4px;}
+/* "Add Media" + Visual/Code toolbar on the relocated real #postdivrich editor. */
+.wbtm-bme #wp-content-editor-tools{
+	background:#fff;
+	padding:10px 14px;border:none;border-radius:10px 10px 0 0;
+	display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.wbtm-bme .wp-media-buttons{margin:0;order:2;}
+.wbtm-bme #wp-content-media-buttons .button{
+	display:inline-flex !important;align-items:center;justify-content:center;
+	border-radius:8px !important;font-family:inherit;font-size:12px !important;font-weight:600;
+	color:var(--blue) !important;background:var(--blue-soft) !important;border:1px solid #cfe0ff !important;
+	padding:6px 14px !important;line-height:1.4 !important;box-shadow:none !important;word-spacing:-3px;
+}
+.wbtm-bme #wp-content-media-buttons .button:hover{background:#e2edff !important;}
+.wbtm-bme #wp-content-media-buttons .wp-media-buttons-icon{margin-right:4px;}
+.wbtm-bme .wp-editor-tabs{display:flex;gap:0;border:1px solid #dcdfe5;border-radius:8px;overflow:hidden;order:1;}
+.wbtm-bme .wp-switch-editor{
+	font-family:inherit;font-size:12px !important;font-weight:600;color:var(--ink-2);
+	background:#fff;border:0;padding:6px 14px;margin:0 !important;cursor:pointer;
+}
+.wbtm-bme .wp-switch-editor.switch-html{border-left:1px solid #dcdfe5;}
+.wbtm-bme #wp-content-wrap.tmce-active .wp-switch-editor.switch-tmce,
+.wbtm-bme #wp-content-wrap.html-active .wp-switch-editor.switch-html{background:var(--blue);color:#fff;}
+
+/* "Add Media", relocated by JS to sit right after the kitchen-sink toggle
+   (Visual mode) or the distraction-free toggle (Text mode) — shrunk down
+   to match the scale of the icon buttons it now sits alongside. The
+   .wbtm-bme__media-btn-compact class is added directly to #wp-content-
+   media-buttons itself (not a separate wrapper), so .button is a descendant. */
+#wp-content-media-buttons.wbtm-bme__media-btn-compact{display:inline-flex !important;vertical-align:middle;margin-left:6px;}
+.wbtm-bme #wp-content-media-buttons.wbtm-bme__media-btn-compact .button{
+	font-size:11px !important;padding:3px 9px !important;line-height:1.3 !important;gap:3px;
+}
+.wbtm-bme #wp-content-media-buttons.wbtm-bme__media-btn-compact .wp-media-buttons-icon{transform:scale(.85);margin-right:2px;}
+.wbtm-bme .wp-editor-container{border:1px solid #e8e8eb;}
+/* Content editing area — fixed height (overrides WP's inline height/resize). */
+.wbtm-bme .mce-edit-area,
+.wbtm-bme .mce-edit-area iframe,
+.wbtm-bme .wp-editor-area{height:150px !important;}
+.wbtm-bme div.mce-toolbar-grp{border-top:1px solid #dfdddd;}
+/* Word count / last-edited / resize-handle footer on the relocated editor. */
+.wbtm-bme #post-status-info{display:none;}
+
+/* Hide the classic "Bus Information" band in the General Info step only —
+   Post Title/Content now sit in its place. Scoped to data-bme-panel="general"
+   so other steps' own _bgLight band headers (Seat/Pricing/Advanced) are
+   untouched; WBTM_Settings_General::tab_content() itself is not modified. */
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_bgLight"]{display:none;}
+
+/* Hide the classic "Bus Feature" card in the Advanced step once its checkbox
+   list has been relocated into the General Info step's Bus Features slot —
+   everything left in this card at that point is empty chrome. */
+.wbtm-bme.wbtm_style .wbtm-bme__card[data-bme-section="WTBM_Features_Seating"]{display:none;}
+
+/* Hide both classic band headers ("Vehicle Type Configuration" and "Seat
+   Information") in the Seat Configure step — they're the only two elements
+   with this shared class in that step, so the bare class is safe to hide now. */
+.wbtm-bme.wbtm_style [data-bme-panel="seat"] ._dLayout_padding_dFlex_justifyBetween_alignCenter_bgLight{display:none;}
+
 /* Body = main column + sticky preview rail */
-.wbtm-bme__body{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start;}
+.wbtm-bme__body{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start;}
 .wbtm-bme__main{min-width:0;}
 .wbtm-bme__rail{position:sticky;top:84px;display:flex;flex-direction:column;gap:18px;}
 .wbtm-bme__rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;}
 
 /* Featured Image card — title, big preview, text-link actions (attachment-style). */
-.wbtm-bme__feat-head{padding:14px 16px 0;font-size:13.5px;font-weight:800;color:var(--ink);}
+.wbtm-bme__feat-head{padding:16px 16px 0;font-size:15px;font-weight:800;color:var(--ink);}
 .wbtm-bme__req{color:var(--brand);}
-.wbtm-bme__feat-preview{position:relative;margin:10px 16px 0;height:150px;border-radius:10px;background:linear-gradient(135deg,#1e293b,#334155);display:grid;place-items:center;color:#cbd5e1;overflow:hidden;}
+.wbtm-bme__feat-preview{position:relative;margin:14px 16px 0;height:180px;min-height:140px;border-radius:12px;border:1px solid var(--line);background:#ebebeb;display:grid;place-items:center;color:#cbd5e1;overflow:hidden;}
 .wbtm-bme__feat-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 .wbtm-bme__rail-hero-ph{font-size:46px;width:46px;height:46px;opacity:.7;}
 .wbtm-bme__rail-badge{position:absolute;top:10px;left:10px;z-index:2;background:rgba(255,255,255,.92);color:var(--ink);font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;box-shadow:var(--shadow-sm);}
-.wbtm-bme__feat-acts{display:flex;align-items:center;gap:14px;padding:10px 16px 4px;}
-.wbtm-bme__feat-link{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--blue);background:none;border:0;padding:0;cursor:pointer;}
+.wbtm-bme__feat-acts{display:flex;align-items:center;gap:22px;padding:14px 16px 18px;}
+.wbtm-bme__feat-link{font-family:inherit;font-size:12px !important;font-weight:600;color:var(--blue);background:none;border:0;padding:0;cursor:pointer;}
 .wbtm-bme__feat-link:hover{text-decoration:underline;}
 .wbtm-bme__feat-link--rm{color:var(--brand);}
-.wbtm-bme__rail-info{padding:14px 16px 16px;}
-.wbtm-bme__rail-name{font-size:15px;font-weight:800;color:var(--ink);margin:0 0 12px;word-break:break-word;}
-.wbtm-bme__rail-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.wbtm-bme__rail-stats > div{background:var(--inset);border:1px solid var(--band-line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;}
-.wbtm-bme__rail-stats span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
-.wbtm-bme__rail-stats strong{font-size:16px;color:var(--ink);font-weight:800;}
-.wbtm-bme__rail-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ink);padding:13px 16px;border-bottom:1px solid var(--band-line);background:linear-gradient(180deg,#fbfcfe,var(--band));}
-.wbtm-bme__rail-title .dashicons{font-size:16px;width:16px;height:16px;color:var(--brand);}
-.wbtm-bme__rail-manage{margin-left:auto;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--blue);background:var(--blue-soft);border:1px solid #cfe0ff;border-radius:8px;padding:4px 10px;cursor:pointer;}
-.wbtm-bme__rail-manage:hover{background:#e2edff;}
+
+/* Bus Logo card — classic row relocated here by JS, redesigned to match the
+   Featured Image card exactly: a big bordered preview box (placeholder icon
+   when empty, cover-fit image when set) with "Change image"/"Remove" text
+   links below it (JS-injected — see relocateBusLogoRow), instead of the
+   classic tiny corner "x" icon. The classic "Bus Logo"/"Add your logo"
+   label column is dropped; .wbtm_add_single_image keeps its classic click
+   handler (open the media picker), and the classic remove icon stays in
+   the DOM (hidden) so our "Remove" link can still trigger it programmatically. */
+.wbtm-bme__logo-slot{padding:16px;}
+.wbtm-bme__logo-slot .wbtm-bme__logo-row > .col_6:first-child{display:none !important;}
+.wbtm-bme__logo-slot .wbtm-bme__logo-row > .col_6:last-child{width:100% !important;}
+/* !important throughout this box: several generic classic rules further
+   down this same file (`.wbtm-bme.wbtm_style .wbtm_add_single_image` etc.,
+   reused for OTHER single-image fields) target these same classes and can
+   match with equal-or-higher specificity depending on selector shape, which
+   previously won by source order and silently broke this preview box
+   (wrong display mode, collapsed height, image invisible). !important
+   removes the ambiguity instead of chasing specificity point-counts. */
+.wbtm-bme__logo-slot .wbtm_add_single_image{
+	max-width:none !important;width:220px !important;position:relative !important;height:180px !important;
+	border-radius:12px !important;border:1px solid var(--line) !important;background:#ebebeb !important;
+	display:grid !important;place-items:center !important;justify-content:center !important;overflow:hidden !important;cursor:pointer;gap:0 !important;
+}
+.wbtm-bme__logo-slot .wbtm_add_single_image > button{
+	position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;
+	display:grid !important;place-items:center !important;
+	background:none !important;border:0 !important;padding:0 !important;box-shadow:none !important;cursor:pointer;
+	min-width:0 !important;gap:0 !important;
+}
+.wbtm-bme__logo-slot .wbtm_add_single_image > button .fas{display:none !important;}
+.wbtm-bme__logo-drop-icon{font-size:36px;width:36px;height:36px;color:#cbd5e1;}
+/* Preview shown after an image is picked (classic JS appends this). */
+.wbtm-bme__logo-slot .wbtm_single_image_item{
+	position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;
+	border:0 !important;border-radius:0 !important;background:none !important;
+}
+.wbtm-bme__logo-slot .wbtm_single_image_item img{
+	position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;
+	object-fit:cover !important;display:block !important;padding:0 !important;border:0 !important;border-radius:0 !important;
+}
+.wbtm-bme__logo-slot .wbtm_remove_single_image{display:none !important;}
+/* "Change image"/"Remove" text links, injected by JS below the preview box. */
+.wbtm-bme__logo-acts{display:flex;align-items:center;gap:22px;padding:14px 0 0;}
+
 .wbtm-bme__rail-empty{padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.5;}
 
 /* Enable/Disable Gallery toggle row */
@@ -173,15 +291,16 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__switch input:checked + .wbtm-bme__switch-slider::before{transform:translateX(16px);}
 .wbtm-bme__rail-gallery-section{border-top:1px solid var(--band-line);}
 
-.wbtm-bme__rail-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:14px 16px 4px;}
+.wbtm-bme__gallery-head{display:flex;align-items:center;gap:6px;padding:14px 16px 8px;font-size:13px;font-weight:700;color:var(--ink);}
+.wbtm-bme__gallery-head .dashicons{font-size:16px;width:16px;height:16px;color:var(--muted);cursor:help;}
+.wbtm-bme__rail-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 10px;}
 .wbtm-bme__gallery-item{position:relative;}
-.wbtm-bme__gallery-item img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block;}
-.wbtm-bme__gallery-item-rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;line-height:16px;text-align:center;font-size:13px;font-weight:700;color:#fff;background:var(--brand);border:2px solid #fff;border-radius:50%;padding:0;cursor:pointer;box-shadow:var(--shadow-sm);}
+.wbtm-bme__gallery-item img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line);display:block;}
+.wbtm-bme__gallery-item-rm{position:absolute;top:-6px;right:-6px;width:20px;height:20px;line-height:18px;text-align:center;font-size:14px;font-weight:700;color:#fff;background:var(--brand);border:2px solid #fff;border-radius:50%;padding:0;cursor:pointer;box-shadow:var(--shadow-sm);}
 .wbtm-bme__gallery-item-rm:hover{background:var(--brand-600);}
-.wbtm-bme__add-image-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 32px);margin:4px 16px 16px;font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--blue);border:0;border-radius:9px;padding:9px 10px;cursor:pointer;}
+.wbtm-bme__add-image-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:150px;margin-top:14px;margin-right:16px;margin-bottom:10px !important;margin-left:15px !important;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;color:#fff;background:var(--blue);border:0;border-radius:10px;padding:11px 16px;cursor:pointer;}
 .wbtm-bme__add-image-btn:hover{background:#1d4ed8;}
-.wbtm-bme__add-image-btn .dashicons{font-size:15px;width:15px;height:15px;}
-.wbtm-bme__rail-features{display:flex;flex-wrap:wrap;gap:7px;padding:14px 16px;}
+.wbtm-bme__add-image-btn .dashicons{font-size:16px;width:16px;height:16px;line-height:1;}
 .wbtm-bme__chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-2);background:var(--inset);border:1px solid var(--line);border-radius:999px;padding:5px 11px;}
 .wbtm-bme__chip i{color:var(--brand);font-size:13px;}
 @media(max-width:1100px){
@@ -189,14 +308,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	.wbtm-bme__rail{position:static;flex-direction:row;flex-wrap:wrap;}
 	.wbtm-bme__rail-card{flex:1 1 240px;}
 }
-/* Config-heavy steps (seat / pricing / advanced) -> hide rail, go full width.
- * The preview rail stays on General where the overview is most useful. */
-.wbtm-bme[data-step="seat"] .wbtm-bme__body,
-.wbtm-bme[data-step="pricing"] .wbtm-bme__body,
-.wbtm-bme[data-step="advanced"] .wbtm-bme__body{grid-template-columns:1fr;}
-.wbtm-bme[data-step="seat"] .wbtm-bme__rail,
-.wbtm-bme[data-step="pricing"] .wbtm-bme__rail,
-.wbtm-bme[data-step="advanced"] .wbtm-bme__rail{display:none;}
 
 /* Our own primitive rows (Bus Name) */
 .wbtm-bme__frow{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--band-line);}
@@ -273,7 +384,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .justifyCenter,
 .wbtm-bme.wbtm_style [class*="justifyCenter"]{display:flex;justify-content:center;}
 
-.wbtm-bme.wbtm_style [class*="_dLayout"]{border:0;background:transparent;}
+.wbtm-bme.wbtm_style [class*="_dLayout"]{border:0;background:transparent;padding:0px;margin-bottom:20px;}
 .wbtm-bme.wbtm_style .textRight{text-align:right;}
 .wbtm-bme.wbtm_style .textCenter{text-align:center;}
 .wbtm-bme.wbtm_style .col_6 > label,
@@ -513,7 +624,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:none;height:auto;min-width:0;width:auto;text-shadow:none;
 }
 .wbtm-bme.wbtm_style .wbtm_add_single_image button:hover{filter:brightness(1.06);color:#fff;}
-.wbtm-bme.wbtm_style .wbtm_single_image_item{position:relative;width:60px;height:60px;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:var(--inset);}
+.wbtm-bme.wbtm_style .wbtm_single_image_item{position:relative;width:240px;height:auto;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:var(--inset);}
 .wbtm-bme.wbtm_style .wbtm_single_image_item img{width:100%;height:100%;object-fit:cover;border-radius:0;max-width:none;max-height:none;border:0;}
 .wbtm-bme.wbtm_style .wbtm_remove_single_image{position:absolute;top:2px;right:2px;background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;cursor:pointer;z-index:2;}
 .wbtm-bme.wbtm_style .wbtm_add_icon_image_area img{border-radius:12px;max-width:60px;max-height:60px;object-fit:cover;border:1.5px solid var(--line);}
@@ -524,12 +635,28 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 
 /* General step rows -> match the mockup .frow (label left, control fixed ~320px right) */
-.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"]{align-items:center;gap:16px;}
+.wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"]{align-items:center;gap:16px;padding:10px;}
 .wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :first-child{flex:1 1 auto;min-width:0;}
 .wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2){flex:0 0 320px;max-width:320px;display:flex;justify-content:flex-end;align-items:center;gap:10px;}
 .wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) .formControl,
 .wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) input,
 .wbtm-bme.wbtm_style [data-bme-panel="general"] [class*="_dFlex_justifyBetween"] > :nth-child(2) select{width:100%;max-width:none;}
+
+/* Bordered box around Bus No / Coach Type / Reservation on/off, wrapped by
+   JS (wrapGeneralInfoRows) once the Bus Logo row has been relocated out. */
+.wbtm-bme__general-rows-box{border:1px solid #ddd;border-radius:10px;padding:4px 16px;}
+.wbtm-bme__general-rows-title{font-size:13.5px;font-weight:700;color:var(--ink);padding:12px 0 2px;}
+.wbtm-bme__general-rows-box > ._dLayout_padding_dFlex_justifyBetween_alignCenter{padding-top:14px;padding-bottom:14px;transition:background-color .15s;}
+.wbtm-bme__general-rows-box > ._dLayout_padding_dFlex_justifyBetween_alignCenter + ._dLayout_padding_dFlex_justifyBetween_alignCenter{border-top:1px solid var(--band-line);}
+.wbtm-bme__general-rows-box > ._dLayout_padding_dFlex_justifyBetween_alignCenter:hover{background-color:var(--inset);}
+.wbtm-bme__general-rows-box label{display:flex !important;align-items:center;gap:8px;font-size:14px !important;font-weight:700 !important;}
+.wbtm-bme__general-rows-box > ._dLayout_padding_dFlex_justifyBetween_alignCenter > :first-child > span{font-size:12px;padding-left:30px;}
+.wbtm-bme__row-icon{
+	display:inline-flex !important;align-items:center;justify-content:center;flex:none;
+	width:22px;height:22px;border-radius:7px;font-size:13px;
+	background:var(--brand-soft);color:var(--brand);
+}
+.wbtm-bme__row-icon:before{font-size:13px;width:13px;height:13px;}
 
 /* Seat price-override modal (reused) */
 .wbtm-bme.wbtm_style .wbtm_seat_price_modal{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;}
@@ -866,7 +993,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(99,102,241,.06) 0%,rgba(99,102,241,.02) 100%);
 	border-bottom:1px solid rgba(99,102,241,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1) .wbtm-bme__dot{background:#6366f1;box-shadow:0 0 0 4px rgba(99,102,241,.12);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(1) .wbtm-bme__card-body{background:rgba(99,102,241,.018);}
 
 /* --- 2. Pickup / Drop-Off — sky blue --- */
@@ -877,7 +1003,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(14,165,233,.06) 0%,rgba(14,165,233,.02) 100%);
 	border-bottom:1px solid rgba(14,165,233,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2) .wbtm-bme__dot{background:#0ea5e9;box-shadow:0 0 0 4px rgba(14,165,233,.12);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(2) .wbtm-bme__card-body{background:rgba(14,165,233,.018);}
 
 /* --- 3. Date Settings — emerald --- */
@@ -888,7 +1013,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(16,185,129,.06) 0%,rgba(16,185,129,.02) 100%);
 	border-bottom:1px solid rgba(16,185,129,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3) .wbtm-bme__dot{background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.12);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(3) .wbtm-bme__card-body{background:rgba(16,185,129,.018);}
 
 /* --- 4. Tax Configure — amber --- */
@@ -899,7 +1023,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(245,158,11,.07) 0%,rgba(245,158,11,.02) 100%);
 	border-bottom:1px solid rgba(245,158,11,.18);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4) .wbtm-bme__dot{background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.14);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(4) .wbtm-bme__card-body{background:rgba(245,158,11,.018);}
 
 /* --- 5. Gallery Image — purple --- */
@@ -910,7 +1033,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(139,92,246,.06) 0%,rgba(139,92,246,.02) 100%);
 	border-bottom:1px solid rgba(139,92,246,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5) .wbtm-bme__dot{background:#8b5cf6;box-shadow:0 0 0 4px rgba(139,92,246,.12);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(5) .wbtm-bme__card-body{background:rgba(139,92,246,.018);}
 
 /* --- 6. Term & Condition — teal --- */
@@ -921,7 +1043,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(20,184,166,.06) 0%,rgba(20,184,166,.02) 100%);
 	border-bottom:1px solid rgba(20,184,166,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6) .wbtm-bme__dot{background:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.12);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(6) .wbtm-bme__card-body{background:rgba(20,184,166,.018);}
 
 /* --- 7. Bus Feature — rose (brand) --- */
@@ -931,7 +1052,6 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,rgba(225,29,72,.06) 0%,rgba(225,29,72,.02) 100%);
 	border-bottom:1px solid rgba(225,29,72,.14);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7) .wbtm-bme__dot{background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__card:nth-child(7) .wbtm-bme__card-body{background:rgba(225,29,72,.014);}
 
 /* ---- Step 4: add-new / sortable buttons polish ---- */
