@@ -225,6 +225,52 @@
 	});
 
 	/* ---------------------------------------------------------------- *
+	 *  Gallery — enable/disable toggle + inline add/remove in the rail
+	 * ---------------------------------------------------------------- */
+	var $gallerySection = $root.find('[data-bme-gallery-section]');
+	var $galleryList = $root.find('[data-bme-gallery-list]');
+	var $galleryEmpty = $root.find('[data-bme-gallery-empty]');
+
+	function refreshGalleryEmptyState() {
+		$galleryEmpty.toggle($galleryList.find('[data-bme-gallery-item]').length === 0);
+	}
+
+	$root.on('change', '[data-bme-gallery-toggle]', function () {
+		var on = $(this).is(':checked');
+		$gallerySection.toggle(on);
+		toast('Gallery: ' + (on ? 'On' : 'Off'));
+	});
+
+	var galleryFrame;
+	$root.on('click', '[data-bme-gallery-add]', function (e) {
+		e.preventDefault();
+		if (typeof wp === 'undefined' || !wp.media) { return; }
+		if (galleryFrame) { galleryFrame.open(); return; }
+		galleryFrame = wp.media({ title: 'Select gallery images', button: { text: 'Add to gallery' }, library: { type: 'image' }, multiple: true });
+		galleryFrame.on('select', function () {
+			var selection = galleryFrame.state().get('selection');
+			selection.each(function (a) {
+				a = a.toJSON();
+				var url = (a.sizes && a.sizes.thumbnail) ? a.sizes.thumbnail.url : a.url;
+				var $item = $('<div class="wbtm-bme__gallery-item" data-bme-gallery-item></div>');
+				$item.append($('<img>').attr({ src: url, alt: '' }));
+				$item.append($('<input type="hidden" name="wbtm_gallery_images[]">').val(a.id));
+				$item.append($('<button type="button" class="wbtm-bme__gallery-item-rm" data-bme-gallery-remove aria-label="Remove image">&times;</button>'));
+				$galleryList.append($item);
+			});
+			refreshGalleryEmptyState();
+			toast('Gallery image' + (selection.length > 1 ? 's' : '') + ' added');
+			galleryFrame.state().get('selection').reset();
+		});
+		galleryFrame.open();
+	});
+	$root.on('click', '[data-bme-gallery-remove]', function () {
+		$(this).closest('[data-bme-gallery-item]').remove();
+		refreshGalleryEmptyState();
+		toast('Gallery image removed');
+	});
+
+	/* ---------------------------------------------------------------- *
 	 *  Rail "Manage" buttons -> jump to the relevant step + section
 	 * ---------------------------------------------------------------- */
 	$root.on('click', '[data-bme-goto]', function () {

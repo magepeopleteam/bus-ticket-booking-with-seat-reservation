@@ -27,6 +27,7 @@
 				add_filter( 'admin_body_class', array( $this, 'body_class' ) );
 				add_action( 'wp_ajax_wbtm_set_bus_edit_ui', array( $this, 'ajax_set_ui' ) );
 				add_action( 'save_post', array( $this, 'save_feature_image' ), 20 );
+				add_action( 'save_post', array( $this, 'save_gallery_enabled' ), 20 );
 			}
 
 			/* ------------------------------------------------------------------ *
@@ -164,6 +165,10 @@
 
 				// Shared plumbing — MUST match the classic save handler.
 				wp_nonce_field( 'wbtm_type_nonce', 'wbtm_type_nonce' );
+				// The classic Gallery Image Settings section (which normally prints this
+				// nonce itself) is skipped in the modern Advanced step in favour of the
+				// rail's inline gallery editor — so its save handler needs the nonce here.
+				wp_nonce_field( 'wbtm_save_gallery_image_nonce', 'wbtm_gallery_image_nonce' );
 				?>
 				<input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr( $post_id ); ?>"/>
 <?php // The wbtm_style class keeps classic JS (collapse, validation, datepicker, lazy images) working for the reused sections. ?>
@@ -201,6 +206,12 @@
 									<section class="wbtm-bme__panel<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-panel="<?php echo esc_attr( $step['id'] ); ?>">
 										<?php
 										foreach ( $step['sections'] as $section ) {
+											// Gallery is edited inline in the rail (Featured Image card) now,
+											// so skip the classic uploader card here to avoid a second,
+											// out-of-sync `wbtm_gallery_images[]` field set on submit.
+											if ( $section[0] === 'WBTM_Gallery_Image_Settings' ) {
+												continue;
+											}
 											$this->render_section_card( $section, $post_id );
 										}
 										?>
@@ -244,6 +255,10 @@
 				$feat_ids = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
 				$feat_ids = is_array( $feat_ids ) ? array_values( array_filter( array_map( 'intval', $feat_ids ) ) ) : array();
 
+				// Existing posts had no explicit flag yet, so an unset meta still means "on".
+				$gallery_enabled_meta = get_post_meta( $post_id, 'wbtm_gallery_enabled', true );
+				$gallery_enabled      = $gallery_enabled_meta !== 'no';
+
 				$thumb_id = (int) get_post_thumbnail_id( $post_id );
 				$hero     = '';
 				if ( $thumb_id ) {
@@ -255,18 +270,21 @@
 				}
 				?>
 				<aside class="wbtm-bme__rail">
-					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-hero">
+					<div class="wbtm-bme__rail-card wbtm-bme__feat-card">
+						<div class="wbtm-bme__feat-head">
+							<?php esc_html_e( 'Featured Image', 'bus-ticket-booking-with-seat-reservation' ); ?> <span class="wbtm-bme__req">*</span>
+						</div>
+						<div class="wbtm-bme__feat-preview">
 							<img class="wbtm-bme__rail-hero-img" id="wbtm-bme-hero-img" src="<?php echo esc_url( $hero ); ?>" alt="" style="<?php echo $hero ? '' : 'display:none'; ?>"/>
 							<span class="dashicons dashicons-bus wbtm-bme__rail-hero-ph" style="<?php echo $hero ? 'display:none' : ''; ?>"></span>
 							<?php if ( $coach ) : ?>
 								<span class="wbtm-bme__rail-badge"><?php echo esc_html( $coach ); ?></span>
 							<?php endif; ?>
-							<div class="wbtm-bme__rail-hero-acts">
-								<button type="button" class="wbtm-bme__hero-btn" data-bme-feat-set><span class="dashicons dashicons-camera"></span><?php echo esc_html( $thumb_id ? __( 'Change', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Set image', 'bus-ticket-booking-with-seat-reservation' ) ); ?></button>
-								<button type="button" class="wbtm-bme__hero-btn wbtm-bme__hero-btn--rm" data-bme-feat-remove style="<?php echo $thumb_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-							</div>
 							<input type="hidden" id="wbtm-bme-thumbnail" name="wbtm_bme_thumbnail_id" value="<?php echo esc_attr( $thumb_id ); ?>"/>
+						</div>
+						<div class="wbtm-bme__feat-acts">
+							<button type="button" class="wbtm-bme__feat-link" data-bme-feat-set><?php echo esc_html( $thumb_id ? __( 'Change image', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Set image', 'bus-ticket-booking-with-seat-reservation' ) ); ?></button>
+							<button type="button" class="wbtm-bme__feat-link wbtm-bme__feat-link--rm" data-bme-feat-remove style="<?php echo $thumb_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
 						</div>
 						<div class="wbtm-bme__rail-info">
 							<h3 class="wbtm-bme__rail-name" id="wbtm-bme-rail-name"><?php echo esc_html( $bus_name !== '' ? $bus_name : __( 'Untitled bus', 'bus-ticket-booking-with-seat-reservation' ) ); ?></h3>
@@ -278,22 +296,35 @@
 					</div>
 
 					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-title">
-							<span class="dashicons dashicons-format-gallery"></span><?php esc_html_e( 'Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<button type="button" class="wbtm-bme__rail-manage" data-bme-goto="advanced" data-bme-scroll="#wbtm_settings_gallery_images"><?php esc_html_e( 'Manage', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+						<div class="wbtm-bme__rail-toggle-row">
+							<span class="wbtm-bme__rail-toggle-label"><?php esc_html_e( 'Enable/Disable Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<label class="wbtm-bme__switch">
+								<input type="checkbox" id="wbtm-bme-gallery-enabled" name="wbtm_gallery_enabled" value="yes" data-bme-gallery-toggle <?php checked( $gallery_enabled ); ?>/>
+								<span class="wbtm-bme__switch-slider"></span>
+							</label>
 						</div>
-						<?php if ( ! empty( $gallery ) ) : ?>
-							<div class="wbtm-bme__rail-gallery">
-								<?php foreach ( array_slice( $gallery, 0, 6 ) as $gid ) :
+						<div class="wbtm-bme__rail-gallery-section" data-bme-gallery-section style="<?php echo $gallery_enabled ? '' : 'display:none;'; ?>">
+							<div class="wbtm-bme__rail-title">
+								<span class="dashicons dashicons-format-gallery"></span><?php esc_html_e( 'Gallery Images', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</div>
+							<div class="wbtm-bme__rail-gallery" id="wbtm-bme-gallery-grid" data-bme-gallery-list>
+								<?php foreach ( $gallery as $gid ) :
 									$g = wp_get_attachment_image_url( $gid, 'thumbnail' );
 									if ( $g ) :
 										?>
-										<img src="<?php echo esc_url( $g ); ?>" alt=""/>
-									<?php endif; endforeach; ?>
+										<div class="wbtm-bme__gallery-item" data-bme-gallery-item>
+											<img src="<?php echo esc_url( $g ); ?>" alt=""/>
+											<input type="hidden" name="wbtm_gallery_images[]" value="<?php echo esc_attr( $gid ); ?>"/>
+											<button type="button" class="wbtm-bme__gallery-item-rm" data-bme-gallery-remove aria-label="<?php esc_attr_e( 'Remove image', 'bus-ticket-booking-with-seat-reservation' ); ?>">&times;</button>
+										</div>
+									<?php endif;
+								endforeach; ?>
 							</div>
-						<?php else : ?>
-							<div class="wbtm-bme__rail-empty"><?php esc_html_e( 'No gallery images yet. Click Manage to upload.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
-						<?php endif; ?>
+							<div class="wbtm-bme__rail-empty" data-bme-gallery-empty style="<?php echo empty( $gallery ) ? '' : 'display:none;'; ?>"><?php esc_html_e( 'No gallery images yet.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+							<button type="button" class="wbtm-bme__add-image-btn" data-bme-gallery-add>
+								<span class="dashicons dashicons-plus-alt2"></span><?php esc_html_e( 'Add Image', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</button>
+						</div>
 					</div>
 
 					<div class="wbtm-bme__rail-card">
@@ -392,6 +423,31 @@
 				} else {
 					delete_post_thumbnail( $post_id );
 				}
+			}
+
+			/**
+			 * Save the rail's "Enable/Disable Gallery" toggle. Gated on the same
+			 * modern-only field (wbtm_bme_thumbnail_id) so a classic-editor save,
+			 * which never posts this checkbox, can't accidentally disable it.
+			 */
+			public function save_gallery_enabled( $post_id ) {
+				if ( ! array_key_exists( 'wbtm_bme_thumbnail_id', $_POST ) ) {
+					return;
+				}
+				if ( get_post_type( $post_id ) !== WBTM_Functions::get_cpt() ) {
+					return;
+				}
+				if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_type_nonce'] ) ), 'wbtm_type_nonce' ) ) {
+					return;
+				}
+				if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+					return;
+				}
+				if ( ! current_user_can( 'edit_post', $post_id ) ) {
+					return;
+				}
+				$enabled = isset( $_POST['wbtm_gallery_enabled'] ) && sanitize_text_field( wp_unslash( $_POST['wbtm_gallery_enabled'] ) ) === 'yes';
+				update_post_meta( $post_id, 'wbtm_gallery_enabled', $enabled ? 'yes' : 'no' );
 			}
 
 			public function ajax_set_ui() {

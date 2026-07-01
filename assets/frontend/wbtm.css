@@ -1468,7 +1468,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
 
   .wbtm_search_result .wbtm-bus-list:hover {
-    transform: translateY(-3px);
+    transform: none;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
