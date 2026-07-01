@@ -638,6 +638,8 @@ div#wbtm_date_start_route { height: 50px; }
     display:     flex;
     align-items: stretch;
     min-height:  110px;
+    justify-content: space-between;
+    width:100%;
 }
 
 /* ── LEFT: times + duration track ───────────────────────────────── */
