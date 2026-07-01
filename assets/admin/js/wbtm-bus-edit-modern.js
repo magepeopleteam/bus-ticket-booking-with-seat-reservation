@@ -726,6 +726,52 @@
 			$nr.toggle(total === 0);
 		});
 	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  Skeleton / shimmer placeholder loaders for each panel section   *
+	 *  Skeleton HTML is server-rendered in PHP so it shows immediately  *
+	 *  on page load — JS only removes the --loading class per panel.   *
+	 * ---------------------------------------------------------------- */
+	(function initSkeletons() {
+		function removeLoading(el) {
+			var ov = el.querySelector('.wbtm-bme__skel-ov');
+			if (ov) {
+				ov.classList.add('out');
+				setTimeout(function () {
+					el.classList.remove('wbtm-bme__panel--loading', 'wbtm-bme__rail-card--loading');
+				}, 260);
+			} else {
+				el.classList.remove('wbtm-bme__panel--loading', 'wbtm-bme__rail-card--loading');
+			}
+		}
+
+		// Panels: remove loading when .active is applied by goStep()
+		$root.find('.wbtm-bme__panel').each(function () {
+			var panel = this;
+			var done = false;
+			var obs = new MutationObserver(function () {
+				if (!done && panel.classList.contains('active')) {
+					done = true;
+					obs.disconnect();
+					setTimeout(function () { removeLoading(panel); }, 400);
+				}
+			});
+			obs.observe(panel, { attributes: true, attributeFilter: ['class'] });
+		});
+
+		// The initially-active panel already has .active in PHP; goStep(0) won't
+		// mutate its class attribute, so trigger removal separately.
+		// Rail cards are always visible — remove their loading state at the same time.
+		setTimeout(function () {
+			var panel = $root.find('.wbtm-bme__panel.active')[0];
+			if (panel) { removeLoading(panel); }
+
+			$root.find('.wbtm-bme__rail-card--loading').each(function () {
+				removeLoading(this);
+			});
+		}, 500);
+	})();
+
 	// Initialise.
 	goStep(0);
 

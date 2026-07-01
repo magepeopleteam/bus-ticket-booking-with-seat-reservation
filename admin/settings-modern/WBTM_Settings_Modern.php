@@ -156,6 +156,76 @@
 			}
 
 			/* ------------------------------------------------------------------ *
+			 *  Panel skeleton (server-rendered so it shows before JS runs)
+			 * ------------------------------------------------------------------ */
+
+			private function render_rail_card_skeleton( string $type ): void {
+				$row = function( string $lw = '28%' ): string {
+					return '<div style="display:flex;align-items:center;gap:12px;padding:6px 0">'
+					     . '<div class="wbtm-bme__skel wbtm-bme__skel-lbl" style="width:' . $lw . '"></div>'
+					     . '<div class="wbtm-bme__skel wbtm-bme__skel-inp"></div>'
+					     . '</div>';
+				};
+				switch ( $type ) {
+					case 'featured':
+						$inner = '<div class="wbtm-bme__skel wbtm-bme__skel-block" style="height:155px;margin-bottom:14px"></div>'
+						       . '<div style="display:flex;gap:10px">'
+						       . '<div class="wbtm-bme__skel" style="height:24px;flex:1;border-radius:6px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:24px;flex:1;border-radius:6px"></div>'
+						       . '</div>';
+						break;
+					case 'logo':
+						$inner = '<div style="display:flex;align-items:center;gap:12px">'
+						       . '<div style="flex:1"><div class="wbtm-bme__skel" style="height:13px;width:60%;margin-bottom:8px;border-radius:5px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:11px;width:80%;border-radius:5px"></div></div>'
+						       . '<div class="wbtm-bme__skel" style="width:52px;height:52px;border-radius:8px;flex-shrink:0"></div>'
+						       . '</div>';
+						break;
+					case 'gallery':
+						$inner = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+						       . '<div class="wbtm-bme__skel" style="height:13px;width:55%;border-radius:5px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:22px;width:44px;border-radius:12px"></div>'
+						       . '</div>'
+						       . '<div style="display:flex;flex-wrap:wrap;gap:6px">'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '</div>';
+						break;
+					default: // info
+						$inner = '<div class="wbtm-bme__skel" style="height:13px;width:40%;margin-bottom:14px;border-radius:5px"></div>'
+						       . $row( '30%' ) . $row( '30%' ) . $row( '35%' ) . $row( '30%' );
+						break;
+				}
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="wbtm-bme__skel-ov">' . $inner . '</div>';
+			}
+
+			private function render_panel_skeleton( string $id ): void {
+				$row   = '<div class="wbtm-bme__skel-row"><div class="wbtm-bme__skel wbtm-bme__skel-lbl"></div><div class="wbtm-bme__skel wbtm-bme__skel-inp"></div></div>';
+				$rows  = function( int $n ) use ( $row ): string {
+					return str_repeat( $row, $n );
+				};
+				$card  = function( int $n, string $w = '35%' ) use ( $rows ): string {
+					return '<div class="wbtm-bme__skel-card"><div class="wbtm-bme__skel wbtm-bme__skel-card-hd" style="width:' . $w . '"></div>' . $rows( $n ) . '</div>';
+				};
+				$block = function( int $h ): string {
+					return '<div class="wbtm-bme__skel wbtm-bme__skel-block" style="height:' . $h . 'px"></div>';
+				};
+
+				$shapes = array(
+					'general'  => $card( 4, '30%' ),
+					'seat'     => $card( 2, '25%' ) . $block( 280 ),
+					'pricing'  => $card( 3, '30%' ) . $card( 2, '25%' ),
+					'advanced' => $card( 3, '35%' ) . $card( 2, '30%' ) . $card( 3, '40%' ),
+				);
+
+				$inner = isset( $shapes[ $id ] ) ? $shapes[ $id ] : $card( 3, '30%' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fully static markup, no user data
+				echo '<div class="wbtm-bme__skel-ov">' . $inner . '</div>';
+			}
+
+			/* ------------------------------------------------------------------ *
 			 *  Modern shell
 			 * ------------------------------------------------------------------ */
 
@@ -207,7 +277,8 @@
 						<div class="wbtm-bme__body">
 							<div class="wbtm-bme__main">
 								<?php foreach ( $steps as $i => $step ) : ?>
-									<section class="wbtm-bme__panel<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-panel="<?php echo esc_attr( $step['id'] ); ?>">
+									<section class="wbtm-bme__panel wbtm-bme__panel--loading<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-panel="<?php echo esc_attr( $step['id'] ); ?>">
+										<?php $this->render_panel_skeleton( $step['id'] ); ?>
 										<?php
 										foreach ( $step['sections'] as $section ) {
 											// Gallery is edited inline in the rail (Featured Image card) now,
@@ -276,7 +347,8 @@
 				}
 				?>
 				<aside class="wbtm-bme__rail">
-					<div class="wbtm-bme__rail-card wbtm-bme__feat-card">
+					<div class="wbtm-bme__rail-card wbtm-bme__feat-card wbtm-bme__rail-card--loading">
+						<?php $this->render_rail_card_skeleton( 'featured' ); ?>
 						<div class="wbtm-bme__feat-head">
 							<?php esc_html_e( 'Featured Image', 'bus-ticket-booking-with-seat-reservation' ); ?> <span class="wbtm-bme__req">*</span>
 						</div>
@@ -294,12 +366,14 @@
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card" data-bme-hide-on-step="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat">
+						<?php $this->render_rail_card_skeleton( 'logo' ); ?>
 						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Bus Logo', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 						<div class="wbtm-bme__logo-slot" data-bme-logo-slot></div>
 					</div>
 
-					<div class="wbtm-bme__rail-card" data-bme-hide-on-step="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat">
+						<?php $this->render_rail_card_skeleton( 'gallery' ); ?>
 						<div class="wbtm-bme__rail-toggle-row">
 							<span class="wbtm-bme__rail-toggle-label"><?php esc_html_e( 'Enable/Disable Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 							<label class="wbtm-bme__switch">
@@ -332,7 +406,8 @@
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card" data-bme-step-only="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="seat">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
 						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'General Info Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 						<div class="wbtm-bme__rail-info-list">
 							<div class="wbtm-bme__rail-info-row">

@@ -155,7 +155,7 @@
 .wbtm-status-dot.status-pending::before{background:var(--wbtm-blue);}
 
 /* TABLE */
-.wbtm-bus-table{width:100%;border-collapse:separate;border-spacing:0 8px;display:none;}
+.wbtm-bus-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
 .wbtm-bus-table th{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--wbtm-muted);padding:0 16px 4px;text-align:left;}
 .wbtm-bus-table tr.wbtm-row{background:var(--wbtm-white);transition:box-shadow .2s,transform .15s;animation:wbtmFadeUp .35s ease both;}
 .wbtm-bus-table tr.wbtm-row:hover{box-shadow:var(--wbtm-shadow-hover);transform:translateY(-2px);}

@@ -1,6 +1,6 @@
 /* ==========================================================================
-   WBTM Bus Fleet - new list design interactions
-   View toggle, search, type filter, status tabs, client-side pagination.
+   WBTM Bus Fleet - list design interactions
+   Search, type filter, status tabs, client-side pagination.
    ========================================================================== */
 (function () {
 	'use strict';
@@ -11,65 +11,31 @@
 			return;
 		}
 
-		var grid       = document.getElementById('wbtmBusGrid');
-		var table      = document.getElementById('wbtmBusTable');
-		var gridBtn    = document.getElementById('wbtmGridBtn');
-		var listBtn    = document.getElementById('wbtmListBtn');
-		var searchEl   = document.getElementById('wbtmSearchInput');
-		var searchBox  = searchEl ? searchEl.closest('.wbtm-search-box') : null;
-		var clearBtn   = document.getElementById('wbtmSearchClear');
-		var typeEl     = document.getElementById('wbtmTypeFilter');
-		var emptyMsg   = document.getElementById('wbtmEmptyMsg');
-		var pageInfo   = document.getElementById('wbtmPageInfo');
-		var pageBtns   = document.getElementById('wbtmPageBtns');
-		// Only the in-page client filter pills; Trash / navigation pills are real links.
-		var tabs       = Array.prototype.slice.call(document.querySelectorAll('.wbtm-filter-pill'));
+		var table     = document.getElementById('wbtmBusTable');
+		var searchEl  = document.getElementById('wbtmSearchInput');
+		var searchBox = searchEl ? searchEl.closest('.wbtm-search-box') : null;
+		var clearBtn  = document.getElementById('wbtmSearchClear');
+		var typeEl    = document.getElementById('wbtmTypeFilter');
+		var emptyMsg  = document.getElementById('wbtmEmptyMsg');
+		var pageInfo  = document.getElementById('wbtmPageInfo');
+		var pageBtns  = document.getElementById('wbtmPageBtns');
+		var tabs      = Array.prototype.slice.call(document.querySelectorAll('.wbtm-filter-pill'));
 
-		// No buses on the page (empty state) - nothing to wire up.
-		if (!grid) {
+		if (!table) {
 			return;
 		}
 
-		var PER_PAGE   = 12;
-		var STORE_KEY  = 'wbtmBusListView';
-		var cards      = Array.prototype.slice.call(grid.querySelectorAll('.wbtm-bus-card'));
-		var rows       = table ? Array.prototype.slice.call(table.querySelectorAll('tr.wbtm-row')) : [];
+		table.style.display = 'table';
+
+		var PER_PAGE = 12;
+		var rows     = Array.prototype.slice.call(table.querySelectorAll('tr.wbtm-row'));
 
 		var state = {
-			view: 'grid',
 			search: '',
-			type: '',
+			type:   '',
 			status: '',
-			page: 1
+			page:   1
 		};
-
-		/* ---- View toggle (persisted) ---------------------------------- */
-		function applyView() {
-			var isGrid = state.view === 'grid';
-			grid.style.display = isGrid ? 'grid' : 'none';
-			if (table) {
-				table.style.display = isGrid ? 'none' : 'table';
-			}
-			gridBtn.classList.toggle('active', isGrid);
-			listBtn.classList.toggle('active', !isGrid);
-		}
-
-		function setView(view) {
-			state.view = view;
-			try { window.localStorage.setItem(STORE_KEY, view); } catch (e) {}
-			applyView();
-			render();
-		}
-
-		try {
-			var saved = window.localStorage.getItem(STORE_KEY);
-			if (saved === 'list' || saved === 'grid') {
-				state.view = saved;
-			}
-		} catch (e) {}
-
-		gridBtn.addEventListener('click', function () { setView('grid'); });
-		listBtn.addEventListener('click', function () { setView('list'); });
 
 		/* ---- Matching --------------------------------------------------- */
 		function matches(el) {
@@ -84,20 +50,16 @@
 
 		/* ---- Render with pagination ------------------------------------ */
 		function render() {
-			var items   = state.view === 'list' ? rows : cards;
-			var matched = items.filter(matches);
+			var matched = rows.filter(matches);
 			var total   = matched.length;
-			var pages    = Math.max(1, Math.ceil(total / PER_PAGE));
+			var pages   = Math.max(1, Math.ceil(total / PER_PAGE));
 			if (state.page > pages) { state.page = pages; }
 			var start = (state.page - 1) * PER_PAGE;
 			var end   = start + PER_PAGE;
 
-			// Hide everything, then show the current page slice of matched items.
-			items.forEach(function (el) { el.style.display = 'none'; });
+			rows.forEach(function (el) { el.style.display = 'none'; });
 			matched.forEach(function (el, i) {
-				if (i >= start && i < end) {
-					el.style.display = '';
-				}
+				if (i >= start && i < end) { el.style.display = ''; }
 			});
 
 			if (emptyMsg) { emptyMsg.style.display = total === 0 ? 'block' : 'none'; }
@@ -108,13 +70,8 @@
 
 		function renderPageInfo(total, start, end) {
 			if (!pageInfo) { return; }
-			if (total === 0) {
-				pageInfo.textContent = '0 buses';
-				return;
-			}
-			var from = start + 1;
-			var to   = Math.min(end, total);
-			pageInfo.textContent = 'Showing ' + from + '-' + to + ' of ' + total + ' buses';
+			if (total === 0) { pageInfo.textContent = '0 buses'; return; }
+			pageInfo.textContent = 'Showing ' + (start + 1) + '-' + Math.min(end, total) + ' of ' + total + ' buses';
 		}
 
 		function makeBtn(label, page, opts) {
@@ -145,7 +102,6 @@
 			pageBtns.appendChild(makeBtn('&#8250;', state.page + 1, { disabled: state.page === pages }));
 		}
 
-		/* ---- Filters ---------------------------------------------------- */
 		function resetAndRender() {
 			state.page = 1;
 			render();
@@ -161,10 +117,10 @@
 				resetAndRender();
 			};
 			searchEl.addEventListener('input', onSearch);
-			searchEl.addEventListener('search', onSearch); // native clear (×) on some browsers
+			searchEl.addEventListener('search', onSearch);
 			if (searchBox) {
 				searchEl.addEventListener('focus', function () { searchBox.classList.add('is-focused'); });
-				searchEl.addEventListener('blur', function () { searchBox.classList.remove('is-focused'); });
+				searchEl.addEventListener('blur',  function () { searchBox.classList.remove('is-focused'); });
 			}
 			if (clearBtn) {
 				clearBtn.addEventListener('click', function () {
@@ -223,34 +179,23 @@
 				menu.appendChild(item);
 			});
 
-			function openMenu() {
-				wrap.classList.add('open');
-				toggle.setAttribute('aria-expanded', 'true');
-			}
-			function closeMenu() {
-				wrap.classList.remove('open');
-				toggle.setAttribute('aria-expanded', 'false');
-			}
+			function openMenu()  { wrap.classList.add('open');    toggle.setAttribute('aria-expanded', 'true'); }
+			function closeMenu() { wrap.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
 
 			toggle.addEventListener('click', function (e) {
 				e.stopPropagation();
 				wrap.classList.contains('open') ? closeMenu() : openMenu();
 			});
-			document.addEventListener('click', function (e) {
-				if (!wrap.contains(e.target)) { closeMenu(); }
-			});
-			document.addEventListener('keydown', function (e) {
-				if (e.key === 'Escape') { closeMenu(); }
-			});
+			document.addEventListener('click',   function (e) { if (!wrap.contains(e.target)) { closeMenu(); } });
+			document.addEventListener('keydown',  function (e) { if (e.key === 'Escape') { closeMenu(); } });
 
 			wrap.appendChild(toggle);
 			wrap.appendChild(menu);
 			select.parentNode.insertBefore(wrap, select.nextSibling);
 		}
 
-		if (typeEl) {
-			buildDropdown(typeEl);
-		}
+		if (typeEl) { buildDropdown(typeEl); }
+
 		tabs.forEach(function (tab) {
 			tab.addEventListener('click', function () {
 				tabs.forEach(function (t) { t.classList.remove('active'); });
@@ -261,7 +206,6 @@
 		});
 
 		/* ---- Init ------------------------------------------------------- */
-		applyView();
 		render();
 	});
 })();
