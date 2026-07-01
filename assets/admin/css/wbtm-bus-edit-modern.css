@@ -140,13 +140,80 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
    [data-bme-features-slot]); its old card in the Advanced step is hidden
    once emptied out (data-bme-section rule further down). */
 .wbtm-bme__subsection{margin-top:18px;padding-top:18px;border-top:1px solid var(--band-line);}
-.wbtm-bme__subsection-label{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;}
+.wbtm-bme__subsection-label{display:flex;flex-direction:column;gap:3px;margin-bottom:0px;}
 .wbtm-bme__subsection-label label{font-size:13.5px;font-weight:700;color:var(--ink);}
 .wbtm-bme__subsection-label span{font-size:12px;color:var(--ink-2);}
 .wbtm-bme__features-slot .wtbm_all_selected_term_condition h3{display:none;}
 /* Bus Features card — same structure as Specifications & Basic Information */
 .wbtm-bme__features-slot{background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden;}
 .wbtm-bme__features-slot .wtbm-bus-features{display:flex;flex-wrap:wrap;gap:8px;max-height:220px;overflow-y:hidden;}
+/* ---- "Add Feature" button inside the features body ---- */
+.wbtm-bme.wbtm_style .wbtm-bme__feat-add-btn{
+	display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+	padding:6px 14px;border-radius:999px;border:1.5px dashed var(--brand);
+	background:transparent;color:var(--brand);font-size:12.5px;font-weight:600;
+	cursor:pointer;transition:.15s;line-height:1;
+}
+.wbtm-bme.wbtm_style .wbtm-bme__feat-add-btn:hover{background:var(--brand);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm-bme__feat-add-btn .dashicons{font-size:15px;width:15px;height:15px;}
+
+/* ---- Add Feature modal ---- */
+.wbtm-bme__feat-modal{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;}
+.wbtm-bme__feat-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);}
+.wbtm-bme__feat-modal-box{
+	position:relative;z-index:1;width:440px;max-width:90vw;
+	background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.22);
+	overflow:hidden;
+}
+.wbtm-bme__feat-modal-head{
+	display:flex;align-items:center;justify-content:space-between;
+	padding:16px 20px;border-bottom:1px solid #e5e7eb;
+}
+.wbtm-bme__feat-modal-title{font-size:15px;font-weight:700;color:var(--ink);}
+.wbtm-bme__feat-modal-close{
+	background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;
+	line-height:1;padding:2px;transition:.15s;
+}
+.wbtm-bme__feat-modal-close:hover{color:var(--ink);}
+.wbtm-bme__feat-modal-body{padding:20px;}
+.wbtm-bme__feat-modal-label{
+	display:block;font-size:12px;font-weight:600;color:var(--muted);
+	text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;
+}
+.wbtm-bme__feat-modal-label small{text-transform:none;letter-spacing:0;font-weight:400;}
+.wbtm-bme__feat-modal-name{
+	width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;
+	font-size:13.5px;color:var(--ink);background:#fff;box-shadow:none;
+	transition:.15s;box-sizing:border-box;
+}
+.wbtm-bme__feat-modal-name:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-ring);}
+.wbtm-bme__feat-icon-area{margin-top:4px;}
+.wbtm-bme__feat-icon-area .wbtm_icon_item{background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;min-height:48px;}
+.wbtm-bme__feat-icon-area .wbtm-bme__feat-icon-display{font-size:22px;color:var(--ink);}
+.wbtm-bme__feat-icon-area .wbtm-bme__feat-icon-remove{margin-left:auto;cursor:pointer;color:var(--muted);font-size:13px;}
+.wbtm-bme__feat-icon-area .wbtm-bme__feat-icon-remove:hover{color:var(--brand);}
+.wbtm-bme__feat-icon-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px dashed var(--brand);background:transparent;color:var(--brand);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
+.wbtm-bme__feat-icon-btn:hover{background:var(--brand);color:#fff;border-style:solid;}
+.wbtm-bme__feat-modal-foot{
+	display:flex;justify-content:flex-end;gap:10px;
+	padding:14px 20px;border-top:1px solid #e5e7eb;
+}
+.wbtm-bme__feat-modal-cancel{
+	padding:8px 18px;border-radius:8px;border:1px solid var(--line);
+	background:#fff;color:var(--ink-2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;
+}
+.wbtm-bme__feat-modal-cancel:hover{background:var(--inset);}
+.wbtm-bme__feat-modal-submit{
+	padding:8px 20px;border-radius:8px;border:none;
+	background:var(--brand);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;
+}
+.wbtm-bme__feat-modal-submit:hover{filter:brightness(1.08);}
+.wbtm-bme__feat-modal-submit:disabled{opacity:.6;cursor:not-allowed;}
+/* Icon picker popup must stack above the Add Feature modal */
+.wbtm_add_icon_popup.wbtm_popup{z-index:1000001 !important;}
+/* Icon area inside modal — tighten spacing so it feels native */
+.wbtm-bme__feat-icon-area .wbtm_add_icon_image_button_area{margin-top:0;}
+.wbtm-bme__feat-icon-area .wbtm_icon_item .allCenter{flex:1;}
 .wbtm-bme__features-slot .wtbm-bus-features label{
 	display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--ink-2);
 	background:var(--inset);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;margin:0;
@@ -529,7 +596,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 /* ===================== Step 3 · Pricing & Route (compact, modern) ===================== */
 /* Tighten the section content wrappers so the whole step reads compact. */
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_dLayout_padding"]{padding:14px 16px;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_dLayout_padding"]{padding:14px 0px;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > h3:first-child{margin-bottom:4px;}
 
 /* --- Stop timeline. Overrides the classic wbtm_admin.css 32px pin + line that
@@ -563,16 +630,19 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 /* ---------- Step 3 professional polish ---------- */
 /* Section headers: clean flat style — colored bottom border, no accent bar. */
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"]{
-	background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--brand);
-	border-radius:10px 10px 0 0;padding:12px 16px;margin:14px 0 0;
+	background:#fff;border:1px solid var(--line);border-bottom:1px solid #ddd;
+	border-radius:10px;padding:12px 16px;margin:14px 0 0;
 }
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] label{font-size:14px;font-weight:700;color:var(--ink);}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [class*="_bgLight"] span{font-size:12px;color:var(--muted);line-height:1.55;}
 
 /* Native checkboxes branded; "Enable same bus return" + its settings card. */
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand);cursor:pointer;margin:0;}
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing label._dFlex_alignCenter{font-weight:600;font-size:13.5px;color:var(--ink);gap:9px;align-items:center;}
-.wbtm-bme.wbtm_style .wbtm_return_route_settings_area{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:8px;background:#fff;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing label._dFlex_alignCenter{display:flex !important;font-weight:600;font-size:13.5px;color:var(--ink);gap:9px;align-items:center;cursor:pointer;}
+/* Stop-item time display: icon + time input on one line, flush/compact. */
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing label.col_4._dFlex_alignCenter{font-weight:400;gap:5px;cursor:default;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing label.col_4._dFlex_alignCenter input[type=time]{width:auto !important;padding:0 !important;border:none !important;background:transparent !important;box-shadow:none !important;min-height:0 !important;height:auto !important;font-size:13px;color:var(--ink);line-height:inherit;}
+.wbtm-bme.wbtm_style .wbtm_return_route_settings_area{display:none;border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:8px;background:#fff;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .justifyCenter{display:flex;justify-content:center;margin-top:8px;}
 
 /* Warning callout refined. */
@@ -701,7 +771,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{
 	border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;
 }
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{padding:0;}
+.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{padding:0 10px;}
 
 /* Collapsible content areas get a subtle inset background */
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [data-collapse]{

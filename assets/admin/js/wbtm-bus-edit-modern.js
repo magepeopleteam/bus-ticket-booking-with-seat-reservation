@@ -381,6 +381,129 @@
 		$slot.append($header).append($body);
 		$checklist.remove();
 		$label.remove();
+
+		// ---- "Add Feature" button + modal ----
+		var $addBtn = $('<button type="button" class="wbtm-bme__feat-add-btn"><span class="dashicons dashicons-plus-alt2"></span> Add Feature</button>');
+		$body.append($addBtn);
+
+		// Build modal once and append to $root
+		var modalId = 'wbtm-bme-feat-modal';
+		if (!$root.find('#' + modalId).length) {
+			var $modal = $([
+				'<div id="' + modalId + '" class="wbtm-bme__feat-modal" style="display:none">',
+				  '<div class="wbtm-bme__feat-modal-backdrop"></div>',
+				  '<div class="wbtm-bme__feat-modal-box">',
+				    '<div class="wbtm-bme__feat-modal-head">',
+				      '<span class="wbtm-bme__feat-modal-title">Add Bus Feature</span>',
+				      '<button type="button" class="wbtm-bme__feat-modal-close dashicons dashicons-no-alt"></button>',
+				    '</div>',
+				    '<div class="wbtm-bme__feat-modal-body">',
+				      '<label class="wbtm-bme__feat-modal-label">Feature Name</label>',
+				      '<input type="text" class="wbtm-bme__feat-modal-name" placeholder="e.g. Wi-Fi, USB Port…" autocomplete="off">',
+				      '<label class="wbtm-bme__feat-modal-label" style="margin-top:14px">Feature Icon <small>(optional)</small></label>',
+				      '<div class="wbtm_add_icon_image_area fdColumn wbtm-bme__feat-icon-area">',
+				        '<input type="hidden" class="wbtm-bme__feat-icon-val" value="">',
+				        '<div class="wbtm_icon_item wbtm-bme__feat-icon-item" style="display:none">',
+				          '<div class="allCenter"><span class="wbtm-bme__feat-icon-display" data-add-icon></span></div>',
+				          '<span class="fas fa-times wbtm_icon_remove wbtm-bme__feat-icon-remove" title="Remove Icon"></span>',
+				        '</div>',
+				        '<div class="wbtm_add_icon_image_button_area">',
+				          '<button class="wbtm-bme__feat-icon-btn wbtm_icon_add" type="button" data-target-popup="#wbtm_add_icon_popup">',
+				            '<span class="fas fa-plus"></span> Choose Icon',
+				          '</button>',
+				        '</div>',
+				      '</div>',
+				    '</div>',
+				    '<div class="wbtm-bme__feat-modal-foot">',
+				      '<button type="button" class="wbtm-bme__feat-modal-cancel">Cancel</button>',
+				      '<button type="button" class="wbtm-bme__feat-modal-submit">Add Feature</button>',
+				    '</div>',
+				  '</div>',
+				'</div>'
+			].join(''));
+			$root.append($modal);
+		}
+
+		function openFeatModal() {
+			var $m = $root.find('#' + modalId);
+			$m.find('.wbtm-bme__feat-modal-name').val('');
+			$m.find('.wbtm-bme__feat-icon-val').val('');
+			$m.find('[data-add-icon]').removeAttr('class');
+			$m.find('.wbtm-bme__feat-icon-item').hide();
+			$m.find('.wbtm_add_icon_image_button_area').show();
+			$m.find('.wbtm-bme__feat-modal-submit').prop('disabled', false).text('Add Feature');
+			$m.show();
+			setTimeout(function () { $m.find('.wbtm-bme__feat-modal-name').focus(); }, 50);
+		}
+		function closeFeatModal() {
+			$root.find('#' + modalId).hide();
+		}
+
+		$root.on('click', '.wbtm-bme__feat-add-btn', openFeatModal);
+		$root.on('click', '.wbtm-bme__feat-modal-close, .wbtm-bme__feat-modal-cancel, .wbtm-bme__feat-modal-backdrop', closeFeatModal);
+
+		// Submit
+		$root.on('click', '.wbtm-bme__feat-modal-submit', function () {
+			var $m    = $root.find('#' + modalId);
+			var name  = $m.find('.wbtm-bme__feat-modal-name').val().trim();
+			var icon  = $m.find('.wbtm-bme__feat-icon-val').val().trim();
+			var postId = $('[name="wbtm_post_id"]').val() || $('[name="post_ID"]').val() || 0;
+			if (!name) {
+				$m.find('.wbtm-bme__feat-modal-name').focus();
+				return;
+			}
+			var $btn = $(this).prop('disabled', true).text('Adding…');
+			$.ajax({
+				url: wbtm_ajax_url,
+				type: 'POST',
+				data: {
+					action:       'wbtm_bme_create_bus_feature',
+					nonce:        wbtm_nonce,
+					post_id:      postId,
+					feature_name: name,
+					feature_icon: icon
+				},
+				success: function (res) {
+					if (!res.success) {
+						alert(res.data || 'Could not add feature.');
+						$btn.prop('disabled', false).text('Add Feature');
+						return;
+					}
+					var d = res.data;
+					// Append new chip to the feature list, pre-checked
+					var $chip = $(
+						'<label>' +
+						'<input type="checkbox" class="wtbm_bus_feature_checkbox" data-term-id="' + d.term_id + '" checked>' +
+						(d.icon ? '<span class="wbtm_bus_feature_icon ' + d.icon + '"></span>' : '') +
+						d.name +
+						'</label><br>'
+					);
+					$features.append($chip);
+					closeFeatModal();
+					toast('Feature "' + d.name + '" added');
+					// Trigger the existing save-features AJAX via the new checkbox's change event
+					$chip.find('.wtbm_bus_feature_checkbox').trigger('change');
+				},
+				error: function () {
+					alert('Request failed. Please try again.');
+					$btn.prop('disabled', false).text('Add Feature');
+				}
+			});
+		});
+	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  "Enable same bus for return trips" checkbox -- show/hide the
+	 *  return route settings area below it. The area starts hidden (CSS
+	 *  display:none) and is revealed when the checkbox is checked.
+	 * ---------------------------------------------------------------- */
+	(function initReturnRouteToggle() {
+		var $cb   = $root.find('input[name="wbtm_same_bus_return_enabled"][type="checkbox"]');
+		var $area = $root.find('.wbtm_return_route_settings_area');
+		if (!$cb.length || !$area.length) { return; }
+		function syncArea() { $area.toggle($cb.is(':checked')); }
+		syncArea(); // set state from saved value on page load
+		$root.on('change', 'input[name="wbtm_same_bus_return_enabled"][type="checkbox"]', syncArea);
 	})();
 
 	/* ---------------------------------------------------------------- *
