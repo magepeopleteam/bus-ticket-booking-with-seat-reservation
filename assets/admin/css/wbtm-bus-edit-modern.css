@@ -234,6 +234,21 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__feat-link:hover{text-decoration:underline;}
 .wbtm-bme__feat-link--rm{color:var(--brand);}
 
+/* "General Info Summary" rail card — shown only on the Seat Configure step
+   (data-bme-step-only, gated by the shell's data-step attribute below). */
+.wbtm-bme__rail-card[data-bme-step-only]{display:none;}
+.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-step-only="seat"]{display:block;}
+/* Bus Logo / Enable-Disable Gallery cards hidden specifically on Seat Configure. */
+.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-hide-on-step="seat"]{display:none;}
+.wbtm-bme__rail-info-list{padding:6px 16px 14px;}
+.wbtm-bme__rail-info-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--band-line);}
+.wbtm-bme__rail-info-row:last-child{border-bottom:0;}
+.wbtm-bme__rail-info-row > span:first-child{font-size:12px;color:var(--muted);font-weight:600;}
+.wbtm-bme__rail-info-row strong{font-size:13px;color:var(--ink);font-weight:700;text-align:right;}
+.wbtm-bme__rail-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;}
+.wbtm-bme__rail-pill.is-on{color:var(--ok);background:var(--ok-soft);}
+.wbtm-bme__rail-pill.is-off{color:var(--muted);background:var(--inset);}
+
 /* Bus Logo card — classic row relocated here by JS, redesigned to match the
    Featured Image card exactly: a big bordered preview box (placeholder icon
    when empty, cover-fit image when set) with "Change image"/"Remove" text

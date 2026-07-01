@@ -253,6 +253,9 @@
 			 */
 			private function render_preview_rail( $post_id ) {
 				$coach    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' );
+				$bus_name = get_the_title( $post_id );
+				$bus_no   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_no' );
+				$reservation_on = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_registration', 'yes' ) !== 'no';
 
 				$logo_id  = (int) get_post_meta( $post_id, 'wbtm_bus_logo', true );
 				$gallery  = get_post_meta( $post_id, 'wbtm_gallery_images', true );
@@ -291,12 +294,12 @@
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card">
+					<div class="wbtm-bme__rail-card" data-bme-hide-on-step="seat">
 						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Bus Logo', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 						<div class="wbtm-bme__logo-slot" data-bme-logo-slot></div>
 					</div>
 
-					<div class="wbtm-bme__rail-card">
+					<div class="wbtm-bme__rail-card" data-bme-hide-on-step="seat">
 						<div class="wbtm-bme__rail-toggle-row">
 							<span class="wbtm-bme__rail-toggle-label"><?php esc_html_e( 'Enable/Disable Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 							<label class="wbtm-bme__switch">
@@ -326,6 +329,28 @@
 							<button type="button" class="wbtm-bme__add-image-btn" data-bme-gallery-add>
 								<span class="dashicons dashicons-plus-alt2"></span><?php esc_html_e( 'Add Image', 'bus-ticket-booking-with-seat-reservation' ); ?>
 							</button>
+						</div>
+					</div>
+
+					<div class="wbtm-bme__rail-card" data-bme-step-only="seat">
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'General Info Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Bus Name', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $bus_name !== '' ? $bus_name : '—' ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Bus No', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $bus_no !== '' ? $bus_no : '—' ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Coach Type', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $coach !== '' ? $coach : '—' ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Reservation', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $reservation_on ? ' is-on' : ' is-off'; ?>"><?php echo $reservation_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
 						</div>
 					</div>
 				</aside>
