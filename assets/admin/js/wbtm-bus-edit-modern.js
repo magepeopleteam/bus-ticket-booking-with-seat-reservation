@@ -402,6 +402,34 @@
 	})();
 
 	/* ---------------------------------------------------------------- *
+	 *  Lower Deck "Layout Settings" column (Seat Configure step): add a
+	 *  title, stack the Driver Position row (it's bare label+select
+	 *  siblings, not the col_6/col_6 pattern the toggle rows use), merge
+	 *  Seat Rows + Seat Columns into one 2-up row, and make the Generate
+	 *  button full width — matching the approved mockup. Pure DOM/class
+	 *  changes on top of the classic markup; WBTM_Seat_Configuration is
+	 *  untouched.
+	 * ---------------------------------------------------------------- */
+	(function redesignSeatLayoutSettings() {
+		var $col = $root.find('input[name="wbtm_seat_rows"]').closest('._dlayout_bR_bgWhite_padding_xs');
+		if (!$col.length) { return; }
+
+		$col.prepend('<div class="wbtm-bme__seat-settings-title">Layout Settings</div>');
+
+		var $driverSelect = $col.find('select[name="driver_seat_position"]');
+		$driverSelect.closest('._dFlex_justifyBetween_alignCenter').addClass('wbtm-bme__row-stacked');
+
+		var $rowsRow = $col.find('input[name="wbtm_seat_rows"]').closest('._dFlex_justifyBetween_alignCenter');
+		var $colsRow = $col.find('input[name="wbtm_seat_cols"]').closest('._dFlex_justifyBetween_alignCenter');
+		if ($rowsRow.length && $colsRow.length) {
+			$rowsRow.next('.divider').remove();
+			$rowsRow.add($colsRow).wrapAll('<div class="wbtm-bme__seat-rowcols-grid"></div>');
+		}
+
+		$col.find('.wbtm_create_seat_plan').addClass('wbtm-bme__seat-generate-btn');
+	})();
+
+	/* ---------------------------------------------------------------- *
 	 *  Gallery — enable/disable toggle + inline add/remove in the rail
 	 * ---------------------------------------------------------------- */
 	var $gallerySection = $root.find('[data-bme-gallery-section]');
