@@ -248,7 +248,7 @@
         visibility: visible;
         opacity: 1;
         transform: scale(1);
-        padding: 5px;
+        padding: 0;
     }
     .wbtm-bus-popup {
         display: none;
