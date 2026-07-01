@@ -43,6 +43,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_License.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_General.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Bus_Info_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Seat_Configuration.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Date_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Pricing_Routing.php';

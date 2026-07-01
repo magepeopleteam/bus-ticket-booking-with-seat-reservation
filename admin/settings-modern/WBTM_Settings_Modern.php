@@ -190,19 +190,19 @@
 						</div>
 					</header>
 
-					<div class="wbtm-bme__wrap">
+					<div class="wbtm-bme__stepper">
+						<?php foreach ( $steps as $i => $step ) : ?>
+							<?php if ( $i > 0 ) : ?>
+								<div class="wbtm-bme__conn" data-bme-conn="<?php echo esc_attr( $i ); ?>"></div>
+							<?php endif; ?>
+							<div class="wbtm-bme__step<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-go="<?php echo esc_attr( $step['id'] ); ?>" data-bme-index="<?php echo esc_attr( $i ); ?>">
+								<div class="wbtm-bme__num"><?php echo esc_html( $i + 1 ); ?></div>
+								<div class="wbtm-bme__lab"><?php echo esc_html( $step['label'] ); ?></div>
+							</div>
+						<?php endforeach; ?>
+					</div>
 
-						<div class="wbtm-bme__stepper">
-							<?php foreach ( $steps as $i => $step ) : ?>
-								<?php if ( $i > 0 ) : ?>
-									<div class="wbtm-bme__conn" data-bme-conn="<?php echo esc_attr( $i ); ?>"></div>
-								<?php endif; ?>
-								<div class="wbtm-bme__step<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-go="<?php echo esc_attr( $step['id'] ); ?>" data-bme-index="<?php echo esc_attr( $i ); ?>">
-									<div class="wbtm-bme__num"><?php echo esc_html( $i + 1 ); ?></div>
-									<div class="wbtm-bme__lab"><?php echo esc_html( $step['label'] ); ?></div>
-								</div>
-							<?php endforeach; ?>
-						</div>
+					<div class="wbtm-bme__wrap">
 
 						<div class="wbtm-bme__body">
 							<div class="wbtm-bme__main">
@@ -365,14 +365,18 @@
 					return;
 				}
 				?>
-				<div class="wbtm-bme__card" data-has-head data-bme-section="<?php echo esc_attr( $class ); ?>">
-					<div class="wbtm-bme__card-head">
-						<h2><?php echo esc_html( $title ); ?></h2>
+				<div class="wbtm-bme__postfields" data-bme-section="<?php echo esc_attr( $class ); ?>"<?php echo $class !== 'WBTM_Settings_General' ? ' data-has-head' : ''; ?>>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
+					<div class="wbtm-bme__postfields-header">
+						<div class="wbtm-bme__postfields-header-title"><?php echo esc_html( $title ); ?></div>
 						<?php if ( $subtitle ) : ?>
-							<p><?php echo esc_html( $subtitle ); ?></p>
+							<div class="wbtm-bme__postfields-header-sub"><?php echo esc_html( $subtitle ); ?></div>
 						<?php endif; ?>
 					</div>
-					<div class="wbtm-bme__card-body">
+					<?php endif; ?>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
+					<div class="wbtm-bme__postfields-body">
+					<?php endif; ?>
 						<?php
 						$instance->$method( $post_id );
 						// The Bus Features chips used to live in the rail's Bus Information
@@ -389,7 +393,9 @@
 							$this->render_bus_features_subsection( $post_id );
 						}
 						?>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
 					</div>
+					<?php endif; ?>
 				</div>
 				<?php
 			}
@@ -405,18 +411,22 @@
 			private function render_post_fields_subsection( $post_id ) {
 				$title = get_the_title( $post_id );
 				?>
-				<div class="wbtm-bme__postfields" data-bme-postfields>
-					<div class="wbtm-bme__subsection-label">
-						<label><?php esc_html_e( 'Title', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
-						<span><?php esc_html_e( 'The bus title shown across the site', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+				<div class="wbtm-bme__postfields basic-Information" data-bme-postfields>
+					<div class="wbtm-bme__postfields-header">
+						<div class="wbtm-bme__postfields-header-title"><?php esc_html_e( 'Basic Information', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__postfields-header-sub"><?php esc_html_e( 'The core details of your bus.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 					</div>
-					<input type="text" class="formControl" id="wbtm-bme-title-inline" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
+					<div class="wbtm-bme__postfields-body">
+						<div class="wbtm-bme__subsection-label">
+							<label><?php esc_html_e( 'Title', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						</div>
+						<input type="text" class="formControl" id="wbtm-bme-title-inline" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
 
-					<div class="wbtm-bme__subsection-label wbtm-bme__postfields-content-label">
-						<label><?php esc_html_e( 'Content', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
-						<span><?php esc_html_e( 'Full description shown on the bus details page', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						<div class="wbtm-bme__subsection-label wbtm-bme__postfields-content-label">
+							<label><?php esc_html_e( 'Description', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						</div>
+						<?php wp_editor( get_post_field( 'post_content', $post_id ), 'wbtm_bme_content', array( 'textarea_name' => 'content', 'media_buttons' => false, 'teeny' => false, 'textarea_rows' => 8 ) ); ?>
 					</div>
-					<div class="wbtm-bme__content-slot" data-bme-content-slot></div>
 				</div>
 				<?php
 			}

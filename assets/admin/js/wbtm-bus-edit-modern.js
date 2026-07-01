@@ -77,6 +77,16 @@
 
 		var top = $root.offset() ? $root.offset().top - 60 : 0;
 		$('html, body').animate({ scrollTop: top }, 200);
+
+		// Repaint our wp_editor() instance when returning to the general panel
+		if (name === 'general') {
+			setTimeout(function () {
+				if (window.tinymce) {
+					var ed = tinymce.get('wbtm_bme_content');
+					if (ed) { ed.execCommand('mceRepaint'); }
+				}
+			}, 50);
+		}
 	}
 
 	$steps.on('click', function () {
@@ -150,64 +160,15 @@
 	 *  duplicate, so #content is submitted exactly once.
 	 * ---------------------------------------------------------------- */
 	(function relocatePostFields() {
-		var $band = $root.find('[data-bme-panel="general"] [class*="_bgLight"]').first();
+		// Place Basic Information card as the first child of postfields-body
+		// (before the tabsItem that holds the spec rows).
 		var $postFields = $root.find('[data-bme-postfields]');
-		if ($band.length && $postFields.length) {
-			$postFields.insertAfter($band);
-		}
-		var $contentSlot = $root.find('[data-bme-content-slot]');
-		var $editor = $('#postdivrich');
-		if ($contentSlot.length && $editor.length) {
-			$editor.appendTo($contentSlot);
+		var $pbody = $root.find('[data-bme-section="WBTM_Settings_General"]');
+		if ($postFields.length && $pbody.length) {
+			$postFields.prependTo($pbody);
 		}
 	})();
 
-	/* ---------------------------------------------------------------- *
-	 *  Move "Add Media" out of its own toolbar row and into whichever
-	 *  editor toolbar is currently active: after the kitchen-sink toggle
-	 *  in Visual mode, after the distraction-free toggle in Text mode.
-	 *  WP's switchEditors.js only shows/hides TinyMCE (it doesn't destroy
-	 *  it on every toggle), so once we've found the real toolbar buttons
-	 *  we just move the same node back and forth — no cloning, no risk
-	 *  of a duplicate/orphaned "Add Media" button.
-	 * ---------------------------------------------------------------- */
-	(function relocateAddMediaButton() {
-		var $mediaWrap = $('#wp-content-media-buttons');
-		if (!$mediaWrap.length) { return; }
-		$mediaWrap.addClass('wbtm-bme__media-btn-compact');
-
-		function forVisual() {
-			var $advToggle = $('.mce-i-wp_adv').closest('.mce-btn');
-			if ($advToggle.length) {
-				$mediaWrap.insertAfter($advToggle);
-			}
-		}
-		function forCode() {
-			var $dfw = $('#qt_content_dfw');
-			if ($dfw.length) {
-				$mediaWrap.insertAfter($dfw);
-			}
-		}
-
-		// TinyMCE builds its toolbar asynchronously; position once it's ready,
-		// and re-position defensively if it ever reinitializes.
-		$(document).on('tinymce-editor-init', function (e, editor) {
-			if (!editor || editor.id === 'content') { forVisual(); }
-		});
-		// Initial placement: whichever mode is actually active right now —
-		// TinyMCE may already be initialized, or the user's last-used mode
-		// (baked server-side into #wp-content-wrap's class) may be Text.
-		if ($('#wp-content-wrap').hasClass('html-active')) {
-			forCode();
-		} else if (window.tinymce && tinymce.get('content')) {
-			forVisual();
-		}
-
-		// Re-position on every Visual/Code switch (the inactive toolbar is
-		// hidden as a whole, so "Add Media" would disappear with it otherwise).
-		$(document).on('click', '#content-tmce', function () { setTimeout(forVisual, 0); });
-		$(document).on('click', '#content-html', function () { setTimeout(forCode, 0); });
-	})();
 
 	/* ---------------------------------------------------------------- *
 	 *  Live toast feedback on real interactions (mirrors the mockup)
@@ -357,10 +318,22 @@
 	 *  only these three are left in the General Info step at this point.
 	 * ---------------------------------------------------------------- */
 	(function wrapGeneralInfoRows() {
-		var $rows = $root.find('[data-bme-panel="general"] ._dLayout_padding_dFlex_justifyBetween_alignCenter');
+		var $rows = $root.find('[data-bme-panel="general"] ._dLayout_padding_dFlex_justifyBetween_alignCenter').not('.wbtm-bme__info-field-row');
 		if (!$rows.length) { return; }
-		$rows.wrapAll('<div class="wbtm-bme__general-rows-box"></div>');
-		$rows.first().parent().prepend('<div class="wbtm-bme__general-rows-title">Specifications &amp; Configuration</div>');
+		$rows.wrapAll('<div class="wbtm-bme__postfields-body"></div>');
+		var $body = $rows.first().parent();
+		$body.wrap('<div class="wbtm-bme__general-rows-box specifications"></div>');
+		var $specs = $body.parent();
+		$specs.prepend('<div class="wbtm-bme__postfields-header"><div class="wbtm-bme__postfields-header-title">Specifications &amp; Configuration</div><div class="wbtm-bme__postfields-header-sub">Here You can add bus number, coach type and keep registration off if needed.</div></div>');
+		// Lift specs box out of tabsItem — place it directly in postfields-body
+		// before the features subsection, so all three cards are siblings.
+		var $pbody = $root.find('[data-bme-section="WBTM_Settings_General"]');
+		var $subsection = $pbody.find('.wbtm-bme__subsection').first();
+		if ($subsection.length) {
+			$specs.insertBefore($subsection);
+		} else {
+			$specs.appendTo($pbody);
+		}
 		// Small icon per row label (Bus No, Coach Type, Reservation on/off),
 		// matched by the row's real field name so order changes can't mismatch.
 		var icons = {
@@ -387,18 +360,27 @@
 	 *  moving the markup doesn't touch that behaviour at all.
 	 * ---------------------------------------------------------------- */
 	(function relocateFeatureChecklist() {
-		var $slot = $root.find('[data-bme-features-slot]');
+		var $slot     = $root.find('[data-bme-features-slot]');
 		var $checklist = $root.find('.wtbm_all_selected_term_condition');
-		var $label = $root.find('[data-bme-features-label]');
-		if ($slot.length && $checklist.length) {
-			$checklist.appendTo($slot);
-			// Move the "Bus Features" label/description inside the classic
-			// wrapper too, right before its "Available Feature" heading.
-			var $inner = $checklist.find('.wtbm_all_term_condition').first();
-			if ($label.length && $inner.length) {
-				$label.prependTo($inner);
-			}
-		}
+		var $label    = $root.find('[data-bme-features-label]');
+		if (!$slot.length || !$checklist.length) { return; }
+
+		// Build header from the PHP-rendered label element
+		var labelText = $label.length ? $label.find('label').text().trim() : 'Bus Features';
+		var subText   = $label.length ? $label.find('span').text().trim()   : '';
+		var $header = $('<div class="wbtm-bme__postfields-header">'
+			+ '<div class="wbtm-bme__postfields-header-title">' + labelText + '</div>'
+			+ (subText ? '<div class="wbtm-bme__postfields-header-sub">' + subText + '</div>' : '')
+			+ '</div>');
+
+		// Wrap just the checkbox list in a body div, then move header + body
+		// directly into the slot — removing both old wrapper divs.
+		var $features = $checklist.find('.wtbm-bus-features');
+		$features.wrap('<div class="wbtm-bme__postfields-body"></div>');
+		var $body = $features.parent();
+		$slot.append($header).append($body);
+		$checklist.remove();
+		$label.remove();
 	})();
 
 	/* ---------------------------------------------------------------- *
@@ -413,6 +395,7 @@
 	(function redesignSeatLayoutSettings() {
 		var $col = $root.find('input[name="wbtm_seat_rows"]').closest('._dlayout_bR_bgWhite_padding_xs');
 		if (!$col.length) { return; }
+		$col.addClass('layour-settings');
 
 		$col.prepend('<div class="wbtm-bme__seat-settings-title">Layout Settings</div>');
 

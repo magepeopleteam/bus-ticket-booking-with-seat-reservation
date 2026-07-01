@@ -135,6 +135,10 @@
 					update_post_meta($post_id, 'wbtm_bus_no', $bus_no);
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
 					update_post_meta($post_id, 'wbtm_registration', $wbtm_registration);
+					$bus_info_title   = isset($_POST['wbtm_bus_info_title']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bus_info_title'])) : '';
+					$bus_info_content = isset($_POST['wbtm_bus_info_content']) ? sanitize_textarea_field(wp_unslash($_POST['wbtm_bus_info_content'])) : '';
+					update_post_meta($post_id, 'wbtm_bus_info_title', $bus_info_title);
+					update_post_meta($post_id, 'wbtm_bus_info_content', $bus_info_content);
 					// Check if the term exists, if not create it
 					$term = term_exists($bus_category, 'wbtm_bus_cat');
 					if (!$term) {
