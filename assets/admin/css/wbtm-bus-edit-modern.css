@@ -554,9 +554,18 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 ._dlayout_bR_bgWhite_padding_xs.col_6.layour-settings{background:#fff !important;}
 .wbtm-bme.wbtm_style .wbtm-bme__row-stacked{flex-direction:column;align-items:stretch !important;gap:6px;}
 .wbtm-bme.wbtm_style .wbtm-bme__row-stacked select.formControl{max-width:none !important;width:100%;}
-.wbtm-bme__seat-rowcols-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+.wbtm-bme__seat-rowcols-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start;}
 .wbtm-bme__seat-rowcols-grid > ._dFlex_justifyBetween_alignCenter{flex-direction:column;align-items:stretch;gap:6px;}
 .wbtm-bme__seat-rowcols-grid input.formControl{max-width:none !important;width:100%;}
+.wbtm-bme__seat-rowcols-grid > div label{font-size:13px !important;}
+.wbtm-bme__seat-rowcols-grid [class*="_dFlex_justifyBetween"]{text-align:left !important;}
+/* "Template chosen" mode: Seat Columns + Aisle Position hide (JS), leaving
+   Seat Rows alone in the 3-column grid — span the full row and go back to a
+   normal label-left/input-right single line instead of the stacked cell. */
+.wbtm-bme__seat-rowcols-grid > ._dFlex_justifyBetween_alignCenter.wbtm-bme__seat-row-solo{
+	grid-column:1 / -1;flex-direction:row !important;align-items:center !important;justify-content:space-between;gap:10px;
+}
+.wbtm-bme__seat-rowcols-grid > ._dFlex_justifyBetween_alignCenter.wbtm-bme__seat-row-solo input.formControl{width:auto;max-width:300px !important;}
 .wbtm-bme.wbtm_style .wbtm-bme__seat-generate-btn{width:100%;justify-content:center;}
 
 /* Buttons (reused helpers) */
@@ -672,6 +681,12 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_draggable_item:active{cursor:grabbing;}
 .wbtm-bme.wbtm_style .wbtm_draggable_eraser{color:var(--brand);border-color:#fbd0da;}
 .wbtm-bme.wbtm_style .wbtm_seat_plan_settings .textCenter label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+
+/* "Add New Row" + inline "Enable Rotation" toggle, one pair per deck. */
+.wbtm-bme.wbtm_style .wbtm_seat_row_actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.wbtm-bme.wbtm_style .wbtm_seat_row_actions .wbtm_add_item{margin-top:0;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_toggle{display:inline-flex;align-items:center;gap:6px;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_label{font-size:12px;font-weight:600;color:var(--ink-2);white-space:nowrap;}
 
 /* ===================== Step 3 · Pricing & Route (compact, modern) ===================== */
 /* Tighten the section content wrappers so the whole step reads compact. */

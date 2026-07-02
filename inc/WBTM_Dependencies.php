@@ -92,6 +92,17 @@
 				// see WBTM_Seat_Configuration::has_seat_toolbar_features().
 				$pro_seat_features_enabled = class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
 				$seat_toolbar_enabled = class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::has_seat_toolbar_features();
+				// Seat template column-patterns + numbering schemes, shared with
+				// wbtm_admin.js applySeatTemplate() — PHP stays the single source
+				// of truth (also used to render the <select> options).
+				$seat_templates_payload = [];
+				$seat_numbering_payload = [];
+				if (class_exists('WBTM_Seat_Configuration')) {
+					foreach (WBTM_Seat_Configuration::get_seat_templates() as $tkey => $tpl) {
+						$seat_templates_payload[$tkey] = $tpl['pattern'];
+					}
+					$seat_numbering_payload = array_keys(WBTM_Seat_Configuration::get_seat_numbering_schemes());
+				}
 				if (function_exists('get_current_screen')) {
 					$screen = get_current_screen();
 					if ($screen && $screen->post_type === 'wbtm_bus' && isset($_GET['post'])) {
@@ -114,6 +125,9 @@
 					'pro_seat_features_enabled' => $pro_seat_features_enabled,
 					'seat_toolbar_enabled' => $seat_toolbar_enabled,
 					'nonseat_badge_title' => esc_attr__( 'Double click to Remove', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_templates'    => $seat_templates_payload,
+					'seat_numbering_schemes' => $seat_numbering_payload,
+					'seat_template_pick_error' => esc_html__( 'Please choose a seat template first.', 'bus-ticket-booking-with-seat-reservation' ),
 					'ticket_types'      => $ticket_types_payload,
 					'seat_price_need_name' => esc_html__( 'Enter a seat label first (e.g. A1).', 'bus-ticket-booking-with-seat-reservation' ),
 					'seat_price_no_types' => esc_html__( 'Add a route fare for at least one passenger type under Routing & Pricing, or save a per-seat price first.', 'bus-ticket-booking-with-seat-reservation' ),

@@ -126,6 +126,16 @@
                         parent.find('[name="wbtm_seat_cols_hidden"]').val(column);
                         parent.find('[name="wbtm_seat_rows_hidden"]').val(row);
                         target.html(data);
+                        // Numbered per whichever "Seat Numbering" scheme is
+                        // currently selected, with an optional single aisle
+                        // inserted at the chosen "Aisle Position" — no full
+                        // template needed for a simple custom layout.
+                        if (window.wbtmSeatNumbering) {
+                            let numbering = parent.find('.wbtm_seat_template_picker[data-scope=""] .wbtm_seat_numbering_select').val() || 'sequential';
+                            let aislePos = parseInt(parent.find('[name="wbtm_seat_aisle_after_col"]').val()) || 0;
+                            let pattern = window.wbtmSeatNumbering.buildAislePattern(column, aislePos);
+                            window.wbtmSeatNumbering.fill(target, pattern, numbering);
+                        }
                         $(document).trigger("wbtm_seat_plan_dom_updated");
                         //wbtm_loaderRemove(parent);
                     },
@@ -192,6 +202,16 @@
                         parent.find('[name="wbtm_seat_cols_dd_hidden"]').val(column);
                         parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(row);
                         target.html(data);
+                        // Numbered per whichever "Seat Numbering" scheme is
+                        // currently selected, with an optional single aisle
+                        // inserted at the chosen "Aisle Position" — no full
+                        // template needed for a simple custom layout.
+                        if (window.wbtmSeatNumbering) {
+                            let numbering = parent.find('.wbtm_seat_template_picker[data-scope="_dd"] .wbtm_seat_numbering_select').val() || 'sequential';
+                            let aislePos = parseInt(parent.find('[name="wbtm_seat_aisle_after_col_dd"]').val()) || 0;
+                            let pattern = window.wbtmSeatNumbering.buildAislePattern(column, aislePos);
+                            window.wbtmSeatNumbering.fill(target, pattern, numbering);
+                        }
                         $(document).trigger("wbtm_seat_plan_dom_updated");
                         //wbtm_loaderRemove(parent);
                     },
@@ -319,19 +339,15 @@
             }
         });
     }
-    // Handle rotation setting toggle
-    $(document).on('change', 'input[name="wbtm_enable_seat_rotation"]', function () {
-        let isEnabled = $(this).is(':checked');
-        let $seatPlanContainer = $('.wbtm_seat_plan_settings');
-        let $cabinContainer = $('.wbtm_cabin_settings_area');
-        if (isEnabled) {
-            // Show rotation controls immediately
-            $seatPlanContainer.addClass('wbtm_enable_rotation');
-            $seatPlanContainer.find('.wbtm_seat_rotation_controls').show();
-            $cabinContainer.addClass('wbtm_enable_rotation');
-            $cabinContainer.find('.wbtm_seat_rotation_controls').show();
+    // Applies (or removes) the rotation-controls display state on a single
+    // scope — either one deck's own .wbtm_settings_area, or the cabin area.
+    function wbtmApplyRotationState($scopeContainer, enabled) {
+        if (!$scopeContainer || !$scopeContainer.length) { return; }
+        if (enabled) {
+            $scopeContainer.addClass('wbtm_enable_rotation');
+            $scopeContainer.find('.wbtm_seat_rotation_controls').show();
             // Add rotation controls to existing seats if they don't have them
-            $seatPlanContainer.find('.wbtm_seat_container').each(function () {
+            $scopeContainer.find('.wbtm_seat_container').each(function () {
                 let $container = $(this);
                 if ($container.find('.wbtm_seat_rotation_controls').length === 0) {
                     let $input = $container.find('input[class*="wbtm_id_validation"]');
@@ -339,14 +355,14 @@
                     let seatKey = inputName.replace('wbtm_', '').replace('[]', '');
                     let rotationControls = `
             <div class="wbtm_seat_rotation_controls">
-              <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
-                      data-seat-key="${seatKey}" 
+              <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
+                      data-seat-key="${seatKey}"
                       data-rotation="0"
                       title="Rotate Seat">
                 <span class="fas fa-redo-alt mp_zero"></span>
               </button>
-              <input type="hidden" name="wbtm_${seatKey}_rotation[]" 
-                     value="0" 
+              <input type="hidden" name="wbtm_${seatKey}_rotation[]"
+                     value="0"
                      class="wbtm_rotation_value" />
             </div>
           `;
@@ -354,21 +370,37 @@
                 }
             });
         } else {
-            // Hide rotation controls immediately
-            $seatPlanContainer.removeClass('wbtm_enable_rotation');
-            $seatPlanContainer.find('.wbtm_seat_rotation_controls').hide();
-            $cabinContainer.removeClass('wbtm_enable_rotation');
-            $cabinContainer.find('.wbtm_seat_rotation_controls').hide();
+            $scopeContainer.removeClass('wbtm_enable_rotation');
+            $scopeContainer.find('.wbtm_seat_rotation_controls').hide();
+        }
+    }
+    // Handle rotation setting toggle — each deck now has its OWN independent
+    // checkbox (wbtm_enable_seat_rotation for lower, _dd for upper), rendered
+    // inline next to that deck's own "Add New Row" button (create_seat_plan()
+    // in WBTM_Seat_Configuration.php). Toggling one only affects its own
+    // deck's grid — never both. Cabin mode has no checkbox of its own and has
+    // always followed the lower-deck key, so that coupling is preserved.
+    $(document).on('change', 'input[name="wbtm_enable_seat_rotation"], input[name="wbtm_enable_seat_rotation_dd"]', function () {
+        let isEnabled = $(this).is(':checked');
+        let isLowerDeck = $(this).attr('name') === 'wbtm_enable_seat_rotation';
+        wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), isEnabled);
+        if (isLowerDeck) {
+            wbtmApplyRotationState($('.wbtm_cabin_settings_area'), isEnabled);
         }
     });
-    // Initialize rotation setting on page load
+    // Initialize rotation state on page load, per deck independently. (Note:
+    // WBTM_Seat_Configuration::create_seat_plan() already bakes the
+    // wbtm_enable_rotation class into the server-rendered HTML, so this is a
+    // defensive re-sync — e.g. for older saved seats missing the controls.)
     $(document).ready(function () {
-        let $rotationToggle = $('input[name="wbtm_enable_seat_rotation"]');
-        if ($rotationToggle.is(':checked')) {
-            $('.wbtm_seat_plan_settings').addClass('wbtm_enable_rotation');
-            $('.wbtm_cabin_settings_area').addClass('wbtm_enable_rotation');
-            $('.wbtm_seat_rotation_controls').show();
-        }
+        $('input[name="wbtm_enable_seat_rotation"]').each(function () {
+            let isEnabled = $(this).is(':checked');
+            wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), isEnabled);
+            wbtmApplyRotationState($('.wbtm_cabin_settings_area'), isEnabled);
+        });
+        $('input[name="wbtm_enable_seat_rotation_dd"]').each(function () {
+            wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), $(this).is(':checked'));
+        });
     });
 })(jQuery);
 //==========Seat Plan Drag & Drop Non-Seat Items=================//
@@ -467,9 +499,182 @@
         refreshAllBadges($scope);
     }
 
+    // General robustness fix: re-init drag/drop + badges any time the seat
+    // grid is (re)rendered, via the event both "Generate Bus Seat" and the
+    // new seat-template flow below already fire on AJAX success. This is a
+    // reliable alternative to the 'DOMNodeInserted' listener further down,
+    // which some browsers no longer fire (that listener is left in place for
+    // older browsers; this one guarantees it works everywhere).
+    $(document).on('wbtm_seat_plan_dom_updated', function () {
+        initDragDrop();
+        refreshAllBadges();
+    });
+
+    //==========Predefined Seat Template=================//
+    // Fills 'A1' style row letters: 0 -> A, 1 -> B ... 25 -> Z, 26 -> AA ...
+    function wbtmSeatTemplateRowLetter(n) {
+        let s = '';
+        n = n + 1;
+        while (n > 0) {
+            let rem = (n - 1) % 26;
+            s = String.fromCharCode(65 + rem) + s;
+            n = Math.floor((n - 1) / 26);
+        }
+        return s;
+    }
+
+    // Walks the freshly (re)generated grid and fills each cell per the
+    // template's repeating column pattern + chosen numbering scheme. Every
+    // cell is set via the SAME input.formControl the admin would type into
+    // by hand, so the result stays fully editable — no new data shape.
+    function fillSeatTemplateValues($target, pattern, numbering) {
+        let seq = 0;
+        $target.find('tr.wbtm_remove_area').each(function (rowIndex) {
+            let rowLetter = wbtmSeatTemplateRowLetter(rowIndex);
+            let seatInRow = 0;
+            $(this).find('.wbtm_seat_container').each(function (colIndex) {
+                let cellType = pattern[colIndex % pattern.length];
+                let $input = $(this).find('input.formControl');
+                let value;
+                if (cellType === 'seat') {
+                    if (numbering === 'row_letter') {
+                        seatInRow++;
+                        value = rowLetter + seatInRow;
+                    } else {
+                        seq++;
+                        value = String(seq);
+                    }
+                } else {
+                    value = cellType; // e.g. 'aisle' — an existing non-seat toolbar keyword
+                }
+                $input.val(value).trigger('change');
+            });
+        });
+    }
+
+    // Builds a plain column pattern with a single optional aisle inserted
+    // right after column `aislePos` (1-based, "left to right"). aislePos = 0
+    // (or out of range) means no aisle — every column is just a seat.
+    function wbtmBuildAislePattern(column, aislePos) {
+        let pattern = [];
+        for (let i = 0; i < column; i++) {
+            pattern.push('seat');
+        }
+        if (aislePos > 0 && aislePos < column) {
+            pattern[aislePos] = 'aisle';
+        }
+        return pattern;
+    }
+
+    // Exposed so the plain "Generate Bus Seat" / "Create seat Plan" handlers
+    // (separate IIFE above) can auto-number too, using whichever numbering
+    // scheme + aisle position is currently selected.
+    window.wbtmSeatNumbering = {
+        fill: fillSeatTemplateValues,
+        buildAislePattern: wbtmBuildAislePattern
+    };
+
+    // Regenerates the grid through the SAME AJAX action the manual "Generate
+    // Bus Seat" button uses (wbtm_create_seat_plan / _dd), then auto-fills
+    // it. $picker is the .wbtm_seat_template_picker wrapper that was clicked
+    // from, so lower-deck and upper-deck pickers never cross-read each other.
+    function applySeatTemplate($picker) {
+        let scope = $picker.data('scope') || '';
+        let templateKey = $picker.find('.wbtm_seat_template_select').val();
+        let numbering = $picker.find('.wbtm_seat_numbering_select').val();
+        let templates = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_templates) ? wbtm_admin_var.seat_templates : {};
+        let pattern = templateKey ? templates[templateKey] : null;
+
+        if (!pattern) {
+            alert((typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_template_pick_error) ? wbtm_admin_var.seat_template_pick_error : 'Please choose a seat template first.');
+            return;
+        }
+
+        let parent = $('.wbtm_settings_seat');
+        let row = parseInt(parent.find('[name="wbtm_seat_rows' + scope + '"]').val());
+        let column = pattern.length;
+
+        if (!(row > 0)) {
+            alert((typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_row_col_error) ? wbtm_admin_var.seat_row_col_error : 'Number of rows & columns must be greater than 0');
+            return;
+        }
+
+        // Columns are derived from the template — reflect that back into the
+        // (still fully editable) Seat Columns field before generating.
+        parent.find('[name="wbtm_seat_cols' + scope + '"]').val(column);
+
+        let target = parent.find(scope === '_dd' ? '.wbtm_seat_plan_preview_dd' : '.wbtm_seat_plan_preview');
+        let post_id = $('[name="wbtm_post_id"]').val();
+        let action = scope === '_dd' ? 'wbtm_create_seat_plan_dd' : 'wbtm_create_seat_plan';
+
+        $.ajax({
+            type: 'POST',
+            url: wbtm_admin_var.url,
+            data: {
+                action: action,
+                post_id: post_id,
+                row: row,
+                column: column,
+                nonce: wbtm_admin_var.nonce
+            },
+            beforeSend: function () {
+                wbtm_loader(target);
+            },
+            success: function (data) {
+                parent.find('[name="wbtm_seat_cols' + scope + '_hidden"]').val(column);
+                parent.find('[name="wbtm_seat_rows' + scope + '_hidden"]').val(row);
+                target.html(data);
+                fillSeatTemplateValues(target, pattern, numbering);
+                $(document).trigger('wbtm_seat_plan_dom_updated');
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    $(document).on('click', '.wbtm_apply_seat_template', function () {
+        applySeatTemplate($(this).closest('.wbtm_seat_template_picker'));
+    });
+
+    // Toggle between "no template" mode (Seat Columns + Aisle Position +
+    // Generate Bus Seat button) and "template chosen" mode (those two fields
+    // hidden — the template supplies columns/aisle — and Apply Template
+    // shown instead). Never both buttons at once. Seat Rows always stays
+    // visible; when it ends up the only field left it switches to a plain
+    // single-line layout (wbtm-bme__seat-row-solo) instead of the cramped
+    // stacked grid cell.
+    function wbtmToggleSeatTemplateMode($picker) {
+        if (!$picker || !$picker.length) { return; }
+        let scope = $picker.data('scope') || '';
+        let hasTemplate = !!$picker.find('.wbtm_seat_template_select').val();
+        let $generateBtn = $picker.siblings(scope === '_dd' ? '.wbtm_create_seat_plan_dd' : '.wbtm_create_seat_plan');
+        let $applyBtn = $picker.find('.wbtm_apply_seat_template');
+        let $colsRow = $picker.find('[name="wbtm_seat_cols' + scope + '"]').closest('._dFlex_justifyBetween_alignCenter');
+        let $aisleRow = $picker.find('[name="wbtm_seat_aisle_after_col' + scope + '"]').closest('._dFlex_justifyBetween_alignCenter');
+        let $rowsRow = $picker.find('[name="wbtm_seat_rows' + scope + '"]').closest('._dFlex_justifyBetween_alignCenter');
+
+        $generateBtn.toggle(!hasTemplate);
+        $applyBtn.toggle(hasTemplate);
+        $colsRow.toggle(!hasTemplate);
+        $aisleRow.toggle(!hasTemplate);
+        $rowsRow.toggleClass('wbtm-bme__seat-row-solo', hasTemplate);
+    }
+
+    $(document).on('change', '.wbtm_seat_template_select', function () {
+        wbtmToggleSeatTemplateMode($(this).closest('.wbtm_seat_template_picker'));
+    });
+
+    function wbtmInitSeatTemplateToggles() {
+        $('.wbtm_seat_template_picker').each(function () {
+            wbtmToggleSeatTemplateMode($(this));
+        });
+    }
+
     $(document).ready(function () {
         initDragDrop();
         wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
+        wbtmInitSeatTemplateToggles();
     });
 
     $(document).on('DOMNodeInserted', '.wbtm_seat_plan_preview, .wbtm_seat_plan_preview_dd, .wbtm_cabin_seat_plan', function () {

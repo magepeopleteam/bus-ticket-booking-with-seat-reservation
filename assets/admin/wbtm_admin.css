@@ -108,6 +108,28 @@
   display: flex;
 }
 
+/* "Add New Row" + inline "Enable Rotation" toggle, one per deck (lower/upper
+   each have their own independent rotation setting — see
+   create_seat_plan() / wbtm_enable_seat_rotation[_dd]). */
+.wbtm_seat_row_actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.wbtm_seat_rotation_inline_toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.wbtm_seat_rotation_inline_label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
 /* Ensure proper spacing for rotation controls */
 .wbtm_seat_container {
   position: relative;

@@ -531,12 +531,18 @@
 
 		var $rowsRow = $col.find('input[name="wbtm_seat_rows"]').closest('._dFlex_justifyBetween_alignCenter');
 		var $colsRow = $col.find('input[name="wbtm_seat_cols"]').closest('._dFlex_justifyBetween_alignCenter');
+		var $aisleRow = $col.find('input[name="wbtm_seat_aisle_after_col"]').closest('._dFlex_justifyBetween_alignCenter');
 		if ($rowsRow.length && $colsRow.length) {
 			$rowsRow.next('.divider').remove();
-			$rowsRow.add($colsRow).wrapAll('<div class="wbtm-bme__seat-rowcols-grid"></div>');
+			var $grouped = $rowsRow.add($colsRow);
+			if ($aisleRow.length) {
+				$colsRow.next('.divider').remove();
+				$grouped = $grouped.add($aisleRow);
+			}
+			$grouped.wrapAll('<div class="wbtm-bme__seat-rowcols-grid"></div>');
 		}
 
-		$col.find('.wbtm_create_seat_plan').addClass('wbtm-bme__seat-generate-btn');
+		$col.find('.wbtm_create_seat_plan, .wbtm_apply_seat_template').addClass('wbtm-bme__seat-generate-btn');
 	})();
 
 	/* ---------------------------------------------------------------- *

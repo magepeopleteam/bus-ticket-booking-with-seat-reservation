@@ -84,6 +84,130 @@
 				return $toolbar;
 			}
 			/**
+			 * Predefined seat templates — a REPEATING COLUMN PATTERN, not a fixed
+			 * seat count. Row count stays admin-controlled (the existing "Seat
+			 * Rows" field) so one template fits buses of any length; only the
+			 * column arrangement (and therefore "Seat Columns") is derived from
+			 * the template. 'aisle' cells reuse the existing non-seat toolbar
+			 * keyword, so the result is a normal, fully-editable seat grid —
+			 * the template is a one-time fill, not a new stored data shape.
+			 */
+			public static function get_seat_templates() {
+				return [
+					'2_2' => [
+						'label'   => esc_html__('2 + 2 Standard (aisle center)', 'bus-ticket-booking-with-seat-reservation'),
+						'pattern' => ['seat', 'seat', 'aisle', 'seat', 'seat'],
+					],
+					'2_1' => [
+						'label'   => esc_html__('2 + 1 Business (aisle right of pair)', 'bus-ticket-booking-with-seat-reservation'),
+						'pattern' => ['seat', 'seat', 'aisle', 'seat'],
+					],
+					'1_2' => [
+						'label'   => esc_html__('1 + 2 Business (aisle left of pair)', 'bus-ticket-booking-with-seat-reservation'),
+						'pattern' => ['seat', 'aisle', 'seat', 'seat'],
+					],
+					'1_1' => [
+						'label'   => esc_html__('1 + 1 VIP / Sleeper', 'bus-ticket-booking-with-seat-reservation'),
+						'pattern' => ['seat', 'aisle', 'seat'],
+					],
+					'3_2' => [
+						'label'   => esc_html__('3 + 2 Large Coach', 'bus-ticket-booking-with-seat-reservation'),
+						'pattern' => ['seat', 'seat', 'seat', 'aisle', 'seat', 'seat'],
+					],
+				];
+			}
+			/** Seat-numbering schemes offered alongside a template. */
+			public static function get_seat_numbering_schemes() {
+				return [
+					'sequential' => esc_html__('Sequential (1, 2, 3…)', 'bus-ticket-booking-with-seat-reservation'),
+					'row_letter' => esc_html__('Row Letter (A1, A2, B1…)', 'bus-ticket-booking-with-seat-reservation'),
+				];
+			}
+			/**
+			 * Renders the "Predefined Seat Template" picker (template + numbering
+			 * scheme + Apply button). $scope is '' for the lower deck or '_dd' for
+			 * the upper deck, so the generated field names/classes target the
+			 * right row/column inputs and grid — see wbtm_admin.js applySeatTemplate().
+			 */
+			public function render_seat_template_picker($scope = '', $seat_row = 0, $seat_column = 0) {
+				if (!self::has_seat_toolbar_features()) {
+					return;
+				}
+				$templates = self::get_seat_templates();
+				$schemes   = self::get_seat_numbering_schemes();
+				$is_dd        = ($scope === '_dd');
+				$label_class  = $is_dd ? 'flexEqual' : 'mp_zero';
+				$rows_label   = $is_dd ? __('Seat Rows : ', 'bus-ticket-booking-with-seat-reservation') : __('Seat Rows', 'bus-ticket-booking-with-seat-reservation');
+				$cols_label   = $is_dd ? __('Seat Columns : ', 'bus-ticket-booking-with-seat-reservation') : __('Seat Columns', 'bus-ticket-booking-with-seat-reservation');
+				$aisle_label  = $is_dd ? __('Aisle Position : ', 'bus-ticket-booking-with-seat-reservation') : __('Aisle Position', 'bus-ticket-booking-with-seat-reservation');
+				$aisle_title  = __('Choose aisle position after column (Left to Right). 0 = no automatic aisle.', 'bus-ticket-booking-with-seat-reservation');
+				?>
+				<div class="wbtm_seat_template_picker" data-scope="<?php echo esc_attr($scope); ?>">
+					<div class="_dFlex_justifyBetween_alignCenter">
+						<div class="col_6 _dFlex_fdColumn">
+							<label>
+								<?php esc_html_e('Seat Template', 'bus-ticket-booking-with-seat-reservation'); ?>
+							</label>
+							<span><?php esc_html_e('Generate a complete seat layout in one click, then edit freely as usual.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						</div>
+						<div class="col_6 textRight">
+							<select class="formControl max_300 wbtm_seat_template_select">
+								<option value=""><?php esc_html_e('-- No template --', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+								<?php foreach ($templates as $key => $tpl) : ?>
+									<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($tpl['label']); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+					<div class="divider"></div>
+					<div class="_dFlex_justifyBetween_alignCenter">
+						<div class="col_6 _dFlex_fdColumn">
+							<label>
+								<?php esc_html_e('Seat Numbering', 'bus-ticket-booking-with-seat-reservation'); ?>
+							</label>
+							<span><?php esc_html_e('How seat labels are generated when the template is applied.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						</div>
+						<div class="col_6 textRight">
+							<select class="formControl max_300 wbtm_seat_numbering_select">
+								<?php foreach ($schemes as $key => $label) : ?>
+									<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+					<div class="divider"></div>
+					<div class="_dFlex_justifyBetween_alignCenter">
+						<label class="<?php echo esc_attr($label_class); ?>">
+							<?php echo esc_html($rows_label); ?>
+						</label>
+						<input type="hidden" name="wbtm_seat_rows<?php echo esc_attr($scope); ?>_hidden" value="<?php echo esc_attr($seat_row); ?>"/>
+						<input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_rows<?php echo esc_attr($scope); ?>" placeholder="Ex: 10" value="<?php echo esc_attr($seat_row); ?>"/>
+					</div>
+					<div class="divider"></div>
+					<div class="_dFlex_justifyBetween_alignCenter">
+						<label class="<?php echo esc_attr($label_class); ?>">
+							<?php echo esc_html($cols_label); ?>
+						</label>
+						<input type="hidden" name="wbtm_seat_cols<?php echo esc_attr($scope); ?>_hidden" value="<?php echo esc_attr($seat_column); ?>"/>
+						<input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_cols<?php echo esc_attr($scope); ?>" placeholder="Ex: 10" value="<?php echo esc_attr($seat_column); ?>"/>
+					</div>
+					<div class="divider"></div>
+					<div class="_dFlex_justifyBetween_alignCenter">
+						<label class="<?php echo esc_attr($label_class); ?>" title="<?php echo esc_attr($aisle_title); ?>">
+							<?php echo esc_html($aisle_label); ?>
+						</label>
+						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_aisle_after_col<?php echo esc_attr($scope); ?>" placeholder="Ex: 2 (0=none)" value="0" title="<?php echo esc_attr($aisle_title); ?>"/>
+					</div>
+					<div class="divider"></div>
+					<button type="button" class="_themeButton_xs_mT_xs wbtm_apply_seat_template">
+						<span class="fas fa-magic"></span>
+						<span class="mL_xs"><?php esc_html_e('Apply Template', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+					</button>
+					<div class="divider"></div>
+				</div>
+				<?php
+			}
+			/**
 			 * FIX: Disable seat-price actions for non-sellable seat-grid items.
 			 * AUTHOR: shahnur alam
 			 * ISSUE: #WBTM-SEAT-001
@@ -188,6 +312,8 @@
 				$cabin_count = count($cabin_config);
 				$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 				$checked_cabin_mode = $cabin_mode_enabled == 'yes' ? 'checked' : '';
+				$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
+				$checked_upper_desk = $show_upper_desk == 'yes' ? 'checked' : '';
 				?>
                 <div class="tabsItem wbtm_settings_seat" data-tabs="#wbtm_settings_seat">
                     <h3><?php esc_html_e('Seat Configuration', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
@@ -296,6 +422,16 @@
                         </div>
                     </div>
                     <div data-collapse="#wbtm_seat_plan" class="_dLayout <?php echo esc_attr($seat_type == 'wbtm_seat_plan' ? 'mActive' : ''); ?>">
+                        <div class="_dFlex_justifyBetween_alignCenter">
+                            <div class="col_6 _dFlex_fdColumn">
+                                <label>
+									<?php esc_html_e('Show Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                </label>
+                                <span><?php esc_html_e('Turn On or Off upper deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            </div>
+							<?php WBTM_Custom_Layout::switch_button('wbtm_show_upper_desk', $checked_upper_desk); ?>
+                        </div>
+                        <div class="divider"></div>
 						<?php $this->lower_seat_plan_settings($post_id); ?>
 						<?php $this->dd_seat_plan_settings($post_id); ?>
                     </div>
@@ -306,12 +442,6 @@
 				$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
 				$seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 				$seat_position = WBTM_Global_Function::get_post_info($post_id, 'driver_seat_position', 'driver_left');
-				/***************************/
-				$show_upper_desk = WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk');
-				$checked_upper_desk = $show_upper_desk == 'yes' ? 'checked' : '';
-				/***************************/
-				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
-				$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
 				$has_pro_seat_features = self::has_pro_seat_features();
 				$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
 				$checked_seat_price_override = $enable_seat_price_override ? 'checked' : '';
@@ -325,17 +455,7 @@
                     </div>
                     <div class="mpPanelBody mp_zero _dFlex">
                         <div class="_dlayout_bR_bgWhite_padding_xs col_6">
-                            <div class="_dFlex_justifyBetween_alignCenter">
-                                <div class="col_6 _dFlex_fdColumn">
-                                    <label>
-										<?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                    </label>
-                                    <span><?php esc_html_e('Enable seat rotation for individual seats', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                                </div>
-								<?php WBTM_Custom_Layout::switch_button('wbtm_enable_seat_rotation', $checked_rotation); ?>
-                            </div>
-                            <div class="divider"></div>
-							<?php if ($has_pro_seat_features) { ?>
+                            <?php if ($has_pro_seat_features) { ?>
                             <div class="_dFlex_justifyBetween_alignCenter">
                                 <div class="col_6 _dFlex_fdColumn">
                                     <label>
@@ -347,17 +467,7 @@
                             </div>
                             <div class="divider"></div>
 							<?php } ?>
-                            <div class="_dFlex_justifyBetween_alignCenter">
-                                <div class="col_6 _dFlex_fdColumn">
-                                    <label>
-										<?php esc_html_e('Show Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                    </label>
-                                    <span><?php esc_html_e('Turn On or Off upper deck seat plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                                </div>
-								<?php WBTM_Custom_Layout::switch_button('wbtm_show_upper_desk', $checked_upper_desk); ?>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="_dFlex_justifyBetween_alignCenter">
+							<div class="_dFlex_justifyBetween_alignCenter">
                                 <label class="mp_zero">
 									<?php esc_html_e('Driver Position', 'bus-ticket-booking-with-seat-reservation'); ?>
                                 </label>
@@ -368,26 +478,11 @@
                                 </select>
                             </div>
                             <div class="divider"></div>
-                            <div class="_dFlex_justifyBetween_alignCenter">
-                                <label class="mp_zero">
-									<?php esc_html_e('Seat Rows', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <input type="hidden" name="wbtm_seat_rows_hidden" value="<?php echo esc_attr($seat_row); ?>"/>
-                                <input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_rows" placeholder="Ex: 10" value="<?php echo esc_attr($seat_row); ?>"/>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="_dFlex_justifyBetween_alignCenter">
-                                <label class="mp_zero">
-									<?php esc_html_e('Seat Columns', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <input type="hidden" name="wbtm_seat_cols_hidden" value="<?php echo esc_attr($seat_column); ?>"/>
-                                <input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_cols" placeholder="Ex: 10" value="<?php echo esc_attr($seat_column); ?>"/>
-                            </div>
-                            <div class="divider"></div>
+							<?php $this->render_seat_template_picker('', $seat_row, $seat_column); ?>
 							<?php WBTM_Custom_Layout::add_new_button(esc_html__('Generate Bus Seat', 'bus-ticket-booking-with-seat-reservation'), 'wbtm_create_seat_plan', '_themeButton_xs_mT_xs'); ?>
                         </div>
                         <div class="wbtm_seat_plan_settings col_6">
-                            <div class="mB textCenter">
+							<div class="mB textCenter">
                                 <label><?php esc_html_e('Bus Front', 'bus-ticket-booking-with-seat-reservation'); ?></label>
                                 <div class="divider"></div>
                             </div>
@@ -418,22 +513,7 @@
                         </div>
                         <div class="mpPanelBody mp_zero _dFlex">
                             <div class="_bR_bgWhite_padding_xs col_6">
-                                <div class="_dFlex_justifyBetween_alignCenter">
-                                    <label class="mp_zero">
-										<?php esc_html_e('Seat Rows : ', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                    </label>
-                                    <input type="hidden" name="wbtm_seat_rows_dd_hidden" value="<?php echo esc_attr($seat_row); ?>"/>
-                                    <input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_rows_dd" placeholder="Ex: 10" value="<?php echo esc_attr($seat_row); ?>"/>
-                                </div>
-                                <div class="divider"></div>
-                                <div class="_dFlex_justifyBetween_alignCenter">
-                                    <label class="flexEqual">
-										<?php esc_html_e('Seat Columns : ', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                    </label>
-                                    <input type="hidden" name="wbtm_seat_cols_dd_hidden" value="<?php echo esc_attr($seat_column); ?>"/>
-                                    <input type="number" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_seat_cols_dd" placeholder="Ex: 10" value="<?php echo esc_attr($seat_column); ?>"/>
-                                </div>
-                                <div class="divider"></div>
+                                <?php $this->render_seat_template_picker('_dd', $seat_row, $seat_column); ?>
                                 <div class="_dFlex_justifyBetween_alignCenter">
                                     <label class="flexEqual">
 										<?php esc_html_e('Price Increase : ', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -484,7 +564,12 @@
 				if ($seat_row > 0 && $seat_column > 0) {
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
-					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+					// Rotation is enabled independently per deck (lower vs upper),
+					// so its toggle can live inline with each deck's own "Add New
+					// Row" button instead of one setting shared by both decks.
+					$rotation_key = $dd ? 'wbtm_enable_seat_rotation_dd' : 'wbtm_enable_seat_rotation';
+					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, $rotation_key);
+					$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
 					$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
@@ -500,7 +585,13 @@
                                 </tbody>
                             </table>
                         </div>
-						<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Row', 'bus-ticket-booking-with-seat-reservation')); ?>
+                        <div class="wbtm_seat_row_actions">
+							<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Row', 'bus-ticket-booking-with-seat-reservation')); ?>
+                            <span class="wbtm_seat_rotation_inline_toggle">
+								<?php WBTM_Custom_Layout::switch_button($rotation_key, $checked_rotation); ?>
+                                <span class="wbtm_seat_rotation_inline_label"><?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            </span>
+                        </div>
                         <div class="wbtm_hidden_content">
                             <table>
                                 <tbody class="wbtm_hidden_item">
@@ -514,7 +605,8 @@
 			public function seat_plan_row($seat_column, $dd, $row_info = [], $enable_seat_price_override = true) {
 				$seat_key = $dd ? 'dd_seat' : 'seat';
 				$post_id = get_the_ID();
-				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
+				$rotation_key = $dd ? 'wbtm_enable_seat_rotation_dd' : 'wbtm_enable_seat_rotation';
+				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, $rotation_key);
 				?>
                 <tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $seat_column; $j++) { ?>
