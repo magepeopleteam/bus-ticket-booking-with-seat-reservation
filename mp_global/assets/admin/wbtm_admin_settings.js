@@ -5,7 +5,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             .promise()
             .done(function () {
                 parent.find(".wbtm_sortable_area").sortable({
-                    handle: jQuery(this).find(".wbtm_sortable_button"),
+                    handle: ".wbtm_sortable_button",
                 });
                 wbtm_load_date_picker(parent);
             });
@@ -17,7 +17,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             .promise()
             .done(function () {
                 parent.find(".wbtm_sortable_area").sortable({
-                    handle: jQuery(this).find(".wbtm_sortable_button"),
+                    handle: ".wbtm_sortable_button",
                 });
                 wbtm_load_date_picker(parent);
             });
@@ -28,12 +28,22 @@ function wbtm_load_sortable_datepicker(parent, item) {
     "use strict";
     $(document).ready(function () {
         //=========Short able==============//
-        $(document)
-            .find(".wbtm_sortable_area")
-            .sortable({
-                handle: $(this).find(".wbtm_sortable_button"),
-            });
+        wbtmInitSortableAreas();
     });
+    // Row-reorder drag handle (.wbtm_sortable_button). Only ran once, at page
+    // load, before — any seat/cabin grid swapped in later via AJAX (Generate
+    // Bus Seat, Apply Template, Generate Seat Plan — see wbtm_admin.js /
+    // wbtm_admin_settings.js) never got sortable() applied, so its drag
+    // handle looked present but did nothing. Re-running this after every such
+    // update (via the existing wbtm_seat_plan_dom_updated event) fixes both
+    // old and newly-inserted areas; jQuery UI no-ops safely on ones that are
+    // already initialized.
+    function wbtmInitSortableAreas() {
+        $(".wbtm_sortable_area").sortable({
+            handle: ".wbtm_sortable_button",
+        });
+    }
+    $(document).on("wbtm_seat_plan_dom_updated", wbtmInitSortableAreas);
     // Clear optional datepicker fields (settings + metaboxes): readonly input cannot be cleared by typing.
     $(document).on("click", ".wbtm_clear_datepicker", function (e) {
         e.preventDefault();
@@ -212,7 +222,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
                 .promise()
                 .done(function () {
                     parent.find(".wbtm_sortable_area").sortable({
-                        handle: jQuery(this).find(".wbtm_sortable_button"),
+                        handle: ".wbtm_sortable_button",
                     });
                     wbtm_load_date_picker(parent);
                     wbtmReindexRouteNextDay();

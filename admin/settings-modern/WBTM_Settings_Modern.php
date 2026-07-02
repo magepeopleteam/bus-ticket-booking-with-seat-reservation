@@ -366,13 +366,13 @@
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat pricing advanced">
 						<?php $this->render_rail_card_skeleton( 'logo' ); ?>
 						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Bus Logo', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 						<div class="wbtm-bme__logo-slot" data-bme-logo-slot></div>
 					</div>
 
-					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat pricing advanced">
 						<?php $this->render_rail_card_skeleton( 'gallery' ); ?>
 						<div class="wbtm-bme__rail-toggle-row">
 							<span class="wbtm-bme__rail-toggle-label"><?php esc_html_e( 'Enable/Disable Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
@@ -406,7 +406,7 @@
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="seat">
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="seat pricing advanced">
 						<?php $this->render_rail_card_skeleton( 'info' ); ?>
 						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'General Info Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
 						<div class="wbtm-bme__rail-info-list">
@@ -425,6 +425,69 @@
 							<div class="wbtm-bme__rail-info-row">
 								<span><?php esc_html_e( 'Reservation', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								<span class="wbtm-bme__rail-pill<?php echo $reservation_on ? ' is-on' : ' is-off'; ?>"><?php echo $reservation_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+						</div>
+					</div>
+
+					<?php
+					// Same fallback default as WBTM_Seat_Configuration::tab_content() /
+					// count_actual_seats() — an existing bus that predates this field
+					// (no meta saved) must read the same way here as it does everywhere
+					// else, not silently show as "Seat Plan".
+					$seat_type_conf = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan' );
+					$seat_type_label = $seat_type_conf === 'wbtm_seat_plan'
+						? __( 'Seat Plan', 'bus-ticket-booking-with-seat-reservation' )
+						: __( 'Without Seat Plan', 'bus-ticket-booking-with-seat-reservation' );
+					$cabin_mode_on = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_cabin_mode_enabled', 'no' ) === 'yes';
+					$upper_deck_on = WBTM_Global_Function::get_post_info( $post_id, 'show_upper_desk' ) === 'yes';
+					$total_seats   = class_exists( 'WBTM_Seat_Configuration' ) ? WBTM_Seat_Configuration::count_actual_seats( $post_id ) : (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+					?>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="pricing advanced">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Seat Configuration Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Seat Type', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $seat_type_label ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Total Seats', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_seats ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Cabin/Coach Mode', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $cabin_mode_on ? ' is-on' : ' is-off'; ?>"><?php echo $cabin_mode_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Upper Deck', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $upper_deck_on ? ' is-on' : ' is-off'; ?>"><?php echo $upper_deck_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+						</div>
+					</div>
+
+					<?php
+					// Same meta key / helper WBTM_Pricing_Routing.php itself reads from.
+					$route_infos_summary = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', array() );
+					$total_stops         = is_array( $route_infos_summary ) ? count( $route_infos_summary ) : 0;
+					$ticket_types_summary = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_ticket_types( $post_id ) : array();
+					$total_ticket_types   = is_array( $ticket_types_summary ) ? count( $ticket_types_summary ) : 0;
+					$return_trip_on       = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_same_bus_return_enabled', 'no' ) === 'yes';
+					?>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="advanced">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Pricing & Route Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Boarding/Dropping Stops', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_stops ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Passenger Types', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_ticket_types ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Return Trip', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $return_trip_on ? ' is-on' : ' is-off'; ?>"><?php echo $return_trip_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 							</div>
 						</div>
 					</div>

@@ -34,14 +34,6 @@
 				$checked_wbtm_pickup_point_required = $wbtm_pickup_point_required == 'no' ? '' : 'checked';
 				?>
                 <div class="">
-                    <div class="_dLayout_bgLight">
-                        <div class="_dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Pick up settings', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Here you can set pickup location', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                        </div>
-                    </div>
                     <div class="_dLayout dFlex _justifyBetween ">
                         <div class="col_10_dFlex_fdColumn">
                             <label>

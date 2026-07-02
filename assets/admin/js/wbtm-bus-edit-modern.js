@@ -596,6 +596,72 @@
 	})();
 
 	/* ---------------------------------------------------------------- *
+	 *  Passenger Types + Route Pricing Matrix (Pricing & Route step):
+	 *  side-by-side cards instead of two stacked tables, each with its
+	 *  own header, matching the approved mockup. Passenger Types becomes
+	 *  a card list (icon + name) instead of a plain table; the pricing
+	 *  table keeps its structure but the split Boarding/Dropping header
+	 *  collapses into one "Boarding → Dropping" label and route names
+	 *  get the mockup's colored styling (CSS only, see wbtm-bus-edit-
+	 *  modern.css). Pure DOM/class changes on top of the classic markup;
+	 *  WBTM_Pricing_Routing.php is untouched, so the classic screen keeps
+	 *  its existing two-stacked-tables look.
+	 * ---------------------------------------------------------------- */
+	(function redesignPricingSettings() {
+		var $ticketArea = $root.find('.wbtm_ticket_type_area');
+		var $priceArea = $root.find('.wbtm_price_setting_area');
+		if (!$ticketArea.length || !$priceArea.length) { return; }
+
+		// Replace the single "Pricing Settings" header above both tables
+		// with two per-card headers instead (added below).
+		var $outer = $ticketArea.closest('._dLayout_padding');
+		$outer.prev('._dLayout_padding_bgLight').remove();
+
+		// Drop the vertical spacer between the two areas — side-by-side
+		// grid columns don't need it.
+		$ticketArea.nextUntil($priceArea, '._mT').remove();
+
+		if (!$ticketArea.find('> .wbtm-bme__pricing-card-title').length) {
+			$ticketArea.prepend('<div class="wbtm-bme__pricing-card-title">Passenger Types</div>');
+		}
+		if (!$priceArea.find('> .wbtm-bme__pricing-card-title').length) {
+			$priceArea.prepend(
+				'<div class="wbtm-bme__pricing-card-title">Route Pricing Matrix' +
+				'<span>Set ticket prices for each route and segment.</span></div>'
+			);
+		}
+
+		if (!$ticketArea.parent().hasClass('wbtm-bme__pricing-grid')) {
+			$ticketArea.add($priceArea).wrapAll('<div class="wbtm-bme__pricing-grid"></div>');
+		}
+
+		// Passenger type icon per built-in ticket type id; custom types
+		// (blank id) fall back to a generic icon.
+		var TICKET_ICONS = { adult: 'fa-user', child: 'fa-child', infant: 'fa-baby' };
+		function addTicketIcon($row) {
+			var $cell = $row.find('td').first();
+			if ($cell.find('.wbtm-bme__ticket-icon').length) { return; }
+			var typeId = $row.find('input[name="wbtm_ticket_type_id[]"]').val();
+			var icon = TICKET_ICONS[typeId] || 'fa-user-tag';
+			$cell.prepend('<span class="wbtm-bme__ticket-icon"><span class="fas ' + icon + '"></span></span>');
+		}
+		$ticketArea.find('.wbtm_ticket_type_item').each(function () { addTicketIcon($(this)); });
+
+		var $ticketInsert = $ticketArea.find('.wbtm_item_insert');
+		if (window.MutationObserver && $ticketInsert.length) {
+			new MutationObserver(function () {
+				$ticketInsert.find('.wbtm_ticket_type_item').each(function () { addTicketIcon($(this)); });
+			}).observe($ticketInsert.get(0), { childList: true });
+		}
+
+		// Collapse the split Boarding/Dropping header cell into one label.
+		var $bdHeader = $priceArea.find('thead th[colspan="2"]').first();
+		if ($bdHeader.length && !$bdHeader.find('.wbtm-bme__price-bd-label').length) {
+			$bdHeader.html('<span class="wbtm-bme__price-bd-label">Boarding &rarr; Dropping</span>');
+		}
+	})();
+
+	/* ---------------------------------------------------------------- *
 	 *  Gallery — enable/disable toggle + inline add/remove in the rail
 	 * ---------------------------------------------------------------- */
 	var $gallerySection = $root.find('[data-bme-gallery-section]');

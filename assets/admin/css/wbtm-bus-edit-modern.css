@@ -330,12 +330,23 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__feat-link:hover{text-decoration:underline;}
 .wbtm-bme__feat-link--rm{color:var(--brand);}
 
-/* "General Info Summary" rail card — shown only on the Seat Configure step
-   (data-bme-step-only, gated by the shell's data-step attribute below). */
+/* Rail cards gated by step, via the shell's data-step attribute (set in
+   wbtm-bus-edit-modern.js). data-bme-step-only / data-bme-hide-on-step hold a
+   SPACE-SEPARATED list of step ids (e.g. "seat pricing advanced"), so the
+   card-level attribute selectors use ~= (token match) rather than = (exact
+   match) — one composite rule per possible current step, since data-step
+   itself is always a single value. "General Info Summary" shows on Seat
+   Configure, Pricing & Route and Advanced; "Seat Configuration Summary" on
+   Pricing & Route and Advanced; "Pricing & Route Summary" on Advanced only;
+   Bus Logo / Gallery are hidden on all three (they'd otherwise crowd out the
+   summary cards stacked under Featured Image on those steps). */
 .wbtm-bme__rail-card[data-bme-step-only]{display:none;}
-.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-step-only="seat"]{display:block;}
-/* Bus Logo / Enable-Disable Gallery cards hidden specifically on Seat Configure. */
-.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-hide-on-step="seat"]{display:none;}
+.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-step-only~="seat"],
+.wbtm-bme[data-step="pricing"] .wbtm-bme__rail-card[data-bme-step-only~="pricing"],
+.wbtm-bme[data-step="advanced"] .wbtm-bme__rail-card[data-bme-step-only~="advanced"]{display:block;}
+.wbtm-bme[data-step="seat"] .wbtm-bme__rail-card[data-bme-hide-on-step~="seat"],
+.wbtm-bme[data-step="pricing"] .wbtm-bme__rail-card[data-bme-hide-on-step~="pricing"],
+.wbtm-bme[data-step="advanced"] .wbtm-bme__rail-card[data-bme-hide-on-step~="advanced"]{display:none;}
 .wbtm-bme__rail-info-list{padding:6px 16px 14px;}
 .wbtm-bme__rail-info-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--band-line);}
 .wbtm-bme__rail-info-row:last-child{border-bottom:0;}
@@ -776,13 +787,27 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_stop_item_content .col_4 label{white-space:nowrap;flex-shrink:0;margin:0;}
 .wbtm-bme.wbtm_style .wbtm_stop_item_content .col_4 .formControl{min-width:0;width:100%;max-width:none;}
 /* "Next Day Dropping" row (outbound + return): single line, right-aligned
-   instead of centered — label stays unshrinkable so it can't wrap. */
-.wbtm-bme.wbtm_style .next-day-dropping-checkbox,
-.wbtm-bme.wbtm_style .wbtm_return_next_day_dropping{
-	display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;
+   instead of centered — label stays unshrinkable so it can't wrap.
+   WBTM_Pricing_Routing.php / wbtm_admin.js toggle this row's visibility via
+   an INLINE style="display: block" (shown) / "display: none" (hidden) based
+   on the selected stop type, and an inline style always wins over a non-
+   !important external rule. Scoping to [style*="block"] (the shown state)
+   lets !important safely override just the display VALUE (block → flex)
+   without also forcing the row visible when it's meant to stay hidden. */
+.wbtm-bme.wbtm_style .next-day-dropping-checkbox[style*="block"],
+.wbtm-bme.wbtm_style .wbtm_return_next_day_dropping[style*="block"]{
+	display:flex !important;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;
 }
 .wbtm-bme.wbtm_style .next-day-dropping-checkbox label,
-.wbtm-bme.wbtm_style .wbtm_return_next_day_dropping label{white-space:nowrap;flex-shrink:0;margin:0;}
+.wbtm-bme.wbtm_style .wbtm_return_next_day_dropping label{white-space:nowrap;flex-shrink:0;margin:0;font-weight:500 !important;}
+/* Guard against the flex row squeezing/covering the checkbox itself — the
+   label has flex-shrink:0 above, so without an explicit rule here the
+   checkbox (default flex-shrink:1) is the only item left to give way. */
+.wbtm-bme.wbtm_style .next-day-dropping-checkbox input[type="checkbox"],
+.wbtm-bme.wbtm_style .wbtm_return_next_day_dropping input[type="checkbox"]{
+	flex:0 0 auto !important;width:18px !important;height:18px !important;
+	position:static !important;opacity:1 !important;pointer-events:auto !important;cursor:pointer;
+}
 
 /* ---------- Step 3 professional polish ---------- */
 /* Section headers: clean flat style — colored bottom border, no accent bar. */
@@ -822,7 +847,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area{overflow-x:auto;}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area thead th{text-align:center;vertical-align:middle;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area thead th:first-child{text-align:left;}
-.wbtm-bme.wbtm_style .wbtm_price_setting_area thead th span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area thead th span{font-size:11px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:.04em;}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td:first-child{min-width:210px;}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td:first-child span{font-weight:600;font-size:12.5px;color:var(--ink);}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td{text-align:center;}
@@ -834,7 +859,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_price_arrow_return::after{border-left-color:var(--blue);}
 .wbtm-bme.wbtm_style .wbtm_price_setting_area tbody tr:hover{background:#fff5f7;}
 .wbtm-bme.wbtm_style .wbtm_price_row_return:hover{background:#e6edff;}
-.wbtm-bme.wbtm_style .wbtm_price_leg_badge_return{background:var(--blue);}
+.wbtm-bme.wbtm_style .wbtm_price_leg_badge_return{background:var(--blue);color:#fff !important;}
 
 /* Return Discount (Pro) section, if present, reads as a clean card. */
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_return_discount_area,
@@ -851,11 +876,63 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_ticket_type_area input{height:34px;font-size:12.5px;padding:4px 9px;width:100%;}
 .wbtm-bme.wbtm_style .wbtm_ticket_type_area td:last-child{width:1%;white-space:nowrap;text-align:center;}
 .wbtm-bme.wbtm_style .wbtm_price_row_return{background:var(--blue-soft);}
-.wbtm-bme.wbtm_style .wbtm_price_leg_badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--blue);color:#fff;margin-right:6px;}
+.wbtm-bme.wbtm_style .wbtm_price_leg_badge{display:inline-block;font-size:11px !important;font-weight:700;padding:2px 7px;border-radius:5px !important;background:var(--blue);color:#fff;margin-right:6px;margin-bottom:5px !important;text-transform:none !important;}
 .wbtm-bme.wbtm_style .long-arrow{height:2px;background:var(--line);position:relative;margin:0 8px;}
-.wbtm-bme.wbtm_style .wbtm_return_time_warning{display:flex;gap:9px;align-items:flex-start;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:9px 12px;margin-bottom:10px;color:#9a3412;font-size:12px;}
+.wbtm-bme.wbtm_style .wbtm_return_time_warning{display:flex;gap:9px;align-items:flex-start;background:var(--brand-soft);border:1px solid #6c6c6c;border-radius:10px;padding:9px 12px;margin-bottom:10px;color:#3e3b3b;font-size:12px;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .notice,
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing ._textLight{font-size:12px;}
+
+/* --- Passenger Types + Route Pricing Matrix: side-by-side cards ---
+   DOM restructuring (grid wrapper, per-card titles, ticket icons, the
+   collapsed Boarding/Dropping header) happens in redesignPricingSettings()
+   in wbtm-bus-edit-modern.js; this is the styling for that new structure. */
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start;}
+@media(max-width:980px){.wbtm-bme.wbtm_style .wbtm-bme__pricing-grid{grid-template-columns:1fr;}}
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-grid .wbtm_ticket_type_area,
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-grid .wbtm_price_setting_area{
+	border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px;
+}
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-card-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;}
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-card-title span{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:3px;}
+
+/* Passenger Types: card list instead of a table. */
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area thead{display:none;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area table{border:0;border-radius:0;overflow:visible;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area tbody{display:block;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area tr.wbtm_ticket_type_item{
+	display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;
+	padding:8px 10px;margin-bottom:8px;background:#fff;
+}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area tr.wbtm_ticket_type_item td{border:0;padding:0;display:flex;align-items:center;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area tr.wbtm_ticket_type_item td:first-child{flex:1 1 auto;gap:10px;min-width:0;}
+.wbtm-bme.wbtm_style .wbtm-bme__ticket-icon{
+	display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;
+	border-radius:9px;background:var(--band);color:var(--ink-2);font-size:14px;
+}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_item label{flex:1 1 auto;min-width:0;margin:0;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_item input.formControl{border:0;background:transparent;padding:0;font-weight:700;font-size:13.5px;height:auto;box-shadow:none;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_item input.formControl:focus{background:var(--inset);padding:5px 8px;border-radius:6px;}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area .wbtm_add_item{
+	width:100%;justify-content:center;background:transparent;border:1.5px dashed #4d97fd;
+	color:var(--muted);box-shadow:none;
+}
+/* The shared mp_style stylesheet (loaded on every screen) hardcodes the icon
+   + label spans inside any "_themeButton"-classed button to white text —
+   fine on the gradient buttons it was designed for, but it made this dashed
+   outline button's icon/label invisible (white on white/transparent), even
+   though the button's own background/border correctly went transparent/
+   dashed. Inheriting color from the button isn't enough since that global
+   rule targets the spans directly, so it has to be overridden explicitly. */
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area .wbtm_add_item span{color:var(--muted);}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area .wbtm_add_item:hover{border-color:var(--brand);color:var(--brand);}
+.wbtm-bme.wbtm_style .wbtm_ticket_type_area .wbtm_add_item:hover span{color:var(--brand);}
+
+/* Route Pricing Matrix: collapsed Boarding → Dropping header + colored route names.
+   The card itself (.wbtm-bme__pricing-grid rule above) now carries the border/
+   radius, so the inner table goes flat to avoid a nested double-border look. */
+.wbtm-bme.wbtm_style .wbtm-bme__pricing-grid .wbtm_price_setting_area table{border:0;border-radius:0;overflow:visible;}
+.wbtm-bme.wbtm_style .wbtm-bme__price-bd-label{font-size:11px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em;}
+.wbtm-bme.wbtm_style .wbtm_price_setting_area tbody td:first-child span{color:#333;}
 
 /* Logo / single image (mockup: dashed thumb + blue Image button) */
 .wbtm-bme.wbtm_style .wbtm_add_single_image{display:flex;align-items:center;justify-content:flex-end;gap:12px;}
@@ -937,9 +1014,8 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > .tabsItem > div > ._dLayout,
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing > .tabsItem > div > div > ._dLayout,
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{
-	border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;
+	border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;padding:12px 16px !important;
 }
-.wbtm-bme.wbtm_style .wbtm_settings_pricing_routing .wbtm_settings_area{padding:10px;}
 
 /* Collapsible content areas get a subtle inset background */
 .wbtm-bme.wbtm_style .wbtm_settings_pricing_routing [data-collapse]{
@@ -1256,37 +1332,37 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(2) .wbtm-bme__postfields-header{
-	background:linear-gradient(135deg,rgba(14,165,233,.06) 0%,rgba(14,165,233,.02) 100%);
+	background:#E9EFF6;
 	border-bottom:1px solid rgba(14,165,233,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(2) .wbtm-bme__postfields-body{background:rgba(14,165,233,.018);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(2) .wbtm-bme__postfields-body{background:#fff;}
 
 /* --- 3. Date Settings — emerald --- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(3){
 
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(3) .wbtm-bme__postfields-header{
-	background:linear-gradient(135deg,rgba(16,185,129,.06) 0%,rgba(16,185,129,.02) 100%);
+	background:#E9EFF6;
 	border-bottom:1px solid rgba(16,185,129,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(3) .wbtm-bme__postfields-body{background:rgba(16,185,129,.018);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(3) .wbtm-bme__postfields-body{background:#fff;}
 
 /* --- 4. Tax Configure — amber --- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(4){
 
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(4) .wbtm-bme__postfields-header{
-	background:linear-gradient(135deg,rgba(245,158,11,.07) 0%,rgba(245,158,11,.02) 100%);
+	background:#E9EFF6;
 	border-bottom:1px solid rgba(245,158,11,.18);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(4) .wbtm-bme__postfields-body{background:rgba(245,158,11,.018);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(4) .wbtm-bme__postfields-body{background:#fff;}
 
 /* --- 5. Gallery Image — purple --- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(5){
 
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(5) .wbtm-bme__postfields-header{
-	background:linear-gradient(135deg,rgba(139,92,246,.06) 0%,rgba(139,92,246,.02) 100%);
+	background:#E9EFF6;
 	border-bottom:1px solid rgba(139,92,246,.15);
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(5) .wbtm-bme__postfields-body{background:rgba(139,92,246,.018);}
