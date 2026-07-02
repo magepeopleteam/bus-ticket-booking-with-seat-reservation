@@ -214,10 +214,14 @@
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $ns_data = wbtm_get_non_seat_data_check($seat_name);
                                                             ?>
-                                                                <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data['label']); ?>">
-                                                                    <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data['icon']); ?>"></span>
-                                                                    <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data['label']); ?></span>
-                                                                </td>
+                                                                <?php if (strtolower(trim($seat_name)) === 'aisle'): ?>
+                                                                    <td class="wbtm_aisle_blank"></td>
+                                                                <?php else: ?>
+                                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data['label']); ?>">
+                                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data['icon']); ?>"></span>
+                                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data['label']); ?></span>
+                                                                    </td>
+                                                                <?php endif; ?>
                                                             <?php else: ?>
                                                                 <?php
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -351,10 +355,14 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $ns_data_lower = wbtm_get_non_seat_data_check($seat_name);
                                                 ?>
-                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_lower['label']); ?>">
-                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_lower['icon']); ?>"></span>
-                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_lower['label']); ?></span>
-                                                    </td>
+                                                    <?php if (strtolower(trim($seat_name)) === 'aisle') { ?>
+                                                        <td class="wbtm_aisle_blank"></td>
+                                                    <?php } else { ?>
+                                                        <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_lower['label']); ?>">
+                                                            <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_lower['icon']); ?>"></span>
+                                                            <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_lower['label']); ?></span>
+                                                        </td>
+                                                    <?php } ?>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -466,10 +474,14 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $ns_data_upper = wbtm_get_non_seat_data_check($info);
                                                 ?>
-                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_upper['label']); ?>">
-                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_upper['icon']); ?>"></span>
-                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_upper['label']); ?></span>
-                                                    </td>
+                                                    <?php if (strtolower(trim($info)) === 'aisle') { ?>
+                                                        <td class="wbtm_aisle_blank"></td>
+                                                    <?php } else { ?>
+                                                        <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_upper['label']); ?>">
+                                                            <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_upper['icon']); ?>"></span>
+                                                            <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_upper['label']); ?></span>
+                                                        </td>
+                                                    <?php } ?>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound

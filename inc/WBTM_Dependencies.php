@@ -96,12 +96,24 @@
 				// wbtm_admin.js applySeatTemplate() — PHP stays the single source
 				// of truth (also used to render the <select> options).
 				$seat_templates_payload = [];
-				$seat_numbering_payload = [];
+				// Labels are kept separate from seat_templates (patterns) so the
+				// existing applySeatTemplate() JS — which uses seat_templates[key]
+				// as the pattern array directly — is untouched; only the new
+				// cabin "Configure Cabins" JS template (which has to build its
+				// <option> list client-side, unlike the server-rendered deck
+				// picker) needs the labels.
+				$seat_template_labels_payload = [];
 				if (class_exists('WBTM_Seat_Configuration')) {
 					foreach (WBTM_Seat_Configuration::get_seat_templates() as $tkey => $tpl) {
 						$seat_templates_payload[$tkey] = $tpl['pattern'];
+						$seat_template_labels_payload[$tkey] = $tpl['label'];
 					}
-					$seat_numbering_payload = array_keys(WBTM_Seat_Configuration::get_seat_numbering_schemes());
+					// key => label map (was array_keys()-only; unused anywhere in JS
+					// beforehand, so widening the shape here is safe) — same reason
+					// as above, needed to build the cabin numbering <option> list.
+					$seat_numbering_payload = WBTM_Seat_Configuration::get_seat_numbering_schemes();
+				} else {
+					$seat_numbering_payload = [];
 				}
 				if (function_exists('get_current_screen')) {
 					$screen = get_current_screen();
@@ -126,6 +138,7 @@
 					'seat_toolbar_enabled' => $seat_toolbar_enabled,
 					'nonseat_badge_title' => esc_attr__( 'Double click to Remove', 'bus-ticket-booking-with-seat-reservation' ),
 					'seat_templates'    => $seat_templates_payload,
+					'seat_template_labels' => $seat_template_labels_payload,
 					'seat_numbering_schemes' => $seat_numbering_payload,
 					'seat_template_pick_error' => esc_html__( 'Please choose a seat template first.', 'bus-ticket-booking-with-seat-reservation' ),
 					'ticket_types'      => $ticket_types_payload,

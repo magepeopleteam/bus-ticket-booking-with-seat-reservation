@@ -21,6 +21,7 @@
 					$return_route_infos = [];
 				}
 				$same_bus_return_on = WBTM_Global_Function::get_post_info($post_id, 'wbtm_same_bus_return_enabled', 'no') === 'yes';
+				$checked_same_bus_return = $same_bus_return_on ? 'checked' : '';
 				// When return schedule is empty but same-bus return is on, show reversed outbound in the form so admins can edit times and save (runtime still uses reverse if never saved).
 				$return_route_prefilled = false;
 				if ( $same_bus_return_on && count( $return_route_infos ) === 0 && is_array( $full_route_infos ) && count( $full_route_infos ) > 1 ) {
@@ -66,19 +67,19 @@
                     </div>
                     <div class="_mT"></div>
                     <div class="_dLayout_padding_bgLight">
-                        <div class="col_12 _dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Same bus return journey', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Allow this bus to appear in return search (reverse direction). Custom return schedule rows appear as blue “Return” prices (separate fares even when the stop names match an outbound row). If the return schedule is empty, the system still uses reversed outbound stops and times on the site; below you can load that reversal into the form, change times, and save.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                        <div class="_dFlex_justifyBetween_alignCenter">
+                            <div class="col_11 _dFlex_fdColumn">
+                                <label>
+									<?php esc_html_e('Same bus return journey', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                </label>
+                                <span><?php esc_html_e('Enable this bus for return trips. Set a custom return schedule with separate fares, or use the reversed outbound route by default.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            </div>
+                            <div class="col_1 textRight">
+								<?php WBTM_Custom_Layout::switch_button('wbtm_same_bus_return_enabled', $checked_same_bus_return); ?>
+                            </div>
                         </div>
                     </div>
                     <div class="_dLayout_padding">
-                        <label class="_dFlex_alignCenter _mB_xs">
-                            <input type="hidden" name="wbtm_same_bus_return_enabled" value="no"/>
-                            <input type="checkbox" name="wbtm_same_bus_return_enabled" value="yes" <?php checked($same_bus_return_on); ?> class="_mR_xs"/>
-							<?php esc_html_e('Enable same bus for return trips', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </label>
                         <div class="wbtm_return_route_settings_area wbtm_settings_area">
                             <div class="wbtm_return_time_warning">
                                 <span class="wbtm_return_time_warning_icon dashicons dashicons-warning"></span>

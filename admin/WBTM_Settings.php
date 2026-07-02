@@ -273,7 +273,12 @@
 						$route_direction = array_values(array_unique($route_direction));
 					}
 
-					$same_return = (isset($_POST['wbtm_same_bus_return_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_same_bus_return_enabled'])) === 'yes') ? 'yes' : 'no';
+					// Truthy check (not a strict 'yes' match): the toggle now uses the
+					// shared WBTM_Custom_Layout::switch_button() component, whose
+					// checkbox has no explicit value attribute and so submits the
+					// browser default "on" when checked — same pattern every other
+					// switch_button()-driven field in this file already uses.
+					$same_return = (isset($_POST['wbtm_same_bus_return_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_same_bus_return_enabled']))) ? 'yes' : 'no';
 					update_post_meta($post_id, 'wbtm_same_bus_return_enabled', $same_return);
 
 					if ($same_return === 'yes' && sizeof($route_direction) > 1) {
@@ -491,8 +496,14 @@
 					if ($cabin_mode_enabled === 'yes') {
 						$total_seat = 0;
 						$has_enabled_cabin = false;
-						$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 						foreach ($cabin_config as $cabin_index => $cabin) {
+							// Each cabin has its own independent rotation toggle — mirrors
+							// the lower/upper deck pattern (wbtm_enable_seat_rotation /
+							// wbtm_enable_seat_rotation_dd), never shared across cabins.
+							// Saved before the enabled-cabin skip below so a disabled
+							// cabin's toggle state is preserved for when it's re-enabled.
+							$enable_rotation = isset($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index]) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index])) ? 'yes' : 'no';
+							update_post_meta($post_id, 'wbtm_enable_seat_rotation_cabin_' . $cabin_index, $enable_rotation);
 							if (($cabin['enabled'] ?? 'yes') !== 'yes')
 								continue;
 							$has_enabled_cabin = true;

@@ -378,28 +378,29 @@
     // checkbox (wbtm_enable_seat_rotation for lower, _dd for upper), rendered
     // inline next to that deck's own "Add New Row" button (create_seat_plan()
     // in WBTM_Seat_Configuration.php). Toggling one only affects its own
-    // deck's grid — never both. Cabin mode has no checkbox of its own and has
-    // always followed the lower-deck key, so that coupling is preserved.
+    // deck's grid — never both, and never any cabin (cabins have their own
+    // independent checkboxes below).
     $(document).on('change', 'input[name="wbtm_enable_seat_rotation"], input[name="wbtm_enable_seat_rotation_dd"]', function () {
-        let isEnabled = $(this).is(':checked');
-        let isLowerDeck = $(this).attr('name') === 'wbtm_enable_seat_rotation';
-        wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), isEnabled);
-        if (isLowerDeck) {
-            wbtmApplyRotationState($('.wbtm_cabin_settings_area'), isEnabled);
-        }
+        wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), $(this).is(':checked'));
     });
-    // Initialize rotation state on page load, per deck independently. (Note:
-    // WBTM_Seat_Configuration::create_seat_plan() already bakes the
+    // Each cabin has its own independent checkbox too
+    // (wbtm_enable_seat_rotation_cabin_N), rendered inline next to that
+    // cabin's own "Add New Row" button (render_cabin_seat_plan() in
+    // WBTM_Seat_Configuration.php). Toggling one only affects its own
+    // cabin's grid — never the deck's, never another cabin's.
+    $(document).on('change', 'input[name^="wbtm_enable_seat_rotation_cabin_"]', function () {
+        wbtmApplyRotationState($(this).closest('.wbtm_cabin_settings_area'), $(this).is(':checked'));
+    });
+    // Initialize rotation state on page load, per deck/cabin independently.
+    // (Note: create_seat_plan() / render_cabin_seat_plan() already bake the
     // wbtm_enable_rotation class into the server-rendered HTML, so this is a
     // defensive re-sync — e.g. for older saved seats missing the controls.)
     $(document).ready(function () {
-        $('input[name="wbtm_enable_seat_rotation"]').each(function () {
-            let isEnabled = $(this).is(':checked');
-            wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), isEnabled);
-            wbtmApplyRotationState($('.wbtm_cabin_settings_area'), isEnabled);
-        });
-        $('input[name="wbtm_enable_seat_rotation_dd"]').each(function () {
+        $('input[name="wbtm_enable_seat_rotation"], input[name="wbtm_enable_seat_rotation_dd"]').each(function () {
             wbtmApplyRotationState($(this).closest('.wbtm_settings_area'), $(this).is(':checked'));
+        });
+        $('input[name^="wbtm_enable_seat_rotation_cabin_"]').each(function () {
+            wbtmApplyRotationState($(this).closest('.wbtm_cabin_settings_area'), $(this).is(':checked'));
         });
     });
 })(jQuery);
@@ -430,6 +431,16 @@
             return;
         }
         if (!itemType) {
+            $container.removeClass('wbtm_has_nonseat');
+            return;
+        }
+        let key = itemType.toLowerCase().trim();
+        if (key === 'aisle') {
+            // Aisle gets no badge/decoration at all in the seat grid — just
+            // the plain editable text input, same as a normal seat cell. The
+            // toolbar itself (render_seat_item_toolbar() in
+            // WBTM_Seat_Configuration.php) is untouched and still shows
+            // Aisle's icon+label there.
             $container.removeClass('wbtm_has_nonseat');
             return;
         }

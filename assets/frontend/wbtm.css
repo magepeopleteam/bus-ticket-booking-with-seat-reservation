@@ -1795,6 +1795,17 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   opacity: 0.85;
 }
 
+/* Aisle is rendered as an empty <td> (no icon/label markup at all) — just
+   blank space, no border/background, unlike every other non-seat item above. */
+.wbtm_seat_plan_area table td.wbtm_aisle_blank,
+.wbtm_seat_plan_upper table td.wbtm_aisle_blank,
+.wbtm_cabin_seat_plan table td.wbtm_aisle_blank {
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
 @media only screen and (max-width: 768px) {
   .wbtm_non_seat_item .wbtm_non_seat_icon {
     font-size: 14px;

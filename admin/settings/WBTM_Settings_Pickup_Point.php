@@ -189,14 +189,6 @@
 				$checked_wbtm_dropping_point_required = $wbtm_dropping_point_required == 'no' ? '' : 'checked';
 				?>
                 <div class="">
-                    <div class="_dLayout_bgLight">
-                        <div class="_dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Drop-off settings', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Here you can set drop-off location.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                        </div>
-                    </div>
                     <div class="_dLayout_dFlex_justifyBetween ">
                         <div class="col_8 _dFlex_fdColumn">
                             <label>

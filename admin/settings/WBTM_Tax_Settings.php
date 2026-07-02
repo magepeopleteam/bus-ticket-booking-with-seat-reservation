@@ -21,14 +21,6 @@
 						$tax_class = WBTM_Global_Function::get_post_info($post_id, '_tax_class');
 						$all_tax_class = WBTM_Global_Function::all_tax_list();
 					?>
-                    <div class="_dLayout_padding_bgLight">
-                        <div class="col_6 _dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Tax Settings Information', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Here you can configure tax settings.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                        </div>
-                    </div>
 					<?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
                         <div class="">
                             <div class="_dLayout_dFlex_justifyBetween_alignCenter">

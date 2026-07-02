@@ -546,6 +546,56 @@
 	})();
 
 	/* ---------------------------------------------------------------- *
+	 *  Cabin "Seat Rows / Seat Columns / Aisle Position" — same 3-up grid
+	 *  treatment as the deck's Layout Settings column above (reuses the
+	 *  SAME wbtm-bme__seat-rowcols-grid / wbtm-bme__seat-generate-btn
+	 *  classes/CSS, so it's the identical design), but per-cabin and with
+	 *  cabin field names (wbtm_cabin_rows[]/wbtm_cabin_cols[] parallel
+	 *  arrays + a class-only Aisle field, not a scoped scalar field) — see
+	 *  render_cabin_seat_template_picker() in WBTM_Seat_Configuration.php.
+	 *  Runs for every cabin already on the page, and (via the
+	 *  MutationObserver) for any cabin added later through "Configure
+	 *  Cabins" (built client-side in wbtm_admin_settings.js).
+	 * ---------------------------------------------------------------- */
+	(function redesignCabinSeatLayoutSettings() {
+		function processPicker($picker) {
+			if (!$picker.length || $picker.hasClass('wbtm-bme__cabin-grid-done')) { return; }
+			$picker.addClass('wbtm-bme__cabin-grid-done');
+
+			var $rowsRow = $picker.find('input[name="wbtm_cabin_rows[]"]').closest('._dFlex_justifyBetween_alignCenter');
+			var $colsRow = $picker.find('input[name="wbtm_cabin_cols[]"]').closest('._dFlex_justifyBetween_alignCenter');
+			var $aisleRow = $picker.find('.wbtm_cabin_aisle_after_col').closest('._dFlex_justifyBetween_alignCenter');
+			if ($rowsRow.length && $colsRow.length) {
+				$rowsRow.next('.divider').remove();
+				var $grouped = $rowsRow.add($colsRow);
+				if ($aisleRow.length) {
+					$colsRow.next('.divider').remove();
+					$grouped = $grouped.add($aisleRow);
+				}
+				$grouped.wrapAll('<div class="wbtm-bme__seat-rowcols-grid"></div>');
+			}
+
+			$picker.find('.wbtm_apply_cabin_seat_template').addClass('wbtm-bme__seat-generate-btn');
+			$picker.siblings('.wbtm_generate_cabin_seats').addClass('wbtm-bme__seat-generate-btn');
+		}
+
+		function processAllCabins() {
+			$root.find('.wbtm_cabin_seat_template_picker').each(function () {
+				processPicker($(this));
+			});
+		}
+
+		processAllCabins();
+
+		if (window.MutationObserver) {
+			var $cabinList = $root.find('.wbtm_cabin_list');
+			if ($cabinList.length) {
+				new MutationObserver(processAllCabins).observe($cabinList.get(0), { childList: true });
+			}
+		}
+	})();
+
+	/* ---------------------------------------------------------------- *
 	 *  Gallery — enable/disable toggle + inline add/remove in the rail
 	 * ---------------------------------------------------------------- */
 	var $gallerySection = $root.find('[data-bme-gallery-section]');

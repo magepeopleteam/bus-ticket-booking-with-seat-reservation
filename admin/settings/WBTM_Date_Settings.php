@@ -33,14 +33,6 @@
                     <h3><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <p><?php esc_html_e('Bus date settings will help to operation a bus in a particular or repeated date.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                     <div class="">
-                        <div class="_dLayout_bgLight">
-                            <div class="col_6 _dFlex_fdColumn">
-                                <label>
-									<?php esc_html_e('Date Information', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <span><?php esc_html_e('Here you can set bus seat booking date.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                            </div>
-                        </div>
                         <div class="_dLayoutd_dFlex_alignCenter_">
                             <div class="col_8 _dFlex_fdColumn">
                                 <label>
