@@ -87,7 +87,11 @@
 					$non_seat_icon_map['wc'] = 'fa-restroom';
 				}
 				$ticket_types_payload = [];
+				// Per-seat PRICE OVERRIDE stays Pro-gated; the drag-and-drop
+				// TOOLBAR (door/toilet/driver/etc.) is a free-plugin feature —
+				// see WBTM_Seat_Configuration::has_seat_toolbar_features().
 				$pro_seat_features_enabled = class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
+				$seat_toolbar_enabled = class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::has_seat_toolbar_features();
 				if (function_exists('get_current_screen')) {
 					$screen = get_current_screen();
 					if ($screen && $screen->post_type === 'wbtm_bus' && isset($_GET['post'])) {
@@ -108,6 +112,8 @@
 					'seat_row_col_error' => esc_html__( 'Number of rows & columns must be greater than 0', 'bus-ticket-booking-with-seat-reservation' ),
 					'non_seat_items'    => $non_seat_icon_map,
 					'pro_seat_features_enabled' => $pro_seat_features_enabled,
+					'seat_toolbar_enabled' => $seat_toolbar_enabled,
+					'nonseat_badge_title' => esc_attr__( 'Double click to Remove', 'bus-ticket-booking-with-seat-reservation' ),
 					'ticket_types'      => $ticket_types_payload,
 					'seat_price_need_name' => esc_html__( 'Enter a seat label first (e.g. A1).', 'bus-ticket-booking-with-seat-reservation' ),
 					'seat_price_no_types' => esc_html__( 'Add a route fare for at least one passenger type under Routing & Pricing, or save a per-seat price first.', 'bus-ticket-booking-with-seat-reservation' ),

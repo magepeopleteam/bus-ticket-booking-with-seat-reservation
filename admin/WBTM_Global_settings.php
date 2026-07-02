@@ -399,6 +399,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'subtitle'   => esc_html__('Colors & typography', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_style_settings',
 					],
+					'promo' => [
+						'title'      => esc_html__('Promo Banner', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-tags',
+						'subtitle'   => esc_html__('Search sidebar discount banner', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_promo_settings',
+					],
 					'license' => [
 						'title'      => esc_html__('License', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-key',
@@ -446,6 +452,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'label'    => esc_html__('Typography (px)', 'bus-ticket-booking-with-seat-reservation'),
 							'layout'   => 'compact',
 							'field_names' => ['default_font_size', 'font_size_h1', 'font_size_h2', 'font_size_h3', 'font_size_h4', 'font_size_h5', 'font_size_h6', 'button_font_size', 'font_size_label'],
+						],
+					],
+					'wbtm_promo_settings' => [
+						'promo' => [
+							'icon'     => 'fas fa-tags',
+							'label'    => esc_html__('Discount banner', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['promo_enabled', 'promo_title', 'promo_desc', 'promo_button_text', 'promo_button_link'],
 						],
 					],
 					'wbtm_passenger_pdf_settings' => [
@@ -876,6 +889,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					array(
 						'id'    => 'wbtm_style_settings',
 						'title' => esc_html__( 'Style Settings', 'bus-ticket-booking-with-seat-reservation' )
+					),
+					array(
+						'id'    => 'wbtm_promo_settings',
+						'title' => esc_html__( 'Promo Banner', 'bus-ticket-booking-with-seat-reservation' )
 					),
 					array(
 						'id'    => 'wbtm_license_settings',
@@ -1344,6 +1361,51 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'desc'    => esc_html__( 'Select Background  Color.', 'bus-ticket-booking-with-seat-reservation' ),
 							'type'    => 'color',
 							'default' => '#FAFCFE'
+						),
+					) ),
+					'wbtm_promo_settings' => apply_filters( 'wbtm_filter_promo_settings', array(
+						array(
+							'name'    => 'promo_enabled',
+							'label'   => esc_html__( 'Show Promo Banner', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Show or hide the discount banner in the bus search results sidebar.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'enable',
+							'options' => array(
+								'enable'  => esc_html__( 'Enable', 'bus-ticket-booking-with-seat-reservation' ),
+								'disable' => esc_html__( 'Disable', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'        => 'promo_title',
+							'label'       => esc_html__( 'Banner Title', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Heading shown at the top of the banner.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'text',
+							'default'     => __( 'Member Discount', 'bus-ticket-booking-with-seat-reservation' ),
+							'placeholder' => __( 'Member Discount', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						array(
+							'name'        => 'promo_desc',
+							'label'       => esc_html__( 'Banner Description', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Use {destination} to insert the searched destination city. The phrase "to {destination}" is dropped automatically when no destination is known (e.g. on a single bus\'s own page).', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'textarea',
+							'default'     => __( 'Save up to 15% on your first trip to {destination}.', 'bus-ticket-booking-with-seat-reservation' ),
+							'placeholder' => __( 'Save up to 15% on your first trip to {destination}.', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						array(
+							'name'        => 'promo_button_text',
+							'label'       => esc_html__( 'Button Text', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Label shown on the banner\'s call-to-action button.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'text',
+							'default'     => __( 'Join Now', 'bus-ticket-booking-with-seat-reservation' ),
+							'placeholder' => __( 'Join Now', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						array(
+							'name'        => 'promo_button_link',
+							'label'       => esc_html__( 'Button Link', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Where the button should link to. Leave blank to use "#" (no navigation).', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'url',
+							'default'     => '',
+							'placeholder' => 'https://example.com/membership',
 						),
 					) ),
 				);

@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin , hamidxazad
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.7.8
+Stable tag: 5.7.10
 Tested up to: 6.9
 Requires PHP: 8.0
 License: GPLv2 or later
@@ -411,4 +411,16 @@ Seat number rotation stopped
 **Bug Fixes & UI**
 * Fixed the return route title weekday showing the outbound day instead of the return leg's own date.
 * Styled the editable Return From / To selectors to match the main search form (boxed inputs, inline marker icon, locked-field styling, responsive layout).
+
+= 5.7.9 =
+*Release Date - 02 Jul 2026*
+
+**Seat Layout Drag-and-Drop Toolbar now Free**
+* The seat-grid toolbar (Door, Toilet, Driver, Window, Food Stall, Luggage, Stairs, Aisle, Emergency Exit, Eraser) is no longer gated behind a PRO license — available to every install.
+* Per-seat ticket price override remains a PRO-only feature; unaffected by this change.
+
+= 5.7.10 =
+*Release Date - 02 Jul 2026*
+
+* Added a "Double click to Remove" tooltip on placed seat-layout items (Door, Toilet, Driver, etc.) shown on hover, for discoverability.
 

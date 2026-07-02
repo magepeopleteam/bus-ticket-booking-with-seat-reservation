@@ -927,9 +927,12 @@ div#wbtm_date_start_route { height: 50px; }
 
 <div class="wbtm_search_result_holder">
     <?php
-    // Always show the filter sidebar when there are buses — the redesigned
-    // form forces wbtm_left_filter_show=on, but guard with bus count anyway.
-    $has_left_filter = count($bus_titles) > 0;
+    // Show the filter sidebar only for multi-bus route search results.
+    // When $post_id is set, this template is rendering a single bus's own
+    // booking widget (e.g. the "search from this bus" box on the bus's
+    // single page) — there's only ever one bus in that result set, so a
+    // filter sidebar is meaningless there; the list area goes full width.
+    $has_left_filter = count($bus_titles) > 0 && empty($post_id);
 
     // Always show all 4 departure-time options, regardless of whether the
     // current result set happens to have a bus in that window.
@@ -1017,21 +1020,33 @@ div#wbtm_date_start_route { height: 50px; }
             </div>
             <?php endif; ?>
 
-            <!-- Member Discount promo card -->
+            <!-- Member Discount promo card — content configurable under
+                 Settings → Promo Banner (WBTM_Global_settings.php). -->
+            <?php
+            $wbtm_promo_enabled = WBTM_Global_Function::get_settings('wbtm_promo_settings', 'promo_enabled', 'enable');
+            if ($wbtm_promo_enabled !== 'disable') :
+                $wbtm_promo_title      = WBTM_Global_Function::get_settings('wbtm_promo_settings', 'promo_title', __('Member Discount', 'bus-ticket-booking-with-seat-reservation'));
+                $wbtm_promo_desc       = WBTM_Global_Function::get_settings('wbtm_promo_settings', 'promo_desc', __('Save up to 15% on your first trip to {destination}.', 'bus-ticket-booking-with-seat-reservation'));
+                $wbtm_promo_btn_text   = WBTM_Global_Function::get_settings('wbtm_promo_settings', 'promo_button_text', __('Join Now', 'bus-ticket-booking-with-seat-reservation'));
+                $wbtm_promo_btn_link   = WBTM_Global_Function::get_settings('wbtm_promo_settings', 'promo_button_link', '');
+                // With a destination, fill the token in; without one, drop the
+                // "to {destination}" phrase entirely so the sentence still reads
+                // cleanly (mirrors the two hand-written variants this replaced).
+                if ($end_route) {
+                    $wbtm_promo_desc = str_replace('{destination}', $end_route, $wbtm_promo_desc);
+                } else {
+                    $wbtm_promo_desc = preg_replace('/\s*\bto\s*\{destination\}/i', '', $wbtm_promo_desc);
+                    $wbtm_promo_desc = str_replace('{destination}', '', $wbtm_promo_desc);
+                }
+            ?>
             <div class="wbtm-member-promo">
-                <p class="wbtm-member-promo-title"><?php esc_html_e('Member Discount', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+                <p class="wbtm-member-promo-title"><?php echo esc_html($wbtm_promo_title); ?></p>
                 <p class="wbtm-member-promo-desc">
-                    <?php
-                    if ($end_route) {
-                        /* translators: %s: destination city */
-                        printf(esc_html__('Save up to 15%% on your first trip to %s.', 'bus-ticket-booking-with-seat-reservation'), esc_html($end_route));
-                    } else {
-                        esc_html_e('Save up to 15% on your first trip.', 'bus-ticket-booking-with-seat-reservation');
-                    }
-                    ?>
+                    <?php echo esc_html($wbtm_promo_desc); ?>
                 </p>
-                <a href="#" class="wbtm-member-promo-btn"><?php esc_html_e('Join Now', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                <a href="<?php echo esc_url($wbtm_promo_btn_link ? $wbtm_promo_btn_link : '#'); ?>" class="wbtm-member-promo-btn"><?php echo esc_html($wbtm_promo_btn_text); ?></a>
             </div>
+            <?php endif; ?>
 
         </div><!-- /.wbtm-filter-card -->
     </div><!-- /.wbtm_bus_left_filter_holder -->

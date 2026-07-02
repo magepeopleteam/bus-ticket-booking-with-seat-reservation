@@ -375,8 +375,12 @@
 (function ($) {
     "use strict";
 
+    // Per-seat PRICE OVERRIDE stays Pro-gated; the drag-and-drop TOOLBAR
+    // (door/toilet/driver/etc.) is a free-plugin feature — separate flags.
     let proSeatFeaturesEnabled = !!(typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.pro_seat_features_enabled);
+    let seatToolbarEnabled = !!(typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_toolbar_enabled);
     let nonSeatItems = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.non_seat_items) ? wbtm_admin_var.non_seat_items : {};
+    let wbtmDblClickRemoveTitle = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.nonseat_badge_title) ? wbtm_admin_var.nonseat_badge_title : 'Double click to Remove';
 
     function isNonSeatItem(val) {
         return val && nonSeatItems.hasOwnProperty(val.toLowerCase().trim());
@@ -389,7 +393,7 @@
 
     function applyBadge($container, itemType) {
         $container.find('.wbtm_nonseat_badge').remove();
-        if (!proSeatFeaturesEnabled) {
+        if (!seatToolbarEnabled) {
             $container.removeClass('wbtm_has_nonseat');
             return;
         }
@@ -399,12 +403,12 @@
         }
         let icon = getNonSeatIcon(itemType);
         if (!icon) return;
-        let $badge = $('<span class="wbtm_nonseat_badge"><span class="fas ' + icon + '"></span></span>');
+        let $badge = $('<span class="wbtm_nonseat_badge" title="' + wbtmDblClickRemoveTitle + '"><span class="fas ' + icon + '"></span></span>');
         $container.addClass('wbtm_has_nonseat').append($badge);
     }
 
     function refreshAllBadges($scope) {
-        if (!proSeatFeaturesEnabled) {
+        if (!seatToolbarEnabled) {
             ($scope || $(document)).find('.wbtm_nonseat_badge').remove();
             ($scope || $(document)).find('.wbtm_seat_container').removeClass('wbtm_has_nonseat');
             return;
@@ -422,7 +426,7 @@
     }
 
     function initDragDrop($scope) {
-        if (!proSeatFeaturesEnabled) {
+        if (!seatToolbarEnabled) {
             return;
         }
         $scope = $scope || $(document);

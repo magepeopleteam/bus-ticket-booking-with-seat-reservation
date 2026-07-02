@@ -354,7 +354,7 @@
 						</div>
 						<div class="wbtm-bme__feat-preview">
 							<img class="wbtm-bme__rail-hero-img" id="wbtm-bme-hero-img" src="<?php echo esc_url( $hero ); ?>" alt="" style="<?php echo $hero ? '' : 'display:none'; ?>"/>
-							<span class="dashicons dashicons-bus wbtm-bme__rail-hero-ph" style="<?php echo $hero ? 'display:none' : ''; ?>"></span>
+							<span class="dashicons dashicons-format-image wbtm-bme__rail-hero-ph" style="<?php echo $hero ? 'display:none' : ''; ?>"></span>
 							<?php if ( $coach ) : ?>
 								<span class="wbtm-bme__rail-badge"><?php echo esc_html( $coach ); ?></span>
 							<?php endif; ?>

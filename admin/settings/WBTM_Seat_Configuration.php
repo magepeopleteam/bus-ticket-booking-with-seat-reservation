@@ -24,10 +24,10 @@
 				return isset(self::$non_seat_items[strtolower(trim($value))]);
 			}
 			public static function is_non_seat_item($value) {
-				return self::has_pro_seat_features() && self::is_non_seat_keyword($value);
+				return self::has_seat_toolbar_features() && self::is_non_seat_keyword($value);
 			}
 			public static function get_non_seat_item_data($value) {
-				if (!self::has_pro_seat_features()) {
+				if (!self::has_seat_toolbar_features()) {
 					return null;
 				}
 				$key = strtolower(trim($value));
@@ -38,7 +38,7 @@
 			}
 			public static function normalize_saved_seat_value($value) {
 				$value = trim((string) $value);
-				if ($value !== '' && !self::has_pro_seat_features() && self::is_non_seat_keyword($value)) {
+				if ($value !== '' && !self::has_seat_toolbar_features() && self::is_non_seat_keyword($value)) {
 					return '';
 				}
 				return $value;
@@ -53,8 +53,20 @@
 				 */
 				return self::has_pro_seat_features() && WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_price_override', 'yes') === 'yes';
 			}
+			/**
+			 * Per-seat ticket PRICE OVERRIDE remains a Pro feature — unrelated to
+			 * the drag-and-drop toolbar below, kept gated exactly as before.
+			 */
 			public static function has_pro_seat_features() {
 				return class_exists('WBTM_Functions') && WBTM_Functions::is_pro_active();
+			}
+			/**
+			 * Non-seat toolbar items (Door, Toilet, Driver, Window, Food Stall,
+			 * Luggage, Stairs, Aisle, Emergency Exit, Eraser) are a free-plugin
+			 * feature — always available, independent of Pro license status.
+			 */
+			public static function has_seat_toolbar_features() {
+				return true;
 			}
 			public static function get_toolbar_items() {
 				$toolbar = [];
@@ -446,7 +458,7 @@
 				<?php
 			}
 			public function render_seat_item_toolbar() {
-				if (!self::has_pro_seat_features()) {
+				if (!self::has_seat_toolbar_features()) {
 					return;
 				}
 				$items = self::get_toolbar_items();

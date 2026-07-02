@@ -543,6 +543,7 @@
 
 /* ── BOOKING BAR (search form restyle, scoped — markup untouched) ── */
 .wbtm_single_modern #wbtm_area { margin: 0; }
+.single-wbtm_bus #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder { margin-top: 10px; }
 .wbtm_single_modern .wbtm_search_area {
     background: #f8fafc;
     border: 1px solid #f0f2f5;
@@ -563,15 +564,9 @@
 /* Input fields → clean white pills */
 .wbtm_single_modern .wbtm_search_area .marker,
 .wbtm_single_modern .wbtm_search_area .calendar {
-    background: #fff;
-    border: 1.5px solid #e5e7eb;
+    border: none;
     border-radius: 12px;
     transition: border-color .2s, box-shadow .2s;
-}
-.wbtm_single_modern .wbtm_search_area .marker:focus-within,
-.wbtm_single_modern .wbtm_search_area .calendar:focus-within {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, .1);
 }
 .wbtm_single_modern .wbtm_search_area .marker input,
 .wbtm_single_modern .wbtm_search_area .calendar input {
