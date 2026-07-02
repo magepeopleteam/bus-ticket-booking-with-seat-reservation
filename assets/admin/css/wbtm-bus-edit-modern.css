@@ -514,6 +514,10 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .info_text,
 .wbtm-bme.wbtm_style .col_6 > span{color:var(--muted);font-weight:400;font-size:12.5px;line-height:1.45;margin:2px 0 0;padding:0;display:block;}
 
+/* Seat Template / Seat Numbering pickers: title, description, then field —
+   stacked in a single row instead of a two-column split. */
+.wbtm-bme.wbtm_style .wbtm_seat_template_picker > [class*="_dFlex_fdColumn"] > select{margin-top:10px;}
+
 /* Light "band" sub-headers */
 .wbtm-bme.wbtm_style [class*="_bgLight"]{
 	background:var(--band);border:1px solid var(--band-line);border-radius:12px;padding:13px 16px;margin:0px 0 5px;
@@ -558,6 +562,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme__seat-rowcols-grid > ._dFlex_justifyBetween_alignCenter{flex-direction:column;align-items:stretch;gap:6px;}
 .wbtm-bme__seat-rowcols-grid input.formControl{max-width:none !important;width:100%;}
 .wbtm-bme__seat-rowcols-grid > div label{font-size:13px !important;}
+.wbtm-bme.wbtm_style .layour-settings label.mp_zero{text-align:left;}
 .wbtm-bme__seat-rowcols-grid [class*="_dFlex_justifyBetween"]{text-align:left !important;}
 /* "Template chosen" mode: Seat Columns + Aisle Position hide (JS), leaving
    Seat Rows alone in the 3-column grid — span the full row and go back to a
@@ -567,6 +572,12 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme__seat-rowcols-grid > ._dFlex_justifyBetween_alignCenter.wbtm-bme__seat-row-solo input.formControl{width:auto;max-width:300px !important;}
 .wbtm-bme.wbtm_style .wbtm-bme__seat-generate-btn{width:100%;justify-content:center;}
+/* Seat Template / Seat Numbering selects only — scoped to .layour-settings
+   (the Lower Deck Layout Settings column, see redesignSeatLayoutSettings in
+   wbtm-bus-edit-modern.js). Outranks the generic ":first-child .formControl"
+   150px cap above by real specificity (extra .layour-settings class), not
+   just source order, so it only ever affects this column. */
+.wbtm-bme.wbtm_style .mpPanelBody._dFlex > ._dlayout_bR_bgWhite_padding_xs.layour-settings .formControl{max-width:100%;}
 
 /* Buttons (reused helpers) */
 .wbtm-bme.wbtm_style [class*="_themeButton"],
@@ -702,15 +713,17 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_selection_header > .col_6 > span{display:none;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_cards{display:flex;gap:16px;flex-wrap:wrap;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card{flex:1 1 240px;max-width:none;text-align:left;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card:hover{border-color:var(--brand);box-shadow:0 4px 12px var(--brand-ring);}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;margin:0 0 14px;border-radius:11px;background:var(--bg);color:#64748b;font-size:17px;line-height:1;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_icon .fas{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_title{font-size:14px;color:var(--ink);margin-bottom:4px;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_desc{font-size:12px;color:#64748b;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_check{display:flex;align-items:center;justify-content:center;top:14px;right:14px;width:22px;height:22px;border:0;box-shadow:0 0 0 2px #fff;color:transparent;background:transparent;font-size:10px;line-height:1;}
 .wbtm-bme.wbtm_style .wbtm_seat_type_card_check .fas{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
-.wbtm-bme.wbtm_style .wbtm_seat_type_card_active{border-color:var(--ok);background:var(--ok-soft);box-shadow:none;}
-.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_icon{background:var(--ok);color:#fff;}
-.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_check{background:var(--ok);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active{border-color:var(--brand);background:var(--brand-soft);box-shadow:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_icon{background:var(--brand);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_check{background:var(--brand);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_title{color:var(--brand-600);}
 
 /* ===================== Step 3 · Pricing & Route (compact, modern) ===================== */
 /* Tighten the section content wrappers so the whole step reads compact. */

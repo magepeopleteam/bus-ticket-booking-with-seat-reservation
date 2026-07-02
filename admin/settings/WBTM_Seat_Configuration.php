@@ -143,37 +143,29 @@
 				$aisle_title  = __('Choose aisle position after column (Left to Right). 0 = no automatic aisle.', 'bus-ticket-booking-with-seat-reservation');
 				?>
 				<div class="wbtm_seat_template_picker" data-scope="<?php echo esc_attr($scope); ?>">
-					<div class="_dFlex_justifyBetween_alignCenter">
-						<div class="col_6 _dFlex_fdColumn">
-							<label>
-								<?php esc_html_e('Seat Template', 'bus-ticket-booking-with-seat-reservation'); ?>
-							</label>
-							<span><?php esc_html_e('Generate a complete seat layout in one click, then edit freely as usual.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-						</div>
-						<div class="col_6 textRight">
-							<select class="formControl max_300 wbtm_seat_template_select">
-								<option value=""><?php esc_html_e('-- No template --', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-								<?php foreach ($templates as $key => $tpl) : ?>
-									<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($tpl['label']); ?></option>
-								<?php endforeach; ?>
-							</select>
-						</div>
+					<div class="_dFlex_fdColumn">
+						<label>
+							<?php esc_html_e('Seat Template', 'bus-ticket-booking-with-seat-reservation'); ?>
+						</label>
+						<span><?php esc_html_e('Generate a complete seat layout in one click, then edit freely as usual.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						<select class="formControl wbtm_seat_template_select">
+							<option value=""><?php esc_html_e('-- No template --', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+							<?php foreach ($templates as $key => $tpl) : ?>
+								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($tpl['label']); ?></option>
+							<?php endforeach; ?>
+						</select>
 					</div>
 					<div class="divider"></div>
-					<div class="_dFlex_justifyBetween_alignCenter">
-						<div class="col_6 _dFlex_fdColumn">
-							<label>
-								<?php esc_html_e('Seat Numbering', 'bus-ticket-booking-with-seat-reservation'); ?>
-							</label>
-							<span><?php esc_html_e('How seat labels are generated when the template is applied.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-						</div>
-						<div class="col_6 textRight">
-							<select class="formControl max_300 wbtm_seat_numbering_select">
-								<?php foreach ($schemes as $key => $label) : ?>
-									<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
-								<?php endforeach; ?>
-							</select>
-						</div>
+					<div class="_dFlex_fdColumn">
+						<label>
+							<?php esc_html_e('Seat Numbering', 'bus-ticket-booking-with-seat-reservation'); ?>
+						</label>
+						<span><?php esc_html_e('How seat labels are generated when the template is applied.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+						<select class="formControl wbtm_seat_numbering_select">
+							<?php foreach ($schemes as $key => $label) : ?>
+								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
+							<?php endforeach; ?>
+						</select>
 					</div>
 					<div class="divider"></div>
 					<div class="_dFlex_justifyBetween_alignCenter">
@@ -372,7 +364,7 @@
                                 <label>
 									<?php esc_html_e('Enable Multiple Cabin/Coach Configuration', 'bus-ticket-booking-with-seat-reservation'); ?>
                                 </label>
-                                <span><?php esc_html_e('With Enabling this option you can configure multiple cabin option in single booking area, this is mostly needed for Train Ticket where it has multiple cabin.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                <span><?php esc_html_e('Enable multiple cabin option booking, commonly used for train ticket reservations.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                             </div>
                             <div class="col_6 textRight">
 								<?php WBTM_Custom_Layout::switch_button('wbtm_cabin_mode_enabled', $checked_cabin_mode); ?>
