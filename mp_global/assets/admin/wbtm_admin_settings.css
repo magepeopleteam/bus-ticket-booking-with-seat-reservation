@@ -174,3 +174,90 @@ div.wbtm_style .info_text span {margin: 0 5px 0 0;}
 	font-size: 12px;
 	color: #666;
 }
+
+/* Seat Type card selector (replaces the wbtm_seat_type_conf <select>). The
+   real <select> stays in the DOM, visually hidden, and drives every existing
+   behavior (collapse sections, cabin-mode coupling) via wbtm_admin_settings.js. */
+.wbtm_seat_type_conf_hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+.wbtm_seat_type_cards {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+.wbtm_seat_type_card {
+	position: relative;
+	flex: 1 1 220px;
+	max-width: 320px;
+	text-align: center;
+	padding: 24px 20px;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	background: #fff;
+	cursor: pointer;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wbtm_seat_type_card:hover {
+	border-color: #94a3b8;
+}
+.wbtm_seat_type_card_icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 72px;
+	height: 72px;
+	margin: 0 auto 16px;
+	border-radius: 50%;
+	background: #f1f5f9;
+	color: #64748b;
+	font-size: 26px;
+}
+.wbtm_seat_type_card_title {
+	display: block;
+	font-size: 16px;
+	font-weight: 700;
+	color: #0f172a;
+	margin-bottom: 6px;
+}
+.wbtm_seat_type_card_desc {
+	display: block;
+	font-size: 12.5px;
+	color: #64748b;
+	line-height: 1.5;
+}
+.wbtm_seat_type_card_check {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	border: 1px solid #cbd5e1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	color: transparent;
+}
+.wbtm_seat_type_card_active {
+	border-color: #22c55e;
+	box-shadow: 0 0 0 1px #22c55e;
+}
+.wbtm_seat_type_card_active .wbtm_seat_type_card_icon {
+	background: #ecfdf3;
+	color: #22c55e;
+}
+.wbtm_seat_type_card_active .wbtm_seat_type_card_check {
+	border-color: #22c55e;
+	background: #22c55e;
+	color: #fff;
+}

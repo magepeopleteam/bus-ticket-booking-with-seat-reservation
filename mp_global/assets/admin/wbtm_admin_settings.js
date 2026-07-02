@@ -653,6 +653,31 @@ function wbtm_load_sortable_datepicker(parent, item) {
         }
     }
 
+    // Reflects the real <select name="wbtm_seat_type_conf"> value (kept in the
+    // DOM, visually hidden, for validation/collapse compatibility) onto the
+    // wbtm_seat_type_card UI that replaced the visible dropdown.
+    function syncSeatTypeCards(value) {
+        $('.wbtm_seat_type_card').removeClass('wbtm_seat_type_card_active');
+        $('.wbtm_seat_type_card[data-seat-type-card="' + value + '"]').addClass('wbtm_seat_type_card_active');
+    }
+
+    // Card click/keyboard drives the real select so every existing behavior
+    // wired to its change event (collapse sections, cabin-mode coupling below)
+    // keeps working unchanged.
+    $(document).on('click', '.wbtm_seat_type_card', function () {
+        let value = $(this).data('seat-type-card');
+        let $select = $('select[name="wbtm_seat_type_conf"]');
+        if ($select.val() !== value) {
+            $select.val(value).trigger('change');
+        }
+    });
+    $(document).on('keydown', '.wbtm_seat_type_card', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).trigger('click');
+        }
+    });
+
     // Initialize cabin field visibility on page load
     $(document).ready(function() {
         // Initialize individual cabin toggles
@@ -660,11 +685,13 @@ function wbtm_load_sortable_datepicker(parent, item) {
             toggleCabinFields($(this));
         });
 
+        syncSeatTypeCards($('select[name="wbtm_seat_type_conf"]').val());
+
         // Initialize master cabin mode toggle
         let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
         if (cabin_mode_checkbox.length > 0) {
             toggleCabinModeFields(cabin_mode_checkbox);
-            
+
             // Also check seat type selection - if cabin mode is enabled but seat type is 'without_seat_plan',
             // we should still show the traditional interface
             let seat_type = $('select[name="wbtm_seat_type_conf"]').val();
@@ -715,6 +742,8 @@ function wbtm_load_sortable_datepicker(parent, item) {
             // If seat type is 'wbtm_seat_plan' but cabin mode is disabled, show traditional seat plan
             traditional_seat_plan.show();
         }
+
+        syncSeatTypeCards(seat_type);
     });
 
 })(jQuery);

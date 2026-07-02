@@ -685,8 +685,32 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 /* "Add New Row" + inline "Enable Rotation" toggle, one pair per deck. */
 .wbtm-bme.wbtm_style .wbtm_seat_row_actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .wbtm-bme.wbtm_style .wbtm_seat_row_actions .wbtm_add_item{margin-top:0;}
-.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_toggle{display:inline-flex;align-items:center;gap:6px;}
-.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_label{font-size:12px;font-weight:600;color:var(--ink-2);white-space:nowrap;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_toggle{display:inline-flex;align-items:center;gap:6px;margin-left:auto;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_text_toggle{display:inline-flex;align-items:center;cursor:pointer;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_checkbox{display:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_inline_label{display:inline-flex;align-items:center;gap:6px;font-size:10px;background:var(--brand-soft);border-radius:10px;font-weight:600;color:#606060;border:1px solid #dbd5d5;padding:5px;white-space:nowrap;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_icon{color:#606060;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_text_disable{display:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_enable{display:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_disable{display:inline;}
+
+/* Seat Type Selection — left-aligned card pair (base, unscoped styling lives in
+   wbtm_admin_settings.css for the classic editor; these higher-specificity
+   overrides restyle just the modern editor to match the approved design). */
+.wbtm-bme.wbtm_style .wbtm_seat_type_selection_header label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.wbtm-bme.wbtm_style .wbtm_seat_type_selection_header .textRequired{color:var(--brand);}
+.wbtm-bme.wbtm_style .wbtm_seat_type_selection_header > .col_6 > span{display:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_cards{display:flex;gap:16px;flex-wrap:wrap;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card{flex:1 1 240px;max-width:none;text-align:left;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;margin:0 0 14px;border-radius:11px;background:var(--bg);color:#64748b;font-size:17px;line-height:1;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_icon .fas{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_title{font-size:14px;color:var(--ink);margin-bottom:4px;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_desc{font-size:12px;color:#64748b;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_check{display:flex;align-items:center;justify-content:center;top:14px;right:14px;width:22px;height:22px;border:0;box-shadow:0 0 0 2px #fff;color:transparent;background:transparent;font-size:10px;line-height:1;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_check .fas{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active{border-color:var(--ok);background:var(--ok-soft);box-shadow:none;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_icon{background:var(--ok);color:#fff;}
+.wbtm-bme.wbtm_style .wbtm_seat_type_card_active .wbtm_seat_type_card_check{background:var(--ok);color:#fff;}
 
 /* ===================== Step 3 · Pricing & Route (compact, modern) ===================== */
 /* Tighten the section content wrappers so the whole step reads compact. */

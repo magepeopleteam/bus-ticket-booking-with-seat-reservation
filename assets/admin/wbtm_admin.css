@@ -122,12 +122,38 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
+}
+.wbtm_seat_rotation_text_toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.wbtm_seat_rotation_checkbox {
+  display: none;
 }
 .wbtm_seat_rotation_inline_label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #475569;
+  color: #606060;
+  border: 1px solid #ddd;
+  padding: 5px;
   white-space: nowrap;
+}
+.wbtm_seat_rotation_icon {
+  color: #606060;
+}
+.wbtm_seat_rotation_text_disable {
+  display: none;
+}
+.wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_enable {
+  display: none;
+}
+.wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_disable {
+  display: inline;
 }
 
 /* Ensure proper spacing for rotation controls */

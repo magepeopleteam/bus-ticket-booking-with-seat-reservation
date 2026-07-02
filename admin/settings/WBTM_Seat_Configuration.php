@@ -250,6 +250,10 @@
 			}
 			public static function count_actual_seats($post_id) {
 				$total = 0;
+				// Fallback stays 'wbtm_without_seat_plan' (not the admin-UI default below) —
+				// this feeds live seat-availability/checkout math (WBTM_Woocommerce.php), so
+				// any existing bus saved before this field existed must keep its original
+				// counting behavior rather than silently switching to seat-grid counting.
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
 				if ($seat_type !== 'wbtm_seat_plan') {
 					return (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
@@ -306,7 +310,15 @@
 				add_action('wp_ajax_wbtm_create_seat_plan_dd', [$this, 'wbtm_create_seat_plan_dd']);
 			}
 			public function tab_content($post_id) {
+				// Fallback stays 'wbtm_without_seat_plan' — same as count_actual_seats() —
+				// so an existing bus that predates this field (no meta saved) keeps
+				// rendering exactly as it always has. Only a brand-new, never-published
+				// post (auto-draft) is forced to 'wbtm_seat_plan' below, satisfying the
+				// "Seat Plan selected by default" request without touching existing buses.
 				$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan');
+				if (empty(get_post_meta($post_id, 'wbtm_seat_type_conf', true)) && get_post_status($post_id) === 'auto-draft') {
+					$seat_type = 'wbtm_seat_plan';
+				}
 				$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
 				$cabin_count = count($cabin_config);
@@ -358,9 +370,9 @@
                         <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
                             <div class="col_6 _dFlex_fdColumn">
                                 <label>
-									<?php esc_html_e('Enable Cabin/Coach Configuration', 'bus-ticket-booking-with-seat-reservation'); ?>
+									<?php esc_html_e('Enable Multiple Cabin/Coach Configuration', 'bus-ticket-booking-with-seat-reservation'); ?>
                                 </label>
-                                <span><?php esc_html_e('Turn ON to configure multiple cabins/coaches, turn OFF for single bus/train.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                <span><?php esc_html_e('With Enabling this option you can configure multiple cabin option in single booking area, this is mostly needed for Train Ticket where it has multiple cabin.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                             </div>
                             <div class="col_6 textRight">
 								<?php WBTM_Custom_Layout::switch_button('wbtm_cabin_mode_enabled', $checked_cabin_mode); ?>
@@ -392,20 +404,34 @@
                                 <span><?php esc_html_e('Here you can plan seat of the bus/train.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                             </div>
                         </div>
-                        <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
+                        <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter wbtm_seat_type_selection_header">
                             <div class="col_6 _dFlex_fdColumn">
                                 <label>
-									<?php esc_html_e('Seat Type', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i>
+									<?php esc_html_e('Seat Type Selection', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i>
                                 </label>
                                 <span><?php WBTM_Settings::info_text('wbtm_seat_type_conf'); ?></span>
                             </div>
-                            <div class="col_6 textRight">
-                                <select class="formControl max_300" name="wbtm_seat_type_conf" data-collapse-target required>
-                                    <option disabled selected><?php esc_html_e('Please select ...', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                    <option value="wbtm_seat_plan" data-option-target="#wbtm_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                    <option value="wbtm_without_seat_plan" data-option-target="#wbtm_without_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
-                                </select>
+                        </div>
+                        <div class="_dLayout_padding">
+                            <div class="wbtm_seat_type_cards">
+                                <div class="wbtm_seat_type_card <?php echo esc_attr($seat_type == 'wbtm_seat_plan' ? 'wbtm_seat_type_card_active' : ''); ?>" data-seat-type-card="wbtm_seat_plan" role="button" tabindex="0">
+                                    <span class="wbtm_seat_type_card_check"><span class="fas fa-check"></span></span>
+                                    <span class="wbtm_seat_type_card_icon"><span class="fas fa-th-large"></span></span>
+                                    <span class="wbtm_seat_type_card_title"><?php esc_html_e('Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                    <span class="wbtm_seat_type_card_desc"><?php esc_html_e('Show seat layout and allow customers to select their seats manually during booking.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                </div>
+                                <div class="wbtm_seat_type_card <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'wbtm_seat_type_card_active' : ''); ?>" data-seat-type-card="wbtm_without_seat_plan" role="button" tabindex="0">
+                                    <span class="wbtm_seat_type_card_check"><span class="fas fa-check"></span></span>
+                                    <span class="wbtm_seat_type_card_icon"><span class="fas fa-ban"></span></span>
+                                    <span class="wbtm_seat_type_card_title"><?php esc_html_e('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                    <span class="wbtm_seat_type_card_desc"><?php esc_html_e('Do not show seat layout. Customers will not select seats; system assigns automatically.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                </div>
                             </div>
+                            <select class="wbtm_seat_type_conf_hidden" name="wbtm_seat_type_conf" data-collapse-target required>
+                                <option disabled <?php echo esc_attr($seat_type ? '' : 'selected'); ?>><?php esc_html_e('Please select ...', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                <option value="wbtm_seat_plan" data-option-target="#wbtm_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                <option value="wbtm_without_seat_plan" data-option-target="#wbtm_without_seat_plan" <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'selected' : ''); ?>><?php esc_html_e('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                            </select>
                         </div>
                         <div class="_dLayout_padding <?php echo esc_attr($seat_type == 'wbtm_without_seat_plan' ? 'mActive' : ''); ?>" data-collapse="#wbtm_without_seat_plan">
                             <div class="_dFlex_justifyBetween_alignCenter">
@@ -588,8 +614,14 @@
                         <div class="wbtm_seat_row_actions">
 							<?php WBTM_Custom_Layout::add_new_button(esc_html__('Add New Row', 'bus-ticket-booking-with-seat-reservation')); ?>
                             <span class="wbtm_seat_rotation_inline_toggle">
-								<?php WBTM_Custom_Layout::switch_button($rotation_key, $checked_rotation); ?>
-                                <span class="wbtm_seat_rotation_inline_label"><?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                <label class="wbtm_seat_rotation_text_toggle">
+                                    <input type="checkbox" name="<?php echo esc_attr($rotation_key); ?>" class="wbtm_seat_rotation_checkbox" <?php echo esc_attr($checked_rotation); ?>>
+                                    <span class="wbtm_seat_rotation_inline_label">
+                                        <span class="fas fa-redo-alt wbtm_seat_rotation_icon"></span>
+                                        <span class="wbtm_seat_rotation_text_enable"><?php esc_html_e('Enable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                        <span class="wbtm_seat_rotation_text_disable"><?php esc_html_e('Disable Rotation', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                    </span>
+                                </label>
                             </span>
                         </div>
                         <div class="wbtm_hidden_content">
