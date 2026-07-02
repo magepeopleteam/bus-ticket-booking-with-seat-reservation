@@ -29,6 +29,10 @@
 				'wbtm_bus_feature',
 			];
 
+			/** Only Bus Features carries an icon — same term meta key WTBM_Features_Seating already uses elsewhere in the plugin, so both stay in sync. */
+			const FEATURE_TAXONOMY  = 'wbtm_bus_feature';
+			const FEATURE_ICON_META = 'wbtm_bus_feature_icon';
+
 			public function __construct() {
 				add_filter('screen_options_show_screen', [$this, 'maybe_hide_screen_options'], 10, 2);
 				add_action('admin_enqueue_scripts', [$this, 'enqueue']);
@@ -116,64 +120,25 @@
 				];
 			}
 
-			/**
-			 * Flat, depth-annotated term list for the popup's parent select —
-			 * same indentation convention wp_dropdown_categories() uses, built
-			 * by hand here since the popup has no server round trip for Add.
-			 *
-			 * $exclude_term_id (edit mode only) drops that term and its whole
-			 * descendant subtree, so a term can never be offered as its own
-			 * parent — wp_update_term() already guards against that server-side,
-			 * this just keeps the dropdown from offering an invalid choice.
-			 */
-			private function get_parent_options($taxonomy, $exclude_term_id = 0) {
+			/** term_id => icon class, for every Bus Feature term that has one — used to prepend the icon before the name in the list table. */
+			private function get_feature_icons() {
 				$terms = get_terms(
 					[
-						'taxonomy'   => $taxonomy,
+						'taxonomy'   => self::FEATURE_TAXONOMY,
 						'hide_empty' => false,
 					]
 				);
 				if (is_wp_error($terms) || empty($terms)) {
 					return [];
 				}
-				$by_parent = [];
+				$icons = [];
 				foreach ($terms as $term) {
-					$by_parent[$term->parent][] = $term;
-				}
-
-				$skip = [];
-				if ($exclude_term_id > 0) {
-					$collect = function ($id) use (&$collect, $by_parent, &$skip) {
-						$skip[$id] = true;
-						if (empty($by_parent[$id])) {
-							return;
-						}
-						foreach ($by_parent[$id] as $child) {
-							$collect((int) $child->term_id);
-						}
-					};
-					$collect((int) $exclude_term_id);
-				}
-
-				$options = [];
-				$walk    = function ($parent_id, $depth) use (&$walk, $by_parent, &$options, $skip) {
-					if (empty($by_parent[$parent_id])) {
-						return;
+					$icon = get_term_meta($term->term_id, self::FEATURE_ICON_META, true);
+					if ($icon) {
+						$icons[$term->term_id] = $icon;
 					}
-					foreach ($by_parent[$parent_id] as $term) {
-						$term_id = (int) $term->term_id;
-						if (isset($skip[$term_id])) {
-							continue;
-						}
-						$options[] = [
-							'id'   => $term_id,
-							'name' => str_repeat('— ', $depth) . $term->name,
-						];
-						$walk($term_id, $depth + 1);
-					}
-				};
-				$walk(0, 0);
-				return $options;
+				}
+				return $icons;
 			}
 
 			/**
@@ -200,7 +165,6 @@
 
 				$args = [
 					'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
-					'parent'      => isset($_POST['parent']) ? absint($_POST['parent']) : 0,
 				];
 				$slug = isset($_POST['slug']) ? sanitize_title(wp_unslash($_POST['slug'])) : '';
 				if ($slug !== '') {
@@ -211,6 +175,10 @@
 
 				if (is_wp_error($result)) {
 					wp_send_json_error(['message' => $result->get_error_message()], 400);
+				}
+
+				if ($taxonomy === self::FEATURE_TAXONOMY && isset($_POST[self::FEATURE_ICON_META])) {
+					update_term_meta((int) $result['term_id'], self::FEATURE_ICON_META, sanitize_text_field(wp_unslash($_POST[self::FEATURE_ICON_META])));
 				}
 
 				wp_send_json_success(['message' => esc_html__('Added.', 'bus-ticket-booking-with-seat-reservation')]);
@@ -240,12 +208,11 @@
 
 				wp_send_json_success(
 					[
-						'id'            => (int) $term->term_id,
-						'name'          => $term->name,
-						'slug'          => $term->slug,
-						'description'   => $term->description,
-						'parent'        => (int) $term->parent,
-						'parentOptions' => $this->get_parent_options($taxonomy, (int) $term->term_id),
+						'id'          => (int) $term->term_id,
+						'name'        => $term->name,
+						'slug'        => $term->slug,
+						'description' => $term->description,
+						'icon'        => $taxonomy === self::FEATURE_TAXONOMY ? get_term_meta($term->term_id, self::FEATURE_ICON_META, true) : '',
 					]
 				);
 			}
@@ -270,10 +237,14 @@
 					wp_send_json_error(['message' => esc_html__('Please enter a name.', 'bus-ticket-booking-with-seat-reservation')], 422);
 				}
 
+				// No 'parent' key here on purpose: wp_update_term() merges this
+				// array over the term's own current data, so omitting it keeps
+				// whatever parent the term already has rather than resetting it
+				// to top-level (there's no parent field in this popup to submit
+				// a new value from).
 				$args = [
 					'name'        => $name,
 					'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
-					'parent'      => isset($_POST['parent']) ? absint($_POST['parent']) : 0,
 				];
 				$slug = isset($_POST['slug']) ? sanitize_title(wp_unslash($_POST['slug'])) : '';
 				if ($slug !== '') {
@@ -284,6 +255,10 @@
 
 				if (is_wp_error($result)) {
 					wp_send_json_error(['message' => $result->get_error_message()], 400);
+				}
+
+				if ($taxonomy === self::FEATURE_TAXONOMY && isset($_POST[self::FEATURE_ICON_META])) {
+					update_term_meta($term_id, self::FEATURE_ICON_META, sanitize_text_field(wp_unslash($_POST[self::FEATURE_ICON_META])));
 				}
 
 				wp_send_json_success(['message' => esc_html__('Updated.', 'bus-ticket-booking-with-seat-reservation')]);
@@ -331,6 +306,24 @@
 				$singular_lc = function_exists('mb_strtolower') ? mb_strtolower($singular) : strtolower($singular);
 				$copy      = $this->copy_for($taxonomy);
 
+				// Bus Features gets an icon field, reusing the plugin's existing
+				// icon-library picker (WBTM_Select_Icon_image) verbatim rather
+				// than building a second one — do_action() both renders the
+				// hidden-input/preview/button markup we inject into the popup
+				// AND (as a side effect) registers the shared picker popup to
+				// print once in admin_footer, exactly like WTBM_Features_Seating
+				// does for the classic term-edit screen and the bus-edit modal.
+				$icon_field_html = '';
+				$feature_icons   = [];
+				if ($taxonomy === self::FEATURE_TAXONOMY) {
+					if (has_action('wbtm_input_add_icon')) {
+						ob_start();
+						do_action('wbtm_input_add_icon', self::FEATURE_ICON_META);
+						$icon_field_html = ob_get_clean();
+					}
+					$feature_icons = $this->get_feature_icons();
+				}
+
 				wp_enqueue_style('wbtm-taxonomy-modern', WBTM_PLUGIN_URL . '/assets/admin/css/wbtm-taxonomy-modern.css', [], $this->asset_ver('/assets/admin/css/wbtm-taxonomy-modern.css'));
 				wp_enqueue_script('wbtm-taxonomy-modern', WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-taxonomy-modern.js', [], $this->asset_ver('/assets/admin/js/wbtm-taxonomy-modern.js'), true);
 
@@ -349,7 +342,9 @@
 						'getNonce'       => wp_create_nonce('wbtm_get_bus_type'),
 						'editNonce'      => wp_create_nonce('wbtm_edit_bus_type'),
 						'deleteNonce'    => wp_create_nonce('wbtm_delete_bus_type'),
-						'parentOptions'  => $this->get_parent_options($taxonomy),
+						'iconFieldHtml'  => $icon_field_html,
+						'iconMetaKey'    => self::FEATURE_ICON_META,
+						'featureIcons'   => $feature_icons,
 						'proUrl'         => admin_url('edit.php?post_type=wbtm_bus&page=admin/WBTM_Welcome'),
 						'strings'        => [
 							/* translators: %s: singular taxonomy label, e.g. "Bus Type" */
@@ -360,15 +355,12 @@
 							'slug'             => esc_html__('Slug', 'bus-ticket-booking-with-seat-reservation'),
 							'slugPlaceholder'  => esc_attr($copy['slugPlaceholder']),
 							'slugHelp'         => esc_html__('The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.', 'bus-ticket-booking-with-seat-reservation'),
-							/* translators: %s: singular taxonomy label, e.g. "Bus Type" */
-							'parent'           => sprintf(esc_html__('Parent %s', 'bus-ticket-booking-with-seat-reservation'), $singular),
-							'parentNone'       => esc_html__('None', 'bus-ticket-booking-with-seat-reservation'),
-							/* translators: %s: singular taxonomy label, lowercased, e.g. "bus type" */
-							'parentHelp'       => sprintf(esc_html__('Assign a parent %s to create a hierarchy.', 'bus-ticket-booking-with-seat-reservation'), $singular_lc),
 							'description'      => esc_html__('Description', 'bus-ticket-booking-with-seat-reservation'),
 							/* translators: %s: singular taxonomy label, lowercased, e.g. "bus type" */
 							'descPlaceholder'  => sprintf(esc_attr__('Enter a detailed description of this %s…', 'bus-ticket-booking-with-seat-reservation'), $singular_lc),
 							'descHelp'         => esc_html__('The description is not prominent by default; however, some themes may show it.', 'bus-ticket-booking-with-seat-reservation'),
+							'icon'             => esc_html__('Icon', 'bus-ticket-booking-with-seat-reservation'),
+							'iconHelp'         => esc_html__('Shown before the name wherever this feature is listed.', 'bus-ticket-booking-with-seat-reservation'),
 							'actionsColumn'    => esc_html__('Actions', 'bus-ticket-booking-with-seat-reservation'),
 							'cancel'           => esc_html__('Cancel', 'bus-ticket-booking-with-seat-reservation'),
 							/* translators: %s: singular taxonomy label, e.g. "Bus Type" */

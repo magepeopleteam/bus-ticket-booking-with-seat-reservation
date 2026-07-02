@@ -219,25 +219,54 @@
 		});
 	}
 
+	/**
+	 * The name is no longer a link to term.php — every action already has
+	 * its own icon in the Actions column, so this just stops the name
+	 * itself from navigating away. Keeps the same "row-title" class (a
+	 * <span> now, not an <a>) so the existing color/weight styling and
+	 * prependFeatureIcons() below still find and style it the same way.
+	 */
+	function removeNameLinks(wrap) {
+		wrap.querySelectorAll('#col-right table.wp-list-table tbody td.column-name a.row-title').forEach(function (link) {
+			var span = el('span', { class: 'row-title' });
+			while (link.firstChild) {
+				span.appendChild(link.firstChild);
+			}
+			link.replaceWith(span);
+		});
+	}
+
+	/**
+	 * Bus Features only: prepends the feature's chosen icon before its name
+	 * in the list table — same "<span class='wbtm_bus_feature_icon {class}'>"
+	 * convention already used in the bus-edit feature checklist, so the
+	 * icon font (already loaded admin-wide) renders it identically here.
+	 */
+	function prependFeatureIcons(wrap) {
+		if (!cfg.featureIcons) {
+			return;
+		}
+		wrap.querySelectorAll('#col-right table.wp-list-table tbody tr').forEach(function (row) {
+			var icon = cfg.featureIcons[String(getRowTermId(row))];
+			if (!icon) {
+				return;
+			}
+			var titleLink = row.querySelector('.column-name .row-title');
+			if (!titleLink || titleLink.querySelector('.wbtm_bus_feature_icon')) {
+				return;
+			}
+			titleLink.insertAdjacentElement('afterbegin', el('span', { class: 'wbtm_bus_feature_icon ' + icon }));
+		});
+	}
+
 	/* ---------------------------------------------------------------- *
 	 *  Popup — shared by Add (button) and Edit (pencil icon). Same form,
 	 *  different title/submit label/AJAX action; Edit additionally does a
-	 *  quick round trip on open to fetch fresh field values + a parent
-	 *  list with the term's own subtree excluded.
+	 *  quick round trip on open to fetch fresh field values.
 	 * ---------------------------------------------------------------- */
 
 	var modalEls = null;
 	var modalState = { mode: 'add', termId: 0 };
-
-	function buildParentOptions(select, options) {
-		select.innerHTML = '';
-		select.appendChild(el('option', { value: '0' }, strings.parentNone || 'None'));
-		(options || cfg.parentOptions || []).forEach(function (term) {
-			var opt = el('option', { value: String(term.id) });
-			opt.textContent = term.name;
-			select.appendChild(opt);
-		});
-	}
 
 	function buildModal() {
 		if (modalEls) {
@@ -266,15 +295,17 @@
 					'<p>' + (strings.slugHelp || '') + '</p>' +
 				'</div>' +
 				'<div class="form-field">' +
-					'<label for="wbtm-modal-parent">' + (strings.parent || '') + '</label>' +
-					'<select id="wbtm-modal-parent"></select>' +
-					'<p>' + (strings.parentHelp || '') + '</p>' +
-				'</div>' +
-				'<div class="form-field">' +
 					'<label for="wbtm-modal-description">' + (strings.description || '') + '</label>' +
 					'<textarea id="wbtm-modal-description" placeholder="' + (strings.descPlaceholder || '') + '"></textarea>' +
 					'<p>' + (strings.descHelp || '') + '</p>' +
 				'</div>' +
+				(cfg.iconFieldHtml ?
+					'<div class="form-field wbtm-icon-field">' +
+						'<label>' + (strings.icon || 'Icon') + '</label>' +
+						cfg.iconFieldHtml +
+						'<p>' + (strings.iconHelp || '') + '</p>' +
+					'</div>'
+				: '') +
 			'</div>' +
 			'<div class="wbtm-modal-footer">' +
 				'<button type="button" class="button wbtm-modal-cancel">' + (strings.cancel || '') + '</button>' +
@@ -282,8 +313,6 @@
 			'</div>';
 
 		document.body.appendChild(overlay);
-
-		buildParentOptions(dialog.querySelector('#wbtm-modal-parent'));
 
 		var titleEl = dialog.querySelector('.wbtm-modal-header h2');
 		var closeBtn = dialog.querySelector('.wbtm-modal-close');
@@ -315,12 +344,47 @@
 		errorEl.classList.add('wbtm-hidden');
 	}
 
+	/**
+	 * Mirrors the show/hide logic WBTM_Select_Icon_image::load_icon() applies
+	 * server-side based on whether an icon is already set — the injected
+	 * markup always starts in the "no icon" state (it was rendered once,
+	 * empty, for Add mode), so Edit has to replicate the toggle in JS.
+	 */
+	function setIconFieldState(modal, iconClass) {
+		var area = modal.dialog.querySelector('.wbtm-icon-field .wbtm_add_icon_image_area');
+		if (!area) {
+			return;
+		}
+		var hiddenInput = area.querySelector('input[type="hidden"]');
+		var preview = area.querySelector('[data-add-icon]');
+		var previewItem = area.querySelector('.wbtm_icon_item');
+		var addButtonArea = area.querySelector('.wbtm_add_icon_image_button_area');
+
+		if (hiddenInput) {
+			hiddenInput.value = iconClass || '';
+		}
+		if (preview) {
+			preview.setAttribute('class', iconClass || '');
+		}
+		if (previewItem) {
+			previewItem.style.display = iconClass ? '' : 'none';
+		}
+		if (addButtonArea) {
+			addButtonArea.style.display = iconClass ? 'none' : '';
+		}
+	}
+
+	function getIconFieldValue(dialog) {
+		var input = dialog.querySelector('.wbtm-icon-field .wbtm_add_icon_image_area input[type="hidden"]');
+		return input ? input.value : '';
+	}
+
 	function resetModalFields(modal) {
 		clearError();
 		modal.dialog.querySelector('#wbtm-modal-name').value = '';
 		modal.dialog.querySelector('#wbtm-modal-slug').value = '';
 		modal.dialog.querySelector('#wbtm-modal-description').value = '';
-		buildParentOptions(modal.dialog.querySelector('#wbtm-modal-parent'), cfg.parentOptions);
+		setIconFieldState(modal, '');
 	}
 
 	function openAddModal() {
@@ -376,8 +440,7 @@
 				modal.dialog.querySelector('#wbtm-modal-name').value = data.name || '';
 				modal.dialog.querySelector('#wbtm-modal-slug').value = data.slug || '';
 				modal.dialog.querySelector('#wbtm-modal-description').value = data.description || '';
-				buildParentOptions(modal.dialog.querySelector('#wbtm-modal-parent'), data.parentOptions);
-				modal.dialog.querySelector('#wbtm-modal-parent').value = String(data.parent || 0);
+				setIconFieldState(modal, data.icon || '');
 				modal.submitBtn.disabled = false;
 			})
 			.catch(function () {
@@ -414,8 +477,10 @@
 		}
 		body.set('tag-name', name);
 		body.set('slug', dialog.querySelector('#wbtm-modal-slug').value.trim());
-		body.set('parent', dialog.querySelector('#wbtm-modal-parent').value);
 		body.set('description', dialog.querySelector('#wbtm-modal-description').value);
+		if (cfg.iconFieldHtml && cfg.iconMetaKey) {
+			body.set(cfg.iconMetaKey, getIconFieldValue(dialog));
+		}
 
 		modalEls.submitBtn.disabled = true;
 		modalEls.submitBtn.textContent = isEdit ? (strings.saving || 'Saving…') : (strings.submitting || 'Adding…');
@@ -516,8 +581,10 @@
 			buildPromoPanel(wrap);
 			removeTableFooter(wrap);
 			buildActionsColumn(wrap);
+			removeNameLinks(wrap);
 			removeBulkSelection(wrap);
 			badgeSlugs(wrap);
+			prependFeatureIcons(wrap);
 		} finally {
 			document.body.classList.add('wbtm-taxonomy-ready');
 		}
@@ -529,3 +596,97 @@
 		init();
 	}
 })();
+
+/**
+ * Icon picker popup — live search + "no results" state. Same feature
+ * already shipped for the bus-edit "Add Feature" modal (see
+ * wbtm-bus-edit-modern.js), ported verbatim so the shared
+ * #wbtm_add_icon_popup widget behaves identically wherever it's opened
+ * from. Only ever finds anything to attach to on the Bus Features screen
+ * (the only one of the 5 taxonomies with an icon field), self-gating via
+ * the popup's absence everywhere else. jQuery is safe here — it's already
+ * a hard dependency of the picker's own click handlers, which is what
+ * renders the popup in the first place.
+ */
+(function ($) {
+	'use strict';
+	if (!$) {
+		return;
+	}
+
+	function initIconPickerSearch() {
+		var $popup = $('.wbtm_add_icon_popup');
+		if (!$popup.length || $popup.data('wbtm-search-wired')) {
+			return;
+		}
+		$popup.data('wbtm-search-wired', true);
+
+		$popup.find('.popup_all_icon').append(
+			'<div class="wbtm-bme-icon-noresults">' +
+				'<span class="fas fa-search wbtm-bme-nores-icon"></span>' +
+				'<p>No icons match <strong class="q"></strong></p>' +
+			'</div>'
+		);
+
+		function resetSearch() {
+			var $input = $popup.find('input[name="mp_select_icon_name"]');
+			if ($input.val()) {
+				$input.val('');
+				$popup.find('.popupTabItem').show();
+				$popup.find('.iconItem').show();
+				$popup.find('.wbtm-bme-icon-noresults').hide();
+			}
+		}
+
+		$(document).on('click', '.wbtm_icon_add', resetSearch);
+
+		$(document).on('click', '.wbtm_add_icon_popup [data-icon-menu]', function () {
+			if ($popup.find('input[name="mp_select_icon_name"]').val()) {
+				setTimeout(function () {
+					$popup.find('.popupTabItem').each(function () {
+						$(this).find('.iconItem').show();
+					});
+					$popup.find('.wbtm-bme-icon-noresults').hide();
+					$popup.find('input[name="mp_select_icon_name"]').val('');
+				}, 0);
+			}
+		});
+
+		$(document).on('input', '.wbtm_add_icon_popup input[name="mp_select_icon_name"]', function () {
+			var q = $(this).val().toLowerCase().trim();
+			var $grid = $popup.find('.popup_all_icon');
+			var $nr = $popup.find('.wbtm-bme-icon-noresults');
+
+			if (!q) {
+				$grid.find('.popupTabItem').show();
+				$grid.find('.iconItem').show();
+				$nr.hide();
+				return;
+			}
+
+			var total = 0;
+			$grid.find('.popupTabItem').each(function () {
+				var matched = 0;
+				$(this).find('.iconItem').each(function () {
+					var name = ($(this).data('icon-name') || $(this).attr('title') || '').toLowerCase();
+					var cls = ($(this).data('icon-class') || '').toLowerCase();
+					var ok = name.indexOf(q) >= 0 || cls.indexOf(q) >= 0;
+					$(this).toggle(ok);
+					if (ok) { matched++; }
+				});
+				$(this).toggle(matched > 0);
+				total += matched;
+			});
+
+			$nr.find('.q').text('"' + q + '"');
+			$nr.toggle(total === 0);
+		});
+	}
+
+	// The popup only exists once something calls do_action('wbtm_input_add_icon', ...)
+	// on this request — by the time our own script runs (footer-enqueued),
+	// it's already in the DOM if it's going to be at all.
+	$(function () {
+		initIconPickerSearch();
+	});
+})(window.jQuery);
