@@ -1179,6 +1179,143 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	content:none !important;display:none !important;
 }
 
+/* ---- 4c-ii. Date Settings: 3-card redesign (Operation Schedule / Off Days /
+   Excluded Dates). DOM grouping is done once by enhanceDateSettings() in
+   wbtm-bus-edit-modern.js — everything below only styles what that JS
+   produces; the classic template/JS themselves are never touched, so the
+   classic (non-modern) editor is completely unaffected by any of this. ---- */
+
+/* The old rule above treats #mp_repeated as one big bordered card; once our
+   3 sub-cards exist inside it, let THEM carry the border/background instead
+   so we don't get a card-within-a-card look. Falls back to the original
+   single-card look untouched if the JS ever doesn't run. */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"]:has(.wbtm-bme__ds-card){
+	border:0;border-radius:0;background:transparent;overflow:visible;
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"] > .wbtm-bme__ds-card{
+	padding:0 !important;border-bottom:0 !important;
+}
+
+.wbtm-bme__ds-card{
+	background:#fff;border:1px solid var(--line);border-radius:12px;
+	margin:0 0 14px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.03);
+}
+.wbtm-bme__ds-card:last-child{margin-bottom:0;}
+.wbtm-bme__ds-card-head{
+	display:flex;align-items:flex-start;gap:10px;
+	padding:13px 16px;border-bottom:1px solid var(--band-line);
+	background:linear-gradient(180deg,#fbfcfe,var(--band));
+}
+/* Only color/spacing are overridden — NOT width/height/font-size. This
+   markup pattern (class="dashicons dashicons-*" on one element) renders its
+   glyph via a :before pseudo-element that only WP core's own font-size-only
+   sizing actually reaches; forcing a smaller width/height directly on the
+   .dashicons span clips the glyph instead of shrinking it, since the box
+   and the glyph aren't the same box in this pattern. */
+.wbtm-bme__ds-card-head .dashicons{
+	color:var(--brand);margin-top:2px;flex-shrink:0;
+}
+.wbtm-bme__ds-card-title{font-size:14px;font-weight:700;color:var(--ink);}
+.wbtm-bme__ds-card-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
+.wbtm-bme__ds-card-body{padding:14px 16px;}
+
+/* Card 1 — Operation Schedule: reflow the 4 stacked label-left/control-right
+   rows into a 4-column grid, each field's label above its own control. */
+.wbtm-bme__ds-schedule-body{
+	display:grid;grid-template-columns:repeat(4,1fr);gap:16px 20px;
+}
+.wbtm-bme__ds-schedule-body > div{
+	display:flex !important;flex-direction:column;align-items:stretch !important;
+	padding:0 !important;border-bottom:0 !important;gap:5px;
+}
+.wbtm-bme__ds-schedule-body [class*="col_"]{width:auto !important;flex:none !important;}
+.wbtm-bme__ds-schedule-body [class*="textRight"]{text-align:left !important;}
+.wbtm-bme__ds-schedule-body input,
+.wbtm-bme__ds-schedule-body select{width:100% !important;max-width:none !important;}
+@media (max-width:900px){
+	.wbtm-bme__ds-schedule-body{grid-template-columns:repeat(2,1fr);}
+}
+
+/* Card 2 — Off Days: pills left-aligned (the generic Step-4 rule right-
+   aligns .groupCheckBox by default; this card wants it left, per the
+   screenshot). */
+.wbtm-bme__ds-offday-body{padding:14px 16px;}
+.wbtm-bme__ds-offday-body .groupCheckBox{justify-content:flex-start;padding-top:0;}
+.wbtm-bme__ds-offday-body > div{padding:0 !important;border-bottom:0 !important;}
+
+/* Card 3 — Excluded Dates: individual dates + date ranges, side by side.
+   Every element the Add button/list needs (.wbtm_settings_area,
+   .wbtm_item_insert, .wbtm_hidden_content) stays in its ORIGINAL nesting —
+   only colors/spacing are restyled — so the generic add/remove/sortable
+   delegation in wbtm_admin_settings.js (which walks up from the clicked
+   element via .closest('.wbtm_settings_area')) is never at risk of losing
+   its target the way an earlier version of this file did. */
+.wbtm-bme__ds-excluded-body{
+	display:flex;gap:16px;align-items:flex-start;padding:14px 16px;
+}
+.wbtm-bme__ds-excluded-body > div{
+	flex:1;min-width:0;padding:0 !important;border-bottom:0 !important;display:block !important;
+}
+/* The classic column wrapper still nested one level inside each row
+   (col_6/col_8, whatever the original template gave it) shouldn't keep its
+   classic 50%/66% width now that the row itself is a flex child here. */
+.wbtm-bme__ds-excluded-body > div > [class*="col_"]{
+	width:100% !important;max-width:none !important;flex:none !important;
+}
+.wbtm-bme__ds-mini-head{margin-bottom:8px;}
+.wbtm-bme__ds-excluded-body .wbtm-bme__ds-mini-head{padding-left:15px;}
+.wbtm-bme__ds-mini-head > span{
+	font-size:12px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.03em;
+}
+@media (max-width:900px){
+	.wbtm-bme__ds-excluded-body{flex-direction:column;}
+}
+
+.wbtm-bme__ds-excluded-body .wbtm_settings_area{
+	max-width:none !important;width:100% !important;background:transparent;
+	border:0 !important;padding:0 !important;overflow:visible !important;margin-bottom:0 !important;
+}
+.wbtm-bme__ds-excluded-body .wbtm_item_insert{display:flex;flex-direction:column;gap:8px;}
+
+/* Each row is its own small rounded card (not one shared table/list box). */
+.wbtm-bme__ds-excluded-body .wbtm_remove_area{
+	border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px;
+}
+.wbtm-bme__ds-excluded-body .wbtm_remove_area .justifyBetween{
+	display:flex;align-items:center;gap:10px;
+}
+.wbtm-bme__ds-excluded-body ._fullWidth_mR{flex:1;min-width:0;margin-right:0 !important;display:block;}
+/* Explicit height (not just width) so a single-field row (Off Dates) and a
+   two-field row (Off Dates in Range) line up pixel-for-pixel — otherwise
+   each inherits whatever height the base .formControl/.date_type rules
+   happen to compute, which isn't guaranteed identical in both contexts. */
+.wbtm-bme__ds-excluded-body .date_type{
+	width:100%;height:38px;box-sizing:border-box;line-height:normal;
+}
+/* No row-to-row divider line needed now that each row is its own card. */
+.wbtm-bme__ds-excluded-body .wbtm_remove_area .divider{display:none;}
+
+/* Single delete icon per row, matching the reference design — the drag
+   handle is still in the DOM (so dragging still works if you know it's
+   there) but visually hidden, since only one icon per row is wanted here. */
+.wbtm-bme__ds-excluded-body .buttonGroup{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.wbtm-bme__ds-excluded-body .wbtm_item_remove{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);
+	cursor:pointer;font-size:12px;transition:background .15s,color .15s;
+}
+.wbtm-bme__ds-excluded-body .wbtm_item_remove:hover{background:var(--brand-soft);color:var(--brand);}
+.wbtm-bme__ds-excluded-body .wbtm_sortable_button{display:none;}
+
+/* Add button: back at the bottom (its original spot), just restyled —
+   comfortably sized and centered, matching the reference design. */
+.wbtm-bme__ds-excluded-body ._dFlex_justifyEnd{
+	display:flex !important;justify-content:center;padding:0px 12px 12px !important;
+}
+.wbtm-bme__ds-excluded-body .wbtm_add_item{
+	margin-top:10px !important;width:auto;min-width:200px;
+}
+
 /* ---- 4e. Gallery Image — modern upload zone ---- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .field-media-multi-wrapper{
 	display:flex;flex-direction:column;gap:14px;padding:16px;background:var(--inset);border:1px solid var(--line);border-radius:12px;
@@ -1710,7 +1847,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 /* ---- Repeating section: date field right column — constrain + align ---- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] [data-collapse="#mp_repeated"] .textRight{
-	display:flex;justify-content:flex-end;align-items:center;
+	display:flex;justify-content:flex-start;align-items:center;
 }
 
 /* ---- Gallery: upload zone intro row ---- */

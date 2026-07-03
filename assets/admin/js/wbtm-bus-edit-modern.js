@@ -214,6 +214,10 @@
 		wbtm_item_remove: 'Item removed'
 	};
 	$root.on('click', '.wbtm_create_seat_plan, .wbtm_create_seat_plan_dd, .wbtm_configure_cabins, .wbtm_generate_cabin_seats, .wbtm_add_item, .wbtm_add_return_route_item, .wbtm_item_remove', function () {
+		// Suppressed for programmatic clicks (see enhanceDateSettings()'s
+		// auto-add-one-empty-row logic) — that's not a real user action, so
+		// it shouldn't produce a "Row added" toast on every page load.
+		if (window.__wbtmSuppressActionToast) { return; }
 		var el = this, msg = 'Updated';
 		Object.keys(actionMsgs).forEach(function (cls) {
 			if (el.classList.contains(cls)) { msg = actionMsgs[cls]; }
@@ -350,6 +354,115 @@
 				$label.prepend('<span class="dashicons ' + icon + ' wbtm-bme__row-icon"></span>');
 			}
 		});
+	})();
+
+	/* ---------------------------------------------------------------- *
+	 *  Date Settings: split the single flowing #mp_repeated block into 3
+	 *  titled cards (Operation Schedule / Off Days / Excluded Dates).
+	 *  Everything stays INSIDE #mp_repeated (only re-grouped into new
+	 *  sub-wrappers that are still its children), so the existing
+	 *  show/hide toggle between "Particular" and "Repeated" date-type
+	 *  modes — which hides/shows #mp_repeated as one unit — keeps
+	 *  working exactly as before; we only ever move real DOM rows, never
+	 *  clone them, so the repeater add/remove/sortable JS (delegated
+	 *  generically off .wbtm_settings_area / .wbtm_item_insert /
+	 *  .wbtm_hidden_content, see wbtm_admin_settings.js) is untouched.
+	 * ---------------------------------------------------------------- */
+	(function enhanceDateSettings() {
+		var $section = $root.find('[data-bme-section="WBTM_Date_Settings"]');
+		if (!$section.length) { return; }
+		var $repeated = $section.find('[data-collapse="#mp_repeated"]');
+		if (!$repeated.length) { return; }
+
+		var $centerRows = $repeated.children('._dLayout_padding_dFlex_justifyBetween_alignCenter');
+		var $startRows = $repeated.children('._dLayout_padding_dFlex_justifyBetween_alignStart');
+		// Defensive: bail cleanly (leave the classic layout as-is) if the
+		// classic template ever changes shape instead of assuming positions.
+		if ($centerRows.length < 5 || $startRows.length < 2) { return; }
+
+		function makeCard(title, iconClass, sub) {
+			return $(
+				'<div class="wbtm-bme__ds-card">' +
+					'<div class="wbtm-bme__ds-card-head">' +
+						'<span class="dashicons ' + iconClass + '"></span>' +
+						'<div>' +
+							'<div class="wbtm-bme__ds-card-title">' + title + '</div>' +
+							(sub ? '<div class="wbtm-bme__ds-card-sub">' + sub + '</div>' : '') +
+						'</div>' +
+					'</div>' +
+					'<div class="wbtm-bme__ds-card-body"></div>' +
+				'</div>'
+			);
+		}
+
+		// Card 1 — Operation Schedule: Repeated Start/End Date, Repeat After,
+		// Max advance days (the first 4 of the 5 "alignCenter" rows).
+		var $scheduleRows = $centerRows.slice(0, 4);
+		var $card1 = makeCard('Operation Schedule', 'dashicons-calendar-alt');
+		$scheduleRows.first().before($card1);
+		$card1.find('.wbtm-bme__ds-card-body').append($scheduleRows).addClass('wbtm-bme__ds-schedule-body');
+
+		// Card 2 — Off Days: the 5th "alignCenter" row (the day-of-week pill
+		// checkboxes). The pill styling itself already exists (.groupCheckBox
+		// / .customCheckboxLabel:has(input:checked)) — this just gives it its
+		// own card and moves its label/description into the card header.
+		var $offDayRow = $centerRows.eq(4);
+		var $offDayLabel = $offDayRow.find('> [class*="_dFlex_fdColumn"] label').first().text().trim() || 'Off Days';
+		var $offDaySub = $offDayRow.find('> [class*="_dFlex_fdColumn"] span').first().text().trim();
+		var $card2 = makeCard($offDayLabel, 'dashicons-marker', $offDaySub);
+		$offDayRow.before($card2);
+		$offDayRow.find('> [class*="_dFlex_fdColumn"]').remove();
+		$card2.find('.wbtm-bme__ds-card-body').append($offDayRow).addClass('wbtm-bme__ds-offday-body');
+
+		// Card 3 — Excluded Dates: both "alignStart" rows (individual off
+		// dates + off-date ranges), placed side by side. Each row's own
+		// label/description becomes a small heading over its own list so the
+		// two stay distinguishable once they're side by side in one card.
+		var $card3 = makeCard('Excluded Dates', 'dashicons-trash', 'Individual off dates and off-date ranges for this bus.');
+		$startRows.first().before($card3);
+		$startRows.each(function () {
+			var $row = $(this);
+			var label = $row.find('> [class*="_dFlex_fdColumn"] label').first().text().trim();
+			$row.find('> [class*="_dFlex_fdColumn"]').remove();
+			// The "+ Add New"/"+ Add Range" button is NOT moved into the
+			// mini-head (a previous version of this code did, and broke it):
+			// its click handler is `$(this).closest(".wbtm_settings_area")`
+			// (wbtm_admin_settings.js) — .closest() only walks up real
+			// ancestors, so moving the button out to a sibling container
+			// made that lookup return nothing and every subsequent action a
+			// silent no-op. The button stays exactly where classic markup put
+			// it (still a real descendant of .wbtm_settings_area); CSS alone
+			// repositions it to sit visually next to this title instead.
+			$row.prepend('<div class="wbtm-bme__ds-mini-head"><span>' + (label || '') + '</span></div>');
+		});
+		$card3.find('.wbtm-bme__ds-card-body').append($startRows).addClass('wbtm-bme__ds-excluded-body');
+
+		// If a list starts out with zero real rows (no off dates / no date
+		// ranges saved yet), show one empty row instead of just the Add
+		// button — friendlier than an apparently-blank section. Reuses the
+		// REAL "Add" button click (wbtm_admin_settings.js's own clone-from-
+		// hidden-template logic) rather than re-implementing row creation,
+		// so it can't drift out of sync with how Add actually behaves.
+		// Deferred with setTimeout so it runs after every enqueued script on
+		// the page — including wbtm_admin_settings.js, wherever it happens
+		// to sit relative to this one — has had a chance to register its
+		// delegated click handler; .trigger('click') needs that handler to
+		// already exist to do anything.
+		setTimeout(function () {
+			$startRows.each(function () {
+				var $area = $(this).find('.wbtm_settings_area').first();
+				var $insert = $area.find('.wbtm_item_insert').first();
+				if ($insert.length && $insert.children('.wbtm_remove_area').length === 0) {
+					// Suppress the "Row added" toast for this specific
+					// programmatic click — it's not a real user action, and
+					// the row stays empty until they actually pick a date, so
+					// without this it re-fires on every single page load.
+					window.__wbtmSuppressActionToast = true;
+					$area.find('.wbtm_add_item').first().trigger('click');
+					window.__wbtmSuppressActionToast = false;
+				}
+			});
+		}, 0);
 	})();
 
 	/* ---------------------------------------------------------------- *
