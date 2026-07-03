@@ -130,6 +130,12 @@
 							array( 'WBTM_Gallery_Image_Settings', 'add_tabs_content', __( 'Gallery Image', 'bus-ticket-booking-with-seat-reservation' ), __( 'Images shown on the bus details and listings.', 'bus-ticket-booking-with-seat-reservation' ) ),
 							array( 'WTBM_Term_Condition_Add_Bus', 'term_tab_content', __( 'Term & Condition', 'bus-ticket-booking-with-seat-reservation' ), __( 'Terms shown to passengers for this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
 							array( 'WTBM_Features_Seating', 'term_tab_content', __( 'Bus Feature', 'bus-ticket-booking-with-seat-reservation' ), __( 'Highlight amenities and features of this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
+							// Pro-only. WBTM_Settings_PRO only exists when the seat-pro
+							// addon is active (its bootstrap requires the file that
+							// defines it); when it isn't, section_instance()'s own
+							// class_exists() check makes render_section_card() a no-op,
+							// same as every other section here — no extra Pro guard needed.
+							array( 'WBTM_Settings_PRO', 'tab_content', __( 'Registration Form', 'bus-ticket-booking-with-seat-reservation' ), __( 'Customize the passenger details collected during booking for this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
 						),
 					),
 				);
