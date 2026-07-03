@@ -524,7 +524,7 @@
 	.wbtm_style button[disabled] {
 		cursor: not-allowed;
 		opacity: 0.8;
-		background-color: #DDD;
+		background-color: var(--wbtm_color_theme);
 	}
 	.wbtm_style button:hover,
 	.wbtm_style button:focus {

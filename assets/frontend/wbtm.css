@@ -1610,6 +1610,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     padding: 20px;
     border: 1px solid #d0d0d0;
     margin-bottom: 20px;
+    border-radius: 20px;
   }
 
 
@@ -2262,10 +2263,12 @@ table.wbtm_totals {
   display: none !important;
 }
 
-/* ---- Shared card shell for every section in this column ---- */
+/* ---- Shared card shell for every section in this column ----
+   .wbtm_pickup_point deliberately NOT included here — Pickup Point and
+   Drop-Off Point are merged into one shared card (.wbtm_location_points_card
+   below) instead of getting one each. */
 .wbtm_selected_seat_details,
 table.wbtm_totals,
-.wbtm_pickup_point,
 .wbtm_ex_service_area,
 .wbtm_attendee_area .wbtm_attendee_item,
 .wbtm_form_submit_area {
@@ -2380,7 +2383,37 @@ table.wbtm_totals .wbtm_sub_total {
   font-weight: 700;
 }
 
-/* ---- Pickup / Drop-off point — stacked caption + full-width select ---- */
+/* ---- Pickup / Drop-off point — merged into ONE shared card ----
+   Pickup Point and Drop-Off Point are two separate templates
+   (templates/layout/pickup_point.php, drop_off_point.php), each rendering
+   its own <div class="wbtm_pickup_point _bgLight ...">, and each only
+   conditionally (a bus may have only one of the two enabled). Rather than
+   editing both templates, they're wrapped in one new
+   .wbtm_location_points_card container (see registration_seat_plan.php)
+   which gets the card shell instead of each .wbtm_pickup_point getting its
+   own; the individual sections are stripped back to flush, borderless
+   blocks with a divider between them when both are present. */
+.wbtm_location_points_card {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+  padding: 18px !important;
+  margin: 0 0 16px !important;
+  box-sizing: border-box;
+}
+.wbtm_location_points_card .wbtm_pickup_point {
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.wbtm_location_points_card .wbtm_pickup_point + .wbtm_pickup_point {
+  margin-top: 16px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #eef1f5 !important;
+}
 .wbtm_pickup_point label.justifyBetween {
   display: flex !important;
   flex-direction: column !important;
@@ -2408,14 +2441,20 @@ table.wbtm_totals .wbtm_sub_total {
 
 /* ---- Extra services — line items with a pill quantity stepper ---- */
 .wbtm_ex_service_area h3 {
-  margin: 0 0 12px !important;
-  font-size: 14px !important;
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 15.5px !important;
   font-weight: 700 !important;
-  color: #1f2937;
+  color: #111827 !important;
+  border-bottom: 1px solid #eef1f5 !important;
+  padding-bottom: 5px;
 }
 .wbtm_ex_service_area .mpPanel {
   border: 0;
   background: none;
+}
+.wbtm_style .wbtm_ex_service_area .mT {
+  margin-top: 0px;
 }
 .wbtm_ex_service_area table thead {
   position: absolute;
@@ -2460,6 +2499,14 @@ table.wbtm_totals .wbtm_sub_total {
   flex: 0 0 auto;
   text-align: center !important;
 }
+/* Swap visual order so Price sits to the left of the Quantity stepper — the
+   markup order (Name, Quantity, Price) is unchanged, this just reorders how
+   the row paints. Uses nth-child (fixed structural position), not :has(),
+   so it isn't at risk of the DOM-mutation reflow issue fixed for the
+   Passenger Information fields (the quantity stepper's +/- buttons only
+   change the input's value, they don't add/remove/re-tag DOM nodes). */
+.wbtm_ex_service_area tbody td:nth-child(2) { order: 3; }
+.wbtm_ex_service_area tbody td:nth-child(3) { order: 2; }
 .wbtm_ex_service_area td._textCenter .woocommerce-Price-amount {
   font-weight: 700;
   color: #1f2937;
@@ -2498,8 +2545,8 @@ table.wbtm_totals .wbtm_sub_total {
   background: none !important;
   border: 0 !important;
   border-bottom: 1px solid #eef1f5 !important;
-  padding: 0 0 14px !important;
-  margin: 0 0 16px !important;
+  padding: 0 0 10px !important;
+  margin: 0 0 5px !important;
   display: flex !important;
   align-items: flex-start !important;
   justify-content: space-between !important;
@@ -2515,6 +2562,7 @@ table.wbtm_totals .wbtm_sub_total {
   font-size: 15.5px !important;
   font-weight: 700 !important;
   color: #111827 !important;
+  text-transform: uppercase;
 }
 .wbtm_attendee_seat_label {
   font-size: 12px;
@@ -2537,7 +2585,7 @@ table.wbtm_totals .wbtm_sub_total {
 }
 .wbtm_attendee_area .mpPanelBody {
   display: grid !important;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr !important;
   gap: 14px;
   padding: 0 !important;
   background: none !important;
@@ -2547,6 +2595,14 @@ table.wbtm_totals .wbtm_sub_total {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* Grid items default to min-width:auto, which refuses to shrink below
+     the item's own content size (e.g. the uppercase "PASSENGER ADDRESS"
+     label) — that alone can make the two 1fr tracks render at visibly
+     different widths even though they're an equal fr share. min-width:0
+     lets both columns actually end up equal, and width:100% stops this
+     flex column from shrink-wrapping instead of filling its grid track. */
+  width: 100% !important;
+  min-width: 0 !important;
 }
 .wbtm_attendee_area .mp_form_item span {
   font-size: 12px;
@@ -2560,6 +2616,8 @@ table.wbtm_totals .wbtm_sub_total {
   font-weight: 700;
 }
 .wbtm_attendee_area .mp_form_item .formControl {
+  width: 100% !important;
+  box-sizing: border-box !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 10px !important;
   padding: 10px 12px !important;
@@ -2569,6 +2627,14 @@ table.wbtm_totals .wbtm_sub_total {
   background-position: 12px center !important;
   background-size: 16px !important;
 }
+/* The blanket padding:10px 12px !important above clobbers the legacy
+   calendar icon's own padding-left:40px (div.wbtm_style .formControl.date_type
+   in wbtm_plugin_global.css, not !important, so it lost) — collapsing the
+   left padding back to 12px let the icon overlap the "D" in "Date of Birth".
+   Restored here, scoped to this form only. */
+.wbtm_attendee_area .mp_form_item .formControl.date_type {
+  padding-left: 40px !important;
+}
 .wbtm_attendee_area .mp_form_item .formControl:focus {
   border-color: var(--wbtm_color_theme) !important;
   background-color: #fff !important;
@@ -2576,38 +2642,37 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_attendee_area .mp_form_item:has(textarea) {
   grid-column: 1 / -1;
 }
-/* Field order matches the mockup (Name, Email, Phone, DOB, Gender, Address)
-   rather than the DOM order the PHP loop renders fields in (Name, Email,
-   Phone, Address, Gender, then any custom fields) — reordered visually via
-   grid `order` instead of changing that loop, which other views also rely
-   on. Anything not explicitly listed (e.g. a custom field) falls through to
-   the default order:10 and lands after these six. */
-.wbtm_attendee_area .mp_form_item {
-  order: 10;
-}
-.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_full_name[]"]) { order: 1; }
-.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_reg_email[]"]) { order: 2; }
-.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_reg_phone[]"]) { order: 3; }
-.wbtm_attendee_area .mp_form_item:has(input[name="date_of_birth[]"]) { order: 4; }
-.wbtm_attendee_area .mp_form_item:has(select[name="wbtm_user_gender[]"]) { order: 5; }
-.wbtm_attendee_area .mp_form_item:has(textarea[name="wbtm_reg_address[]"]) { order: 6; }
-/* Icon prefixes — matched by field name so no PHP template changes were
+/* Field order (Name, Email, Phone, DOB, Gender, Address) is now handled by
+   physically moving the DOM nodes once in JS — see wbtm_reorder_attendee_fields()
+   in wbtm_global.js. A CSS `order` + :has() version of this lived here
+   before, but interacting with the Date of Birth datepicker mutated the DOM
+   enough to re-trigger :has() and visibly reshuffle the grid (Passenger Name
+   and Date of Birth would swap on screen). Real DOM order isn't affected by
+   that.
+   Icon prefixes — matched by field name so no PHP template changes were
    needed; each icon is a small inline SVG (not an icon font) so it renders
-   the same regardless of whether Font Awesome/Dashicons load on this page. */
-.wbtm_attendee_area input[name="wbtm_full_name[]"] {
+   the same regardless of whether Font Awesome/Dashicons load on this page.
+   Selectors include .mp_form_item (not just .wbtm_attendee_area + the field)
+   so their specificity (0,3,1) beats .wbtm_attendee_area .mp_form_item
+   .formControl's padding:10px 12px !important (0,3,0) above — both are
+   !important, so without that extra class here padding-left silently lost
+   and the icon ended up drawn on top of the placeholder text. */
+.wbtm_attendee_area .mp_form_item input[name="wbtm_full_name[]"] {
   padding-left: 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/%3E%3C/svg%3E") !important;
   background-position: 12px center !important;
 }
-.wbtm_attendee_area input[name="wbtm_reg_email[]"] {
+.wbtm_attendee_area .mp_form_item input[name="wbtm_reg_email[]"] {
   padding-left: 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M3 7l9 6 9-6'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
 }
-.wbtm_attendee_area input[name="wbtm_reg_phone[]"] {
+.wbtm_attendee_area .mp_form_item input[name="wbtm_reg_phone[]"] {
   padding-left: 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.6 3.5h2.7l1.5 4-2 1.4a10.8 10.8 0 0 0 5.3 5.3l1.4-2 4 1.5v2.7a1.8 1.8 0 0 1-2 1.8C11 17.4 6.6 13 5.8 6.5a1.8 1.8 0 0 1 1.8-2z'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
 }
-.wbtm_attendee_area select[name="wbtm_user_gender[]"] {
+.wbtm_attendee_area .mp_form_item select[name="wbtm_user_gender[]"] {
   padding-left: 36px !important;
   -webkit-appearance: none;
   appearance: none;
@@ -2615,13 +2680,15 @@ table.wbtm_totals .wbtm_sub_total {
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='7' r='2.6'/%3E%3Ccircle cx='16' cy='9.5' r='2.2'/%3E%3Cpath d='M4 20c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.6 20c.3-2 1.8-3.5 3.6-3.8'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-position: 12px center, right 12px center !important;
+  background-repeat: no-repeat, no-repeat !important;
   background-size: 16px, 14px !important;
   padding-right: 34px !important;
 }
-.wbtm_attendee_area textarea[name="wbtm_reg_address[]"] {
+.wbtm_attendee_area .mp_form_item textarea[name="wbtm_reg_address[]"] {
   padding-left: 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.3'/%3E%3C/svg%3E") !important;
   background-position: 12px 12px !important;
+  background-repeat: no-repeat !important;
 }
 /* Date of birth already gets a calendar icon from the classic
    div.wbtm_style .formControl.date_type rule (wbtm_plugin_global.css) —
@@ -2776,7 +2843,7 @@ table.wbtm_totals .wbtm_sub_total {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: .02em;
-  background: #2563eb;
+  background-color: var(--wbtm_color_theme);
   color: #fff;
   cursor: pointer;
   transition: filter .15s;
@@ -2800,7 +2867,7 @@ table.wbtm_totals .wbtm_sub_total {
   margin-top: 15px !important;
   padding: 10px 12px;
   background: #ecfdf5;
-  border: 1px solid #d1fae5;
+  border: 1px solid #71d1a0;
   border-radius: 10px;
   font-size: 12px;
   color: #047857;
@@ -2812,4 +2879,17 @@ table.wbtm_totals .wbtm_sub_total {
 }
 .wbtm_registration_area ._dLayout_xs {
   border-radius: 10px;
+}
+.wbtm_registration_area .mpPanel {
+  border: none !important;
+}
+
+/* The small inline loader (e.g. the "To" field while its Drop-Off Point
+   options load) inherits a dark semi-transparent background from the
+   generic div[class*="wbtm_loader"] rule in wbtm_plugin_global.css, which
+   is shared with the big full-area loader used elsewhere (search results,
+   etc). Scoped to just .wbtm_loader_xs so only this small spinner loses its
+   background — the bigger loader's dimming overlay elsewhere is untouched. */
+div.wbtm_loader_xs {
+  background: transparent !important;
 }

@@ -157,9 +157,13 @@
 						"nonce": wbtm_nonce,
 					},
 					success: function (data) {
+						// Data loads in the background as before (still needed to
+						// populate valid destinations for this start route) — just no
+						// longer force-opens the Drop-Off Point field afterwards, so
+						// selecting "From" doesn't yank focus away before the user is
+						// ready to pick "To" themselves.
 						target.append(data).promise().done(function () {
 							wbtm_loaderRemove(parent);
-							target.find('input.formControl').trigger('click');
 						});
 					},
 					error: function (response) {
@@ -187,9 +191,11 @@
 		}).promise().done(function () {
 			wbtm_load_journey_date(parent);
 		}).promise().done(function () {
-			if (exit_route > 0) {
-				parent.find('input[name="j_date"]').siblings('input').focus();
-			} else {
+			// Valid dates still load in the background above (still needed so the
+			// Journey Date calendar only shows bookable dates) — just no longer
+			// force-focuses/opens that picker afterwards, same reasoning as the
+			// Drop-Off Point auto-open removed above.
+			if (exit_route === 0) {
 				current.val('').trigger('click');
 			}
 		});
@@ -682,6 +688,37 @@
 			target.append(hidden_target_tr.clone());
 		});
 	}
+	// Passenger Information fields are visually reordered to Name, Email,
+	// Phone, Date of Birth, Gender, Address (see templates/layout/
+	// WBTM_Attendee_form.php's form_item() loop, which renders Address before
+	// Gender). This used to be done with CSS `order` + :has() selectors, but
+	// interacting with the Date of Birth datepicker (which mutates the DOM —
+	// adds a dynamic id/hasDatepicker class, appends/removes the calendar
+	// popup) was re-triggering :has() re-evaluation and visibly reshuffling
+	// the grid, swapping Passenger Name and Date of Birth on screen. Moving
+	// the actual DOM nodes once, right when the panel is inserted, is stable
+	// against that — nothing about opening the datepicker touches DOM order
+	// afterwards. Safe to call repeatedly (e.g. once per seat) since moving
+	// an already-correctly-placed field is a no-op.
+	function wbtm_reorder_attendee_fields(form_target) {
+		var field_order = [
+			'input[name="wbtm_full_name[]"]',
+			'input[name="wbtm_reg_email[]"]',
+			'input[name="wbtm_reg_phone[]"]',
+			'input[name="date_of_birth[]"]',
+			'select[name="wbtm_user_gender[]"]',
+			'textarea[name="wbtm_reg_address[]"]'
+		];
+		form_target.find('.wbtm_attendee_item .mpPanelBody').each(function () {
+			var panel_body = $(this);
+			field_order.forEach(function (selector) {
+				var field = panel_body.find('.mp_form_item').has(selector);
+				if (field.length) {
+					panel_body.append(field);
+				}
+			});
+		});
+	}
 	function wbtm_attendee_management(parent, total_qty) {
 		let form_target = parent.find('.wbtm_attendee_area');
 		if (form_target.length > 0 && total_qty > 0) {
@@ -712,6 +749,7 @@
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
 								wbtm_load_date_picker(parent);
+								wbtm_reorder_attendee_fields(form_target);
 							});
 						}
 					}).promise().done(function () {
@@ -746,6 +784,7 @@
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
 								wbtm_load_date_picker(parent);
+								wbtm_reorder_attendee_fields(form_target);
 							});
 						}
 					}
