@@ -1523,6 +1523,13 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(7) .wbtm-bme__postfields-body{background:rgba(225,29,72,.014);}
 
+/* --- 8. Registration Form (Pro addon) — blue --- */
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(8) .wbtm-bme__postfields-header{
+	background:linear-gradient(135deg,rgba(37,99,235,.06) 0%,rgba(37,99,235,.02) 100%);
+	border-bottom:1px solid rgba(37,99,235,.15);
+}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(8) .wbtm-bme__postfields-body{background:rgba(37,99,235,.014);}
+
 /* ---- Step 4: add-new / sortable buttons polish ---- */
 /* Buttons should be compact, not full-width */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_add_item{
@@ -1535,6 +1542,255 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dFlex_justifyEnd .wbtm_add_item{
 	margin-top:0;
 }
+
+/* ==================================================================== *
+ *  Registration Form (Pro addon "WBTM_Settings_PRO" section) — form-
+ *  builder redesign. DOM grouping/decoration is done once by
+ *  enhanceRegistrationForm() in wbtm-bus-edit-modern.js — everything
+ *  below only styles what that JS produces; WBTM_Settings_PRO::
+ *  tab_content()/custom_form_item()/settings_save() are never touched,
+ *  so the classic (non-modern) editor and the save contract are both
+ *  completely unaffected.
+ * ==================================================================== */
+
+/* Hide the classic inner heading — the card shell already renders an
+   equivalent title/subtitle from get_steps() just above this body.
+   NOTE: data-bme-section is on the OUTER .wbtm-bme__postfields div; .tabsItem
+   (the classic tab_content() wrapper) is nested one level deeper inside
+   .wbtm-bme__postfields-body, not a direct child of the section div itself —
+   so this must be a descendant selector on the outer part, with only the
+   INNER ">" kept (h3/p ARE direct children of .tabsItem). A stray extra ">"
+   here previously matched nothing at all (no error, just silently inert). */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .tabsItem > h3,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .tabsItem > p{display:none;}
+
+/* Hide the classic "Custom Form Field Settings" divider heading — replaced by
+   the new "+ Add New Field" button / Suggested pills directly above the list. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .tabsItem > ._dLayout_bgLight{display:none;}
+
+/* ---- Core Fields table -> row cards ---- */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-table{
+	display:block;width:100%;border:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-table thead{
+	position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-table tbody{
+	display:flex;flex-direction:column;gap:10px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-row{
+	display:flex;align-items:center;flex-wrap:wrap;gap:14px;background:#fff;border:1px solid var(--line);
+	border-radius:12px;padding:12px 16px;width:100%;max-width:100%;box-sizing:border-box;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row > th,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row > td{
+	display:flex;align-items:center;text-align:left;font-weight:400;padding:0;border:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row > th{flex:0 0 auto;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-icon{
+	color:var(--blue);background:var(--blue-soft);border-radius:9px;width:32px;height:32px;
+	display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td{flex:0 0 auto;gap:6px;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td .wbtm_sortable_button{cursor:grab;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row select,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row input{margin:0;}
+
+/* "Restore" pills for a removed default field — same pill look as the
+   custom-fields "Suggested" pills (.wbtm-bme__pf-pill), just its own row. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-restore-pills{
+	display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:14px;
+}
+
+/* Name cell (label) — icon + mirrored name + CORE badge + edit pencil,
+   real label input hidden until the pencil is clicked. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-labeltd{
+	display:flex;align-items:center;flex-wrap:wrap;gap:10px;flex:1 1 auto;min-width:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-name-row{
+	display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-name-mirror{
+	font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-badge{
+	font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--blue);background:var(--blue-soft);
+	border-radius:5px;padding:2px 6px;flex-shrink:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-btn{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+	width:26px;height:26px;border-radius:6px;color:var(--muted);cursor:pointer;flex-shrink:0;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-btn:hover{background:var(--inset);color:var(--brand);}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-btn .dashicons{font-size:15px;width:15px;height:15px;}
+
+/* Delete/disable icon on core rows (next to the Active switch) — visually
+   the same trash affordance as custom rows, but it can only ever flip the
+   Active switch off (see the click handler), never actually remove the row. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:pointer;font-size:12px;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete:hover{background:var(--brand-soft);color:var(--brand);}
+
+/* Field label input (core: lives in .wbtm-bme__pf-edit-panel alongside Input
+   Type/Required; custom: same exact structure now too — Field Label, Input
+   Type, Field Value, Required and Done all sit inside ONE edit panel inside
+   the label cell, so an expanded custom field renders on a single line,
+   identical to an expanded default field, instead of splitting the label
+   onto its own row above a separate full-width detail block). Both are
+   governed by .wbtm-bme__pf-labeltd's own .wbtm-bme__pf-open now — there is
+   no longer a custom-only "whole <tr>" variant of this toggle. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel{display:none;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-labeltd.wbtm-bme__pf-open .wbtm-bme__pf-edit-panel{
+	display:flex;align-items:flex-end;flex-wrap:wrap;gap:14px;width:100%;margin-top:2px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-labeltd.wbtm-bme__pf-open .wbtm-bme__pf-name-row{display:none;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel label{margin:0;flex:1 1 120px;min-width:110px;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel label input,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel label select{width:100%;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel .wbtm-bme__pf-detail-field{flex:0 0 auto;min-width:0;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-done-btn{
+	all:unset;box-sizing:border-box;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;padding:9px 4px;flex-shrink:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-done-btn:hover{text-decoration:underline;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-labeltd label input{width:100%;}
+
+/* Required/Active <select> -> toggle switch bridge. The real <select> stays
+   in the DOM (still submitted) but is visually hidden — not display:none, so
+   it stays focusable/consistent with the rest of this file's convention. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-hidden-native{
+	position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;
+	margin:-1px !important;overflow:hidden !important;clip:rect(0,0,0,0) !important;white-space:nowrap !important;border:0 !important;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-row label:has(.wbtm-bme__pf-hidden-native){position:relative;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-switch{margin:0;}
+
+/* ---- Additional (custom) fields table -> row cards ---- */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm_custom_form_setting_area{
+	background:transparent;border:0;padding:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm_custom_form_setting_area table{display:block;width:100%;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm_custom_form_setting_area thead{
+	position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm_custom_form_setting_area tbody.wbtm_item_insert{
+	display:flex;flex-direction:column;gap:10px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row{
+	flex-wrap:wrap;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row > td{
+	display:flex;align-items:center;padding:0;border:0;
+}
+/* Action cell (edit/delete/drag) - always stays its own natural size and
+   never gets squeezed by the label cell's edit panel growing wide; it's
+   always the last remaining <td> once the other cells are removed in
+   decorateCustomRow(). */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row > td:last-child{flex:0 0 auto;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm-bme__pf-type-icon{
+	color:var(--brand);background:var(--brand-soft);
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .allCenter,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .buttonGroup{
+	display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:pointer;font-size:12px;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove:hover{background:var(--brand-soft);color:var(--brand);}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_sortable_button{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:grab;font-size:12px;
+}
+
+/* Field Value (options - only meaningful for select/checkbox/radio) is shown
+   or hidden purely off the data-custom-type attribute the JS keeps in sync
+   (see syncTypeAttr() in decorateCustomRow()), NOT the classic dNone/
+   slideUp()/slideDown() mechanism, which only reacts to a live `change`
+   event and proved unreliable for fields whose type is set programmatically
+   (e.g. via the Custom Field Builder or a Suggested pill). !important since
+   this <label> can also match a more specific pre-existing generic rule. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-panel label:has([name="wbtm_custom_value[]"]){display:none !important;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row[data-custom-type="select"] .wbtm-bme__pf-edit-panel label:has([name="wbtm_custom_value[]"]),
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row[data-custom-type="checkbox"] .wbtm-bme__pf-edit-panel label:has([name="wbtm_custom_value[]"]),
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row[data-custom-type="radio"] .wbtm-bme__pf-edit-panel label:has([name="wbtm_custom_value[]"]){display:flex !important;}
+/* Unique ID (auto-generated, system-use only) and Default Value/Date (not
+   exposed in the simplified builder) - real fields, still submitted with
+   whatever value they carry, just never shown to the admin. Unconditional
+   display:none (not the visually-hidden clip trick used for the toggle-switch
+   bridge) since there's no reason for these to ever be interacted with. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-hidden-system{display:none !important;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-detail-label{
+	font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;
+}
+
+/* ---- Suggested pills + Custom Field Builder panel ---- */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-native-add{display:none;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-suggestions{
+	display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-add-field-btn{
+	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;
+	font-size:12.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--blue),#1d4ed8);
+	border-radius:999px;padding:7px 15px;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(37,99,235,.2);
+	margin-right:4px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-add-field-btn:hover{filter:brightness(1.08);}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-add-field-btn .dashicons{font-size:14px;width:14px;height:14px;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-suggest-label{
+	display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--muted);
+	text-transform:uppercase;letter-spacing:.03em;margin-right:2px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-suggest-label .dashicons{font-size:13px;width:13px;height:13px;color:#f59e0b;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-pill{
+	all:unset;box-sizing:border-box;font-size:12px;font-weight:600;color:var(--blue);background:var(--blue-soft);
+	border:1px solid rgba(37,99,235,.18);border-radius:999px;padding:6px 13px;cursor:pointer;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-pill:hover{background:var(--blue);color:#fff;}
+
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder{
+	margin-top:14px;border:1px dashed var(--line);border-radius:12px;background:var(--inset);overflow:hidden;
+	max-height:0;opacity:0;transition:max-height .2s ease,opacity .2s ease;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder.wbtm-bme__pf-builder-open{max-height:280px;opacity:1;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-head{
+	display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ink);padding:14px 16px 0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-head .dashicons{color:var(--blue);}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-body{
+	display:flex;flex-wrap:wrap;gap:14px;padding:14px 16px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-field{
+	display:flex;flex-direction:column;gap:6px;flex:1 1 200px;min-width:180px;margin:0;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-field > span{
+	font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-field input,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-field select{
+	width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--ink);background:#fff;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-switch{
+	display:flex;flex-direction:column;gap:6px;flex:0 0 auto;margin:0;justify-content:flex-end;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-switch > span{
+	font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-foot{
+	display:flex;justify-content:flex-end;gap:10px;padding:0 16px 16px;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-cancel{
+	padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+	font-size:12.5px;font-weight:600;cursor:pointer;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-cancel:hover{background:var(--band);}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-submit{
+	padding:8px 18px;border-radius:8px;border:0;background:var(--blue);color:#fff;
+	font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-builder-submit:hover{filter:brightness(1.08);}
 
 /* ==================================================================== *
  *  ICON FIX — replace FA5 icon spans with inline SVG background images
