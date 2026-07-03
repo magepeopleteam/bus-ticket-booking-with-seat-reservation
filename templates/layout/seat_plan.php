@@ -565,6 +565,20 @@
                         </div>
                     <?php } ?>
                 </div>
+                <div class="wbtm_seat_legend">
+                    <span class="wbtm_seat_legend_item">
+                        <i class="wbtm_seat_legend_swatch is_available"></i>
+						<?php esc_html_e('Available', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    </span>
+                    <span class="wbtm_seat_legend_item">
+                        <i class="wbtm_seat_legend_swatch is_selected"></i>
+						<?php esc_html_e('Selected', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    </span>
+                    <span class="wbtm_seat_legend_item">
+                        <i class="wbtm_seat_legend_swatch is_booked"></i>
+						<?php esc_html_e('Booked', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    </span>
+                </div>
             </div>
             <?php
             //echo '<pre>'; print_r($seat_infos); echo '</pre>';
