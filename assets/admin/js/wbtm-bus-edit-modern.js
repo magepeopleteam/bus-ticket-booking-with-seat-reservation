@@ -511,6 +511,21 @@
 			});
 		}
 
+		// Shared by core + custom rows: shows/hides a "REQUIRED" pill in the
+		// collapsed name-row (same visual treatment as the core rows' "CORE"
+		// pill) so required fields are visible at a glance without opening the
+		// edit panel. Kept in sync with the real <select> via its change event,
+		// which bridgeToggle()'s roundSwitch already triggers on every toggle.
+		function syncRequiredBadge($nameRow, $reqSelect) {
+			var $badge = $nameRow.find('.wbtm-bme__pf-badge--required');
+			if (!$badge.length) {
+				$badge = $('<span class="wbtm-bme__pf-badge wbtm-bme__pf-badge--required">Required</span>').appendTo($nameRow);
+			}
+			function sync() { $badge.toggle($reqSelect.val() === '1'); }
+			sync();
+			$reqSelect.on('change', sync);
+		}
+
 		/* ---------------- shared type -> icon map (core + custom fields) ---------------- */
 		var TYPE_ICONS = {
 			text: 'dashicons-editor-textcolor', email: 'dashicons-email-alt', number: 'dashicons-calculator',
@@ -573,7 +588,6 @@
 				$labelTd.prepend(
 					'<div class="wbtm-bme__pf-name-row">' +
 						'<span class="wbtm-bme__pf-name-mirror">' + initial + '</span>' +
-						'<span class="wbtm-bme__pf-badge">CORE</span>' +
 					'</div>'
 				);
 				$labelInput.on('input', function () {
@@ -595,6 +609,7 @@
 				bridgeToggle($reqSelect);
 				var $reqField = $reqSelect.closest('label').addClass('wbtm-bme__pf-detail-field');
 				$reqField.prepend('<span class="wbtm-bme__pf-detail-label">Required</span>');
+				syncRequiredBadge($labelTd.find('.wbtm-bme__pf-name-row'), $reqSelect);
 
 				$labelTd.append(
 					$('<div class="wbtm-bme__pf-edit-panel"></div>')
@@ -715,7 +730,16 @@
 			);
 			// Edit pencil grouped with delete/drag on the right (matching core
 			// fields) instead of sitting alone in the name cell on the left.
-			$actionTd.find('.buttonGroup').prepend('<button type="button" class="wbtm-bme__pf-edit-btn" title="Edit field"><span class="dashicons dashicons-edit"></span></button>');
+			var $buttonGroup = $actionTd.find('.buttonGroup');
+			$buttonGroup.prepend('<button type="button" class="wbtm-bme__pf-edit-btn" title="Edit field"><span class="dashicons dashicons-edit"></span></button>');
+			// WBTM_Custom_Layout::move_remove_button() always renders the delete
+			// button before the drag handle, so the DOM order here starts as
+			// [edit, delete, drag]. Reordered to [edit, drag, delete] to match the
+			// default fields' order (their JS prepends edit+drag together, ahead
+			// of the classic single delete button already in the row) — moved in
+			// the actual DOM rather than just visually via CSS `order`, so tab
+			// order and screen readers see the same sequence sighted users do.
+			$buttonGroup.find('.wbtm_sortable_button').insertBefore($buttonGroup.find('.wbtm_item_remove'));
 			// Unique ID is system-only now - never shown/editable. A brand-new
 			// row (no id yet, e.g. from the classic "Add New Custom Form"
 			// button or a fresh clone) gets one auto-generated from the label
@@ -748,7 +772,9 @@
 				syncTypeAttr();
 			});
 
-			bridgeToggle($reqTd.find('select[name="wbtm_custom_required[]"]'));
+			var $reqSelect = $reqTd.find('select[name="wbtm_custom_required[]"]');
+			bridgeToggle($reqSelect);
+			syncRequiredBadge($labelTd.find('.wbtm-bme__pf-name-row'), $reqSelect);
 
 			// Build ONE edit panel (Field Label + Input Type + Field Value +
 			// Required + Done, all on one line) directly inside the label cell
@@ -767,7 +793,7 @@
 			var $valueField = $valueTd.find('label').first().addClass('wbtm-bme__pf-detail-field');
 			$valueField.prepend('<span class="wbtm-bme__pf-detail-label">Options</span>');
 
-			var $reqField = $reqTd.find('select[name="wbtm_custom_required[]"]').closest('label').addClass('wbtm-bme__pf-detail-field');
+			var $reqField = $reqSelect.closest('label').addClass('wbtm-bme__pf-detail-field');
 			$reqField.prepend('<span class="wbtm-bme__pf-detail-label">Required</span>');
 
 			$labelTd.append(

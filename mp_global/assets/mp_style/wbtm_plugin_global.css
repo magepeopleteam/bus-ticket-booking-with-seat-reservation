@@ -2113,7 +2113,7 @@
 	}
 	.wbtm_style table th,
 	.wbtm_style table td {
-		border: 1px solid var(--wbtm_color_border);
+		border: none;
 		padding: var(--wbtm_dmp_xs);
 	}
 	.wbtm_style table thead th {

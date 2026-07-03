@@ -73,7 +73,15 @@
                         </div>
 					<?php } else { ?>
                         <div class="_dLayout_dFlex_justifyCenter">
-							<?php WBTM_Layout::msg(esc_html__('Tax not active. Please add Tax settings from woocommerce.', 'bus-ticket-booking-with-seat-reservation')); ?>
+                            <div class="_mZero_textCenter">
+                                <label class="_textTheme">
+									<?php esc_html_e('Tax not active. Please add Tax settings from woocommerce.', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    <br/>
+                                    <a href="<?php echo esc_url(admin_url('admin.php?page=wc-settings&tab=tax')); ?>" target="_blank" rel="noopener noreferrer">
+										<?php esc_html_e('Configure WooCommerce Tax Settings', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    </a>
+                                </label>
+                            </div>
                         </div>
 					<?php } ?>
                 </div>

@@ -476,7 +476,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style select,
 .wbtm-bme.wbtm_style textarea,
 .wbtm-bme.wbtm_style .formControl{
-	width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:var(--inset);
+	width:100%;font-family:inherit;font-size:12px;color:var(--ink);background:var(--inset);
 	border:1px solid var(--line);border-radius:10px;padding:10px 12px;transition:.15s;box-shadow:none;line-height:1.4;min-height:0;height:auto;
 }
 .wbtm-bme.wbtm_style input:focus,
@@ -489,9 +489,15 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 	background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;
 }
+/* Classic .max_100/.max_200/.max_300 (wbtm_plugin_global.css) set BOTH
+   max-width AND width:100% of the parent. Only clearing max-width left
+   width:100% active — on .buttonGroup.max_100 (the custom fields' action
+   icon wrapper) that stretched the group to fill its parent, shoving the
+   edit pencil away from the delete/drag icons instead of keeping all three
+   packed together like the default fields' action cell. */
 .wbtm-bme.wbtm_style .max_300,
 .wbtm-bme.wbtm_style .max_200,
-.wbtm-bme.wbtm_style .max_100{max-width:none;}
+.wbtm-bme.wbtm_style .max_100{max-width:none;width:auto;}
 
 /* Toggle switch — drive the SAME ::before knob that classic uses (the
  * classic knob is .roundSwitch::before, so we must override it, not add a
@@ -520,7 +526,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style .textCenter{text-align:center;}
 .wbtm-bme.wbtm_style .col_6 > label,
 .wbtm-bme.wbtm_style [class*="_dFlex_fdColumn"] > label,
-.wbtm-bme.wbtm_style .tabsItem > div label{font-weight:600;color:var(--ink);font-size:14px;line-height:1.35;margin:0;padding:0;display:block;}
+.wbtm-bme.wbtm_style .tabsItem > div label{font-weight:600;color:var(--ink);font-size:14px;line-height:1.35;margin:5px;padding:0;display:block;}
 .wbtm-bme.wbtm_style [class*="_dFlex_fdColumn"] > span,
 .wbtm-bme.wbtm_style .info_text,
 .wbtm-bme.wbtm_style .col_6 > span{color:var(--muted);font-weight:400;font-size:12.5px;line-height:1.45;margin:2px 0 0;padding:0;display:block;}
@@ -1057,7 +1063,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area thead th.textCenter{text-align:center;}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody td{
-	padding:7px 10px;border-bottom:1px solid var(--band-line);vertical-align:middle;font-size:13px;
+	padding:7px 0px;border-bottom:1px solid var(--band-line);vertical-align:middle;font-size:13px;
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody tr:last-child td{border-bottom:0;}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_settings_area tbody tr:hover{background:var(--inset);}
@@ -1279,7 +1285,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 /* Each row is its own small rounded card (not one shared table/list box). */
 .wbtm-bme__ds-excluded-body .wbtm_remove_area{
-	border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px;
+	border:1px solid var(--line);border-radius:10px;background:#fff;padding:0px;
 }
 .wbtm-bme__ds-excluded-body .wbtm_remove_area .justifyBetween{
 	display:flex;align-items:center;gap:10px;
@@ -1502,7 +1508,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:#E9EFF6;
 	border-bottom:1px solid rgba(139,92,246,.15);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(5) .wbtm-bme__postfields-body{background:rgba(139,92,246,.018);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(5) .wbtm-bme__postfields-body{background:#fff;}
 
 /* --- 6. Term & Condition — teal --- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(6){
@@ -1518,10 +1524,10 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(7){
 }
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(7) .wbtm-bme__postfields-header{
-	background:linear-gradient(135deg,rgba(225,29,72,.06) 0%,rgba(225,29,72,.02) 100%);
+	background:#E9EFF6;
 	border-bottom:1px solid rgba(225,29,72,.14);
 }
-.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(7) .wbtm-bme__postfields-body{background:rgba(225,29,72,.014);}
+.wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(7) .wbtm-bme__postfields-body{background:#fff;}
 
 /* --- 8. Registration Form (Pro addon) — blue --- */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm-bme__postfields:nth-child(8) .wbtm-bme__postfields-header{
@@ -1533,7 +1539,7 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 /* ---- Step 4: add-new / sortable buttons polish ---- */
 /* Buttons should be compact, not full-width */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] .wbtm_add_item{
-	margin-top:10px;width:auto !important;justify-content:center;min-width:150px;
+	margin:10px;width:auto !important;justify-content:center;min-width:150px;
 }
 /* Containers that hold add-new buttons — right-align them */
 .wbtm-bme.wbtm_style [data-bme-panel="advanced"] ._dFlex_justifyEnd{
@@ -1592,17 +1598,9 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td{flex:0 0 auto;gap:6px;}
-/* Same fully-reset treatment as the custom rows' drag handle
-   (.wbtm-bme__pf-custom-row .wbtm_sortable_button below) — without this, the
-   core rows' handle fell back to the generic .wbtm_sortable_button rule
-   further down this file, which doesn't clear the padding/box-shadow/
-   font-weight a legacy [class*="_themeButton"] rule puts on this same
-   element, quietly rendering it larger/misaligned versus this custom-row
-   version. */
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td .wbtm_sortable_button{
-	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
-	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:grab;font-size:12px;
-}
+/* Box styling + icon glyphs for the core row's drag/delete buttons are
+   unified with the custom rows' equivalents in ONE shared block further down
+   this file (search "Shared action-icon treatment") — see that block for why. */
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row select,
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-row input{margin:0;}
 
@@ -1627,6 +1625,13 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--blue);background:var(--blue-soft);
 	border-radius:5px;padding:2px 6px;flex-shrink:0;
 }
+/* "Required" pill — same shape as the "CORE" pill above, shown on both core
+   and custom rows (see syncRequiredBadge() in the JS) so it's visible at a
+   glance without opening the edit panel to check the Required toggle. Red
+   instead of blue so it reads as a distinct status, not a duplicate of CORE. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-badge--required{
+	color:var(--brand);background:var(--brand-soft);
+}
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-edit-btn{
 	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
 	width:26px;height:26px;border-radius:6px;color:var(--muted);cursor:pointer;flex-shrink:0;transition:.15s;
@@ -1636,12 +1641,9 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 
 /* Delete/disable icon on core rows (next to the Active switch) — visually
    the same trash affordance as custom rows, but it can only ever flip the
-   Active switch off (see the click handler), never actually remove the row. */
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete{
-	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
-	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:pointer;font-size:12px;transition:.15s;
-}
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete:hover{background:var(--brand-soft);color:var(--brand);}
+   Active switch off (see the click handler), never actually remove the row.
+   Box styling + icon glyph unified with custom rows in ONE shared block
+   further down this file (search "Shared action-icon treatment"). */
 
 /* Field label input (core: lives in .wbtm-bme__pf-edit-panel alongside Input
    Type/Required; custom: same exact structure now too — Field Label, Input
@@ -1705,23 +1707,83 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
    never gets squeezed by the label cell's edit panel growing wide; it's
    always the last remaining <td> once the other cells are removed in
    decorateCustomRow(). */
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row > td:last-child{flex:0 0 auto;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row > td:last-child{flex:0 0 auto !important;width:auto !important;}
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm-bme__pf-type-icon{
 	color:var(--brand);background:var(--brand-soft);
 }
+/* addon-bus--ticket-booking-with-seat-pro/assets/admin/wbtm_admin_pro.css ships
+   a bare, unscoped `.buttonGroup{justify-content:flex-end;gap:10px;}` that
+   loads on this same admin screen and matches this element with no scoping
+   at all. Our own rule below already wins the specificity fight on display/
+   gap/align-items, but never touched justify-content or width, so that
+   property survived and — combined with the classic `.max_100` class (still
+   used on this exact div) leaving elements wider than their content — was
+   shoving the actual icons over to the right edge of that extra width while
+   the empty leftover space sat to their left, right after the edit pencil.
+   Forced with !important, and width pinned to auto, to close this off for
+   good regardless of what else this div picks up on this page. */
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .allCenter,
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .buttonGroup{
-	display:flex;align-items:center;gap:6px;flex-shrink:0;
+	display:flex !important;align-items:center !important;gap:6px !important;flex-shrink:0 !important;
+	width:auto !important;max-width:none !important;flex-grow:0 !important;justify-content:flex-start !important;
 }
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove{
-	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
-	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:pointer;font-size:12px;transition:.15s;
-}
-.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove:hover{background:var(--brand-soft);color:var(--brand);}
+/* ==================================================================== *
+ *  Shared action-icon treatment — core rows' delete/drag buttons and
+ *  custom rows' delete/drag buttons are DIFFERENT DOM/class pairs
+ *  (wbtm_core_field_remove + .wbtm-bme__pf-core-delete for core;
+ *  wbtm_item_remove/wbtm_sortable_button for custom, which additionally
+ *  collide with the global ICON FIX section further down this file — added
+ *  there to work around FA5 not loading reliably plugin-wide, which forces
+ *  ANY .wbtm_item_remove/.wbtm_sortable_button to a 22px box with a 10px
+ *  SVG glyph via !important). Keeping two separate hand-tuned rule sets for
+ *  these kept drifting apart every time one side changed. Declared together,
+ *  ONE time, so core and custom are structurally guaranteed to match instead
+ *  of relying on two edits staying in sync by hand. !important is required
+ *  to beat the ICON FIX section for the custom-row pair; harmless as a no-op
+ *  for the core-row pair, which nothing else contests. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td .wbtm_sortable_button,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove,
 .wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_sortable_button{
-	all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
-	width:28px;height:28px;border-radius:6px;background:var(--inset);color:var(--muted);cursor:grab;font-size:12px;
+	all:unset !important;box-sizing:border-box !important;display:inline-flex !important;
+	align-items:center !important;justify-content:center !important;
+	width:28px !important;height:28px !important;padding:0 !important;min-width:0 !important;
+	border:0 !important;border-radius:6px !important;background:var(--inset) !important;
+	color:var(--muted) !important;cursor:pointer !important;transition:.15s !important;
 }
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete:hover,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove:hover{
+	background:var(--brand-soft) !important;color:var(--brand) !important;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td .wbtm_sortable_button,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_sortable_button{cursor:grab !important;}
+/* Core's delete button never carries .wbtm_item_remove (see class list
+   above), so it never picks up the global ICON FIX's SVG trash icon or its
+   .fas-hiding rule — it was falling back to the raw <span class="fas
+   fa-trash-alt"> glyph, a different icon face than custom rows' SVG line
+   icon even at the same box size. Given the same SVG here (reusing the
+   ICON FIX's exact trash artwork) so both look identical, not just
+   same-sized. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete .fas{display:none !important;}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete::after{
+	content:"" !important;display:block !important;width:14px !important;height:14px !important;flex:none !important;
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e11d48' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2'/%3E%3C/svg%3E") !important;
+	background-repeat:no-repeat !important;background-position:center !important;background-size:contain !important;
+}
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete:hover::after{
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23be123c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2'/%3E%3C/svg%3E") !important;
+}
+/* Both delete-type icons (core + custom) share the ICON FIX's trash SVG, and
+   both drag-type icons (core + custom) share its 6-dot grip SVG — sized
+   identically here so the glyph itself, not just the surrounding box, matches. */
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-core-delete::after,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-remove-td .wbtm_sortable_button::after,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_item_remove::after,
+.wbtm-bme.wbtm_style [data-bme-section="WBTM_Settings_PRO"] .wbtm-bme__pf-custom-row .wbtm_sortable_button::after{
+	width:14px !important;height:14px !important;
+}
+/* Icon order (edit, drag, delete) is fixed directly in the DOM now — see
+   decorateCustomRow()'s insertBefore() call — so no CSS `order` is needed here. */
 
 /* Field Value (options - only meaningful for select/checkbox/radio) is shown
    or hidden purely off the data-custom-type attribute the JS keeps in sync
