@@ -791,35 +791,35 @@ div#wbtm_date_start_route { height: 50px; }
     gap:      6px;
 }
 .wbtm-amenity {
-    display:       inline-flex;
-    align-items:   center;
-    gap:           5px;
-    font-size:     11px;
-    font-weight:   500;
-    color:         #475569;
-    background:    #f1f5f9;
-    padding:       3px 9px;
-    border-radius: 20px;
-    border:        1px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    background: #fff;
+    padding: 3px 9px;
+    border-radius: none;
+    border: none;
 }
 .wbtm-amenity i {
     color:     #64748b;
     font-size: 11px;
 }
 .wbtm-seats-avail {
-    display:     inline-flex;
+    display: inline-flex;
     align-items: center;
-    gap:         6px;
-    font-size:   12px;
+    gap: 6px;
+    font-size: 11px;
     font-weight: 600;
-    color:       #15803d;
-    background:  #f0fdf4;
-    padding:     4px 10px;
+    color: #333;
+    background: #fff;
+    padding: 4px 6px;
     border-radius: 20px;
-    align-self:  flex-start;
-    border:      1px solid #bbf7d0;
+    align-self: flex-start;
+    border: none;
 }
-.wbtm-seats-avail i { color: #16a34a; font-size: 11px; }
+.wbtm-seats-avail i { color: #2f302f; font-size: 11px; }
 .wbtm-card-info .wbtm_bus_details_tabs_holder {
     margin-top:  auto;
     padding-top: 8px;
@@ -1180,11 +1180,12 @@ div#wbtm_date_start_route { height: 50px; }
                                   data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>">
                                 <?php echo esc_html(get_the_title($bus_id)); ?>
                             </span>
-                            <span class="wbtm-type-badge <?php echo $bus_type === 'AC' ? 'wbtm-type-badge--top' : 'wbtm-type-badge--std'; ?>">
-                                <?php echo $bus_type === 'AC'
-                                    ? esc_html__('Top Rated', 'bus-ticket-booking-with-seat-reservation')
-                                    : esc_html__('Standard', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </span>
+                        </div>
+
+                        <div class="wbtm-seats-avail">
+                            <i class="fas fa-chair"></i>
+                            <?php echo esc_html($all_info['available_seat']); ?>
+                            <?php esc_html_e('seats available', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </div>
 
                         <?php if (!empty($feature_list)) : ?>
@@ -1202,12 +1203,6 @@ div#wbtm_date_start_route { height: 50px; }
                             <?php endforeach; ?>
                         </div>
                         <?php endif; ?>
-
-                        <div class="wbtm-seats-avail">
-                            <i class="fas fa-chair"></i>
-                            <?php echo esc_html($all_info['available_seat']); ?>
-                            <?php esc_html_e('seats available', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </div>
 
                         <!-- Popup links + extra details tabs -->
                         <div class="wbtm_bus_details_tabs_holder<?php echo esc_attr($details_tabs_class); ?>">

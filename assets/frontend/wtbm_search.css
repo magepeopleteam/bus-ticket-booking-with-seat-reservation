@@ -324,7 +324,7 @@
 
     .wbtm_bus_list_area .wbtm_bus_popup_links {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: left;
         gap: 10px;
         visibility: hidden;
         opacity: 0;

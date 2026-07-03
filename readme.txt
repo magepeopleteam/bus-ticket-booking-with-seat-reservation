@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin , hamidxazad
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.8.3
+Stable tag: 5.8.5
 Tested up to: 6.9
 Requires PHP: 8.0
 License: GPLv2 or later
@@ -446,4 +446,14 @@ Seat number rotation stopped
 *Release Date - 02 Jul 2026*
 
 * "Enable Rotation" moved inline next to each deck's own "Add New Row" button, and is now an independent setting per deck (Lower Deck / Upper Deck) instead of one shared toggle — turning rotation on for one deck no longer affects the other.
+
+= 5.8.4 =
+*Release Date - 02 Jul 2026*
+
+* Bus list admin page: search box and "All Types" filter now share the exact same height (both 38px, matching padding/border-box), and are right-aligned together as a group while the status tabs (All/Published/Draft/Trash) stay left.
+
+= 5.8.5 =
+*Release Date - 02 Jul 2026*
+
+* Redesigned the frontend "Bus Details" popup (Details / Boarding-Dropping / Features / Photo tabs): refreshed tab pills, a clean summary card for Bus Details, a timeline-style stop list for Boarding/Dropping Points, chip-style Bus Features, and a modernized close button and popup shell shadow. CSS-only — no markup or JS changes.
 

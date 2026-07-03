@@ -317,6 +317,212 @@
 }
 
 /* ============================================================
+   MODERN BUS DETAILS POPUP  (#wbtm-bus-popup content)
+   Markup comes from WBTM_Single_Bus_Details::wbtm_render_bus_details_popup()
+   and JS (wtbm_single_bus_details.js) depends on the existing classes/ids
+   (.wbtm_bus_detail_popup_tab, data-tab-id, .wbtm_bus_popup_holder, .active,
+   #wbtm-bus-popup, .wbtm-popup-content) — this is a pure visual overlay,
+   no markup changes. Everything is scoped under .wbtm-popup-content so the
+   shared "mp" utility classes (mp_list, dLayout_xs, flexEqual, divider)
+   keep their normal look everywhere else in the plugin.
+   ============================================================ */
+
+/* Shell */
+.wbtm-bus-popup-inner{
+    border-radius: 16px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
+    background: #fff;
+}
+.wbtm-popup-close{
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 600;
+    transition: background .15s, color .15s, transform .15s;
+}
+.wbtm-popup-close:hover{
+    background: #fee2e2;
+    color: #dc2626;
+    transform: scale(1.06);
+}
+.wbtm-popup-content ._dLayout_dShadow_1{
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Tab bar */
+.wbtm-popup-content .wbtm_bus_detail_popup_tabs{
+    background: #f8fafc;
+    border: 1px solid #eef1f5;
+    border-radius: 12px;
+    padding: 6px;
+    gap: 6px;
+}
+.wbtm-popup-content .wbtm_bus_detail_popup_tab{
+    border-radius: 8px;
+    border-color: transparent;
+    background: transparent;
+    font-weight: 600;
+    font-size: 13px;
+    color: #64748b;
+}
+.wbtm-popup-content .wbtm_bus_detail_popup_tab:hover{
+    background: #fff;
+    color: var(--wbtm_color_theme);
+    border-color: transparent;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+}
+.wbtm-popup-content .wbtm_bus_detail_popup_tab.active{
+    background: var(--wbtm_color_theme);
+    color: var(--wbtm_color_theme_alter);
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(0, 124, 186, .25);
+}
+
+/* "Bus Details" panel — plain <p><span>label</span><strong>value</strong></p>
+   rows become a clean summary card, no markup changes needed. */
+.wbtm-popup-content #wbtm_bus_details_content{
+    background: #fff;
+    border: 1px solid #eef1f5;
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+.wbtm-popup-content #wbtm_bus_details_content > p:first-child{
+    margin: 0 0 12px;
+}
+.wbtm-popup-content #wbtm_bus_details_content > p:first-child strong{
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.wbtm-popup-content #wbtm_bus_details_content .divider{
+    height: 1px;
+    background: #eef1f5;
+    margin: 12px 0;
+    border: none;
+}
+.wbtm-popup-content #wbtm_bus_details_content > p:not(:first-child){
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 8px 0;
+    font-size: 13px;
+}
+.wbtm-popup-content #wbtm_bus_details_content > p:not(:first-child) span{
+    color: #64748b;
+    font-weight: 500;
+}
+.wbtm-popup-content #wbtm_bus_details_content > p:not(:first-child) strong{
+    color: #0f172a;
+    font-weight: 700;
+}
+.wbtm-popup-content #wbtm_bus_details_content .mp_wp_editor{
+    margin-top: 12px;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+/* "Boarding / Dropping Points" panel — timeline-style stop list */
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content .flexEqual{
+    gap: 16px;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content .dLayout_xs{
+    background: #fff;
+    border: 1px solid #eef1f5;
+    border-radius: 14px;
+    padding: 16px 18px;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content strong{
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content .divider{
+    height: 1px;
+    background: #eef1f5;
+    margin: 10px 0 6px;
+    border: none;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content ul.mp_list{
+    position: relative;
+    padding-left: 6px;
+    margin: 0;
+    list-style: none;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content ul.mp_list li{
+    position: relative;
+    padding: 8px 0 8px 22px;
+    font-size: 13px;
+    color: #334155;
+    font-weight: 500;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content ul.mp_list li::before{
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 14px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--wbtm_color_theme);
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content ul.mp_list li:not(:last-child)::after{
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 22px;
+    bottom: -8px;
+    width: 1px;
+    background: #e2e8f0;
+}
+.wbtm-popup-content #wbtm_bus_boarding_dropping_content ul.mp_list li i.mi-marker{
+    display: none;
+}
+
+/* "Bus Features" panel — chip/pill layout instead of stacked full-width cards */
+.wbtm-popup-content #wbtm_bus_feature_content{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.wbtm-popup-content #wbtm_bus_feature_content h4{
+    width: 100%;
+    margin: 0 0 4px;
+}
+.wbtm-popup-content #wbtm_bus_feature_content .wbtm_bus_feature_items{
+    background: #f8fafc;
+    border: 1px solid #eef1f5;
+    border-radius: 999px;
+    padding: 7px 16px;
+    box-shadow: none;
+    margin: 0;
+}
+.wbtm-popup-content #wbtm_bus_feature_content .wbtm_bus_feature_items:hover{
+    transform: none;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, .08);
+}
+.wbtm-popup-content #wbtm_bus_feature_content .wtbm_term_content{
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    padding-left: 0;
+}
+
+/* ============================================================
    MODERN SINGLE BUS PAGE  (scoped to .wbtm_single_modern)
    Matches the bus-service-card mockup. All rules are scoped so
    no other page/shortcode is affected.
