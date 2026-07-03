@@ -2190,7 +2190,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   align-items: center;
   flex-wrap: wrap;
   gap: 18px;
-  margin-top: 10px;
+  margin: 20px 10px;
 }
 .wbtm_seat_legend_item {
   display: inline-flex;
@@ -2217,4 +2217,599 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_seat_legend_swatch.is_booked {
   background: #cbd5e1;
   border: 1.5px solid #cbd5e1;
+}
+
+/* ==================================================================== *
+ *  Booking summary column redesign — selected seats, totals, pickup /
+ *  drop-off, extra services, passenger info and the Book Now footer
+ *  (the right-hand column of the seat-booking form). Each section is
+ *  scoped to its own existing wrapper class. Shared component classes also
+ *  reused elsewhere in the plugin (.mpPanel_xs, .mpPanelHeader,
+ *  .mpPanelBody, .qtyIncDec, .groupContent, .mp_form_item) are always
+ *  qualified with a wrapper from this column (e.g. ".wbtm_attendee_area
+ *  .mpPanel_xs") so nothing here leaks into admin settings pages or other
+ *  frontend areas that reuse those same classes. !important is used only
+ *  on the box-model properties (background/border/padding/margin/radius)
+ *  that the classic [class*="_dLayout"]/[class*="_bgLight"] utility
+ *  classes already set on these same elements. *
+ * ==================================================================== */
+
+/* ---- Selected-seats table / totals table — hidden, not removed ----
+   Both are now redundant on-screen (the "Booking Summary" preview card
+   shows the same seat list + subtotal), but .wbtm_selected_seat_details
+   .wbtm_item_insert and .wbtm_sub_total are the live elements
+   wbtm_selected_seat_details()/wbtm_price_calculation() in wbtm_global.js
+   read from and write to on every seat click — and the exact source
+   wbtm_update_summary_preview() mirrors into the preview card. Removing
+   this markup from the template would break seat tracking and price
+   calculation everywhere, not just this duplicate display, so it's hidden
+   with CSS instead; the DOM keeps working exactly as before. */
+.wbtm_selected_seat_details,
+table.wbtm_totals {
+  display: none !important;
+}
+
+/* ---- Bottom Total/Book Now footer — hidden, not removed ----
+   Same reasoning as above: the "Booking Summary" preview card now shows the
+   total and its own Book Now button, but #wbtm_add_to_cart here is the real
+   button that button re-triggers via .trigger('click') (see the click
+   handler for .wbtm_summary_preview_book_now in wbtm_global.js), and
+   .wbtm_total is what wbtm_price_calculation() writes the grand total (incl.
+   extra services) and data-raw-total into. jQuery's .trigger('click') still
+   fires a hidden element's click handler, so hiding this with CSS rather
+   than removing it from the template keeps the preview's button working. */
+.wbtm_form_submit_area {
+  display: none !important;
+}
+
+/* ---- Shared card shell for every section in this column ---- */
+.wbtm_selected_seat_details,
+table.wbtm_totals,
+.wbtm_pickup_point,
+.wbtm_ex_service_area,
+.wbtm_attendee_area .wbtm_attendee_item,
+.wbtm_form_submit_area {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+  padding: 18px !important;
+  margin: 0 0 16px !important;
+  box-sizing: border-box;
+}
+.wbtm_attendee_area .wbtm_attendee_item + .wbtm_attendee_item {
+  margin-top: 16px !important;
+}
+
+/* ---- Selected seat(s) — table reshaped into a compact line-item list ---- */
+.wbtm_selected_seat_details table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.wbtm_selected_seat_details table,
+.wbtm_selected_seat_details tbody.wbtm_item_insert {
+  display: block;
+  width: 100%;
+}
+.wbtm_selected_seat_details tbody.wbtm_item_insert {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #eef1f5 !important;
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+.wbtm_selected_seat_details td.insert_seat_label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--wbtm_color_theme);
+  background: var(--wbtm_color_theme_alter, #fff1f4);
+  border-radius: 999px;
+  padding: 4px 10px;
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details td.insert_seat_name {
+  font-weight: 700;
+  color: #1f2937;
+  flex: 1 1 auto;
+}
+.wbtm_selected_seat_details td.insert_seat_price {
+  font-weight: 700;
+  color: #1f2937;
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area .allCenter,
+.wbtm_selected_seat_details tr.wbtm_remove_area .wbtm_item_remove {
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details .wbtm_item_remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #eef1f5;
+  color: #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.wbtm_selected_seat_details .wbtm_item_remove:hover {
+  background: #fef2f2;
+}
+
+/* ---- Totals table — a clean flex row instead of a bordered grid ---- */
+table.wbtm_totals tbody,
+table.wbtm_totals tr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+table.wbtm_totals td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+table.wbtm_totals h5 {
+  margin: 0;
+  font-size: 15px !important;
+  color: #64748b !important;
+  font-weight: 600;
+}
+table.wbtm_totals .wbtm_sub_total {
+  color: #1f2937 !important;
+  font-weight: 700;
+}
+
+/* ---- Pickup / Drop-off point — stacked caption + full-width select ---- */
+.wbtm_pickup_point label.justifyBetween {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 6px;
+}
+.wbtm_pickup_point label span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.wbtm_pickup_point select.formControl {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  font-size: 13.5px !important;
+  background-color: #f8fafc !important;
+}
+.wbtm_pickup_point select.formControl:focus {
+  border-color: var(--wbtm_color_theme) !important;
+  background-color: #fff !important;
+}
+
+/* ---- Extra services — line items with a pill quantity stepper ---- */
+.wbtm_ex_service_area h3 {
+  margin: 0 0 12px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1f2937;
+}
+.wbtm_ex_service_area .mpPanel {
+  border: 0;
+  background: none;
+}
+.wbtm_ex_service_area table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.wbtm_ex_service_area table,
+.wbtm_ex_service_area tbody {
+  display: block;
+  width: 100%;
+}
+.wbtm_ex_service_area tbody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wbtm_ex_service_area tbody tr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc !important;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.wbtm_ex_service_area tbody td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+.wbtm_ex_service_area td._textLeft {
+  flex: 1 1 auto;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: left !important;
+}
+.wbtm_ex_service_area td._textCenter {
+  flex: 0 0 auto;
+  text-align: center !important;
+}
+.wbtm_ex_service_area td._textCenter .woocommerce-Price-amount {
+  font-weight: 700;
+  color: #1f2937;
+}
+.wbtm_ex_service_area .qtyIncDec {
+  background: #fff;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+}
+.wbtm_ex_service_area .qtyIncDec .addonGroupContent {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  border: 0 !important;
+}
+.wbtm_ex_service_area .qtyIncDec .addonGroupContent:hover {
+  background: #f1f5f9;
+}
+.wbtm_ex_service_area .qtyIncDec input.formControl {
+  width: 40px !important;
+  height: 28px;
+  border: 0 !important;
+  text-align: center;
+  font-weight: 700;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* ---- Passenger information ---- */
+.wbtm_attendee_area .mpPanelHeader {
+  background: none !important;
+  border: 0 !important;
+  border-bottom: 1px solid #eef1f5 !important;
+  padding: 0 0 14px !important;
+  margin: 0 0 16px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px;
+}
+.wbtm_attendee_header_text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wbtm_attendee_area .mpPanelHeader h5 {
+  margin: 0;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+}
+.wbtm_attendee_seat_label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wbtm_color_theme);
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+.wbtm_attendee_area .mpPanelHeader .wbtm_seat_name {
+  font-weight: 700;
+}
+/* Small person+pencil badge, top-right of the header — purely decorative. */
+.wbtm_attendee_header_icon {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--wbtm_color_theme_alter, #eff6ff) center/15px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Cpath d='M4 20c0-3.3 2.5-5.5 5.5-5.5'/%3E%3Cpath d='M15.5 20.5l4-4a1.4 1.4 0 0 0-2-2l-4 4-.6 2.6z'/%3E%3C/svg%3E") center/15px no-repeat;
+}
+.wbtm_attendee_area .mpPanelBody {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 !important;
+  background: none !important;
+}
+.wbtm_attendee_area .mp_form_item {
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wbtm_attendee_area .mp_form_item span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.wbtm_attendee_area .mp_form_item .textRequired {
+  color: #ef4444;
+  font-weight: 700;
+}
+.wbtm_attendee_area .mp_form_item .formControl {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  font-size: 13.5px !important;
+  background-color: #f8fafc !important;
+  background-repeat: no-repeat !important;
+  background-position: 12px center !important;
+  background-size: 16px !important;
+}
+.wbtm_attendee_area .mp_form_item .formControl:focus {
+  border-color: var(--wbtm_color_theme) !important;
+  background-color: #fff !important;
+}
+.wbtm_attendee_area .mp_form_item:has(textarea) {
+  grid-column: 1 / -1;
+}
+/* Field order matches the mockup (Name, Email, Phone, DOB, Gender, Address)
+   rather than the DOM order the PHP loop renders fields in (Name, Email,
+   Phone, Address, Gender, then any custom fields) — reordered visually via
+   grid `order` instead of changing that loop, which other views also rely
+   on. Anything not explicitly listed (e.g. a custom field) falls through to
+   the default order:10 and lands after these six. */
+.wbtm_attendee_area .mp_form_item {
+  order: 10;
+}
+.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_full_name[]"]) { order: 1; }
+.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_reg_email[]"]) { order: 2; }
+.wbtm_attendee_area .mp_form_item:has(input[name="wbtm_reg_phone[]"]) { order: 3; }
+.wbtm_attendee_area .mp_form_item:has(input[name="date_of_birth[]"]) { order: 4; }
+.wbtm_attendee_area .mp_form_item:has(select[name="wbtm_user_gender[]"]) { order: 5; }
+.wbtm_attendee_area .mp_form_item:has(textarea[name="wbtm_reg_address[]"]) { order: 6; }
+/* Icon prefixes — matched by field name so no PHP template changes were
+   needed; each icon is a small inline SVG (not an icon font) so it renders
+   the same regardless of whether Font Awesome/Dashicons load on this page. */
+.wbtm_attendee_area input[name="wbtm_full_name[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
+}
+.wbtm_attendee_area input[name="wbtm_reg_email[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M3 7l9 6 9-6'/%3E%3C/svg%3E") !important;
+}
+.wbtm_attendee_area input[name="wbtm_reg_phone[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.6 3.5h2.7l1.5 4-2 1.4a10.8 10.8 0 0 0 5.3 5.3l1.4-2 4 1.5v2.7a1.8 1.8 0 0 1-2 1.8C11 17.4 6.6 13 5.8 6.5a1.8 1.8 0 0 1 1.8-2z'/%3E%3C/svg%3E") !important;
+}
+.wbtm_attendee_area select[name="wbtm_user_gender[]"] {
+  padding-left: 36px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='7' r='2.6'/%3E%3Ccircle cx='16' cy='9.5' r='2.2'/%3E%3Cpath d='M4 20c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.6 20c.3-2 1.8-3.5 3.6-3.8'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-position: 12px center, right 12px center !important;
+  background-size: 16px, 14px !important;
+  padding-right: 34px !important;
+}
+.wbtm_attendee_area textarea[name="wbtm_reg_address[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.3'/%3E%3C/svg%3E") !important;
+  background-position: 12px 12px !important;
+}
+/* Date of birth already gets a calendar icon from the classic
+   div.wbtm_style .formControl.date_type rule (wbtm_plugin_global.css) —
+   left as-is rather than duplicated here. */
+@media only screen and (max-width: 600px) {
+  .wbtm_attendee_area .mpPanelBody {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Footer: total + Book Now ---- */
+.wbtm_form_submit_area {
+  position: sticky;
+  bottom: 12px;
+}
+.wbtm_form_submit_area .justifyBetween {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.wbtm_form_submit_area h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+.wbtm_form_submit_area .wbtm_total {
+  display: block;
+  margin-top: 2px;
+  font-size: 22px;
+  font-weight: 800;
+}
+#wbtm_add_to_cart {
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 32px !important;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background: var(--wbtm_color_theme);
+  color: var(--wbtm_color_theme_alter);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transition: filter .15s, transform .15s;
+  cursor: pointer;
+}
+#wbtm_add_to_cart:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+@media only screen and (max-width: 600px) {
+  .wbtm_form_submit_area .justifyBetween {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #wbtm_add_to_cart {
+    width: 100%;
+  }
+}
+
+/* ==================================================================== *
+ *  Booking Summary preview card (templates/layout/booking_summary_preview.php)
+ *  A second, read-only summary shown right after Drop-Off Point — mirrors
+ *  the live seat list/subtotal (see wbtm_update_summary_preview() in
+ *  wbtm_global.js) and its Book Now button just re-triggers the real
+ *  #wbtm_add_to_cart button below, so nothing here duplicates cart logic.
+ * ==================================================================== */
+.wbtm_booking_summary_preview {
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+.wbtm_booking_summary_title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+.wbtm_booking_summary_route {
+  margin: 0 0 15px !important;
+  font-size: 12.5px;
+  color: #4f5ea3;
+}
+.wbtm_booking_summary_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+.wbtm_booking_summary_table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: #6b7280;
+  padding: 0 0 8px;
+  border-bottom: 1px solid #e0e7ff;
+}
+.wbtm_booking_summary_table tbody td {
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e9ff;
+}
+.wbtm_booking_summary_table tbody td:first-child {
+  color: #f97316;
+  padding: 10px;
+  font-weight: 700;
+}
+.wbtm_booking_summary_table tbody td:nth-child(2) {
+  font-weight: 700;
+  color: #1f2937;
+}
+.wbtm_booking_summary_table tbody td:last-child {
+  text-align: right;
+  padding: 10px;
+  font-weight: 700;
+  color: #1f2937;
+}
+/* "No seat selected yet" placeholder row (see booking_summary_preview.php /
+   wbtm_update_summary_preview()) — its lone <td> would otherwise inherit the
+   seat-type column's orange first-child styling above. */
+.wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row td {
+  text-align: center !important;
+  font-weight: 400 !important;
+  color: #9ca3af !important;
+  font-style: italic;
+}
+.wbtm_booking_summary_subtotal {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 15px;
+  margin-bottom: 14px;
+}
+.wbtm_booking_summary_subtotal .wbtm_summary_preview_subtotal {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.wbtm_summary_preview_book_now {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  transition: filter .15s;
+}
+.wbtm_summary_preview_book_now:hover {
+  filter: brightness(1.08);
+}
+.wbtm_summary_preview_book_now:disabled {
+  background: #cbd5e1;
+  color: #f8fafc;
+  cursor: not-allowed;
+}
+.wbtm_summary_preview_book_now:disabled:hover {
+  filter: none;
+}
+.wbtm_booking_summary_note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  margin-top: 15px !important;
+  padding: 10px 12px;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #047857;
+}
+.wbtm_booking_summary_note::before {
+  content: "✓";
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+.wbtm_registration_area ._dLayout_xs {
+  border-radius: 10px;
 }

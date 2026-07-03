@@ -29,10 +29,11 @@
 					<div class="col_7 col_12_1000 col_6_800 col_12_700">
 						<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
+						<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
 						<?php do_action('wbtm_attendee_form', $post_id); ?>
+						<?php require WBTM_Functions::template_path('layout/booking_summary_preview.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/add_to_cart.php'); ?>
 					</div>
 				</div>

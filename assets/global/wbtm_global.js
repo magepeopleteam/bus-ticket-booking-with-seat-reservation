@@ -386,7 +386,51 @@
 		// Added by Shahnur 2026-06-02 — keep the raw numeric total so it can be sent to the
 		// server without depending on locale-formatted text (e.g. "39,00 lei" was collapsing to 3900).
 		target_summary.attr('data-raw-total', total);
+		wbtm_update_summary_preview(parent, total_qty);
 	}
+	// Read-only "Booking Summary" preview card (see templates/layout/
+	// booking_summary_preview.php) — mirrors the rows .wbtm_selected_seat_details
+	// already built above and the .wbtm_sub_total text this same function just
+	// set, rather than recomputing anything itself, so it can never drift out of
+	// sync with the real totals. Its own Book Now button (below) just re-clicks
+	// the real #wbtm_add_to_cart button instead of duplicating the add-to-cart logic.
+	// Loaded and visible before any seat is picked (not hidden/shown like
+	// .wbtm_ex_service_area / .wbtm_form_submit_area above) — only its Book Now
+	// button toggles disabled/enabled based on whether a seat is selected yet.
+	function wbtm_update_summary_preview(parent, total_qty) {
+		let preview = parent.find('.wbtm_booking_summary_preview');
+		if (!preview.length) {
+			return;
+		}
+		let preview_rows = preview.find('.wbtm_summary_preview_rows');
+		let book_now_btn = preview.find('.wbtm_summary_preview_book_now');
+		if (preview_rows.data('wbtm-empty-html') === undefined) {
+			// Capture the PHP-rendered "No seat selected yet" placeholder row once,
+			// before it's ever replaced, so it can be restored later without
+			// duplicating its translated text here in JS.
+			preview_rows.data('wbtm-empty-html', preview_rows.html());
+		}
+		if (total_qty > 0) {
+			preview_rows.html('');
+			parent.find('.wbtm_selected_seat_details .wbtm_item_insert .wbtm_remove_area').each(function () {
+				let row = $(this);
+				let clone = $('<tr></tr>');
+				clone.append($('<td></td>').html(row.find('.insert_seat_label').html()));
+				clone.append($('<td></td>').html(row.find('.insert_seat_name').html()));
+				clone.append($('<td></td>').html(row.find('.insert_seat_price').html()));
+				preview_rows.append(clone);
+			});
+			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			book_now_btn.prop('disabled', false);
+		} else {
+			preview_rows.html(preview_rows.data('wbtm-empty-html'));
+			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			book_now_btn.prop('disabled', true);
+		}
+	}
+	$(document).on('click', '.wbtm_registration_area .wbtm_summary_preview_book_now', function () {
+		$(this).closest('.wbtm_registration_area').find('#wbtm_add_to_cart').trigger('click');
+	});
 	function wbtm_ticket_price(parent) {
 		let total = 0;
 		if (parent.find('.wbtm_seat_plan_area').length > 0) {
