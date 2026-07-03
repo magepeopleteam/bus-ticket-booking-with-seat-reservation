@@ -427,10 +427,12 @@
 				preview_rows.append(clone);
 			});
 			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			preview.find('.wbtm_summary_preview_total').html(parent.find('.wbtm_total').html());
 			book_now_btn.prop('disabled', false);
 		} else {
 			preview_rows.html(preview_rows.data('wbtm-empty-html'));
 			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			preview.find('.wbtm_summary_preview_total').html(parent.find('.wbtm_total').html());
 			book_now_btn.prop('disabled', true);
 		}
 	}

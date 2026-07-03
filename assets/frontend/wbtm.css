@@ -2198,17 +2198,26 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
+  line-height: 1;
   color: #64748b;
+  white-space: nowrap;
 }
 .wbtm_seat_legend_swatch {
   width: 13px;
   height: 13px;
+  min-width: 13px;
   border-radius: 3px;
   display: inline-block;
   box-sizing: border-box;
+  flex-shrink: 0;
+  font-style: normal;
+  vertical-align: middle;
 }
 .wbtm_seat_legend_swatch.is_available {
-  background: #fff;
+  /* A near-white fill with a visible border reads as ill-defined/misaligned
+     against the page's own white background — tinted very slightly so it
+     shows up as a clear, consistently-sized square like the other two. */
+  background: #f1f5f9;
   border: 1.5px solid #cbd5e1;
 }
 .wbtm_seat_legend_swatch.is_selected {
@@ -2831,6 +2840,22 @@ table.wbtm_totals .wbtm_sub_total {
 }
 .wbtm_booking_summary_subtotal .wbtm_summary_preview_subtotal {
   font-size: 17px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.wbtm_booking_summary_total {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #e0e7ff;
+}
+.wbtm_booking_summary_total .wbtm_summary_preview_total {
+  font-size: 19px;
   font-weight: 800;
   color: #1e3a8a;
 }
