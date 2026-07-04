@@ -73,7 +73,9 @@
 
 		var button = el('button', { type: 'button', class: 'button button-primary wbtm-add-bus-type-btn' });
 		button.textContent = cfg.addButtonLabel || 'Add New Bus Type';
-		button.addEventListener('click', openAddModal);
+		button.addEventListener('click', function () {
+			openAddModal(cfg.taxonomy);
+		});
 
 		var right = el('div', { class: 'wbtm-tablenav-right' });
 		var pages = tablenavTop.querySelector('.tablenav-pages');
@@ -167,7 +169,7 @@
 					editLink.innerHTML = '<span class="dashicons dashicons-edit" aria-hidden="true"></span>';
 					editLink.addEventListener('click', function (evt) {
 						evt.preventDefault();
-						openEditModal(termId);
+						openEditModal(cfg.taxonomy, termId);
 					});
 					td.appendChild(editLink);
 				}
@@ -176,7 +178,7 @@
 					deleteLink.innerHTML = '<span class="dashicons dashicons-trash" aria-hidden="true"></span>';
 					deleteLink.addEventListener('click', function (evt) {
 						evt.preventDefault();
-						deleteBusType(termId, deleteLink);
+						deleteBusType(cfg.taxonomy, termId, deleteLink);
 					});
 					td.appendChild(deleteLink);
 				}
@@ -268,6 +270,23 @@
 	var modalEls = null;
 	var modalState = { mode: 'add', termId: 0 };
 
+	function escapeHtml(value) {
+		var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+		return String(value || '').replace(/[&<>"']/g, function (ch) {
+			return map[ch];
+		});
+	}
+
+	/** Options for the "Under Bus Stop" dropdown, built once from the bus stops localized server-side. */
+	function buildBusStopOptions() {
+		var stops = cfg.busStops || [];
+		var options = '<option value="">' + escapeHtml(strings.underStopEmpty || '') + '</option>';
+		stops.forEach(function (stop) {
+			options += '<option value="' + stop.id + '">' + escapeHtml(stop.name) + '</option>';
+		});
+		return options;
+	}
+
 	function buildModal() {
 		if (modalEls) {
 			return modalEls;
@@ -289,10 +308,14 @@
 					'<input type="text" id="wbtm-modal-name" placeholder="' + (strings.namePlaceholder || '') + '" />' +
 					'<p>' + (strings.nameHelp || '') + '</p>' +
 				'</div>' +
-				'<div class="form-field">' +
+				'<div class="form-field wbtm-slug-field">' +
 					'<label for="wbtm-modal-slug">' + (strings.slug || '') + '</label>' +
 					'<input type="text" id="wbtm-modal-slug" placeholder="' + (strings.slugPlaceholder || '') + '" />' +
 					'<p>' + (strings.slugHelp || '') + '</p>' +
+				'</div>' +
+				'<div class="form-field wbtm-understop-field wbtm-hidden">' +
+					'<label for="wbtm-modal-understop">' + (strings.underStop || 'Under Bus Stop') + '</label>' +
+					'<select id="wbtm-modal-understop">' + buildBusStopOptions() + '</select>' +
 				'</div>' +
 				'<div class="form-field">' +
 					'<label for="wbtm-modal-description">' + (strings.description || '') + '</label>' +
@@ -384,28 +407,86 @@
 		modal.dialog.querySelector('#wbtm-modal-name').value = '';
 		modal.dialog.querySelector('#wbtm-modal-slug').value = '';
 		modal.dialog.querySelector('#wbtm-modal-description').value = '';
+		var understopSelect = modal.dialog.querySelector('#wbtm-modal-understop');
+		if (understopSelect) {
+			understopSelect.value = '';
+		}
 		setIconFieldState(modal, '');
 	}
 
-	function openAddModal() {
+	/**
+	 * Popup copy for one taxonomy. The host screen's own taxonomy (cfg.taxonomy)
+	 * is always in cfg.perTaxonomy; a merged section's taxonomy (e.g. Drop-Off
+	 * Point rendered on the Pickup Point screen) is there too, added server-side
+	 * by WBTM_Taxonomy_Modern::enqueue(). Falls back to the host's own strings
+	 * so the popup still works even if a taxonomy is somehow missing an entry.
+	 */
+	function bundleFor(taxonomy) {
+		var perTaxonomy = cfg.perTaxonomy || {};
+		if (taxonomy && perTaxonomy[taxonomy]) {
+			return perTaxonomy[taxonomy];
+		}
+		return {
+			modalTitle: strings.modalTitle,
+			editModalTitle: strings.editModalTitle,
+			namePlaceholder: strings.namePlaceholder,
+			nameFieldLabel: strings.name,
+			slugPlaceholder: strings.slugPlaceholder,
+			descPlaceholder: strings.descPlaceholder,
+			submit: strings.submit,
+			confirmDelete: strings.confirmDelete,
+			linkedToStops: false
+		};
+	}
+
+	function applyBundlePlaceholders(modal, bundle) {
+		modal.dialog.querySelector('#wbtm-modal-name').setAttribute('placeholder', bundle.namePlaceholder || '');
+		modal.dialog.querySelector('#wbtm-modal-slug').setAttribute('placeholder', bundle.slugPlaceholder || '');
+		modal.dialog.querySelector('#wbtm-modal-description').setAttribute('placeholder', bundle.descPlaceholder || '');
+
+		var nameLabel = modal.dialog.querySelector('label[for="wbtm-modal-name"]');
+		if (nameLabel) {
+			nameLabel.textContent = bundle.nameFieldLabel || strings.name || '';
+		}
+
+		// Pickup/Drop-Off Point: Slug is auto-generated from the name and never
+		// shown, replaced in the form by the "Under Bus Stop" dropdown. Every
+		// other taxonomy keeps the Slug field and never shows the dropdown.
+		var slugField = modal.dialog.querySelector('.wbtm-slug-field');
+		var understopField = modal.dialog.querySelector('.wbtm-understop-field');
+		if (slugField) {
+			slugField.classList.toggle('wbtm-hidden', !!bundle.linkedToStops);
+		}
+		if (understopField) {
+			understopField.classList.toggle('wbtm-hidden', !bundle.linkedToStops);
+		}
+	}
+
+	function openAddModal(taxonomy) {
+		taxonomy = taxonomy || cfg.taxonomy;
 		var modal = buildModal();
-		modalState = { mode: 'add', termId: 0 };
+		var bundle = bundleFor(taxonomy);
+		modalState = { mode: 'add', termId: 0, taxonomy: taxonomy };
 		resetModalFields(modal);
-		modal.titleEl.textContent = strings.modalTitle || 'Add New Bus Type';
+		applyBundlePlaceholders(modal, bundle);
+		modal.titleEl.textContent = bundle.modalTitle || 'Add New Bus Type';
 		modal.submitBtn.disabled = false;
-		modal.submitBtn.textContent = strings.submit || 'Add New Bus Type';
+		modal.submitBtn.textContent = bundle.submit || 'Add New Bus Type';
 		modal.overlay.classList.remove('wbtm-hidden');
 		modal.dialog.querySelector('#wbtm-modal-name').focus();
 	}
 
-	function openEditModal(termId) {
+	function openEditModal(taxonomy, termId) {
+		taxonomy = taxonomy || cfg.taxonomy;
 		if (!termId) {
 			return;
 		}
 		var modal = buildModal();
-		modalState = { mode: 'edit', termId: termId };
+		var bundle = bundleFor(taxonomy);
+		modalState = { mode: 'edit', termId: termId, taxonomy: taxonomy };
 		resetModalFields(modal);
-		modal.titleEl.textContent = strings.editModalTitle || 'Edit Bus Type';
+		applyBundlePlaceholders(modal, bundle);
+		modal.titleEl.textContent = bundle.editModalTitle || 'Edit Bus Type';
 		modal.submitBtn.textContent = strings.saveChanges || 'Save Changes';
 		modal.submitBtn.disabled = true;
 		modal.dialog.querySelector('#wbtm-modal-name').value = strings.loadingTerm || 'Loading…';
@@ -414,7 +495,7 @@
 		var body = new URLSearchParams();
 		body.set('action', 'wbtm_get_bus_type');
 		body.set('nonce', cfg.getNonce || '');
-		body.set('taxonomy', cfg.taxonomy || '');
+		body.set('taxonomy', taxonomy || '');
 		body.set('term_id', String(termId));
 
 		fetch(cfg.ajaxUrl, {
@@ -427,7 +508,7 @@
 			.then(function (json) {
 				// The modal may have been closed and reopened for something
 				// else while this was in flight — ignore a stale response.
-				if (modalState.mode !== 'edit' || modalState.termId !== termId) {
+				if (modalState.mode !== 'edit' || modalState.termId !== termId || modalState.taxonomy !== taxonomy) {
 					return;
 				}
 				if (!json || !json.success) {
@@ -440,11 +521,15 @@
 				modal.dialog.querySelector('#wbtm-modal-name').value = data.name || '';
 				modal.dialog.querySelector('#wbtm-modal-slug').value = data.slug || '';
 				modal.dialog.querySelector('#wbtm-modal-description').value = data.description || '';
+				var understopSelect = modal.dialog.querySelector('#wbtm-modal-understop');
+				if (understopSelect) {
+					understopSelect.value = data.underStop ? String(data.underStop) : '';
+				}
 				setIconFieldState(modal, data.icon || '');
 				modal.submitBtn.disabled = false;
 			})
 			.catch(function () {
-				if (modalState.mode === 'edit' && modalState.termId === termId) {
+				if (modalState.mode === 'edit' && modalState.termId === termId && modalState.taxonomy === taxonomy) {
 					showError(strings.genericError || 'Something went wrong.');
 					modal.dialog.querySelector('#wbtm-modal-name').value = '';
 				}
@@ -461,6 +546,8 @@
 		var dialog = modalEls.dialog;
 		var name = dialog.querySelector('#wbtm-modal-name').value.trim();
 		var isEdit = modalState.mode === 'edit';
+		var taxonomy = modalState.taxonomy || cfg.taxonomy;
+		var bundle = bundleFor(taxonomy);
 		clearError();
 
 		if (!name) {
@@ -471,13 +558,17 @@
 		var body = new URLSearchParams();
 		body.set('action', isEdit ? 'wbtm_edit_bus_type' : 'wbtm_add_bus_type');
 		body.set('nonce', (isEdit ? cfg.editNonce : cfg.nonce) || '');
-		body.set('taxonomy', cfg.taxonomy || '');
+		body.set('taxonomy', taxonomy || '');
 		if (isEdit) {
 			body.set('term_id', String(modalState.termId));
 		}
 		body.set('tag-name', name);
 		body.set('slug', dialog.querySelector('#wbtm-modal-slug').value.trim());
 		body.set('description', dialog.querySelector('#wbtm-modal-description').value);
+		var understopSelect = dialog.querySelector('#wbtm-modal-understop');
+		if (understopSelect) {
+			body.set('under_bus_stop', understopSelect.value || '0');
+		}
 		if (cfg.iconFieldHtml && cfg.iconMetaKey) {
 			body.set(cfg.iconMetaKey, getIconFieldValue(dialog));
 		}
@@ -505,7 +596,7 @@
 			})
 			.finally(function () {
 				modalEls.submitBtn.disabled = false;
-				modalEls.submitBtn.textContent = isEdit ? (strings.saveChanges || 'Save Changes') : (strings.submit || 'Add New Bus Type');
+				modalEls.submitBtn.textContent = isEdit ? (strings.saveChanges || 'Save Changes') : (bundle.submit || 'Add New Bus Type');
 			});
 	}
 
@@ -514,18 +605,19 @@
 	 *  edit-tags.php?action=delete&... is ever followed.
 	 * ---------------------------------------------------------------- */
 
-	function deleteBusType(termId, triggerEl) {
+	function deleteBusType(taxonomy, termId, triggerEl) {
+		taxonomy = taxonomy || cfg.taxonomy;
 		if (!termId) {
 			return;
 		}
-		if (!window.confirm(strings.confirmDelete || 'Delete this bus type?')) {
+		if (!window.confirm(bundleFor(taxonomy).confirmDelete || 'Delete this item?')) {
 			return;
 		}
 
 		var body = new URLSearchParams();
 		body.set('action', 'wbtm_delete_bus_type');
 		body.set('nonce', cfg.deleteNonce || '');
-		body.set('taxonomy', cfg.taxonomy || '');
+		body.set('taxonomy', taxonomy || '');
 		body.set('term_id', String(termId));
 
 		if (triggerEl) {
@@ -560,6 +652,45 @@
 	}
 
 	/* ---------------------------------------------------------------- *
+	 *  Merged section — a secondary taxonomy's whole management UI (e.g.
+	 *  Drop-Off Point), server-rendered by
+	 *  WBTM_Taxonomy_Modern::render_merged_taxonomy_section() as an extra
+	 *  section on this screen. Its markup is already in the finished
+	 *  "modern" shape (icon Actions column, slug badge, no name link), so
+	 *  unlike the host table above, nothing here needs transforming —
+	 *  only the Add/Edit/Delete controls need wiring to the same popup.
+	 * ---------------------------------------------------------------- */
+
+	function wireMergedSections(wrap) {
+		wrap.querySelectorAll('.wbtm-merged-section[data-taxonomy]').forEach(function (section) {
+			var taxonomy = section.getAttribute('data-taxonomy');
+
+			var addButton = section.querySelector('.wbtm-add-bus-type-btn');
+			if (addButton) {
+				addButton.addEventListener('click', function () {
+					openAddModal(taxonomy);
+				});
+			}
+
+			section.querySelectorAll('.wbtm-row-action-edit').forEach(function (link) {
+				link.addEventListener('click', function (evt) {
+					evt.preventDefault();
+					var termId = parseInt(link.getAttribute('data-term-id'), 10) || 0;
+					openEditModal(taxonomy, termId);
+				});
+			});
+
+			section.querySelectorAll('.wbtm-row-action-delete').forEach(function (link) {
+				link.addEventListener('click', function (evt) {
+					evt.preventDefault();
+					var termId = parseInt(link.getAttribute('data-term-id'), 10) || 0;
+					deleteBusType(taxonomy, termId, link);
+				});
+			});
+		});
+	}
+
+	/* ---------------------------------------------------------------- *
 	 *  Init
 	 * ---------------------------------------------------------------- */
 
@@ -585,6 +716,7 @@
 			removeBulkSelection(wrap);
 			badgeSlugs(wrap);
 			prependFeatureIcons(wrap);
+			wireMergedSections(wrap);
 		} finally {
 			document.body.classList.add('wbtm-taxonomy-ready');
 		}

@@ -91,8 +91,7 @@
 					'name' => sprintf(__('%s Pickup Point', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
 					'singular_name' => sprintf(__('%s Pickup Point', 'bus-ticket-booking-with-seat-reservation'), $name),
-					/* translators: %s: event name */
-					'menu_name' => sprintf(__('%s Pickup Point', 'bus-ticket-booking-with-seat-reservation'), $name),
+					'menu_name' => __('Pick & Drop Point', 'bus-ticket-booking-with-seat-reservation'),
 					/* translators: %s: event name */
 					'all_items' => sprintf(__('All %s Pickup Point', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
@@ -183,6 +182,12 @@
 					"public" => true,
 					'labels' => $labels_drop_off,
 					'show_ui' => true,
+					// No separate "Drop-Off Point" admin submenu: its term
+					// management UI is merged into the Pickup Point screen
+					// instead (see WBTM_Taxonomy_Modern::MERGED_TAXONOMIES).
+					// show_ui stays true so the taxonomy, its terms, and its
+					// capabilities keep working exactly as before.
+					'show_in_menu' => false,
 					'show_admin_column' => true,
 					'update_count_callback' => '_update_post_term_count',
 					'query_var' => true,

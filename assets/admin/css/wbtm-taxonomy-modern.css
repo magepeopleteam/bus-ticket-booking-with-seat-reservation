@@ -360,6 +360,19 @@ body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap::after {
 	resize: vertical;
 }
 
+.wbtm-modal .form-field select {
+	padding: 2px 12px !important;
+	padding-right: 32px !important;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 12px 8px;
+	cursor: pointer;
+}
+
 .wbtm-modal .form-field input[type="text"]:focus,
 .wbtm-modal .form-field textarea:focus,
 .wbtm-modal .form-field select:focus {
@@ -539,6 +552,54 @@ body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap::after {
 .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td.column-name,
 .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td.column-description {
 	overflow-wrap: break-word;
+}
+
+/* ---------- Pickup/Drop-Off Point only: 6 columns instead of 5 (an extra
+   "Under Bus Stop" column between Description and Slug), on both the host
+   table and the merged section's table — everywhere else keeps the 5-column
+   widths above. Scoped by body class rather than a wrapper element since the
+   host table and the merged section table are structurally unrelated. ---------- */
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(1),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(1),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(1),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(1) {
+	width: 20%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(2),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(2),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(2),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(2) {
+	width: 22%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(3),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(3),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(3),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(3) {
+	width: 16%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(4),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(4),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(4),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(4) {
+	width: 14%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(5),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(5),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(5),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(5) {
+	width: 12%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(6),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(6),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(6),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(6) {
+	width: 16%;
 }
 
 .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead th,
@@ -775,6 +836,55 @@ body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap::after {
 .wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-delete:hover {
 	background: #FFF1F4;
 	color: #9F1239;
+}
+
+/* ---------- Merged secondary taxonomy section (e.g. Drop-Off Point's
+   management UI, living at the bottom of the Pickup Point screen instead of
+   its own submenu — see WBTM_Taxonomy_Modern::MERGED_TAXONOMIES) ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section {
+	margin-top: 28px;
+	padding-top: 24px;
+	border-top: 1px solid #E4E9F0;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-bottom: 14px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header h2 {
+	margin: 0 0 4px;
+	font-size: 17px;
+	font-weight: 700;
+	color: #0F172A;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header .wbtm-taxonomy-subtitle {
+	margin: 0;
+	padding: 0;
+	max-width: 560px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #64748B;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header .wbtm-add-bus-type-btn {
+	flex: 0 0 auto;
+	white-space: nowrap;
+	height: 34px;
+	padding: 0 16px;
+	border-radius: 8px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section table.wp-list-table tbody tr.no-items td {
+	color: #94A3B8;
+	text-align: center;
+	padding: 20px 16px;
 }
 
 /* ---------- Sort indicators ---------- */
