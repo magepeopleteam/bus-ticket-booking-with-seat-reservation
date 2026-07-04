@@ -813,13 +813,12 @@ div#wbtm_date_start_route { height: 50px; }
     font-size: 11px;
     font-weight: 600;
     color: #333;
-    background: #fff;
     padding: 4px 6px;
-    border-radius: 20px;
     align-self: flex-start;
-    border: none;
+    border: 1px dotted #bedfbf;
+    background: #eaffed;
+    border-radius: 5px;
 }
-.wbtm-seats-avail i { color: #2f302f; font-size: 11px; }
 .wbtm-card-info .wbtm_bus_details_tabs_holder {
     margin-top:  auto;
     padding-top: 8px;
@@ -1183,7 +1182,6 @@ div#wbtm_date_start_route { height: 50px; }
                         </div>
 
                         <div class="wbtm-seats-avail">
-                            <i class="fas fa-chair"></i>
                             <?php echo esc_html($all_info['available_seat']); ?>
                             <?php esc_html_e('seats available', 'bus-ticket-booking-with-seat-reservation'); ?>
                         </div>

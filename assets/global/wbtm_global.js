@@ -797,20 +797,34 @@
 		}
 	}
 
-	// Handle cabin seat plan toggle
+	// Handle cabin seat plan toggle — accordion: opening one cabin collapses
+	// every other cabin within the same seat plan area (outbound and return
+	// each get their own independent accordion, since each has its own
+	// .wbtm_seat_plan_area — see the "each" loop below).
 	$(document).on('click', '.wbtm_cabin_toggle', function () {
 		let header = $(this);
 		let cabin_section = header.closest('.wbtm_cabin_section');
+		let seat_plan_area = cabin_section.closest('.wbtm_seat_plan_area');
 		let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
 		let arrow = header.find('.wbtm_toggle_arrow');
 		let isExpanded = seat_plan.attr('aria-expanded') === 'true';
 
+		seat_plan_area.find('.wbtm_cabin_section').not(cabin_section).each(function () {
+			let other_section = $(this);
+			let other_plan = other_section.find('.wbtm_cabin_seat_plan');
+			if (other_plan.attr('aria-expanded') === 'true') {
+				other_plan.stop(true, true).slideUp(300).attr('aria-expanded', 'false');
+				other_section.removeClass('expanded').addClass('collapsed');
+				other_section.find('.wbtm_toggle_arrow').text('▼');
+			}
+		});
+
 		if (isExpanded) {
-			seat_plan.slideUp(300).attr('aria-expanded', 'false');
+			seat_plan.stop(true, true).slideUp(300).attr('aria-expanded', 'false');
 			cabin_section.removeClass('expanded').addClass('collapsed');
 			arrow.text('▼'); // Show down arrow when collapsed
 		} else {
-			seat_plan.slideDown(300).attr('aria-expanded', 'true');
+			seat_plan.stop(true, true).slideDown(300).attr('aria-expanded', 'true');
 			cabin_section.removeClass('collapsed').addClass('expanded');
 			arrow.text('▲'); // Show up arrow when expanded
 		}

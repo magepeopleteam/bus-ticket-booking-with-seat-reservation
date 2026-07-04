@@ -1023,10 +1023,11 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
 /* Cabin-specific styles for train/bus multi-cabin support */
 .wbtm_cabin_section {
-  margin-bottom: 15px;
-  border: 2px solid var(--wbtm_color_border);
-  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid var(--wbtm_color_border);
+  border-radius: 12px;
   background-color: var(--wbtm_color_light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04), 0 6px 18px rgba(0, 0, 0, .05);
   overflow: hidden;
 }
 
@@ -1042,11 +1043,15 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_cabin_header {
   background-color: var(--wbtm_color_theme);
   color: white;
-  padding: 15px 20px;
+  padding: 16px 22px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   user-select: none;
+  transition: filter .15s ease;
+}
+.wbtm_cabin_header:hover {
+  filter: brightness(1.06);
 }
 
 .wbtm_cabin_toggle {
@@ -1068,6 +1073,9 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   justify-content: center;
   width: 30px;
   height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  flex-shrink: 0;
 }
 
 .wbtm_toggle_arrow {
@@ -1107,7 +1115,7 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 }
 
 .wbtm_cabin_seat_plan {
-  padding: 20px;
+  padding: 24px 20px;
   background-color: white;
 }
 
@@ -1123,15 +1131,12 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
 .wbtm_cabin_direction {
   text-align: center;
-  color: var(--wbtm_color_theme);
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.wbtm_cabin_separator {
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--wbtm_color_border) 50%, transparent 100%);
-  margin: 20px 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 16px;
 }
 
 .wbtm_cabin_seat_plan .seat_available {
@@ -2189,9 +2194,12 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm_seat_legend {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 18px;
-  margin: 20px 10px;
+  margin: 4px 10px 20px;
+  padding-top: 18px;
+  border-top: 1px solid #eef1f5;
 }
 .wbtm_seat_legend_item {
   display: inline-flex;
