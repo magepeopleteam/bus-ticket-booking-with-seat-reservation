@@ -132,6 +132,20 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    // ===== RETURN JOURNEY TOGGLE =====
+    $(document).on('click', '[data-bus-return-toggle]', function () {
+        var $btn = $(this);
+        var $panel = $btn.next('[data-bus-return-panel]');
+        var expanded = $btn.attr('aria-expanded') === 'true';
+
+        $btn.attr('aria-expanded', String(!expanded));
+        $btn.toggleClass('is-open', !expanded);
+        $panel.prop('hidden', expanded);
+        $btn.find('.wbtm_sm_return_toggle_label').text(
+            expanded ? $btn.data('label-show') : $btn.data('label-hide')
+        );
+    });
+
     // ===== TABS FUNCTIONALITY =====
     $(".wbtm_car_details_tabs button").on("click", function(){
         var tabId = $(this).data('tab');

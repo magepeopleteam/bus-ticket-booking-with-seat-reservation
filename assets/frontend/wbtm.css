@@ -2908,6 +2908,11 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_registration_area .mpPanel {
   border: none !important;
 }
+@media only screen and (min-width: 10px) {
+  .wbtm_style .wbtm_registration_area .col_4 {
+    width: 38%;
+  }
+}
 
 /* The small inline loader (e.g. the "To" field while its Drop-Off Point
    options load) inherits a dark semi-transparent background from the

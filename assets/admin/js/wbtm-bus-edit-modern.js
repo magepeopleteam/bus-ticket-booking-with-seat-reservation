@@ -128,6 +128,84 @@
 	});
 
 	/* ---------------------------------------------------------------- *
+	 *  Split-button dropdown — one extra option, always the opposite of
+	 *  whatever the primary button already does ("Update"/"Publish").
+	 *  "Save as Draft"/"Switch to Draft" submits the real #post form
+	 *  directly (no #publish/#save click) with WordPress' own core
+	 *  'saveasdraft' flag set — the exact same flag its native Save Draft
+	 *  button uses (see _wp_translate_postdata() in wp-admin/includes/post.php),
+	 *  so post_status ends up 'draft' no matter what the primary action is.
+	 * ---------------------------------------------------------------- */
+	var $split = $root.find('[data-bme-split]');
+	var $splitToggle = $split.find('[data-bme-split-toggle]');
+	var $splitMenu = $split.find('[data-bme-split-menu]');
+
+	function closeSplitMenu() {
+		$splitMenu.attr('hidden', true);
+		$splitToggle.attr('aria-expanded', 'false');
+	}
+	function openSplitMenu() {
+		$splitMenu.removeAttr('hidden');
+		$splitToggle.attr('aria-expanded', 'true');
+	}
+
+	$splitToggle.on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if ($splitMenu.attr('hidden')) { openSplitMenu(); } else { closeSplitMenu(); }
+	});
+	$(document).on('click', function (e) {
+		if ($split.length && !$split.is(e.target) && $split.has(e.target).length === 0) {
+			closeSplitMenu();
+		}
+	});
+	$(document).on('keydown', function (e) {
+		if (e.key === 'Escape' || e.keyCode === 27) { closeSplitMenu(); }
+	});
+
+	function submitFormAs(status) {
+		try { sessionStorage.setItem('wbtmBmeSaved', '1'); } catch (e) {}
+		toast(cfg.savingTxt || 'Saving…');
+		var form = document.getElementById('post');
+		if (!form) { return; }
+		if (status === 'draft') {
+			var draftField = form.querySelector('input[name="saveasdraft"]');
+			if (!draftField) {
+				draftField = document.createElement('input');
+				draftField.type = 'hidden';
+				draftField.name = 'saveasdraft';
+				form.appendChild(draftField);
+			}
+			draftField.value = '1';
+		}
+		if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+	}
+	$splitMenu.on('click', '[data-bme-save-as]', function (e) {
+		e.preventDefault();
+		closeSplitMenu();
+		submitFormAs($(this).data('bme-save-as'));
+	});
+	// "Classic editor" lives in this dropdown too now — its own reload logic
+	// is still the document-level [data-bme-ui] handler above; this just
+	// tidies up the menu before that reload happens.
+	$splitMenu.on('click', '[data-bme-ui]', function () {
+		closeSplitMenu();
+	});
+
+	/* ---------------------------------------------------------------- *
+	 *  Preview — proxy to WordPress' own hidden #post-preview link, whose
+	 *  core click handler (wp-admin/js/post.js) saves an autosave first and
+	 *  opens the preview in a reused tab, so unsaved changes show up too.
+	 * ---------------------------------------------------------------- */
+	$root.on('click', '[data-bme-preview]', function (e) {
+		var $native = $('#post-preview');
+		if ($native.length) {
+			e.preventDefault();
+			$native.trigger('click');
+		}
+	});
+
+	/* ---------------------------------------------------------------- *
 	 *  Bus name <-> hidden WP #title sync (title box is CSS-hidden).
 	 *  Two visual proxies (topbar + the inline "Post Title" field under
 	 *  the Bus Information band) both mirror the one real #title input.

@@ -293,6 +293,67 @@
             .attr("name", "wbtm_drop_off_time[" + unique_id + "][]");
     });
 })(jQuery);
+//==========Auto-fill Pickup/Drop-Off Info from a stop's "Under Bus Stop"=================//
+(function ($) {
+    "use strict";
+    /**
+     * When a Boarding/Dropping Point (wbtm_bp_pickup / wbtm_dp_pickup) is
+     * picked, look up every Pickup/Drop-Off Point term assigned "Under Bus
+     * Stop" to that same stop (see WBTM_Taxonomy_Modern) and add one Info
+     * row per match — same generic "Add Pickup/Drop-Off Point" flow
+     * (.wbtm_add_item) a manual click already uses, just triggered once per
+     * match and then given a value, so the admin only has to fill in times.
+     */
+    function autoFillLinkedPoints($stopSelect, pointType) {
+        let stopName = $stopSelect.val();
+        let $row = $stopSelect.closest("tr.wbtm_remove_area");
+        let $settingsArea = $row.find(".wbtm_settings_area").first();
+        let $insertArea = $settingsArea.find(".wbtm_item_insert").first();
+        let nameSelector = pointType === "drop_off" ? '[name*="wbtm_drop_off_name"]' : '[name*="wbtm_pickup_name"]';
+
+        $insertArea.empty();
+
+        if (!stopName || typeof wbtm_admin_var === "undefined") {
+            return;
+        }
+
+        // Same loading overlay (dark backdrop + spinner) already used
+        // elsewhere in this file (pricing reload, seat plan generation) —
+        // covers just this stop's Pickup/Drop-Off Info box while it fetches,
+        // so it's clear something is loading rather than the table just
+        // silently sitting empty.
+        wbtm_loader($settingsArea);
+
+        $.ajax({
+            type: "POST",
+            url: wbtm_admin_var.url,
+            data: {
+                action: "wbtm_get_stop_points",
+                nonce: wbtm_admin_var.nonce,
+                stop_name: stopName,
+                point_type: pointType,
+            },
+            success: function (response) {
+                if (!response || !response.success || !response.data || !response.data.points) {
+                    return;
+                }
+                response.data.points.forEach(function (pointName) {
+                    $settingsArea.find(".wbtm_add_item").first().trigger("click");
+                    $insertArea.find("tr").last().find(nameSelector).val(pointName);
+                });
+            },
+            complete: function () {
+                wbtm_loaderRemove($settingsArea);
+            },
+        });
+    }
+    $(document).on("change", 'select[name^="wbtm_bp_pickup"]', function () {
+        autoFillLinkedPoints($(this), "pickup");
+    });
+    $(document).on("change", 'select[name^="wbtm_dp_pickup"]', function () {
+        autoFillLinkedPoints($(this), "drop_off");
+    });
+})(jQuery);
 //==========Seat Rotation=================//
 (function ($) {
     "use strict";

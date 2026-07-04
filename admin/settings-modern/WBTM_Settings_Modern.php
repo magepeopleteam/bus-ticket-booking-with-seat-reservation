@@ -261,8 +261,39 @@
 						</a>
 						<input type="text" class="wbtm-bme__ttl wbtm-bme__ttl-input" id="wbtm-bme-title" value="<?php echo esc_attr( $bus_title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>" aria-label="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
 						<div class="wbtm-bme__acts">
-							<button type="button" class="wbtm-bme__btn" data-bme-ui="classic"><?php esc_html_e( 'Classic editor', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-							<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary" data-bme-save><?php esc_html_e( 'Update', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+							<?php
+							// Same "Published"/"Update" vs "Draft"/"Publish" split WordPress's own
+							// Publish box uses — the dropdown's Save-as option is always the
+							// opposite of whatever the primary button already does, so picking it
+							// flips status without leaving this screen.
+							$bme_post_status  = get_post_status( $post_id );
+							$bme_is_published = in_array( $bme_post_status, array( 'publish', 'private', 'future' ), true );
+							$bme_primary_label   = $bme_is_published ? __( 'Update', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Publish', 'bus-ticket-booking-with-seat-reservation' );
+							$bme_secondary_label = $bme_is_published ? __( 'Switch to Draft', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Save Draft', 'bus-ticket-booking-with-seat-reservation' );
+							$bme_status_label    = $bme_is_published ? __( 'Published', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Draft', 'bus-ticket-booking-with-seat-reservation' );
+							?>
+							<span class="wbtm-bme__status-pill<?php echo $bme_is_published ? ' is-published' : ' is-draft'; ?>"><?php echo esc_html( $bme_status_label ); ?></span>
+							<?php
+							// Proxies to WordPress' own hidden #post-preview link (see
+							// wbtm-bus-edit-modern.js) — same core click handler that saves an
+							// autosave first, so the preview always reflects unsaved changes too.
+							// This href is just the no-JS fallback.
+							?>
+							<a href="<?php echo esc_url( get_preview_post_link( $post_id ) ); ?>" target="wp-preview-<?php echo esc_attr( $post_id ); ?>" class="wbtm-bme__btn" data-bme-preview>
+								<span class="dashicons dashicons-visibility" aria-hidden="true"></span>
+								<?php esc_html_e( 'Preview', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</a>
+							<div class="wbtm-bme__split" data-bme-split>
+								<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary" data-bme-save><?php echo esc_html( $bme_primary_label ); ?></button>
+								<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary wbtm-bme__split-caret" data-bme-split-toggle aria-haspopup="true" aria-expanded="false">
+									<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+									<span class="screen-reader-text"><?php esc_html_e( 'More save options', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								</button>
+								<div class="wbtm-bme__split-menu" data-bme-split-menu hidden>
+									<button type="button" class="wbtm-bme__split-menu-item" data-bme-save-as="draft"><?php echo esc_html( $bme_secondary_label ); ?></button>
+									<button type="button" class="wbtm-bme__split-menu-item" data-bme-ui="classic"><?php esc_html_e( 'Classic editor', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+								</div>
+							</div>
 						</div>
 					</header>
 

@@ -135,8 +135,14 @@
 				</div>
 
 				<?php if ( ! empty( $return_route_infos ) ) { ?>
-				<!-- ── RETURN JOURNEY ── -->
-			<div class="wbtm_sm_return_section">
+				<!-- ── RETURN JOURNEY (collapsed behind a toggle button by default) ── -->
+				<button type="button" class="wbtm_sm_return_toggle" data-bus-return-toggle aria-expanded="false"
+					data-label-show="<?php echo esc_attr__( 'View Return Journey', 'bus-ticket-booking-with-seat-reservation' ); ?>"
+					data-label-hide="<?php echo esc_attr__( 'Hide Return Journey', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+					<svg class="wbtm_sm_return_toggle_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+					<span class="wbtm_sm_return_toggle_label"><?php esc_html_e( 'View Return Journey', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+				</button>
+			<div class="wbtm_sm_return_section" data-bus-return-panel hidden>
 				<div class="wbtm_sm_return_head">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
 					<?php esc_html_e( 'Return Journey', 'bus-ticket-booking-with-seat-reservation' ); ?>

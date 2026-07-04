@@ -90,13 +90,18 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme.wbtm_style .wbtm-bme__topbar input.wbtm-bme__ttl-input:hover{background:var(--band);}
 .wbtm-bme.wbtm_style .wbtm-bme__topbar input.wbtm-bme__ttl-input:focus{outline:none;background:#fff;border-color:var(--line);box-shadow:0 0 0 3px var(--brand-ring);text-transform:none;letter-spacing:normal;}
-.wbtm-bme__acts{justify-self:end;display:flex;gap:10px;}
+.wbtm-bme__acts{justify-self:end;display:flex;align-items:center;gap:10px;}
 
 /* On/Off badge next to the reservation toggle (mockup) */
 .wbtm-bme__onoff{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-right:8px;vertical-align:middle;}
 .wbtm-bme__onoff.on{background:var(--ok-soft);color:var(--ok) !important;}
 .wbtm-bme__onoff.on::before{content:"✓";font-weight:800;}
 .wbtm-bme__onoff.off{background:#f1f5f9;color:var(--muted);}
+
+/* Post status pill in the topbar (Published/Draft), next to Preview + the split button */
+.wbtm-bme__status-pill{display:inline-flex;align-items:center;line-height:1.2;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:999px;box-sizing:border-box;}
+.wbtm-bme__status-pill.is-published{background:var(--ok-soft);color:var(--ok);}
+.wbtm-bme__status-pill.is-draft{background:#f1f5f9;color:var(--muted);}
 
 .wbtm-bme__btn{
 	font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:10px;
@@ -110,6 +115,29 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 	background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff;border-color:transparent;box-shadow:0 6px 16px var(--brand-ring);
 }
 .wbtm-bme__btn--primary:hover{filter:brightness(1.05);}
+
+/* Update/Publish split button — primary action + caret opening one
+   status-flip option ("Switch to Draft" / "Save Draft"). */
+.wbtm-bme__split{position:relative;display:inline-flex;}
+.wbtm-bme__split .wbtm-bme__btn--primary{border-radius:10px 0 0 10px;}
+button.wbtm-bme__btn.wbtm-bme__btn--primary.wbtm-bme__split-caret{
+	border-radius:0 10px 10px 0;
+}
+.wbtm-bme__split-caret{
+	padding:9px 10px;border-left:1px solid rgba(255,255,255,.35);
+}
+.wbtm-bme__split-caret .dashicons{font-size:16px;width:16px;height:16px;}
+.wbtm-bme__split-menu{
+	position:absolute;top:calc(100% + 6px);right:0;z-index:40;min-width:180px;
+	background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px rgba(15,23,42,.14);
+	padding:6px;
+}
+.wbtm-bme__split-menu[hidden]{display:none;}
+.wbtm-bme__split-menu-item{
+	display:block;width:100%;text-align:left;font-family:inherit;font-size:13px;font-weight:600;
+	padding:9px 12px;border-radius:7px;border:none;background:transparent;color:var(--ink-2);cursor:pointer;
+}
+.wbtm-bme__split-menu-item:hover{background:var(--band);color:var(--ink);}
 
 /* Wrap + stepper */
 .wbtm-bme__wrap{max-width:1320px;margin:0 auto;padding:26px;}
