@@ -530,10 +530,17 @@
 .wbtm_single_modern {
     background: transparent;
     padding: 0;
-    border-radius: 0;
+    border-radius: 10px;
     max-width: 1350px;
     margin-left: auto;
     margin-right: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .04), 0 12px 40px rgba(0, 0, 0, .08);
+}
+.wbtm_single_modern .wbtm-bus-list {
+    border: 1px solid #ddd !important;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .04), 0 12px 40px rgba(0, 0, 0, .08) !important;
 }
 
 /* ── UNIFIED CARD ── */
