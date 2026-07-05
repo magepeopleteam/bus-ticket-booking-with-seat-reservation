@@ -1230,16 +1230,33 @@
 			/*********************/
 			public function order_status_changed($order_id) {
 				$order = wc_get_order($order_id);
+				if (!$order) {
+					return;
+				}
 				$order_status = $order->get_status();
+				// Only act on the statuses this plugin handles. This is an order-level
+				// check, so evaluate it once instead of re-checking it per line item.
+				if (!$order->has_status(array('processing', 'pending', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed', 'requested'))) {
+					return;
+				}
+				$representative_bus_id = 0;
+				// Per-bus attendee / service-booking status sync must run for EVERY bus
+				// line item, so this stays inside the loop.
 				foreach ($order->get_items() as $item_id => $item_values) {
 					$post_id = wc_get_order_item_meta($item_id, '_wbtm_bus_id');
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-						if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
-							$this->wc_order_status_change($order_status, $post_id, $order_id);
-							//echo '<pre>';print_r($order_status);echo '</pre>';die();
-							do_action('wbtm_order_status_change', $order_status, $post_id, $order_id);
+						$this->wc_order_status_change($order_status, $post_id, $order_id);
+						if (!$representative_bus_id) {
+							$representative_bus_id = (int) $post_id;
 						}
 					}
+				}
+				// Fire the status-change action ONCE per order, not once per line item.
+				// Every listener (PDF-ticket email, marketplace commission, booked-seat
+				// cache flush) is order-scoped, so dispatching inside the loop above made
+				// an order with N bus line items send N identical confirmation emails.
+				if ($representative_bus_id) {
+					do_action('wbtm_order_status_change', $order_status, $representative_bus_id, $order_id);
 				}
 			}
 			public function wc_order_status_change($order_status, $post_id, $order_id) {
