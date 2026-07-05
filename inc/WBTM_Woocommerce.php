@@ -119,18 +119,37 @@
 									}
 								}
 							} elseif (!empty($legacy_seats)) {
-								// Legacy seat validation
-								foreach ($legacy_seats as $seat_info) {
-									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
-									if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
-										WC()->cart->remove_cart_item($key);
-										wc_add_notice(
-											sprintf(
-												esc_html__( 'Seat %s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
-												esc_html( $seat_name )
-											),
-											'error'
-										);
+								/**
+								 * Added by Shahnur — 2026-07-05.
+								 * Whether this cart item books quantity tickets WITHOUT seat
+								 * labels (e.g. an addon booking flow with no customer-facing
+								 * seat plan). Such items have nothing to collide on, and an
+								 * empty seat name would make query_total_booked() run
+								 * unfiltered - counting every booking on the route/date and
+								 * falsely removing the item as "seat already booked".
+								 *
+								 * Default is FALSE, so standard seat-plan and cabin bookings
+								 * keep the full per-seat duplicate restriction unchanged.
+								 *
+								 * @param bool  $is_seatless Default false.
+								 * @param array $cart_item   The WooCommerce cart item.
+								 * @param int   $post_id     Bus post ID.
+								 */
+								$is_seatless_item = apply_filters( 'wbtm_cart_item_is_seatless', false, $cart_item, $post_id );
+								if ( ! $is_seatless_item ) {
+									// Legacy seat validation
+									foreach ($legacy_seats as $seat_info) {
+										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
+										if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
+											WC()->cart->remove_cart_item($key);
+											wc_add_notice(
+												sprintf(
+													esc_html__( 'Seat %s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+													esc_html( $seat_name )
+												),
+												'error'
+											);
+										}
 									}
 								}
 							}
