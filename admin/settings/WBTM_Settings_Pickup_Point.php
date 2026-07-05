@@ -10,7 +10,58 @@
 		class WBTM_Settings_Pickup_Point {
 			public function __construct() {
 				add_action('wbtm_add_settings_tab_content', [$this, 'tab_content']);
+				add_action('wp_ajax_wbtm_get_stop_points', [$this, 'ajax_get_stop_points']);
 			}
+
+			/**
+			 * Boarding/Dropping Point select (wbtm_bp_pickup / wbtm_dp_pickup) is a
+			 * wbtm_bus_stops term name — this resolves it to that term, then
+			 * returns the names of every Pickup/Drop-Off Point term whose "Under
+			 * Bus Stop" (see WBTM_Taxonomy_Modern) points at the same stop, so the
+			 * JS can auto-add one Pickup/Drop-Off Info row per match, leaving only
+			 * the time for the admin to fill in.
+			 */
+			public function ajax_get_stop_points() {
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wbtm_admin_nonce')) {
+					wp_send_json_error(esc_html__('Invalid nonce!', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				if (!current_user_can('edit_posts')) {
+					wp_send_json_error(esc_html__('You do not have permission to perform this action.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+
+				$stop_name = isset($_POST['stop_name']) ? sanitize_text_field(wp_unslash($_POST['stop_name'])) : '';
+				$point_type = isset($_POST['point_type']) ? sanitize_key($_POST['point_type']) : 'pickup';
+				$taxonomy = 'drop_off' === $point_type ? 'wbtm_bus_drop_off' : 'wbtm_bus_pickpoint';
+
+				if ($stop_name === '') {
+					wp_send_json_success(['points' => []]);
+				}
+
+				$stop_term = get_term_by('name', $stop_name, 'wbtm_bus_stops');
+				if (!$stop_term) {
+					wp_send_json_success(['points' => []]);
+				}
+
+				$under_stop_meta_key = class_exists('WBTM_Taxonomy_Modern') ? WBTM_Taxonomy_Modern::UNDER_STOP_META : 'wbtm_under_bus_stop';
+				$terms = get_terms(
+					[
+						'taxonomy'   => $taxonomy,
+						'hide_empty' => false,
+						'orderby'    => 'name',
+						'order'      => 'ASC',
+						'meta_query' => [
+							[
+								'key'   => $under_stop_meta_key,
+								'value' => $stop_term->term_id,
+							],
+						],
+					]
+				);
+				$names = is_wp_error($terms) ? [] : wp_list_pluck($terms, 'name');
+
+				wp_send_json_success(['points' => array_values($names)]);
+			}
+
 			public function tab_content($post_id) {
 				//echo '<pre>'; print_r($pickup_points); echo '</pre>';
 				?>
@@ -34,14 +85,6 @@
 				$checked_wbtm_pickup_point_required = $wbtm_pickup_point_required == 'no' ? '' : 'checked';
 				?>
                 <div class="">
-                    <div class="_dLayout_bgLight">
-                        <div class="_dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Pick up settings', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Here you can set pickup location', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                        </div>
-                    </div>
                     <div class="_dLayout dFlex _justifyBetween ">
                         <div class="col_10_dFlex_fdColumn">
                             <label>
@@ -189,14 +232,6 @@
 				$checked_wbtm_dropping_point_required = $wbtm_dropping_point_required == 'no' ? '' : 'checked';
 				?>
                 <div class="">
-                    <div class="_dLayout_bgLight">
-                        <div class="_dFlex_fdColumn">
-                            <label>
-								<?php esc_html_e('Drop-off settings', 'bus-ticket-booking-with-seat-reservation'); ?>
-                            </label>
-                            <span><?php esc_html_e('Here you can set drop-off location.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                        </div>
-                    </div>
                     <div class="_dLayout_dFlex_justifyBetween ">
                         <div class="col_8 _dFlex_fdColumn">
                             <label>

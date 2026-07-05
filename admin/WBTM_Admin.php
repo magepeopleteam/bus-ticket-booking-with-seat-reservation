@@ -43,6 +43,7 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_License.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_General.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Bus_Info_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Seat_Configuration.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Date_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Pricing_Routing.php';
@@ -56,6 +57,8 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WTBM_Features_Seating.php';
 				//========Modern bus editor (parallel to classic; per-user opt-in)==========//
 				require_once WBTM_PLUGIN_DIR . '/admin/settings-modern/WBTM_Settings_Modern.php';
+				//========Modern Bus Type taxonomy screen (edit-tags.php / term.php)========//
+				require_once WBTM_PLUGIN_DIR . '/admin/settings-modern/WBTM_Taxonomy_Modern.php';
 
 				//=====================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';

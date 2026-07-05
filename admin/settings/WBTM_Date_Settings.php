@@ -33,14 +33,6 @@
                     <h3><?php esc_html_e('Date Settings', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <p><?php esc_html_e('Bus date settings will help to operation a bus in a particular or repeated date.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                     <div class="">
-                        <div class="_dLayout_bgLight">
-                            <div class="col_6 _dFlex_fdColumn">
-                                <label>
-									<?php esc_html_e('Date Information', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <span><?php esc_html_e('Here you can set bus seat booking date.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                            </div>
-                        </div>
                         <div class="_dLayoutd_dFlex_alignCenter_">
                             <div class="col_8 _dFlex_fdColumn">
                                 <label>
@@ -128,18 +120,18 @@
                                     <span><?php esc_html_e('Set repeated date step count.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>
                                 <div class="col_6 textRight">
-                                    <input type="text" name="wbtm_repeated_after" class="formControl max_300 wbtm_number_validation" value="<?php echo esc_attr($repeated_after); ?>"/>
+                                    <input type="text" name="wbtm_repeated_after" class="formControl max_300 wbtm_number_validation" value="<?php echo esc_attr($repeated_after); ?>" placeholder="<?php esc_attr_e('e.g. 1', 'bus-ticket-booking-with-seat-reservation'); ?>"/>
                                 </div>
                             </div>
                             <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
                                 <div class="col_6 _dFlex_fdColumn">
                                     <label>
-										<?php esc_html_e('Maximum advanced day for booking', 'bus-ticket-booking-with-seat-reservation'); ?>
+										<?php esc_html_e('Advanced day for booking', 'bus-ticket-booking-with-seat-reservation'); ?>
                                     </label>
-                                    <span><?php esc_html_e('Set maximum advanced day for booking.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                    <span><?php esc_html_e('Set maximum advanced day', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>
                                 <div class="col_6 textRight">
-                                    <input type="text" name="wbtm_active_days" class="formControl max_300 wbtm_number_validation" value="<?php echo esc_attr($active_days); ?>"/>
+                                    <input type="text" name="wbtm_active_days" class="formControl max_300 wbtm_number_validation" value="<?php echo esc_attr($active_days); ?>" placeholder="<?php esc_attr_e('e.g. 90', 'bus-ticket-booking-with-seat-reservation'); ?>"/>
                                 </div>
                             </div>
                             <div class="_dLayout_padding_dFlex_justifyBetween_alignCenter">
@@ -162,7 +154,7 @@
                             <div class="_dLayout_padding_dFlex_justifyBetween_alignStart">
                                 <div class="col_6 _dFlex_fdColumn">
                                     <label>
-										<?php esc_html_e('Off Dates', 'bus-ticket-booking-with-seat-reservation'); ?>
+										<?php esc_html_e('Operational Off dates list', 'bus-ticket-booking-with-seat-reservation'); ?>
                                     </label>
                                     <span><?php esc_html_e('Select dates for off day.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>
@@ -195,7 +187,7 @@
                             <div class="_dLayout_padding_dFlex_justifyBetween_alignStart">
                                 <div class="col_6 _dFlex_fdColumn">
                                     <label>
-										<?php esc_html_e('Off Dates in Range', 'bus-ticket-booking-with-seat-reservation'); ?>
+										<?php esc_html_e('Operational Off date in Range', 'bus-ticket-booking-with-seat-reservation'); ?>
                                     </label>
                                     <span><?php esc_html_e('Select date range for off day.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                 </div>

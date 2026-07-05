@@ -27,16 +27,21 @@
 				add_filter( 'admin_body_class', array( $this, 'body_class' ) );
 				add_action( 'wp_ajax_wbtm_set_bus_edit_ui', array( $this, 'ajax_set_ui' ) );
 				add_action( 'save_post', array( $this, 'save_feature_image' ), 20 );
+				add_action( 'save_post', array( $this, 'save_gallery_enabled' ), 20 );
 			}
 
 			/* ------------------------------------------------------------------ *
 			 *  Preference helpers
 			 * ------------------------------------------------------------------ */
 
-			/** Current user's editor preference. Defaults to classic so nothing changes until opt-in. */
+			/**
+			 * Current user's editor preference. Defaults to modern until the
+			 * user explicitly switches to classic — once they do, that choice
+			 * (like an explicit modern choice) sticks across reloads.
+			 */
 			public static function current_ui() {
 				$ui = get_user_meta( get_current_user_id(), self::USER_META, true );
-				return $ui === 'modern' ? 'modern' : 'classic';
+				return $ui === 'classic' ? 'classic' : 'modern';
 			}
 
 			private function is_modern() {
@@ -125,6 +130,12 @@
 							array( 'WBTM_Gallery_Image_Settings', 'add_tabs_content', __( 'Gallery Image', 'bus-ticket-booking-with-seat-reservation' ), __( 'Images shown on the bus details and listings.', 'bus-ticket-booking-with-seat-reservation' ) ),
 							array( 'WTBM_Term_Condition_Add_Bus', 'term_tab_content', __( 'Term & Condition', 'bus-ticket-booking-with-seat-reservation' ), __( 'Terms shown to passengers for this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
 							array( 'WTBM_Features_Seating', 'term_tab_content', __( 'Bus Feature', 'bus-ticket-booking-with-seat-reservation' ), __( 'Highlight amenities and features of this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
+							// Pro-only. WBTM_Settings_PRO only exists when the seat-pro
+							// addon is active (its bootstrap requires the file that
+							// defines it); when it isn't, section_instance()'s own
+							// class_exists() check makes render_section_card() a no-op,
+							// same as every other section here — no extra Pro guard needed.
+							array( 'WBTM_Settings_PRO', 'tab_content', __( 'Registration Form', 'bus-ticket-booking-with-seat-reservation' ), __( 'Customize the passenger details collected during booking for this bus.', 'bus-ticket-booking-with-seat-reservation' ) ),
 						),
 					),
 				);
@@ -151,6 +162,76 @@
 			}
 
 			/* ------------------------------------------------------------------ *
+			 *  Panel skeleton (server-rendered so it shows before JS runs)
+			 * ------------------------------------------------------------------ */
+
+			private function render_rail_card_skeleton( string $type ): void {
+				$row = function( string $lw = '28%' ): string {
+					return '<div style="display:flex;align-items:center;gap:12px;padding:6px 0">'
+					     . '<div class="wbtm-bme__skel wbtm-bme__skel-lbl" style="width:' . $lw . '"></div>'
+					     . '<div class="wbtm-bme__skel wbtm-bme__skel-inp"></div>'
+					     . '</div>';
+				};
+				switch ( $type ) {
+					case 'featured':
+						$inner = '<div class="wbtm-bme__skel wbtm-bme__skel-block" style="height:155px;margin-bottom:14px"></div>'
+						       . '<div style="display:flex;gap:10px">'
+						       . '<div class="wbtm-bme__skel" style="height:24px;flex:1;border-radius:6px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:24px;flex:1;border-radius:6px"></div>'
+						       . '</div>';
+						break;
+					case 'logo':
+						$inner = '<div style="display:flex;align-items:center;gap:12px">'
+						       . '<div style="flex:1"><div class="wbtm-bme__skel" style="height:13px;width:60%;margin-bottom:8px;border-radius:5px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:11px;width:80%;border-radius:5px"></div></div>'
+						       . '<div class="wbtm-bme__skel" style="width:52px;height:52px;border-radius:8px;flex-shrink:0"></div>'
+						       . '</div>';
+						break;
+					case 'gallery':
+						$inner = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+						       . '<div class="wbtm-bme__skel" style="height:13px;width:55%;border-radius:5px"></div>'
+						       . '<div class="wbtm-bme__skel" style="height:22px;width:44px;border-radius:12px"></div>'
+						       . '</div>'
+						       . '<div style="display:flex;flex-wrap:wrap;gap:6px">'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '<div class="wbtm-bme__skel" style="width:66px;height:66px;border-radius:8px"></div>'
+						       . '</div>';
+						break;
+					default: // info
+						$inner = '<div class="wbtm-bme__skel" style="height:13px;width:40%;margin-bottom:14px;border-radius:5px"></div>'
+						       . $row( '30%' ) . $row( '30%' ) . $row( '35%' ) . $row( '30%' );
+						break;
+				}
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="wbtm-bme__skel-ov">' . $inner . '</div>';
+			}
+
+			private function render_panel_skeleton( string $id ): void {
+				$row   = '<div class="wbtm-bme__skel-row"><div class="wbtm-bme__skel wbtm-bme__skel-lbl"></div><div class="wbtm-bme__skel wbtm-bme__skel-inp"></div></div>';
+				$rows  = function( int $n ) use ( $row ): string {
+					return str_repeat( $row, $n );
+				};
+				$card  = function( int $n, string $w = '35%' ) use ( $rows ): string {
+					return '<div class="wbtm-bme__skel-card"><div class="wbtm-bme__skel wbtm-bme__skel-card-hd" style="width:' . $w . '"></div>' . $rows( $n ) . '</div>';
+				};
+				$block = function( int $h ): string {
+					return '<div class="wbtm-bme__skel wbtm-bme__skel-block" style="height:' . $h . 'px"></div>';
+				};
+
+				$shapes = array(
+					'general'  => $card( 4, '30%' ),
+					'seat'     => $card( 2, '25%' ) . $block( 280 ),
+					'pricing'  => $card( 3, '30%' ) . $card( 2, '25%' ),
+					'advanced' => $card( 3, '35%' ) . $card( 2, '30%' ) . $card( 3, '40%' ),
+				);
+
+				$inner = isset( $shapes[ $id ] ) ? $shapes[ $id ] : $card( 3, '30%' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fully static markup, no user data
+				echo '<div class="wbtm-bme__skel-ov">' . $inner . '</div>';
+			}
+
+			/* ------------------------------------------------------------------ *
 			 *  Modern shell
 			 * ------------------------------------------------------------------ */
 
@@ -164,6 +245,10 @@
 
 				// Shared plumbing — MUST match the classic save handler.
 				wp_nonce_field( 'wbtm_type_nonce', 'wbtm_type_nonce' );
+				// The classic Gallery Image Settings section (which normally prints this
+				// nonce itself) is skipped in the modern Advanced step in favour of the
+				// rail's inline gallery editor — so its save handler needs the nonce here.
+				wp_nonce_field( 'wbtm_save_gallery_image_nonce', 'wbtm_gallery_image_nonce' );
 				?>
 				<input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr( $post_id ); ?>"/>
 <?php // The wbtm_style class keeps classic JS (collapse, validation, datepicker, lazy images) working for the reused sections. ?>
@@ -176,31 +261,73 @@
 						</a>
 						<input type="text" class="wbtm-bme__ttl wbtm-bme__ttl-input" id="wbtm-bme-title" value="<?php echo esc_attr( $bus_title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>" aria-label="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
 						<div class="wbtm-bme__acts">
-							<button type="button" class="wbtm-bme__btn" data-bme-ui="classic"><?php esc_html_e( 'Classic editor', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-							<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary" data-bme-save><?php esc_html_e( 'Update', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+							<?php
+							// Same "Published"/"Update" vs "Draft"/"Publish" split WordPress's own
+							// Publish box uses — the dropdown's Save-as option is always the
+							// opposite of whatever the primary button already does, so picking it
+							// flips status without leaving this screen.
+							$bme_post_status  = get_post_status( $post_id );
+							$bme_is_published = in_array( $bme_post_status, array( 'publish', 'private', 'future' ), true );
+							$bme_primary_label   = $bme_is_published ? __( 'Update', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Publish', 'bus-ticket-booking-with-seat-reservation' );
+							$bme_secondary_label = $bme_is_published ? __( 'Switch to Draft', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Save Draft', 'bus-ticket-booking-with-seat-reservation' );
+							$bme_status_label    = $bme_is_published ? __( 'Published', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Draft', 'bus-ticket-booking-with-seat-reservation' );
+							?>
+							<span class="wbtm-bme__status-pill<?php echo $bme_is_published ? ' is-published' : ' is-draft'; ?>"><?php echo esc_html( $bme_status_label ); ?></span>
+							<?php
+							// Proxies to WordPress' own hidden #post-preview link (see
+							// wbtm-bus-edit-modern.js) — same core click handler that saves an
+							// autosave first, so the preview always reflects unsaved changes too.
+							// This href is just the no-JS fallback.
+							?>
+							<a href="<?php echo esc_url( get_preview_post_link( $post_id ) ); ?>" target="wp-preview-<?php echo esc_attr( $post_id ); ?>" class="wbtm-bme__btn" data-bme-preview>
+								<span class="dashicons dashicons-visibility" aria-hidden="true"></span>
+								<?php esc_html_e( 'Preview', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</a>
+							<div class="wbtm-bme__split" data-bme-split>
+								<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary" data-bme-save><?php echo esc_html( $bme_primary_label ); ?></button>
+								<button type="button" class="wbtm-bme__btn wbtm-bme__btn--primary wbtm-bme__split-caret" data-bme-split-toggle aria-haspopup="true" aria-expanded="false">
+									<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+									<span class="screen-reader-text"><?php esc_html_e( 'More save options', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								</button>
+								<div class="wbtm-bme__split-menu" data-bme-split-menu hidden>
+									<button type="button" class="wbtm-bme__split-menu-item" data-bme-save-as="draft"><?php echo esc_html( $bme_secondary_label ); ?></button>
+									<button type="button" class="wbtm-bme__split-menu-item" data-bme-ui="classic"><?php esc_html_e( 'Classic editor', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+								</div>
+							</div>
 						</div>
 					</header>
 
-					<div class="wbtm-bme__wrap">
+					<div class="wbtm-bme__stepper">
+						<?php foreach ( $steps as $i => $step ) : ?>
+							<?php if ( $i > 0 ) : ?>
+								<div class="wbtm-bme__conn" data-bme-conn="<?php echo esc_attr( $i ); ?>"></div>
+							<?php endif; ?>
+							<div class="wbtm-bme__step<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-go="<?php echo esc_attr( $step['id'] ); ?>" data-bme-index="<?php echo esc_attr( $i ); ?>">
+								<div class="wbtm-bme__num"><?php echo esc_html( $i + 1 ); ?></div>
+								<div class="wbtm-bme__lab"><?php echo esc_html( $step['label'] ); ?></div>
+							</div>
+						<?php endforeach; ?>
+					</div>
 
-						<div class="wbtm-bme__stepper">
-							<?php foreach ( $steps as $i => $step ) : ?>
-								<?php if ( $i > 0 ) : ?>
-									<div class="wbtm-bme__conn" data-bme-conn="<?php echo esc_attr( $i ); ?>"></div>
-								<?php endif; ?>
-								<div class="wbtm-bme__step<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-go="<?php echo esc_attr( $step['id'] ); ?>" data-bme-index="<?php echo esc_attr( $i ); ?>">
-									<div class="wbtm-bme__num"><?php echo esc_html( $i + 1 ); ?></div>
-									<div class="wbtm-bme__lab"><?php echo esc_html( $step['label'] ); ?></div>
-								</div>
-							<?php endforeach; ?>
-						</div>
+					<div class="wbtm-bme__wrap">
 
 						<div class="wbtm-bme__body">
 							<div class="wbtm-bme__main">
 								<?php foreach ( $steps as $i => $step ) : ?>
-									<section class="wbtm-bme__panel<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-panel="<?php echo esc_attr( $step['id'] ); ?>">
+									<section class="wbtm-bme__panel wbtm-bme__panel--loading<?php echo $i === 0 ? ' active' : ''; ?>" data-bme-panel="<?php echo esc_attr( $step['id'] ); ?>">
+										<?php $this->render_panel_skeleton( $step['id'] ); ?>
 										<?php
 										foreach ( $step['sections'] as $section ) {
+											// Gallery is edited inline in the rail (Featured Image card) now,
+											// so skip the classic uploader card here to avoid a second,
+											// out-of-sync `wbtm_gallery_images[]` field set on submit.
+											if ( $section[0] === 'WBTM_Gallery_Image_Settings' ) {
+												continue;
+											}
+											// Term & Condition removed from the modern editor on request.
+											if ( $section[0] === 'WTBM_Term_Condition_Add_Bus' ) {
+												continue;
+											}
 											$this->render_section_card( $section, $post_id );
 										}
 										?>
@@ -233,16 +360,18 @@
 			 * A live snapshot of the bus the admin is editing (data from post meta).
 			 */
 			private function render_preview_rail( $post_id ) {
+				$coach    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' );
 				$bus_name = get_the_title( $post_id );
 				$bus_no   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_no' );
-				$coach    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_category' );
-				$seats    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+				$reservation_on = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_registration', 'yes' ) !== 'no';
 
 				$logo_id  = (int) get_post_meta( $post_id, 'wbtm_bus_logo', true );
 				$gallery  = get_post_meta( $post_id, 'wbtm_gallery_images', true );
 				$gallery  = is_array( $gallery ) ? array_values( array_filter( array_map( 'intval', $gallery ) ) ) : array();
-				$feat_ids = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
-				$feat_ids = is_array( $feat_ids ) ? array_values( array_filter( array_map( 'intval', $feat_ids ) ) ) : array();
+
+				// Existing posts had no explicit flag yet, so an unset meta still means "on".
+				$gallery_enabled_meta = get_post_meta( $post_id, 'wbtm_gallery_enabled', true );
+				$gallery_enabled      = $gallery_enabled_meta !== 'no';
 
 				$thumb_id = (int) get_post_thumbnail_id( $post_id );
 				$hero     = '';
@@ -255,67 +384,149 @@
 				}
 				?>
 				<aside class="wbtm-bme__rail">
-					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-hero">
+					<div class="wbtm-bme__rail-card wbtm-bme__feat-card wbtm-bme__rail-card--loading">
+						<?php $this->render_rail_card_skeleton( 'featured' ); ?>
+						<div class="wbtm-bme__feat-head">
+							<?php esc_html_e( 'Featured Image', 'bus-ticket-booking-with-seat-reservation' ); ?> <span class="wbtm-bme__req">*</span>
+						</div>
+						<div class="wbtm-bme__feat-preview">
 							<img class="wbtm-bme__rail-hero-img" id="wbtm-bme-hero-img" src="<?php echo esc_url( $hero ); ?>" alt="" style="<?php echo $hero ? '' : 'display:none'; ?>"/>
-							<span class="dashicons dashicons-bus wbtm-bme__rail-hero-ph" style="<?php echo $hero ? 'display:none' : ''; ?>"></span>
+							<span class="dashicons dashicons-format-image wbtm-bme__rail-hero-ph" style="<?php echo $hero ? 'display:none' : ''; ?>"></span>
 							<?php if ( $coach ) : ?>
 								<span class="wbtm-bme__rail-badge"><?php echo esc_html( $coach ); ?></span>
 							<?php endif; ?>
-							<div class="wbtm-bme__rail-hero-acts">
-								<button type="button" class="wbtm-bme__hero-btn" data-bme-feat-set><span class="dashicons dashicons-camera"></span><?php echo esc_html( $thumb_id ? __( 'Change', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Set image', 'bus-ticket-booking-with-seat-reservation' ) ); ?></button>
-								<button type="button" class="wbtm-bme__hero-btn wbtm-bme__hero-btn--rm" data-bme-feat-remove style="<?php echo $thumb_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-							</div>
 							<input type="hidden" id="wbtm-bme-thumbnail" name="wbtm_bme_thumbnail_id" value="<?php echo esc_attr( $thumb_id ); ?>"/>
 						</div>
-						<div class="wbtm-bme__rail-info">
-							<h3 class="wbtm-bme__rail-name" id="wbtm-bme-rail-name"><?php echo esc_html( $bus_name !== '' ? $bus_name : __( 'Untitled bus', 'bus-ticket-booking-with-seat-reservation' ) ); ?></h3>
-							<div class="wbtm-bme__rail-stats">
-								<div><span><?php esc_html_e( 'Bus No', 'bus-ticket-booking-with-seat-reservation' ); ?></span><strong><?php echo esc_html( $bus_no !== '' ? $bus_no : '—' ); ?></strong></div>
-								<div><span><?php esc_html_e( 'Seats', 'bus-ticket-booking-with-seat-reservation' ); ?></span><strong><?php echo esc_html( $seats ? $seats : '0' ); ?></strong></div>
-							</div>
+						<div class="wbtm-bme__feat-acts">
+							<button type="button" class="wbtm-bme__feat-link" data-bme-feat-set><?php echo esc_html( $thumb_id ? __( 'Change image', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Set image', 'bus-ticket-booking-with-seat-reservation' ) ); ?></button>
+							<button type="button" class="wbtm-bme__feat-link wbtm-bme__feat-link--rm" data-bme-feat-remove style="<?php echo $thumb_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
 						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-title">
-							<span class="dashicons dashicons-format-gallery"></span><?php esc_html_e( 'Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<button type="button" class="wbtm-bme__rail-manage" data-bme-goto="advanced" data-bme-scroll="#wbtm_settings_gallery_images"><?php esc_html_e( 'Manage', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat pricing advanced">
+						<?php $this->render_rail_card_skeleton( 'logo' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Bus Logo', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__logo-slot" data-bme-logo-slot></div>
+					</div>
+
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-hide-on-step="seat pricing advanced">
+						<?php $this->render_rail_card_skeleton( 'gallery' ); ?>
+						<div class="wbtm-bme__rail-toggle-row">
+							<span class="wbtm-bme__rail-toggle-label"><?php esc_html_e( 'Enable/Disable Gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<label class="wbtm-bme__switch">
+								<input type="checkbox" id="wbtm-bme-gallery-enabled" name="wbtm_gallery_enabled" value="yes" data-bme-gallery-toggle <?php checked( $gallery_enabled ); ?>/>
+								<span class="wbtm-bme__switch-slider"></span>
+							</label>
 						</div>
-						<?php if ( ! empty( $gallery ) ) : ?>
-							<div class="wbtm-bme__rail-gallery">
-								<?php foreach ( array_slice( $gallery, 0, 6 ) as $gid ) :
+						<div class="wbtm-bme__rail-gallery-section" data-bme-gallery-section style="<?php echo $gallery_enabled ? '' : 'display:none;'; ?>">
+							<div class="wbtm-bme__gallery-head">
+								<?php esc_html_e( 'Gallery Images', 'bus-ticket-booking-with-seat-reservation' ); ?>
+								<span class="dashicons dashicons-editor-help" tabindex="0" title="<?php esc_attr_e( 'Upload images shown in this bus\'s photo gallery.', 'bus-ticket-booking-with-seat-reservation' ); ?>"></span>
+							</div>
+							<div class="wbtm-bme__rail-gallery" id="wbtm-bme-gallery-grid" data-bme-gallery-list>
+								<?php foreach ( $gallery as $gid ) :
 									$g = wp_get_attachment_image_url( $gid, 'thumbnail' );
 									if ( $g ) :
 										?>
-										<img src="<?php echo esc_url( $g ); ?>" alt=""/>
-									<?php endif; endforeach; ?>
+										<div class="wbtm-bme__gallery-item" data-bme-gallery-item>
+											<img src="<?php echo esc_url( $g ); ?>" alt=""/>
+											<input type="hidden" name="wbtm_gallery_images[]" value="<?php echo esc_attr( $gid ); ?>"/>
+											<button type="button" class="wbtm-bme__gallery-item-rm" data-bme-gallery-remove aria-label="<?php esc_attr_e( 'Remove image', 'bus-ticket-booking-with-seat-reservation' ); ?>">&times;</button>
+										</div>
+									<?php endif;
+								endforeach; ?>
 							</div>
-						<?php else : ?>
-							<div class="wbtm-bme__rail-empty"><?php esc_html_e( 'No gallery images yet. Click Manage to upload.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
-						<?php endif; ?>
+							<div class="wbtm-bme__rail-empty" data-bme-gallery-empty style="<?php echo empty( $gallery ) ? '' : 'display:none;'; ?>"><?php esc_html_e( 'No gallery images yet.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+							<button type="button" class="wbtm-bme__add-image-btn" data-bme-gallery-add>
+								<span class="dashicons dashicons-plus-alt2"></span><?php esc_html_e( 'Add Image', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</button>
+						</div>
 					</div>
 
-					<div class="wbtm-bme__rail-card">
-						<div class="wbtm-bme__rail-title">
-							<span class="dashicons dashicons-star-filled"></span><?php esc_html_e( 'Features', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<button type="button" class="wbtm-bme__rail-manage" data-bme-goto="advanced" data-bme-scroll="#wbtm_bus_feature_settings"><?php esc_html_e( 'Manage', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-						</div>
-						<?php if ( ! empty( $feat_ids ) ) : ?>
-							<div class="wbtm-bme__rail-features">
-								<?php foreach ( $feat_ids as $tid ) :
-									$term = get_term( $tid, 'wbtm_bus_feature' );
-									if ( ! $term || is_wp_error( $term ) ) {
-										continue;
-									}
-									$icon = get_term_meta( $tid, 'wbtm_bus_feature_icon', true );
-									?>
-									<span class="wbtm-bme__chip"><?php if ( $icon ) : ?><i class="<?php echo esc_attr( $icon ); ?>"></i><?php endif; ?><?php echo esc_html( $term->name ); ?></span>
-								<?php endforeach; ?>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="seat pricing advanced">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'General Info Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Bus Name', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $bus_name !== '' ? $bus_name : '—' ); ?></strong>
 							</div>
-						<?php else : ?>
-							<div class="wbtm-bme__rail-empty"><?php esc_html_e( 'No features selected yet. Click Manage to add.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
-						<?php endif; ?>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Bus No', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $bus_no !== '' ? $bus_no : '—' ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Coach Type', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $coach !== '' ? $coach : '—' ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Reservation', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $reservation_on ? ' is-on' : ' is-off'; ?>"><?php echo $reservation_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+						</div>
+					</div>
+
+					<?php
+					// Same fallback default as WBTM_Seat_Configuration::tab_content() /
+					// count_actual_seats() — an existing bus that predates this field
+					// (no meta saved) must read the same way here as it does everywhere
+					// else, not silently show as "Seat Plan".
+					$seat_type_conf = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf', 'wbtm_without_seat_plan' );
+					$seat_type_label = $seat_type_conf === 'wbtm_seat_plan'
+						? __( 'Seat Plan', 'bus-ticket-booking-with-seat-reservation' )
+						: __( 'Without Seat Plan', 'bus-ticket-booking-with-seat-reservation' );
+					$cabin_mode_on = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_cabin_mode_enabled', 'no' ) === 'yes';
+					$upper_deck_on = WBTM_Global_Function::get_post_info( $post_id, 'show_upper_desk' ) === 'yes';
+					$total_seats   = class_exists( 'WBTM_Seat_Configuration' ) ? WBTM_Seat_Configuration::count_actual_seats( $post_id ) : (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+					?>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="pricing advanced">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Seat Configuration Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Seat Type', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $seat_type_label ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Total Seats', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_seats ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Cabin/Coach Mode', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $cabin_mode_on ? ' is-on' : ' is-off'; ?>"><?php echo $cabin_mode_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Upper Deck', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $upper_deck_on ? ' is-on' : ' is-off'; ?>"><?php echo $upper_deck_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+						</div>
+					</div>
+
+					<?php
+					// Same meta key / helper WBTM_Pricing_Routing.php itself reads from.
+					$route_infos_summary = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', array() );
+					$total_stops         = is_array( $route_infos_summary ) ? count( $route_infos_summary ) : 0;
+					$ticket_types_summary = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_ticket_types( $post_id ) : array();
+					$total_ticket_types   = is_array( $ticket_types_summary ) ? count( $ticket_types_summary ) : 0;
+					$return_trip_on       = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_same_bus_return_enabled', 'no' ) === 'yes';
+					?>
+					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="advanced">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Pricing & Route Summary', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__rail-info-list">
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Boarding/Dropping Stops', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_stops ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Passenger Types', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<strong><?php echo esc_html( $total_ticket_types ); ?></strong>
+							</div>
+							<div class="wbtm-bme__rail-info-row">
+								<span><?php esc_html_e( 'Return Trip', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bme__rail-pill<?php echo $return_trip_on ? ' is-on' : ' is-off'; ?>"><?php echo $return_trip_on ? esc_html__( 'On', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Off', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							</div>
+						</div>
 					</div>
 				</aside>
 				<?php
@@ -329,16 +540,90 @@
 					return;
 				}
 				?>
-				<div class="wbtm-bme__card" data-has-head>
-					<div class="wbtm-bme__card-head">
-						<h2><span class="wbtm-bme__dot"></span><?php echo esc_html( $title ); ?></h2>
+				<div class="wbtm-bme__postfields" data-bme-section="<?php echo esc_attr( $class ); ?>"<?php echo $class !== 'WBTM_Settings_General' ? ' data-has-head' : ''; ?>>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
+					<div class="wbtm-bme__postfields-header">
+						<div class="wbtm-bme__postfields-header-title"><?php echo esc_html( $title ); ?></div>
 						<?php if ( $subtitle ) : ?>
-							<p><?php echo esc_html( $subtitle ); ?></p>
+							<div class="wbtm-bme__postfields-header-sub"><?php echo esc_html( $subtitle ); ?></div>
 						<?php endif; ?>
 					</div>
-					<div class="wbtm-bme__card-body">
-						<?php $instance->$method( $post_id ); ?>
+					<?php endif; ?>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
+					<div class="wbtm-bme__postfields-body">
+					<?php endif; ?>
+						<?php
+						$instance->$method( $post_id );
+						// The Bus Features chips used to live in the rail's Bus Information
+						// card; moved here (right after Reservation on/off) on request. Added
+						// only in the modern shell — WBTM_Settings_General::tab_content() is
+						// shared with the classic editor and stays untouched.
+						if ( $class === 'WBTM_Settings_General' ) {
+							// Rendered here, then repositioned by JS to sit right after the
+							// "Bus Information" band (data-bme-postfields) — same relocation
+							// technique as the Bus Logo row, so the real #title input and the
+							// real #postdivrich editor stay the single source of truth (no
+							// duplicate wbtm_bus_logo/content fields on submit).
+							$this->render_post_fields_subsection( $post_id );
+							$this->render_bus_features_subsection( $post_id );
+						}
+						?>
+					<?php if ( $class !== 'WBTM_Settings_General' ) : ?>
 					</div>
+					<?php endif; ?>
+				</div>
+				<?php
+			}
+
+			/**
+			 * "Post Title" / "Post Content" fields, placed right after the "Bus
+			 * Information" band. #wbtm-bme-title-inline just mirrors the real
+			 * #title input (kept in sync by JS, same as the topbar title); the
+			 * content slot is where JS relocates the real #postdivrich editor,
+			 * so WordPress' own Visual/Text tabs, Add Media button and autosave
+			 * keep working against the one true #content textarea.
+			 */
+			private function render_post_fields_subsection( $post_id ) {
+				$title = get_the_title( $post_id );
+				?>
+				<div class="wbtm-bme__postfields basic-Information" data-bme-postfields>
+					<div class="wbtm-bme__postfields-header">
+						<div class="wbtm-bme__postfields-header-title"><?php esc_html_e( 'Basic Information', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+						<div class="wbtm-bme__postfields-header-sub"><?php esc_html_e( 'The core details of your bus.', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+					</div>
+					<div class="wbtm-bme__postfields-body">
+						<div class="wbtm-bme__subsection-label">
+							<label><?php esc_html_e( 'Title', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						</div>
+						<input type="text" class="formControl" id="wbtm-bme-title-inline" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'Bus name', 'bus-ticket-booking-with-seat-reservation' ); ?>"/>
+
+						<div class="wbtm-bme__subsection-label wbtm-bme__postfields-content-label">
+							<label><?php esc_html_e( 'Description', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						</div>
+						<?php wp_editor( get_post_field( 'post_content', $post_id ), 'wbtm_bme_content', array( 'textarea_name' => 'content', 'media_buttons' => false, 'teeny' => false, 'textarea_rows' => 8 ) ); ?>
+					</div>
+				</div>
+				<?php
+			}
+
+			/** "Bus Features" read-only chip list, appended after General Settings in the modern shell. */
+			/**
+			 * "Bus Features" — a slot JS relocates the REAL classic checkbox
+			 * list into (from WTBM_Features_Seating::term_tab_content(), whose
+			 * card is hidden in the Advanced step once its content moves here —
+			 * see [data-bme-section="WTBM_Features_Seating"] in the CSS). The
+			 * checkbox change handler is delegated on document by class name
+			 * (wtbm_bus_feature_checkbox), so it keeps saving via its existing
+			 * AJAX call regardless of where the markup lives in the DOM.
+			 */
+			private function render_bus_features_subsection( $post_id ) {
+				?>
+				<div class="wbtm-bme__subsection">
+					<div class="wbtm-bme__subsection-label" data-bme-features-label>
+						<label><?php esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
+						<span><?php esc_html_e( 'Select the amenities and features to highlight for this bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+					</div>
+					<div class="wbtm-bme__features-slot" data-bme-features-slot></div>
 				</div>
 				<?php
 			}
@@ -392,6 +677,31 @@
 				} else {
 					delete_post_thumbnail( $post_id );
 				}
+			}
+
+			/**
+			 * Save the rail's "Enable/Disable Gallery" toggle. Gated on the same
+			 * modern-only field (wbtm_bme_thumbnail_id) so a classic-editor save,
+			 * which never posts this checkbox, can't accidentally disable it.
+			 */
+			public function save_gallery_enabled( $post_id ) {
+				if ( ! array_key_exists( 'wbtm_bme_thumbnail_id', $_POST ) ) {
+					return;
+				}
+				if ( get_post_type( $post_id ) !== WBTM_Functions::get_cpt() ) {
+					return;
+				}
+				if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_type_nonce'] ) ), 'wbtm_type_nonce' ) ) {
+					return;
+				}
+				if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+					return;
+				}
+				if ( ! current_user_can( 'edit_post', $post_id ) ) {
+					return;
+				}
+				$enabled = isset( $_POST['wbtm_gallery_enabled'] ) && sanitize_text_field( wp_unslash( $_POST['wbtm_gallery_enabled'] ) ) === 'yes';
+				update_post_meta( $post_id, 'wbtm_gallery_enabled', $enabled ? 'yes' : 'no' );
 			}
 
 			public function ajax_set_ui() {

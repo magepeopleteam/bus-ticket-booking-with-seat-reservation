@@ -94,6 +94,26 @@
             return $items[strtolower(trim($value))] ?? null;
         }
     }
+    if (!function_exists('wbtm_render_seat_legend_check')) {
+        function wbtm_render_seat_legend_check() {
+            ?>
+            <div class="wbtm_seat_legend">
+                <span class="wbtm_seat_legend_item">
+                    <i class="wbtm_seat_legend_swatch is_available"></i>
+                    <?php esc_html_e('Available', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </span>
+                <span class="wbtm_seat_legend_item">
+                    <i class="wbtm_seat_legend_swatch is_selected"></i>
+                    <?php esc_html_e('Selected', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </span>
+                <span class="wbtm_seat_legend_item">
+                    <i class="wbtm_seat_legend_swatch is_booked"></i>
+                    <?php esc_html_e('Booked', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </span>
+            </div>
+            <?php
+        }
+    }
 
     if ($has_cabin_seat_plan || (sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0)) {
     //		$date = $_POST['date'] ?? '';
@@ -133,7 +153,13 @@
                 <div class="wbtm_seat_plan_area">
                     <?php if ($has_cabin_seat_plan) { ?>
                         <?php
-                        // Render cabin seat plans
+                        // Render cabin seat plans. Accordion: only the first cabin that
+                        // actually renders (some are skipped below for being disabled or
+                        // having no seat layout) starts open — the rest start collapsed,
+                        // matching the click handler in wbtm_global.js which keeps only
+                        // one cabin open at a time within a given .wbtm_seat_plan_area.
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                        $wbtm_rendered_cabin_count = 0;
                         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                         foreach ($cabin_config as $cabin_index => $cabin) {
                             if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
@@ -149,8 +175,11 @@
                             $cabin_seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
 
                             if ($cabin_rows > 0 && $cabin_cols > 0 && !empty($cabin_seat_infos)) {
+                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                $wbtm_cabin_is_first = ($wbtm_rendered_cabin_count === 0);
+                                $wbtm_rendered_cabin_count++;
                                 ?>
-                                <div class="wbtm_cabin_section">
+                                <div class="wbtm_cabin_section <?php echo $wbtm_cabin_is_first ? 'expanded' : 'collapsed'; ?>">
                                     <div class="wbtm_cabin_header wbtm_cabin_toggle" data-cabin-index="<?php echo esc_attr($cabin_index); ?>" style="cursor: pointer;">
                                         <div class="wbtm_cabin_title_container">
                                             <h4 class="wbtm_cabin_title" id="cabin-<?php echo esc_attr($cabin_index); ?>-title"><?php echo esc_html($cabin_name); ?></h4>
@@ -177,11 +206,11 @@
                                             <?php endif; ?>
                                         </div>
                                         <div class="wbtm_cabin_toggle_icon">
-                                            <span class="wbtm_toggle_arrow" aria-label="Toggle cabin seats">▼</span>
+                                            <span class="wbtm_toggle_arrow" aria-label="Toggle cabin seats"><?php echo $wbtm_cabin_is_first ? '▲' : '▼'; ?></span>
                                         </div>
                                     </div>
 
-                                    <div class="wbtm_cabin_seat_plan ovAuto" style="display: none;" aria-expanded="false" role="region" aria-labelledby="cabin-<?php echo esc_attr($cabin_index); ?>-title" data-cabin-index="<?php echo esc_attr($cabin_index); ?>">
+                                    <div class="wbtm_cabin_seat_plan ovAuto" style="<?php echo $wbtm_cabin_is_first ? '' : 'display: none;'; ?>" aria-expanded="<?php echo $wbtm_cabin_is_first ? 'true' : 'false'; ?>" role="region" aria-labelledby="cabin-<?php echo esc_attr($cabin_index); ?>-title" data-cabin-index="<?php echo esc_attr($cabin_index); ?>">
                                         <input type="hidden" name="wbtm_selected_seat_cabin_<?php echo esc_attr($cabin_index); ?>" value=""/>
                                         <input type="hidden" name="wbtm_selected_seat_type_cabin_<?php echo esc_attr($cabin_index); ?>" value=""/>
                                         <table>
@@ -214,10 +243,14 @@
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $ns_data = wbtm_get_non_seat_data_check($seat_name);
                                                             ?>
-                                                                <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data['label']); ?>">
-                                                                    <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data['icon']); ?>"></span>
-                                                                    <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data['label']); ?></span>
-                                                                </td>
+                                                                <?php if (strtolower(trim($seat_name)) === 'aisle'): ?>
+                                                                    <td class="wbtm_aisle_blank"></td>
+                                                                <?php else: ?>
+                                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data['label']); ?>">
+                                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data['icon']); ?>"></span>
+                                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data['label']); ?></span>
+                                                                    </td>
+                                                                <?php endif; ?>
                                                             <?php else: ?>
                                                                 <?php
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -306,11 +339,8 @@
                                             <?php endforeach; ?>
                                             </tbody>
                                         </table>
+                                        <?php wbtm_render_seat_legend_check(); ?>
                                     </div>
-
-                                    <?php if (sizeof($cabin_config) > 1): ?>
-                                        <div class="wbtm_cabin_separator"></div>
-                                    <?php endif; ?>
                                 </div>
                                 <?php
                             }
@@ -351,10 +381,14 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $ns_data_lower = wbtm_get_non_seat_data_check($seat_name);
                                                 ?>
-                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_lower['label']); ?>">
-                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_lower['icon']); ?>"></span>
-                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_lower['label']); ?></span>
-                                                    </td>
+                                                    <?php if (strtolower(trim($seat_name)) === 'aisle') { ?>
+                                                        <td class="wbtm_aisle_blank"></td>
+                                                    <?php } else { ?>
+                                                        <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_lower['label']); ?>">
+                                                            <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_lower['icon']); ?>"></span>
+                                                            <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_lower['label']); ?></span>
+                                                        </td>
+                                                    <?php } ?>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -466,10 +500,14 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $ns_data_upper = wbtm_get_non_seat_data_check($info);
                                                 ?>
-                                                    <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_upper['label']); ?>">
-                                                        <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_upper['icon']); ?>"></span>
-                                                        <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_upper['label']); ?></span>
-                                                    </td>
+                                                    <?php if (strtolower(trim($info)) === 'aisle') { ?>
+                                                        <td class="wbtm_aisle_blank"></td>
+                                                    <?php } else { ?>
+                                                        <td class="wbtm_non_seat_item" title="<?php echo esc_attr($ns_data_upper['label']); ?>">
+                                                            <span class="wbtm_non_seat_icon fas <?php echo esc_attr($ns_data_upper['icon']); ?>"></span>
+                                                            <span class="wbtm_non_seat_label"><?php echo esc_html($ns_data_upper['label']); ?></span>
+                                                        </td>
+                                                    <?php } ?>
                                                 <?php } else { ?>
                                                     <?php
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -553,6 +591,15 @@
                         </div>
                     <?php } ?>
                 </div>
+                <?php
+                // Cabin mode now shows its own legend inside each
+                // .wbtm_cabin_seat_plan instead (see wbtm_render_seat_legend_check()
+                // above) — only the legacy single/double-deck layout still needs it
+                // here, once for the whole seat plan.
+                if (!$has_cabin_seat_plan) {
+                    wbtm_render_seat_legend_check();
+                }
+                ?>
             </div>
             <?php
             //echo '<pre>'; print_r($seat_infos); echo '</pre>';

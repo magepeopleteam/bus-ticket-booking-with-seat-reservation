@@ -444,12 +444,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$status_counts = wp_count_posts( 'wbtm_bus' );
 				$trash         = isset( $status_counts->trash ) ? (int) $status_counts->trash : 0;
 
-				// Grid shows trashed buses in trash view, active fleet otherwise.
 				$buses     = $is_trash ? $this->get_buses( array( 'trash' ) ) : $active;
 				$base_url  = admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 				$trash_url = add_query_arg( 'wbtm_status', 'trash', $base_url );
 				$add_url   = admin_url( 'post-new.php?post_type=wbtm_bus' );
-				$classic   = admin_url( 'edit.php?post_type=wbtm_bus&wbtm_view=classic' );
 				?>
 				<div class="wrap wbtm-fleet-wrap">
 					<div class="wbtm-fleet">
@@ -459,10 +457,6 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								<span><?php echo esc_html( sprintf( _n( '%d bus', '%d buses', $total, 'bus-ticket-booking-with-seat-reservation' ), $total ) ); ?></span>
 							</div>
 							<div class="wbtm-header-actions">
-								<a class="wbtm-classic-link" href="<?php echo esc_url( $classic ); ?>">
-									<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-									<?php esc_html_e( 'Classic view', 'bus-ticket-booking-with-seat-reservation' ); ?>
-								</a>
 								<a class="wbtm-add-btn" href="<?php echo esc_url( $add_url ); ?>">
 									<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 									<?php printf( esc_html__( 'Add New %s', 'bus-ticket-booking-with-seat-reservation' ), esc_html( $name ) ); ?>
@@ -529,14 +523,6 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								<option value="AC"><?php esc_html_e( 'AC', 'bus-ticket-booking-with-seat-reservation' ); ?></option>
 								<option value="Non AC"><?php esc_html_e( 'Non AC', 'bus-ticket-booking-with-seat-reservation' ); ?></option>
 							</select>
-							<div class="wbtm-view-toggle">
-								<button class="wbtm-vtog active" id="wbtmGridBtn" title="<?php esc_attr_e( 'Grid view', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-									<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-								</button>
-								<button class="wbtm-vtog" id="wbtmListBtn" title="<?php esc_attr_e( 'List view', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-									<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-								</button>
-							</div>
 						</div>
 
 						<?php if ( empty( $buses ) ) : ?>
@@ -551,75 +537,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							</div>
 						<?php else : ?>
 
-						<div class="wbtm-bus-grid" id="wbtmBusGrid">
-							<?php foreach ( $buses as $b ) :
-								$type_badge_class = $b['is_ac'] ? 'ac' : 'nonac';
-								$type_badge_text  = $b['type'] ?: esc_html__( 'Coach', 'bus-ticket-booking-with-seat-reservation' );
-								?>
-								<div class="wbtm-bus-card" data-name="<?php echo esc_attr( strtolower( $b['title'] . ' ' . $b['coach_no'] ) ); ?>" data-type="<?php echo esc_attr( $b['type'] ); ?>" data-status="<?php echo esc_attr( $b['status'] ); ?>">
-									<div class="wbtm-bus-thumb">
-										<?php if ( $b['thumb'] ) : ?>
-											<img src="<?php echo esc_url( $b['thumb'] ); ?>" alt="<?php echo esc_attr( $b['title'] ); ?>">
-										<?php else : ?>
-											<div class="wbtm-thumb-placeholder">
-												<svg width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M3 11h18"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>
-											</div>
-										<?php endif; ?>
-										<div class="wbtm-bus-thumb-overlay"></div>
-										<div class="wbtm-bus-thumb-badges">
-											<span class="wbtm-thumb-badge <?php echo esc_attr( $type_badge_class ); ?>"><?php echo esc_html( $type_badge_text ); ?></span>
-											<span class="wbtm-thumb-badge nonac"><?php echo esc_html( $b['bus_type'] ); ?></span>
-										</div>
-										<?php if ( $b['coach_no'] ) : ?><div class="wbtm-bus-coach-no"><?php echo esc_html( $b['coach_no'] ); ?></div><?php endif; ?>
-										<div class="wbtm-bus-actions-top">
-											<?php if ( $is_trash ) : ?>
-												<a class="wbtm-act-btn restore" href="<?php echo esc_url( $b['restore_link'] ); ?>" title="<?php esc_attr_e( 'Restore', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9 9 0 00-7 3.3"/><polyline points="3 4 3 8 7 8"/></svg>
-												</a>
-												<a class="wbtm-act-btn del" href="<?php echo esc_url( $b['delete_link'] ); ?>" title="<?php esc_attr_e( 'Delete Permanently', 'bus-ticket-booking-with-seat-reservation' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Permanently delete this bus? This cannot be undone.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-												</a>
-											<?php else : ?>
-												<?php if ( $b['view_link'] ) : ?>
-												<a class="wbtm-act-btn view" href="<?php echo esc_url( $b['view_link'] ); ?>" target="_blank" rel="noopener" title="<?php esc_attr_e( 'View on frontend', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-												</a>
-												<?php endif; ?>
-												<a class="wbtm-act-btn edit" href="<?php echo esc_url( $b['edit_link'] ); ?>" title="<?php esc_attr_e( 'Edit', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-												</a>
-												<a class="wbtm-act-btn dup" href="<?php echo esc_url( $b['duplicate_link'] ); ?>" title="<?php esc_attr_e( 'Duplicate', 'bus-ticket-booking-with-seat-reservation' ); ?>">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-												</a>
-												<a class="wbtm-act-btn del" href="<?php echo esc_url( $b['trash_link'] ); ?>" title="<?php esc_attr_e( 'Move to Trash', 'bus-ticket-booking-with-seat-reservation' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Move this bus to Trash?', 'bus-ticket-booking-with-seat-reservation' ) ); ?>');">
-													<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-												</a>
-											<?php endif; ?>
-										</div>
-									</div>
-									<div class="wbtm-bus-body">
-										<?php if ( $is_trash ) : ?>
-											<span class="wbtm-bus-name"><?php echo esc_html( $b['title'] ); ?></span>
-										<?php else : ?>
-											<a class="wbtm-bus-name" href="<?php echo esc_url( $b['edit_link'] ); ?>"><?php echo esc_html( $b['title'] ); ?></a>
-										<?php endif; ?>
-										<div class="wbtm-bus-meta">
-											<span class="wbtm-meta-pill type"><?php echo esc_html( $b['bus_type'] ); ?></span>
-											<?php if ( $b['type'] ) : ?>
-												<span class="wbtm-meta-pill <?php echo $b['is_ac'] ? 'coach' : 'nonac-pill'; ?>"><?php echo esc_html( $b['is_ac'] ? esc_html__( 'AC Coach', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Non AC', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span>
-											<?php endif; ?>
-										</div>
-										<?php $this->name_extra_info( $b ); ?>
-										<div class="wbtm-bus-footer">
-											<div class="wbtm-bus-author"><span class="wbtm-author-avatar"><?php echo esc_html( $this->initials( $b['author'] ) ); ?></span> <?php echo esc_html( $b['author'] ); ?></div>
-											<span class="wbtm-status-dot status-<?php echo esc_attr( $b['status'] ); ?>"><?php echo esc_html( $this->status_label( $b['status'] ) ); ?></span>
-										</div>
-									</div>
-								</div>
-							<?php endforeach; ?>
-						</div>
-
-						<table class="wbtm-bus-table" id="wbtmBusTable">
+					<table class="wbtm-bus-table" id="wbtmBusTable">
 							<thead>
 								<tr>
 									<th><?php printf( esc_html__( '%s Name', 'bus-ticket-booking-with-seat-reservation' ), esc_html( $name ) ); ?></th>

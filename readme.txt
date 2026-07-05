@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin , hamidxazad
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.7.8
+Stable tag: 5.8.5
 Tested up to: 6.9
 Requires PHP: 8.0
 License: GPLv2 or later
@@ -411,4 +411,49 @@ Seat number rotation stopped
 **Bug Fixes & UI**
 * Fixed the return route title weekday showing the outbound day instead of the return leg's own date.
 * Styled the editable Return From / To selectors to match the main search form (boxed inputs, inline marker icon, locked-field styling, responsive layout).
+
+= 5.7.9 =
+*Release Date - 02 Jul 2026*
+
+**Seat Layout Drag-and-Drop Toolbar now Free**
+* The seat-grid toolbar (Door, Toilet, Driver, Window, Food Stall, Luggage, Stairs, Aisle, Emergency Exit, Eraser) is no longer gated behind a PRO license — available to every install.
+* Per-seat ticket price override remains a PRO-only feature; unaffected by this change.
+
+= 5.7.10 =
+*Release Date - 02 Jul 2026*
+
+* Added a "Double click to Remove" tooltip on placed seat-layout items (Door, Toilet, Driver, etc.) shown on hover, for discoverability.
+
+= 5.8.0 =
+*Release Date - 02 Jul 2026*
+
+**Predefined Seat Template System**
+* New "Seat Template" + "Seat Numbering" pickers in Seat Configuration (both lower and upper deck): choose a common seat arrangement (2+2, 2+1, 1+2, 1+1, 3+2) and a numbering scheme (Sequential or Row Letter), then click "Apply Template" to auto-generate the full seat grid in one click.
+* Reuses the existing "Generate Bus Seat" grid-creation flow and the same editable seat inputs, so the result is a normal, fully-editable seat plan — no new data format, no change to existing buses' saved seat data.
+* Aisle columns are placed automatically using the existing Aisle toolbar item; driver/door placement is left to the existing drag-and-drop toolbar for bus-specific accuracy.
+
+= 5.8.1 =
+*Release Date - 02 Jul 2026*
+
+* The "Seat Numbering" scheme (Sequential / Row Letter) now also applies to the plain "Generate Bus Seat" / "Create seat Plan" buttons, not just "Apply Template" — every generated grid is auto-numbered per whichever scheme is currently selected.
+
+= 5.8.2 =
+*Release Date - 02 Jul 2026*
+
+* Added an "Aisle Position" field next to Seat Rows / Seat Columns (both decks): enter the column number the aisle should sit after (Left to Right), and "Generate Bus Seat" places that single aisle automatically — a lighter-weight alternative to picking a full Seat Template for simple/custom layouts. 0 = no automatic aisle (unchanged default behavior).
+
+= 5.8.3 =
+*Release Date - 02 Jul 2026*
+
+* "Enable Rotation" moved inline next to each deck's own "Add New Row" button, and is now an independent setting per deck (Lower Deck / Upper Deck) instead of one shared toggle — turning rotation on for one deck no longer affects the other.
+
+= 5.8.4 =
+*Release Date - 02 Jul 2026*
+
+* Bus list admin page: search box and "All Types" filter now share the exact same height (both 38px, matching padding/border-box), and are right-aligned together as a group while the status tabs (All/Published/Draft/Trash) stay left.
+
+= 5.8.5 =
+*Release Date - 02 Jul 2026*
+
+* Redesigned the frontend "Bus Details" popup (Details / Boarding-Dropping / Features / Photo tabs): refreshed tab pills, a clean summary card for Bus Details, a timeline-style stop list for Boarding/Dropping Points, chip-style Bus Features, and a modernized close button and popup shell shadow. CSS-only — no markup or JS changes.
 

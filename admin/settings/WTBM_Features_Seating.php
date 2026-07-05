@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 if ( ! defined( 'ABSPATH' ) ) { die; }
 
@@ -14,6 +14,7 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
         public function __construct() {
             add_action( 'wbtm_add_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
             add_action('wp_ajax_wtbm_save_bus_features', [ $this, 'wtbm_save_bus_features' ] );
+            add_action( 'wp_ajax_wbtm_bme_create_bus_feature', [ $this, 'ajax_create_bus_feature' ] );
 
             add_action( 'wbtm_bus_feature_add_form_fields', [ $this, 'wbtm_bus_feature_add_icon_field' ] );
             add_action( 'wbtm_bus_feature_edit_form_fields',  [ $this, 'wbtm_bus_feature_edit_icon_field' ] );
@@ -70,6 +71,38 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
 
             wp_send_json_success( array(
                 'saved_features' => $feature_ids,
+            ) );
+        }
+
+        public function ajax_create_bus_feature() {
+            check_ajax_referer( 'wtbm_ajax_nonce', 'nonce' );
+            if ( ! current_user_can( 'manage_categories' ) ) {
+                wp_send_json_error( 'Permission denied.' );
+            }
+            $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : 0;
+            $name    = isset( $_POST['feature_name'] ) ? sanitize_text_field( wp_unslash( $_POST['feature_name'] ) ) : '';
+            $icon    = isset( $_POST['feature_icon'] ) ? sanitize_text_field( wp_unslash( $_POST['feature_icon'] ) ) : '';
+            if ( ! $name ) {
+                wp_send_json_error( 'Feature name is required.' );
+            }
+            $term = wp_insert_term( $name, 'wbtm_bus_feature' );
+            if ( is_wp_error( $term ) ) {
+                wp_send_json_error( $term->get_error_message() );
+            }
+            $term_id = (int) $term['term_id'];
+            if ( $icon ) {
+                update_term_meta( $term_id, 'wbtm_bus_feature_icon', $icon );
+            }
+            if ( $post_id ) {
+                $current = get_post_meta( $post_id, 'wbbm_bus_features_term_id', true );
+                if ( ! is_array( $current ) ) { $current = []; }
+                $current[] = $term_id;
+                update_post_meta( $post_id, 'wbbm_bus_features_term_id', $current );
+            }
+            wp_send_json_success( array(
+                'term_id' => $term_id,
+                'name'    => $name,
+                'icon'    => $icon,
             ) );
         }
 
@@ -144,6 +177,7 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
 
                 </div>
                 <input type="hidden" id="wtbm_added_feature" name="wtbm_added_feature" value="<?php echo esc_attr( $selected );?>">
+                <?php ob_start(); do_action( 'wbtm_input_add_icon', 'wbtm_bme_feat_icon_trigger' ); ob_end_clean(); ?>
             </div>
 
         <?php }

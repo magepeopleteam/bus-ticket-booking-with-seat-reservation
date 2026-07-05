@@ -61,7 +61,7 @@
 .wbtm-tab-trash:not(.active):hover{background:var(--wbtm-red-soft);color:var(--wbtm-red) !important;}
 .wbtm-tab-trash.active{background:var(--wbtm-red);color:#fff !important;}
 .wbtm-tab-trash.active svg{opacity:1;}
-.wbtm-search-box{display:flex;align-items:center;gap:8px;background:var(--wbtm-white);border:1px solid var(--wbtm-border);border-radius:10px;padding:6px 14px;flex:1;max-width:300px;min-width:180px;color:var(--wbtm-muted);transition:border-color .2s,box-shadow .2s;}
+.wbtm-search-box{display:flex;align-items:center;gap:8px;background:var(--wbtm-white);border:1px solid var(--wbtm-border);border-radius:10px;padding:0 14px;height:38px;box-sizing:border-box;flex:1;max-width:300px;min-width:180px;color:var(--wbtm-muted);transition:border-color .2s,box-shadow .2s;margin-left:auto;}
 .wbtm-search-box.is-focused{border-color:var(--wbtm-red);box-shadow:0 0 0 3px var(--wbtm-red-soft);}
 .wbtm-search-box .wbtm-search-icon{flex-shrink:0;transition:color .2s;}
 .wbtm-search-box.is-focused .wbtm-search-icon{color:var(--wbtm-red);}
@@ -77,7 +77,7 @@
 .wbtm-dropdown-toggle{
   display:inline-flex;align-items:center;gap:10px;min-width:148px;justify-content:space-between;
   background:var(--wbtm-white);border:1px solid var(--wbtm-border);border-radius:10px;
-  padding:9px 14px;font-size:13px;font-weight:600;font-family:inherit;color:var(--wbtm-ink2);
+  padding:0 14px;height:38px;box-sizing:border-box;font-size:13px;font-weight:600;font-family:inherit;color:var(--wbtm-ink2);
   cursor:pointer;transition:border-color .2s,box-shadow .2s;
 }
 .wbtm-dropdown-toggle:hover{border-color:#cfd5e6;}
@@ -155,7 +155,7 @@
 .wbtm-status-dot.status-pending::before{background:var(--wbtm-blue);}
 
 /* TABLE */
-.wbtm-bus-table{width:100%;border-collapse:separate;border-spacing:0 8px;display:none;}
+.wbtm-bus-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
 .wbtm-bus-table th{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--wbtm-muted);padding:0 16px 4px;text-align:left;}
 .wbtm-bus-table tr.wbtm-row{background:var(--wbtm-white);transition:box-shadow .2s,transform .15s;animation:wbtmFadeUp .35s ease both;}
 .wbtm-bus-table tr.wbtm-row:hover{box-shadow:var(--wbtm-shadow-hover);transform:translateY(-2px);}

@@ -1,0 +1,1194 @@
+/* ==========================================================================
+   Modern reskin, shared by every bus-related taxonomy screen (Bus Type,
+   Bus Stops, Pickup Point, Drop-Off Point, Bus Features — edit-tags.php /
+   term.php). Scoped entirely by PHP-side conditional enqueue
+   (WBTM_Taxonomy_Modern) — only ever loaded when the current screen's
+   taxonomy is one of those five, one at a time.
+
+   WordPress adds "taxonomy-{$taxonomy}" to <body> on these screens, and all
+   five of ours share the "wbtm_bus_" prefix — [class*="taxonomy-wbtm_bus_"]
+   below matches any of them without enumerating all five everywhere. If a
+   taxonomy without that prefix is ever added to WBTM_Taxonomy_Modern::
+   TAXONOMIES, this selector needs a matching update.
+   ========================================================================== */
+
+body[class*="taxonomy-wbtm_bus_"] #wpbody-content,
+.wrap.wbtm-taxonomy-modern-wrap {
+	background: #F8FAFC;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap {
+	max-width: 1340px;
+	padding: 20px;
+}
+
+/* ---------- Loading placeholder ----------
+   The reskin (heading swap, popup wiring, promo panel) happens in JS, which
+   only runs once the whole DOM is parsed — without this, the page would
+   flash the raw default WordPress form/search-box for a moment first. Scoped
+   to the taxonomy body class (present from first paint) rather than
+   .wbtm-taxonomy-modern-wrap, since that wrapper class is itself only added
+   by the same JS this is covering for. */
+
+body[class*="taxonomy-wbtm_bus_"] .wrap {
+	position: relative;
+	min-height: 420px;
+}
+
+body[class*="taxonomy-wbtm_bus_"] .wrap > * {
+	visibility: hidden;
+}
+
+body[class*="taxonomy-wbtm_bus_"] .wrap::before,
+body[class*="taxonomy-wbtm_bus_"] .wrap::after {
+	position: absolute;
+	left: 50%;
+}
+
+body[class*="taxonomy-wbtm_bus_"] .wrap::before {
+	content: "";
+	top: 160px;
+	left: calc(50% - 18px);
+	width: 36px;
+	height: 36px;
+	border: 3px solid #FBD0DA;
+	border-top-color: #BE123C;
+	border-radius: 50%;
+	animation: wbtm-taxonomy-spin .8s linear infinite;
+}
+
+body[class*="taxonomy-wbtm_bus_"] .wrap::after {
+	content: "Loading\2026";
+	top: 210px;
+	transform: translateX(-50%);
+	font-size: 13px;
+	color: #64748B;
+	white-space: nowrap;
+}
+
+@keyframes wbtm-taxonomy-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body[class*="taxonomy-wbtm_bus_"] .wrap::before {
+		animation: none;
+	}
+}
+
+/* JS adds this to <body> once the reskin has finished running. */
+body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap {
+	min-height: 0;
+}
+
+body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap > * {
+	visibility: visible;
+}
+
+body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap::before,
+body.wbtm-taxonomy-ready[class*="taxonomy-wbtm_bus_"] .wrap::after {
+	content: none;
+}
+
+/* ---------- Heading ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap hr.wp-header-end {
+	display: none;
+}
+
+/* Lines up with where #col-right's card content actually starts —
+   not with .wrap's content edge, which sits further left than the card. */
+.wrap.wbtm-taxonomy-modern-wrap h1.wp-heading-inline {
+	margin-left: 0;
+	padding-left: 30px;
+	font-size: 23px;
+	font-weight: 700;
+	color: #0F172A;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-taxonomy-subtitle {
+	margin: 6px 0 24px;
+	padding-left: 30px;
+	max-width: 640px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #64748B;
+}
+
+/* ---------- Two-column layout ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap #col-container {
+	display: flex;
+	align-items: flex-start;
+	gap: 24px;
+	flex-wrap: wrap;
+	margin-top: 4px;
+	margin-left: 0;
+}
+
+/* Sidebar now hosts the promo panel, so it moves to the right visually —
+   order is flipped here rather than in the DOM (WordPress always renders
+   #col-left first), keeping the JS's DOM edits minimal. */
+.wrap.wbtm-taxonomy-modern-wrap #col-left {
+	width: auto;
+	flex: 0 0 300px;
+	order: 2;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap #col-right {
+	width: auto;
+	flex: 1 1 480px;
+	min-width: 0;
+	order: 1;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap #col-left .col-wrap,
+.wrap.wbtm-taxonomy-modern-wrap #col-right .col-wrap {
+	padding: 0;
+}
+
+/* ---------- "Add New {Item}" button (replaces the term search box,
+   docked into the top tablenav's right side — see .wbtm-tablenav-right) ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-add-bus-type-btn {
+	background: #BE123C;
+	border-color: #BE123C;
+	color: #FFFFFF;
+	font-weight: 600;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-add-bus-type-btn:hover {
+	background: #9F1239;
+	border-color: #9F1239;
+	color: #FFFFFF;
+}
+
+/* ---------- Sidebar: Pro / addons promo panel ---------- */
+
+.wbtm-promo-panel {
+	background: linear-gradient(180deg, #FFF1F4 0%, #FFFFFF 55%);
+	border: 1px solid #FBD0DA;
+	border-radius: 12px;
+	padding: 22px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.wbtm-promo-eyebrow {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	color: #BE123C;
+	background: #FFFFFF;
+	border: 1px solid #FBD0DA;
+	border-radius: 999px;
+	padding: 3px 10px;
+	margin-bottom: 12px;
+}
+
+.wbtm-promo-panel h2 {
+	margin: 0 0 8px;
+	font-size: 17px;
+	font-weight: 700;
+	color: #0F172A;
+	line-height: 1.35;
+}
+
+.wbtm-promo-body {
+	margin: 0 0 16px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #64748B;
+}
+
+.wbtm-promo-features {
+	list-style: none;
+	margin: 0 0 20px;
+	padding: 0;
+}
+
+.wbtm-promo-features li {
+	position: relative;
+	padding: 0 0 10px 22px;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #334155;
+}
+
+.wbtm-promo-features li::before {
+	content: "\2713";
+	position: absolute;
+	left: 0;
+	top: 0;
+	color: #BE123C;
+	font-weight: 700;
+	font-size: 12px;
+}
+
+.wbtm-promo-panel .wbtm-promo-cta {
+	display: block;
+	width: 100%;
+	text-align: center;
+	background: #BE123C;
+	border-color: #BE123C;
+	color: #FFFFFF;
+	font-weight: 600;
+	font-size: 13.5px;
+	padding: 9px 14px;
+	height: auto;
+	line-height: 1.5;
+	border-radius: 8px;
+	box-shadow: none;
+	text-shadow: none;
+	text-decoration: none;
+}
+
+.wbtm-promo-panel .wbtm-promo-cta:hover {
+	background: #9F1239;
+	border-color: #9F1239;
+	color: #FFFFFF;
+}
+
+/* ---------- Popup: Add/Edit ---------- */
+
+.wbtm-hidden {
+	display: none !important;
+}
+
+.wbtm-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, .5);
+	z-index: 100000;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 8vh 16px;
+}
+
+.wbtm-modal {
+	background: #FFFFFF;
+	border-radius: 12px;
+	width: 100%;
+	max-width: 480px;
+	box-shadow: 0 20px 40px rgba(15, 23, 42, .2);
+	max-height: 82vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.wbtm-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 22px;
+	border-bottom: 1px solid #EEF1F6;
+	flex: 0 0 auto;
+}
+
+.wbtm-modal-header h2 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #0F172A;
+}
+
+.wbtm-modal-close {
+	background: none;
+	border: none;
+	font-size: 22px;
+	line-height: 1;
+	color: #94A3B8;
+	cursor: pointer;
+	padding: 4px;
+}
+
+.wbtm-modal-close:hover {
+	color: #0F172A;
+}
+
+.wbtm-modal-body {
+	padding: 20px 22px;
+	overflow-y: auto;
+	flex: 1 1 auto;
+}
+
+.wbtm-modal-error {
+	margin: 0 0 16px;
+	padding: 10px 12px;
+	background: #FFF1F4;
+	border: 1px solid #FBD0DA;
+	border-radius: 8px;
+	color: #9F1239;
+	font-size: 13px;
+}
+
+.wbtm-modal .form-field {
+	margin: 0 0 18px;
+}
+
+.wbtm-modal .form-field:last-child {
+	margin-bottom: 0;
+}
+
+.wbtm-modal .form-field label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #0F172A;
+}
+
+.wbtm-modal .form-field input[type="text"],
+.wbtm-modal .form-field textarea,
+.wbtm-modal .form-field select {
+	width: 100%;
+	max-width: 100%;
+	border: 1px solid #D1D5DB;
+	border-radius: 8px;
+	padding: 9px 12px;
+	font-size: 14px;
+	color: #0F172A;
+	background: #FFFFFF;
+	box-shadow: none;
+}
+
+.wbtm-modal .form-field textarea {
+	min-height: 80px;
+	resize: vertical;
+}
+
+.wbtm-modal .form-field select {
+	padding: 2px 12px !important;
+	padding-right: 32px !important;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 12px 8px;
+	cursor: pointer;
+}
+
+.wbtm-modal .form-field input[type="text"]:focus,
+.wbtm-modal .form-field textarea:focus,
+.wbtm-modal .form-field select:focus {
+	border-color: #BE123C;
+	box-shadow: 0 0 0 3px #FFF1F4;
+	outline: none;
+}
+
+.wbtm-modal .form-field p {
+	margin: 6px 0 0;
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: #94A3B8;
+}
+
+.wbtm-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 16px 22px;
+	border-top: 1px solid #EEF1F6;
+	flex: 0 0 auto;
+}
+
+.wbtm-modal-footer .button {
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: 13.5px;
+	padding: 7px 16px;
+	height: auto;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.wbtm-modal-footer .button-primary {
+	background: #BE123C;
+	border-color: #BE123C;
+	color: #FFFFFF;
+}
+
+.wbtm-modal-footer .button-primary:hover {
+	background: #9F1239;
+	border-color: #9F1239;
+}
+
+.wbtm-modal-footer .button-primary:disabled {
+	opacity: .6;
+}
+
+/* ---------- List panel card ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap #col-right .col-wrap {
+	background: #FFFFFF;
+	border: 1px solid #E4E9F0;
+	border-radius: 12px;
+	padding: 18px 18px 6px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav {
+	height: auto;
+	margin: 0 0 14px;
+	padding: 0;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav.bottom {
+	margin: 14px 0 4px;
+}
+
+/* Top row: item count + Add New {Item}, right-aligned. (Bulk actions/
+   Apply and the checkbox column are removed entirely by JS — every row
+   has its own Edit/Delete icons now, so multi-select is redundant.) */
+.wrap.wbtm-taxonomy-modern-wrap .tablenav.top {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-tablenav-right {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin-left: auto;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-tablenav-right .tablenav-pages {
+	float: none;
+	margin: 0;
+	height: auto;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav .displaying-num {
+	font-size: 13px;
+	color: #64748B;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav select,
+.wrap.wbtm-taxonomy-modern-wrap .tablenav .button.action,
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-tablenav-right .wbtm-add-bus-type-btn {
+	box-sizing: border-box;
+	height: 34px;
+	display: inline-flex;
+	align-items: center;
+	font-size: 13px;
+	border-radius: 8px;
+	line-height: 1;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav select {
+	border: 1px solid #D1D5DB;
+	color: #0F172A;
+	padding: 0 28px 0 10px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav .button.action {
+	border: 1px solid #BE123C;
+	background: #FFFFFF;
+	color: #BE123C;
+	font-weight: 600;
+	padding: 0 14px;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .tablenav .button.action:hover {
+	background: #FFF1F4;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-tablenav-right .wbtm-add-bus-type-btn {
+	padding: 0 16px;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+/* ---------- Table ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table {
+	border: 1px solid #E5E7EB;
+	border-radius: 10px;
+	border-collapse: separate;
+	border-spacing: 0;
+	overflow: hidden;
+	table-layout: fixed;
+	width: 100%;
+}
+
+/* Fixed percentage widths (5 columns: Name, Description, Slug, Count,
+   Actions — the checkbox column is removed) so nothing has to fight for
+   space or get clipped; long text wraps within its own column instead. */
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(1),
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(1) {
+	width: 26%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(2),
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(2) {
+	width: 32%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(3),
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(3) {
+	width: 16%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(4),
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(4) {
+	width: 12%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(5),
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(5) {
+	width: 14%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td.column-name,
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td.column-description {
+	overflow-wrap: break-word;
+}
+
+/* ---------- Pickup/Drop-Off Point only: 6 columns instead of 5 (an extra
+   "Under Bus Stop" column between Description and Slug), on both the host
+   table and the merged section's table — everywhere else keeps the 5-column
+   widths above. Scoped by body class rather than a wrapper element since the
+   host table and the merged section table are structurally unrelated. ---------- */
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(1),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(1),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(1),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(1) {
+	width: 20%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(2),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(2),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(2),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(2) {
+	width: 22%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(3),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(3),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(3),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(3) {
+	width: 16%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(4),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(4),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(4),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(4) {
+	width: 14%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(5),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(5),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(5),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(5) {
+	width: 12%;
+}
+
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(6),
+body[class*="taxonomy-wbtm_bus_pickpoint"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(6),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table th:nth-child(6),
+body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.wp-list-table td:nth-child(6) {
+	width: 16%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead th,
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead td {
+	background: #F8FAFC;
+	border-bottom: 1px solid #E5E7EB;
+	color: #64748B;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	padding: 12px 16px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead th a {
+	color: #64748B;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table tbody td {
+	padding: 14px 16px;
+	border-bottom: 1px solid #F1F5F9;
+	font-size: 14px;
+	color: #0F172A;
+	vertical-align: middle;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table.striped tbody tr {
+	background: transparent;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table tbody tr:hover td {
+	background: #F8FAFC;
+}
+
+/* Plain text now (JS unwraps the term.php link into a span) — editing lives
+   in the Actions column, so the name itself no longer needs to navigate. */
+.wrap.wbtm-taxonomy-modern-wrap .column-name .row-title {
+	font-weight: 700;
+	color: #BE123C;
+}
+
+/* Bus Features only — icon prepended before the name (see prependFeatureIcons in JS). */
+.wrap.wbtm-taxonomy-modern-wrap .column-name .row-title .wbtm_bus_feature_icon {
+	display: inline-block;
+	margin-right: 8px;
+	font-size: 16px;
+	vertical-align: middle;
+	color: #64748B;
+}
+
+/* ---------- Icon field (Bus Features popup only) ---------- */
+
+.wbtm-modal .wbtm-icon-field .wbtm_add_icon_image_area {
+	margin-top: 2px;
+	max-width: none !important;
+	border: none !important;
+}
+
+/* Empty state: "+ Icon" trigger button — !important because the widget's
+   own JS toggles display via jQuery .show()/.hide(), which writes an
+   inline style that would otherwise win over a plain class rule. */
+.wbtm-modal .wbtm-icon-field .wbtm_add_icon_image_button_area {
+	margin: 0 !important;
+}
+
+.wbtm-modal .wbtm-icon-field .wbtm_add_icon_image_button_area .flexEqual {
+	display: flex !important;
+}
+
+.wbtm-modal .wbtm-icon-field button.wbtm_icon_add {
+	all: unset;
+	box-sizing: border-box;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 11px 16px;
+	border: 1.5px dashed #D1D5DB;
+	border-radius: 8px;
+	background: #F8FAFC;
+	color: #64748B;
+	font-size: 13.5px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: border-color .15s, background .15s, color .15s;
+}
+
+.wbtm-modal .wbtm-icon-field button.wbtm_icon_add:hover {
+	border-color: #BE123C;
+	background: #FFF1F4;
+	color: #BE123C;
+}
+
+.wbtm-modal .wbtm-icon-field button.wbtm_icon_add .fas {
+	font-size: 11px;
+}
+
+/* Selected state: swatch preview + remove button */
+.wbtm-modal .wbtm-icon-field .wbtm_icon_item {
+	display: flex !important;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border: 1px solid #E4E9F0;
+	border-radius: 8px;
+	background: #FFFFFF;
+}
+
+.wbtm-modal .wbtm-icon-field .wbtm_icon_item [data-add-icon] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	flex: 0 0 auto;
+	border-radius: 8px;
+	background: #FFF1F4;
+	color: #BE123C;
+	font-size: 18px;
+}
+
+/* order: real DOM children (swatch, then remove button) sandwich this
+   generated label by default — order pushes the label between them and
+   the remove button to the far right, matching the visual layout. */
+.wbtm-modal .wbtm-icon-field .wbtm_icon_item::after {
+	content: "Icon selected";
+	order: 1;
+	flex: 1;
+	font-size: 13px;
+	font-weight: 500;
+	color: #334155;
+}
+
+.wbtm-modal .wbtm-icon-field .wbtm_icon_remove {
+	order: 2;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	flex: 0 0 auto;
+	border-radius: 6px;
+	background: #F8FAFC;
+	color: #94A3B8;
+	font-size: 11px;
+	cursor: pointer;
+	transition: background .15s, color .15s;
+}
+
+.wbtm-modal .wbtm-icon-field .wbtm_icon_remove:hover {
+	background: #FFF1F4;
+	color: #E11D48;
+}
+
+/* Edit/Delete get moved into the dedicated icon column below; Quick Edit
+   and View aren't shown in that column, so the hover-text row they'd
+   otherwise sit in is just noise now. */
+.wrap.wbtm-taxonomy-modern-wrap .row-actions {
+	display: none;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .column-description {
+	color: #94A3B8;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .column-posts a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 26px;
+	height: 22px;
+	padding: 0 8px;
+	background: #EFF5FF;
+	color: #2563EB;
+	font-weight: 700;
+	font-size: 12.5px;
+	border-radius: 999px;
+	text-decoration: none;
+}
+
+/* ---------- Slug pill ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-slug-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	background: #F1F5F9;
+	color: #64748B;
+	font-size: 12px;
+	border-radius: 6px;
+}
+
+/* ---------- Actions column (icon buttons, replaces hover-text links) ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap th.column-wbtm-actions,
+.wrap.wbtm-taxonomy-modern-wrap td.column-wbtm-actions {
+	text-align: right;
+	white-space: nowrap;
+	width: 1%;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	margin-left: 6px;
+	border-radius: 6px;
+	color: #64748B;
+	text-decoration: none;
+	vertical-align: middle;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-icon .dashicons {
+	width: 16px;
+	height: 16px;
+	font-size: 16px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-edit:hover {
+	background: #EFF5FF;
+	color: #2563EB;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-delete {
+	color: #E11D48;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-row-action-delete:hover {
+	background: #FFF1F4;
+	color: #9F1239;
+}
+
+/* ---------- Merged secondary taxonomy section (e.g. Drop-Off Point's
+   management UI, living at the bottom of the Pickup Point screen instead of
+   its own submenu — see WBTM_Taxonomy_Modern::MERGED_TAXONOMIES) ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section {
+	margin-top: 28px;
+	padding-top: 24px;
+	border-top: 1px solid #E4E9F0;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-bottom: 14px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header h2 {
+	margin: 0 0 4px;
+	font-size: 17px;
+	font-weight: 700;
+	color: #0F172A;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header .wbtm-taxonomy-subtitle {
+	margin: 0;
+	padding: 0;
+	max-width: 560px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #64748B;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section-header .wbtm-add-bus-type-btn {
+	flex: 0 0 auto;
+	white-space: nowrap;
+	height: 34px;
+	padding: 0 16px;
+	border-radius: 8px;
+}
+
+.wrap.wbtm-taxonomy-modern-wrap .wbtm-merged-section table.wp-list-table tbody tr.no-items td {
+	color: #94A3B8;
+	text-align: center;
+	padding: 20px 16px;
+}
+
+/* ---------- Sort indicators ---------- */
+
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead th.sorted .sorting-indicators,
+.wrap.wbtm-taxonomy-modern-wrap table.wp-list-table thead th.sortable .sorting-indicators {
+	margin-top: 2px;
+	opacity: .7;
+}
+
+@media (max-width: 782px) {
+	.wrap.wbtm-taxonomy-modern-wrap #col-left,
+	.wrap.wbtm-taxonomy-modern-wrap #col-right {
+		flex: 1 1 100%;
+	}
+}
+
+/* ================================================================= *
+ *  Icon Picker Popup — same redesign already shipped for the bus-edit
+ *  "Add Feature" modal (see wbtm-bus-edit-modern.css), ported verbatim
+ *  so the shared #wbtm_add_icon_popup widget looks identical wherever
+ *  it's opened from. Overrides the legacy dark theme in
+ *  wbtm_admin_settings.css — !important throughout because that base
+ *  theme is loaded after this file on some screens.
+ * ================================================================= */
+
+/* Overlay backdrop */
+div.wbtm_add_icon_popup.wbtm_popup {
+	align-items: center !important;
+	justify-content: center !important;
+	padding: 20px !important;
+	background: rgba(15, 23, 42, .6) !important;
+	backdrop-filter: blur(2px);
+	z-index: 1000001 !important;
+}
+
+/* Dialog box */
+div.wbtm_add_icon_popup .popupMainArea {
+	min-width: 0 !important;
+	max-width: 760px !important;
+	width: 100% !important;
+	border-radius: 16px !important;
+	overflow: hidden !important;
+	background: #fff !important;
+	box-shadow: 0 24px 64px rgba(15, 23, 42, .22), 0 4px 16px rgba(15, 23, 42, .1) !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex-flow: column !important;
+	max-height: min(700px, 88vh) !important;
+}
+
+/* ---- Header: search + close ---- */
+div.wbtm_add_icon_popup .popupHeader {
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
+	background: #fff !important;
+	padding: 13px 16px !important;
+	border-bottom: 1px solid #e5e7eb !important;
+	height: auto !important;
+	min-height: 0 !important;
+	flex-shrink: 0 !important;
+}
+
+div.wbtm_add_icon_popup .popupHeader h2 {
+	display: none !important;
+}
+
+/* Search wrapper */
+div.wbtm_add_icon_popup .popupHeader label.min_300 {
+	flex: 1 !important;
+	min-width: 0 !important;
+	width: auto !important;
+	margin: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+	background: #f1f5f9 !important;
+	border: 1.5px solid #e4e9f0 !important;
+	border-radius: 10px !important;
+	padding: 0 12px !important;
+	transition: .15s !important;
+}
+
+div.wbtm_add_icon_popup .popupHeader label.min_300:focus-within {
+	background: #fff !important;
+	border-color: #BE123C !important;
+	box-shadow: 0 0 0 3px rgba(190, 18, 60, .1) !important;
+}
+
+div.wbtm_add_icon_popup .popupHeader label.min_300::before {
+	content: "\f002";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	color: #94a3b8;
+	font-size: 12px;
+	flex-shrink: 0;
+	line-height: 1;
+}
+
+/* Search input */
+div.wbtm_add_icon_popup .popupHeader input[name="mp_select_icon_name"] {
+	all: unset !important;
+	flex: 1 !important;
+	width: 100% !important;
+	font-size: 13px !important;
+	color: #0f172a !important;
+	font-family: inherit !important;
+	padding: 9px 0 !important;
+	line-height: 1.4 !important;
+}
+
+div.wbtm_add_icon_popup .popupHeader input[name="mp_select_icon_name"]::placeholder {
+	color: #94a3b8 !important;
+}
+
+/* Close button */
+div.wbtm_add_icon_popup .popupClose {
+	position: static !important;
+	z-index: auto !important;
+	top: auto !important;
+	right: auto !important;
+	flex-shrink: 0 !important;
+	width: 34px !important;
+	height: 34px !important;
+	border-radius: 9px !important;
+	border: 1.5px solid #e4e9f0 !important;
+	background: #f8fafc !important;
+	color: #64748b !important;
+	font-size: 12px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	cursor: pointer !important;
+	transition: .15s !important;
+}
+
+div.wbtm_add_icon_popup .popupClose:hover {
+	background: #BE123C !important;
+	color: #fff !important;
+	border-color: #BE123C !important;
+}
+
+/* ---- Body: sidebar + grid ---- */
+div.wbtm_add_icon_popup .popupBody {
+	display: flex !important;
+	flex: 1 1 auto !important;
+	min-height: 0 !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+}
+
+div.wbtm_add_icon_popup .popupBody > .dFlex {
+	display: flex !important;
+	flex: 1 !important;
+	min-height: 0 !important;
+	width: 100% !important;
+}
+
+/* Category sidebar */
+div.wbtm_add_icon_popup ul.popupIconMenu {
+	width: 162px !important;
+	min-width: 162px !important;
+	max-width: 162px !important;
+	background: #f8fafc !important;
+	border-right: 1px solid #e5e7eb !important;
+	overflow: hidden auto !important;
+	max-height: none !important;
+	padding: 6px 0 !important;
+	margin: 0 !important;
+}
+
+div.wbtm_add_icon_popup .popupIconMenu li {
+	display: block !important;
+	padding: 7px 11px !important;
+	margin: 2px 6px !important;
+	border-bottom: none !important;
+	color: #64748b !important;
+	font-size: 11.5px !important;
+	font-weight: 500 !important;
+	cursor: pointer !important;
+	border-radius: 7px !important;
+	line-height: 1.4 !important;
+	transition: .12s !important;
+}
+
+div.wbtm_add_icon_popup .popupIconMenu li strong {
+	color: inherit !important;
+	font-weight: inherit !important;
+	font-size: inherit !important;
+}
+
+div.wbtm_add_icon_popup .popupIconMenu li:hover {
+	background: #e2e8f0 !important;
+	color: #0f172a !important;
+}
+
+div.wbtm_add_icon_popup .popupIconMenu li.active {
+	background: #fff1f4 !important;
+	color: #BE123C !important;
+	font-weight: 600 !important;
+}
+
+div.wbtm_add_icon_popup .popupIconMenu li.active:hover {
+	background: #ffe4ea !important;
+	color: #BE123C !important;
+}
+
+/* Icon grid */
+div.wbtm_add_icon_popup .popup_all_icon {
+	flex: 1 !important;
+	min-width: 0 !important;
+	padding: 10px 12px !important;
+	background: #fff !important;
+	overflow: hidden auto !important;
+	max-height: none !important;
+}
+
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem {
+	width: 100% !important;
+}
+
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem h5 {
+	font-size: 10px !important;
+	font-weight: 700 !important;
+	text-transform: uppercase !important;
+	letter-spacing: .06em !important;
+	color: #94a3b8 !important;
+	margin: 10px 0 5px !important;
+	padding-bottom: 5px !important;
+	border-bottom: 1px solid #f1f5f9 !important;
+	position: sticky !important;
+	top: 0 !important;
+	background: #fff !important;
+	z-index: 1 !important;
+}
+
+div.wbtm_add_icon_popup .popup_all_icon .popupTabItem:first-child h5 {
+	margin-top: 0 !important;
+}
+
+div.wbtm_add_icon_popup .popup_all_icon .divider {
+	display: none !important;
+}
+
+div.wbtm_add_icon_popup .popup_all_icon .itemIconArea {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 4px !important;
+	width: 100% !important;
+}
+
+/* Individual icon cells */
+div.wbtm_add_icon_popup .iconItem {
+	width: 46px !important;
+	height: 46px !important;
+	font-size: 18px !important;
+	margin: 0 !important;
+	border: 1.5px solid #e4e9f0 !important;
+	background: #f8fafc !important;
+	border-radius: 9px !important;
+	box-shadow: none !important;
+	cursor: pointer !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	color: #64748b !important;
+	transition: border-color .12s, background .12s, color .12s, transform .1s !important;
+}
+
+div.wbtm_add_icon_popup .iconItem:hover {
+	border-color: #BE123C !important;
+	background: #fff1f4 !important;
+	color: #BE123C !important;
+	transform: scale(1.12) !important;
+	z-index: 1 !important;
+}
+
+div.wbtm_add_icon_popup .iconItem.active {
+	border-color: #BE123C !important;
+	background: #fff1f4 !important;
+	color: #BE123C !important;
+	border-radius: 9px !important;
+	box-shadow: 0 0 0 2px rgba(190, 18, 60, .18) !important;
+}
+
+/* No-results state */
+.wbtm-bme-icon-noresults {
+	display: none;
+	text-align: center;
+	padding: 52px 20px;
+	color: #94a3b8;
+}
+
+.wbtm-bme-icon-noresults .wbtm-bme-nores-icon {
+	font-size: 30px;
+	display: block;
+	margin-bottom: 12px;
+	opacity: .35;
+}
+
+.wbtm-bme-icon-noresults p {
+	font-size: 13px;
+	color: #64748b;
+	margin: 0;
+	line-height: 1.55;
+}

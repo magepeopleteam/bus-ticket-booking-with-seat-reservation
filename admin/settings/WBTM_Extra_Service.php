@@ -22,14 +22,6 @@
                     <h3><?php esc_html_e('Extra Services', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <p><?php esc_html_e('Add Extra Services for the passanger with bus seat reservation', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                     <div class="">
-                        <div class="_dLayout_bgLight_dFlex_justifyBetween">
-                            <div class="_dFlex_fdColumn">
-                                <label>
-									<?php esc_html_e('Extra service', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <span><?php esc_html_e('Here you can add extra services. Also can be on/off extra service', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                            </div>
-                        </div>
                         <div class="_dLayout_dFlex_justifyBetween">
                             <div class="col_10 _dFlex_fdColumn">
                                 <label>

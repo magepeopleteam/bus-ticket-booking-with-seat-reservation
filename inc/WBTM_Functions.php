@@ -1928,6 +1928,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$feature_ids = get_post_meta( $bus_id, 'wbbm_bus_features_term_id', true );
 				$term_condition = get_post_meta( $bus_id, 'wbtm_term_condition_list', true );
 				$gallery_images       = get_post_meta( $bus_id, 'wbtm_gallery_images', true );
+				$gallery_enabled      = get_post_meta( $bus_id, 'wbtm_gallery_enabled', true ) !== 'no';
 
 				if ( empty( $boarding_routes ) ) {
 					unset( $tabs['wbtm_bus_boarding_dropping'] );
@@ -1938,7 +1939,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				if ( empty( $term_condition ) ) {
 					unset( $tabs['wbtm_bus_term_condition'] );
 				}
-				if ( empty( $gallery_images ) ) {
+				if ( empty( $gallery_images ) || ! $gallery_enabled ) {
 					unset( $tabs['wbtm_bus_image'] );
 				}
 				return $tabs;

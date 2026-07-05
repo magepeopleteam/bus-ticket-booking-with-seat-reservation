@@ -157,9 +157,13 @@
 						"nonce": wbtm_nonce,
 					},
 					success: function (data) {
+						// Data loads in the background as before (still needed to
+						// populate valid destinations for this start route) — just no
+						// longer force-opens the Drop-Off Point field afterwards, so
+						// selecting "From" doesn't yank focus away before the user is
+						// ready to pick "To" themselves.
 						target.append(data).promise().done(function () {
 							wbtm_loaderRemove(parent);
-							target.find('input.formControl').trigger('click');
 						});
 					},
 					error: function (response) {
@@ -187,9 +191,11 @@
 		}).promise().done(function () {
 			wbtm_load_journey_date(parent);
 		}).promise().done(function () {
-			if (exit_route > 0) {
-				parent.find('input[name="j_date"]').siblings('input').focus();
-			} else {
+			// Valid dates still load in the background above (still needed so the
+			// Journey Date calendar only shows bookable dates) — just no longer
+			// force-focuses/opens that picker afterwards, same reasoning as the
+			// Drop-Off Point auto-open removed above.
+			if (exit_route === 0) {
 				current.val('').trigger('click');
 			}
 		});
@@ -386,7 +392,53 @@
 		// Added by Shahnur 2026-06-02 — keep the raw numeric total so it can be sent to the
 		// server without depending on locale-formatted text (e.g. "39,00 lei" was collapsing to 3900).
 		target_summary.attr('data-raw-total', total);
+		wbtm_update_summary_preview(parent, total_qty);
 	}
+	// Read-only "Booking Summary" preview card (see templates/layout/
+	// booking_summary_preview.php) — mirrors the rows .wbtm_selected_seat_details
+	// already built above and the .wbtm_sub_total text this same function just
+	// set, rather than recomputing anything itself, so it can never drift out of
+	// sync with the real totals. Its own Book Now button (below) just re-clicks
+	// the real #wbtm_add_to_cart button instead of duplicating the add-to-cart logic.
+	// Loaded and visible before any seat is picked (not hidden/shown like
+	// .wbtm_ex_service_area / .wbtm_form_submit_area above) — only its Book Now
+	// button toggles disabled/enabled based on whether a seat is selected yet.
+	function wbtm_update_summary_preview(parent, total_qty) {
+		let preview = parent.find('.wbtm_booking_summary_preview');
+		if (!preview.length) {
+			return;
+		}
+		let preview_rows = preview.find('.wbtm_summary_preview_rows');
+		let book_now_btn = preview.find('.wbtm_summary_preview_book_now');
+		if (preview_rows.data('wbtm-empty-html') === undefined) {
+			// Capture the PHP-rendered "No seat selected yet" placeholder row once,
+			// before it's ever replaced, so it can be restored later without
+			// duplicating its translated text here in JS.
+			preview_rows.data('wbtm-empty-html', preview_rows.html());
+		}
+		if (total_qty > 0) {
+			preview_rows.html('');
+			parent.find('.wbtm_selected_seat_details .wbtm_item_insert .wbtm_remove_area').each(function () {
+				let row = $(this);
+				let clone = $('<tr></tr>');
+				clone.append($('<td></td>').html(row.find('.insert_seat_label').html()));
+				clone.append($('<td></td>').html(row.find('.insert_seat_name').html()));
+				clone.append($('<td></td>').html(row.find('.insert_seat_price').html()));
+				preview_rows.append(clone);
+			});
+			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			preview.find('.wbtm_summary_preview_total').html(parent.find('.wbtm_total').html());
+			book_now_btn.prop('disabled', false);
+		} else {
+			preview_rows.html(preview_rows.data('wbtm-empty-html'));
+			preview.find('.wbtm_summary_preview_subtotal').html(parent.find('.wbtm_sub_total').html());
+			preview.find('.wbtm_summary_preview_total').html(parent.find('.wbtm_total').html());
+			book_now_btn.prop('disabled', true);
+		}
+	}
+	$(document).on('click', '.wbtm_registration_area .wbtm_summary_preview_book_now', function () {
+		$(this).closest('.wbtm_registration_area').find('#wbtm_add_to_cart').trigger('click');
+	});
 	function wbtm_ticket_price(parent) {
 		let total = 0;
 		if (parent.find('.wbtm_seat_plan_area').length > 0) {
@@ -638,6 +690,37 @@
 			target.append(hidden_target_tr.clone());
 		});
 	}
+	// Passenger Information fields are visually reordered to Name, Email,
+	// Phone, Date of Birth, Gender, Address (see templates/layout/
+	// WBTM_Attendee_form.php's form_item() loop, which renders Address before
+	// Gender). This used to be done with CSS `order` + :has() selectors, but
+	// interacting with the Date of Birth datepicker (which mutates the DOM —
+	// adds a dynamic id/hasDatepicker class, appends/removes the calendar
+	// popup) was re-triggering :has() re-evaluation and visibly reshuffling
+	// the grid, swapping Passenger Name and Date of Birth on screen. Moving
+	// the actual DOM nodes once, right when the panel is inserted, is stable
+	// against that — nothing about opening the datepicker touches DOM order
+	// afterwards. Safe to call repeatedly (e.g. once per seat) since moving
+	// an already-correctly-placed field is a no-op.
+	function wbtm_reorder_attendee_fields(form_target) {
+		var field_order = [
+			'input[name="wbtm_full_name[]"]',
+			'input[name="wbtm_reg_email[]"]',
+			'input[name="wbtm_reg_phone[]"]',
+			'input[name="date_of_birth[]"]',
+			'select[name="wbtm_user_gender[]"]',
+			'textarea[name="wbtm_reg_address[]"]'
+		];
+		form_target.find('.wbtm_attendee_item .mpPanelBody').each(function () {
+			var panel_body = $(this);
+			field_order.forEach(function (selector) {
+				var field = panel_body.find('.mp_form_item').has(selector);
+				if (field.length) {
+					panel_body.append(field);
+				}
+			});
+		});
+	}
 	function wbtm_attendee_management(parent, total_qty) {
 		let form_target = parent.find('.wbtm_attendee_area');
 		if (form_target.length > 0 && total_qty > 0) {
@@ -668,6 +751,7 @@
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
 								wbtm_load_date_picker(parent);
+								wbtm_reorder_attendee_fields(form_target);
 							});
 						}
 					}).promise().done(function () {
@@ -702,6 +786,7 @@
 								form_target.append(hidden_target.html());
 							}).promise().done(function () {
 								wbtm_load_date_picker(parent);
+								wbtm_reorder_attendee_fields(form_target);
 							});
 						}
 					}
@@ -712,20 +797,34 @@
 		}
 	}
 
-	// Handle cabin seat plan toggle
+	// Handle cabin seat plan toggle — accordion: opening one cabin collapses
+	// every other cabin within the same seat plan area (outbound and return
+	// each get their own independent accordion, since each has its own
+	// .wbtm_seat_plan_area — see the "each" loop below).
 	$(document).on('click', '.wbtm_cabin_toggle', function () {
 		let header = $(this);
 		let cabin_section = header.closest('.wbtm_cabin_section');
+		let seat_plan_area = cabin_section.closest('.wbtm_seat_plan_area');
 		let seat_plan = cabin_section.find('.wbtm_cabin_seat_plan');
 		let arrow = header.find('.wbtm_toggle_arrow');
 		let isExpanded = seat_plan.attr('aria-expanded') === 'true';
 
+		seat_plan_area.find('.wbtm_cabin_section').not(cabin_section).each(function () {
+			let other_section = $(this);
+			let other_plan = other_section.find('.wbtm_cabin_seat_plan');
+			if (other_plan.attr('aria-expanded') === 'true') {
+				other_plan.stop(true, true).slideUp(300).attr('aria-expanded', 'false');
+				other_section.removeClass('expanded').addClass('collapsed');
+				other_section.find('.wbtm_toggle_arrow').text('▼');
+			}
+		});
+
 		if (isExpanded) {
-			seat_plan.slideUp(300).attr('aria-expanded', 'false');
+			seat_plan.stop(true, true).slideUp(300).attr('aria-expanded', 'false');
 			cabin_section.removeClass('expanded').addClass('collapsed');
 			arrow.text('▼'); // Show down arrow when collapsed
 		} else {
-			seat_plan.slideDown(300).attr('aria-expanded', 'true');
+			seat_plan.stop(true, true).slideDown(300).attr('aria-expanded', 'true');
 			cabin_section.removeClass('collapsed').addClass('expanded');
 			arrow.text('▲'); // Show up arrow when expanded
 		}

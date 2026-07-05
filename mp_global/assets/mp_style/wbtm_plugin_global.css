@@ -524,7 +524,7 @@
 	.wbtm_style button[disabled] {
 		cursor: not-allowed;
 		opacity: 0.8;
-		background-color: #DDD;
+		background-color: var(--wbtm_color_theme);
 	}
 	.wbtm_style button:hover,
 	.wbtm_style button:focus {
@@ -2113,7 +2113,7 @@
 	}
 	.wbtm_style table th,
 	.wbtm_style table td {
-		border: 1px solid var(--wbtm_color_border);
+		border: none;
 		padding: var(--wbtm_dmp_xs);
 	}
 	.wbtm_style table thead th {

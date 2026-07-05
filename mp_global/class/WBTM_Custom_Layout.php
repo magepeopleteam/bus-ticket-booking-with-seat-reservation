@@ -188,7 +188,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                 $thumbnail_url = $post_id > 0 ? WBTM_Global_Function::get_image_url( $post_id ) : $url;
 				$post_url  = $post_id > 0 ? get_the_permalink( $post_id ) : '';
 
-                $gallery_images = get_post_meta( $post_id, 'wbtm_gallery_images', true );
+                $gallery_enabled = get_post_meta( $post_id, 'wbtm_gallery_enabled', true ) !== 'no';
+                $gallery_images = $gallery_enabled ? get_post_meta( $post_id, 'wbtm_gallery_images', true ) : [];
                 $gallery_image_urls = [];
                 if (!empty($gallery_images) && is_array($gallery_images)) {
                     $gallery_image_urls = array_map(function ( $id ) {

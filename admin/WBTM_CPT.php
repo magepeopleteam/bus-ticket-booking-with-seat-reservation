@@ -37,7 +37,7 @@
 					/* translators: %s: event name */
 					'all_items' => sprintf(__('All %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
-					'add_new_item' => sprintf(__('All New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					'add_new_item' => sprintf(__('Add New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
 					'add_new' => sprintf(__('Add New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
