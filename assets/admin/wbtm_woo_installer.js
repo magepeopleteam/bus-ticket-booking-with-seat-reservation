@@ -30,8 +30,10 @@
 	var progressToken    = '';
 	var progressTimer    = null;
 	var lastPercent      = 0;
-	var phase             = null;  // 'install' | 'activate'
-	var requestFinished   = false; // true once a terminal outcome (success/error) has been acted on for the current phase
+	// Chunked installer: the flow is a chain of discrete server steps
+	// (download → install → activate), each its own HTTP request.
+	var launchedSteps    = {};    // guards against launching the same step twice
+	var finished         = false; // true once a terminal outcome (success/error) has fired
 	var processStartTime  = 0;
 
 	/**
@@ -61,15 +63,15 @@
 	});
 
 	/**
-	 * Start the install → activate → redirect process.
+	 * Start the chunked download → install → activate → redirect process.
 	 */
 	function startProcess() {
 		isWorking        = true;
 		progressToken    = 'wbtm' + Date.now().toString(36) + Math.random().toString(36).slice(2);
 		lastPercent      = 0;
-		requestFinished  = false;
+		launchedSteps    = {};
+		finished         = false;
 		processStartTime = Date.now();
-		phase            = (config.woo_installed === 'yes') ? 'activate' : 'install';
 		$btn.prop('disabled', true);
 
 		// Show progress, hide actions
@@ -78,13 +80,99 @@
 
 		startProgressPolling();
 
-		if (phase === 'activate') {
-			setProgress(30, config.i18n.activating);
-			activateWooCommerce();
+		// If WooCommerce files already exist, skip straight to activation;
+		// otherwise begin with the download step.
+		if (config.woo_installed === 'yes') {
+			runStep('activate');
 		} else {
-			setProgress(5, config.i18n.installing);
-			installWooCommerce();
+			runStep('download');
 		}
+	}
+
+	/**
+	 * Human-readable starting text + baseline percent for each step, shown the
+	 * instant a step's request is fired so the UI never looks stalled.
+	 */
+	function stepIntro(step) {
+		switch (step) {
+			case 'download': return { percent: 5,  text: config.i18n.installing };
+			case 'install':  return { percent: 60, text: config.i18n.installing };
+			case 'activate': return { percent: 92, text: config.i18n.activating };
+			default:         return { percent: lastPercent, text: '' };
+		}
+	}
+
+	/**
+	 * Run a single server step. Idempotent per step: launchedSteps guards
+	 * against the same step being started twice (e.g. if both the AJAX response
+	 * and a progress-poll recovery try to advance to it).
+	 */
+	function runStep(step) {
+		if (finished || launchedSteps[step]) {
+			return;
+		}
+		launchedSteps[step] = true;
+
+		var intro = stepIntro(step);
+		if (intro.percent >= lastPercent) {
+			lastPercent = intro.percent;
+		}
+		setProgress(lastPercent, intro.text);
+
+		$.ajax({
+			url:      config.ajax_url,
+			type:     'POST',
+			dataType: 'json',
+			timeout:  AJAX_TIMEOUT,
+			data: {
+				action:         'wbtm_woo_install_step',
+				nonce:          config.install_nonce,
+				progress_token: progressToken,
+				step:           step
+			},
+			success: function (response) {
+				if (finished) {
+					return;
+				}
+				if (response && response.success) {
+					advance(response.data && response.data.next ? response.data.next : '');
+				} else {
+					showError(response && response.data && response.data.message
+						? response.data.message
+						: stepErrorText(step));
+				}
+			},
+			error: function (jqXHR, textStatus) {
+				if (textStatus === 'timeout') {
+					// The server keeps running past a dropped connection — keep
+					// polling; the poller recovers the outcome for this step.
+					setProgress(lastPercent, config.i18n.timeout_wait);
+					return;
+				}
+				if (finished) {
+					return;
+				}
+				showError(stepErrorText(step));
+			}
+		});
+	}
+
+	/**
+	 * Advance the chain to the next step, or finish when there is none.
+	 */
+	function advance(next) {
+		if (!next) {
+			if (!finished) {
+				finished = true;
+				showSuccess();
+			}
+			return;
+		}
+		runStep(next);
+	}
+
+	function stepErrorText(step) {
+		return (step === 'activate') ? config.i18n.activate_error : config.i18n.install_error;
 	}
 
 	/**
@@ -124,25 +212,21 @@
 				setProgress(percent, data.text);
 			}
 
-			if (requestFinished) {
+			if (finished) {
 				return;
 			}
 
 			if (data.status === 'error') {
-				requestFinished = true;
 				showError(data.text || config.i18n.install_error);
 				return;
 			}
 
+			// A step finished server-side. Recover the chain even if that step's
+			// own AJAX response was lost to a client-side timeout: advance to the
+			// next step, or finish when there is none. advance()/runStep() are
+			// idempotent, so this can't double-run a step already in flight.
 			if (data.status === 'success') {
-				requestFinished = true;
-				if (phase === 'install') {
-					phase = 'activate';
-					setProgress(96, config.i18n.activating);
-					activateWooCommerce();
-				} else {
-					showSuccess();
-				}
+				advance(data.next ? data.next : '');
 				return;
 			}
 
@@ -150,96 +234,9 @@
 			// absolute ceiling, in case the server process died without
 			// ever recording a final status.
 			if (Date.now() - processStartTime > MAX_TOTAL_WAIT) {
-				requestFinished = true;
 				showError(config.i18n.timeout_error);
 			}
 		}, 'json');
-	}
-
-	/**
-	 * AJAX: Install WooCommerce.
-	 */
-	function installWooCommerce() {
-		$.ajax({
-			url:      config.ajax_url,
-			type:     'POST',
-			dataType: 'json',
-			timeout:  AJAX_TIMEOUT,
-			data: {
-				action:         'wbtm_install_woocommerce',
-				nonce:          config.install_nonce,
-				progress_token: progressToken
-			},
-			success: function (response) {
-				if (requestFinished) {
-					return;
-				}
-				requestFinished = true;
-				if (response.success) {
-					phase = 'activate';
-					setProgress(96, config.i18n.activating);
-					activateWooCommerce();
-				} else {
-					showError(response.data && response.data.message
-						? response.data.message
-						: config.i18n.install_error);
-				}
-			},
-			error: function (jqXHR, textStatus) {
-				if (textStatus === 'timeout') {
-					// The server is very likely still working (it keeps running
-					// past a dropped connection) — keep polling instead of failing.
-					setProgress(lastPercent, config.i18n.timeout_wait);
-					return;
-				}
-				if (requestFinished) {
-					return;
-				}
-				requestFinished = true;
-				showError(config.i18n.install_error);
-			}
-		});
-	}
-
-	/**
-	 * AJAX: Activate WooCommerce.
-	 */
-	function activateWooCommerce() {
-		$.ajax({
-			url:      config.ajax_url,
-			type:     'POST',
-			dataType: 'json',
-			timeout:  AJAX_TIMEOUT,
-			data: {
-				action:         'wbtm_activate_woocommerce',
-				nonce:          config.activate_nonce,
-				progress_token: progressToken
-			},
-			success: function (response) {
-				if (requestFinished) {
-					return;
-				}
-				requestFinished = true;
-				if (response.success) {
-					showSuccess();
-				} else {
-					showError(response.data && response.data.message
-						? response.data.message
-						: config.i18n.activate_error);
-				}
-			},
-			error: function (jqXHR, textStatus) {
-				if (textStatus === 'timeout') {
-					setProgress(lastPercent, config.i18n.timeout_wait);
-					return;
-				}
-				if (requestFinished) {
-					return;
-				}
-				requestFinished = true;
-				showError(config.i18n.activate_error);
-			}
-		});
 	}
 
 	/**
@@ -284,6 +281,7 @@
 	 * Show error state with retry option.
 	 */
 	function showError(message) {
+		finished  = true;
 		isWorking = false;
 		stopProgressPolling();
 		$popup.addClass('wbtm-state-error');
