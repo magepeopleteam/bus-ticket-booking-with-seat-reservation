@@ -2276,7 +2276,21 @@ table.wbtm_totals {
    extra services) and data-raw-total into. jQuery's .trigger('click') still
    fires a hidden element's click handler, so hiding this with CSS rather
    than removing it from the template keeps the preview's button working. */
+/* Hidden until a ticket quantity / seat is chosen. No !important here on
+   purpose: wbtm_price_calculation() (wbtm_global.js) reveals this footer via
+   jQuery .slideDown(), which sets an inline display that must be able to win
+   over this rule. The without-seat-plan flow has no Booking Summary preview
+   card, so this footer is its ONLY Book Now button and must stay revealable. */
 .wbtm_form_submit_area {
+  display: none;
+}
+
+/* Seat-plan flow renders a Booking Summary preview card whose own Book Now
+   button re-triggers the hidden #wbtm_add_to_cart, so the real submit footer
+   is kept permanently hidden there to avoid a duplicate button. !important
+   scoped to that flow blocks the shared slideDown() from revealing it — the
+   without-seat-plan flow (no preview card) is unaffected. */
+.wbtm_registration_area:has(.wbtm_booking_summary_preview) .wbtm_form_submit_area {
   display: none !important;
 }
 
