@@ -29,10 +29,12 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			// Render the popup markup in admin footer
 			add_action( 'admin_footer', array( $this, 'render_popup' ) );
-			// AJAX handlers for install, activate & dismiss
-			add_action( 'wp_ajax_wbtm_install_woocommerce', array( $this, 'ajax_install_woocommerce' ) );
-			add_action( 'wp_ajax_wbtm_activate_woocommerce', array( $this, 'ajax_activate_woocommerce' ) );
-			// Polled by the popup while install/activate is running to read the live percentage.
+			// Chunked installer: one AJAX request per phase (download → install →
+			// activate) so each runs in a fresh PHP process and a low
+			// memory_limit / short max_execution_time host never times out
+			// trying to do everything in a single long request.
+			add_action( 'wp_ajax_wbtm_woo_install_step', array( $this, 'ajax_install_step' ) );
+			// Polled by the popup while a step is running to read the live percentage.
 			add_action( 'wp_ajax_wbtm_install_progress', array( $this, 'ajax_get_install_progress' ) );
 		}
 
@@ -108,8 +110,12 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 		 *                        popup uses this to recover even if the original
 		 *                        AJAX response never reaches the browser (e.g. the
 		 *                        browser gave up waiting while the server kept going).
+		 * @param string $next    When a step finishes server-side, the next step to
+		 *                        run ('install'|'activate'|''). Lets the poller
+		 *                        advance the chunked flow even if the step's own
+		 *                        AJAX response was lost to a client-side timeout.
 		 */
-		private function set_progress( $token, $percent, $text, $status = 'progress' ) {
+		private function set_progress( $token, $percent, $text, $status = 'progress', $next = '' ) {
 			if ( ! $token ) {
 				return;
 			}
@@ -119,6 +125,7 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 					'percent' => max( 0, min( 100, (int) round( $percent ) ) ),
 					'text'    => (string) $text,
 					'status'  => $status,
+					'next'    => (string) $next,
 				),
 				120
 			);
@@ -316,8 +323,8 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 
 			wp_localize_script( 'wbtm-woo-installer', 'wbtm_woo_installer', array(
 				'ajax_url'         => admin_url( 'admin-ajax.php' ),
+				// Single nonce now guards every step of the chunked installer.
 				'install_nonce'    => wp_create_nonce( 'wbtm_install_woo' ),
-				'activate_nonce'   => wp_create_nonce( 'wbtm_activate_woo' ),
 				'redirect_url'     => admin_url( 'edit.php?post_type=wbtm_bus' ),
 				'woo_installed'    => $this->is_woo_installed() ? 'yes' : 'no',
 				'i18n'             => array(
@@ -456,6 +463,7 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 					'percent' => 0,
 					'text'    => '',
 					'status'  => 'progress',
+					'next'    => '',
 				);
 			}
 
@@ -463,21 +471,61 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 		}
 
 		/**
-		 * AJAX: Install WooCommerce from WordPress.org repository.
+		 * Transient key that carries the downloaded package path between the
+		 * separate 'download' and 'install' AJAX requests.
+		 *
+		 * @param string $token Per-attempt progress token.
+		 * @return string
 		 */
-		public function ajax_install_woocommerce() {
+		private function package_transient_key( $token ) {
+			return 'wbtm_woo_pkg_' . sanitize_key( $token );
+		}
+
+		/**
+		 * AJAX: run ONE step of the chunked installer.
+		 *
+		 * The whole flow is split across three separate HTTP requests —
+		 * download → install → activate — so each runs with a fresh
+		 * max_execution_time / memory budget. This is the key difference that
+		 * lets constrained hosts (default 2M-ish PHP limits, short timeouts)
+		 * finish an install that a single monolithic request would abort.
+		 */
+		public function ajax_install_step() {
 			check_ajax_referer( 'wbtm_install_woo', 'nonce' );
 
 			$token = isset( $_POST['progress_token'] ) ? sanitize_key( wp_unslash( $_POST['progress_token'] ) ) : '';
+			$step  = isset( $_POST['step'] ) ? sanitize_key( wp_unslash( $_POST['step'] ) ) : '';
 
 			if ( ! current_user_can( 'install_plugins' ) ) {
 				$this->fail_install( $token, __( 'You do not have permission to install plugins.', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
 
+			switch ( $step ) {
+				case 'download':
+					$this->step_download( $token );
+					break;
+				case 'install':
+					$this->step_install( $token );
+					break;
+				case 'activate':
+					$this->step_activate( $token );
+					break;
+				default:
+					$this->fail_install( $token, __( 'Unknown installation step.', 'bus-ticket-booking-with-seat-reservation' ) );
+			}
+		}
+
+		/**
+		 * Step 1 — download the WooCommerce package to a temp file.
+		 * Kept in its own request so the (potentially large) download can't eat
+		 * into the time budget the unpack/move step needs.
+		 *
+		 * @param string $token Per-attempt progress token.
+		 */
+		private function step_download( $token ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 			include_once ABSPATH . 'wp-admin/includes/file.php';
 			include_once ABSPATH . 'wp-admin/includes/misc.php';
-			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
 			$this->prepare_environment_for_long_task();
 			$this->set_progress( $token, 2, __( 'Preparing installation...', 'bus-ticket-booking-with-seat-reservation' ) );
@@ -513,18 +561,62 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 				$this->fail_install( $token, $api->get_error_message() );
 			}
 
-			// Download it ourselves first so we can report real byte-level percentage.
-			// Returns false (and we fall back to Plugin_Upgrader's own download) when
-			// cURL is unavailable or outbound requests are locked down on this host.
-			$local_package = $this->download_package_with_progress( $api->download_link, $token, 10, 70 );
+			// Download it ourselves so we can report real byte-level percentage.
+			// Returns false (and the install step falls back to letting
+			// Plugin_Upgrader download from the URL) when cURL is unavailable or
+			// outbound requests are locked down on this host.
+			$local_package = $this->download_package_with_progress( $api->download_link, $token, 8, 52 );
 
 			if ( ! $local_package ) {
-				// We didn't download it ourselves — Plugin_Upgrader will, internally,
-				// with no granular progress available, so just mark the phase.
-				$this->set_progress( $token, 10, __( 'Downloading WooCommerce...', 'bus-ticket-booking-with-seat-reservation' ) );
+				$this->set_progress( $token, 10, __( 'Preparing download...', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
 
-			$this->set_progress( $token, 75, __( 'Unpacking & installing WooCommerce (this can take several minutes for many files)...', 'bus-ticket-booking-with-seat-reservation' ) );
+			// Hand the package location to the install step (next request).
+			set_transient(
+				$this->package_transient_key( $token ),
+				array(
+					'path' => $local_package ? $local_package : '',
+					'url'  => $api->download_link,
+				),
+				15 * MINUTE_IN_SECONDS
+			);
+
+			$this->set_progress( $token, 55, __( 'Download complete. Preparing to install...', 'bus-ticket-booking-with-seat-reservation' ), 'success', 'install' );
+
+			wp_send_json_success( array( 'next' => 'install' ) );
+		}
+
+		/**
+		 * Step 2 — unpack & move WooCommerce into wp-content/plugins.
+		 * Runs in its own fresh request so the file copy (thousands of files)
+		 * gets a full time budget rather than whatever was left after the
+		 * download.
+		 *
+		 * @param string $token Per-attempt progress token.
+		 */
+		private function step_install( $token ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+			include_once ABSPATH . 'wp-admin/includes/file.php';
+			include_once ABSPATH . 'wp-admin/includes/misc.php';
+			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+			$this->prepare_environment_for_long_task();
+			$this->set_progress( $token, 60, __( 'Unpacking & installing WooCommerce (this can take a few minutes for many files)...', 'bus-ticket-booking-with-seat-reservation' ) );
+
+			$pkg  = get_transient( $this->package_transient_key( $token ) );
+			$path = ( is_array( $pkg ) && ! empty( $pkg['path'] ) && file_exists( $pkg['path'] ) ) ? $pkg['path'] : '';
+			$url  = ( is_array( $pkg ) && ! empty( $pkg['url'] ) ) ? $pkg['url'] : '';
+
+			// The temp file/URL is gone (transient expired, or step order lost) —
+			// recover the download URL so we can still install without forcing the
+			// user to start over.
+			if ( ! $path && ! $url ) {
+				$api = plugins_api( 'plugin_information', array( 'slug' => 'woocommerce' ) );
+				if ( is_wp_error( $api ) ) {
+					$this->fail_install( $token, $api->get_error_message() );
+				}
+				$url = $api->download_link;
+			}
 
 			// WP core resets the execution time limit to a flat 300s right before
 			// moving files into the plugins folder (see reset_time_limit_before_copy()
@@ -533,44 +625,37 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 			add_filter( 'upgrader_pre_install', array( $this, 'reset_time_limit_before_copy' ) );
 
 			$upgrader = new Plugin_Upgrader( new WP_Ajax_Upgrader_Skin() );
-			$package  = $local_package ? $local_package : $api->download_link;
+			$package  = $path ? $path : $url;
 			$result   = $upgrader->install( $package );
 
 			remove_filter( 'upgrader_pre_install', array( $this, 'reset_time_limit_before_copy' ) );
 
-			if ( $local_package ) {
-				@unlink( $local_package );
+			if ( $path ) {
+				@unlink( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 			}
+			delete_transient( $this->package_transient_key( $token ) );
 
 			if ( is_wp_error( $result ) ) {
 				$this->fail_install( $token, $result->get_error_message() );
 			}
-
-			if ( $result === false ) {
+			if ( false === $result ) {
 				$this->fail_install( $token, __( 'Installation failed.', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
 
-			$this->set_progress( $token, 95, __( 'WooCommerce installed successfully.', 'bus-ticket-booking-with-seat-reservation' ), 'success' );
+			$this->set_progress( $token, 88, __( 'WooCommerce installed. Activating...', 'bus-ticket-booking-with-seat-reservation' ), 'success', 'activate' );
 
-			wp_send_json_success( array( 'message' => __( 'WooCommerce installed successfully.', 'bus-ticket-booking-with-seat-reservation' ) ) );
+			wp_send_json_success( array( 'next' => 'activate' ) );
 		}
 
 		/**
-		 * AJAX: Activate WooCommerce plugin.
+		 * Step 3 — activate WooCommerce (its own request; first-run DB/table
+		 * setup can be heavy too, so it gets a fresh budget as well).
+		 *
+		 * @param string $token Per-attempt progress token.
 		 */
-		public function ajax_activate_woocommerce() {
-			check_ajax_referer( 'wbtm_activate_woo', 'nonce' );
-
-			$token = isset( $_POST['progress_token'] ) ? sanitize_key( wp_unslash( $_POST['progress_token'] ) ) : '';
-
-			if ( ! current_user_can( 'activate_plugins' ) ) {
-				$this->fail_install( $token, __( 'You do not have permission to activate plugins.', 'bus-ticket-booking-with-seat-reservation' ) );
-			}
-
-			// WooCommerce runs its own DB table/setup routines on activation,
-			// which can also be heavy on first run — give it the same headroom.
+		private function step_activate( $token ) {
 			$this->prepare_environment_for_long_task();
-			$this->set_progress( $token, 96, __( 'Activating WooCommerce...', 'bus-ticket-booking-with-seat-reservation' ) );
+			$this->set_progress( $token, 92, __( 'Activating WooCommerce...', 'bus-ticket-booking-with-seat-reservation' ) );
 
 			$result = activate_plugin( 'woocommerce/woocommerce.php' );
 
@@ -578,9 +663,9 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 				$this->fail_install( $token, $result->get_error_message() );
 			}
 
-			$this->set_progress( $token, 100, __( 'WooCommerce activated successfully!', 'bus-ticket-booking-with-seat-reservation' ), 'success' );
+			$this->set_progress( $token, 100, __( 'WooCommerce activated successfully!', 'bus-ticket-booking-with-seat-reservation' ), 'success', '' );
 
-			wp_send_json_success( array( 'message' => __( 'WooCommerce activated successfully!', 'bus-ticket-booking-with-seat-reservation' ) ) );
+			wp_send_json_success( array( 'next' => '', 'message' => __( 'WooCommerce activated successfully!', 'bus-ticket-booking-with-seat-reservation' ) ) );
 		}
 	}
 
