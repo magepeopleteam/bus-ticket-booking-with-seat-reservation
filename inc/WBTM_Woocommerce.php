@@ -8,6 +8,11 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Woocommerce')) {
 		class WBTM_Woocommerce {
+			// When TRUE, the WooCommerce customer "Completed order" email is suppressed
+			// while THIS plugin performs an automatic processing -> completed transition.
+			// Prevents a duplicate confirmation landing on top of the "Processing order"
+			// email and the plugin's own PDF ticket email.
+			private $wbtm_suppress_completed_email = false;
 			public function __construct() {
 				add_action('wp_ajax_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart'));
 				add_action('wp_ajax_nopriv_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart'));
@@ -30,6 +35,9 @@
 				// Added hooks for robust auto-completion of successful payments
 				add_action('woocommerce_payment_complete', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_order_status_processing', array($this, 'auto_complete_paid_order'));
+				// Suppress the duplicate customer "Completed order" email ONLY for orders
+				// this plugin auto-completes (see wbtm_complete_order_silently()).
+				add_filter('woocommerce_email_enabled_customer_completed_order', array($this, 'maybe_disable_completed_order_email'), 10, 2);
 				add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
 				// Add redirect logic after adding to cart
 				add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
@@ -680,7 +688,7 @@
 					}
 					
 					if ('processing' == $order->get_status()) {
-						$order->update_status('completed');
+						$this->wbtm_complete_order_silently($order);
 					}
 				}
 			}
@@ -712,11 +720,56 @@
 					}
 					
 					if ($has_bus_ticket) {
-						$order->update_status('completed');
+						$this->wbtm_complete_order_silently($order);
 					}
 				}
 			}
-			
+
+			/**
+			 * Move an order to "completed" WITHOUT WooCommerce's customer
+			 * "Completed order" email.
+			 *
+			 * The customer has already received the "Processing order" email plus the
+			 * plugin's own PDF ticket confirmation, so the completed-order email is a
+			 * redundant third message. We persist a meta flag (so suppression also works
+			 * when WooCommerce defers transactional emails to a later request) and set a
+			 * request-scoped guard, then let maybe_disable_completed_order_email()
+			 * short-circuit only that one email. HPOS-safe (CRUD only).
+			 *
+			 * @param WC_Order $order Order being auto-completed.
+			 * @return void
+			 */
+			private function wbtm_complete_order_silently($order) {
+				if (!$order instanceof WC_Order) {
+					return;
+				}
+				$order->update_meta_data('_wbtm_auto_completed_no_email', 'yes');
+				$order->save_meta_data();
+				$this->wbtm_suppress_completed_email = true;
+				$order->update_status('completed');
+				$this->wbtm_suppress_completed_email = false;
+			}
+
+			/**
+			 * Disable ONLY the customer "Completed order" email when this plugin is the
+			 * one that auto-completed the order. Every other email (New order, Processing
+			 * order, admin notifications, and a MANUAL admin "Complete" action) is left
+			 * untouched. Developers can re-enable via the
+			 * `wbtm_suppress_duplicate_completed_email` filter.
+			 *
+			 * @param bool          $enabled Whether the email is currently enabled.
+			 * @param WC_Order|null $order   Order the email is for (null in admin previews).
+			 * @return bool
+			 */
+			public function maybe_disable_completed_order_email($enabled, $order) {
+				$is_auto_completed = ($order instanceof WC_Order) && 'yes' === $order->get_meta('_wbtm_auto_completed_no_email');
+				if (($this->wbtm_suppress_completed_email || $is_auto_completed)
+					&& apply_filters('wbtm_suppress_duplicate_completed_email', true, $order)) {
+					return false;
+				}
+				return $enabled;
+			}
+
 			public function cart_item_thumbnail($thumbnail, $cart_item) {
 				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
