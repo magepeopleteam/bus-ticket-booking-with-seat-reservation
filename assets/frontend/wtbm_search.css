@@ -418,3 +418,71 @@
         font-size: 11px;
     }
 }
+
+/* ---- Mobile: results-first + collapsible "Filters" hamburger ----
+   The toggle button is rendered by both search_result.php and
+   search_result_flix.php inside .wbtm_bus_left_filter_holder.
+   Desktop/laptop (>=768px) is untouched: button hidden, sidebar as-is. */
+.wbtm-mobile-filter-toggle {
+    display: none;
+}
+
+@media only screen and (max-width: 767px) {
+    /* Stack the results page vertically, full width — the flix layout sets an
+       inline width (calc(100% - 180px)) on the list area, hence !important. */
+    .wbtm_search_result_holder {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    .wbtm_bus_list_area {
+        width: 100% !important;
+    }
+    .wbtm_bus_left_filter_holder {
+        width: 100% !important;
+        flex: none !important;
+        min-width: 0;
+    }
+
+    /* Hamburger "Filters" bar */
+    .wbtm-mobile-filter-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #e8ecf0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+    }
+    .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label i {
+        color: var(--wbtm_color_theme, #e8510f);
+    }
+    .wbtm-mobile-filter-caret {
+        font-size: 12px;
+        color: #666;
+        transition: transform .2s ease;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
+        transform: rotate(180deg);
+    }
+
+    /* Collapsed by default: only the toggle bar shows, so the first bus card
+       appears right below it. Opening reveals the filter panel. */
+    .wbtm_bus_left_filter_holder > *:not(.wbtm-mobile-filter-toggle) {
+        display: none !important;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open > *:not(.wbtm-mobile-filter-toggle) {
+        display: block !important;
+        margin-top: 10px;
+    }
+}
