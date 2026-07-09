@@ -905,10 +905,43 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── Mobile ─────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-    .wbtm_search_result_holder  { flex-direction: column; }
+    .wbtm_search_result_holder  { flex-direction: column; gap: 12px; max-width: 100%; }
     .wbtm_bus_left_filter_holder { flex: none; width: 100%; }
-    .wbtm-card-wrap { flex-direction: column; }
+    .wbtm_bus_list_area { width: 100% !important; padding: 0; }
+    .wbtm-filter-card { position: static; }
+
+    /* Step indicator (round-trip): shrink so both steps fit */
+    .wbtm_bus_tab_wrapper:has(.wtbm_return_route) { padding: 10px 12px; }
+    .wbtm_bus_tab_wrapper .wtbm_start_route,
+    .wbtm_bus_tab_wrapper .wtbm_return_route { font-size: 12px; gap: 6px; }
+    .wbtm_bus_tab_wrapper .wtbm_start_route::before,
+    .wbtm_bus_tab_wrapper .wtbm_return_route::before { width: 22px; height: 22px; font-size: 11px; }
+    .wbtm_bus_tab_wrapper .wbtm-step-connector { flex: 1 1 20px; min-width: 16px; margin: 0 6px; }
+
+    /* Selected-bus summary card stacks */
+    .wbtm_selected_bus_card { flex-wrap: wrap; }
+    .wbtm_selbus_body { flex: 1 1 200px; padding: 12px 14px; }
+    .wbtm_selbus_route { font-size: 16px; }
+    .wbtm_selbus_actions {
+        flex-direction: row;
+        width:          100%;
+        min-width:      0;
+        border-left:    none;
+        border-top:     1px solid #eee;
+        padding:        10px 14px;
+    }
+
+    /* Count + sort header wraps instead of overflowing */
+    .wbtm-list-header { flex-wrap: wrap; gap: 6px; }
+    .wbtm-list-count  { font-size: 14px; }
+    .wbtm-list-sort   { font-size: 13px; }
+
+    /* Bus card: 3 columns become 3 stacked rows */
+    .wbtm-card-wrap { flex-direction: column; min-height: 0; }
+    .wbtm-bus-list  { min-width: 0; }
     .wbtm-card-times {
+        flex:          none;
+        width:         100%;
         border-right:  none;
         border-bottom: 1px solid #eaecf2;
         padding:       14px 16px;
@@ -917,10 +950,29 @@ div#wbtm_date_start_route { height: 50px; }
     }
     .wbtm-time-depart, .wbtm-time-arrive { font-size: 17px; }
     .wbtm-duration-track-wrap { min-width: 40px; }
-    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #eaecf2; }
-    .wbtm-card-price { flex: none; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 16px; background: #fafbfd; }
+    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #eaecf2; padding: 14px 16px; }
+    .wbtm-card-price {
+        flex:            none;
+        width:           100%;
+        flex-direction:  row;
+        align-items:     center;
+        justify-content: space-between;
+        flex-wrap:       wrap;
+        gap:             10px;
+        padding:         12px 16px;
+        background:      #fafbfd;
+    }
+    .wbtm-starting-from { width: 100%; text-align: left; margin-bottom: -6px; }
+    .wbtm-price-value   { font-size: 22px; text-align: left; }
     .wbtm-card-price .wbtm-seat-book { width: auto; margin-top: 0; }
     .wbtm-card-price #get_wbtm_bus_details { width: auto !important; padding: 10px 20px !important; }
+}
+@media (max-width: 480px) {
+    .wbtm-card-times { padding: 12px; }
+    .wbtm-time-depart, .wbtm-time-arrive { font-size: 16px; }
+    .wbtm-city-depart, .wbtm-city-arrive { font-size: 10px; }
+    .wbtm-price-value { font-size: 20px; }
+    .wbtm-card-price #get_wbtm_bus_details { padding: 9px 16px !important; font-size: 13px !important; }
 }
 </style>
 
@@ -953,6 +1005,15 @@ div#wbtm_date_start_route { height: 50px; }
 
     <?php if ($has_left_filter) : ?>
     <div class="wbtm_bus_left_filter_holder">
+        <!-- Mobile-only hamburger toggle: collapses the filter panel so the
+             bus list is visible immediately on small screens. Hidden ≥768px. -->
+        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="false">
+            <span class="wbtm-mobile-filter-toggle-label">
+                <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
+            </span>
+            <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
+        </button>
         <div class="wbtm-filter-card">
 
             <!-- Header -->

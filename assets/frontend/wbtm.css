@@ -1,4 +1,14 @@
 /******************************************************************** Date picker ************************************************/
+/* Mobile: the datepicker below is a fixed 342px wide, which overflows
+   320-360px phone screens — clamp it to the viewport. */
+@media only screen and (max-width: 400px) {
+  #ui-datepicker-div {
+    max-width: calc(100vw - 16px);
+  }
+  #ui-datepicker-div .ui-datepicker-calendar {
+    width: 100%;
+  }
+}
 @media only screen and (min-width: 10px) {
   #ui-datepicker-div {
     width: 342px;
@@ -2930,9 +2940,50 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_registration_area .mpPanel {
   border: none !important;
 }
-@media only screen and (min-width: 10px) {
+/* Desktop-only: widen the seat-plan column slightly. Was previously wrapped
+   in (min-width: 10px), which applied at ALL widths and — because this
+   selector out-specifies the responsive .col_12_800 / .col_12_700 grid
+   classes — locked the seat plan to 38% width on phones, squeezing the seat
+   grid and pushing the summary column off-screen. Scoped to >1000px so the
+   col_5_1000 / col_6_900 / col_12_800 breakpoints work again. */
+@media only screen and (min-width: 1001px) {
   .wbtm_style .wbtm_registration_area .col_4 {
     width: 38%;
+  }
+}
+
+/* ---- Mobile: expanded seat-plan / booking view ---- */
+@media only screen and (max-width: 800px) {
+  /* Stack the seat-plan column and the summary column full-width, whatever
+     grid class combination the templates use. */
+  .wbtm_style .wbtm_registration_area .mpRow.justifyBetween > [class*="col_"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+  /* Wide seat layouts (many columns / double-decker) scroll inside their
+     card instead of overflowing the viewport. */
+  .wbtm_style .wbtm_seat_plan_area {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wbtm_style .wbtm_seat_plan_area table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* The white card around the seat grid: trim side padding so the seat
+     grid gets the full phone width. */
+  .wbtm_style .wbtm_registration_area ._dLayout_xs {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  /* Legend sits inside the same card — keep it inside the card width and
+     let items wrap instead of forcing a wider box. */
+  .wbtm_style .wbtm_seat_legend {
+    margin-left: 0;
+    margin-right: 0;
+    gap: 10px 14px;
   }
 }
 

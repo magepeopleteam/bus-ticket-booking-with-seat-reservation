@@ -109,6 +109,15 @@ if (sizeof($bus_ids) > 0) {
             $width = 'calc( 100% - 180px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
+                <!-- Mobile-only hamburger toggle: collapses the filter panel so the
+                     bus list is visible immediately on small screens. Hidden ≥768px. -->
+                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="false">
+                    <span class="wbtm-mobile-filter-toggle-label">
+                        <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                        <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    </span>
+                    <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
+                </button>
                 <?php
                 echo wp_kses_post( WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show ) );
                 ?>

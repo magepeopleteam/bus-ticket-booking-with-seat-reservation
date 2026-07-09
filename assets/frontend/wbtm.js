@@ -25,6 +25,12 @@ jQuery(document).ready(function ($) {
         toggleBtn.toggleClass('rotate');
     });
 
-
+    // Mobile: collapsible "Filters" panel on search results.
+    // Delegated handler so it also works for AJAX-injected result markup.
+    $(document).on('click', '.wbtm-mobile-filter-toggle', function () {
+        var holder = $(this).closest('.wbtm_bus_left_filter_holder');
+        holder.toggleClass('wbtm-mobile-open');
+        $(this).attr('aria-expanded', holder.hasClass('wbtm-mobile-open') ? 'true' : 'false');
+    });
 
 });

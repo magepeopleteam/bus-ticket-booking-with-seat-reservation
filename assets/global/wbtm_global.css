@@ -33,19 +33,24 @@ body.wbtm-plugin-page .has-global-padding > h1 {
   padding-left:  0 !important;
   padding-right: 0 !important;
 }
-/* Also align the post content block itself on plugin pages */
-body.wbtm-plugin-page .wp-block-post-content,
-body.wbtm-plugin-page .entry-content {
-  max-width: 1340px !important;
-  margin-left:  auto !important;
-  margin-right: auto !important;
+/* Also align the post content block itself on plugin pages.
+   Desktop only: on mobile we must NOT touch margins — .entry-content is often
+   `alignfull`, and the theme centers it with symmetric NEGATIVE side margins.
+   Overriding only one side (our !important vs the theme's) leaves asymmetric
+   margins (0 left / -30px right), pushing the whole page 30px right and
+   creating a horizontal scrollbar on phones. */
+@media only screen and (min-width: 769px) {
+  body.wbtm-plugin-page .wp-block-post-content,
+  body.wbtm-plugin-page .entry-content {
+    max-width: 1340px !important;
+    margin-left:  auto !important;
+    margin-right: auto !important;
+  }
 }
 @media only screen and (max-width: 768px) {
   body.wbtm-plugin-page .wp-block-post-title,
   body.wbtm-plugin-page .entry-title,
-  body.wbtm-plugin-page h1.page-title,
-  body.wbtm-plugin-page .wp-block-post-content,
-  body.wbtm-plugin-page .entry-content {
+  body.wbtm-plugin-page h1.page-title {
     width: 100% !important;
     max-width: 100% !important;
     margin-left:  0 !important;
