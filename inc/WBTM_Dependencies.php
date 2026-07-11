@@ -60,6 +60,10 @@
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Single_Bus_Details.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woocommerce.php';
 				//==================//
+				// Coupon engine (per-bus discounts, restrictions, usage limits).
+				require_once WBTM_PLUGIN_DIR . '/inc/coupon/WBTM_Coupon_Module.php';
+				new WBTM_Coupon_Module();
+				//==================//
 				require_once WBTM_PLUGIN_DIR . '/inc/class-functions.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_My_Account_Dashboard.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Installer.php';
@@ -170,6 +174,16 @@
 					'place_departure_first' => esc_html__( 'Please place departure bus first.', 'bus-ticket-booking-with-seat-reservation' ),
 					'fill_required_fields'  => esc_html__( 'Please fill all required fields', 'bus-ticket-booking-with-seat-reservation' ),
 					'failed_add_ticket'     => esc_html__( 'Failed to add ticket', 'bus-ticket-booking-with-seat-reservation' ),
+					// Generic transport-error message shown to the customer when an AJAX
+					// request fails (network drop, 500, expired nonce). Previously every
+					// error: callback only did console.log, so the user saw a blank result.
+					'error_bus_list'        => esc_html__( 'Could not load buses. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_dropping_point'  => esc_html__( 'Could not load destinations. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_journey_date'    => esc_html__( 'Could not load journey dates. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_return_date'     => esc_html__( 'Could not load return dates. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_seat_plan'       => esc_html__( 'Could not load the seat plan. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_return_buses'    => esc_html__( 'Could not load return buses. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'error_generic'         => esc_html__( 'Something went wrong. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
 				) );
 				do_action('wbtm_add_frontend_script');
 			}

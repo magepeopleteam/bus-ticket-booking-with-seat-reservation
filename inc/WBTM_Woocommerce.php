@@ -867,7 +867,9 @@
 					$base_price = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
 					if (sizeof($ticket_infos) > 0) {
 						foreach ($ticket_infos as $ticket_info) {
-							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_info['ticket_name']);
+							$ticket_info = is_array($ticket_info) ? $ticket_info : [];
+							$ticket_name_label = $ticket_info['ticket_name'] ?? WBTM_Functions::get_ticket_name($ticket_info['ticket_type'] ?? '', $post_id);
+							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_name_label);
 							if (array_key_exists('seat_name', $ticket_info)) {
 								$seat_name = $ticket_info['seat_name'];
 								if (array_key_exists('dd', $ticket_info) && $ticket_info['dd']) {
@@ -875,8 +877,10 @@
 								}
 								$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_name);
 							}
-							$item->add_meta_data(WBTM_Translations::text_qty(), $ticket_info['ticket_qty']);
-							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $ticket_info["ticket_price"] . ' x ' . $ticket_info['ticket_qty'] . ' ) = ' . wc_price($ticket_info['ticket_price'] * $ticket_info['ticket_qty']));
+							$t_qty   = isset($ticket_info['ticket_qty']) ? $ticket_info['ticket_qty'] : 1;
+							$t_price = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
+							$item->add_meta_data(WBTM_Translations::text_qty(), $t_qty);
+							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $t_price . ' x ' . $t_qty . ' ) = ' . wc_price($t_price * $t_qty));
 						}
 						$item->add_meta_data(WBTM_Translations::text_total_qty(), $ticket_qty);
 						$item->add_meta_data(WBTM_Translations::text_ticket_sub_total(), wc_price($base_price));
@@ -1044,7 +1048,10 @@
 					if (sizeof($ticket_infos) > 0) {
 						$count = 0;
 						foreach ($ticket_infos as $ticket_info) {
-							$qty = $ticket_info['ticket_qty'];
+							$ticket_info = is_array($ticket_info) ? $ticket_info : [];
+							$t_name = isset($ticket_info['ticket_name']) ? $ticket_info['ticket_name'] : WBTM_Functions::get_ticket_name(isset($ticket_info['ticket_type']) ? $ticket_info['ticket_type'] : '', $post_id);
+							$t_seat = array_key_exists('seat_name', $ticket_info) && $ticket_info['seat_name'] ? $ticket_info['seat_name'] : $t_name;
+							$qty = isset($ticket_info['ticket_qty']) ? (int) $ticket_info['ticket_qty'] : 1;
 							for ($key = 0; $key < $qty; $key++) {
 								$data['wbtm_order_id'] = $order_id;
 								$data['wbtm_bus_id'] = $post_id;
@@ -1060,8 +1067,8 @@
 								$data['wbtm_booking_date'] = $now_full;
 								$data['wbtm_pickup_point'] = $pickup_point;
 								$data['wbtm_drop_off_point'] = $drop_off_point;
-								$data['wbtm_ticket'] = $ticket_info['ticket_name'];
-								$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
+								$data['wbtm_ticket'] = $t_name;
+								$data['wbtm_seat'] = $t_seat;
 								$is_full_bus_booking = isset($ticket_info['ticket_type']) && $ticket_info['ticket_type'] === 'full_bus';
 								// Enhanced by Shahnur Alam - 2025-10-08
 								// Save cabin information for cabin/coach bookings to display in passenger list
@@ -1073,13 +1080,13 @@
 										'price_multiplier' => $ticket_info['price_multiplier'] ?? 1.0
 									];
 									// Store cabin-specific seat identifier to prevent cross-cabin conflicts
-									$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . $ticket_info['seat_name'];
+									$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . (isset($ticket_info['seat_name']) ? $ticket_info['seat_name'] : $t_seat);
 								} else {
 									// Fixed by Shahnur — full bus booking rows without seat_name warning 2026-05-07 12:55 PM
 									// Legacy seat storage for non-cabin bookings
-									$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) && $ticket_info['seat_name'] ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
+									$data['wbtm_seat'] = $t_seat;
 								}
-								$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
+								$data['wbtm_bus_fare'] = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
 								if ($is_full_bus_booking) {
 									$data['wbtm_booking_mode'] = 'full_bus';
 									$data['wbtm_full_bus_base_price'] = wc_get_order_item_meta($item_id, '_wbtm_full_bus_base_price', true);
@@ -1434,9 +1441,14 @@
 						$qty = isset($_POST['wbtm_seat_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_qty'])) : [];
 						$passenger_type = isset($_POST['wbtm_passenger_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_passenger_type'])) : [];
 						$submitted_prices = isset($_POST['wbtm_seat_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_price'])) : [];
-						$count = count($passenger_type);
-						if ($count > 0 && is_array($qty)) {
-							for ($i = 0; $i < count($passenger_type); $i++) {
+						$total_types = count($passenger_type);
+						// Use a monotonic $count instead of the loop index $i: when a
+						// passenger type has qty 0 it is skipped, so indexing by $i left
+						// gaps in $ticket_info (e.g. key 0 missing) that later triggered
+						// "Undefined array key ticket_name" when the order was created.
+						$count = 0;
+						if ($total_types > 0 && is_array($qty)) {
+							for ($i = 0; $i < $total_types; $i++) {
 								if (isset($qty[$i]) && $qty[$i] > 0) {
 									$type = $passenger_type[$i] ?? '';
 									$ticket_name = WBTM_Functions::get_ticket_name($type, $post_id);
@@ -1445,18 +1457,37 @@
 									if ($seat_price === false || $seat_price < 0) {
 										continue;
 									}
-									$ticket_info[$i]['ticket_name'] = $ticket_name;
-									$ticket_info[$i]['seat_name'] = $ticket_name;
-									$ticket_info[$i]['ticket_type'] = $type;
-									$ticket_info[$i]['ticket_price'] = floatval($seat_price);
-									$ticket_info[$i]['ticket_qty'] = intval($qty[$i]);
-									$ticket_info[$i]['date'] = $start_date ?? '';
+									$ticket_info[$count]['ticket_name'] = $ticket_name;
+									$ticket_info[$count]['seat_name'] = $ticket_name;
+									$ticket_info[$count]['ticket_type'] = $type;
+									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
+									$ticket_info[$count]['ticket_qty'] = intval($qty[$i]);
+									$ticket_info[$count]['date'] = $start_date ?? '';
+									$count++;
 								}
 							}
 						}
 					}
 				}
-				return apply_filters('wbtm_cart_ticket_info_data_prepare', $ticket_info, $post_id);
+				$ticket_info = apply_filters('wbtm_cart_ticket_info_data_prepare', $ticket_info, $post_id);
+				// Defensively guarantee every ticket entry has the keys the order
+				// creation code reads unconditionally (ticket_name, ticket_qty,
+				// ticket_price). Filter callbacks or sparse legacy data could otherwise
+				// leave them unset and trigger PHP warnings at checkout.
+				if (is_array($ticket_info)) {
+					$default_name = WBTM_Functions::get_ticket_name('', $post_id);
+					foreach ($ticket_info as $k => $row) {
+						if (!is_array($row)) {
+							unset($ticket_info[$k]);
+							continue;
+						}
+						$ticket_info[$k]['ticket_name']  = $row['ticket_name']  ?? $default_name;
+						$ticket_info[$k]['ticket_qty']   = $row['ticket_qty']   ?? 1;
+						$ticket_info[$k]['ticket_price'] = $row['ticket_price'] ?? 0;
+					}
+					$ticket_info = array_values($ticket_info);
+				}
+				return $ticket_info;
 			}
 			public static function get_cart_extra_service_info($post_id): array {
 				$extra_service = array();

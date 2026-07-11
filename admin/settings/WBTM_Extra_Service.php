@@ -40,7 +40,6 @@
                                         <table>
                                             <thead>
                                             <tr>
-                                                <!--										<th>--><?php ////esc_html_e('Service Icon', 'bus-ticket-booking-with-seat-reservation'); ?><!--</th>-->
                                                 <th><?php esc_html_e('Service Name', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
@@ -71,7 +70,6 @@
 			}
 			public function extra_service_item($field = array()) {
 				$field = $field ?: array();
-				//$service_icon = array_key_exists('option_icon', $field) ? $field['option_icon'] : '';
 				$service_name = array_key_exists('option_name', $field) ? $field['option_name'] : '';
 				$service_price = array_key_exists('option_price', $field) ? $field['option_price'] : '';
 				$service_qty = array_key_exists('option_qty', $field) ? $field['option_qty'] : '';
