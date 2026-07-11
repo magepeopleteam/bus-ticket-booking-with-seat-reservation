@@ -60,6 +60,10 @@
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Single_Bus_Details.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woocommerce.php';
 				//==================//
+				// Coupon engine (per-bus discounts, restrictions, usage limits).
+				require_once WBTM_PLUGIN_DIR . '/inc/coupon/WBTM_Coupon_Module.php';
+				new WBTM_Coupon_Module();
+				//==================//
 				require_once WBTM_PLUGIN_DIR . '/inc/class-functions.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_My_Account_Dashboard.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Installer.php';
