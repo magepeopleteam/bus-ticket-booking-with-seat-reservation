@@ -593,15 +593,24 @@ div#wbtm_date_start_route { height: 50px; }
     align-items: center;
     gap:        5px;
 }
-.wbtm-sort-label {
-    font-weight: 600;
-    color:       #222;
-    cursor:      pointer;
-    display:     flex;
-    align-items: center;
-    gap:         4px;
+.wbtm-sort-label-text { font-weight: 600; color: #222; }
+.wbtm-sort-select {
+    padding: 6px 28px 6px 10px;
+    border: 1px solid #d8dcea;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    color: #222;
+    cursor: pointer;
+    line-height: 1.4;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
 }
-.wbtm-sort-label i { font-size: 11px; }
+.wbtm-sort-select:focus { outline: 2px solid #2563eb; outline-offset: 1px; }
 
 /* ── Bus card ───────────────────────────────────────────────────── */
 /* Must NOT use !important on display — jQuery fadeOut() sets display:none inline
@@ -631,6 +640,24 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-bus-list.in_cart {
     border-color: #16a34a;
     box-shadow:   0 0 0 2px rgba(22,163,74,.15);
+}
+.wbtm-bus-list.wbtm-sold-out { opacity: .6; }
+.wbtm-soldout-badge {
+    display: inline-block;
+    background: #dc2626;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: .3px;
+    margin-bottom: 8px;
+}
+.wbtm-seat-book button.wbtm-disabled,
+.wbtm-seat-book button:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+    pointer-events: none;
 }
 
 /* 3-column card row */
@@ -1146,11 +1173,16 @@ div#wbtm_date_start_route { height: 50px; }
                 <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
             </div>
             <div class="wbtm-list-sort">
-                <?php esc_html_e('Sort by', 'bus-ticket-booking-with-seat-reservation'); ?>:
-                <span class="wbtm-sort-label">
-                    <?php esc_html_e('Earliest First', 'bus-ticket-booking-with-seat-reservation'); ?>
-                    <i class="fas fa-chevron-down"></i>
-                </span>
+                <label for="wbtm_sort_select" class="wbtm-sort-label-text">
+                    <?php esc_html_e('Sort by', 'bus-ticket-booking-with-seat-reservation'); ?>:
+                </label>
+                <select id="wbtm_sort_select" class="formControl wbtm-sort-select">
+                    <option value="earliest" selected><?php esc_html_e('Earliest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="latest"><?php esc_html_e('Latest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="price_asc"><?php esc_html_e('Price: Low to High', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="price_desc"><?php esc_html_e('Price: High to Low', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="duration_asc"><?php esc_html_e('Shortest Duration', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                </select>
             </div>
         </div>
 
@@ -1190,13 +1222,19 @@ div#wbtm_date_start_route { height: 50px; }
                 $selected_ids     = get_post_meta($bus_id, 'wbbm_bus_features_term_id', true);
                 $feature_list     = WBTM_Functions::getSelectedFeatures($all_features, (array)$selected_ids);
             }
+
+            // Sold-out detection: a bus with no seats left still appears in the
+            // list but is flagged so the card can be greyed + its Book button disabled.
+            $is_sold_out = (int) ($all_info['available_seat'] ?? 0) <= 0;
         ?>
 
-            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr($wbtm_bus_search); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? ' in_cart' : ''); ?>"
+            <div class="wbtm-bus-list wtbm_bus_counter <?php echo esc_attr($wbtm_bus_search); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? ' in_cart' : ''); echo esc_attr($is_sold_out ? ' wbtm-sold-out' : ''); ?>"
                  id="wbtm_bust_list"
                  data-bus-id="<?php echo esc_attr($bus_id); ?>"
                  data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled($bus_id) ? '1' : '0'; ?>"
-                 data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
+                 data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>"
+                 data-price="<?php echo esc_attr((float) $price); ?>"
+                 data-duration="<?php echo esc_attr((int) $dur_s); ?>">
 
                 <!-- Hidden fields required by JS/cart -->
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr(get_the_title($bus_id)); ?>" />
@@ -1278,16 +1316,23 @@ div#wbtm_date_start_route { height: 50px; }
 
                     <!-- RIGHT: price + Book Seat button -->
                     <div class="wbtm-card-price">
-                        <div class="wbtm-starting-from">
-                            <?php esc_html_e('Starting from', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </div>
-                        <div class="wbtm-price-value">
-                            <?php echo wp_kses_post(wc_price($price)); ?>
-                        </div>
+                        <?php if ($is_sold_out) : ?>
+                            <div class="wbtm-soldout-badge">
+                                <?php esc_html_e('Sold Out', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </div>
+                        <?php else : ?>
+                            <div class="wbtm-starting-from">
+                                <?php esc_html_e('Starting from', 'bus-ticket-booking-with-seat-reservation'); ?>
+                            </div>
+                            <div class="wbtm-price-value">
+                                <?php echo wp_kses_post(wc_price($price)); ?>
+                            </div>
+                        <?php endif; ?>
                         <div class="wbtm-seat-book <?php echo esc_html($btn_show); ?>">
                             <?php echo WBTM_Functions::full_bus_booking_button($bus_id, $all_info, $date, $wbtm_price_leg); ?>
                             <button type="button"
-                                    class="_themeButton_xs"
+                                    class="_themeButton_xs<?php echo esc_attr($is_sold_out ? ' wbtm-disabled' : ''); ?>"
+                                <?php echo $is_sold_out ? 'disabled' : ''; ?>
                                     id="get_wbtm_bus_details"
                                     data-bus_id="<?php echo esc_attr($bus_id); ?>"
                                     data-price-leg="<?php echo esc_attr($wbtm_price_leg); ?>"

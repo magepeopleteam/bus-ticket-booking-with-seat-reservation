@@ -62,21 +62,9 @@
                             <li data-tabs-target="#wbtm_bus_feature_settings">
                                 <span class="mi mi-features"></span><?php esc_html_e('Bus Feature', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
-							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
-                                <li data-tabs-target="#mp_pp_deposits_type">
-                                    <span class=""></span>&nbsp;&nbsp;<?php esc_html_e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </li>
-							<?php } ?>
                         </ul>
                         <div class="tabsContent tab-content">
 							<?php do_action('wbtm_add_settings_tab_content', $post_id); ?>
-							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
-                                <div class="tabsItem" data-tabs="#mp_pp_deposits_type">
-                                    <h5><?php esc_html_e('Partial Payment Settings : ', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-                                    <div class="divider"></div>
-									<?php //do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
-                                </div>
-							<?php } ?>
                         </div>
                     </div>
                 </div>
@@ -88,8 +76,6 @@
 					'wbtm_bus_category' => esc_html__('Please add your bus category', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_reservation' => esc_html__('Turn on or off, bus seat registration', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_reservation_tips' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
-					'show_boarding_time' => esc_html__('By default Boarding Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
-					'show_dropping_time' => esc_html__('By default Dropping Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_seat_type_conf' => esc_html__('Please select your bus seat type . Default Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_get_total_seat' => esc_html__('Please Type your bus total seat.', 'bus-ticket-booking-with-seat-reservation'),
 					'show_operational_on_day' => esc_html__('Select Particular Date or Repeated Date.', 'bus-ticket-booking-with-seat-reservation'),
@@ -135,10 +121,6 @@
 					update_post_meta($post_id, 'wbtm_bus_no', $bus_no);
 					update_post_meta($post_id, 'wbtm_bus_category', $bus_category);
 					update_post_meta($post_id, 'wbtm_registration', $wbtm_registration);
-					$bus_info_title   = isset($_POST['wbtm_bus_info_title']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bus_info_title'])) : '';
-					$bus_info_content = isset($_POST['wbtm_bus_info_content']) ? sanitize_textarea_field(wp_unslash($_POST['wbtm_bus_info_content'])) : '';
-					update_post_meta($post_id, 'wbtm_bus_info_title', $bus_info_title);
-					update_post_meta($post_id, 'wbtm_bus_info_content', $bus_info_content);
 					// Check if the term exists, if not create it
 					$term = term_exists($bus_category, 'wbtm_bus_cat');
 					if (!$term) {
@@ -196,21 +178,8 @@
 					}
 					update_post_meta($post_id, 'wbtm_off_dates', $_off_dates);
 					//**********************//
-					$off_schedules = [];
-					$from_dates = isset($_POST['wbtm_from_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_from_date'])) : [];
-					$to_dates = isset($_POST['wbtm_to_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_to_date'])) : [];
-					if (sizeof($from_dates) > 0) {
-						foreach ($from_dates as $key => $from_date) {
-							if ($from_date && $to_dates[$key]) {
-								$off_schedules[] = [
-									'from_date' => $from_date,
-									'to_date' => $to_dates[$key],
-								];
-							}
-						}
-					}
-					update_post_meta($post_id, 'wbtm_offday_schedule', $off_schedules);
-					//***********************************//
+					// Off-day date ranges (live mechanism; the deprecated
+					// 'wbtm_offday_schedule' duplicate that nothing fed/ read was removed).
 					$from_dates = isset($_POST['wbtm_from_off_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_from_off_date'])) : [];
 					$to_dates = isset($_POST['wbtm_to_off_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_to_off_date'])) : [];
 					$off_date_ranges = [];
@@ -701,7 +670,6 @@
 					$extra_count = count($extra_names);
 					for ($i = 0; $i < $extra_count; $i++) {
 						if ($extra_names[$i] && $extra_price[$i] && $extra_qty[$i] > 0) {
-							//$new_extra_service[$i]['option_icon'] = $extra_icon[$i] ?? '';
 							$new_extra_service[$i]['option_name'] = $extra_names[$i];
 							$new_extra_service[$i]['option_price'] = $extra_price[$i];
 							$new_extra_service[$i]['option_qty'] = $extra_qty[$i];
@@ -720,7 +688,6 @@
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}
 				do_action('wbtm_settings_save', $post_id);
-				//do_action('wcpp_partial_settings_saved', $post_id);
 			}
 		}
 		new WBTM_Settings();

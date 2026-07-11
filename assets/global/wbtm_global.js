@@ -109,6 +109,8 @@
 				},
 				error: function (response) {
 					wbtm_set_search_button_state(parent, false);
+					wbtm_loaderRemove(parent.find(".wbtm_search_area"));
+					wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_bus_list : 'Could not load buses. Please try again.');
 					console.log(response);
 				},
 			});
@@ -167,6 +169,8 @@
 						});
 					},
 					error: function (response) {
+						wbtm_loaderRemove(parent);
+						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_dropping_point : 'Could not load destinations. Please try again.');
 						console.log(response);
 					}
 				});
@@ -223,6 +227,8 @@
 				wbtm_loaderRemove(target);
 			},
 			error: function (response) {
+				wbtm_loaderRemove(target);
+				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_journey_date : 'Could not load journey dates. Please try again.');
 				console.log(response);
 			}
 		});
@@ -255,6 +261,8 @@
 					wbtm_loaderRemove(target);
 				},
 				error: function (response) {
+					wbtm_loaderRemove(target);
+					wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_return_date : 'Could not load return dates. Please try again.');
 					console.log(response);
 				}
 			});
@@ -338,6 +346,8 @@
 						// }, 100);
 					},
 					error: function (response) {
+						wbtm_loaderRemove(parent);
+						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_seat_plan : 'Could not load the seat plan. Please try again.');
 						console.log(response);
 					},
 				});
@@ -1042,6 +1052,7 @@
 			},
 			error: function (response) {
 				wbtm_loaderRemove(listContainer);
+				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_return_buses : 'Could not load return buses. Please try again.');
 				console.log(response);
 			}
 		});
@@ -1215,6 +1226,7 @@
 			},
 			error: function () {
 				wbtm_set_loading_button_state(this_btn, false);
+				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_generic : 'Something went wrong. Please try again.');
 			},
 			complete: function () {
 				if (burPosition === 'start_bus') {
@@ -1287,7 +1299,7 @@
 				}
 			},
 			error: function () {
-				alert('Failed to add ticket');
+				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket');
 			},
 			complete: function () {
 				this_btn.prop('disabled', false).html(defaultHtml);
@@ -1310,5 +1322,94 @@
 	});
 
 
+}(jQuery));
+
+//====================================================================//
+// Sort bus results client-side by the chosen attribute.
+// Each .wbtm-bus-list card already carries data-bp-time, data-price and
+// data-duration. The immediately following .wbtm_bus_details sibling is the
+// seat-plan container, so it must move with its card. Works inside both the
+// main result holder and the return-bus container.
+(function ($) {
+	"use strict";
+
+	function wbtm_sort_bus_results(holder, mode) {
+		if (!holder || !holder.length) {
+			return;
+		}
+		var cards = holder.children('.wbtm-bus-list');
+		if (cards.length < 2) {
+			return;
+		}
+		var pairs = [];
+		cards.each(function () {
+			var card = $(this);
+			var details = card.next('.wbtm_bus_details');
+			pairs.push({ card: card, details: details.length ? details : null });
+		});
+		pairs.sort(function (a, b) {
+			var av, bv;
+			switch (mode) {
+				case 'latest':
+					av = $(a.card).data('bp-time');
+					bv = $(b.card).data('bp-time');
+					return wbtm_sort_cmp_text(bv, av); // descending
+				case 'price_asc':
+					av = parseFloat($(a.card).data('price')) || 0;
+					bv = parseFloat($(b.card).data('price')) || 0;
+					return av - bv;
+				case 'price_desc':
+					av = parseFloat($(a.card).data('price')) || 0;
+					bv = parseFloat($(b.card).data('price')) || 0;
+					return bv - av;
+				case 'duration_asc':
+					av = parseInt($(a.card).data('duration'), 10) || 0;
+					bv = parseInt($(b.card).data('duration'), 10) || 0;
+					return av - bv;
+				case 'earliest':
+				default:
+					av = $(a.card).data('bp-time');
+					bv = $(b.card).data('bp-time');
+					return wbtm_sort_cmp_text(av, bv); // ascending
+			}
+		});
+		$.each(pairs, function (i, pair) {
+			holder.append(pair.card);
+			if (pair.details) {
+				holder.append(pair.details);
+			}
+		});
+	}
+
+	// Compare bp-time strings ("YYYY-MM-DD HH:MM[:SS]"). Parse locally rather
+	// than reusing wbtm_parse_bus_datetime, which is scoped to a different IIFE.
+	function wbtm_sort_cmp_text(a, b) {
+		var ta = wbtm_sort_parse_ts(a);
+		var tb = wbtm_sort_parse_ts(b);
+		if (ta === null && tb === null) return 0;
+		if (ta === null) return 1;
+		if (tb === null) return -1;
+		return ta - tb;
+	}
+	function wbtm_sort_parse_ts(value) {
+		if (!value) return null;
+		var s = String(value).trim().replace(' ', 'T');
+		if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) s += ':00';
+		var t = Date.parse(s);
+		return Number.isNaN(t) ? null : t;
+	}
+
+	$(document).on('change', '#wbtm_sort_select', function () {
+		var mode = $(this).val();
+		// Main result list
+		wbtm_sort_bus_results($('.wbtm_search_result_holder').first(), mode);
+		// Return-bus container, if present
+		wbtm_sort_bus_results($('#wbtm_return_container .wbtm_return_bus_lists_container').first(), mode);
+	});
+
+	// Default the select to "earliest" to match the server-side usort order.
+	$(document).ready(function () {
+		$('#wbtm_sort_select').val('earliest');
+	});
 }(jQuery));
 
