@@ -480,6 +480,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'layout'   => 'toggles',
 							'field_names' => ['show_filter_departure_time', 'show_filter_bus_type', 'show_filter_bus_operator', 'show_filter_boarding_point', 'show_sort_bar'],
 						],
+						'unpriced' => [
+							'icon'     => 'fas fa-ban',
+							'label'    => esc_html__('Unpriced Routes', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['unpriced_route_action', 'unpriced_route_message'],
+						],
 					],
 					'wbtm_passenger_pdf_settings' => [
 						'checklist' => [
@@ -1558,6 +1563,25 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'type'    => 'toggle',
 							'icon'    => 'fas fa-arrow-down-short-wide',
 							'default' => 'show',
+						),
+						array(
+							'name'    => 'unpriced_route_action',
+							'label'   => esc_html__( 'Routes with no price', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'What to do when a customer selects a route segment that has no fare configured. This prevents such segments from being booked at 0.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'message',
+							'options' => array(
+								'message' => esc_html__( 'Show a "not available" message', 'bus-ticket-booking-with-seat-reservation' ),
+								'hide'    => esc_html__( 'Hide the route from the results', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'        => 'unpriced_route_message',
+							'label'       => esc_html__( 'Not-available message', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Shown in place of the price/Book button when a route has no fare (only used when the option above is set to show a message).', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'text',
+							'default'     => esc_html__( 'This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation' ),
+							'placeholder' => esc_html__( 'This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation' ),
 						),
 					) ),
 				);

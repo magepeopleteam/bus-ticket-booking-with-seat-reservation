@@ -1368,6 +1368,20 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				return false;
 			}
+			/**
+			 * Whether an origin -> destination segment has a fare configured.
+			 *
+			 * get_seat_price() returns boolean false when no price row exists for the
+			 * OD pair (a configured free route returns numeric 0, not false), so this
+			 * cleanly distinguishes "not priced / not bookable" from "priced at 0".
+			 * Reuses get_seat_price(), so it honors the same return-leg / same-bus-return
+			 * fallbacks used everywhere else.
+			 *
+			 * @return bool True if bookable (a fare exists), false if unpriced.
+			 */
+			public static function route_price_configured( $post_id, $start_route, $end_route, $price_leg = 'outbound' ) {
+				return self::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg ) !== false;
+			}
 			public static function get_ex_service_price( $post_id, $service_name ) {
 				$show_extra_service = WBTM_Global_Function::get_post_info( $post_id, 'show_extra_service', 'no' );
 				if ( $show_extra_service == 'yes' ) {

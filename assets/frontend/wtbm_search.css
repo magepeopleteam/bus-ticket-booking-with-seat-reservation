@@ -486,3 +486,24 @@
         margin-top: 10px;
     }
 }
+
+/* Route with no fare configured (Frontend Display -> Unpriced Routes).
+   Shown in place of the price/Book button in the flix search layout. */
+.wbtm-route-unavailable {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #b45309;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.wbtm-route-unavailable i {
+    font-size: 15px;
+    flex-shrink: 0;
+}

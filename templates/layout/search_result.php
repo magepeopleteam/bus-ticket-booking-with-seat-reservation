@@ -43,6 +43,14 @@ if (sizeof($bus_ids) > 0) {
     $all_boarding_routes = [];
    
     $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
+
+    // Unpriced-route handling (Global Settings -> Frontend Display -> Unpriced Routes).
+    // A segment with no fare configured returns price === false from get_bus_all_info().
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_unpriced_action = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'unpriced_route_action', 'message');
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_unpriced_msg = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'unpriced_route_message', __('This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation'));
+
     foreach ($bus_ids as $bus_id) {
         $wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair(
             $bus_id,
@@ -50,14 +58,22 @@ if (sizeof($bus_ids) > 0) {
             $end_route,
             ( $journey_type === 'return_journey' ) ? 'return' : 'outbound'
         );
-       
+
         $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
-           
+
+            // No fare configured for this exact origin -> destination segment.
+            $route_priced = ($all_info['price'] !== false);
+            if (!$route_priced && $wbtm_unpriced_action === 'hide') {
+                // Hidden entirely: not listed, not filtered, not counted.
+                continue;
+            }
+
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
                 'price_leg' => $wbtm_price_leg,
+                'route_priced' => $route_priced,
             ];
            
             $bus_titles[] = get_the_title($bus_id);
@@ -902,6 +918,25 @@ div#wbtm_date_start_route { height: 50px; }
     font-size: inherit !important;
     color:     inherit !important;
 }
+/* Route with no fare configured: shown in place of the price + Book button. */
+.wbtm-route-unavailable {
+    display:       flex;
+    align-items:   center;
+    gap:           8px;
+    text-align:    left;
+    background:    #fff7ed;
+    border:        1px solid #fed7aa;
+    color:         #b45309;
+    border-radius: 10px;
+    padding:       10px 12px;
+    font-size:     13px;
+    font-weight:   600;
+    line-height:   1.4;
+}
+.wbtm-route-unavailable i {
+    font-size:  15px;
+    flex-shrink: 0;
+}
 .wbtm-card-price .wbtm-seat-book {
     width:      100%;
     margin-top: 2px;
@@ -1208,6 +1243,7 @@ div#wbtm_date_start_route { height: 50px; }
             $popup_tabs   = WBTM_Functions::single_bus_details_tabs_filtered($bus_id);
             $all_info     = $bus['all_info'];
             $wbtm_price_leg = $bus['price_leg'] ?? $wbtm_price_leg;
+            $route_priced = $bus['route_priced'] ?? true;
             $bus_count++;
             $price        = $all_info['price'];
             $bp_time      = $all_info['bp_time'];
@@ -1333,7 +1369,12 @@ div#wbtm_date_start_route { height: 50px; }
 
                     <!-- RIGHT: price + Book Seat button -->
                     <div class="wbtm-card-price">
-                        <?php if ($is_sold_out) : ?>
+                        <?php if (!$route_priced) : ?>
+                            <div class="wbtm-route-unavailable">
+                                <i class="fas fa-circle-info" aria-hidden="true"></i>
+                                <span><?php echo esc_html($wbtm_unpriced_msg); ?></span>
+                            </div>
+                        <?php elseif ($is_sold_out) : ?>
                             <div class="wbtm-soldout-badge">
                                 <?php esc_html_e('Sold Out', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </div>
@@ -1345,6 +1386,7 @@ div#wbtm_date_start_route { height: 50px; }
                                 <?php echo wp_kses_post(wc_price($price)); ?>
                             </div>
                         <?php endif; ?>
+                        <?php if ($route_priced) : ?>
                         <div class="wbtm-seat-book <?php echo esc_html($btn_show); ?>">
                             <?php echo WBTM_Functions::full_bus_booking_button($bus_id, $all_info, $date, $wbtm_price_leg); ?>
                             <button type="button"
@@ -1362,6 +1404,7 @@ div#wbtm_date_start_route { height: 50px; }
                                 </span>
                             </button>
                         </div>
+                        <?php endif; ?>
                     </div>
 
                 </div><!-- /.wbtm-card-wrap -->
