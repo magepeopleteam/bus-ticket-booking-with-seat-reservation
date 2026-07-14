@@ -224,6 +224,17 @@
 					return true;
 				}
 				$booking_mode = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
+				// Reject segments with no fare configured so they can't be booked at 0,
+				// even via a crafted request that bypasses the hidden UI. Full-bus pricing
+				// is validated separately, so this guard applies to seat bookings only.
+				if ( $booking_mode === 'seat'
+					&& ! WBTM_Functions::route_price_configured( $post_id, $bp, $dp, 'outbound' )
+					&& ! WBTM_Functions::route_price_configured( $post_id, $bp, $dp, 'return' ) ) {
+					return new WP_Error(
+						'wbtm_route_unpriced',
+						esc_html__( 'This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation' )
+					);
+				}
 				if ( $booking_mode === 'full_bus' ) {
 					$total_seat = class_exists( 'WBTM_Seat_Configuration' ) ? WBTM_Seat_Configuration::count_actual_seats( $post_id ) : (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 					$sold_seat  = WBTM_Query::query_total_booked( $post_id, $bp, $dp, $date );

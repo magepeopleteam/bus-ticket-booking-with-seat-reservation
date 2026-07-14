@@ -351,6 +351,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'subtitle'   => esc_html__('Date & editor settings', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_global_settings',
 					],
+					'frontend' => [
+						'title'      => esc_html__('Frontend Display', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-eye',
+						'subtitle'   => esc_html__('Search result filter visibility', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_frontend_display_settings',
+					],
 					'deposit' => [
 						'title'      => esc_html__('Deposit / Partial Pay', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-wallet',
@@ -461,6 +467,25 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'field_names' => ['promo_enabled', 'promo_title', 'promo_desc', 'promo_button_text', 'promo_button_link'],
 						],
 					],
+					'wbtm_frontend_display_settings' => [
+						'panel' => [
+							'icon'     => 'fas fa-sliders-h',
+							'label'    => esc_html__('Filter Sidebar', 'bus-ticket-booking-with-seat-reservation'),
+							'layout'   => 'toggles',
+							'field_names' => ['show_filter_panel'],
+						],
+						'filters' => [
+							'icon'     => 'fas fa-list-check',
+							'label'    => esc_html__('Individual Filters', 'bus-ticket-booking-with-seat-reservation'),
+							'layout'   => 'toggles',
+							'field_names' => ['show_filter_departure_time', 'show_filter_bus_type', 'show_filter_bus_operator', 'show_filter_boarding_point', 'show_sort_bar'],
+						],
+						'unpriced' => [
+							'icon'     => 'fas fa-ban',
+							'label'    => esc_html__('Unpriced Routes', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['unpriced_route_action', 'unpriced_route_message'],
+						],
+					],
 					'wbtm_passenger_pdf_settings' => [
 						'checklist' => [
 							'icon'   => 'fas fa-list-check',
@@ -510,6 +535,38 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								<div class="bm-gs__checklist-grid">
 									<?php foreach ($checklist_fields as $field): 
 										$this->render_checklist_item($section_id, $field);
+									endforeach; ?>
+								</div>
+							</div>
+							<?php
+							continue;
+						}
+
+						$is_toggles = (isset($card['layout']) && $card['layout'] === 'toggles');
+
+						if ($is_toggles) {
+							// Toggle-switch layout: modern on/off switches in a compact grid.
+							$toggle_fields = [];
+							foreach ($card['field_names'] as $fname) {
+								foreach ($fields as $field) {
+									if (isset($field['name']) && $field['name'] === $fname) {
+										$toggle_fields[] = $field;
+										$assigned[]      = $fname;
+										break;
+									}
+								}
+							}
+							if (empty($toggle_fields)) continue;
+							$grid_mod = (count($toggle_fields) === 1) ? ' bm-gs__toggle-grid--single' : '';
+							?>
+							<div class="bm-gs__section-card">
+								<div class="bm-gs__section-head">
+									<span class="bm-gs__section-icon <?php echo esc_attr($card['icon']); ?>"></span>
+									<span class="bm-gs__section-head-label"><?php echo esc_html($card['label']); ?></span>
+								</div>
+								<div class="bm-gs__toggle-grid<?php echo esc_attr($grid_mod); ?>">
+									<?php foreach ($toggle_fields as $field):
+										$this->render_toggle_item($section_id, $field);
 									endforeach; ?>
 								</div>
 							</div>
@@ -661,6 +718,42 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				<?php
 			}
 
+			/**
+			 * Renders a single modern on/off toggle switch (Show / Hide).
+			 *
+			 * Uses a hidden input + checkbox with the SAME name so a value is
+			 * always submitted: unchecked posts 'hide' (hidden field), checked
+			 * posts 'show' (checkbox wins as the later same-name value in $_POST).
+			 * This avoids the classic WordPress bug where an unchecked checkbox is
+			 * absent from POST and silently reverts to its saved/default value.
+			 */
+			private function render_toggle_item($section_id, $field) {
+				$label = isset($field['label']) ? $field['label'] : '';
+				$desc  = isset($field['desc']) ? $field['desc'] : '';
+				$name  = isset($field['name']) ? $field['name'] : '';
+				$icon  = isset($field['icon']) ? $field['icon'] : 'fas fa-toggle-on';
+				$value = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : 'show');
+				$id    = $section_id . '[' . $name . ']';
+				$id_attr = esc_attr($id);
+				$checked = ($value === 'hide') ? '' : ' checked';
+				?>
+				<div class="bm-gs__toggle-item">
+					<span class="bm-gs__toggle-icon"><i class="<?php echo esc_attr($icon); ?>" aria-hidden="true"></i></span>
+					<div class="bm-gs__toggle-text">
+						<div class="bm-gs__toggle-label"><?php echo esc_html($label); ?></div>
+						<?php if ($desc): ?>
+							<div class="bm-gs__toggle-hint"><?php echo wp_kses_post($desc); ?></div>
+						<?php endif; ?>
+					</div>
+					<label class="bm-gs__switch">
+						<input type="hidden" name="<?php echo $id_attr; ?>" value="hide">
+						<input type="checkbox" name="<?php echo $id_attr; ?>" value="show"<?php echo $checked; ?>>
+						<span class="bm-gs__switch-track"><span class="bm-gs__switch-thumb"></span></span>
+					</label>
+				</div>
+				<?php
+			}
+
 			private function render_form_control($section_id, $field, $value) {
 				$type  = isset($field['type']) ? $field['type'] : 'text';
 				$name  = isset($field['name']) ? $field['name'] : '';
@@ -782,6 +875,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						echo '</label>';
 						break;
 
+					case 'toggle':
+						// Show / Hide switch backed by a hidden field so a value is always saved.
+						$checked = ($value === 'hide') ? '' : ' checked';
+						echo '<label class="bm-gs__switch">';
+						echo '<input type="hidden" name="' . $id_attr . '" value="hide">';
+						echo '<input type="checkbox" name="' . $id_attr . '" value="show"' . $checked . '>';
+						echo '<span class="bm-gs__switch-track"><span class="bm-gs__switch-thumb"></span></span>';
+						echo '</label>';
+						break;
+
 					case 'icon':
 						// Wrap in .wbtm_style so the icon-picker popup & button CSS applies.
 						// WBTM_Select_Icon_image outputs classes (_mpBtn_xs, dNone, fdColumn etc.)
@@ -893,6 +996,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					array(
 						'id'    => 'wbtm_promo_settings',
 						'title' => esc_html__( 'Promo Banner', 'bus-ticket-booking-with-seat-reservation' )
+					),
+					array(
+						'id'    => 'wbtm_frontend_display_settings',
+						'title' => esc_html__( 'Frontend Display', 'bus-ticket-booking-with-seat-reservation' )
 					),
 					array(
 						'id'    => 'wbtm_license_settings',
@@ -1406,6 +1513,75 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'type'        => 'url',
 							'default'     => '',
 							'placeholder' => 'https://example.com/membership',
+						),
+					) ),
+					'wbtm_frontend_display_settings' => apply_filters( 'wbtm_filter_frontend_display_settings', array(
+						array(
+							'name'    => 'show_filter_panel',
+							'label'   => esc_html__( 'Filter Sidebar', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Master switch. Turn off to remove the entire Filters sidebar from the search results — the bus list then spans the full width.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-sliders-h',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'show_filter_departure_time',
+							'label'   => esc_html__( 'Departure Time', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'The Morning / Afternoon / Evening / Night filter. Turn off if you do not offer time-of-day choices.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-clock',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'show_filter_bus_type',
+							'label'   => esc_html__( 'Bus Type', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'The AC / Non-AC style bus-type filter.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-bus',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'show_filter_bus_operator',
+							'label'   => esc_html__( 'Bus Operator', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Filter by operator / bus name.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-building',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'show_filter_boarding_point',
+							'label'   => esc_html__( 'Boarding Point', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Filter by boarding location.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-map-marker-alt',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'show_sort_bar',
+							'label'   => esc_html__( 'Sort Bar', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'The "Sort by: Earliest First" dropdown above the bus list.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'toggle',
+							'icon'    => 'fas fa-arrow-down-short-wide',
+							'default' => 'show',
+						),
+						array(
+							'name'    => 'unpriced_route_action',
+							'label'   => esc_html__( 'Routes with no price', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'What to do when a customer selects a route segment that has no fare configured. This prevents such segments from being booked at 0.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'message',
+							'options' => array(
+								'message' => esc_html__( 'Show a "not available" message', 'bus-ticket-booking-with-seat-reservation' ),
+								'hide'    => esc_html__( 'Hide the route from the results', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'        => 'unpriced_route_message',
+							'label'       => esc_html__( 'Not-available message', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Shown in place of the price/Book button when a route has no fare (only used when the option above is set to show a message).', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'text',
+							'default'     => esc_html__( 'This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation' ),
+							'placeholder' => esc_html__( 'This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation' ),
 						),
 					) ),
 				);

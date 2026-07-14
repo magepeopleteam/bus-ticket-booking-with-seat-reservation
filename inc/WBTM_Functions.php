@@ -1368,6 +1368,20 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				return false;
 			}
+			/**
+			 * Whether an origin -> destination segment has a fare configured.
+			 *
+			 * get_seat_price() returns boolean false when no price row exists for the
+			 * OD pair (a configured free route returns numeric 0, not false), so this
+			 * cleanly distinguishes "not priced / not bookable" from "priced at 0".
+			 * Reuses get_seat_price(), so it honors the same return-leg / same-bus-return
+			 * fallbacks used everywhere else.
+			 *
+			 * @return bool True if bookable (a fare exists), false if unpriced.
+			 */
+			public static function route_price_configured( $post_id, $start_route, $end_route, $price_leg = 'outbound' ) {
+				return self::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg ) !== false;
+			}
 			public static function get_ex_service_price( $post_id, $service_name ) {
 				$show_extra_service = WBTM_Global_Function::get_post_info( $post_id, 'show_extra_service', 'no' );
 				if ( $show_extra_service == 'yes' ) {
@@ -1761,6 +1775,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 
             public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box, $left_filter_show ): void {
+                // Frontend Display settings (Global Settings → Frontend Display).
+                // Default 'show' keeps existing behavior; only an explicit 'hide' turns a filter off.
+                $fd_type     = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_bus_type', 'show' ) !== 'hide';
+                $fd_operator = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_bus_operator', 'show' ) !== 'hide';
+                $fd_boarding = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_boarding_point', 'show' ) !== 'hide';
                 ?>
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_left_filter_title_holder">
@@ -1772,7 +1791,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                         </div>
                     </div>
                     <div class="wbtm_left_filter_element_holder">
-                        <?php if( $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
+                        <?php if( $fd_type && $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
                         <div class="wbtm_bus_filter_items">
                                 <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_type()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                                 <?php
@@ -1806,7 +1825,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                         <?php }
 						
 						
-                        if( $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
+                        if( $fd_operator && $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
                         <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_operator()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php
@@ -1822,7 +1841,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                         </div>
                         <?php }
 						
-                        if( $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
+                        if( $fd_boarding && $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
                         ?>
                         <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_boarding_point()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
