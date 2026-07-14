@@ -236,51 +236,52 @@
                         background: #dc3545;
                         border-radius: 2px;
                     }
-                    /* Off day / off date / non-operating day — clearly marked as disabled.
-                       jQuery UI fades disabled cells to opacity .35, which hides the styling,
-                       so force full opacity and give the number a struck-through grey chip. */
-                    td.wbtm-cal-off,
-                    td.wbtm-cal-off.ui-state-disabled {
-                        opacity: 1 !important;
-                    }
-                    td.wbtm-cal-off a,
-                    td.wbtm-cal-off span,
-                    td.wbtm-cal-off span.ui-state-default {
+                    /* Off day / off date / non-operating day — clearly visible, struck-through
+                       grey chip. Uses #ui-datepicker-div to match the theme rule that fades
+                       disabled dates to near-white (#e2e8f0); inline + later in source order,
+                       so it wins on equal specificity and is never stale (no file caching). */
+                    #ui-datepicker-div td.wbtm-cal-off .ui-state-default,
+                    #ui-datepicker-div td.wbtm-cal-off span.ui-state-default {
+                        color: #6c757d !important;
                         background: #eceef1 !important;
-                        color: #868e96 !important;
-                        border: 1px solid #d6dbe0 !important;
-                        border-radius: 4px;
-                        cursor: not-allowed !important;
+                        border: 1px solid #ced4da !important;
+                        border-radius: 8px !important;
                         text-decoration: line-through !important;
-                        text-decoration-thickness: 2px;
+                        text-decoration-thickness: 2px !important;
+                        text-decoration-color: #adb5bd !important;
+                        cursor: not-allowed !important;
                         opacity: 1 !important;
                     }
                     /* Legend shown inside the calendar popup. */
-                    .wbtm-cal-legend {
-                        display: flex;
+                    /* Legend prefixed with #ui-datepicker-div (it is appended inside the
+                       popup) and given solid dots so they can't be washed out by the theme. */
+                    #ui-datepicker-div .wbtm-cal-legend {
+                        display: flex !important;
                         flex-wrap: wrap;
-                        gap: 10px 14px;
+                        gap: 8px 14px;
                         padding: 8px 10px 4px;
                         border-top: 1px solid #e9ecef;
                         margin-top: 4px;
                         font-size: 11.5px;
-                        color: #666;
+                        color: #555 !important;
+                        background: #fff !important;
                     }
-                    .wbtm-cal-legend-item {
-                        display: inline-flex;
+                    #ui-datepicker-div .wbtm-cal-legend-item {
+                        display: inline-flex !important;
                         align-items: center;
                         gap: 6px;
                     }
-                    .wbtm-cal-legend-box {
-                        display: inline-block;
-                        width: 12px;
-                        height: 12px;
-                        border-radius: 3px;
-                        border: 1px solid transparent;
+                    #ui-datepicker-div .wbtm-cal-legend-box {
+                        display: inline-block !important;
+                        width: 12px !important;
+                        height: 12px !important;
+                        border-radius: 3px !important;
+                        border: 1px solid transparent !important;
+                        flex-shrink: 0;
                     }
-                    .wbtm-cal-legend-box.is-available { background: #e7f5ec; border-color: #37b24d; }
-                    .wbtm-cal-legend-box.is-off       { background: #f1f3f5; border-color: #ced4da; }
-                    .wbtm-cal-legend-box.is-soldout   { background: #dc3545; border-color: #dc3545; }
+                    #ui-datepicker-div .wbtm-cal-legend-box.is-available { background: #2f9e44 !important; border-color: #2f9e44 !important; }
+                    #ui-datepicker-div .wbtm-cal-legend-box.is-off       { background: #ced4da !important; border-color: #adb5bd !important; }
+                    #ui-datepicker-div .wbtm-cal-legend-box.is-soldout   { background: #dc3545 !important; border-color: #dc3545 !important; }
                 </style>
                 <script>
                     jQuery(document).ready(function () {
@@ -327,11 +328,18 @@
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
                             if (jQuery.inArray(dmy, soldoutDates) !== -1) {
                                 return [false, "wbtm-soldout-date", "<?php echo esc_js(__( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' )); ?>"];
-                            } else if (jQuery.inArray(dmy, availableDates) !== -1) {
-                                return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
-                            } else {
-                                return [false, "wbtm-cal-off", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
                             }
+                            if (jQuery.inArray(dmy, availableDates) !== -1) {
+                                return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
+                            }
+                            // Past dates keep the plain faded look; only in-window off days/dates
+                            // get the struck-through "off" chip so they stand out clearly.
+                            var wbtmToday = new Date();
+                            wbtmToday.setHours(0, 0, 0, 0);
+                            if (date < wbtmToday) {
+                                return [false, "", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
+                            }
+                            return [false, "wbtm-cal-off", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
                         }
 						<?php if ( ! empty( $async ) && isset( $async['post_id'], $async['start'], $async['end'] ) ) : ?>
                         // Load sold-out dates as a separate, non-blocking request and re-paint
