@@ -252,6 +252,26 @@
                         cursor: not-allowed !important;
                         opacity: 1 !important;
                     }
+                    /* Available (bookable) date — small green dot under the number, matching
+                       the "Available" legend swatch so bookable days read clearly at a glance. */
+                    #ui-datepicker-div td.wbtm-cal-on a.ui-state-default {
+                        position: relative !important;
+                    }
+                    #ui-datepicker-div td.wbtm-cal-on a.ui-state-default::after {
+                        content: "" !important;
+                        position: absolute !important;
+                        left: 50% !important;
+                        bottom: 3px !important;
+                        transform: translateX(-50%) !important;
+                        width: 5px !important;
+                        height: 5px !important;
+                        border-radius: 50% !important;
+                        background: #2f9e44 !important;
+                    }
+                    /* Keep the dot visible on the selected (dark) day. */
+                    #ui-datepicker-div td.wbtm-cal-on a.ui-state-active::after {
+                        background: #fff !important;
+                    }
                     /* Legend shown inside the calendar popup. */
                     /* Legend prefixed with #ui-datepicker-div (it is appended inside the
                        popup) and given solid dots so they can't be washed out by the theme. */
@@ -330,7 +350,7 @@
                                 return [false, "wbtm-soldout-date", "<?php echo esc_js(__( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' )); ?>"];
                             }
                             if (jQuery.inArray(dmy, availableDates) !== -1) {
-                                return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
+                                return [true, "wbtm-cal-on", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
                             }
                             // Past dates keep the plain faded look; only in-window off days/dates
                             // get the struck-through "off" chip so they stand out clearly.
