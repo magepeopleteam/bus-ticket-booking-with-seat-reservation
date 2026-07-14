@@ -236,15 +236,24 @@
                         background: #dc3545;
                         border-radius: 2px;
                     }
-                    /* Off day / off date / non-operating day: disabled + clearly muted. */
+                    /* Off day / off date / non-operating day — clearly marked as disabled.
+                       jQuery UI fades disabled cells to opacity .35, which hides the styling,
+                       so force full opacity and give the number a struck-through grey chip. */
+                    td.wbtm-cal-off,
+                    td.wbtm-cal-off.ui-state-disabled {
+                        opacity: 1 !important;
+                    }
                     td.wbtm-cal-off a,
+                    td.wbtm-cal-off span,
                     td.wbtm-cal-off span.ui-state-default {
-                        background: #f1f3f5 !important;
-                        color: #adb5bd !important;
-                        border-color: #e9ecef !important;
+                        background: #eceef1 !important;
+                        color: #868e96 !important;
+                        border: 1px solid #d6dbe0 !important;
+                        border-radius: 4px;
                         cursor: not-allowed !important;
-                        text-decoration: line-through;
-                        opacity: 0.9;
+                        text-decoration: line-through !important;
+                        text-decoration-thickness: 2px;
+                        opacity: 1 !important;
                     }
                     /* Legend shown inside the calendar popup. */
                     .wbtm-cal-legend {
