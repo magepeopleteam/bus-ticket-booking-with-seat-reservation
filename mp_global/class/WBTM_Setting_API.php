@@ -193,6 +193,24 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                 </fieldset>
 				<?php
 			}
+			function callback_toggle( $args ) {
+				// Show / Hide switch. A hidden "hide" field guarantees a value is
+				// always posted, so an unchecked toggle reliably saves as 'hide'
+				// instead of silently reverting to the default.
+				$std     = isset( $args['std'] ) ? $args['std'] : 'show';
+				$value   = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $std );
+				$name    = $args['section'] . '[' . $args['id'] . ']';
+				$checked = ( $value === 'hide' ) ? '' : ' checked';
+				?>
+                <fieldset>
+                    <label class="roundSwitchLabel">
+                        <input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="hide"/>
+                        <input type="checkbox" name="<?php echo esc_attr( $name ); ?>" value="show"<?php echo esc_attr( $checked ); ?>>
+                        <span class="roundSwitch"></span>
+                    </label>
+                </fieldset>
+				<?php
+			}
 			function callback_multicheck( $args ) {
 				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';

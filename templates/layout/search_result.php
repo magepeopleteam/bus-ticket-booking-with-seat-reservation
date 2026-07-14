@@ -1010,7 +1010,22 @@ div#wbtm_date_start_route { height: 50px; }
     // booking widget (e.g. the "search from this bus" box on the bus's
     // single page) — there's only ever one bus in that result set, so a
     // filter sidebar is meaningless there; the list area goes full width.
-    $has_left_filter = count($bus_titles) > 0 && empty($post_id);
+    // Frontend Display settings (Global Settings → Frontend Display).
+    // Each defaults to 'show' so existing sites are unaffected until toggled.
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_panel     = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_panel', 'show') !== 'hide';
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_time      = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_departure_time', 'show') !== 'hide';
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_type      = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_bus_type', 'show') !== 'hide';
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_operator  = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_bus_operator', 'show') !== 'hide';
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_boarding  = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_boarding_point', 'show') !== 'hide';
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_fd_sort      = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_sort_bar', 'show') !== 'hide';
+
+    $has_left_filter = count($bus_titles) > 0 && empty($post_id) && $wbtm_fd_panel;
 
     // Always show all 4 departure-time options, regardless of whether the
     // current result set happens to have a bus in that window.
@@ -1052,7 +1067,7 @@ div#wbtm_date_start_route { height: 50px; }
             </div>
 
             <!-- Departure Time -->
-            <?php if (!empty($wbtm_time_buckets)) : ?>
+            <?php if ($wbtm_fd_time && !empty($wbtm_time_buckets)) : ?>
             <div class="wbtm-filter-section">
                 <div class="wbtm-filter-section-label"><?php esc_html_e('Departure Time', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                 <?php foreach ($wbtm_time_buckets as $k => $opt) : ?>
@@ -1069,7 +1084,7 @@ div#wbtm_date_start_route { height: 50px; }
 
             <!-- Bus Type -->
             <?php $unique_bus_types = array_unique(array_filter($bus_types)); ?>
-            <?php if (!empty($unique_bus_types)) : ?>
+            <?php if ($wbtm_fd_type && !empty($unique_bus_types)) : ?>
             <div class="wbtm-filter-section">
                 <div class="wbtm-filter-section-label"><?php esc_html_e('Bus Type', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                 <?php foreach ($unique_bus_types as $type) : ?>
@@ -1082,7 +1097,7 @@ div#wbtm_date_start_route { height: 50px; }
             <?php endif; ?>
 
             <!-- Bus Operator -->
-            <?php if (!empty($bus_titles)) : ?>
+            <?php if ($wbtm_fd_operator && !empty($bus_titles)) : ?>
             <div class="wbtm-filter-section">
                 <div class="wbtm-filter-section-label"><?php esc_html_e('Bus Operator', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                 <?php foreach (array_unique($bus_titles) as $title) : ?>
@@ -1095,7 +1110,7 @@ div#wbtm_date_start_route { height: 50px; }
             <?php endif; ?>
 
             <!-- Boarding Point -->
-            <?php if (!empty($all_boarding_routes)) : ?>
+            <?php if ($wbtm_fd_boarding && !empty($all_boarding_routes)) : ?>
             <div class="wbtm-filter-section">
                 <div class="wbtm-filter-section-label"><?php esc_html_e('Boarding Point', 'bus-ticket-booking-with-seat-reservation'); ?></div>
                 <?php foreach (array_unique($all_boarding_routes) as $route) : if (!$route) continue; ?>
@@ -1172,6 +1187,7 @@ div#wbtm_date_start_route { height: 50px; }
                 <?php echo esc_html__('buses available for', 'bus-ticket-booking-with-seat-reservation'); ?>
                 <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
             </div>
+            <?php if ($wbtm_fd_sort) : ?>
             <div class="wbtm-list-sort">
                 <label for="wbtm_sort_select" class="wbtm-sort-label-text">
                     <?php esc_html_e('Sort by', 'bus-ticket-booking-with-seat-reservation'); ?>:
@@ -1184,6 +1200,7 @@ div#wbtm_date_start_route { height: 50px; }
                     <option value="duration_asc"><?php esc_html_e('Shortest Duration', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                 </select>
             </div>
+            <?php endif; ?>
         </div>
 
         <?php foreach ($bus_data as $key => $bus) :

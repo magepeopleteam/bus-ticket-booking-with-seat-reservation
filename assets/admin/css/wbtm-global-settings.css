@@ -572,6 +572,82 @@
   .bm-gs__checklist-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ── TOGGLE SWITCHES (Frontend Display) ── */
+.bm-gs__toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 14px;
+}
+.bm-gs__toggle-grid--single { grid-template-columns: 1fr; }
+.bm-gs__toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #fafafa;
+  border: 1px solid #eef1f5;
+  border-radius: 10px;
+  transition: border-color .15s, background .15s;
+}
+.bm-gs__toggle-item:hover { background: #fff; border-color: #e2e8f0; }
+.bm-gs__toggle-icon {
+  font-size: 15px;
+  color: #6366f1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99, 102, 241, .1);
+  flex-shrink: 0;
+}
+/* Nested <i> so Font Awesome's own .fas{display:inline-block} can't override
+   the flex centering above; keep the glyph perfectly centered in the badge. */
+.bm-gs__toggle-icon > i {
+  display: block;
+  line-height: 1;
+}
+.bm-gs__toggle-text { flex: 1; min-width: 0; }
+.bm-gs__toggle-label { font-size: 13.5px; font-weight: 600; color: #334155; }
+.bm-gs__toggle-hint { font-size: 11px; color: #94a3b8; line-height: 1.45; margin-top: 3px; }
+
+/* iOS-style switch */
+.bm-gs__switch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.bm-gs__switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.bm-gs__switch-track {
+  display: block;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background .2s ease;
+  position: relative;
+}
+.bm-gs__switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+  transition: transform .2s ease;
+}
+.bm-gs__switch input:checked + .bm-gs__switch-track { background: #6366f1; }
+.bm-gs__switch input:checked + .bm-gs__switch-track .bm-gs__switch-thumb { transform: translateX(18px); }
+.bm-gs__switch input:focus-visible + .bm-gs__switch-track { box-shadow: 0 0 0 3px rgba(99, 102, 241, .25); }
+@media (max-width: 600px) {
+  .bm-gs__toggle-grid { grid-template-columns: 1fr; }
+}
+
 
 /* ══════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
