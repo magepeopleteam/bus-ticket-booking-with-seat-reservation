@@ -1225,9 +1225,47 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						$off_dates[] = $processed_date;
 					}
 				}
-				$off_dates     = array_unique( $off_dates );
 				$off_days      = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
 				$off_day_array = $off_days ? array_map( 'strtolower', array_map( 'trim', explode( ',', $off_days ) ) ) : [];
+
+				// Site-wide off days / off dates (Global Settings -> Bus Settings) apply to
+				// EVERY bus, so a day/date the whole operation is closed is never bookable —
+				// regardless of individual bus config. This flows into both the search and
+				// the calendar (get_all_dates -> availableDates -> beforeShowDay).
+				$global_off_days = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'global_off_days', [] );
+				if ( is_array( $global_off_days ) ) {
+					foreach ( $global_off_days as $g_day ) {
+						$off_day_array[] = strtolower( trim( (string) $g_day ) );
+					}
+				}
+				$global_off_dates_raw = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'global_off_dates', '' );
+				if ( is_string( $global_off_dates_raw ) && trim( $global_off_dates_raw ) !== '' ) {
+					foreach ( preg_split( '/[\s,]+/', trim( $global_off_dates_raw ) ) as $token ) {
+						$token = trim( $token );
+						if ( $token === '' ) {
+							continue;
+						}
+						if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $token ) ) {
+							$off_dates[] = $token;                       // exact date
+						} elseif ( preg_match( '/^\d{1,2}-\d{1,2}$/', $token ) ) {
+							$processed = gmdate( 'Y-m-d', strtotime( $year . '-' . $token ) ); // recurring MM-DD
+							if ( $processed && strtotime( $processed ) < strtotime( $now ) ) {
+								$processed = gmdate( 'Y-m-d', strtotime( ( $year + 1 ) . '-' . $token ) );
+							}
+							if ( $processed ) {
+								$off_dates[] = $processed;
+							}
+						} else {
+							$ts = strtotime( $token );
+							if ( $ts ) {
+								$off_dates[] = gmdate( 'Y-m-d', $ts );
+							}
+						}
+					}
+				}
+
+				$off_dates     = array_unique( $off_dates );
+				$off_day_array = array_values( array_unique( array_filter( $off_day_array ) ) );
 				return [ $off_dates, $off_day_array ];
 			}
 			public static function get_post_date( $post_id ) {

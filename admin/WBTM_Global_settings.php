@@ -438,6 +438,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'label'    => esc_html__('Checkout & cart', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['active_redirect_page', 'search_page_redirect', 'checkout_redirect_after_booking', 'cart_empty_after_search', 'auto_complete_paid_orders', 'make_processing_completed'],
 						],
+						'offdays' => [
+							'icon'     => 'fas fa-calendar-times',
+							'label'    => esc_html__('Global off days / dates', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['global_off_days', 'global_off_dates'],
+						],
 					],
 					'wbtm_global_settings' => [
 						'general' => [
@@ -1203,7 +1208,31 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                                 'no'  => esc_html__( 'No', 'bus-ticket-booking-with-seat-reservation' )
                             )
                         ),
-						
+						array(
+							'name'    => 'global_off_days',
+							'label'   => esc_html__( 'Global Off Days', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Weekdays the whole operation is closed. These apply to EVERY bus, so the selected days are removed from search and disabled in the date picker regardless of individual bus settings.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'multicheck',
+							'default' => array(),
+							'options' => array(
+								'monday'    => esc_html__( 'Monday', 'bus-ticket-booking-with-seat-reservation' ),
+								'tuesday'   => esc_html__( 'Tuesday', 'bus-ticket-booking-with-seat-reservation' ),
+								'wednesday' => esc_html__( 'Wednesday', 'bus-ticket-booking-with-seat-reservation' ),
+								'thursday'  => esc_html__( 'Thursday', 'bus-ticket-booking-with-seat-reservation' ),
+								'friday'    => esc_html__( 'Friday', 'bus-ticket-booking-with-seat-reservation' ),
+								'saturday'  => esc_html__( 'Saturday', 'bus-ticket-booking-with-seat-reservation' ),
+								'sunday'    => esc_html__( 'Sunday', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'        => 'global_off_dates',
+							'label'       => esc_html__( 'Global Off Dates', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Specific closed dates for the whole operation (e.g. public holidays), applied to EVERY bus. One per line or comma-separated. Use YYYY-MM-DD for a single date (2026-12-25) or MM-DD for a date that repeats every year (12-25).', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'textarea',
+							'default'     => '',
+							'placeholder' => "2026-12-25\n01-01",
+						),
+
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'wbtm_filter_global_settings', array(
 						array(
