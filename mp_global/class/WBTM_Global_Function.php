@@ -236,6 +236,42 @@
                         background: #dc3545;
                         border-radius: 2px;
                     }
+                    /* Off day / off date / non-operating day: disabled + clearly muted. */
+                    td.wbtm-cal-off a,
+                    td.wbtm-cal-off span.ui-state-default {
+                        background: #f1f3f5 !important;
+                        color: #adb5bd !important;
+                        border-color: #e9ecef !important;
+                        cursor: not-allowed !important;
+                        text-decoration: line-through;
+                        opacity: 0.9;
+                    }
+                    /* Legend shown inside the calendar popup. */
+                    .wbtm-cal-legend {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px 14px;
+                        padding: 8px 10px 4px;
+                        border-top: 1px solid #e9ecef;
+                        margin-top: 4px;
+                        font-size: 11.5px;
+                        color: #666;
+                    }
+                    .wbtm-cal-legend-item {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    .wbtm-cal-legend-box {
+                        display: inline-block;
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 3px;
+                        border: 1px solid transparent;
+                    }
+                    .wbtm-cal-legend-box.is-available { background: #e7f5ec; border-color: #37b24d; }
+                    .wbtm-cal-legend-box.is-off       { background: #f1f3f5; border-color: #ced4da; }
+                    .wbtm-cal-legend-box.is-soldout   { background: #dc3545; border-color: #dc3545; }
                 </style>
                 <script>
                     jQuery(document).ready(function () {
@@ -244,6 +280,25 @@
                         // Mutable: starts with whatever was rendered inline (usually empty) and is
                         // replaced when the async sold-out "chunk" returns.
                         var soldoutDates = [<?php echo wp_kses_post(implode(',', $soldout_date_arr)); ?>];
+
+                        // Legend shown inside the calendar popup so customers understand why
+                        // some dates are greyed out (off days/dates are disabled, not selectable).
+                        var wbtmInst = null;
+                        var wbtmLegendHtml = '<div class="wbtm-cal-legend">'
+                            + '<span class="wbtm-cal-legend-item"><span class="wbtm-cal-legend-box is-available"></span><?php echo esc_js( __( 'Available', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span>'
+                            + '<span class="wbtm-cal-legend-item"><span class="wbtm-cal-legend-box is-off"></span><?php echo esc_js( __( 'Unavailable / Off', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span>'
+<?php if ( ! empty( $async ) ) : ?>
+                            + '<span class="wbtm-cal-legend-item"><span class="wbtm-cal-legend-box is-soldout"></span><?php echo esc_js( __( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span>'
+<?php endif; ?>
+                            + '</div>';
+                        // jQuery UI rebuilds the popup on open / month change / refresh, wiping any
+                        // appended node, so (re)add the legend after each render.
+                        function wbtmEnsureLegend(inst) {
+                            var dp = inst && inst.dpDiv;
+                            if (dp && dp.length && !dp.children('.wbtm-cal-legend').length) {
+                                dp.append(wbtmLegendHtml);
+                            }
+                        }
                         wbtmPicker.datepicker({
                             dateFormat: wbtm_date_format,
                             minDate: new Date(<?php echo esc_attr($start_year); ?>, <?php echo esc_attr($start_month); ?>, <?php echo esc_attr($start_day); ?>),
@@ -252,6 +307,8 @@
                             changeMonth: true,
                             changeYear: true,
                             beforeShowDay: WorkingDates,
+                            beforeShow: function (input, inst) { wbtmInst = inst; setTimeout(function () { wbtmEnsureLegend(inst); }, 0); },
+                            onChangeMonthYear: function (year, month, inst) { setTimeout(function () { wbtmEnsureLegend(inst); }, 0); },
                             onSelect: function (dateString, data) {
                                 let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
                                 jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
@@ -264,7 +321,7 @@
                             } else if (jQuery.inArray(dmy, availableDates) !== -1) {
                                 return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
                             } else {
-                                return [false, "", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
+                                return [false, "wbtm-cal-off", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
                             }
                         }
 						<?php if ( ! empty( $async ) && isset( $async['post_id'], $async['start'], $async['end'] ) ) : ?>
@@ -283,6 +340,7 @@
                                 soldoutDates = res.data.soldout;
                                 if (wbtmPicker.hasClass('hasDatepicker')) {
                                     wbtmPicker.datepicker('refresh');
+                                    if (wbtmInst) { setTimeout(function () { wbtmEnsureLegend(wbtmInst); }, 0); }
                                 }
                             }
                         });
