@@ -146,6 +146,28 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						.bm-gs__field-row.wbtm-hidden { display: none !important; }
 						.wbtm_add_icon_image_area .wbtm_icon_remove,
 						.wbtm_add_icon_image_area .wbtm_image_remove { cursor: pointer; z-index: 2; position: relative; }
+						/* Off-date repeater (date_list field) */
+						.bm-gs__datelist { width: 100%; max-width: 460px; }
+						.bm-gs__datelist-rows { display: flex; flex-direction: column; gap: 8px; }
+						.bm-gs__datelist-row { display: flex; align-items: center; gap: 8px; }
+						.bm-gs__datelist-row .bm-gs__datelist-input {
+							flex: 1; min-width: 0; max-width: none;
+						}
+						.bm-gs__datelist-remove {
+							flex: 0 0 auto; width: 34px; height: 34px; line-height: 1;
+							border: 1px solid #fecaca; background: #fef2f2; color: #dc2626;
+							border-radius: 8px; font-size: 18px; cursor: pointer;
+							display: inline-flex; align-items: center; justify-content: center;
+							transition: background .15s, border-color .15s;
+						}
+						.bm-gs__datelist-remove:hover { background: #fee2e2; border-color: #fca5a5; }
+						.bm-gs__datelist-add {
+							margin-top: 10px; display: inline-flex; align-items: center; gap: 7px;
+							background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe;
+							border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600;
+							cursor: pointer; transition: background .15s, border-color .15s;
+						}
+						.bm-gs__datelist-add:hover { background: #e0e7ff; border-color: #a5b4fc; }
 					</style>
 					<script>
 						window.bmGs = window.bmGs || {};
@@ -159,6 +181,19 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								e.preventDefault();
 								var $f = $('.bm-gs__tab-panel.bm-gs--active').find('form').first();
 								if ($f.length) { HTMLFormElement.prototype.submit.call($f[0]); }
+							});
+							// Off-date repeater (date_list field): add / remove date rows
+							$(document).on('click', '.bm-gs__datelist-add', function(){
+								var $wrap = $(this).closest('.bm-gs__datelist');
+								var $row = $wrap.find('.bm-gs__datelist-row').first().clone();
+								$row.find('input').val('');
+								$wrap.find('.bm-gs__datelist-rows').append($row);
+							});
+							$(document).on('click', '.bm-gs__datelist-remove', function(){
+								var $wrap = $(this).closest('.bm-gs__datelist');
+								var $rows = $wrap.find('.bm-gs__datelist-row');
+								if ($rows.length > 1) { $(this).closest('.bm-gs__datelist-row').remove(); }
+								else { $rows.find('input').val(''); }
 							});
 							// Icon / image remove — instant hide + show add buttons
 							$(document).on('click', '.wbtm_add_icon_image_area .wbtm_icon_remove', function(e){
@@ -817,6 +852,36 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						echo '<textarea class="bm-gs__textarea ' . esc_attr($class) . '" name="' . $id_attr . '" placeholder="' . esc_attr($placeholder) . '" rows="4">' . esc_textarea($value) . '</textarea>';
 						break;
 
+					case 'date_list':
+						// Repeater of native date pickers (one Y-m-d per row) + Add/Remove,
+						// mirroring the bus editor's "Operational Off Dates List".
+						$dates = [];
+						if ( is_array( $value ) ) {
+							$dates = $value;
+						} elseif ( is_string( $value ) && trim( $value ) !== '' ) {
+							$dates = preg_split( '/[\s,]+/', trim( $value ) );
+						}
+						$dates = array_values( array_filter( array_map( 'trim', $dates ) ) );
+						if ( empty( $dates ) ) {
+							$dates = [ '' ]; // always show one empty row
+						}
+						echo '<div class="bm-gs__datelist">';
+						echo '<div class="bm-gs__datelist-rows">';
+						foreach ( $dates as $d ) {
+							$ymd = '';
+							if ( $d ) {
+								$ymd = preg_match( '/^\d{4}-\d{2}-\d{2}$/', $d ) ? $d : gmdate( 'Y-m-d', strtotime( $d ) );
+							}
+							echo '<div class="bm-gs__datelist-row">';
+							echo '<input type="date" class="bm-gs__input bm-gs__datelist-input" name="' . $id_attr . '[]" value="' . esc_attr( $ymd ) . '">';
+							echo '<button type="button" class="bm-gs__datelist-remove" aria-label="' . esc_attr__( 'Remove date', 'bus-ticket-booking-with-seat-reservation' ) . '">&times;</button>';
+							echo '</div>';
+						}
+						echo '</div>';
+						echo '<button type="button" class="bm-gs__datelist-add"><span class="fas fa-plus"></span> ' . esc_html__( 'Add New Off Date', 'bus-ticket-booking-with-seat-reservation' ) . '</button>';
+						echo '</div>';
+						break;
+
 					case 'color':
 						// Standard WP color picker on a single text input. wpColorPicker()
 						// builds its own swatch + "Select Color" control on init, so we must
@@ -1225,12 +1290,24 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							),
 						),
 						array(
-							'name'        => 'global_off_dates',
-							'label'       => esc_html__( 'Global Off Dates', 'bus-ticket-booking-with-seat-reservation' ),
-							'desc'        => esc_html__( 'Specific closed dates for the whole operation (e.g. public holidays), applied to EVERY bus. One per line or comma-separated. Use YYYY-MM-DD for a single date (2026-12-25) or MM-DD for a date that repeats every year (12-25).', 'bus-ticket-booking-with-seat-reservation' ),
-							'type'        => 'textarea',
-							'default'     => '',
-							'placeholder' => "2026-12-25\n01-01",
+							'name'             => 'global_off_dates',
+							'label'            => esc_html__( 'Global Off Dates', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'             => esc_html__( 'Specific closed dates for the whole operation (e.g. public holidays), applied to EVERY bus. Pick a date and use "Add New Off Date" for more.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'             => 'date_list',
+							'default'          => array(),
+							'sanitize_callback' => function ( $dates ) {
+								if ( ! is_array( $dates ) ) {
+									return array();
+								}
+								$out = array();
+								foreach ( $dates as $d ) {
+									$d = sanitize_text_field( $d );
+									if ( $d !== '' && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $d ) ) {
+										$out[] = $d;
+									}
+								}
+								return array_values( array_unique( $out ) );
+							},
 						),
 
 					) ),

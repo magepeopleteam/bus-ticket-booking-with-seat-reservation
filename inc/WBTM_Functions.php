@@ -1238,10 +1238,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						$off_day_array[] = strtolower( trim( (string) $g_day ) );
 					}
 				}
-				$global_off_dates_raw = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'global_off_dates', '' );
-				if ( is_string( $global_off_dates_raw ) && trim( $global_off_dates_raw ) !== '' ) {
-					foreach ( preg_split( '/[\s,]+/', trim( $global_off_dates_raw ) ) as $token ) {
-						$token = trim( $token );
+				$global_off_dates_raw = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'global_off_dates', array() );
+				$global_off_tokens    = array();
+				if ( is_array( $global_off_dates_raw ) ) {
+					$global_off_tokens = $global_off_dates_raw;                        // date_list repeater
+				} elseif ( is_string( $global_off_dates_raw ) && trim( $global_off_dates_raw ) !== '' ) {
+					$global_off_tokens = preg_split( '/[\s,]+/', trim( $global_off_dates_raw ) ); // legacy textarea
+				}
+				if ( ! empty( $global_off_tokens ) ) {
+					foreach ( $global_off_tokens as $token ) {
+						$token = trim( (string) $token );
 						if ( $token === '' ) {
 							continue;
 						}
