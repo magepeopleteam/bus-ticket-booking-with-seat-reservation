@@ -10,12 +10,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * WBTM_Global_Function::format_price()'s WC-optional wrapper; defining this
  * only when missing keeps them from fataling instead of patching every call
  * site individually. Matches format_price()'s own WC-inactive fallback.
+ *
+ * Deferred to plugins_loaded (rather than declared at this file's own parse
+ * time) because active plugins' main files are require()'d in the order
+ * they appear in the 'active_plugins' option, not alphabetically — if this
+ * plugin's turn came before WooCommerce's, function_exists('wc_price') would
+ * still be false here even with WooCommerce active, we'd declare our stub
+ * first, and WooCommerce's own unguarded wc_price() declaration would then
+ * fatal with "Cannot redeclare". Every active plugin's main file has already
+ * been require()'d by the time plugins_loaded fires, so checking there is
+ * load-order-independent.
  */
-if ( ! function_exists( 'wc_price' ) ) {
-	function wc_price( $price, $args = array() ) {
-		return number_format( (float) $price, 2 );
+add_action( 'plugins_loaded', function () {
+	if ( ! function_exists( 'wc_price' ) ) {
+		function wc_price( $price, $args = array() ) {
+			return number_format( (float) $price, 2 );
+		}
 	}
-}
+} );
 
 /**
  * Booking-record helpers that have no real WooCommerce dependency: seat/trip

@@ -278,19 +278,32 @@
 						customWarn: <?php echo wp_json_encode( __( 'Custom Payment mode is selected, but no gateway (PayPal, Stripe, or Offline) is enabled yet. Customers won\'t be able to complete a booking until you enable one below.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>
 					};
 
+					// window.wbtmToast is the plugin's shared global toast helper (see
+					// assets/admin/js/wbtm-toast.js, loaded on every plugin admin screen
+					// via WBTM_Global_File_Load::admin_enqueue()) — falls back to the old
+					// inline status text if it's somehow unavailable, so this never breaks.
+					function notify(message, type) {
+						if (window.wbtmToast) {
+							window.wbtmToast[type](message);
+						} else {
+							$wrap.find('.wbtm-bm-status').show().text(message)
+								.css('color', type === 'success' ? '#0a7c2f' : '#d63638');
+						}
+					}
+
 					$wrap.on('click', '.wbtm-bm-card', function(){
 						var $card = $(this), mode = $card.data('mode');
 						if ($card.hasClass('is-selected')) { return; }
 
 						$wrap.find('.wbtm-bm-card').removeClass('is-selected');
 						$card.addClass('is-selected').find('input[type=radio]').prop('checked', true);
-						var $status = $wrap.find('.wbtm-bm-status').show().text(i18n.saving).css('color','#6b7280');
+						var $status = $wrap.find('.wbtm-bm-status').text(i18n.saving);
 
 						$.post(ajaxurl, { action:'wbtm_save_booking_mode', nonce:nonce, mode:mode })
 							.done(function(res){
 								if (res && res.success) {
-									$status.text(i18n.saved).css('color','#0a7c2f');
-									setTimeout(function(){ $status.fadeOut(400, function(){ $(this).text('').show(); }); }, 1800);
+									$status.text('');
+									notify(i18n.saved, 'success');
 
 									// Refresh the "Active" badge on the sub-tab bar.
 									$('.wbtm-pay-subtab-badge').hide();
@@ -305,12 +318,14 @@
 									if (res.data && res.data.has_gateway === false) {
 										var msg = (mode === 'woocommerce') ? i18n.wcWarn : i18n.customWarn;
 										$slot.append('<div class="wbtm-bm-gateway-warning"><span class="dashicons dashicons-warning"></span><p>'+msg+'</p></div>');
+										notify(msg, 'warning');
 									}
 								} else {
-									$status.show().text((res && res.data) ? res.data : i18n.error).css('color','#d63638');
+									$status.text('');
+									notify((res && res.data) ? res.data : i18n.error, 'error');
 								}
 							})
-							.fail(function(){ $status.show().text(i18n.error).css('color','#d63638'); });
+							.fail(function(){ $status.text(''); notify(i18n.error, 'error'); });
 					});
 				});
 				</script>
