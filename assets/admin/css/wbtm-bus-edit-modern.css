@@ -116,6 +116,17 @@ body.wbtm-bme-active #wbtm_modern_meta_box_panel > .inside{margin:0;padding:0;}
 }
 .wbtm-bme__btn--primary:hover{filter:brightness(1.05);}
 
+/* Background-save (AJAX) state on the primary button: dim + a leading spinner,
+   so "Saving…" reads as in-progress without a page reload. */
+.wbtm-bme__btn--primary.is-saving,
+.wbtm-bme__btn--primary.is-saving:hover{cursor:default;opacity:.85;filter:none;}
+.wbtm-bme__btn--primary.is-saving::before{
+	content:"";display:inline-block;width:13px;height:13px;margin-right:8px;vertical-align:-2px;
+	border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;
+	animation:wbtmBmeSpin .6s linear infinite;
+}
+@keyframes wbtmBmeSpin{to{transform:rotate(360deg);}}
+
 /* Update/Publish split button — primary action + caret opening one
    status-flip option ("Switch to Draft" / "Save Draft"). */
 .wbtm-bme__split{position:relative;display:inline-flex;}

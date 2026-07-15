@@ -104,24 +104,147 @@
 	});
 
 	/* ---------------------------------------------------------------- *
-	 *  Save — reuse WordPress' own Update/Publish button so post_status
-	 *  and all hidden fields stay correct.
+	 *  Save — background (AJAX) submit of WordPress' own #post form, so the
+	 *  admin stays on the editor (no page reload) while the ENTIRE native
+	 *  save pipeline still runs server-side: WordPress' edit_post() →
+	 *  save_post → every existing plugin meta handler, exactly as a real
+	 *  form submit. We only change the transport (fetch instead of a full
+	 *  navigation) and then patch the UI in place.
+	 *
+	 *  On any hard failure (expired nonce, network/server error) we fall
+	 *  back to a real form submit so the admin's edits are never lost — that
+	 *  is the ONLY path that reloads, and only when the quiet save couldn't
+	 *  complete.
 	 * ---------------------------------------------------------------- */
-	function submitForm() {
-		// Flag the save so we can confirm it after WordPress reloads the page.
-		try { sessionStorage.setItem('wbtmBmeSaved', '1'); } catch (e) {}
-		toast(cfg.savingTxt || 'Saving…');
-		var $publish = $('#publish');
-		if (!$publish.length) { $publish = $('#save-post'); }
-		if ($publish.length) {
-			$publish.removeClass('disabled').prop('disabled', false).trigger('click');
+	var savingActive = false;
+
+	/** Disable the save/next/caret controls and show a "Saving…" state on the primary button. */
+	function setSaving(saving) {
+		savingActive = saving;
+		var $primary = $root.find('[data-bme-save]');
+		var $next    = $root.find('[data-bme-next]');
+		var $caret   = $root.find('[data-bme-split-toggle]');
+		if (saving) {
+			$primary.data('bmeLabel', $primary.text());
+			$primary.prop('disabled', true).addClass('is-saving').text(cfg.savingTxt || 'Saving…');
+			$next.prop('disabled', true);
+			$caret.prop('disabled', true);
 		} else {
-			var form = document.getElementById('post');
-			if (form) {
-				if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
-			}
+			var lbl = $primary.data('bmeLabel');
+			if (lbl) { $primary.text(lbl); }
+			$primary.prop('disabled', false).removeClass('is-saving');
+			$next.prop('disabled', false);
+			$caret.prop('disabled', false);
+			// Restore the Back button's per-step disabled state.
+			$root.find('[data-bme-prev]').prop('disabled', cur === 0);
 		}
 	}
+
+	/**
+	 * Reflect the post-save status on the pill + button labels without a reload.
+	 * Whichever primary action ran ("Update"/"Publish") always leaves the bus
+	 * published; "Switch to Draft" leaves it a draft. Status transitions are
+	 * driven by the explicit publish/saveasdraft flags we post (just like WP's
+	 * own buttons), so this is purely cosmetic — it never affects the DB result.
+	 */
+	function updateStatusUi(mode) {
+		var published = (mode !== 'draft');
+		$root.find('.wbtm-bme__status-pill')
+			.toggleClass('is-published', published)
+			.toggleClass('is-draft', !published)
+			.text(published ? (cfg.publishedTxt || 'Published') : (cfg.draftTxt || 'Draft'));
+		// Next primary label (restored by setSaving after this runs).
+		$root.find('[data-bme-save]').data('bmeLabel', published ? (cfg.updateTxt || 'Update') : (cfg.publishTxt || 'Publish'));
+		// The dropdown option is always the opposite of the primary action.
+		$root.find('[data-bme-save-as]').text(published ? (cfg.switchDraftTxt || 'Switch to Draft') : (cfg.saveDraftTxt || 'Save Draft'));
+	}
+
+	/**
+	 * Keep the live form perpetually "freshly loaded": copy the regenerated
+	 * nonces out of the returned edit-page HTML into the current form, so the
+	 * NEXT background save stays valid across a long editing session. (WP
+	 * nonces are reusable within their lifetime, so this is belt-and-braces.)
+	 */
+	function refreshNonces(html) {
+		var parsed;
+		try { parsed = new DOMParser().parseFromString(html, 'text/html'); } catch (e) { return; }
+		if (!parsed) { return; }
+		['_wpnonce', 'wbtm_type_nonce', 'wbtm_gallery_image_nonce'].forEach(function (id) {
+			var fresh = parsed.getElementById(id);
+			var live  = document.getElementById(id);
+			if (fresh && live && typeof fresh.value !== 'undefined') { live.value = fresh.value; }
+		});
+	}
+
+	/**
+	 * @param {string} mode 'primary' (Update/Publish) or 'draft' (Save/Switch to Draft).
+	 */
+	function serializeAndSave(mode) {
+		if (savingActive) { return; }
+		var form = document.getElementById('post');
+		if (!form) { return; }
+
+		// Flush the visual editor into its textarea before we serialize.
+		if (window.tinymce && window.tinymce.triggerSave) {
+			try { window.tinymce.triggerSave(); } catch (e) {}
+		}
+
+		var fd = new FormData(form);
+		// FormData omits submit buttons that weren't the actual submitter, so we
+		// name the intended action explicitly — the exact fields WP's own Publish
+		// / Save Draft buttons post, which is how edit_post() decides post_status.
+		if (mode === 'draft') {
+			fd.delete('publish');
+			fd.set('saveasdraft', '1');
+		} else {
+			fd.delete('saveasdraft');
+			var $pub = $('#publish');
+			fd.set('publish', ($pub.length && $pub.val()) ? $pub.val() : 'Publish');
+		}
+
+		var postUrl = new URL(form.getAttribute('action') || 'post.php', window.location.href).href;
+
+		setSaving(true);
+		toast(cfg.savingTxt || 'Saving…');
+
+		fetch(postUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+			.then(function (res) {
+				return res.text().then(function (html) { return { res: res, html: html }; });
+			})
+			.then(function (data) {
+				// edit_post() redirects on success and wp_die()s (no redirect) on
+				// failure, so a followed redirect is the reliable success signal.
+				var ok = data.res.ok && (data.res.redirected || /[?&]message=\d/.test(data.res.url));
+				if (!ok) { throw new Error('save-failed'); }
+				refreshNonces(data.html);
+				updateStatusUi(mode);
+				setSaving(false);
+				toast(cfg.savedTxt || 'Saved');
+			})
+			.catch(function () {
+				// Quiet save couldn't complete — fall back to a real submit so the
+				// edits are saved (and confirmed by the post-reload toast) rather
+				// than lost. This is the only branch that reloads the page.
+				try { sessionStorage.setItem('wbtmBmeSaved', '1'); } catch (e) {}
+				toast(cfg.errorTxt || 'Couldn’t save in background — saving…');
+				if (mode === 'draft') {
+					var df = form.querySelector('input[name="saveasdraft"]');
+					if (!df) {
+						df = document.createElement('input');
+						df.type = 'hidden';
+						df.name = 'saveasdraft';
+						form.appendChild(df);
+					}
+					df.value = '1';
+				}
+				setTimeout(function () {
+					if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+				}, 700);
+			});
+	}
+
+	function submitForm() { serializeAndSave('primary'); }
+
 	$root.on('click', '[data-bme-save]', function (e) {
 		e.preventDefault();
 		submitForm();
@@ -130,11 +253,11 @@
 	/* ---------------------------------------------------------------- *
 	 *  Split-button dropdown — one extra option, always the opposite of
 	 *  whatever the primary button already does ("Update"/"Publish").
-	 *  "Save as Draft"/"Switch to Draft" submits the real #post form
-	 *  directly (no #publish/#save click) with WordPress' own core
-	 *  'saveasdraft' flag set — the exact same flag its native Save Draft
-	 *  button uses (see _wp_translate_postdata() in wp-admin/includes/post.php),
-	 *  so post_status ends up 'draft' no matter what the primary action is.
+	 *  "Save as Draft"/"Switch to Draft" runs the same background save as the
+	 *  primary button, but posts WordPress' own core 'saveasdraft' flag — the
+	 *  exact flag its native Save Draft button uses (see _wp_translate_postdata()
+	 *  in wp-admin/includes/post.php) — so post_status ends up 'draft' no matter
+	 *  what the primary action is, all without a page reload.
 	 * ---------------------------------------------------------------- */
 	var $split = $root.find('[data-bme-split]');
 	var $splitToggle = $split.find('[data-bme-split-toggle]');
@@ -164,21 +287,7 @@
 	});
 
 	function submitFormAs(status) {
-		try { sessionStorage.setItem('wbtmBmeSaved', '1'); } catch (e) {}
-		toast(cfg.savingTxt || 'Saving…');
-		var form = document.getElementById('post');
-		if (!form) { return; }
-		if (status === 'draft') {
-			var draftField = form.querySelector('input[name="saveasdraft"]');
-			if (!draftField) {
-				draftField = document.createElement('input');
-				draftField.type = 'hidden';
-				draftField.name = 'saveasdraft';
-				form.appendChild(draftField);
-			}
-			draftField.value = '1';
-		}
-		if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+		serializeAndSave(status === 'draft' ? 'draft' : 'primary');
 	}
 	$splitMenu.on('click', '[data-bme-save-as]', function (e) {
 		e.preventDefault();
@@ -515,32 +624,13 @@
 		});
 		$card3.find('.wbtm-bme__ds-card-body').append($startRows).addClass('wbtm-bme__ds-excluded-body');
 
-		// If a list starts out with zero real rows (no off dates / no date
-		// ranges saved yet), show one empty row instead of just the Add
-		// button — friendlier than an apparently-blank section. Reuses the
-		// REAL "Add" button click (wbtm_admin_settings.js's own clone-from-
-		// hidden-template logic) rather than re-implementing row creation,
-		// so it can't drift out of sync with how Add actually behaves.
-		// Deferred with setTimeout so it runs after every enqueued script on
-		// the page — including wbtm_admin_settings.js, wherever it happens
-		// to sit relative to this one — has had a chance to register its
-		// delegated click handler; .trigger('click') needs that handler to
-		// already exist to do anything.
-		setTimeout(function () {
-			$startRows.each(function () {
-				var $area = $(this).find('.wbtm_settings_area').first();
-				var $insert = $area.find('.wbtm_item_insert').first();
-				if ($insert.length && $insert.children('.wbtm_remove_area').length === 0) {
-					// Suppress the "Row added" toast for this specific
-					// programmatic click — it's not a real user action, and
-					// the row stays empty until they actually pick a date, so
-					// without this it re-fires on every single page load.
-					window.__wbtmSuppressActionToast = true;
-					$area.find('.wbtm_add_item').first().trigger('click');
-					window.__wbtmSuppressActionToast = false;
-				}
-			});
-		}, 0);
+		// Intentionally NO auto-inserted blank row here: an Excluded-Dates list
+		// with zero saved rows stays empty (just its "Add New" button). Off
+		// dates/ranges are optional, and auto-adding a phantom empty row made
+		// deleting every row look like it "came back" after save/reload — the
+		// blank row was re-created on each page load even though the saved list
+		// really was empty. Now an emptied list stays empty until the admin
+		// clicks "Add New" themselves.
 	})();
 
 	/* ---------------------------------------------------------------- *
