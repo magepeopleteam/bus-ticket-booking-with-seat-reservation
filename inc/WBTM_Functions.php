@@ -1185,109 +1185,113 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				return array_unique( $all_dates );
 			}
+			/**
+			 * Collect a bus's off dates and off weekdays.
+			 *
+			 * off dates come from the date ranges (wbtm_offday_range) plus the
+			 * individual off dates (wbtm_off_dates, either Y-m-d or a recurring MM-DD).
+			 * off days are weekday names (wbtm_off_days, e.g. "saturday,sunday").
+			 *
+			 * @return array{0: string[], 1: string[]} [ off_dates (Y-m-d), off_day_array ]
+			 */
+			public static function get_off_dates_and_days( $post_id, $year, $now ) {
+				$off_dates = [];
+				// Off-day date ranges.
+				$off_day_ranges = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_offday_range', array() );
+				if ( sizeof( $off_day_ranges ) ) {
+					foreach ( $off_day_ranges as $off_day_range ) {
+						if ( isset( $off_day_range['from_date'] ) && isset( $off_day_range['to_date'] ) ) {
+							$from_date = gmdate( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
+							$to_date   = gmdate( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
+							$off_date_lists = WBTM_Global_Function::date_separate_period( $from_date, $to_date );
+							foreach ( $off_date_lists as $off_date_list ) {
+								$off_dates[] = $off_date_list->format( 'Y-m-d' );
+							}
+						}
+					}
+				}
+				// Individual off dates (Y-m-d, or recurring MM-DD rolled to the next occurrence).
+				$particular_off_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
+				if ( sizeof( $particular_off_dates ) > 0 ) {
+					foreach ( $particular_off_dates as $particular_off_date ) {
+						if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_off_date ) ) {
+							$processed_date = $particular_off_date;
+						} else {
+							$processed_date = gmdate( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
+							if ( strtotime( $processed_date ) < strtotime( $now ) ) {
+								$processed_date = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
+							}
+						}
+						$off_dates[] = $processed_date;
+					}
+				}
+				$off_dates     = array_unique( $off_dates );
+				$off_days      = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
+				$off_day_array = $off_days ? array_map( 'strtolower', array_map( 'trim', explode( ',', $off_days ) ) ) : [];
+				return [ $off_dates, $off_day_array ];
+			}
 			public static function get_post_date( $post_id ) {
-                $all_dates = [];
-                if ( $post_id > 0 ) {
-                    $show_on_dates = WBTM_Global_Function::get_post_info( $post_id, 'show_operational_on_day', 'no' );
-                    $now           = current_time( 'Y-m-d' );
-                    $year          = current_time( 'Y' );
-
-                if ( $show_on_dates == 'yes' ) {
-                    $on_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_particular_dates', array() );
-                    if ( ! empty( $on_dates ) ) {
-                        foreach ( $on_dates as $on_date ) {
-                            if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $on_date ) ) {
-                                $date_item = $on_date;
-                            } else {
-                                $date_item = gmdate( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
-                            }
-                            if ( strtotime( $date_item ) < strtotime( $now ) ) {
-                                $date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
-                            }
-                            if ( strtotime( $date_item ) >= strtotime( $now ) ) {
-                                $all_dates[] = $date_item;
-                            }
-                        }
-                    }
-                } else {
-                    // Handling of regular operational dates without specific operational days
-                    $sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
-                    $sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
-                    $active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
-                    $start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
-                    if ( strtotime( $now ) >= strtotime( $start_date ) ) {
-                        $start_date = $now;
-                    }
-                    $end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
-
-                    if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
-                        $end_date = $sale_end_date;
-                    }
-
-                    if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
-                        $off_dates = [];
-
-                        // Process defined off day ranges
-                        $off_day_ranges = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_offday_range', array() );
-                        if ( sizeof( $off_day_ranges ) ) {
-                            foreach ( $off_day_ranges as $off_day_range ) {
-                                if ( isset( $off_day_range['from_date'] ) && isset( $off_day_range['to_date'] ) ) {
-                                    $from_date = gmdate( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
-                                    $to_date   = gmdate( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
-
-                                    // Collect all off dates within this range
-                                    $off_date_lists = WBTM_Global_Function::date_separate_period( $from_date, $to_date );
-                                    foreach ( $off_date_lists as $off_date_list ) {
-                                        $off_dates[] = $off_date_list->format( 'Y-m-d' );
-                                    }
-                                }
-                            }
-                        }
-
-                        // Unique off dates generated from the ranges
-                        $off_dates = array_unique( $off_dates );
-
-                            $particular_off_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
-                            if ( sizeof( $particular_off_dates ) > 0 ) {
-                                foreach ( $particular_off_dates as $particular_off_date ) {
-                                    // Check if the date is already in 'Y-m-d' format
-                                    if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_off_date ) ) {
-                                        $processed_date = $particular_off_date;
-                                    } else {
-                                        // Assume date is in 'MM-DD' format, prepend year
-                                        $processed_date = gmdate( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
-                                        // Move to next year if the date is in the past
-                                        if ( strtotime( $processed_date ) < strtotime( $now ) ) {
-                                            $processed_date = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
-                                        }
-                                    }
-                                    $off_dates[] = $processed_date;
-                                }
-                            }
-
-                            // Remove duplicates from the off dates array
-                            $off_dates = array_unique( $off_dates );
-                            $off_days      = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
-                            $off_day_array = $off_days ? explode( ',', $off_days ) : [];
-                            $repeat        = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
-
-                            // Generate the date range
-                            $dates = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
-                            foreach ( $dates as $date ) {
-                                $date = $date->format( 'Y-m-d' );
-                                if ( strtotime( $date ) >= strtotime( $now ) ) {
-                                    $day = strtolower( gmdate( 'l', strtotime( $date ) ) ); // Get the day of the week
-                                    // Add date if it is not an off date and not an off day
-                                    if ( ! in_array( $date, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
-                                        $all_dates[] = $date;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return array_unique( $all_dates ); // Return unique available dates
-            }
+				$all_dates = [];
+				if ( $post_id > 0 ) {
+					$show_on_dates = WBTM_Global_Function::get_post_info( $post_id, 'show_operational_on_day', 'no' );
+					$now           = current_time( 'Y-m-d' );
+					$year          = current_time( 'Y' );
+			
+					// Off days / off dates apply in BOTH modes, so a bus never runs on a day or
+					// date the operator marked off. Previously the "operate on specific dates"
+					// mode ignored these, so off days/dates leaked into search and the calendar.
+					list( $off_dates, $off_day_array ) = self::get_off_dates_and_days( $post_id, $year, $now );
+			
+					if ( $show_on_dates == 'yes' ) {
+						$on_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_particular_dates', array() );
+						if ( ! empty( $on_dates ) ) {
+							foreach ( $on_dates as $on_date ) {
+								if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $on_date ) ) {
+									$date_item = $on_date;
+								} else {
+									$date_item = gmdate( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
+								}
+								if ( strtotime( $date_item ) < strtotime( $now ) ) {
+									$date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
+								}
+								if ( strtotime( $date_item ) >= strtotime( $now ) ) {
+									$day = strtolower( gmdate( 'l', strtotime( $date_item ) ) );
+									if ( ! in_array( $date_item, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
+										$all_dates[] = $date_item;
+									}
+								}
+							}
+						}
+					} else {
+						// Regular operational window (start -> end, repeating every N days).
+						$sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
+						$sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
+						$active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
+						$start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
+						if ( strtotime( $now ) >= strtotime( $start_date ) ) {
+							$start_date = $now;
+						}
+						$end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
+						if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
+							$end_date = $sale_end_date;
+						}
+						if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
+							$repeat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
+							$dates  = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
+							foreach ( $dates as $date ) {
+								$date = $date->format( 'Y-m-d' );
+								if ( strtotime( $date ) >= strtotime( $now ) ) {
+									$day = strtolower( gmdate( 'l', strtotime( $date ) ) );
+									if ( ! in_array( $date, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
+										$all_dates[] = $date;
+									}
+								}
+							}
+						}
+					}
+				}
+				return array_unique( $all_dates );
+			}
 
 			public static function slice_buffer_time( $date ) {
 				$buffer_time = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ) * 60;
