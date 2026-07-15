@@ -52,19 +52,36 @@
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Functions.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Translations.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Query.php';
+				// Booking-record helpers (seat locks, availability checks, cart-style POST
+				// parsing, post insertion) with no real WooCommerce dependency — shared by
+				// the WooCommerce cart flow (via WBTM_Woocommerce's delegating wrappers below)
+				// and the WC-independent Standalone/Custom Payment flow (Pro plugin) alike.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Cart_Helper.php';
+				// The "Book Now" AJAX entry point — always loaded (see its own docblock);
+				// dispatches to either the WooCommerce cart or the Standalone flow.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Booking_Controller.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Layout.php';
+				// Payment mode / gateway availability checks (WooCommerce-optional).
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Payment_Status_Checker.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Payment_Provider_Interface.php';
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin.php';
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Shortcodes.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Single_Bus_Details.php';
-				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woocommerce.php';
+				// Cart/checkout/order integration — entirely WooCommerce-specific.
+				if ( WBTM_Functions::is_wc_active() ) {
+					require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woocommerce.php';
+				}
 				//==================//
 				// Coupon engine (per-bus discounts, restrictions, usage limits).
 				require_once WBTM_PLUGIN_DIR . '/inc/coupon/WBTM_Coupon_Module.php';
 				new WBTM_Coupon_Module();
 				//==================//
-				require_once WBTM_PLUGIN_DIR . '/inc/class-functions.php';
+				// My Account "bus panel" endpoint — WooCommerce-account-only.
+				if ( WBTM_Functions::is_wc_active() ) {
+					require_once WBTM_PLUGIN_DIR . '/inc/class-functions.php';
+				}
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_My_Account_Dashboard.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Installer.php';
 				//==================//
@@ -166,7 +183,12 @@
 				wp_enqueue_script('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.js', array('jquery'), WBTM_VERSION, true);
 				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), WBTM_VERSION, true);
 				wp_localize_script('jquery', 'wbtm_wc_vars', array(
-					'checkout_url' => wc_get_checkout_url()
+					'checkout_url'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
+					// Standalone/Custom Payment mode only — lets the booking submit handler
+					// short-circuit to the inline login/register panel (Pro) without a
+					// round trip when we already know the visitor isn't logged in.
+					'login_required' => class_exists( 'WBTM_Functions' ) ? WBTM_Functions::login_required() : false,
+					'is_logged_in'   => is_user_logged_in(),
 				));
 				wp_localize_script( 'wbtm_global', 'wbtm_strings', array(
 					'searching'             => esc_html__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ),

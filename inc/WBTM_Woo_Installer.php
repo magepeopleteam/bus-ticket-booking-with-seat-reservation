@@ -345,6 +345,7 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 		 * Render the popup HTML in admin footer.
 		 */
 		public function render_popup() {
+			return false;
 			if ( ! $this->should_show_popup() ) {
 				return;
 			}

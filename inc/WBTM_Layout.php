@@ -111,7 +111,7 @@
 					$search_info['r_date'] = $r_date;
 					self::wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style, $btn_show, $search_info, $left_filter_show, $bus_start_end_id );
 					$redirect_enabled = WBTM_Global_Function::get_settings('wbtm_general_settings', 'cart_empty_after_search', 'off');
-					if ($redirect_enabled === 'on' && WC()->cart->get_cart_contents_count() > 0) {
+					if ($redirect_enabled === 'on' && WBTM_Functions::is_wc_active() && WC()->cart->get_cart_contents_count() > 0) {
 						WC()->cart->empty_cart();
 					}
 					die();
@@ -459,7 +459,7 @@
 				$end_time = date("h:i A", strtotime($data['wbtm_dp_time']));
 				$time_diff = self::wbtm_get_time_diff($data['wbtm_bp_time'], $data['wbtm_dp_time']);
 				ob_start();
-                $checkout_url = wc_get_checkout_url();
+                $checkout_url = WBTM_Functions::is_wc_active() ? wc_get_checkout_url() : '#';
 
 				?>
                 <?php
@@ -498,13 +498,13 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                 <?php echo esc_html('Seat ' . $data['wbtm_selected_seat']); ?>
                             </span>
-                            <span class="wbtm_selbus_price"><?php echo wp_kses_post(wc_price($data['price_val'])); ?></span>
+                            <span class="wbtm_selbus_price"><?php echo wp_kses_post(WBTM_Global_Function::format_price($data['price_val'])); ?></span>
                         </div>
                     </div>
 
                     <div class="wbtm_selbus_actions">
                         <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_url($checkout_url); ?>" style="text-decoration:none;color:#fff;"><?php esc_html_e('Checkout', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
-                        <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="wbtm_selbus_cart_link"><?php esc_html_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                        <a href="<?php echo esc_url(WBTM_Functions::is_wc_active() ? wc_get_cart_url() : '#'); ?>" class="wbtm_selbus_cart_link"><?php esc_html_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?></a>
                     </div>
 
                 </div>

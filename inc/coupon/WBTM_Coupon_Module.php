@@ -49,11 +49,17 @@
 				require_once $dir . '/WBTM_Coupon_CPT.php';
 				require_once $dir . '/WBTM_Coupon_Engine.php';
 				require_once $dir . '/WBTM_Coupon_Meta.php';
-				require_once $dir . '/WBTM_Coupon_Cart.php';
 
 				new WBTM_Coupon_CPT();
 				new WBTM_Coupon_Meta();
-				new WBTM_Coupon_Cart();
+
+				// The virtual-coupon <-> WooCommerce cart bridge only makes sense with
+				// WooCommerce active; coupon CPT/editing/validation logic above works
+				// regardless, so an admin can still configure coupons without WC.
+				if ( WBTM_Functions::is_wc_active() ) {
+					require_once $dir . '/WBTM_Coupon_Cart.php';
+					new WBTM_Coupon_Cart();
+				}
 			}
 
 			/* ============================================================

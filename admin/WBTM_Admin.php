@@ -37,7 +37,10 @@
 			private function load_file(): void {
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_CPT.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Taxonomy.php';
-				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Hidden_Product.php';
+				// Mirrors each bus to a hidden WooCommerce product — WooCommerce-only.
+				if ( WBTM_Functions::is_wc_active() ) {
+					require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Hidden_Product.php';
+				}
 				//========Global settings==========//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Global_settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_License.php';
@@ -49,6 +52,9 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Extra_Service.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Settings_Pickup_Point.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Tax_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_WC_Payment_Manager.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Payment_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin_Payment_Notice.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Gallery_Image_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Translation_Settings.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/settings/WBTM_Term_Condition_Setting.php';

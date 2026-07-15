@@ -136,15 +136,15 @@
 							$txt .= ' ' . sprintf(
 								/* translators: %s: formatted maximum discount amount */
 								esc_html__( '(max %s)', 'bus-ticket-booking-with-seat-reservation' ),
-								wp_strip_all_tags( wc_price( $cap ) )
+								wp_strip_all_tags( WBTM_Global_Function::format_price( $cap ) )
 							);
 						}
 						return $txt;
 					case 'fixed_seat':
-						return wp_strip_all_tags( wc_price( $amount ) ) . ' ' . esc_html__( '/ seat', 'bus-ticket-booking-with-seat-reservation' );
+						return wp_strip_all_tags( WBTM_Global_Function::format_price( $amount ) ) . ' ' . esc_html__( '/ seat', 'bus-ticket-booking-with-seat-reservation' );
 					case 'fixed_booking':
 					default:
-						return wp_strip_all_tags( wc_price( $amount ) ) . ' ' . esc_html__( '/ booking', 'bus-ticket-booking-with-seat-reservation' );
+						return wp_strip_all_tags( WBTM_Global_Function::format_price( $amount ) ) . ' ' . esc_html__( '/ booking', 'bus-ticket-booking-with-seat-reservation' );
 				}
 			}
 
@@ -242,7 +242,7 @@
 					),
 					array(
 						'label' => esc_html__( 'Total Customer Savings', 'bus-ticket-booking-with-seat-reservation' ),
-						'value' => wp_strip_all_tags( wc_price( $saved ) ),
+						'value' => wp_strip_all_tags( WBTM_Global_Function::format_price( $saved ) ),
 						'mod'   => 'amber',
 						'icon'  => 'money-alt',
 					),

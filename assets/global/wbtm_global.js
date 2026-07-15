@@ -1206,47 +1206,97 @@
 			requestData[fieldName] = values;
 		});
 
-		$.ajax({
-			url: woocommerce_params.ajax_url,
-			type: 'POST',
-			// data: data,
+		// Suppresses the unconditional WC-checkout redirect below (complete:) once we've
+		// already navigated somewhere else ourselves (standalone checkout, or we're
+		// showing the inline login/register panel instead of proceeding).
+		let suppressCompleteRedirect = false;
 
-			data: requestData,
-			success: function (response) {
-
-				if (response.success) {
-					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
-					$(document.body).trigger('wc_update_cart');
-					// Re-apply same-day return bus filter based on newly selected outbound bus
-					wbtm_filter_return_buses_by_outbound_time();
-				} else {
-					wbtm_set_loading_button_state(this_btn, false);
-					alert(typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket');
-				}
-			},
-			error: function () {
+		function handleBookingFailure(response) {
+			if (response.data && typeof response.data === 'object' && response.data.require_login) {
+				// Custom Payment mode requires an account. Pro's inline login/register
+				// panel (if loaded) handles it and calls trySubmitBooking again once
+				// the visitor is authenticated — same requestData, fresh nonce.
+				suppressCompleteRedirect = true;
 				wbtm_set_loading_button_state(this_btn, false);
-				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_generic : 'Something went wrong. Please try again.');
-			},
-			complete: function () {
-				if (burPosition === 'start_bus') {
-					if (returnRequested) {
-						wbtm_set_loading_button_state(this_btn, false);
-						// Show the Return tab so the customer can choose a return bus (or
-						// change the return route when Editable Return Route is on, or use
-						// "Checkout Without Return"). Previously this checked the return bus
-						// count and silently jumped to checkout when the default reverse leg
-						// had no bus — breaking round trips for reverse-direction searches.
-						wtbm_active_return_bus_tab_data();
+				$(document).trigger('wbtm_require_login', [requestData, trySubmitBooking]);
+				return;
+			}
+			wbtm_set_loading_button_state(this_btn, false);
+			var message = (response.data && typeof response.data === 'object' && response.data.message) || response.data;
+			alert(message || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket'));
+		}
 
+		function trySubmitBooking() {
+			$.ajax({
+				url: wbtm_ajax_url,
+				type: 'POST',
+				// data: data,
+
+				data: requestData,
+				success: function (response) {
+
+					if (response.success) {
+						// Standalone/custom booking mode: no WC cart involved, Pro sends a
+						// checkout redirect instead of cart-fragment HTML.
+						if (response.data && response.data.redirect_url) {
+							suppressCompleteRedirect = true;
+							window.location.href = response.data.redirect_url;
+							return;
+						}
+						$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
+						$(document.body).trigger('wc_update_cart');
+						// Re-apply same-day return bus filter based on newly selected outbound bus
+						wbtm_filter_return_buses_by_outbound_time();
+					} else {
+						handleBookingFailure(response);
+					}
+				},
+				// wp_send_json_error() answers with a real HTTP error status (401 for
+				// require_login, 400 for validation, etc.), so jQuery routes it here
+				// instead of success: — but it still parses the JSON body into
+				// jqXHR.responseJSON, which is where require_login/the real message live.
+				error: function (jqXHR) {
+					if (jqXHR.responseJSON) {
+						handleBookingFailure(jqXHR.responseJSON);
+					} else {
+						wbtm_set_loading_button_state(this_btn, false);
+						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_generic : 'Something went wrong. Please try again.');
+					}
+				},
+				complete: function () {
+					if (suppressCompleteRedirect) {
+						return;
+					}
+					if (burPosition === 'start_bus') {
+						if (returnRequested) {
+							wbtm_set_loading_button_state(this_btn, false);
+							// Show the Return tab so the customer can choose a return bus (or
+							// change the return route when Editable Return Route is on, or use
+							// "Checkout Without Return"). Previously this checked the return bus
+							// count and silently jumped to checkout when the default reverse leg
+							// had no bus — breaking round trips for reverse-direction searches.
+							wtbm_active_return_bus_tab_data();
+
+						} else {
+							window.location.href = wbtm_wc_vars.checkout_url;
+						}
 					} else {
 						window.location.href = wbtm_wc_vars.checkout_url;
 					}
-				} else {
-					window.location.href = wbtm_wc_vars.checkout_url;
 				}
-			}
-		});
+			});
+		}
+
+		// Fast client-side gate: skip the round trip when we already know a Custom
+		// Payment booking needs an account. The server re-checks this authoritatively
+		// inside WBTM_Standalone_Payment::create_booking() regardless.
+		if (typeof wbtm_wc_vars !== 'undefined' && wbtm_wc_vars.login_required && !wbtm_wc_vars.is_logged_in) {
+			suppressCompleteRedirect = true;
+			wbtm_set_loading_button_state(this_btn, false);
+			$(document).trigger('wbtm_require_login', [requestData, trySubmitBooking]);
+		} else {
+			trySubmitBooking();
+		}
 
 	});
 
@@ -1279,32 +1329,63 @@
 			"wbtm_cabin_mode_enabled": "no"
 		};
 
-		this_btn.prop('disabled', true).html(this_btn.attr('data-loading-text') || 'Loading...');
-		$.ajax({
-			url: woocommerce_params.ajax_url,
-			type: 'POST',
-			data: requestData,
-			success: function (response) {
-				if (response.success) {
-					$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
-					$(document.body).trigger('wc_update_cart');
-					wbtm_filter_return_buses_by_outbound_time();
-					if (this_btn.closest('#start_bus').length && $('#return_bus .wtbm_bus_counter').length > 0) {
-						wtbm_active_return_bus_tab_data();
-					} else {
-						window.location.href = wbtm_wc_vars.checkout_url;
-					}
-				} else {
-					alert(response.data || 'Failed to add ticket');
-				}
-			},
-			error: function () {
-				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket');
-			},
-			complete: function () {
+		function handleFullBusBookingFailure(response) {
+			if (response.data && typeof response.data === 'object' && response.data.require_login) {
 				this_btn.prop('disabled', false).html(defaultHtml);
+				$(document).trigger('wbtm_require_login', [requestData, trySubmitFullBusBooking]);
+				return;
 			}
-		});
+			this_btn.prop('disabled', false).html(defaultHtml);
+			var message = (response.data && typeof response.data === 'object' && response.data.message) || response.data;
+			alert(message || 'Failed to add ticket');
+		}
+
+		function trySubmitFullBusBooking() {
+			this_btn.prop('disabled', true).html(this_btn.attr('data-loading-text') || 'Loading...');
+			$.ajax({
+				url: wbtm_ajax_url,
+				type: 'POST',
+				data: requestData,
+				success: function (response) {
+					if (response.success) {
+						if (response.data && response.data.redirect_url) {
+							window.location.href = response.data.redirect_url;
+							return;
+						}
+						$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
+						$(document.body).trigger('wc_update_cart');
+						wbtm_filter_return_buses_by_outbound_time();
+						if (this_btn.closest('#start_bus').length && $('#return_bus .wtbm_bus_counter').length > 0) {
+							wtbm_active_return_bus_tab_data();
+						} else {
+							window.location.href = wbtm_wc_vars.checkout_url;
+						}
+					} else {
+						handleFullBusBookingFailure(response);
+					}
+				},
+				// See the identical comment in the regular-booking handler above: non-2xx
+				// responses land here, not in success:, but jQuery still parses the JSON
+				// body into jqXHR.responseJSON.
+				error: function (jqXHR) {
+					if (jqXHR.responseJSON) {
+						handleFullBusBookingFailure(jqXHR.responseJSON);
+					} else {
+						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket');
+						this_btn.prop('disabled', false).html(defaultHtml);
+					}
+				},
+				complete: function () {
+					this_btn.prop('disabled', false).html(defaultHtml);
+				}
+			});
+		}
+
+		if (typeof wbtm_wc_vars !== 'undefined' && wbtm_wc_vars.login_required && !wbtm_wc_vars.is_logged_in) {
+			$(document).trigger('wbtm_require_login', [requestData, trySubmitFullBusBooking]);
+		} else {
+			trySubmitFullBusBooking();
+		}
 	});
 
 	$(document).on('click', '.wbtm-full-bus-tooltip-toggle', function (e) {

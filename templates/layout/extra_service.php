@@ -57,7 +57,7 @@
 									<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
 									<?php WBTM_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>
 								</td>
-								<td class="_textCenter"><?php echo wp_kses_post( wc_price($row_price) ); ?></td>
+								<td class="_textCenter"><?php echo wp_kses_post( WBTM_Global_Function::format_price($row_price) ); ?></td>
 							</tr>
 						<?php } ?>
 						</tbody>

@@ -181,7 +181,7 @@
 					return self::fail( sprintf(
 						/* translators: %s: formatted minimum spend amount */
 						esc_html__( 'A minimum eligible fare of %s is required for this coupon.', 'bus-ticket-booking-with-seat-reservation' ),
-						wp_strip_all_tags( wc_price( $min_spend ) )
+						wp_strip_all_tags( WBTM_Global_Function::format_price( $min_spend ) )
 					) );
 				}
 				$min_seats = WBTM_Coupon_Module::get_int( $post_id, 'min_seats', 0 );

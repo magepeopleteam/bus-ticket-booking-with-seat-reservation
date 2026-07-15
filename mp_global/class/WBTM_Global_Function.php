@@ -395,6 +395,13 @@
 			}
 			//***********************************//
 			public static function price_convert_raw($price) {
+				if (self::check_woocommerce() !== 1) {
+					// No WooCommerce: nothing to strip (currency symbol/separators are
+					// WC-formatted), just pull the numeric value back out.
+					$price = wp_strip_all_tags($price);
+					$price = preg_replace('/[^0-9.\-]/', '', (string) $price);
+					return max((float) $price, 0);
+				}
 				$price = wp_strip_all_tags($price);
 				$price = str_replace(get_woocommerce_currency_symbol(), '', $price);
 				$price = str_replace(wc_get_price_thousand_separator(), 't_s', $price);
@@ -405,6 +412,11 @@
 				return max($price, 0);
 			}
 			public static function wc_price($post_id, $price, $args = array()): string {
+				// No WooCommerce: skip all product/tax lookups (WC_Tax, wc_get_product(),
+				// WC()->customer below aren't available) and just format the raw number.
+				if (self::check_woocommerce() !== 1) {
+					return number_format((float) $price, 2);
+				}
 				$num_of_decimal = get_option('woocommerce_price_num_decimals', 2);
 				$args = wp_parse_args($args, array(
 					'qty' => '',
@@ -466,6 +478,18 @@
 			public static function get_wc_raw_price($post_id, $price, $args = array()) {
 				$price = self::wc_price($post_id, $price, $args);
 				return self::price_convert_raw($price);
+			}
+			/**
+			 * WooCommerce-safe price formatter for plain display (no per-product tax
+			 * calculation). Uses wc_price() when WooCommerce is active, otherwise falls
+			 * back to a plain formatted number so templates never fatal in standalone
+			 * (no-WC) mode.
+			 */
+			public static function format_price($price) {
+				if (self::check_woocommerce() === 1 && function_exists('wc_price')) {
+					return wc_price($price);
+				}
+				return number_format((float) $price, 2);
 			}
 			//***********************************//
 			public static function get_image_url($post_id = '', $image_id = '', $size = 'full') {
@@ -541,6 +565,9 @@
 			//***********************************//
 			public static function all_tax_list(): array {
 				$classes = array();
+				if (self::check_woocommerce() !== 1 || !class_exists('WC_Tax')) {
+					return $classes;
+				}
 				foreach (WC_Tax::get_tax_classes() as $name) {
 					$slug = sanitize_title($name);
 					$classes[$slug] = $name;

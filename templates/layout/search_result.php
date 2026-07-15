@@ -1383,7 +1383,7 @@ div#wbtm_date_start_route { height: 50px; }
                                 <?php esc_html_e('Starting from', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </div>
                             <div class="wbtm-price-value">
-                                <?php echo wp_kses_post(wc_price($price)); ?>
+                                <?php echo wp_kses_post(WBTM_Global_Function::format_price($price)); ?>
                             </div>
                         <?php endif; ?>
                         <?php if ($route_priced) : ?>

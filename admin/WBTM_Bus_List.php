@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			public function __construct() {
 				add_filter( 'wbtm_filter_general_settings', [ $this, 'register_setting' ] );
 				add_action( 'admin_menu', [ $this, 'register_page' ] );
+			add_action( 'admin_menu', [ $this, 'unlist_page' ], 999 );
 				add_action( 'load-edit.php', [ $this, 'maybe_redirect_to_new_design' ] );
 				add_action( 'admin_action_wbtm_duplicate_bus', [ $this, 'handle_duplicate' ] );
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -107,6 +108,22 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					self::PAGE_SLUG,
 					[ $this, 'render_page' ]
 				);
+			}
+
+			/**
+			 * add_submenu_page( '', ... ) still lists the page under the empty-string
+			 * parent bucket in the global $submenu array. wp-admin/menu-header.php calls
+			 * get_admin_page_parent() right after applying our `parent_file` filter (see
+			 * highlight_menu() below), and that core function matches this page against
+			 * $submenu[''] and resets $parent_file back to '' — silently undoing the
+			 * highlight, so the Bus top-level menu never shows as expanded/current.
+			 * Un-listing it here (a later admin_menu priority, after register_page() has
+			 * already registered the page + capability check via $_registered_pages,
+			 * which remove_submenu_page() does not touch) stops that false match without
+			 * affecting the page's reachability.
+			 */
+			public function unlist_page() {
+				remove_submenu_page( '', self::PAGE_SLUG );
 			}
 
 			/**

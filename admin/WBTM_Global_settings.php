@@ -351,6 +351,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'subtitle'   => esc_html__('Date & editor settings', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_global_settings',
 					],
+					'payments' => [
+						'title'      => esc_html__('Payments', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-credit-card',
+						'subtitle'   => esc_html__('Gateways & checkout mode', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_payment_settings',
+					],
 					'frontend' => [
 						'title'      => esc_html__('Frontend Display', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-eye',
@@ -444,6 +450,25 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'icon'     => 'fas fa-calendar',
 							'label'    => esc_html__('Date & editor', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['disable_block_editor', 'date_format', 'date_format_short'],
+						],
+					],
+					// Without an entry here, all of these fields would fall through to the
+					// generic "remaining fields" card, which hardcodes a mismatched icon
+					// (fas fa-sliders-h) instead of using the Payments tab's own icon.
+					'wbtm_payment_settings' => [
+						'main' => [
+							'icon'     => 'fas fa-credit-card',
+							'label'    => esc_html__('Payments', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => [
+								'wbtm_booking_mode_selector',
+								'wbtm_payment_tabs_html',
+								'wbtm_wc_payment_gateways_manager',
+								'wbtm_wc_add_to_cart_redirect',
+								'wbtm_wc_require_login',
+								'wbtm_wc_show_billing_info',
+								'wbtm_wc_confirm_status',
+								'wbtm_payment_gateways_ui',
+							],
 						],
 					],
 					'wbtm_style_settings' => [
@@ -654,6 +679,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$name  = isset($field['name']) ? $field['name'] : '';
 				$options = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : '');
 				$row_class = 'wbtm-field-' . esc_attr($name);
+				// Pass the field's own semantic class(es) through onto the row div, so
+				// JS/CSS registered alongside a field (e.g. the Payments tab's
+				// woocommerce-field / wc-additional-field / no-woocommerce-field
+				// show-hide classes) can target it directly.
+				if (!empty($field['class'])) {
+					$row_class .= ' ' . esc_attr($field['class']);
+				}
 
 				// Mark provider-specific rows for AI Chatbot toggle
 				$is_ai_provider_row = false;
@@ -761,6 +793,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$id_attr = esc_attr($id);
 				$class = isset($field['class']) ? $field['class'] : '';
 				$placeholder = isset($field['placeholder']) ? $field['placeholder'] : '';
+
+				// Fully custom-rendered fields (e.g. the Payments tab's Booking Mode
+				// selector, sub-tabs, and gateway manager) print their own markup in
+				// place of a form control; the row/label cells around them stay so
+				// the field's class (used by JS/CSS show-hide logic) is still applied.
+				if (isset($field['callback']) && is_callable($field['callback'])) {
+					call_user_func($field['callback']);
+					return;
+				}
 
 				switch ($type) {
 					case 'multicheck':
