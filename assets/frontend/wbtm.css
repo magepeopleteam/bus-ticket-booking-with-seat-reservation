@@ -2480,19 +2480,39 @@ table.wbtm_totals .wbtm_sub_total {
   background-color: #fff !important;
 }
 
-/* ---- Extra services — line items with a pill quantity stepper ---- */
+/* ---- Extra services — line items with a pill quantity stepper ----
+   Styled to match the passenger-information card: the shared 18px card
+   padding is zeroed out so the tinted header band (the h3) can bleed
+   edge-to-edge, with the padding moved onto the .mpPanel body instead. */
+.wbtm_ex_service_area {
+  padding: 0 !important;
+  border: 1px solid #e7eaf0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 28px -20px rgba(2, 6, 23, .28);
+  overflow: hidden;
+}
+/* Thin brand accent bar along the top edge of the card. */
+.wbtm_ex_service_area::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wbtm_color_theme, #2563eb), var(--wbtm_color_theme_alter, #93c5fd));
+}
 .wbtm_ex_service_area h3 {
   text-transform: uppercase;
-  margin: 0;
-  font-size: 15.5px !important;
-  font-weight: 700 !important;
-  color: #111827 !important;
-  border-bottom: 1px solid #eef1f5 !important;
-  padding-bottom: 5px;
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: .01em;
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e7eaf0 !important;
+  padding: 14px 18px !important;
 }
 .wbtm_ex_service_area .mpPanel {
   border: 0;
-  background: none;
+  background: #fff;
+  padding: 18px;
 }
 .wbtm_style .wbtm_ex_service_area .mT {
   margin-top: 0px;
@@ -2523,8 +2543,14 @@ table.wbtm_totals .wbtm_sub_total {
   align-items: center;
   gap: 10px;
   background: #f8fafc !important;
-  border-radius: 10px;
-  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 14px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
+  transition: border-color .15s ease;
+}
+.wbtm_ex_service_area tbody tr:hover {
+  border-color: #cbd5e1;
 }
 .wbtm_ex_service_area tbody td {
   border: 0 !important;
@@ -2532,8 +2558,9 @@ table.wbtm_totals .wbtm_sub_total {
 }
 .wbtm_ex_service_area td._textLeft {
   flex: 1 1 auto;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 14px;
   text-align: left !important;
 }
 .wbtm_ex_service_area td._textCenter {
@@ -2548,15 +2575,26 @@ table.wbtm_totals .wbtm_sub_total {
    change the input's value, they don't add/remove/re-tag DOM nodes). */
 .wbtm_ex_service_area tbody td:nth-child(2) { order: 3; }
 .wbtm_ex_service_area tbody td:nth-child(3) { order: 2; }
+/* Unit price rendered as a small white pill badge, like the seat badge on
+   the passenger card header. */
 .wbtm_ex_service_area td._textCenter .woocommerce-Price-amount {
+  display: inline-flex;
+  align-items: center;
   font-weight: 700;
-  color: #1f2937;
+  font-size: 12.5px;
+  color: var(--wbtm_color_theme);
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
 }
 .wbtm_ex_service_area .qtyIncDec {
   background: #fff;
   border: 1px solid #e2e8f0 !important;
   border-radius: 999px !important;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
 }
 .wbtm_ex_service_area .qtyIncDec .addonGroupContent {
   width: 28px;
@@ -2567,9 +2605,11 @@ table.wbtm_totals .wbtm_sub_total {
   color: #64748b;
   cursor: pointer;
   border: 0 !important;
+  transition: background-color .15s ease, color .15s ease;
 }
 .wbtm_ex_service_area .qtyIncDec .addonGroupContent:hover {
-  background: #f1f5f9;
+  background: var(--wbtm_color_theme, #2563eb);
+  color: #fff;
 }
 .wbtm_ex_service_area .qtyIncDec input.formControl {
   width: 40px !important;
@@ -2582,54 +2622,90 @@ table.wbtm_totals .wbtm_sub_total {
 }
 
 /* ---- Passenger information ---- */
+/* The shared card shell above pads every summary-column card 18px on all
+   sides; the passenger card zeroes that out so its tinted header can bleed
+   edge-to-edge, with the padding moved onto .mpPanelBody instead. */
+.wbtm_attendee_area .wbtm_attendee_item {
+  padding: 0 !important;
+  border: 1px solid #e7eaf0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 28px -20px rgba(2, 6, 23, .28);
+  overflow: hidden;
+}
+/* Thin brand accent bar along the top edge of the card. */
+.wbtm_attendee_area .wbtm_attendee_item::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wbtm_color_theme, #2563eb), var(--wbtm_color_theme_alter, #93c5fd));
+}
 .wbtm_attendee_area .mpPanelHeader {
-  background: none !important;
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important;
   border: 0 !important;
-  border-bottom: 1px solid #eef1f5 !important;
-  padding: 0 0 10px !important;
-  margin: 0 0 5px !important;
+  border-bottom: 1px solid #e7eaf0 !important;
+  padding: 14px 18px !important;
+  margin: 0 !important;
   display: flex !important;
-  align-items: flex-start !important;
+  align-items: center !important;
   justify-content: space-between !important;
   gap: 12px;
 }
 .wbtm_attendee_header_text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 7px;
 }
 .wbtm_attendee_area .mpPanelHeader h5 {
   margin: 0;
-  font-size: 15.5px !important;
-  font-weight: 700 !important;
-  color: #111827 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: .01em;
   text-transform: uppercase;
 }
+/* Seat assignment rendered as a small white pill badge under the title. */
 .wbtm_attendee_seat_label {
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--wbtm_color_theme);
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
   text-transform: none !important;
   letter-spacing: normal !important;
 }
 .wbtm_attendee_area .mpPanelHeader .wbtm_seat_name {
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--wbtm_color_theme);
 }
-/* Small person+pencil badge, top-right of the header — purely decorative. */
+/* Round person+pencil avatar, right side of the header — purely decorative. */
 .wbtm_attendee_header_icon {
   flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: var(--wbtm_color_theme_alter, #eff6ff) center/15px no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Cpath d='M4 20c0-3.3 2.5-5.5 5.5-5.5'/%3E%3Cpath d='M15.5 20.5l4-4a1.4 1.4 0 0 0-2-2l-4 4-.6 2.6z'/%3E%3C/svg%3E") center/15px no-repeat;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Cpath d='M4 20c0-3.3 2.5-5.5 5.5-5.5'/%3E%3Cpath d='M15.5 20.5l4-4a1.4 1.4 0 0 0-2-2l-4 4-.6 2.6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px;
 }
 .wbtm_attendee_area .mpPanelBody {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 14px;
-  padding: 0 !important;
-  background: none !important;
+  gap: 16px;
+  /* Card shell padding was zeroed so the header could bleed edge-to-edge;
+     the body carries it instead. */
+  padding: 18px !important;
+  background: #fff !important;
 }
 .wbtm_attendee_area .mp_form_item {
   margin: 0 !important;
@@ -2646,11 +2722,11 @@ table.wbtm_totals .wbtm_sub_total {
   min-width: 0 !important;
 }
 .wbtm_attendee_area .mp_form_item span {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #64748b;
+  color: #475569;
   text-transform: uppercase;
-  letter-spacing: .03em;
+  letter-spacing: .05em;
 }
 .wbtm_attendee_area .mp_form_item .textRequired {
   color: #ef4444;
@@ -2660,13 +2736,22 @@ table.wbtm_totals .wbtm_sub_total {
   width: 100% !important;
   box-sizing: border-box !important;
   border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  padding: 10px 12px !important;
-  font-size: 13.5px !important;
+  border-radius: 12px !important;
+  padding: 11px 14px !important;
+  font-size: 14px !important;
+  color: #0f172a !important;
   background-color: #f8fafc !important;
   background-repeat: no-repeat !important;
   background-position: 12px center !important;
   background-size: 16px !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+.wbtm_attendee_area .mp_form_item .formControl::placeholder {
+  color: #94a3b8;
+}
+.wbtm_attendee_area .mp_form_item .formControl:hover {
+  border-color: #cbd5e1 !important;
 }
 /* The blanket padding:10px 12px !important above clobbers the legacy
    calendar icon's own padding-left:40px (div.wbtm_style .formControl.date_type
@@ -2679,6 +2764,9 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_attendee_area .mp_form_item .formControl:focus {
   border-color: var(--wbtm_color_theme) !important;
   background-color: #fff !important;
+  outline: 0 !important;
+  /* Soft focus ring in the theme color (falls back to blue). */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wbtm_color_theme, #2563eb) 15%, transparent);
 }
 .wbtm_attendee_area .mp_form_item:has(textarea) {
   grid-column: 1 / -1;

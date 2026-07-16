@@ -678,55 +678,68 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* 3-column card row */
 .wbtm-card-wrap {
-    display:     flex;
-    align-items: stretch;
-    min-height:  110px;
+    display:         flex;
+    align-items:     stretch;
     justify-content: space-between;
-    width:100%;
+    width:           100%;
+    min-height:      132px;
+    background:      linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    border:          1px solid #e5edf7;
+    border-radius:   24px;
+    overflow:        hidden;
+    box-shadow:      0 14px 38px rgba(15, 23, 42, 0.06);
+    transition:      transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.wbtm-card-wrap:hover {
+    transform:    translateY(-2px);
+    border-color: #d5e3f5;
+    box-shadow:   0 22px 48px rgba(15, 23, 42, 0.1);
 }
 
 /* ── LEFT: times + duration track ───────────────────────────────── */
 .wbtm-card-times {
-    flex:                  0 0 340px;
+    flex:                  0 0 350px;
     display:               grid;
     grid-template-columns: auto 1fr auto;
     grid-template-rows:    auto auto;
     align-items:           center;
     align-content:         center;
     row-gap:               0;
-    column-gap:            10px;
-    padding:               20px 18px;
-    background:            #ffffff;
-    border-right:          1px solid #e3e5e9;
+    column-gap:            14px;
+    padding:               24px 24px;
+    background:            linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
+    border-right:          1px solid #e5edf7;
+    position:              relative;
 }
 .wbtm-time-depart,
 .wbtm-time-arrive {
-    font-size:   20px;
+    font-size:   26px;
     font-weight: 800;
     color:       #0f172a;
     line-height: 1;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.03em;
 }
 .wbtm-time-depart { grid-column: 1; grid-row: 1; }
 .wbtm-time-arrive { grid-column: 3; grid-row: 1; text-align: right; }
 .wbtm-city-depart {
     grid-column: 1;
     grid-row:    2;
-    font-size:   11px;
-    font-weight: 500;
-    color:       #94a3b8;
-    margin-top:  3px;
-    letter-spacing: 0.2px;
+    font-size:   12px;
+    font-weight: 600;
+    color:       #64748b;
+    margin-top:  6px;
+    letter-spacing: 0.01em;
 }
 .wbtm-city-arrive {
     grid-column: 3;
     grid-row:    2;
-    font-size:   11px;
-    font-weight: 500;
-    color:       #94a3b8;
-    margin-top:  3px;
+    font-size:   12px;
+    font-weight: 600;
+    color:       #64748b;
+    margin-top:  6px;
     text-align:  right;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.01em;
 }
 .wbtm-duration-track-wrap {
     grid-column:     2;
@@ -736,38 +749,40 @@ div#wbtm_date_start_route { height: 50px; }
     flex-direction:  column;
     align-items:     center;
     justify-content: center;
-    gap:             3px;
-    min-width:       70px;
+    gap:             4px;
+    min-width:       96px;
 }
 .wbtm-track-duration {
     position:      absolute;
     bottom:        100%;
     left:          50%;
     transform:     translateX(-50%);
-    margin-bottom: 4px;
+    margin-bottom: 10px;
     font-size:     10px;
     font-weight:   700;
-    color:         var(--wbtm_color_theme, #e8510f);
+    color:         #4338ca;
     white-space:   nowrap;
     line-height:   1;
-    background:    #fff3ee;
-    padding:       2px 6px;
+    background:    #eef2ff;
+    padding:       5px 9px;
     border-radius: 20px;
+    border:        1px solid rgba(99, 102, 241, 0.14);
 }
 .wbtm-track-dot {
-    width:         7px;
-    height:        7px;
+    width:         11px;
+    height:        11px;
     border-radius: 50%;
     background:    #fff;
-    border:        2px solid #c8d0dc;
+    border:        2px solid #94a3b8;
     flex-shrink:   0;
+    box-shadow:    0 0 0 4px rgba(148, 163, 184, 0.08);
 }
 .wbtm-track-line {
     position:   relative;
     width:      100%;
     height:     0;
-    min-width:  30px;
-    border-top: 2px dashed #c8d0dc;
+    min-width:  56px;
+    border-top: 2px dashed #c7d2fe;
 }
 .wbtm-track-line::after {
     content:         '\f207';
@@ -777,39 +792,41 @@ div#wbtm_date_start_route { height: 50px; }
     top:             50%;
     left:            50%;
     transform:       translate(-50%, -50%);
-    width:           22px;
-    height:          22px;
+    width:           30px;
+    height:          30px;
     border-radius:   50%;
-    background:      var(--wbtm_color_theme, #e8510f);
+    background:      linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
     display:         flex;
     align-items:     center;
     justify-content: center;
     color:           #fff;
-    font-size:       9px;
-    line-height:     22px;
-    box-shadow:      0 2px 6px rgba(232,81,15,.35);
+    font-size:       11px;
+    line-height:     30px;
+    box-shadow:      0 10px 20px rgba(67,56,202,.22);
 }
 
 /* ── MIDDLE: bus info ────────────────────────────────────────────── */
 .wbtm-card-info {
     flex:           1;
-    padding:        18px 15px;
+    padding:        22px 22px 20px;
     display:        flex;
     flex-direction: column;
-    gap:            8px;
-    border-right:   1px solid #eaecf2;
+    gap:            12px;
+    border-right:   1px solid #e5edf7;
+    background:     #ffffff;
 }
 .wbtm-operator-row {
     display:     flex;
     align-items: center;
-    gap:         8px;
+    gap:         10px;
     flex-wrap:   wrap;
 }
 .wbtm-operator-name {
-    font-size:   15px;
-    font-weight: 700;
+    font-size:   20px;
+    font-weight: 800;
     color:       #0f172a;
     cursor:      pointer;
+    letter-spacing: -0.02em;
 }
 .wbtm-type-badge {
     font-size:     10px;
@@ -853,66 +870,72 @@ div#wbtm_date_start_route { height: 50px; }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    color: #333;
-    padding: 4px 6px;
+    color: #166534;
+    padding: 6px 10px;
     align-self: flex-start;
-    border: 1px dotted #bedfbf;
-    background: #eaffed;
-    border-radius: 5px;
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    border-radius: 999px;
 }
 .wbtm-card-info .wbtm_bus_details_tabs_holder {
     margin-top:  auto;
-    padding-top: 8px;
-    border-top:  1px dashed #e8ecf0;
+    padding-top: 12px;
+    border-top:  1px dashed #dbe5f0;
 }
 .wbtm-card-info .wbtm_bus_popup_links {
     display:    flex !important;
     flex-wrap:  wrap;
-    gap:        6px;
+    gap:        8px;
     visibility: visible !important;
     opacity:    1 !important;
     transform:  none !important;
 }
 .wbtm-card-info .wbtm_bus_popup_link {
-    font-size:     11px;
-    font-weight:   500;
-    color:         #475569;
+    font-size:     12px;
+    font-weight:   600;
+    color:         #334155;
     background:    #f8fafc;
-    border:        1px solid #e2e8f0;
-    border-radius: 6px;
-    padding:       3px 10px;
+    border:        1px solid #dbe4f0;
+    border-radius: 999px;
+    padding:       7px 12px;
     cursor:        pointer;
-    transition:    background 0.15s, color 0.15s;
+    transition:    background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+}
+.wbtm-card-info .wbtm_bus_popup_link:hover {
+    color:        #4338ca;
+    background:   #eef2ff;
+    border-color: #c7d2fe;
+    transform:    translateY(-1px);
 }
 
 /* ── RIGHT: price + book ─────────────────────────────────────────── */
 .wbtm-card-price {
-    flex:            0 0 325px;
-    padding:         18px 20px;
+    flex:            0 0 280px;
+    padding:         22px 22px;
     display:         flex;
     flex-direction:  column;
-    align-items:     center;
+    align-items:     flex-start;
     justify-content: center;
-    gap:             8px;
-    background:      #fafbfd;
+    gap:             10px;
+    background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
 }
 .wbtm-starting-from {
-    font-size:     10px;
+    font-size:     11px;
     font-weight:   600;
     color:         #94a3b8;
-    text-align:    center;
+    text-align:    left;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.12em;
 }
 .wbtm-price-value {
-    font-size:   28px;
+    font-size:   34px;
     font-weight: 800;
-    color:       #0f172a;
-    text-align:  center;
+    color:       #111827;
+    text-align:  left;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -0.04em;
 }
 .wbtm-price-value .woocommerce-Price-amount {
     font-size: inherit !important;
@@ -939,14 +962,14 @@ div#wbtm_date_start_route { height: 50px; }
 }
 .wbtm-card-price .wbtm-seat-book {
     width:      100%;
-    margin-top: 2px;
+    margin-top: 4px;
 }
 .wbtm-card-price .wbtm-seat-book._themeButton_xs,
 .wbtm-card-price ._themeButton_xs,
 .wbtm-card-price #get_wbtm_bus_details {
     width:           100% !important;
-    border-radius:   50px !important;
-    padding:         11px 18px !important;
+    border-radius:   16px !important;
+    padding:         13px 18px !important;
     font-size:       14px !important;
     font-weight:     700 !important;
     text-align:      center !important;
@@ -957,8 +980,13 @@ div#wbtm_date_start_route { height: 50px; }
     cursor:          pointer;
     white-space:     nowrap;
     border:          none !important;
-    box-shadow:      0 3px 10px rgba(232,81,15,.3) !important;
-    transition:      box-shadow 0.15s, opacity 0.15s !important;
+    box-shadow:      0 14px 26px rgba(232,81,15,.24) !important;
+    transition:      transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s !important;
+}
+
+.wbtm-card-price #get_wbtm_bus_details:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 32px rgba(232,81,15,.28) !important;
 }
 
 /* Seat-expansion area */
@@ -999,20 +1027,20 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-list-sort   { font-size: 13px; }
 
     /* Bus card: 3 columns become 3 stacked rows */
-    .wbtm-card-wrap { flex-direction: column; min-height: 0; }
+    .wbtm-card-wrap { flex-direction: column; min-height: 0; border-radius: 18px; }
     .wbtm-bus-list  { min-width: 0; }
     .wbtm-card-times {
         flex:          none;
         width:         100%;
         border-right:  none;
-        border-bottom: 1px solid #eaecf2;
-        padding:       14px 16px;
-        column-gap:    8px;
-        background:    #f9fafb;
+        border-bottom: 1px solid #e5edf7;
+        padding:       18px 16px;
+        column-gap:    10px;
+        background:    linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
     }
-    .wbtm-time-depart, .wbtm-time-arrive { font-size: 17px; }
+    .wbtm-time-depart, .wbtm-time-arrive { font-size: 20px; }
     .wbtm-duration-track-wrap { min-width: 40px; }
-    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #eaecf2; padding: 14px 16px; }
+    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #e5edf7; padding: 16px 16px; gap: 10px; }
     .wbtm-card-price {
         flex:            none;
         width:           100%;
@@ -1020,9 +1048,9 @@ div#wbtm_date_start_route { height: 50px; }
         align-items:     center;
         justify-content: space-between;
         flex-wrap:       wrap;
-        gap:             10px;
-        padding:         12px 16px;
-        background:      #fafbfd;
+        gap:             12px;
+        padding:         16px 16px;
+        background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
     }
     .wbtm-starting-from { width: 100%; text-align: left; margin-bottom: -6px; }
     .wbtm-price-value   { font-size: 22px; text-align: left; }
