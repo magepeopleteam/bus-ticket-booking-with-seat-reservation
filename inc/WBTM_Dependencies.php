@@ -184,6 +184,7 @@
 				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), WBTM_VERSION, true);
 				wp_localize_script('jquery', 'wbtm_wc_vars', array(
 					'checkout_url'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
+					'booking_mode'   => class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce',
 					// Standalone/Custom Payment mode only — lets the booking submit handler
 					// short-circuit to the inline login/register panel (Pro) without a
 					// round trip when we already know the visitor isn't logged in.

@@ -447,7 +447,12 @@
 		}
 	}
 	$(document).on('click', '.wbtm_registration_area .wbtm_summary_preview_book_now', function () {
-		$(this).closest('.wbtm_registration_area').find('#wbtm_add_to_cart').trigger('click');
+		let book_now_btn = $(this);
+		if (book_now_btn.prop('disabled') || book_now_btn.hasClass('wbtm_is_loading')) {
+			return;
+		}
+		wbtm_set_loading_button_state(book_now_btn, true);
+		book_now_btn.closest('.wbtm_registration_area').find('#wbtm_add_to_cart').trigger('click');
 	});
 	function wbtm_ticket_price(parent) {
 		let total = 0;
@@ -1059,11 +1064,44 @@
 	}
 
 
+	function wbtm_is_standalone_booking_mode() {
+		return typeof wbtm_wc_vars !== 'undefined' && wbtm_wc_vars.booking_mode === 'standalone';
+	}
+
+	function wbtm_begin_standalone_checkout_loading() {
+		if (wbtm_is_standalone_booking_mode()) {
+			$(document).trigger('wbtm_standalone_checkout_loading');
+		}
+	}
+
+	function wbtm_end_standalone_checkout_loading() {
+		$(document).trigger('wbtm_standalone_checkout_loading_end');
+	}
+
+	function wbtm_reset_summary_book_now_buttons() {
+		$('.wbtm_registration_area .wbtm_summary_preview_book_now.wbtm_is_loading').each(function () {
+			wbtm_set_loading_button_state($(this), false);
+		});
+	}
+
+	function wbtm_handle_standalone_checkout_response(response) {
+		if (response.data && response.data.checkout_modal && response.data.checkout_html) {
+			$(document).trigger('wbtm_standalone_checkout_open', [response.data.checkout_html]);
+			return true;
+		}
+		if (response.data && response.data.redirect_url) {
+			window.location.href = response.data.redirect_url;
+			return true;
+		}
+		return false;
+	}
+
 	$(document).on('click', '#wbtm_add_to_cart', function (e) {
 		e.preventDefault();
 
 		let this_btn = $(this);
 		if (this_btn.hasClass('wbtm_is_loading')) {
+			wbtm_reset_summary_book_now_buttons();
 			return false;
 		}
 		let form = this_btn.closest('form');
@@ -1078,6 +1116,7 @@
 			}
 		});
 		if (!isValid) {
+			wbtm_reset_summary_book_now_buttons();
 			alert(typeof wbtm_strings !== 'undefined' ? wbtm_strings.fill_required_fields : 'Please fill all required fields');
 			return;
 		}
@@ -1218,15 +1257,20 @@
 				// the visitor is authenticated — same requestData, fresh nonce.
 				suppressCompleteRedirect = true;
 				wbtm_set_loading_button_state(this_btn, false);
+				wbtm_end_standalone_checkout_loading();
+				wbtm_reset_summary_book_now_buttons();
 				$(document).trigger('wbtm_require_login', [requestData, trySubmitBooking]);
 				return;
 			}
 			wbtm_set_loading_button_state(this_btn, false);
+			wbtm_end_standalone_checkout_loading();
+			wbtm_reset_summary_book_now_buttons();
 			var message = (response.data && typeof response.data === 'object' && response.data.message) || response.data;
 			alert(message || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.failed_add_ticket : 'Failed to add ticket'));
 		}
 
 		function trySubmitBooking() {
+			wbtm_begin_standalone_checkout_loading();
 			$.ajax({
 				url: wbtm_ajax_url,
 				type: 'POST',
@@ -1236,13 +1280,16 @@
 				success: function (response) {
 
 					if (response.success) {
-						// Standalone/custom booking mode: no WC cart involved, Pro sends a
-						// checkout redirect instead of cart-fragment HTML.
-						if (response.data && response.data.redirect_url) {
+						// Standalone/custom booking mode: no WC cart involved — Pro opens an
+						// inline checkout modal (preferred) or falls back to the checkout page.
+						if (wbtm_handle_standalone_checkout_response(response)) {
 							suppressCompleteRedirect = true;
-							window.location.href = response.data.redirect_url;
+							wbtm_set_loading_button_state(this_btn, false);
+							wbtm_reset_summary_book_now_buttons();
 							return;
 						}
+						wbtm_end_standalone_checkout_loading();
+						wbtm_reset_summary_book_now_buttons();
 						$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
 						$(document.body).trigger('wc_update_cart');
 						// Re-apply same-day return bus filter based on newly selected outbound bus
@@ -1260,6 +1307,8 @@
 						handleBookingFailure(jqXHR.responseJSON);
 					} else {
 						wbtm_set_loading_button_state(this_btn, false);
+						wbtm_end_standalone_checkout_loading();
+						wbtm_reset_summary_book_now_buttons();
 						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_generic : 'Something went wrong. Please try again.');
 					}
 				},
@@ -1293,6 +1342,7 @@
 		if (typeof wbtm_wc_vars !== 'undefined' && wbtm_wc_vars.login_required && !wbtm_wc_vars.is_logged_in) {
 			suppressCompleteRedirect = true;
 			wbtm_set_loading_button_state(this_btn, false);
+			wbtm_reset_summary_book_now_buttons();
 			$(document).trigger('wbtm_require_login', [requestData, trySubmitBooking]);
 		} else {
 			trySubmitBooking();
@@ -1348,8 +1398,8 @@
 				data: requestData,
 				success: function (response) {
 					if (response.success) {
-						if (response.data && response.data.redirect_url) {
-							window.location.href = response.data.redirect_url;
+						if (wbtm_handle_standalone_checkout_response(response)) {
+							this_btn.prop('disabled', false).html(defaultHtml);
 							return;
 						}
 						$("#wbtm_seleced_start_bus").html(response.data.selected_bus);
