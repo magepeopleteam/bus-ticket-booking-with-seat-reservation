@@ -262,7 +262,7 @@ if (sizeof($bus_ids) > 0) {
                     </div>
                     <div class="price">
                         <?php if ( $route_priced ) { ?>
-                            <h4 class="textTheme"><?php echo wp_kses_post( wc_price($price) ); ?></h4>
+                            <h4 class="textTheme"><?php echo wp_kses_post( WBTM_Global_Function::format_price($price) ); ?></h4>
                         <?php } else { ?>
                             <div class="wbtm-route-unavailable">
                                 <i class="fas fa-circle-info" aria-hidden="true"></i>

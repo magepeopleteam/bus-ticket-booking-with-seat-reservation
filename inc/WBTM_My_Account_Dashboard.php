@@ -75,7 +75,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             global $wp_query;
             $is_endpoint = isset($wp_query->query_vars['bus-booking-dashboard']);
 
-            if ($is_endpoint && !is_admin() && is_main_query() && in_the_loop() && is_account_page()) {
+            if ($is_endpoint && !is_admin() && is_main_query() && in_the_loop() && function_exists('is_account_page') && is_account_page()) {
                 $label = WBTM_Functions::get_name();
                 $title = $label . ' ' . __('Booking Dashboard', 'bus-ticket-booking-with-seat-reservation');
                 remove_filter('the_title', array($this, 'endpoint_title'));
@@ -554,7 +554,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             $booking_date = get_post_meta($booking_id, 'wbtm_booking_date', true);
 
             // Get WooCommerce order for additional details
-            $wc_order = wc_get_order($order_id);
+            $wc_order = function_exists('wc_get_order') ? wc_get_order($order_id) : false;
             $order_total = $wc_order ? $wc_order->get_total() : $fare;
             
             // Group bookings by order ID to show consolidated view
@@ -640,7 +640,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             
             // Verify the order belongs to the current user (unless admin)
             if (!current_user_can('manage_options')) {
-                $wc_order = wc_get_order($order_id);
+                $wc_order = function_exists('wc_get_order') ? wc_get_order($order_id) : false;
                 if (!$wc_order || $wc_order->get_customer_id() != $user_id) {
                     wp_send_json_error(array('message' => __('Booking not found or access denied.', 'bus-ticket-booking-with-seat-reservation')));
                 }
@@ -674,7 +674,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
             $bus_name = get_the_title($bus_id);
             
             // Get WooCommerce order details
-            $wc_order = wc_get_order($order_id);
+            $wc_order = function_exists('wc_get_order') ? wc_get_order($order_id) : false;
             
             // Get all attendee details
             $attendees = array();
@@ -846,7 +846,7 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
          */
         public function enqueue_scripts()
         {
-            if (is_account_page()) {
+            if (function_exists('is_account_page') && is_account_page()) {
                 wp_enqueue_style('wbtm-my-account-dashboard', WBTM_PLUGIN_URL . '/assets/css/my-account-dashboard.css', array(), '1.0.0');
                 wp_enqueue_script('wbtm-my-account-dashboard', WBTM_PLUGIN_URL . '/assets/js/my-account-dashboard.js', array('jquery'), '1.0.0', true);
                 

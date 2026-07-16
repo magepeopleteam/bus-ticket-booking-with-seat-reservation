@@ -11,6 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'WBTM_Functions' ) ) {
 		class WBTM_Functions {
+			/**
+			 * Single source of truth for "is WooCommerce active right now?" — used to
+			 * gate every WC-only sub-loader (cart/checkout hooks, hidden-product mirror,
+			 * coupon-cart bridge) so the rest of the plugin (CPT, admin, search, seat
+			 * plan) keeps working when WooCommerce is inactive.
+			 */
+			public static function is_wc_active() {
+				return class_exists( 'WBTM_Global_Function' ) && WBTM_Global_Function::check_woocommerce() === 1;
+			}
 			public static function is_pro_active() {
 				if ( class_exists( 'WBTM_Dependencies_Pro' ) || class_exists( 'Wbtm_Woocommerce_bus_Pro' ) ) {
 					return true;
@@ -22,6 +31,157 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					&& is_plugin_active( 'addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' )
 					&& file_exists( WP_PLUGIN_DIR . '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' );
 			}
+			//*********** Booking mode (WooCommerce vs. future standalone Custom Payment) ***********//
+
+			/** Option + key the explicit Booking Mode choice is stored under. */
+			const MODE_OPTION = 'wbtm_payment_settings';
+			const MODE_KEY    = 'wbtm_booking_mode';
+
+			/**
+			 * Which booking systems can actually process a booking right now. When only
+			 * one side is available there is nothing to choose — the mode is simply
+			 * whichever one can run (see booking_mode()). Mirrors the same concept in
+			 * the sibling rental plugin's RBFW_Function::mode_availability().
+			 *
+			 * @return string 'both' | 'woocommerce_only' | 'custom_only' | 'none'
+			 */
+			public static function mode_availability(): string {
+				$woo = self::is_wc_active();
+				$pro = self::is_pro_active();
+				if ( $woo && $pro ) {
+					return 'both';
+				}
+				if ( $woo ) {
+					return 'woocommerce_only';
+				}
+				if ( $pro ) {
+					return 'custom_only';
+				}
+				return 'none';
+			}
+
+			/** True only when a real choice exists and the admin hasn't made it yet. */
+			public static function needs_mode_selection(): bool {
+				return 'both' === self::mode_availability() && '' === self::stored_booking_mode();
+			}
+
+			/**
+			 * The admin's explicit stored choice ('woocommerce'|'standalone'), or '' if
+			 * never made. Unlike the rental plugin's equivalent, there is no legacy
+			 * option shape to migrate from here — this is a brand new option in the bus
+			 * plugin — so this simply reads the stored value.
+			 */
+			public static function stored_booking_mode(): string {
+				$opts = get_option( self::MODE_OPTION, array() );
+				$opts = is_array( $opts ) ? $opts : array();
+				if ( ! empty( $opts[ self::MODE_KEY ] ) && in_array( $opts[ self::MODE_KEY ], array( 'woocommerce', 'standalone' ), true ) ) {
+					return $opts[ self::MODE_KEY ];
+				}
+				return '';
+			}
+
+			/**
+			 * Persist an explicit mode choice and keep a legacy-style "Enable WooCommerce
+			 * Payment" mirror in sync, so any future code reading that flag agrees with
+			 * booking_mode(). Only meaningful when mode_availability() === 'both'.
+			 */
+			public static function set_booking_mode( $mode ) {
+				if ( ! in_array( $mode, array( 'woocommerce', 'standalone' ), true ) ) {
+					return false;
+				}
+				$opts                           = get_option( self::MODE_OPTION, array() );
+				$opts                           = is_array( $opts ) ? $opts : array();
+				$opts[ self::MODE_KEY ]         = $mode;
+				$opts['wbtm_enable_wc_payment'] = ( 'woocommerce' === $mode ) ? 'on' : 'off';
+				return update_option( self::MODE_OPTION, $opts );
+			}
+
+			/**
+			 * Active booking mode: 'woocommerce' | 'standalone'.
+			 *
+			 * Auto-resolves when only one system can run, so the two payment systems can
+			 * never both think they own the same booking; falls back to the admin's
+			 * stored choice (default WooCommerce) only when both are available.
+			 */
+			public static function booking_mode(): string {
+				switch ( self::mode_availability() ) {
+					case 'woocommerce_only':
+						return 'woocommerce';
+					case 'custom_only':
+					case 'none':
+						return 'standalone';
+					case 'both':
+					default:
+						return 'standalone' === self::stored_booking_mode() ? 'standalone' : 'woocommerce';
+				}
+			}
+
+			/**
+			 * Retained for parity with the rental plugin's naming: whether the
+			 * WooCommerce cart/checkout should own bookings. Derived from the resolved
+			 * booking mode.
+			 */
+			public static function wc_payment_enabled(): bool {
+				return self::is_wc_active() && 'woocommerce' === self::booking_mode();
+			}
+
+			/**
+			 * Whether the WooCommerce cart/checkout/order flow should be used for bookings.
+			 *
+			 * True only when WooCommerce is active AND the resolved mode is WooCommerce.
+			 * Otherwise bookings would use a future native (standalone) flow.
+			 */
+			public static function use_wc(): bool {
+				return self::is_wc_active() && 'woocommerce' === self::booking_mode();
+			}
+
+			/**
+			 * Whether a customer must be logged in to place / view a booking, scoped to
+			 * the standalone (custom payment) flow — in WooCommerce mode, WooCommerce's
+			 * own account / guest-checkout settings apply instead.
+			 */
+			public static function login_required(): bool {
+				if ( self::use_wc() ) {
+					return false;
+				}
+				$opts = get_option( self::MODE_OPTION, array() );
+				$opts = is_array( $opts ) ? $opts : array();
+				$val  = isset( $opts['wbtm_require_login'] ) ? $opts['wbtm_require_login'] : 'on';
+				return $val !== 'off';
+			}
+
+			/**
+			 * Whether the Pro plugin has at least one custom payment method enabled.
+			 *
+			 * The free plugin never references Pro classes directly: when Pro is active
+			 * it exposes its enabled gateways/offline method via the
+			 * `wbtm_pro_enabled_payment_methods` filter. Without Pro the filter is never
+			 * added, so this is false — there is no standalone checkout to take payment.
+			 */
+			public static function has_enabled_custom_payment(): bool {
+				if ( ! self::is_pro_active() ) {
+					return false;
+				}
+				$methods = apply_filters( 'wbtm_pro_enabled_payment_methods', array() );
+				return ! empty( $methods );
+			}
+
+			/**
+			 * Whether the free plugin can actually complete a booking in this request.
+			 *
+			 * A working checkout path must exist for the *current* mode, not merely a
+			 * plugin being active:
+			 *  - WooCommerce mode: WooCommerce owns checkout, so it is always available.
+			 *  - Standalone mode: at least one Pro custom payment method (PayPal / Stripe
+			 *    / Offline) must be enabled.
+			 */
+			public static function is_booking_available(): bool {
+				if ( self::use_wc() ) {
+					return true;
+				}
+				return self::has_enabled_custom_payment();
+			}
+
 			public static function template_path( $file_name ): string {
 				$template_path = get_stylesheet_directory() . '/templates/';
 				$default_dir   = WBTM_PLUGIN_DIR . '/templates/';
@@ -842,10 +1002,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						<div class="wbtm-full-bus-tooltip-panel" role="status">
 							<span><?php esc_html_e( 'Full Bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 							<?php if ( ! empty( $full_bus_pricing['discount'] ) ) { ?>
-								<del><?php echo wp_kses_post( wc_price( $full_bus_pricing['base_price'] ) ); ?></del>
-								<small><?php echo esc_html( sprintf( __( 'Discount %s', 'bus-ticket-booking-with-seat-reservation' ), wp_strip_all_tags( wc_price( $full_bus_pricing['discount'] ) ) ) ); ?></small>
+								<del><?php echo wp_kses_post( WBTM_Global_Function::format_price( $full_bus_pricing['base_price'] ) ); ?></del>
+								<small><?php echo esc_html( sprintf( __( 'Discount %s', 'bus-ticket-booking-with-seat-reservation' ), wp_strip_all_tags( WBTM_Global_Function::format_price( $full_bus_pricing['discount'] ) ) ) ); ?></small>
 							<?php } ?>
-							<strong><?php echo wp_kses_post( wc_price( $full_bus_price ) ); ?></strong>
+							<strong><?php echo wp_kses_post( WBTM_Global_Function::format_price( $full_bus_price ) ); ?></strong>
 						</div>
 					</div>
 				</div>
@@ -1404,6 +1564,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 			//==========================//
 			public static function check_seat_in_cart( $bus_id, $bp, $dp, $bp_date, $seat_name ) {
+				if ( ! self::is_wc_active() ) {
+					// No WooCommerce: no cart exists, so nothing can be "in cart" yet.
+					return false;
+				}
 				$cart_items = WC()->cart->get_cart();
 				if ( sizeof( $cart_items ) > 0 ) {
 					foreach ( $cart_items as $cart_item ) {

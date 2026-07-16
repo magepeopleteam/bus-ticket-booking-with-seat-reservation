@@ -41,7 +41,7 @@
 	</table>
 	<div class="wbtm_booking_summary_subtotal justifyBetween">
 		<span><?php esc_html_e('Ticket Sub total', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-		<span class="wbtm_summary_preview_subtotal"><?php echo wp_kses_post( wc_price(0) ); ?></span>
+		<span class="wbtm_summary_preview_subtotal"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0) ); ?></span>
 	</div>
 	<?php // Grand total — ticket subtotal + extra services, mirrored from
 	  // .wbtm_total (the same value the real footer/#wbtm_add_to_cart uses),
@@ -49,7 +49,7 @@
 	  // wbtm_global.js. ?>
 	<div class="wbtm_booking_summary_total justifyBetween">
 		<span><?php esc_html_e('Total Price', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-		<span class="wbtm_summary_preview_total"><?php echo wp_kses_post( wc_price(0) ); ?></span>
+		<span class="wbtm_summary_preview_total"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0) ); ?></span>
 	</div>
 	<?php // Disabled by default — enabled only once a seat is selected, see
 	  // wbtm_update_summary_preview() in wbtm_global.js. A native disabled

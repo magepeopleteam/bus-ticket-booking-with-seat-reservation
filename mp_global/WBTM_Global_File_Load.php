@@ -102,6 +102,14 @@
 				// admin setting global
 				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), WBTM_VERSION, true);
 				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), WBTM_VERSION);
+				// Global toast notifications (window.wbtmToast) — available on every gated
+				// plugin admin screen so any settings/list-table script can call it instead
+				// of rolling its own status text or notice box. Versioned by filemtime()
+				// rather than WBTM_VERSION so edits are never served stale from cache.
+				$toast_css = WBTM_PLUGIN_DIR . '/assets/admin/css/wbtm-toast.css';
+				$toast_js  = WBTM_PLUGIN_DIR . '/assets/admin/js/wbtm-toast.js';
+				wp_enqueue_style('wbtm-toast', WBTM_PLUGIN_URL . '/assets/admin/css/wbtm-toast.css', array(), file_exists($toast_css) ? filemtime($toast_css) : WBTM_VERSION);
+				wp_enqueue_script('wbtm-toast', WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-toast.js', array('jquery'), file_exists($toast_js) ? filemtime($toast_js) : WBTM_VERSION, true);
 				do_action('wbtm_add_admin_enqueue');
 			}
 			/**

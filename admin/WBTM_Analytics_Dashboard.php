@@ -92,7 +92,7 @@
 					foreach ($bookings as $booking) {
 						$order_id = get_post_meta($booking->ID, 'wbtm_order_id', true);
 						if ($order_id) {
-							$order = isset( $order_map[ (int) $order_id ] ) ? $order_map[ (int) $order_id ] : wc_get_order($order_id);
+							$order = isset( $order_map[ (int) $order_id ] ) ? $order_map[ (int) $order_id ] : ( function_exists( 'wc_get_order' ) ? wc_get_order($order_id) : false );
 							if ($order) {
 								$order_status = $order->get_status();
 								$total = $order->get_total();
@@ -208,7 +208,7 @@
                                 <span class="dashicons dashicons-money-alt"></span>
                             </div>
                             <div class="stat-content">
-                                <h3><?php echo wp_kses_post(wc_price($stats['total_revenue'])); ?></h3>
+                                <h3><?php echo wp_kses_post(WBTM_Global_Function::format_price($stats['total_revenue'])); ?></h3>
                                 <p><?php esc_html_e('Total Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                             </div>
                         </div>

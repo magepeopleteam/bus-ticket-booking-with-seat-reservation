@@ -321,7 +321,7 @@
                                                                                             >
                                                                                                 <span><?php echo esc_html($ticket_info['name']); ?></span>
                                                                                                 -
-                                                                                                <span><?php echo wp_kses_post( wc_price( $ticket_price ) ); ?></span>
+                                                                                                <span><?php echo wp_kses_post( WBTM_Global_Function::format_price( $ticket_price ) ); ?></span>
                                                                                             </li>
                                                                                         <?php endforeach; ?>
                                                                                     </ul>
@@ -452,7 +452,7 @@
                                                                                 >
                                                                                     <span><?php echo esc_html($ticket_info['name']); ?></span>
                                                                                     -
-                                                                                    <span><?php echo wp_kses_post( wc_price($ticket_price) ); ?></span>
+                                                                                    <span><?php echo wp_kses_post( WBTM_Global_Function::format_price($ticket_price) ); ?></span>
                                                                                 </li>
                                                                             <?php } ?>
                                                                         </ul>
@@ -570,7 +570,7 @@
                                                                                 >
                                                                                     <span><?php echo esc_html($ticket_info['name']); ?></span>
                                                                                     -
-                                                                                    <span><?php echo wp_kses_post( wc_price($ticket_price) ); ?></span>
+                                                                                    <span><?php echo wp_kses_post( WBTM_Global_Function::format_price($ticket_price) ); ?></span>
                                                                                 </li>
                                                                             <?php } ?>
                                                                         </ul>

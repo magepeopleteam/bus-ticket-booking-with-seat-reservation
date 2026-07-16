@@ -53,13 +53,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 		require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Woo_Installer.php';
 	}
 
-	// Fixed by Shahnur — 2026-05-04 03:15 PM (Asia/Dhaka)
-	// Also verify WooCommerce files exist to handle ghost-active state
-	// (plugin marked active in DB but folder deleted manually).
-	if ( is_plugin_active('woocommerce/woocommerce.php') && file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
-
-		if (!class_exists('Wbtm_Woocommerce_bus')) {
-			class Wbtm_Woocommerce_bus {
+	// WooCommerce is optional (auto-detected downstream via WBTM_Functions::is_wc_active()).
+	// This class itself has no WooCommerce dependency — CPT registration, admin settings,
+	// activation page creation, and rewrite handling all need to run regardless of WC state.
+	// The WC-specific pieces (cart/checkout hooks, hidden-product mirror, coupon-cart bridge)
+	// are gated individually, deeper in inc/WBTM_Dependencies.php and its sub-loaders.
+	if (!class_exists('Wbtm_Woocommerce_bus')) {
+		class Wbtm_Woocommerce_bus {
 				public function __construct() {
 					$this->load_plugin();
 				}
@@ -208,13 +208,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					}
 					return $classes;
 				}
-			}
-			new Wbtm_Woocommerce_bus();
 		}
-
-	} else {
-		// WooCommerce is NOT active – load only global functions & styles
-		// The WBTM_Woo_Installer (loaded above for admin) handles the popup
+		new Wbtm_Woocommerce_bus();
 	}
 
 	add_action( 'rest_api_init', 'wbtm_bookings_cunstom_fields_to_rest_init' );
