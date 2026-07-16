@@ -249,8 +249,14 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					array(),
 					null
 				);
-				wp_enqueue_style( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.css', array(), WBTM_VERSION );
-				wp_enqueue_script( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.js', array( 'jquery' ), WBTM_VERSION, true );
+				// Version assets by file mtime so edits bust the browser cache
+				// (falls back to the plugin version if the file can't be stat'd).
+				$css_path = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_bus_list.css';
+				$js_path  = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_bus_list.js';
+				$css_ver  = file_exists( $css_path ) ? filemtime( $css_path ) : WBTM_VERSION;
+				$js_ver   = file_exists( $js_path ) ? filemtime( $js_path ) : WBTM_VERSION;
+				wp_enqueue_style( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.css', array(), $css_ver );
+				wp_enqueue_script( 'wbtm_bus_list', WBTM_PLUGIN_URL . '/assets/admin/wbtm_bus_list.js', array( 'jquery' ), $js_ver, true );
 			}
 
 			/**
@@ -265,6 +271,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'order'          => 'DESC',
 					'no_found_rows'  => true,
 				) );
+				// SEO column data is only gathered when a supported SEO plugin is
+				// active; AIOSEO stores scores in a custom table, so prime them once.
+				$provider   = $this->seo_provider();
+				$aioseo_map = ( $provider && $provider['key'] === 'aioseo' )
+					? $this->aioseo_scores( wp_list_pluck( $query->posts, 'ID' ) )
+					: array();
+
 				$buses = array();
 				foreach ( $query->posts as $post ) {
 					$pid       = $post->ID;
@@ -302,6 +315,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'trash_link'   => get_delete_post_link( $pid ),
 						'restore_link' => wp_nonce_url( admin_url( sprintf( 'post.php?post=%d&action=untrash', $pid ) ), 'untrash-post_' . $pid ),
 						'delete_link'  => get_delete_post_link( $pid, '', true ),
+						'seo'          => $provider ? $this->get_seo_data( $pid, $provider, $aioseo_map ) : null,
 						'duplicate_link' => wp_nonce_url(
 							admin_url( sprintf( 'admin.php?action=wbtm_duplicate_bus&post=%d', $pid ) ),
 							'wbtm_duplicate_bus_' . $pid
@@ -417,6 +431,210 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 			}
 
+			/**
+			 * Detect which SEO plugin is active, if any. Result is cached for the
+			 * request so the constant/function checks only run once.
+			 *
+			 * @return array|null { key: yoast|aioseo|rankmath, label: string } or null.
+			 */
+			private function seo_provider() {
+				static $provider = false; // false = not resolved yet, null = none active.
+				if ( $provider !== false ) {
+					return $provider;
+				}
+				if ( defined( 'WPSEO_VERSION' ) ) {
+					$provider = array( 'key' => 'yoast', 'label' => 'Yoast SEO' );
+				} elseif ( defined( 'AIOSEO_VERSION' ) || function_exists( 'aioseo' ) ) {
+					$provider = array( 'key' => 'aioseo', 'label' => 'All in One SEO' );
+				} elseif ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath', false ) ) {
+					$provider = array( 'key' => 'rankmath', 'label' => 'Rank Math' );
+				} else {
+					$provider = null;
+				}
+
+				return $provider;
+			}
+
+			/**
+			 * Fetch All in One SEO (v4) scores for a set of posts in one query.
+			 * AIOSEO keeps its per-post data in a custom table, so we prime a map
+			 * keyed by post ID instead of querying once per row.
+			 *
+			 * @param int[] $ids Post IDs.
+			 * @return array<int,array> Map of post_id => row.
+			 */
+			private function aioseo_scores( array $ids ): array {
+				global $wpdb;
+				$ids = array_values( array_filter( array_map( 'absint', $ids ) ) );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+				$table = $wpdb->prefix . 'aioseo_posts';
+				// Bail quietly if AIOSEO is detected but its table isn't there yet.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) {
+					return array();
+				}
+				$in = implode( ',', $ids ); // Ints only — safe to inline.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$rows = $wpdb->get_results( "SELECT post_id, seo_score, title, description, keyphrases FROM {$table} WHERE post_id IN ({$in})", ARRAY_A );
+				$map  = array();
+				if ( $rows ) {
+					foreach ( $rows as $row ) {
+						$map[ (int) $row['post_id'] ] = $row;
+					}
+				}
+
+				return $map;
+			}
+
+			/**
+			 * Normalised SEO snapshot for one post, read from the active plugin.
+			 *
+			 * @param int        $post_id    Bus post ID.
+			 * @param array      $provider   Result of seo_provider().
+			 * @param array<int,array> $aioseo_map Pre-fetched AIOSEO rows (AIOSEO only).
+			 * @return array
+			 */
+			private function get_seo_data( $post_id, array $provider, array $aioseo_map = array() ): array {
+				$data = array(
+					'analyzed'  => false,
+					'score'     => null,
+					'rating'    => 'na',
+					'label'     => esc_html__( 'Not analyzed', 'bus-ticket-booking-with-seat-reservation' ),
+					'keyword'   => '',
+					'has_desc'  => false,
+					'has_title' => false,
+					'provider'  => $provider['label'],
+				);
+
+				switch ( $provider['key'] ) {
+					case 'yoast':
+						$raw               = get_post_meta( $post_id, '_yoast_wpseo_linkdex', true );
+						$data['keyword']   = (string) get_post_meta( $post_id, '_yoast_wpseo_focuskw', true );
+						$data['has_desc']  = get_post_meta( $post_id, '_yoast_wpseo_metadesc', true ) !== '';
+						$data['has_title'] = get_post_meta( $post_id, '_yoast_wpseo_title', true ) !== '';
+						if ( $raw !== '' && $raw !== false ) {
+							$data['analyzed'] = true;
+							$data['score']    = (int) $raw;
+						}
+						break;
+
+					case 'aioseo':
+						$row = $aioseo_map[ $post_id ] ?? null;
+						if ( $row ) {
+							if ( isset( $row['seo_score'] ) && $row['seo_score'] !== null && $row['seo_score'] !== '' ) {
+								$data['analyzed'] = true;
+								$data['score']    = (int) $row['seo_score'];
+							}
+							$data['has_desc']  = ! empty( $row['description'] );
+							$data['has_title'] = ! empty( $row['title'] );
+							$keyphrases        = json_decode( (string) ( $row['keyphrases'] ?? '' ), true );
+							if ( is_array( $keyphrases ) && ! empty( $keyphrases['focus']['keyphrase'] ) ) {
+								$data['keyword'] = (string) $keyphrases['focus']['keyphrase'];
+							}
+						}
+						break;
+
+					case 'rankmath':
+						$raw = get_post_meta( $post_id, 'rank_math_seo_score', true );
+						$kw  = (string) get_post_meta( $post_id, 'rank_math_focus_keyword', true );
+						if ( $kw !== '' ) {
+							$parts           = explode( ',', $kw ); // Comma-list; first is primary.
+							$data['keyword'] = trim( $parts[0] );
+						}
+						$data['has_desc']  = get_post_meta( $post_id, 'rank_math_description', true ) !== '';
+						$data['has_title'] = get_post_meta( $post_id, 'rank_math_title', true ) !== '';
+						if ( $raw !== '' && $raw !== false ) {
+							$data['analyzed'] = true;
+							$data['score']    = (int) $raw;
+						}
+						break;
+				}
+
+				if ( $data['analyzed'] ) {
+					$rating         = $this->seo_rating( (int) $data['score'], $provider['key'] );
+					$data['rating'] = $rating['rating'];
+					$data['label']  = $rating['label'];
+				}
+
+				return $data;
+			}
+
+			/**
+			 * Map a 0-100 score to a rating + label using each plugin's own colour
+			 * bands (so the badge matches what the user sees inside that plugin).
+			 * A score of 0 (no focus keyword / not measurable) falls through to "na".
+			 */
+			private function seo_rating( int $score, string $key ): array {
+				$good = esc_html__( 'Good', 'bus-ticket-booking-with-seat-reservation' );
+				$ok   = esc_html__( 'Needs work', 'bus-ticket-booking-with-seat-reservation' );
+				$bad  = esc_html__( 'Poor', 'bus-ticket-booking-with-seat-reservation' );
+				$na   = esc_html__( 'Not analyzed', 'bus-ticket-booking-with-seat-reservation' );
+
+				switch ( $key ) {
+					case 'aioseo':
+						if ( $score >= 80 ) { return array( 'rating' => 'good', 'label' => $good ); }
+						if ( $score >= 50 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
+						if ( $score > 0 )   { return array( 'rating' => 'bad', 'label' => $bad ); }
+						break;
+					case 'rankmath':
+						if ( $score > 80 ) { return array( 'rating' => 'good', 'label' => $good ); }
+						if ( $score > 50 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
+						if ( $score > 0 )  { return array( 'rating' => 'bad', 'label' => $bad ); }
+						break;
+					default: // Yoast bands: 71-100 good, 41-70 ok, 1-40 bad.
+						if ( $score > 70 ) { return array( 'rating' => 'good', 'label' => $good ); }
+						if ( $score > 40 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
+						if ( $score > 0 )  { return array( 'rating' => 'bad', 'label' => $bad ); }
+				}
+
+				return array( 'rating' => 'na', 'label' => $na );
+			}
+
+			/**
+			 * Render the SEO cell: a circular score gauge plus signal chips
+			 * (focus keyword / meta description) and the source plugin name.
+			 */
+			private function seo_cell( array $seo ): void {
+				$rating    = $seo['rating'];
+				$has_score = $rating !== 'na' && $seo['score'] !== null;
+				$score     = (int) $seo['score'];
+				$radius    = 15.5;
+				$circ      = 2 * M_PI * $radius;
+				$pct       = $has_score ? max( 0, min( 100, $score ) ) : 0;
+				$offset    = round( $circ * ( 1 - $pct / 100 ), 2 );
+
+				$tip = array( $seo['provider'] . ': ' . $seo['label'] . ( $has_score ? ' (' . $score . '/100)' : '' ) );
+				$tip[] = $seo['keyword'] !== ''
+					? sprintf( esc_html__( 'Focus keyword: %s', 'bus-ticket-booking-with-seat-reservation' ), $seo['keyword'] )
+					: esc_html__( 'No focus keyword set', 'bus-ticket-booking-with-seat-reservation' );
+				$tip[] = $seo['has_desc']
+					? esc_html__( 'Meta description: set', 'bus-ticket-booking-with-seat-reservation' )
+					: esc_html__( 'Meta description: missing', 'bus-ticket-booking-with-seat-reservation' );
+				?>
+				<div class="wbtm-seo wbtm-seo-<?php echo esc_attr( $rating ); ?>" title="<?php echo esc_attr( implode( "\n", $tip ) ); ?>">
+					<span class="wbtm-seo-ring">
+						<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+							<circle class="wbtm-seo-track" cx="20" cy="20" r="<?php echo esc_attr( $radius ); ?>" fill="none" stroke-width="4"/>
+							<?php if ( $has_score ) : ?>
+								<circle class="wbtm-seo-bar" cx="20" cy="20" r="<?php echo esc_attr( $radius ); ?>" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="<?php echo esc_attr( round( $circ, 2 ) ); ?>" stroke-dashoffset="<?php echo esc_attr( $offset ); ?>" transform="rotate(-90 20 20)"/>
+							<?php endif; ?>
+						</svg>
+						<span class="wbtm-seo-score"><?php echo $has_score ? esc_html( $score ) : '&ndash;'; ?></span>
+					</span>
+					<span class="wbtm-seo-meta">
+						<span class="wbtm-seo-label"><?php echo esc_html( $seo['label'] ); ?></span>
+						<span class="wbtm-seo-signals">
+							<span class="wbtm-seo-chip <?php echo $seo['keyword'] !== '' ? 'on' : 'off'; ?>" title="<?php echo esc_attr( $seo['keyword'] !== '' ? sprintf( esc_html__( 'Focus keyword: %s', 'bus-ticket-booking-with-seat-reservation' ), $seo['keyword'] ) : esc_html__( 'No focus keyword set', 'bus-ticket-booking-with-seat-reservation' ) ); ?>"><?php esc_html_e( 'KW', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<span class="wbtm-seo-chip <?php echo $seo['has_desc'] ? 'on' : 'off'; ?>" title="<?php echo esc_attr( $seo['has_desc'] ? esc_html__( 'Meta description set', 'bus-ticket-booking-with-seat-reservation' ) : esc_html__( 'Meta description missing', 'bus-ticket-booking-with-seat-reservation' ) ); ?>"><?php esc_html_e( 'Desc', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						</span>
+						<span class="wbtm-seo-provider"><?php echo esc_html( $seo['provider'] ); ?></span>
+					</span>
+				</div>
+				<?php
+			}
+
 			public function render_page() {
 				$name = WBTM_Functions::get_name();
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -445,6 +663,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$trash         = isset( $status_counts->trash ) ? (int) $status_counts->trash : 0;
 
 				$buses     = $is_trash ? $this->get_buses( array( 'trash' ) ) : $active;
+				$seo_provider = $this->seo_provider();
 				$base_url  = admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 				$trash_url = add_query_arg( 'wbtm_status', 'trash', $base_url );
 				$add_url   = admin_url( 'post-new.php?post_type=wbtm_bus' );
@@ -545,6 +764,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									<th><?php printf( esc_html__( '%s Type', 'bus-ticket-booking-with-seat-reservation' ), esc_html( $name ) ); ?></th>
 									<th><?php echo esc_html( WBTM_Translations::text_coach_type() ); ?></th>
 									<th><?php esc_html_e( 'Status', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
+									<?php if ( $seo_provider ) : ?>
+										<th title="<?php echo esc_attr( sprintf( esc_html__( 'SEO score from %s', 'bus-ticket-booking-with-seat-reservation' ), $seo_provider['label'] ) ); ?>"><?php esc_html_e( 'SEO', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
+									<?php endif; ?>
 									<th><?php esc_html_e( 'Actions', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
 								</tr>
 							</thead>
@@ -576,6 +798,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 										<td data-label="<?php esc_attr_e( 'Type', 'bus-ticket-booking-with-seat-reservation' ); ?>"><span class="wbtm-t-badge type"><?php echo esc_html( $b['bus_type'] ); ?></span></td>
 										<td data-label="<?php esc_attr_e( 'Coach', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php if ( $b['type'] ) : ?><span class="wbtm-t-badge <?php echo $b['is_ac'] ? 'ac' : 'nonac'; ?>"><?php echo esc_html( $b['type'] ); ?></span><?php else : ?>-<?php endif; ?></td>
 										<td data-label="<?php esc_attr_e( 'Status', 'bus-ticket-booking-with-seat-reservation' ); ?>"><span class="wbtm-status-dot status-<?php echo esc_attr( $b['status'] ); ?>"><?php echo esc_html( $this->status_label( $b['status'] ) ); ?></span></td>
+										<?php if ( $seo_provider ) : ?>
+											<td class="wbtm-seo-cell" data-label="<?php esc_attr_e( 'SEO', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php if ( ! empty( $b['seo'] ) ) { $this->seo_cell( $b['seo'] ); } else { echo '-'; } ?></td>
+										<?php endif; ?>
 										<td data-label="<?php esc_attr_e( 'Actions', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 											<div class="wbtm-table-actions">
 											<?php if ( $is_trash ) : ?>
