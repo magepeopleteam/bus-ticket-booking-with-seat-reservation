@@ -439,6 +439,25 @@ button.wbtm-bme__btn.wbtm-bme__btn--primary.wbtm-bme__split-caret{
 /* "Change image"/"Remove" text links, injected by JS below the preview box. */
 .wbtm-bme__logo-acts{display:flex;align-items:center;gap:22px;padding:14px 0 0;}
 
+.wbtm-bme__payment-notice{text-align:center;background:#fef3c7;color:#b45309;font-size:13px;font-weight:600;padding:10px 26px;margin:0 0 12px;border-radius:0;}
+.wbtm-bme__payment-notice-link{color:#b45309;text-decoration:underline;margin-left:4px;}
+.wbtm-bme__payment-notice-link:hover{color:#92400e;}
+.wbtm-bme__rail-payment-warning{margin:12px 16px 14px;padding:5px 14px !important;border-radius:10px;border:1px solid #ddd;background:#fef3c7;color:#b45309;font-size:12px;font-weight:600;line-height:1.5;text-align:right;width:calc(100% - 32px);box-sizing:border-box;}
+.wbtm-bme__rail-payment-warning a{color:#b45309;text-decoration:underline;font-weight:700;}
+.wbtm-bme__rail-payment-warning a:hover{color:#92400e;}
+.wbtm-bme__rail-payment-link{display:block !important;margin:12px 16px 14px auto !important;padding:5px 14px !important;border-radius:10px;border:1px solid #ddd;background:#f6f7f7;font-size:12px;font-weight:600;line-height:1.5;text-align:right !important;width:70% !important;box-sizing:border-box;}
+.wbtm-bme__rail-payment-link a{color:var(--brand,#2451e0);text-decoration:underline;font-weight:700;}
+.wbtm-bme__rail-payment-link a:hover{color:#1a3aa8;}
+.wbtm-bme__payment-modal{position:fixed;inset:0;background:rgba(15,23,42,.68);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);z-index:100001;align-items:center;justify-content:center;padding:24px;}
+.wbtm-bme__payment-modal-box{position:relative;background:#f8fafc;border:1px solid rgba(255,255,255,.72);border-radius:20px;max-width:860px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(15,23,42,.32),0 8px 24px rgba(15,23,42,.16);}
+.wbtm-bme__payment-modal-box::before{content:"";position:absolute;top:0;left:0;right:0;z-index:3;height:5px;background:linear-gradient(90deg,#315bdc 0%,#6366f1 52%,#8b5cf6 100%);}
+.wbtm-bme__payment-modal-head{display:flex;align-items:center;justify-content:space-between;padding:23px 26px 19px;border-bottom:1px solid #e5eaf2;position:sticky;top:0;background:linear-gradient(145deg,#f8faff 0%,#fff 70%);z-index:2;}
+.wbtm-bme__payment-modal-head h2{margin:0;font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:17px;font-weight:750;color:#172033;letter-spacing:-.01em;}
+.wbtm-bme__payment-modal-close{display:grid;place-items:center;width:34px;height:34px;min-height:0;border:1px solid #dce3ee;border-radius:10px;background:#fff;font-size:20px;line-height:1;cursor:pointer;color:#64748b;padding:0;transition:.15s;}
+.wbtm-bme__payment-modal-close:hover{border-color:#cbd5e1;background:#f3f6fa;color:#172033;transform:rotate(4deg);}
+.wbtm-bme__payment-modal-body{padding:24px;background:#f8fafc;}
+@media(max-width:760px){.wbtm-bme__payment-modal{padding:12px;}.wbtm-bme__payment-modal-head{padding:20px 18px 16px;}.wbtm-bme__payment-modal-body{padding:16px;}}
+
 .wbtm-bme__rail-empty{padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.5;}
 
 /* Enable/Disable Gallery toggle row */
@@ -496,7 +515,7 @@ button.wbtm-bme__btn.wbtm-bme__btn--primary.wbtm-bme__split-caret{
 .wbtm-bme__navinner .wbtm-bme__btn--primary{justify-self:end;}
 
 /* Toast */
-.wbtm-bme__toast{position:fixed;bottom:90px;left:54%;transform:translate(-50%,16px);opacity:0;visibility:hidden;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:100001;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s ease,visibility .3s;}
+.wbtm-bme__toast{position:fixed;bottom:90px;left:54%;transform:translate(-50%,16px);opacity:0;visibility:hidden;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 12px 30px rgba(0,0,0,.25);z-index:100002;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s ease,visibility .3s;}
 .wbtm-bme__toast.show{transform:translate(-50%,0);opacity:1;visibility:visible;pointer-events:auto;}
 .wbtm-bme__toast .dashicons{color:#4ade80;}
 

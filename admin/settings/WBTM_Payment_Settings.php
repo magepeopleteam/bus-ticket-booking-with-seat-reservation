@@ -56,6 +56,19 @@
 				return $screen && ( $screen->id === self::SCREEN || strpos( $screen->id, 'wbtm_settings_page' ) !== false );
 			}
 
+			/** Settings page or bus edit screen (modern payment modal / rail card). */
+			private function is_payment_ui_context() {
+				if ( $this->is_settings_screen() ) {
+					return true;
+				}
+				$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+				if ( ! $screen || $screen->base !== 'post' ) {
+					return false;
+				}
+				$cpt = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_cpt() : 'wbtm_bus';
+				return $screen->post_type === $cpt;
+			}
+
 			private function has_woo() {
 				return class_exists( 'WBTM_Functions' ) ? WBTM_Functions::is_wc_active() : class_exists( 'WooCommerce' );
 			}
@@ -67,6 +80,116 @@
 			private function opt( $key, $default = '' ) {
 				$o = get_option( self::OPTION, array() );
 				return isset( $o[ $key ] ) ? $o[ $key ] : $default;
+			}
+
+			/**
+			 * True when the active booking mode has at least one usable gateway.
+			 */
+			public static function has_functional_payment_method(): bool {
+				if ( ! class_exists( 'WBTM_Payment_Status_Checker' ) ) {
+					return false;
+				}
+				return ( new WBTM_Payment_Status_Checker() )->has_gateway_for_active_mode();
+			}
+
+			/**
+			 * Human-readable label for the active booking mode.
+			 */
+			public static function get_booking_mode_label(): string {
+				$mode = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce';
+				if ( 'standalone' === $mode ) {
+					return __( 'Custom Payment', 'bus-ticket-booking-with-seat-reservation' );
+				}
+				if ( 'woocommerce' === $mode ) {
+					return __( 'WooCommerce', 'bus-ticket-booking-with-seat-reservation' );
+				}
+				return __( 'Not set', 'bus-ticket-booking-with-seat-reservation' );
+			}
+
+			/**
+			 * Names of gateways currently enabled for the active booking mode.
+			 *
+			 * @return string[]
+			 */
+			public static function get_active_gateway_names(): array {
+				$names = array();
+				if ( ! class_exists( 'WBTM_Payment_Status_Checker' ) ) {
+					return $names;
+				}
+				$checker = new WBTM_Payment_Status_Checker();
+				$mode    = $checker->active_mode();
+				if ( 'woocommerce' === $mode ) {
+					foreach ( $checker->get_enabled_woocommerce_gateways() as $gateway ) {
+						if ( is_object( $gateway ) && method_exists( $gateway, 'get_method_title' ) ) {
+							$names[] = $gateway->get_method_title();
+						}
+					}
+					return $names;
+				}
+				foreach ( $checker->get_enabled_pro_payment_methods() as $label ) {
+					$names[] = is_string( $label ) ? $label : (string) $label;
+				}
+				return $names;
+			}
+
+			/**
+			 * Compact Payment Method card body for the bus edit right rail
+			 * (matches tour / service-booking-manager payment card).
+			 */
+			public function render_sidebar_card() {
+				$pm_active        = self::has_functional_payment_method();
+				$pm_type_label    = self::get_booking_mode_label();
+				$pm_gateway_names = self::get_active_gateway_names();
+				?>
+				<div class="wbtm-bme__feat-head"><?php esc_html_e( 'Payment Method', 'bus-ticket-booking-with-seat-reservation' ); ?></div>
+				<div class="wbtm-bme__rail-info-list">
+					<div class="wbtm-bme__rail-info-row">
+						<span><?php esc_html_e( 'Active Method', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						<strong><?php echo esc_html( $pm_type_label ); ?></strong>
+					</div>
+					<div class="wbtm-bme__rail-info-row">
+						<span><?php esc_html_e( 'Active Gateway', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						<strong><?php echo esc_html( $pm_gateway_names ? implode( ', ', $pm_gateway_names ) : __( 'None', 'bus-ticket-booking-with-seat-reservation' ) ); ?></strong>
+					</div>
+					<?php if ( $pm_gateway_names ) : ?>
+						<p class="wbtm-bme__rail-payment-link">
+							<a href="#" data-wbtm-payment-modal-open><?php esc_html_e( 'Payment Settings', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
+						</p>
+					<?php endif; ?>
+					<?php if ( ! $pm_active ) : ?>
+						<p class="wbtm-bme__rail-payment-warning">
+							<a href="#" data-wbtm-payment-modal-open><?php esc_html_e( 'Configure payment method', 'bus-ticket-booking-with-seat-reservation' ); ?></a>
+						</p>
+					<?php endif; ?>
+				</div>
+				<?php
+			}
+
+			/**
+			 * Full Payments panel for the bus-edit modal — reuses the same mode
+			 * selector / sub-tabs / WC manager / gateway cards as Settings → Payments.
+			 * Misc Settings-API fields (redirect, confirm status) stay on the global
+			 * settings page to avoid nesting those inputs inside the #post form.
+			 */
+			public function render_edit_panel() {
+				$settings_url = admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page#wbtm_payment_settings' );
+				?>
+				<div class="wbtm-edit-payment-panel">
+					<?php $this->render_mode_selector(); ?>
+					<?php $this->render_sub_tabs(); ?>
+					<div class="woocommerce-field wc-payment-methods-field">
+						<?php $this->render_wc_payment_manager(); ?>
+					</div>
+					<div class="no-woocommerce-field payment-gateways-container">
+						<?php $this->render_gateway_cards( false ); ?>
+					</div>
+					<p class="wbtm-edit-payment-panel-foot">
+						<a href="<?php echo esc_url( $settings_url ); ?>">
+							<?php esc_html_e( 'Open full Payment Settings', 'bus-ticket-booking-with-seat-reservation' ); ?>
+						</a>
+					</p>
+				</div>
+				<?php
 			}
 
 			/**
@@ -413,7 +536,7 @@
 			}
 
 			/** PayPal / Stripe / Offline gateway cards + booking confirmation page. */
-			public function render_gateway_cards() {
+			public function render_gateway_cards( $show_standalone_fields = true ) {
 				$is_pro      = $this->is_pro();
 				$pp_enabled  = $this->opt( 'wbtm_paypal_enable' ) === 'on';
 				$st_enabled  = $this->opt( 'wbtm_stripe_enable' ) === 'on';
@@ -511,6 +634,7 @@
 					</div>
 				</div>
 
+				<?php if ( $show_standalone_fields ) : ?>
 				<!-- Booking Confirmation Page -->
 				<?php $req_login = $this->opt( 'wbtm_require_login', 'on' ) !== 'off'; ?>
 				<div class="wbtm-conf-page">
@@ -541,6 +665,7 @@
 						?>
 					</div>
 				</div>
+				<?php endif; ?>
 				<?php
 			}
 
@@ -659,7 +784,7 @@
 
 			/** PayPal / Stripe / Offline Configure modals (footer). Pro-only for PayPal/Stripe. */
 			public function render_gateway_modals() {
-				if ( ! $this->is_settings_screen() ) {
+				if ( ! $this->is_payment_ui_context() ) {
 					return;
 				}
 				$pp_enabled  = $this->opt( 'wbtm_paypal_enable' ) === 'on';
@@ -878,13 +1003,16 @@
 
 			/** Sub-tab switching + gateway card styling (footer). */
 			public function payment_tabs_script() {
-				if ( ! $this->is_settings_screen() ) {
+				if ( ! $this->is_payment_ui_context() ) {
 					return;
 				}
 				$wc_active = $this->has_woo() ? 'true' : 'false';
 				?>
 				<style>
 				:root{--wbtm-pay-accent:#F12971;}
+				.wbtm-edit-payment-panel-foot{margin:14px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;font-size:12px;text-align:right;}
+				.wbtm-edit-payment-panel-foot a{color:#2271b1;text-decoration:underline;font-weight:600;}
+				.wbtm-edit-payment-panel .wbtm-acc-header .wbtm-acc-bar{margin:14px 0 4px;}
 				/* Sub-tab bar */
 				.payment-sub-tabs-wrapper{margin:6px 0 22px;background:#fff;padding:6px;border-radius:12px;border:1px solid #e7e8ec;box-shadow:0 1px 2px rgba(16,24,40,0.04);display:inline-block;}
 				.payment-sub-tabs.nav-tab-wrapper{border-bottom:none !important;padding:0 !important;margin:0 !important;display:flex;gap:6px;}
@@ -1047,12 +1175,13 @@
 
 					function updateTabs(){
 						var activeTabId = $('.payment-sub-tabs .nav-tab-active').attr('href').replace('#','');
-						$('.bm-gs__field-row.woocommerce-field, div.woocommerce-field, .bm-gs__field-row.no-woocommerce-field').hide();
+						$('.bm-gs__field-row.woocommerce-field, div.woocommerce-field, .bm-gs__field-row.no-woocommerce-field, .wbtm-edit-payment-panel .no-woocommerce-field').hide();
 						if (activeTabId === 'woocommerce-field') {
 							$('div.woocommerce-field').show();
 							if (wcActive) { $('.bm-gs__field-row.woocommerce-field').stop(true,true).show(); refreshAccordions(); }
 						} else {
 							$('.bm-gs__field-row.' + activeTabId).show();
+							$('.wbtm-edit-payment-panel .' + activeTabId).show();
 						}
 					}
 					$('.payment-sub-tabs .nav-tab').on('click', function(e){

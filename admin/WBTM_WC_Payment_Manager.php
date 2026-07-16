@@ -40,10 +40,14 @@
 			// ---------------------------------------------------------------
 
 			public function enqueue_assets( $hook ) {
-				unset( $hook );
-
-				$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-				if ( ! $screen || strpos( $screen->id, 'wbtm_settings_page' ) === false ) {
+				$screen      = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+				$on_settings = $screen && strpos( $screen->id, 'wbtm_settings_page' ) !== false;
+				$cpt         = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_cpt() : 'wbtm_bus';
+				$on_bus_edit = $screen
+					&& in_array( $hook, array( 'post.php', 'post-new.php' ), true )
+					&& $screen->base === 'post'
+					&& $screen->post_type === $cpt;
+				if ( ! $on_settings && ! $on_bus_edit ) {
 					return;
 				}
 

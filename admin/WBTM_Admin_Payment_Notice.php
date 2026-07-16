@@ -36,6 +36,13 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 				return;
 			}
 
+			// The modern bus editor renders its own inline payment banner (below the
+			// stepper) with a modal to fix the problem in place — showing this global
+			// notice there too would be a duplicate warning.
+			if ( $this->is_modern_bus_editor() ) {
+				return;
+			}
+
 			// Mode-aware: warn when the system that actually owns bookings right now has
 			// no usable gateway — even if the other (inactive) system does.
 			if ( $this->checker->has_gateway_for_active_mode() ) {
@@ -55,6 +62,19 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 				<p><?php echo wp_kses_post( $this->action_links() ); ?></p>
 			</div>
 			<?php
+		}
+
+		/** True on the bus add/edit screen while the modern editor UI is active. */
+		private function is_modern_bus_editor() {
+			if ( ! function_exists( 'get_current_screen' ) ) {
+				return false;
+			}
+			$screen = get_current_screen();
+			$cpt    = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::get_cpt() : 'wbtm_bus';
+			if ( ! $screen || $screen->base !== 'post' || $screen->post_type !== $cpt ) {
+				return false;
+			}
+			return class_exists( 'WBTM_Settings_Modern' ) && WBTM_Settings_Modern::current_ui() === 'modern';
 		}
 
 		/** Build the contextual "fix it" links shown under the notice. */

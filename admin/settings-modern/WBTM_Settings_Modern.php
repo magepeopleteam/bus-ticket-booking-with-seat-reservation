@@ -309,6 +309,33 @@
 						<?php endforeach; ?>
 					</div>
 
+					<?php if ( class_exists( 'WBTM_Payment_Settings' ) && ! WBTM_Payment_Settings::has_functional_payment_method() ) : ?>
+						<div class="wbtm-bme__payment-notice" id="wbtm-bme-payment-notice">
+							<?php esc_html_e( 'No payment method is currently configured.', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							<a href="#" class="wbtm-bme__payment-notice-link" data-wbtm-payment-modal-open>
+								<?php esc_html_e( 'Please configure a payment method to accept bookings.', 'bus-ticket-booking-with-seat-reservation' ); ?>
+							</a>
+						</div>
+					<?php endif; ?>
+
+					<div class="wbtm-bme__payment-modal" id="wbtm-bme-payment-modal" data-wbtm-payment-modal style="display:none;">
+						<div class="wbtm-bme__payment-modal-box">
+							<div class="wbtm-bme__payment-modal-head">
+								<h2><?php esc_html_e( 'Payment Method', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+								<button type="button" class="wbtm-bme__payment-modal-close" data-wbtm-payment-modal-close aria-label="<?php esc_attr_e( 'Close', 'bus-ticket-booking-with-seat-reservation' ); ?>">&times;</button>
+							</div>
+							<div class="wbtm-bme__payment-modal-body" id="wbtm-bme-payment-modal-body">
+								<?php
+								if ( class_exists( 'WBTM_Payment_Settings' ) ) {
+									( new ReflectionClass( 'WBTM_Payment_Settings' ) )
+										->newInstanceWithoutConstructor()
+										->render_edit_panel();
+								}
+								?>
+							</div>
+						</div>
+					</div>
+
 					<div class="wbtm-bme__wrap">
 
 						<div class="wbtm-bme__body">
@@ -442,6 +469,17 @@
 							</button>
 						</div>
 					</div>
+
+					<?php if ( class_exists( 'WBTM_Payment_Settings' ) ) : ?>
+					<div class="wbtm-bme__rail-card wbtm-bme__payment-card wbtm-bme__rail-card--loading">
+						<?php $this->render_rail_card_skeleton( 'info' ); ?>
+						<?php
+						( new ReflectionClass( 'WBTM_Payment_Settings' ) )
+							->newInstanceWithoutConstructor()
+							->render_sidebar_card();
+						?>
+					</div>
+					<?php endif; ?>
 
 					<div class="wbtm-bme__rail-card wbtm-bme__rail-card--loading" data-bme-step-only="seat pricing advanced">
 						<?php $this->render_rail_card_skeleton( 'info' ); ?>

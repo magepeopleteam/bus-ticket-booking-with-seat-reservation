@@ -1679,6 +1679,52 @@
 		}, 500);
 	})();
 
+	/* ---------------------------------------------------------------- *
+	 *  Payment Method modal — reuses Settings → Payments panel markup.
+	 * ---------------------------------------------------------------- */
+	var $paymentModal = $('#wbtm-bme-payment-modal');
+	if ($paymentModal.length) {
+		$paymentModal.appendTo('body');
+		$(document).on('click', '[data-wbtm-payment-modal-open]', function (e) {
+			e.preventDefault();
+			$paymentModal.css('display', 'flex');
+		});
+		$(document).on('click', '[data-wbtm-payment-modal-close]', function () {
+			$paymentModal.hide();
+		});
+		$paymentModal.on('click', function (e) {
+			if (e.target === this) { $paymentModal.hide(); }
+		});
+		$(document).on('keydown', function (e) {
+			if ((e.key === 'Escape' || e.keyCode === 27) && $paymentModal.is(':visible')) {
+				$paymentModal.hide();
+			}
+		});
+
+		// The payment panel's own AJAX handlers (gateway toggle/save, booking
+		// mode, custom gateways) come from the Settings page and only update
+		// inline status text — surface each successful save through this
+		// editor's toast too, so the feedback is unmissable.
+		var paymentActions = {
+			wbtm_wc_toggle_gateway:     null, // message built from response below
+			wbtm_wc_save_gateway:       'Payment gateway settings saved',
+			wbtm_save_gateway_settings: 'Payment gateway settings saved',
+			wbtm_save_booking_mode:     'Booking mode saved'
+		};
+		$(document).ajaxSuccess(function (event, xhr, settings, response) {
+			var data = typeof settings.data === 'string' ? settings.data : '';
+			var m = data.match(/(?:^|&)action=([^&]+)/);
+			if (!m || !(m[1] in paymentActions)) { return; }
+			if (!response || response.success !== true) { return; }
+			var msg = paymentActions[m[1]];
+			if (m[1] === 'wbtm_wc_toggle_gateway') {
+				var on = response.data && response.data.enabled === 'yes';
+				msg = on ? 'Payment gateway enabled' : 'Payment gateway disabled';
+			}
+			toast(msg);
+		});
+	}
+
 	// Initialise.
 	goStep(0);
 
