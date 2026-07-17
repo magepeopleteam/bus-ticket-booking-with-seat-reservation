@@ -1068,6 +1068,11 @@
 		return typeof wbtm_wc_vars !== 'undefined' && wbtm_wc_vars.booking_mode === 'standalone';
 	}
 
+	// Standalone/Custom Payment mode has no WooCommerce cart to stage a round trip in,
+	// so the outbound leg's booking group id is held here after it is staged. The
+	// return leg is then linked to this group so both legs check out as one order.
+	var wbtm_standalone_outbound_group_id = 0;
+
 	function wbtm_begin_standalone_checkout_loading() {
 		if (wbtm_is_standalone_booking_mode()) {
 			$(document).trigger('wbtm_standalone_checkout_loading');
@@ -1213,6 +1218,14 @@
 			"wbtm_price_leg": form.find(':input[name=wbtm_price_leg]').val() || "outbound",
 			// Journey role (which tab booked from), independent of the internal fare leg.
 			"wbtm_journey_type": (burPosition === 'return_bus') ? 'return' : 'departure',
+			// Round-trip context for Standalone/Custom Payment mode: whether a return was
+			// requested (so the outbound leg is staged instead of checked out), and the
+			// staged outbound booking group the return leg must be linked to.
+			"wbtm_round_trip": returnRequested ? '1' : '0',
+			"wbtm_return_group_id": (burPosition === 'return_bus') ? wbtm_standalone_outbound_group_id : 0,
+			// When re-staging the outbound leg (e.g. after "Change Departure"), tell the
+			// server which previously-staged outbound to discard so it stops holding seats.
+			"wbtm_prev_outbound_group_id": (burPosition === 'return_bus') ? 0 : wbtm_standalone_outbound_group_id,
 			"wbtm_start_point": form.find(':input[name=wbtm_start_point]').val(),
 			"wbtm_cabin_mode_enabled": wbtm_cabin_mode_enabled,
 			"wbtm_start_time": form.find(':input[name=wbtm_start_time]').val(),
@@ -1280,6 +1293,11 @@
 				success: function (response) {
 
 					if (response.success) {
+						// Standalone round trip: the outbound leg is staged (no checkout yet)
+						// and its booking group id is returned so the return leg can join it.
+						if (response.data && response.data.outbound_group_id) {
+							wbtm_standalone_outbound_group_id = response.data.outbound_group_id;
+						}
 						// Standalone/custom booking mode: no WC cart involved — Pro opens an
 						// inline checkout modal (preferred) or falls back to the checkout page.
 						if (wbtm_handle_standalone_checkout_response(response)) {

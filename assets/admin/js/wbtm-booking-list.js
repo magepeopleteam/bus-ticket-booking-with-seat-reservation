@@ -14,14 +14,47 @@
 		$('.wbtm-bkl-dropdown.is-open').each(function () {
 			$(this).removeClass('is-open drop-up');
 			$(this).find('.wbtm-bkl-dropdown-toggle').attr('aria-expanded', 'false');
+			// Clear the JS-applied fixed positioning so the menu reverts to its CSS default.
+			$(this).find('.wbtm-bkl-dropdown-menu').removeAttr('style');
 		});
+	}
+
+	/* The row-actions menu lives inside .wbtm-bkl-table-wrap, which needs
+	   overflow-x:auto for horizontal scroll on narrow screens — and per the CSS
+	   spec that forces the vertical axis to clip too, cutting off an absolutely
+	   positioned menu. Positioning the OPEN menu as position:fixed (anchored to
+	   the toggle button via getBoundingClientRect) lets it escape that clipping
+	   entirely and flip above the button when there isn't room below. */
+	function positionDropdownMenu($dropdown, toggleEl) {
+		var $menu = $dropdown.find('.wbtm-bkl-dropdown-menu');
+		// Render off-screen first so we can measure its real size. right:auto is
+		// essential — the CSS pins right:0, and leaving it set alongside our left
+		// would stretch the menu across the full width.
+		$menu.css({ position: 'fixed', display: 'block', visibility: 'hidden', top: '0px', left: '0px', right: 'auto', bottom: 'auto' });
+		var rect  = toggleEl.getBoundingClientRect();
+		var menuW = $menu.outerWidth();
+		var menuH = $menu.outerHeight();
+		var gap   = 4;
+
+		var left = rect.right - menuW; // right-align the menu to the button
+		if (left < 8) { left = 8; }
+		if (left + menuW > window.innerWidth - 8) { left = window.innerWidth - 8 - menuW; }
+
+		var spaceBelow = window.innerHeight - rect.bottom;
+		var top = ( spaceBelow < menuH + gap && rect.top > menuH + gap )
+			? rect.top - menuH - gap   // not enough room below -> flip above
+			: rect.bottom + gap;
+
+		$menu.css({ left: left + 'px', top: top + 'px', visibility: 'visible' });
 	}
 
 	/* Patches every status pill/badge on the page referencing this booking id —
 	   the row badge in the list and the two pills on the detail page (H1 + card)
 	   all need to stay in sync after a status change. */
 	function paintStatus(id, badgeHtml) {
-		$('tr[data-row-id="' + id + '"]').find('td').eq(6).html(badgeHtml);
+		// Target the Status cell by its data-col so it stays correct no matter how
+		// many columns are hidden (a positional index breaks once columns toggle).
+		$('tr[data-row-id="' + id + '"]').find('td[data-col="status"]').html(badgeHtml);
 		$('.wbtm-bkl-current-status[data-booking-id="' + id + '"]').html(badgeHtml);
 	}
 
@@ -48,12 +81,22 @@
 			var willOpen = !$dropdown.hasClass('is-open');
 			closeAllDropdowns();
 			if (willOpen) {
-				var spaceBelow = window.innerHeight - this.getBoundingClientRect().bottom;
-				$dropdown.toggleClass('drop-up', spaceBelow < 220);
 				$dropdown.addClass('is-open');
 				$(this).attr('aria-expanded', 'true');
+				positionDropdownMenu($dropdown, this);
 			}
 		});
+
+		/* A fixed-positioned menu doesn't move with the page/table scroll, so
+		   close it on any scroll (capture:true also catches the table-wrap's own
+		   scroll) or resize to avoid it drifting away from its button. */
+		function closeOnViewportChange() {
+			if ($('.wbtm-bkl-dropdown.is-open').length) {
+				closeAllDropdowns();
+			}
+		}
+		window.addEventListener('scroll', closeOnViewportChange, true);
+		window.addEventListener('resize', closeOnViewportChange);
 
 		$(document).on('click', function (e) {
 			if (!$(e.target).closest('.wbtm-bkl-dropdown').length) {
@@ -289,6 +332,141 @@
 					toast(i18n.statusError || 'Could not update the status.', 'error');
 				});
 			}
+		});
+
+		/* ---------------------------------------------------------------------
+		   Column show/hide (Pro). Toggling a checkbox applies live; Save persists
+		   the choice to the current user's meta so it survives reloads.
+		--------------------------------------------------------------------- */
+		var $columnsPanel = $('#wbtm-bkl-columns-panel');
+
+		/* The panel is position:fixed so it escapes the table-wrap's overflow clip;
+		   anchor its top-right corner to the toggle button and clamp it to stay on
+		   screen (flip nothing — it always opens downward from the toolbar). */
+		function positionColumnsPanel(toggleEl) {
+			var rect = toggleEl.getBoundingClientRect();
+			var panelW = $columnsPanel.outerWidth();
+			var gap = 6;
+			var left = rect.right - panelW;              // right-align to the button
+			if (left < 8) { left = 8; }
+			var top = rect.bottom + gap;
+			$columnsPanel.css({ top: top + 'px', left: left + 'px' });
+		}
+
+		function closeColumnsPanel() {
+			$columnsPanel.hide();
+			$('#wbtm-bkl-columns-toggle').attr('aria-expanded', 'false');
+		}
+
+		$(document).on('click', '#wbtm-bkl-columns-toggle', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			if ($columnsPanel.is(':visible')) {
+				closeColumnsPanel();
+				return;
+			}
+			positionColumnsPanel(this);
+			$columnsPanel.show();
+			$(this).attr('aria-expanded', 'true');
+		});
+
+		$columnsPanel.on('click', '.wbtm-bkl-columns-close', closeColumnsPanel);
+
+		// A fixed panel doesn't track page/table scroll, so close it on scroll/resize.
+		window.addEventListener('scroll', function () { if ($columnsPanel.is(':visible')) { closeColumnsPanel(); } }, true);
+		window.addEventListener('resize', function () { if ($columnsPanel.is(':visible')) { closeColumnsPanel(); } });
+
+		// Close the popover when clicking outside it (but not on its toggle button).
+		$(document).on('click', function (e) {
+			if (!$(e.target).closest('#wbtm-bkl-columns-panel, #wbtm-bkl-columns-toggle').length) {
+				$columnsPanel.hide();
+				$('#wbtm-bkl-columns-toggle').attr('aria-expanded', 'false');
+			}
+		});
+
+		// Live preview: show/hide the matching header + body cells immediately.
+		$columnsPanel.on('change', '.wbtm-bkl-column-toggle', function () {
+			var col = $(this).data('col');
+			var show = $(this).is(':checked');
+			$('.wbtm-bkl-table').find('[data-col="' + col + '"]').toggle(show);
+		});
+
+		$('#wbtm-bkl-columns-save').on('click', function () {
+			var $btn = $(this);
+			var columns = {};
+			$columnsPanel.find('.wbtm-bkl-column-toggle').each(function () {
+				columns[$(this).data('col')] = $(this).is(':checked') ? '1' : '0';
+			});
+			$btn.prop('disabled', true);
+			$.post(vars.ajaxUrl, {
+				action: 'wbtm_bkl_save_columns',
+				nonce: vars.nonce,
+				columns: columns
+			}).done(function (response) {
+				var $msg = $columnsPanel.find('.wbtm-bkl-columns-msg');
+				if (response && response.success) {
+					$msg.text((response.data && response.data.message) || i18n.columnsSaved || 'Saved.').removeClass('is-error');
+					toast((response.data && response.data.message) || i18n.columnsSaved || 'Saved.', 'success');
+				} else {
+					$msg.text(i18n.columnsError || 'Could not save.').addClass('is-error');
+					toast(i18n.columnsError || 'Could not save column preferences.', 'error');
+				}
+			}).fail(function () {
+				toast(i18n.columnsError || 'Could not save column preferences.', 'error');
+			}).always(function () {
+				$btn.prop('disabled', false);
+			});
+		});
+
+		/* ---------------------------------------------------------------------
+		   QR check-in (only wired when the QR Code add-on is active). Reuses that
+		   add-on's already-registered endpoint (wbtm_bulk_update_ticket_status)
+		   and its own nonce; a full reload re-renders the server-side status text.
+		--------------------------------------------------------------------- */
+		function qrUpdate(ids, actionType) {
+			if (!vars.qrActive || !ids.length) {
+				return;
+			}
+			$.post(vars.ajaxUrl, {
+				action: 'wbtm_bulk_update_ticket_status',
+				_ajax_nonce: vars.qrNonce,
+				attendee_ids: ids,
+				action_type: actionType
+			}).done(function (response) {
+				if (response && response.success) {
+					toast(i18n.checkinDone || 'Check-in updated.', 'success');
+					window.location.reload();
+				} else {
+					toast((response && response.data && response.data.message) || i18n.checkinError || 'Could not update check-in.', 'error');
+				}
+			}).fail(function () {
+				toast(i18n.checkinError || 'Could not update check-in.', 'error');
+			});
+		}
+
+		// Row-level check-in / revoke (Actions dropdown).
+		$(document).on('click', '.wbtm-bkl-checkin-btn', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var id = String($(this).data('id'));
+			var type = $(this).data('action') === 'revoke' ? 'revoke' : 'checkin';
+			closeAllDropdowns();
+			qrUpdate([id], type);
+		});
+
+		// Bulk check-in / revoke (toolbar).
+		$(document).on('click', '#wbtm-bkl-bulk-checkin, #wbtm-bkl-bulk-revoke', function () {
+			var type = this.id === 'wbtm-bkl-bulk-revoke' ? 'revoke' : 'checkin';
+			var ids = getCheckedIds();
+			if (!ids.length) {
+				toast(i18n.selectAtLeastOne || 'Please select at least one booking.');
+				return;
+			}
+			var msg = (type === 'revoke' ? (i18n.confirmRevoke || 'Revoke check-in for %d booking(s)?') : (i18n.confirmCheckin || 'Check in %d booking(s)?')).replace('%d', ids.length);
+			if (!window.confirm(msg)) {
+				return;
+			}
+			qrUpdate(ids, type);
 		});
 	});
 })(jQuery);

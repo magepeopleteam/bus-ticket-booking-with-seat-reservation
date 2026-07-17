@@ -506,7 +506,16 @@
 				$custom_is_mode = ( 'standalone' === $mode );
 				?>
 				<div class="payment-sub-tabs-wrapper">
-					<h2 class="nav-tab-wrapper payment-sub-tabs">
+					<?php
+					/*
+					 * The pill bar duplicates the Booking Mode cards rendered just above
+					 * (render_mode_selector), so it's kept out of view with aria-hidden +
+					 * display:none. It must stay in the DOM: the accordion / panel-switch
+					 * JS in render_wc_payment_manager() reads its .nav-tab-active state and
+					 * the Booking Mode script triggers its tabs to switch panels.
+					 */
+					?>
+					<h2 class="nav-tab-wrapper payment-sub-tabs" aria-hidden="true" style="display:none;">
 						<a href="#woocommerce-field" class="nav-tab<?php echo $custom_is_mode ? '' : ' nav-tab-active'; ?>">
 							<?php esc_html_e( 'WooCommerce', 'bus-ticket-booking-with-seat-reservation' ); ?>
 							<span class="wbtm-pay-subtab-badge" data-badge-for="woocommerce"<?php echo $custom_is_mode ? ' style="display:none;"' : ''; ?>><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
@@ -552,85 +561,81 @@
 					<p><?php esc_html_e( 'Accept payments directly without WooCommerce. Configure a gateway below, then enable it for the Standalone / Custom Payment checkout.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 				</div>
 
-				<!-- PayPal Card -->
-				<div class="gateway-card paypal-card">
-					<div class="gateway-header">
-						<div class="gateway-id">
+				<div class="wbtm-gw-grid">
+					<!-- PayPal Card -->
+					<div class="gateway-card paypal-card">
+						<div class="gateway-top">
 							<span class="gateway-icon">
 								<svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" fill="#fff"/>
 								</svg>
 							</span>
-							<span class="gateway-meta">
-								<span class="gateway-name"><?php esc_html_e( 'PayPal', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-								<span class="gateway-sub"><?php esc_html_e( 'Cards & PayPal balance', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-							</span>
-						</div>
-						<?php if ( $is_pro ) : ?>
-							<span class="gateway-status <?php echo $pp_enabled ? 'active' : ''; ?>"><?php echo esc_html( $pp_enabled ? $enabled_txt : $disabled_txt ); ?></span>
-						<?php endif; ?>
-						<div class="gateway-actions">
 							<?php if ( $is_pro ) : ?>
-								<button type="button" class="gateway-configure-btn" id="wbtm-paypal-configure-btn"><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+								<span class="gateway-status <?php echo $pp_enabled ? 'active' : ''; ?>"><?php echo esc_html( $pp_enabled ? $enabled_txt : $disabled_txt ); ?></span>
 							<?php else : ?>
 								<?php echo wp_kses_post( $pro_badge ); ?>
 							<?php endif; ?>
 						</div>
+						<span class="gateway-meta">
+							<span class="gateway-name"><?php esc_html_e( 'PayPal', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<span class="gateway-sub"><?php esc_html_e( 'Cards & PayPal balance', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						</span>
+						<?php if ( $is_pro ) : ?>
+							<div class="gateway-actions">
+								<button type="button" class="gateway-configure-btn" id="wbtm-paypal-configure-btn"><span class="dashicons dashicons-admin-generic"></span><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+							</div>
+						<?php endif; ?>
 					</div>
-				</div>
 
-				<!-- Stripe Card -->
-				<div class="gateway-card stripe-card">
-					<div class="gateway-header">
-						<div class="gateway-id">
+					<!-- Stripe Card -->
+					<div class="gateway-card stripe-card">
+						<div class="gateway-top">
 							<span class="gateway-icon">
 								<svg width="26" height="26" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
 									<path fill="#fff" d="M14.07 15.11c-1.85-.43-2.61-.79-2.61-1.63 0-.79.75-1.33 1.95-1.33 1.34 0 2.87.41 4.31 1.09V8.65c-1.39-.56-2.93-.84-4.52-.84-3.8 0-6.66 1.96-6.66 5.25 0 3.73 3.32 4.96 6.03 5.61 2.05.49 2.8.92 2.8 1.8 0 .86-.87 1.48-2.3 1.48-1.57 0-3.37-.53-5.06-1.54v4.75c1.67.75 3.59 1.13 5.51 1.13 4.13 0 7-2 7-5.34-.01-3.6-3.6-4.41-6.45-5.84z"/>
 								</svg>
 							</span>
-							<span class="gateway-meta">
-								<span class="gateway-name"><?php esc_html_e( 'Stripe', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-								<span class="gateway-sub"><?php esc_html_e( 'Credit & debit cards', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-							</span>
-						</div>
-						<?php if ( $is_pro ) : ?>
-							<span class="gateway-status <?php echo $st_enabled ? 'active' : ''; ?>"><?php echo esc_html( $st_enabled ? $enabled_txt : $disabled_txt ); ?></span>
-						<?php endif; ?>
-						<div class="gateway-actions">
 							<?php if ( $is_pro ) : ?>
-								<button type="button" class="gateway-configure-btn" id="wbtm-stripe-configure-btn"><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+								<span class="gateway-status <?php echo $st_enabled ? 'active' : ''; ?>"><?php echo esc_html( $st_enabled ? $enabled_txt : $disabled_txt ); ?></span>
 							<?php else : ?>
 								<?php echo wp_kses_post( $pro_badge ); ?>
 							<?php endif; ?>
 						</div>
+						<span class="gateway-meta">
+							<span class="gateway-name"><?php esc_html_e( 'Stripe', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<span class="gateway-sub"><?php esc_html_e( 'Credit & debit cards', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						</span>
+						<?php if ( $is_pro ) : ?>
+							<div class="gateway-actions">
+								<button type="button" class="gateway-configure-btn" id="wbtm-stripe-configure-btn"><span class="dashicons dashicons-admin-generic"></span><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+							</div>
+						<?php endif; ?>
 					</div>
-				</div>
 
-				<!-- Offline Payment Card -->
-				<div class="gateway-card offline-card">
-					<div class="gateway-header">
-						<div class="gateway-id">
+					<!-- Offline Payment Card -->
+					<div class="gateway-card offline-card">
+						<div class="gateway-top">
 							<span class="gateway-icon">
 								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M3 19h18a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
 									<path d="M2 10h20M6 14h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
 								</svg>
 							</span>
-							<span class="gateway-meta">
-								<span class="gateway-name"><?php esc_html_e( 'Offline Payment', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-								<span class="gateway-sub"><?php esc_html_e( 'Bank transfer, cash, pay on pickup', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-							</span>
-						</div>
-						<?php if ( $is_pro ) : ?>
-							<span class="gateway-status <?php echo $off_enabled ? 'active' : ''; ?>"><?php echo esc_html( $off_enabled ? $enabled_txt : $disabled_txt ); ?></span>
-						<?php endif; ?>
-						<div class="gateway-actions">
 							<?php if ( $is_pro ) : ?>
-								<button type="button" class="gateway-configure-btn" id="wbtm-offline-configure-btn"><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+								<span class="gateway-status <?php echo $off_enabled ? 'active' : ''; ?>"><?php echo esc_html( $off_enabled ? $enabled_txt : $disabled_txt ); ?></span>
 							<?php else : ?>
 								<?php echo wp_kses_post( $pro_badge ); ?>
 							<?php endif; ?>
 						</div>
+						<span class="gateway-meta">
+							<span class="gateway-name"><?php esc_html_e( 'Offline Payment', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<span class="gateway-sub"><?php esc_html_e( 'Bank transfer, cash, pay on pickup', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+						</span>
+						<?php if ( $is_pro ) : ?>
+							<div class="gateway-actions">
+								<button type="button" class="gateway-configure-btn" id="wbtm-offline-configure-btn"><span class="dashicons dashicons-admin-generic"></span><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+							</div>
+						<?php endif; ?>
 					</div>
 				</div>
 
@@ -803,24 +808,33 @@
 				$is_pro      = $this->is_pro();
 				?>
 				<style>
-				.wbtm-gw-modal{display:none;position:fixed;inset:0;z-index:999999;background:rgba(10,10,30,0.65);align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-				.wbtm-gw-modal-box{background:#fff;border-radius:16px;width:540px;max-width:94vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.3);}
-				.wbtm-gw-modal-header{padding:22px 26px;display:flex;align-items:center;justify-content:space-between;border-radius:16px 16px 0 0;}
-				.wbtm-gw-modal-header h2{margin:0;font-size:19px;font-weight:700;color:#fff;display:flex;align-items:center;gap:12px;}
-				.wbtm-gw-modal-close{background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:34px;height:34px;font-size:20px;line-height:1;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;}
-				.wbtm-gw-modal-body{padding:26px 26px 10px;}
-				.wbtm-gw-field{margin-bottom:20px;}
+				.wbtm-gw-modal{display:none;position:fixed;inset:0;z-index:999999;background:rgba(10,10,30,0.55);align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+				.wbtm-gw-modal-box{background:#fff;border-radius:20px;width:560px;max-width:94vw;max-height:92vh;overflow-y:auto;box-shadow:0 30px 80px rgba(10,10,30,0.4);animation:wbtmGwModalIn 0.32s cubic-bezier(0.16,1,0.3,1);}
+				@keyframes wbtmGwModalIn{from{opacity:0;transform:translateY(18px) scale(0.97);}to{opacity:1;transform:none;}}
+				.wbtm-gw-modal-header{position:relative;padding:24px 26px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;overflow:hidden;}
+				.wbtm-gw-modal-header:after{content:"";position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.10);pointer-events:none;}
+				.wbtm-gw-modal-title{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
+				.wbtm-gw-modal-ico{flex:0 0 auto;width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.25);}
+				.wbtm-gw-modal-header h2{margin:0;font-size:19px;font-weight:700;color:#fff;line-height:1.25;}
+				.wbtm-gw-modal-header h2 small{display:block;font-size:12px;font-weight:500;opacity:0.85;margin-top:2px;}
+				.wbtm-gw-modal-close{position:relative;z-index:1;background:rgba(255,255,255,0.18);border:none;border-radius:50%;width:34px;height:34px;font-size:20px;line-height:1;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;transition:background 0.16s ease,transform 0.16s ease;}
+				.wbtm-gw-modal-close:hover{background:rgba(255,255,255,0.32);transform:rotate(90deg);}
+				.wbtm-gw-modal-body{padding:24px 26px 8px;}
+				.wbtm-gw-field{margin-bottom:18px;}
 				.wbtm-gw-field label.wbtm-gw-label{display:block;font-weight:600;font-size:13px;color:#374151;margin-bottom:7px;}
-				.wbtm-gw-field input[type="text"],.wbtm-gw-field input[type="password"]{width:100%;padding:10px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;color:#111;background:#f9fafb;box-sizing:border-box;}
+				.wbtm-gw-field input[type="text"],.wbtm-gw-field input[type="password"]{width:100%;padding:11px 14px;border:1.5px solid #e0e2e8;border-radius:10px;font-size:14px;color:#111;background:#f7f8fa;box-sizing:border-box;transition:border-color 0.15s ease,box-shadow 0.15s ease,background 0.15s ease;}
 				.wbtm-gw-field input[type="text"]:focus,.wbtm-gw-field input[type="password"]:focus{border-color:#F12971;box-shadow:0 0 0 3px rgba(241,41,113,0.12);outline:none;background:#fff;}
-				.wbtm-gw-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#f9fafb;border-radius:10px;margin-bottom:20px;border:1.5px solid #e5e7eb;}
+				.wbtm-gw-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 16px;background:#f7f8fa;border-radius:12px;margin-bottom:14px;border:1.5px solid #eceef2;transition:border-color 0.16s ease,box-shadow 0.16s ease;}
+				.wbtm-gw-toggle-row:hover{border-color:#dfe1e7;box-shadow:0 2px 8px rgba(16,24,40,0.05);}
 				.wbtm-gw-toggle-label{font-weight:600;font-size:14px;color:#111827;}
 				.wbtm-gw-toggle-sub{font-size:12px;color:#6b7280;margin-top:2px;}
-				.wbtm-gw-divider{border:none;border-top:1px solid #e5e7eb;margin:4px 0 20px;}
-				.wbtm-gw-section-title{font-size:12px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
-				.wbtm-gw-modal-footer{padding:16px 26px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-				.wbtm-gw-save-btn{padding:11px 28px;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;color:#fff;flex-shrink:0;}
-				.wbtm-gw-save-msg{display:none;padding:9px 14px;border-radius:7px;font-size:13px;font-weight:500;flex:1;}
+				.wbtm-gw-divider{border:none;border-top:1px solid #eceef2;margin:20px 0;}
+				.wbtm-gw-section-title{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 14px;}
+				.wbtm-gw-section-title:after{content:"";flex:1;height:1px;background:#eceef2;}
+				.wbtm-gw-modal-footer{padding:14px 26px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+				.wbtm-gw-save-btn{padding:12px 30px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;color:#fff;flex-shrink:0;box-shadow:0 8px 20px -8px rgba(0,0,0,0.5);transition:transform 0.14s ease,box-shadow 0.14s ease,opacity 0.14s ease;}
+				.wbtm-gw-save-btn:hover{transform:translateY(-1px);}
+				.wbtm-gw-save-msg{display:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:500;flex:1;}
 				.wbtm-gw-switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;}
 				.wbtm-gw-switch input{opacity:0;width:0;height:0;}
 				.wbtm-gw-slider{position:absolute;cursor:pointer;inset:0;background:#d1d5db;border-radius:26px;transition:0.3s;}
@@ -834,7 +848,14 @@
 				<div id="wbtm-paypal-modal" class="wbtm-gw-modal">
 					<div class="wbtm-gw-modal-box">
 						<div class="wbtm-gw-modal-header" style="background:linear-gradient(135deg,#003087 0%,#0079C1 100%);">
-							<h2><?php esc_html_e( 'PayPal Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+							<div class="wbtm-gw-modal-title">
+								<span class="wbtm-gw-modal-ico">
+									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" fill="#fff"/>
+									</svg>
+								</span>
+								<h2><?php esc_html_e( 'PayPal Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?><small><?php esc_html_e( 'Cards & PayPal balance', 'bus-ticket-booking-with-seat-reservation' ); ?></small></h2>
+							</div>
 							<button type="button" class="wbtm-gw-modal-close">&times;</button>
 						</div>
 						<div class="wbtm-gw-modal-body">
@@ -874,7 +895,14 @@
 				<div id="wbtm-stripe-modal" class="wbtm-gw-modal">
 					<div class="wbtm-gw-modal-box">
 						<div class="wbtm-gw-modal-header" style="background:linear-gradient(135deg,#635bff 0%,#3f36c5 100%);">
-							<h2><?php esc_html_e( 'Stripe Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+							<div class="wbtm-gw-modal-title">
+								<span class="wbtm-gw-modal-ico">
+									<svg width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+										<path fill="#fff" d="M14.07 15.11c-1.85-.43-2.61-.79-2.61-1.63 0-.79.75-1.33 1.95-1.33 1.34 0 2.87.41 4.31 1.09V8.65c-1.39-.56-2.93-.84-4.52-.84-3.8 0-6.66 1.96-6.66 5.25 0 3.73 3.32 4.96 6.03 5.61 2.05.49 2.8.92 2.8 1.8 0 .86-.87 1.48-2.3 1.48-1.57 0-3.37-.53-5.06-1.54v4.75c1.67.75 3.59 1.13 5.51 1.13 4.13 0 7-2 7-5.34-.01-3.6-3.6-4.41-6.45-5.84z"/>
+									</svg>
+								</span>
+								<h2><?php esc_html_e( 'Stripe Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?><small><?php esc_html_e( 'Credit & debit cards', 'bus-ticket-booking-with-seat-reservation' ); ?></small></h2>
+							</div>
 							<button type="button" class="wbtm-gw-modal-close">&times;</button>
 						</div>
 						<div class="wbtm-gw-modal-body">
@@ -924,7 +952,15 @@
 				<div id="wbtm-offline-modal" class="wbtm-gw-modal">
 					<div class="wbtm-gw-modal-box">
 						<div class="wbtm-gw-modal-header" style="background:linear-gradient(135deg,#0f766e 0%,#115e59 100%);">
-							<h2><?php esc_html_e( 'Offline Payment Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+							<div class="wbtm-gw-modal-title">
+								<span class="wbtm-gw-modal-ico">
+									<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M3 19h18a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+										<path d="M2 10h20M6 14h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+									</svg>
+								</span>
+								<h2><?php esc_html_e( 'Offline Payment Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?><small><?php esc_html_e( 'Bank transfer, cash, pay on pickup', 'bus-ticket-booking-with-seat-reservation' ); ?></small></h2>
+							</div>
 							<button type="button" class="wbtm-gw-modal-close">&times;</button>
 						</div>
 						<div class="wbtm-gw-modal-body">
@@ -1013,8 +1049,9 @@
 				.wbtm-edit-payment-panel-foot{margin:14px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;font-size:12px;text-align:right;}
 				.wbtm-edit-payment-panel-foot a{color:#2271b1;text-decoration:underline;font-weight:600;}
 				.wbtm-edit-payment-panel .wbtm-acc-header .wbtm-acc-bar{margin:14px 0 4px;}
-				/* Sub-tab bar */
-				.payment-sub-tabs-wrapper{margin:6px 0 22px;background:#fff;padding:6px;border-radius:12px;border:1px solid #e7e8ec;box-shadow:0 1px 2px rgba(16,24,40,0.04);display:inline-block;}
+				/* Sub-tab bar — pill bar hidden (Booking Mode cards are the sole selector);
+				   the wrapper is now a plain container so it leaves no empty box behind. */
+				.payment-sub-tabs-wrapper{margin:0;padding:0;background:transparent;border:none;box-shadow:none;display:block;}
 				.payment-sub-tabs.nav-tab-wrapper{border-bottom:none !important;padding:0 !important;margin:0 !important;display:flex;gap:6px;}
 				.payment-sub-tabs .nav-tab{background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 20px;font-size:14px;font-weight:600;color:#50575e !important;text-decoration:none;margin:0;transition:all 0.18s ease;}
 				.payment-sub-tabs .nav-tab:hover{background:#fbeaf1;color:var(--wbtm-pay-accent) !important;}
@@ -1025,28 +1062,32 @@
 				.wbtm-gw-intro h3{margin:0 0 4px;font-size:16px;font-weight:700;color:#1d2327;}
 				.wbtm-gw-intro p{margin:0;font-size:13px;color:#6b7280;max-width:680px;line-height:1.6;}
 
-				/* Gateway cards (Custom Payment) */
+				/* Gateway cards (Custom Payment) — modern responsive card grid.
+				   Each card exposes its brand colour via --gw / --gw2 custom
+				   properties so the accent strip, icon badge, and Configure button
+				   all share one palette per gateway. */
 				.payment-gateways-container th{display:none;}
 				.payment-gateways-container td{padding:0 !important;}
-				.gateway-card{border:none;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(16,24,40,0.10);width:100%;box-sizing:border-box;color:#fff;overflow:hidden;transition:transform 0.18s ease,box-shadow 0.18s ease;}
-				.gateway-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(16,24,40,0.16);}
-				.gateway-card .gateway-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;}
-				.gateway-card .gateway-id{display:flex;align-items:center;gap:14px;min-width:0;flex:1 1 0;}
-				.gateway-card .gateway-icon{flex:0 0 auto;width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;}
-				.gateway-card .gateway-meta{display:flex;flex-direction:column;min-width:0;}
-				.gateway-card .gateway-name{font-size:16px;font-weight:700;color:#fff;line-height:1.3;}
-				.gateway-card .gateway-sub{font-size:12px;color:rgba(255,255,255,0.82);line-height:1.4;}
-				.gateway-card .gateway-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex:1 1 0;}
-				.gateway-card .gateway-status{display:inline-block;min-width:78px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;}
-				.gateway-card .gateway-status.active{background:#fff;}
-				.gateway-card.paypal-card{background:linear-gradient(135deg,#003087 0%,#0079C1 100%);}
-				.gateway-card.paypal-card .gateway-status.active{color:#003087;}
-				.gateway-card.stripe-card{background:linear-gradient(135deg,#635bff 0%,#3f36c5 100%);}
-				.gateway-card.stripe-card .gateway-status.active{color:#635bff;}
-				.gateway-card.offline-card{background:linear-gradient(135deg,#0f766e 0%,#115e59 100%);}
-				.gateway-card.offline-card .gateway-status.active{color:#0f766e;}
-				.gateway-card .gateway-configure-btn{cursor:pointer;color:#1d2327 !important;background:#fff !important;border:none !important;font-weight:600 !important;font-size:13px !important;border-radius:8px !important;padding:7px 16px !important;line-height:1.4 !important;box-shadow:0 2px 6px rgba(0,0,0,0.18) !important;transition:opacity 0.15s ease;}
-				.gateway-card .gateway-configure-btn:hover{opacity:0.9;}
+				.wbtm-gw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-bottom:22px;}
+				.gateway-card{--gw:#F12971;--gw2:#F12971;position:relative;display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid #eceef2;border-radius:16px;padding:22px 20px 18px;box-shadow:0 4px 14px rgba(16,24,40,0.06);overflow:hidden;box-sizing:border-box;transition:transform 0.18s ease,box-shadow 0.18s ease,border-color 0.18s ease;}
+				.gateway-card:before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gw),var(--gw2));}
+				.gateway-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(16,24,40,0.13);border-color:var(--gw);}
+				.gateway-card.paypal-card{--gw:#0079C1;--gw2:#003087;}
+				.gateway-card.stripe-card{--gw:#635bff;--gw2:#3f36c5;}
+				.gateway-card.offline-card{--gw:#0f766e;--gw2:#115e59;}
+				.gateway-card .gateway-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+				.gateway-card .gateway-icon{flex:0 0 auto;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--gw),var(--gw2));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -6px var(--gw);}
+				.gateway-card .gateway-meta{display:flex;flex-direction:column;gap:3px;min-width:0;}
+				.gateway-card .gateway-name{font-size:16px;font-weight:700;color:#1d2327;line-height:1.3;}
+				.gateway-card .gateway-sub{font-size:12.5px;color:#6b7280;line-height:1.45;}
+				.gateway-card .gateway-status{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 11px;border-radius:20px;background:#f3f4f6;color:#6b7280;font-weight:700;white-space:nowrap;}
+				.gateway-card .gateway-status:before{content:"";width:6px;height:6px;border-radius:50%;background:#9ca3af;}
+				.gateway-card .gateway-status.active{background:#dcfce7;color:#166534;}
+				.gateway-card .gateway-status.active:before{background:#22c55e;}
+				.gateway-card .gateway-actions{display:flex;margin-top:auto;}
+				.gateway-card .gateway-configure-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;cursor:pointer;color:var(--gw) !important;background:#fff !important;border:1.5px solid var(--gw) !important;font-weight:700 !important;font-size:13.5px !important;border-radius:10px !important;padding:9px 16px !important;line-height:1.4 !important;transition:color 0.16s ease,background 0.16s ease,box-shadow 0.16s ease;}
+				.gateway-card .gateway-configure-btn .dashicons{font-size:16px;width:16px;height:16px;line-height:1;}
+				.gateway-card .gateway-configure-btn:hover{color:#fff !important;background:linear-gradient(135deg,var(--gw),var(--gw2)) !important;box-shadow:0 8px 18px -6px var(--gw) !important;}
 				.wbtm-gw-pro-badge{background:linear-gradient(135deg,#f6d365 0%,#fda085 100%);color:#fff;padding:5px 12px;border-radius:20px;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(253,160,133,0.4);}
 
 				/* Booking confirmation page */
@@ -1100,17 +1141,17 @@
 					   holds chunky elements (cards, tab bars) rather than a single input. */
 					padding:16px 18px !important;width:100%;display:block;box-sizing:border-box;
 				}
+				/* The sub-tab pill bar is hidden, so collapse its row's vertical padding
+				   to avoid an empty gap; keep horizontal rhythm for the WooCommerce-inactive
+				   warning notice this row may still hold. */
+				#bm-tab-payments .bm-gs__field-row.wbtm-field-wbtm_payment_tabs_html > .bm-gs__field-control-cell{
+					padding:0 18px !important;
+				}
 
-				/* Mobile: gateway card header wraps to two rows (icon/name/sub on
-				   its own line, status + action below) instead of squeezing three
-				   flex items — icon, status pill, and Configure button — onto one
-				   narrow line. Sub-tab pills wrap instead of overflowing. */
+				/* Mobile: the gateway grid already collapses to a single column via
+				   its auto-fit minmax track; just let the sub-tab pills wrap. */
 				@media (max-width: 480px) {
 					.payment-sub-tabs.nav-tab-wrapper{flex-wrap:wrap;}
-					.gateway-card .gateway-header{flex-wrap:wrap;row-gap:10px;}
-					.gateway-card .gateway-id{flex:1 1 100%;}
-					.gateway-card .gateway-status{flex:0 0 auto;}
-					.gateway-card .gateway-actions{flex:0 0 auto;justify-content:flex-start;margin-left:auto;}
 				}
 				</style>
 				<script>
