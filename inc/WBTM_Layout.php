@@ -459,7 +459,14 @@
 				$end_time = date("h:i A", strtotime($data['wbtm_dp_time']));
 				$time_diff = self::wbtm_get_time_diff($data['wbtm_bp_time'], $data['wbtm_dp_time']);
 				ob_start();
-                $checkout_url = WBTM_Functions::is_wc_active() ? wc_get_checkout_url() : '#';
+                // In Standalone/Custom Payment mode there is no WC cart/checkout; the
+                // caller passes the standalone checkout URL (keyed to the staged outbound
+                // booking) so the card's Checkout button works as "checkout without return".
+                $standalone_checkout_url = isset( $data['standalone_checkout_url'] ) ? $data['standalone_checkout_url'] : '';
+                $is_standalone           = $standalone_checkout_url !== '';
+                $checkout_url            = $is_standalone
+                    ? $standalone_checkout_url
+                    : ( WBTM_Functions::is_wc_active() ? wc_get_checkout_url() : '#' );
 
 				?>
                 <?php
@@ -504,7 +511,9 @@
 
                     <div class="wbtm_selbus_actions">
                         <button class="wbtm_selected_bus_btn"><a href="<?php echo esc_url($checkout_url); ?>" style="text-decoration:none;color:#fff;"><?php esc_html_e('Checkout', 'bus-ticket-booking-with-seat-reservation'); ?></a></button>
+                        <?php if ( ! $is_standalone ) : ?>
                         <a href="<?php echo esc_url(WBTM_Functions::is_wc_active() ? wc_get_cart_url() : '#'); ?>" class="wbtm_selbus_cart_link"><?php esc_html_e('View Cart', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                        <?php endif; ?>
                     </div>
 
                 </div>
