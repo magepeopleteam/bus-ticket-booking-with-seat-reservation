@@ -425,6 +425,43 @@
    Desktop/laptop (>=768px) is untouched: button hidden, sidebar as-is. */
 .wbtm-mobile-filter-toggle {
     display: none;
+    /* Modern styling kept OUT of the mobile media query so the button looks good
+       wherever it is shown (it also appears on the desktop results header). Only
+       the display toggle is size-dependent. */
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 12px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #101828;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.wbtm-mobile-filter-toggle:hover {
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 4px 12px rgba(16, 24, 40, .10);
+}
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label i,
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label svg {
+    color: var(--wbtm_color_theme, #e8510f);
+}
+.wbtm-mobile-filter-caret {
+    font-size: 12px;
+    color: #98a2b3;
+    transition: transform .2s ease;
+}
+.wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
+    transform: rotate(180deg);
 }
 
 @media only screen and (max-width: 767px) {
