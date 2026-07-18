@@ -607,9 +607,11 @@ div#wbtm_date_start_route { height: 50px; }
     color:      #666;
     display:    flex;
     align-items: center;
-    gap:        5px;
+    gap:        8px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
-.wbtm-sort-label-text { font-weight: 600; color: #222; }
+.wbtm-sort-label-text { font-weight: 600; color: #222; white-space: nowrap; }
 .wbtm-sort-select {
     padding: 6px 28px 6px 10px;
     border: 1px solid #d8dcea;
