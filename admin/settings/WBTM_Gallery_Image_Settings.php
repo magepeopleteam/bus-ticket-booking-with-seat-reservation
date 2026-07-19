@@ -15,8 +15,8 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
 
         public function section_header(){
             ?>
-            <h2><?php esc_html_e( 'Gallery Configuration', 'car-rental-manager' ); ?></h2>
-            <p><?php esc_html_e( 'Here you can configure gallery', 'car-rental-manager' ); ?></p>
+            <h2><?php esc_html_e( 'Gallery Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+            <p><?php esc_html_e( 'Here you can configure gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 
             <?php
         }

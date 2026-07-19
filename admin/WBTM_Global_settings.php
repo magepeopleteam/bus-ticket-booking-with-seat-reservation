@@ -87,6 +87,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					if (isset($config['section_id'])) {
 						$handled_section_ids[] = $config['section_id'];
 					}
+					// Sections merged into another tab's panel are handled too — without
+					// this they would fall through and reappear as their own auto tab.
+					if (!empty($config['extra_section_ids']) && is_array($config['extra_section_ids'])) {
+						foreach ($config['extra_section_ids'] as $extra_id) {
+							$handled_section_ids[] = $extra_id;
+						}
+					}
 				}
 
 				// Build visible tabs from configs that match registered sections
@@ -152,14 +159,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						window.bmGs.tabMeta = <?php echo wp_json_encode($meta); ?>;
 						window.bmGs.defaultTab = <?php echo wp_json_encode($first_tab); ?>;
 						jQuery(function($){
-							// Save button — find and submit the active tab's form.
-							// Uses HTMLFormElement.prototype.submit to avoid the "id=submit"
-							// shadow bug (WP's submit_button() creates <input id="submit">).
-							$('#bm-save-btn').on('click', function(e){
-								e.preventDefault();
-								var $f = $('.bm-gs__tab-panel.bm-gs--active').find('form').first();
-								if ($f.length) { HTMLFormElement.prototype.submit.call($f[0]); }
-							});
+							// The #bm-save-btn handler lives in wbtm-global-settings.js. It was
+							// duplicated here, so the button was bound twice and each save fired
+							// two submits. Removed: a merged tab posts its forms in sequence, and
+							// a second handler would double-POST them.
 							// Icon / image remove — instant hide + show add buttons
 							$(document).on('click', '.wbtm_add_icon_image_area .wbtm_icon_remove', function(e){
 								e.stopPropagation();
@@ -319,13 +322,28 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 											</div>
 										</div>
 									<?php elseif (isset($sections[$section_id]) && isset($fields[$section_id])): ?>
+										<?php
+										// A tab normally owns one section, but a merged tab renders several.
+										// Each option group needs its own <form>, because options.php only
+										// processes one registered option page per request — hence the
+										// multi-form save path in wbtm-global-settings.js.
+										$panel_section_ids = array_merge(
+											[$section_id],
+											!empty($config['extra_section_ids']) && is_array($config['extra_section_ids'])
+												? $config['extra_section_ids']
+												: []
+										);
+										foreach ($panel_section_ids as $panel_section_id):
+											if (!isset($sections[$panel_section_id]) || !isset($fields[$panel_section_id])) continue;
+										?>
 										<form method="post" action="options.php">
-											<?php 
-												settings_fields($section_id);
-												$this->render_section_cards($section_id, $fields[$section_id]);
+											<?php
+												settings_fields($panel_section_id);
+												$this->render_section_cards($panel_section_id, $fields[$panel_section_id]);
 											?>
 											<div style="display:none;"><?php submit_button(); ?></div>
 										</form>
+										<?php endforeach; ?>
 									<?php endif; ?>
 								</div>
 								<?php endforeach; ?>
@@ -340,87 +358,87 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$label = WBTM_Functions::get_name();
 				return [
 					'bus' => [
-						'title'      => $label . ' ' . esc_html__('Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => $label . ' ' . __('Settings', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-bus',
-						'subtitle'   => esc_html__('General booking behavior', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('General booking behavior', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_general_settings',
 					],
 					'global' => [
-						'title'      => esc_html__('General', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('General', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-sliders-h',
-						'subtitle'   => esc_html__('Date & editor settings', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Date & editor settings', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_global_settings',
 					],
 					'payments' => [
-						'title'      => esc_html__('Payments', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('Payments', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-credit-card',
-						'subtitle'   => esc_html__('Gateways & checkout mode', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Gateways & checkout mode', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_payment_settings',
 					],
 					'frontend' => [
-						'title'      => esc_html__('Frontend Display', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('Frontend Display', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-eye',
-						'subtitle'   => esc_html__('Search result filter visibility', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Search result filter visibility', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_frontend_display_settings',
 					],
 					'deposit' => [
-						'title'      => esc_html__('Deposit / Partial Pay', 'addon-bus--ticket-booking-with-seat-pro'),
+						'title'      => __('Deposit / Partial Pay', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-wallet',
-						'subtitle'   => esc_html__('Partial payment configuration', 'addon-bus--ticket-booking-with-seat-pro'),
+						'subtitle'   => __('Partial payment configuration', 'addon-bus--ticket-booking-with-seat-pro'),
 						'section_id' => 'wbtm_deposit_settings',
 					],
 					'pdf' => [
-						'title'      => esc_html__('PDF Settings', 'addon-bus--ticket-booking-with-seat-pro'),
+						'title'      => __('PDF Settings', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-file-pdf',
-						'subtitle'   => esc_html__('Ticket PDF customization', 'addon-bus--ticket-booking-with-seat-pro'),
+						'subtitle'   => __('Ticket PDF customization', 'addon-bus--ticket-booking-with-seat-pro'),
 						'section_id' => 'wbtm_pdf_settings',
 					],
-					'pdflist' => [
-						'title'      => esc_html__('PDF Passenger List', 'addon-bus--ticket-booking-with-seat-pro'),
-						'icon'       => 'fas fa-list-check',
-						'subtitle'   => esc_html__('Column visibility for PDF export', 'addon-bus--ticket-booking-with-seat-pro'),
+					// "PDF Passenger List" and "CSV Settings" were two tabs doing the same
+					// job — picking which columns appear in a passenger export — so they
+					// are merged into one. The two option groups stay separate, because
+					// the PDF and CSV generators read them independently, so the panel
+					// renders one form per section (see 'extra_section_ids').
+					'exports' => [
+						'title'      => __('Export Columns', 'addon-bus--ticket-booking-with-seat-pro'),
+						'icon'       => 'fas fa-file-export',
+						'subtitle'   => __('Columns for PDF & CSV passenger exports', 'addon-bus--ticket-booking-with-seat-pro'),
 						'section_id' => 'wbtm_passenger_pdf_settings',
-					],
-					'csv' => [
-						'title'      => esc_html__('CSV Settings', 'addon-bus--ticket-booking-with-seat-pro'),
-						'icon'       => 'fas fa-file-csv',
-						'subtitle'   => esc_html__('Column visibility for CSV export', 'addon-bus--ticket-booking-with-seat-pro'),
-						'section_id' => 'wbtm_passenger_csv_settings',
+						'extra_section_ids' => ['wbtm_passenger_csv_settings'],
 					],
 					'email' => [
-						'title'      => esc_html__('Email Settings', 'addon-bus--ticket-booking-with-seat-pro'),
+						'title'      => __('Email Settings', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-envelope',
-						'subtitle'   => esc_html__('Ticket & notification emails', 'addon-bus--ticket-booking-with-seat-pro'),
+						'subtitle'   => __('Ticket & notification emails', 'addon-bus--ticket-booking-with-seat-pro'),
 						'section_id' => 'wbtm_email_settings',
 					],
 					'chatbot' => [
-						'title'      => esc_html__('AI Chatbot', 'addon-bus--ticket-booking-with-seat-pro'),
+						'title'      => __('AI Chatbot', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-robot',
-						'subtitle'   => esc_html__('Chatbot configuration', 'addon-bus--ticket-booking-with-seat-pro'),
+						'subtitle'   => __('Chatbot configuration', 'addon-bus--ticket-booking-with-seat-pro'),
 						'section_id' => 'wbtm_ai_chatbot_settings',
 					],
 					'slider' => [
-						'title'      => esc_html__('Slider Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('Slider Settings', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-images',
-						'subtitle'   => esc_html__('Search slider display', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Search slider display', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_slider_settings',
 					],
 					'style' => [
-						'title'      => esc_html__('Style Settings', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('Style Settings', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-palette',
-						'subtitle'   => esc_html__('Colors & typography', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Colors & typography', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_style_settings',
 					],
 					'promo' => [
-						'title'      => esc_html__('Promo Banner', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('Promo Banner', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-tags',
-						'subtitle'   => esc_html__('Search sidebar discount banner', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Search sidebar discount banner', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_promo_settings',
 					],
 					'license' => [
-						'title'      => esc_html__('License', 'bus-ticket-booking-with-seat-reservation'),
+						'title'      => __('License', 'bus-ticket-booking-with-seat-reservation'),
 						'icon'       => 'fas fa-key',
-						'subtitle'   => esc_html__('Plugin license keys', 'bus-ticket-booking-with-seat-reservation'),
+						'subtitle'   => __('Plugin license keys', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_license_settings',
 					],
 				];
@@ -431,25 +449,30 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm_general_settings' => [
 						'booking' => [
 							'icon'     => 'fas fa-calendar-check',
-							'label'    => esc_html__('Booking behavior', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Booking behavior', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['set_book_status', 'label', 'slug', 'icon', 'bus_buffer_time'],
 						],
 						'search' => [
 							'icon'     => 'fas fa-search',
-							'label'    => esc_html__('Search & display', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Search & display', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['bus_return_show', 'ticket_sale_close_date', 'ticket_sale_max_date', 'show_hide_view_seats_button', 'show_hide_bus_details_tabs', 'next_date_showing_search', 'calendar_soldout_highlight', 'bus_search_list_direction_icon'],
 						],
 						'checkout' => [
 							'icon'     => 'fas fa-shopping-cart',
-							'label'    => esc_html__('Checkout & cart', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Checkout & cart', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['active_redirect_page', 'search_page_redirect', 'checkout_redirect_after_booking', 'cart_empty_after_search', 'auto_complete_paid_orders', 'make_processing_completed'],
 						],
 					],
 					'wbtm_global_settings' => [
 						'general' => [
 							'icon'     => 'fas fa-calendar',
-							'label'    => esc_html__('Date & editor', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Date & editor', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['disable_block_editor', 'date_format', 'date_format_short'],
+						],
+						'seat_hold' => [
+							'icon'     => 'fas fa-hourglass-half',
+							'label'    => __('Seat hold', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['seat_hold_minutes'],
 						],
 					],
 					// Without an entry here, all of these fields would fall through to the
@@ -458,7 +481,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm_payment_settings' => [
 						'main' => [
 							'icon'     => 'fas fa-credit-card',
-							'label'    => esc_html__('Payments', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Payments', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => [
 								'wbtm_booking_mode_selector',
 								'wbtm_payment_tabs_html',
@@ -474,13 +497,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm_style_settings' => [
 						'colors' => [
 							'icon'     => 'fas fa-palette',
-							'label'    => esc_html__('Colors', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Colors', 'bus-ticket-booking-with-seat-reservation'),
 							'layout'   => 'compact',
 							'field_names' => ['theme_color', 'theme_alternate_color', 'default_text_color', 'button_color', 'button_bg', 'warning_color', 'section_bg'],
 						],
 						'typography' => [
 							'icon'     => 'fas fa-text-height',
-							'label'    => esc_html__('Typography (px)', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Typography (px)', 'bus-ticket-booking-with-seat-reservation'),
 							'layout'   => 'compact',
 							'field_names' => ['default_font_size', 'font_size_h1', 'font_size_h2', 'font_size_h3', 'font_size_h4', 'font_size_h5', 'font_size_h6', 'button_font_size', 'font_size_label'],
 						],
@@ -488,33 +511,34 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm_promo_settings' => [
 						'promo' => [
 							'icon'     => 'fas fa-tags',
-							'label'    => esc_html__('Discount banner', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Discount banner', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['promo_enabled', 'promo_title', 'promo_desc', 'promo_button_text', 'promo_button_link'],
 						],
 					],
 					'wbtm_frontend_display_settings' => [
 						'panel' => [
 							'icon'     => 'fas fa-sliders-h',
-							'label'    => esc_html__('Filter Sidebar', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Filter Sidebar', 'bus-ticket-booking-with-seat-reservation'),
 							'layout'   => 'toggles',
 							'field_names' => ['show_filter_panel'],
 						],
 						'filters' => [
 							'icon'     => 'fas fa-list-check',
-							'label'    => esc_html__('Individual Filters', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Individual Filters', 'bus-ticket-booking-with-seat-reservation'),
 							'layout'   => 'toggles',
 							'field_names' => ['show_filter_departure_time', 'show_filter_bus_type', 'show_filter_bus_operator', 'show_filter_boarding_point', 'show_sort_bar'],
 						],
 						'unpriced' => [
 							'icon'     => 'fas fa-ban',
-							'label'    => esc_html__('Unpriced Routes', 'bus-ticket-booking-with-seat-reservation'),
+							'label'    => __('Unpriced Routes', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['unpriced_route_action', 'unpriced_route_message'],
 						],
 					],
 					'wbtm_passenger_pdf_settings' => [
 						'checklist' => [
-							'icon'   => 'fas fa-list-check',
-							'label'  => esc_html__('PDF passenger list – column visibility', 'addon-bus--ticket-booking-with-seat-pro'),
+							'icon'   => 'fas fa-file-pdf',
+							'label'  => __('PDF passenger list – columns', 'addon-bus--ticket-booking-with-seat-pro'),
+							'desc'   => __('The printable passenger manifest you generate from Booking List for a bus and journey date — the sheet a driver or counter staff carries. Every column ticked here is printed in that PDF; unticked ones are left out, which keeps a narrow list readable on paper. Turning a column off only hides it from the printout, it never deletes booking data.', 'addon-bus--ticket-booking-with-seat-pro'),
 							'layout' => 'checklist',
 							'field_names' => [], // auto: all fields go into checklist grid
 						],
@@ -522,7 +546,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm_passenger_csv_settings' => [
 						'checklist' => [
 							'icon'   => 'fas fa-file-csv',
-							'label'  => esc_html__('CSV export – column visibility', 'addon-bus--ticket-booking-with-seat-pro'),
+							'label'  => __('CSV export – columns', 'addon-bus--ticket-booking-with-seat-pro'),
+							'desc'   => __('The passenger CSV you download from Booking List, for opening in Excel or Google Sheets and for handing data to accounting or another system. Each column ticked here becomes one column in the downloaded file. This list is kept separate from the PDF above on purpose — a spreadsheet usually wants extra fields such as email and address that would not fit on a printed sheet.', 'addon-bus--ticket-booking-with-seat-pro'),
 							'layout' => 'checklist',
 							'field_names' => [],
 						],
@@ -557,8 +582,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									<span class="bm-gs__section-icon <?php echo esc_attr($card['icon']); ?>"></span>
 									<span class="bm-gs__section-head-label"><?php echo esc_html($card['label']); ?></span>
 								</div>
+								<?php if (!empty($card['desc'])): ?>
+								<div class="bm-gs__info-note bm-gs__info-note--attention">
+									<p><?php echo esc_html($card['desc']); ?></p>
+								</div>
+								<?php endif; ?>
 								<div class="bm-gs__checklist-grid">
-									<?php foreach ($checklist_fields as $field): 
+									<?php foreach ($checklist_fields as $field):
 										$this->render_checklist_item($section_id, $field);
 									endforeach; ?>
 								</div>
@@ -736,15 +766,36 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				<?php
 			}
 
+			/**
+			 * Renders one column-visibility checkbox for an export checklist.
+			 *
+			 * Posts 'on' when ticked and 'off' when unticked, using the same hidden
+			 * input + same-name checkbox trick as render_toggle_item(). Both halves
+			 * matter, and each one fixes a real bug:
+			 *
+			 *  - The value must be 'on', not 'yes'. These fields declare
+			 *    'default' => 'on' and the PDF passenger list tests $show_x == 'on',
+			 *    so a ticked box saving 'yes' hid the very column it was meant to
+			 *    show: every column vanished from the PDF the first time an admin
+			 *    pressed Save on this screen.
+			 *  - The hidden 'off' guarantees a value is always submitted. Without it
+			 *    an unticked box is simply absent from $_POST, so the readers fell
+			 *    back to their 'on' default and the column stayed in the export —
+			 *    unticking a box did nothing at all.
+			 *
+			 * Legacy 'yes'/'1' values already in the database still read as ticked.
+			 */
 			private function render_checklist_item($section_id, $field) {
 				$label = isset($field['label']) ? $field['label'] : '';
 				$name  = isset($field['name']) ? $field['name'] : '';
 				$value = WBTM_Global_Function::get_settings($section_id, $name, isset($field['default']) ? $field['default'] : '');
 				$id    = $section_id . '[' . $name . ']';
+				$id_attr = esc_attr($id);
 				$checked = ($value === 'yes' || $value === '1' || $value === 'on') ? ' checked' : '';
 				?>
 				<label class="bm-gs__checklist-item">
-					<input type="checkbox" name="<?php echo esc_attr($id); ?>" value="yes"<?php echo $checked; ?>>
+					<input type="hidden" name="<?php echo $id_attr; ?>" value="off">
+					<input type="checkbox" name="<?php echo $id_attr; ?>" value="on"<?php echo $checked; ?>>
 					<span><?php echo esc_html($label); ?></span>
 				</label>
 				<?php
@@ -1247,6 +1298,14 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						
 					) ),
 					'wbtm_global_settings'  => apply_filters( 'wbtm_filter_global_settings', array(
+						array(
+							'name'        => 'seat_hold_minutes',
+							'label'       => esc_html__( 'Seat Hold Duration (minutes)', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'How long a selected seat is temporarily held for a customer while they complete checkout. A held seat shows as unavailable to other customers. Set to 0 to disable seat holds. Default is 10.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'number',
+							'default'     => 10,
+							'placeholder' => esc_html__( 'Ex:10', 'bus-ticket-booking-with-seat-reservation' ),
+						),
 						array(
 							'name'    => 'disable_block_editor',
 							'label'   => esc_html__( 'Disable Block/Gutenberg Editor', 'bus-ticket-booking-with-seat-reservation' ),

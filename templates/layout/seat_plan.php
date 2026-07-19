@@ -269,7 +269,7 @@
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $is_in_cart = !$is_booked && (WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier) || WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name));
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                $cell_base_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, $cabin_index);
+                                                                $cell_base_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, $cabin_index, $date);
                                                                 if ($cell_base_cabin === false) {
                                                                     $cell_base_cabin = 0;
                                                                 }
@@ -307,7 +307,7 @@
                                                                                         foreach ($ticket_infos as $key => $ticket_info): ?>
                                                                                             <?php
                                                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                            $cell_t_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, $cabin_index);
+                                                                                            $cell_t_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, $cabin_index, $date);
                                                                                             if ($cell_t_cabin === false) {
                                                                                                 $cell_t_cabin = 0;
                                                                                             }
@@ -400,7 +400,7 @@
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                    $cell_lower = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, null);
+                                                    $cell_lower = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, null, $date);
                                                     if ($cell_lower === false) {
                                                         $cell_lower = 0;
                                                     }
@@ -440,7 +440,7 @@
                                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                             foreach ($ticket_infos as $key => $ticket_info) {
                                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, null);
+                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, null, $date);
                                                                                 if ($ticket_price === false) {
                                                                                     $ticket_price = 0;
                                                                                 }
@@ -520,7 +520,7 @@
                                                     $rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
 
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                    $cell_upper = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], true, $wbtm_pl, $info, null);
+                                                    $cell_upper = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], true, $wbtm_pl, $info, null, $date);
                                                     if ($cell_upper === false) {
                                                         $cell_upper = 0;
                                                     }
@@ -558,7 +558,7 @@
                                                                             foreach ($ticket_infos as $key => $ticket_info) { ?>
                                                                                 <?php
                                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], true, $wbtm_pl, $info, null);
+                                                                                $ticket_price = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], true, $wbtm_pl, $info, null, $date);
                                                                                 if ($ticket_price === false) {
                                                                                     $ticket_price = 0;
                                                                                 }

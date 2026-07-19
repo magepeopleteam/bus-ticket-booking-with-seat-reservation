@@ -270,5 +270,51 @@
 					'pickup_point'  => isset( $cart_item['wbtm_pickup_point'] ) ? (string) $cart_item['wbtm_pickup_point'] : '',
 				);
 			}
+
+			/**
+			 * Increment a coupon's usage counters (total / per-user / per-day logs
+			 * plus the lifetime discount_total stat) by one redemption. Shared by
+			 * the WooCommerce adapter (WBTM_Coupon_Cart::record_usage()) and the
+			 * Pro standalone flow, so both count usage the exact same way.
+			 *
+			 * @param int    $coupon_post_id Coupon post ID.
+			 * @param string $identity       Stable identity: 'u:{user_id}' or 'e:{email}'.
+			 * @param float  $discount       The discount amount granted.
+			 * @return bool True when the counters were written.
+			 */
+			public static function increment_usage( $coupon_post_id, $identity, $discount ) {
+				$post_id = (int) $coupon_post_id;
+				if ( ! $post_id || get_post_type( $post_id ) !== self::CPT ) {
+					return false;
+				}
+				$m        = self::META;
+				$identity = (string) $identity;
+				$today    = date_i18n( 'Y-m-d', current_time( 'timestamp' ) );
+
+				$used = (int) get_post_meta( $post_id, $m . 'used_count', true ) + 1;
+				update_post_meta( $post_id, $m . 'used_count', $used );
+
+				$user_log = get_post_meta( $post_id, $m . 'user_log', true );
+				$user_log = is_array( $user_log ) ? $user_log : array();
+				if ( $identity !== '' && $identity !== 'e:' ) {
+					$user_log[ $identity ] = ( isset( $user_log[ $identity ] ) ? (int) $user_log[ $identity ] : 0 ) + 1;
+					update_post_meta( $post_id, $m . 'user_log', $user_log );
+				}
+
+				$day_log = get_post_meta( $post_id, $m . 'day_log', true );
+				$day_log = is_array( $day_log ) ? $day_log : array();
+				$day_log[ $today ] = ( isset( $day_log[ $today ] ) ? (int) $day_log[ $today ] : 0 ) + 1;
+				if ( count( $day_log ) > 400 ) {
+					ksort( $day_log );
+					$day_log = array_slice( $day_log, -400, null, true );
+				}
+				update_post_meta( $post_id, $m . 'day_log', $day_log );
+
+				$decimals       = function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2;
+				$discount_total = (float) get_post_meta( $post_id, $m . 'discount_total', true ) + (float) $discount;
+				update_post_meta( $post_id, $m . 'discount_total', round( $discount_total, $decimals ) );
+
+				return true;
+			}
 		}
 	}

@@ -52,7 +52,10 @@
 			}
 
 			/**
-			 * Evaluate a coupon against a WooCommerce cart.
+			 * Evaluate a coupon against a WooCommerce cart — a thin adapter that
+			 * normalises the cart's bus items and defers every rule to
+			 * validate_items(), so the same engine also serves cart-less flows
+			 * (e.g. the Pro standalone checkout).
 			 *
 			 * @param int      $post_id Coupon post ID.
 			 * @param WC_Cart  $cart    The cart being calculated.
@@ -60,6 +63,28 @@
 			 * @return array{valid:bool,message:string,discount:float,eligible_total:float,eligible_seats:int}
 			 */
 			public static function evaluate( $post_id, $cart, $email = '' ) {
+				$items = array();
+				foreach ( $cart->get_cart() as $cart_item ) {
+					$parsed = WBTM_Coupon_Module::read_cart_item( $cart_item );
+					if ( $parsed !== null ) {
+						$items[] = $parsed;
+					}
+				}
+				return self::validate_items( $post_id, $items, $email );
+			}
+
+			/**
+			 * Cart-agnostic validation core: decide whether a coupon applies to a
+			 * set of normalised items and how large the discount is. Each item is
+			 * an array shaped like WBTM_Coupon_Module::read_cart_item()'s output:
+			 * [ bus_id, line_total, seat_qty, journey_ts ].
+			 *
+			 * @param int    $post_id Coupon post ID.
+			 * @param array  $items   Normalised bus items.
+			 * @param string $email   Optional billing email (guest per-user limits).
+			 * @return array{valid:bool,message:string,discount:float,eligible_total:float,eligible_seats:int}
+			 */
+			public static function validate_items( $post_id, array $items, $email = '' ) {
 				$post_id = (int) $post_id;
 				if ( ! $post_id || get_post_type( $post_id ) !== WBTM_Coupon_Module::CPT || get_post_status( $post_id ) !== 'publish' ) {
 					return self::fail( esc_html__( 'This coupon code is not valid.', 'bus-ticket-booking-with-seat-reservation' ) );
@@ -138,7 +163,7 @@
 					}
 				}
 
-				/* ---- Eligible cart items (targeting + travel window) ---- */
+				/* ---- Eligible items (targeting + travel window) ---- */
 				$travel_start = WBTM_Coupon_Module::get( $post_id, 'travel_start', '' );
 				$travel_end   = WBTM_Coupon_Module::get( $post_id, 'travel_end', '' );
 				$travel_start_ts = $travel_start ? strtotime( $travel_start . ' 00:00:00' ) : 0;
@@ -148,24 +173,20 @@
 				$eligible_seats = 0;
 				$has_bus_item   = false;
 
-				foreach ( $cart->get_cart() as $cart_item ) {
-					$parsed = WBTM_Coupon_Module::read_cart_item( $cart_item );
-					if ( $parsed === null ) {
-						continue;
-					}
+				foreach ( $items as $item ) {
 					$has_bus_item = true;
-					if ( ! self::item_is_targeted( $post_id, $parsed['bus_id'] ) ) {
+					if ( ! self::item_is_targeted( $post_id, $item['bus_id'] ) ) {
 						continue;
 					}
 					// Travel-date window (only counts items whose journey falls inside it).
-					if ( $travel_start_ts && ( ! $parsed['journey_ts'] || $parsed['journey_ts'] < $travel_start_ts ) ) {
+					if ( $travel_start_ts && ( ! $item['journey_ts'] || $item['journey_ts'] < $travel_start_ts ) ) {
 						continue;
 					}
-					if ( $travel_end_ts && ( ! $parsed['journey_ts'] || $parsed['journey_ts'] > $travel_end_ts ) ) {
+					if ( $travel_end_ts && ( ! $item['journey_ts'] || $item['journey_ts'] > $travel_end_ts ) ) {
 						continue;
 					}
-					$eligible_total += $parsed['line_total'];
-					$eligible_seats += $parsed['seat_qty'];
+					$eligible_total += (float) $item['line_total'];
+					$eligible_seats += (int) $item['seat_qty'];
 				}
 
 				if ( ! $has_bus_item ) {
@@ -237,7 +258,8 @@
 				// Never discount more than the eligible fare itself.
 				$discount = min( $discount, $eligible_total );
 				$discount = max( 0.0, $discount );
-				return round( $discount, wc_get_price_decimals() );
+				$decimals = function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2;
+				return round( $discount, $decimals );
 			}
 
 			/** Does the coupon's targeting include this bus? */
@@ -262,10 +284,44 @@
 			/**
 			 * True if the current logged-in user already has a paid/processing
 			 * order that contains a bus ticket. Used for "first booking only".
+			 * Without WooCommerce (standalone mode) it falls back to the internal
+			 * wbtm_bus_booking records, keyed by the same user id / email metas
+			 * both flows write.
 			 */
 			public static function user_has_previous_bus_order() {
-				if ( ! is_user_logged_in() || ! function_exists( 'wc_get_orders' ) ) {
+				if ( ! is_user_logged_in() ) {
 					return false;
+				}
+				if ( ! function_exists( 'wc_get_orders' ) ) {
+					$found = get_posts( array(
+						'post_type'      => 'wbtm_bus_booking',
+						'post_status'    => 'any',
+						'posts_per_page' => 1,
+						'fields'         => 'ids',
+						'no_found_rows'  => true,
+						'meta_query'     => array(
+							'relation' => 'AND',
+							array(
+								'relation' => 'OR',
+								array(
+									'key'     => 'wbtm_user_id',
+									'value'   => get_current_user_id(),
+									'compare' => '=',
+								),
+								array(
+									'key'     => 'wbtm_user_email',
+									'value'   => wp_get_current_user()->user_email,
+									'compare' => '=',
+								),
+							),
+							array(
+								'key'     => 'wbtm_order_status',
+								'value'   => array( 'processing', 'completed', 'on-hold' ),
+								'compare' => 'IN',
+							),
+						),
+					) );
+					return ! empty( $found );
 				}
 				$orders = wc_get_orders( array(
 					'customer_id' => get_current_user_id(),

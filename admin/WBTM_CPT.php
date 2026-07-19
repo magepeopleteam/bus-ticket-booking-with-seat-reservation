@@ -116,6 +116,20 @@
 					'rest_base' => 'wbtm_bus_bookings'
 				));
 				register_post_type('wbtm_bus_booking', $argsl);
+				register_post_type('wbtm_service_booking', array(
+					'public' => false,
+					'publicly_queryable' => false,
+					'label' => __('Extra Service Booking', 'bus-ticket-booking-with-seat-reservation'),
+					'supports' => array('title'),
+					'exclude_from_search' => true,
+					'show_in_menu' => false,
+					'capability_type' => 'post',
+					'capabilities' => array(
+						'create_posts' => 'do_not_allow',
+					),
+					'map_meta_cap' => true,
+					'show_in_rest' => false,
+				));
 			}
 			//************************************//
 			public function set_custom_columns($column) {

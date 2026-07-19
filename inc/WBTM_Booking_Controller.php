@@ -214,6 +214,22 @@ if ( ! class_exists( 'WBTM_Booking_Controller' ) ) {
 					if ( is_wp_error( $valid ) ) {
 						wp_send_json_error( $valid->get_error_message(), 400 );
 					}
+					// Seat-hold enforcement: seats held by another visitor are rejected
+					// here under the trip lock; the caller's own holds pass through.
+					if ( class_exists( 'WBTM_Seat_Hold' ) && WBTM_Seat_Hold::is_enabled() ) {
+						$hold_seat_infos = ! empty( $cabin_seat_infos ) ? $cabin_seat_infos : ( isset( $ticket_infos ) && is_array( $ticket_infos ) ? $ticket_infos : [] );
+						$held_seats      = WBTM_Seat_Hold::seats_held_by_others( $post_id, $date, $hold_seat_infos );
+						if ( ! empty( $held_seats ) ) {
+							wp_send_json_error(
+								sprintf(
+									/* translators: %s: comma-separated seat names. */
+									__( 'Sorry, seat %s is currently held by another customer. Please choose a different seat.', 'bus-ticket-booking-with-seat-reservation' ),
+									implode( ', ', $held_seats )
+								),
+								400
+							);
+						}
+					}
 				}
 
 				/* -------------------------

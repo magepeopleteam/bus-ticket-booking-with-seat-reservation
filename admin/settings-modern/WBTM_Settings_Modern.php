@@ -117,6 +117,9 @@
 						'label'    => __( 'Pricing & Route', 'bus-ticket-booking-with-seat-reservation' ),
 						'sections' => array(
 							array( 'WBTM_Pricing_Routing', 'tab_content', __( 'Price & Routing', 'bus-ticket-booking-with-seat-reservation' ), __( 'Configure boarding/dropping stops, return journey and ticket pricing.', 'bus-ticket-booking-with-seat-reservation' ) ),
+							// Pro-only; section_instance() no-ops when the addon is inactive,
+							// same as the Registration Form section in the Advanced step.
+							array( 'WBTM_Seasonal_Pricing', 'bus_setting_tab_content', __( 'Seasonal Pricing', 'bus-ticket-booking-with-seat-reservation' ), __( 'Date-range fare adjustments (weekends, holidays) applied automatically.', 'bus-ticket-booking-with-seat-reservation' ) ),
 						),
 					),
 					array(

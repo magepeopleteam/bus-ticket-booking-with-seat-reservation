@@ -1118,7 +1118,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 												'bp_time'        => $bp_date,
 												'dp'             => $end_route,
 												'dp_time'        => $info['time'],
-												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg ),
+												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg, '', null, $bp_date ),
 												'total_seat'     => $total_seat,
 												'sold_seat'      => $sold_seat,
 												'available_seat' => max( 0, $available_seat ),
@@ -1504,7 +1504,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				return max( 0, (float) $row[ $tkey ] );
 			}
 
-			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound', $seat_name = '', $cabin_index = null ) {
+			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound', $seat_name = '', $cabin_index = null, $journey_date = '' ) {
 				if ( $post_id && $start_route && $end_route ) {
 					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route, $price_leg );
 					if ( sizeof( $ticket_infos ) > 0 ) {
@@ -1525,6 +1525,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									$seat_dd_increase = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_dd_price_parcent', 0 );
 									$price            = $price + ( $price * $seat_dd_increase / 100 );
 								}
+								// Seasonal/date-based pricing (Pro): applied AFTER the per-seat
+								// override and double-decker % uplift above. $journey_date defaults
+								// to '' so any caller without date context degrades gracefully
+								// (no seasonal adjustment).
+								$price = apply_filters( 'wbtm_ticket_price', $price, $post_id, $journey_date, $requested_seat_type );
 								return $price;
 							}
 						}

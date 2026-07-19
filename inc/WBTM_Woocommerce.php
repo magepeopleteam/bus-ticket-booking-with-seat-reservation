@@ -404,6 +404,7 @@
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
 					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
+					$journey_date = isset($_POST['wbtm_bp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_time'])) : '';
 					$price_leg = WBTM_Functions::get_requested_price_leg();
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
@@ -417,7 +418,7 @@
 							$seat_types = $seat_types ? explode(',', $seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index);
+								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index, $journey_date);
 								if ($base === false || $base < 0) {
 									$base = 0;
 								}
@@ -447,6 +448,7 @@
 						// Security: always re-derive the canonical price from the DB
 						$bp        = array_key_exists('wbtm_bp_place', $value) ? $value['wbtm_bp_place'] : '';
 						$dp        = array_key_exists('wbtm_dp_place', $value) ? $value['wbtm_dp_place'] : '';
+						$journey_date = array_key_exists('wbtm_bp_time', $value) ? $value['wbtm_bp_time'] : '';
 						$price_leg = array_key_exists('wbtm_price_leg', $value) && $value['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
 						$seat_price = 0;
 						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus') {
@@ -474,7 +476,7 @@
 								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
 								$seat_label = isset($cabin_seat['seat_name']) ? $cabin_seat['seat_name'] : '';
 								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
-								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index);
+								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index, $journey_date);
 								if ($unit === false || $unit < 0) {
 									$unit = 0;
 								}
@@ -490,7 +492,7 @@
 									$seat_label = isset($seat_info['seat_name']) ? $seat_info['seat_name'] : '';
 									$is_dd = !empty($seat_info['dd']);
 									$qty = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
-									$canonical_unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $is_dd, $price_leg, $seat_label, null);
+									$canonical_unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $is_dd, $price_leg, $seat_label, null, $journey_date);
 									if ($canonical_unit === false || $canonical_unit < 0) {
 										$canonical_unit = 0;
 									}
@@ -976,6 +978,11 @@
 								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 								$count++;
 							}
+						}
+						// Booking records now block the seats — release the customer's
+						// temporary seat holds for them (WBTM_Seat_Hold).
+						if (class_exists('WBTM_Seat_Hold')) {
+							WBTM_Seat_Hold::release_booked_seats($post_id, $bp_time, $ticket_infos);
 						}
 						if (class_exists('Wbtm_Woocommerce_bus_Pro')) {
 							// Get seat type configuration

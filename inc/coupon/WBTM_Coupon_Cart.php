@@ -178,7 +178,6 @@
 
 				$user_id  = (int) $order->get_customer_id();
 				$identity = $user_id ? 'u:' . $user_id : 'e:' . strtolower( trim( (string) $order->get_billing_email() ) );
-				$today    = date_i18n( 'Y-m-d', current_time( 'timestamp' ) );
 				$recorded = array();
 
 				foreach ( $coupon_items as $item ) {
@@ -187,31 +186,7 @@
 					if ( ! $post_id ) {
 						continue; // A real WooCommerce coupon, not ours.
 					}
-					$m        = WBTM_Coupon_Module::META;
-					$discount = (float) $item->get_discount();
-
-					$used = (int) get_post_meta( $post_id, $m . 'used_count', true ) + 1;
-					update_post_meta( $post_id, $m . 'used_count', $used );
-
-					$user_log = get_post_meta( $post_id, $m . 'user_log', true );
-					$user_log = is_array( $user_log ) ? $user_log : array();
-					if ( $identity !== 'e:' ) {
-						$user_log[ $identity ] = ( isset( $user_log[ $identity ] ) ? (int) $user_log[ $identity ] : 0 ) + 1;
-						update_post_meta( $post_id, $m . 'user_log', $user_log );
-					}
-
-					$day_log = get_post_meta( $post_id, $m . 'day_log', true );
-					$day_log = is_array( $day_log ) ? $day_log : array();
-					$day_log[ $today ] = ( isset( $day_log[ $today ] ) ? (int) $day_log[ $today ] : 0 ) + 1;
-					if ( count( $day_log ) > 400 ) {
-						ksort( $day_log );
-						$day_log = array_slice( $day_log, -400, null, true );
-					}
-					update_post_meta( $post_id, $m . 'day_log', $day_log );
-
-					$discount_total = (float) get_post_meta( $post_id, $m . 'discount_total', true ) + $discount;
-					update_post_meta( $post_id, $m . 'discount_total', round( $discount_total, wc_get_price_decimals() ) );
-
+					WBTM_Coupon_Module::increment_usage( $post_id, $identity, (float) $item->get_discount() );
 					$recorded[] = strtoupper( $code );
 				}
 
