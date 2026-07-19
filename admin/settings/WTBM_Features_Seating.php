@@ -41,7 +41,7 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
             ?>
             <tr class="form-field term-icon-wrap">
                 <th scope="row">
-                    <label for="wbtm_bus_feature_icon"><?php esc_html_e( 'Feature Icon', 'car-rental-manager' ); ?></label>
+                    <label for="wbtm_bus_feature_icon"><?php esc_html_e( 'Feature Icon', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
                 </th>
                 <td>
                     <?php
@@ -157,7 +157,7 @@ if ( ! class_exists( 'WTBM_Features_Seating' ) ) {
 
                 <div class="wtbm_all_selected_term_condition">
                     <div class="wtbm_all_term_condition">
-                        <h3><?php esc_html_e( 'Available Feature', 'car-rental-manager' ); ?></h3>
+                        <h3><?php esc_html_e( 'Available Feature', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
 
                         <div class="wtbm-bus-features">
                             <?php foreach ( $features as $feature ) : ?>

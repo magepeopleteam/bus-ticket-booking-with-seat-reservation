@@ -3084,3 +3084,21 @@ table.wbtm_totals .wbtm_sub_total {
 div.wbtm_loader_xs {
   background: transparent !important;
 }
+
+/* Seat-hold countdown badge (WBTM_Seat_Hold): shown in the selected-seat
+   summary while the customer's seats are temporarily held. */
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: #e8f4e8;
+  border: 1px solid #2e7d32;
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+}
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge--urgent {
+  background: #fdecea;
+  border-color: #c62828;
+  color: #c62828;
+}

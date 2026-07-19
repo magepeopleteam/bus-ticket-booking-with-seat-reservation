@@ -12,7 +12,6 @@
 				add_action('init', array($this, 'language_load'));
 				add_action('admin_init', array($this, 'wbtm_upgrade'));
 				$this->load_file();
-				$this->appsero_init_tracker();
 				add_action('wbtm_add_global_enqueue', array($this, 'global_enqueue'), 90);
 				add_action('wbtm_add_admin_enqueue', array($this, 'admin_enqueue'), 90);
 				add_action('wbtm_add_frontend_enqueue', array($this, 'frontend_enqueue'), 90);
@@ -22,9 +21,6 @@
 				// Privacy protection for booking pages
 				add_action('wp_head', array($this, 'add_privacy_meta_tags'));
 				add_filter('robots_txt', array($this, 'add_robots_txt_rules'));
-				// Add admin cleanup tool
-				//add_action('admin_init', array($this, 'handle_privacy_cleanup'));
-				//add_action('admin_notices', array($this, 'show_privacy_notice'));
 			}
 			public function modify_bus_slug($args, $post_type) {
 				if ('wbtm_bus' === $post_type) {
@@ -57,6 +53,9 @@
 				// the WooCommerce cart flow (via WBTM_Woocommerce's delegating wrappers below)
 				// and the WC-independent Standalone/Custom Payment flow (Pro plugin) alike.
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Cart_Helper.php';
+				// Temporary seat holds (transient-based) + hold countdown — consulted by
+				// WBTM_Query availability reads and enforced at both booking entry points.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Seat_Hold.php';
 				// The "Book Now" AJAX entry point — always loaded (see its own docblock);
 				// dispatches to either the WooCommerce cart or the Standalone flow.
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Booking_Controller.php';
@@ -84,6 +83,9 @@
 				}
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_My_Account_Dashboard.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Installer.php';
+				//==================//
+				// Public read-only REST API (wbtm/v1) — registers its routes on rest_api_init.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_REST_API.php';
 				//==================//
 			}
 			public function global_enqueue() {
@@ -168,14 +170,6 @@
 				) );
 				do_action('wbtm_add_admin_script');
 			}
-			public function appsero_init_tracker() {
-				//if (!class_exists('Appsero\Client')) {
-					//require_once WBTM_PLUGIN_DIR . '/lib/appsero/src/Client.php';
-					// require_once __DIR__ . '/lib/appsero/src/Client.php';
-				//}
-				//$client = new Appsero\Client('183b453a-7a2a-47f6-aa7e-10bf246d1d44', 'Bus Ticket Booking with Seat Reservation', __FILE__);
-				//$client->insights()->init();
-			}
 			public function frontend_enqueue() {
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), WBTM_VERSION);
 				wp_enqueue_style('wtbm_search', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_search.css', array(), WBTM_VERSION);
@@ -205,6 +199,11 @@
 					'error_journey_date'    => esc_html__( 'Could not load journey dates. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
 					'error_return_date'     => esc_html__( 'Could not load return dates. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
 					'error_seat_plan'       => esc_html__( 'Could not load the seat plan. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					// Seat-hold countdown (WBTM_Seat_Hold): badge text, expiry notice and
+					// conflict notice shown when another customer holds a selected seat.
+					'seats_held_for'        => esc_html__( 'Seats held for', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_hold_expired'     => esc_html__( 'Your seat hold has expired. The seats are available to other customers again.', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_hold_conflict'    => esc_html__( 'is no longer available — it is held or booked by another customer.', 'bus-ticket-booking-with-seat-reservation' ),
 					'error_return_buses'    => esc_html__( 'Could not load return buses. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
 					'error_generic'         => esc_html__( 'Something went wrong. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
 				) );
@@ -246,50 +245,6 @@
 				$output .= "Disallow: /bus-booking-*\n";
 				return $output;
 			}
-			/**
-			 * Handle privacy cleanup from admin
-			 */
-//			public function handle_privacy_cleanup() {
-//
-//                $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-//
-//				if (isset($_GET['wbtm_cleanup_urls']) && $nonce && wp_verify_nonce( $nonce, 'wbtm_cleanup_urls')) {
-//					if (current_user_can('manage_options')) {
-//						WBTM_Woocommerce::cleanup_existing_booking_urls();
-//						wp_safe_redirect(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_complete=1'));
-//						exit;
-//					}
-//				}
-//			}
-			/**
-			 * Show privacy notice in admin
-			 */
-//			public function show_privacy_notice() {
-//				$screen = get_current_screen();
-//				if ($screen && $screen->id === 'edit-wbtm_bus_booking') {
-//					if (isset($_GET['wbtm_cleanup_complete'])) {
-//						echo '<div class="notice notice-success is-dismissible"><p><strong>Privacy Cleanup Complete:</strong> All existing booking URLs have been updated to remove customer names.</p></div>';
-//					} else {
-//						// Check if there are any booking posts with customer names in URLs
-//						$bookings = get_posts(array(
-//							'post_type' => 'wbtm_bus_booking',
-//							'numberposts' => 5,
-//							'post_status' => 'publish'
-//						));
-//						$has_customer_names = false;
-//						foreach ($bookings as $booking) {
-//							if (preg_match('/^[a-z]+-[a-z]+/', $booking->post_name)) {
-//								$has_customer_names = true;
-//								break;
-//							}
-//						}
-//						if ($has_customer_names) {
-//							$cleanup_url = wp_nonce_url(admin_url('edit.php?post_type=wbtm_bus_booking&wbtm_cleanup_urls=1'), 'wbtm_cleanup_urls');
-//							echo '<div class="notice notice-warning is-dismissible"><p><strong>Privacy Issue Detected:</strong> Some booking pages contain customer names in URLs. <a href="' . esc_url($cleanup_url) . '" class="button button-primary">Clean Up URLs Now</a></p></div>';
-//						}
-//					}
-//				}
-//			}
 		}
 		new WBTM_Dependencies();
 	}

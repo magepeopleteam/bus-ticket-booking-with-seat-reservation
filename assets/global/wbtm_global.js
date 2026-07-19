@@ -1562,3 +1562,202 @@
 	});
 }(jQuery));
 
+
+//====================================================================//
+// Seat-hold countdown (WBTM_Seat_Hold): selecting a seat asks the server
+// for a temporary hold; the badge in the selected-seat summary counts down
+// the hold TTL, and on expiry the seat plan is refreshed so released seats
+// show up again.
+(function ($) {
+	"use strict";
+
+	var wbtm_hold_countdown = null;
+
+	function wbtm_hold_strings() {
+		return (typeof wbtm_strings !== 'undefined') ? wbtm_strings : {};
+	}
+
+	// Cabin seats are held under the cabin_{index}_{seat} identifier — the same
+	// convention the booking records use (see WBTM_Seat_Hold::seat_identifier()).
+	function wbtm_hold_seat_identifier(seat) {
+		var seat_name = seat.attr('data-seat_name');
+		var cabin_index = seat.attr('data-cabin_index');
+		return cabin_index ? 'cabin_' + cabin_index + '_' + seat_name : seat_name;
+	}
+
+	// Route/date context the hold endpoints need, read from the booking form.
+	function wbtm_hold_context(parent) {
+		var form = parent.closest('form').length ? parent.closest('form') : parent;
+		return {
+			bus_id: form.find(':input[name=wbtm_post_id]').val(),
+			date: form.find(':input[name=wbtm_bp_time]').val() || form.find(':input[name=j_date]').val(),
+			start: form.find(':input[name=wbtm_bp_place]').val(),
+			end: form.find(':input[name=wbtm_dp_place]').val()
+		};
+	}
+
+	function wbtm_hold_badge(parent) {
+		var badge = parent.find('.wbtm_hold_badge');
+		if (!badge.length) {
+			var summary = parent.find('.wbtm_selected_seat_details');
+			if (!summary.length) {
+				return $();
+			}
+			badge = $('<div class="wbtm_hold_badge" role="status"></div>');
+			summary.append(badge);
+		}
+		return badge;
+	}
+
+	function wbtm_hold_badge_text(remaining) {
+		var minutes = Math.floor(remaining / 60);
+		var seconds = remaining % 60;
+		var label = wbtm_hold_strings().seats_held_for || 'Seats held for';
+		return label + ' ' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+	}
+
+	function wbtm_hold_clear_timer(parent) {
+		if (wbtm_hold_countdown) {
+			clearInterval(wbtm_hold_countdown);
+			wbtm_hold_countdown = null;
+		}
+		parent.find('.wbtm_hold_badge').remove();
+		parent.removeData('wbtm_hold_expires');
+	}
+
+	function wbtm_hold_on_expired(parent) {
+		wbtm_hold_clear_timer(parent);
+		if (typeof wbtm_toast === 'function') {
+			wbtm_toast(wbtm_hold_strings().seat_hold_expired || 'Your seat hold has expired.');
+		}
+		// Re-run the existing seat-plan refresh: collapse the open bus details and
+		// reload them so released/other-held seats render with fresh availability.
+		var bus_list = parent.closest('.wbtm_bus_list_area');
+		var toggle = bus_list.find('#get_wbtm_bus_details.mActive');
+		if (toggle.length) {
+			toggle.trigger('click');
+			setTimeout(function () {
+				toggle.trigger('click');
+			}, 300);
+		}
+	}
+
+	function wbtm_hold_start_timer(parent, expires) {
+		if (!expires) {
+			return;
+		}
+		parent.data('wbtm_hold_expires', expires);
+		if (wbtm_hold_countdown) {
+			clearInterval(wbtm_hold_countdown);
+		}
+		wbtm_hold_countdown = setInterval(function () {
+			var remaining = Math.round(parent.data('wbtm_hold_expires') - Date.now() / 1000);
+			if (remaining <= 0) {
+				wbtm_hold_on_expired(parent);
+				return;
+			}
+			var badge = wbtm_hold_badge(parent);
+			if (!badge.length) {
+				wbtm_hold_clear_timer(parent);
+				return;
+			}
+			badge.text(wbtm_hold_badge_text(remaining)).toggleClass('wbtm_hold_badge--urgent', remaining < 60);
+		}, 1000);
+		// Render the badge immediately instead of after the first tick.
+		var initial = Math.round(expires - Date.now() / 1000);
+		if (initial > 0) {
+			wbtm_hold_badge(parent).text(wbtm_hold_badge_text(initial)).toggleClass('wbtm_hold_badge--urgent', initial < 60);
+		}
+	}
+
+	function wbtm_hold_request(parent, seats) {
+		var context = wbtm_hold_context(parent);
+		if (!context.bus_id || !context.date || !seats.length) {
+			return;
+		}
+		$.ajax({
+			type: 'POST',
+			url: wbtm_ajax_url,
+			data: {
+				action: 'wbtm_hold_seats',
+				nonce: wbtm_nonce,
+				bus_id: context.bus_id,
+				date: context.date,
+				start: context.start,
+				end: context.end,
+				seats: seats
+			},
+			success: function (response) {
+				if (!response || !response.success) {
+					return;
+				}
+				var data = response.data || {};
+				if (data.expires) {
+					wbtm_hold_start_timer(parent, data.expires);
+				}
+				// Seats the server refused (booked, or held by another customer) are
+				// toggled back off so the customer isn't heading for a submit error.
+				if (data.conflicts && data.conflicts.length) {
+					$.each(data.conflicts, function (_, identifier) {
+						parent.find('.seat_available.seat_selected').each(function () {
+							if (wbtm_hold_seat_identifier($(this)) === identifier) {
+								$(this).trigger('click');
+								if (typeof wbtm_toast === 'function') {
+									wbtm_toast(identifier + ' ' + (wbtm_hold_strings().seat_hold_conflict || 'is no longer available.'));
+								}
+								return false;
+							}
+						});
+					});
+				}
+			}
+		});
+	}
+
+	function wbtm_release_request(parent, seats) {
+		var context = wbtm_hold_context(parent);
+		if (!context.bus_id || !context.date || !seats.length) {
+			return;
+		}
+		$.ajax({
+			type: 'POST',
+			url: wbtm_ajax_url,
+			data: {
+				action: 'wbtm_release_seats',
+				nonce: wbtm_nonce,
+				bus_id: context.bus_id,
+				date: context.date,
+				seats: seats
+			}
+		});
+	}
+
+	// Bound after the main seat handler above, so the seat_selected class already
+	// reflects the new state when this runs.
+	$(document).on('click', '.wbtm_registration_area .seat_available', function () {
+		var seat = $(this);
+		var parent = seat.closest('.wbtm_registration_area');
+		var identifier = wbtm_hold_seat_identifier(seat);
+		if (!identifier) {
+			return;
+		}
+		if (seat.hasClass('seat_selected')) {
+			wbtm_hold_request(parent, [identifier]);
+		} else {
+			wbtm_release_request(parent, [identifier]);
+			// Last seat deselected (deselect-all): clear the countdown badge.
+			if (!parent.find('.seat_available.seat_selected').length) {
+				wbtm_hold_clear_timer(parent);
+			}
+		}
+	});
+
+	// Booking submit: the server takes over the seats (booking-time validation),
+	// so the countdown badge is cleared locally.
+	$(document).on('click', '#wbtm_add_to_cart', function () {
+		var parent = $(this).closest('.wbtm_registration_area');
+		if (parent.length) {
+			wbtm_hold_clear_timer(parent);
+		}
+	});
+}(jQuery));

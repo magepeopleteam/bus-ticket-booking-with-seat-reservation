@@ -284,6 +284,13 @@
 							return $cached;
 						}
 					}
+					// A seat held (temporarily reserved) by another visitor counts as booked
+					// so the upper-deck seat plan and validate_bus_availability() see it as
+					// unavailable. The seat-name path bypasses the booked map above, so the
+					// hold check drops in cleanly here. Holds are bus-wide per date.
+					if ( $seat_name && class_exists( 'WBTM_Seat_Hold' ) && WBTM_Seat_Hold::is_held_by_other( $post_id, $date, $seat_name ) ) {
+						return 1;
+					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					// Pending orders have already reserved seats during checkout, so they must be
 					// counted as booked to prevent duplicate sales while payment is finalised.
@@ -366,7 +373,7 @@
 					// Serve from the request-scoped batch map when one was primed for this route.
 					$cached = self::booked_map_seats( $post_id, $start, $end, $date );
 					if ( $cached !== null ) {
-						return $cached;
+						return apply_filters( 'wbtm_query_seat_booked', $cached, $post_id, $start, $end, $date );
 					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
 					// Pending orders have already reserved seats during checkout, so they must be
@@ -379,7 +386,7 @@
 						$sp = $norm['sp'];
 						$ep = $norm['ep'];
 						if ( $sp === false || $ep === false ) {
-							return $seat_booked;
+							return apply_filters( 'wbtm_query_seat_booked', $seat_booked, $post_id, $start, $end, $date );
 						}
 						$args = array(
 							'post_type' => 'wbtm_bus_booking',
@@ -430,7 +437,7 @@
 						}
 					}
 				}
-				return $seat_booked;
+				return apply_filters( 'wbtm_query_seat_booked', $seat_booked, $post_id, $start, $end, $date );
 			}
 			/**
 			 * Fetch every booking for a bus + boarding/dropping pair from a given date

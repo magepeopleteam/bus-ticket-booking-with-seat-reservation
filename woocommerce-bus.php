@@ -229,7 +229,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					if ( ! current_user_can( 'manage_woocommerce' ) ) {
 						return null;
 					}
-					return wbtm_get_passenger_custom_meta_for_api( $object );
+					return wbtm_get_bus_custom_meta_for_api( $object );
 				},
 				'schema'       => null,
 			) );
@@ -237,6 +237,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	}
 	if ( ! function_exists( 'wbtm_get_passenger_custom_meta_for_api' ) ) {
 		function wbtm_get_passenger_custom_meta_for_api( $object ) {
+			$post_id   = $object['id'];
+			$post_meta = get_post_meta( $post_id );
+			return $post_meta;
+		}
+	}
+	if ( ! function_exists( 'wbtm_get_bus_custom_meta_for_api' ) ) {
+		function wbtm_get_bus_custom_meta_for_api( $object ) {
 			$post_id   = $object['id'];
 			$post_meta = get_post_meta( $post_id );
 			return $post_meta;

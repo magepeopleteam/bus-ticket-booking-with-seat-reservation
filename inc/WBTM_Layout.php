@@ -175,7 +175,7 @@
 						$wbtm_price_leg = ( isset( $_POST['wbtm_price_leg'] ) && sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) ) === 'return' ) ? 'return' : 'outbound';
 						$wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $wbtm_price_leg );
 						$all_info = WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route, $wbtm_price_leg);
-						$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, 0, false, $wbtm_price_leg);
+						$seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, 0, false, $wbtm_price_leg, '', null, $date);
 						$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route, $wbtm_price_leg);
 //                    $seat_column = $seat_column ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
 //                    $seat_row = $seat_row ?? WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);

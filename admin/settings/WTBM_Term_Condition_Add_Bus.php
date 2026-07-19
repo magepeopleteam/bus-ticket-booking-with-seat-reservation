@@ -46,7 +46,7 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
 
                 <div class="wtbm_all_selected_term_condition">
                     <div class="wtbm_all_term_condition">
-                        <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
+                        <h3><?php esc_html_e( 'Available Term & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
                         <div class="wtbm_term_all_question">
                             <?php if (!empty($terms)) : ?>
                                 <?php foreach ($terms as $key => $term) :
@@ -57,17 +57,17 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
                                          data-title="<?php echo esc_attr( $term['title'] ); ?>"
                                     >
                                         <div class="wtbm_term_title"><?php echo esc_html($term['title']); ?></div>
-                                        <button type="button" class="button button-small wtbm_add_term_condition"><?php esc_html_e( 'Add', 'car-rental-manager' ); ?></button>
+                                        <button type="button" class="button button-small wtbm_add_term_condition"><?php esc_html_e( 'Add', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition available.', 'car-rental-manager' ); ?></p>
+                                <p><?php esc_html_e( 'No Term & Condition available.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="wtbm_selected_term_question_box">
-                        <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
+                        <h3><?php esc_html_e( 'Added Term & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
                         <div class="wtbm_selected_term_condition">
                             <?php if (!empty($selected_terms_data)) : ?>
                                 <?php foreach ($selected_terms_data as $key => $term) : ?>
@@ -76,11 +76,11 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
                                          data-title="<?php echo esc_attr( $term['title'] ); ?>"
                                     >
                                         <div class="wtbm_term_title"><?php echo esc_html($term['title']); ?></div>
-                                        <button type="button" class="button button-small wtbm_remove_term_condition"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
+                                        <button type="button" class="button button-small wtbm_remove_term_condition"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'car-rental-manager' ); ?></p>
+                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
