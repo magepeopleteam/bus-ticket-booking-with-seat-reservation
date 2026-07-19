@@ -427,6 +427,30 @@
 .bm-gs__info-note { padding: 12px 18px; background: #eff6ff; border-bottom: 1px solid #dbeafe; }
 .bm-gs__info-note p { font-size: 12px; color: #3b82f6; line-height: 1.6; margin: 0; }
 
+/* Attention variant — flashes an explanatory note a few times when its tab is
+   opened, then settles into a calm amber panel that stays readable.
+   Deliberately finite rather than an endless blink: WCAG 2.2.2 requires
+   blinking content to be stoppable, endless flashing makes the text itself
+   hard to read, and admins quickly learn to tune out something that never
+   stops moving. */
+.bm-gs__info-note--attention {
+  background: #fffbeb;
+  border-bottom-color: #fde68a;
+  box-shadow: inset 3px 0 0 #f59e0b;
+  animation: bm-gs-note-pulse 0.85s ease-in-out 4;
+}
+.bm-gs__info-note--attention p { color: #b45309; font-weight: 500; }
+
+@keyframes bm-gs-note-pulse {
+  0%, 100% { background: #fffbeb; box-shadow: inset 3px 0 0 #f59e0b; }
+  50%      { background: #fde68a; box-shadow: inset 3px 0 0 #d97706; }
+}
+
+/* Respect an admin who has asked their OS for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .bm-gs__info-note--attention { animation: none; }
+}
+
 /* ── PLUGIN LABEL BADGE (free/pro indicator in sidebar) ── */
 .bm-gs__plugin-badge {
   display: inline-flex;

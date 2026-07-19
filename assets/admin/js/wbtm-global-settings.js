@@ -28,6 +28,16 @@
 		var meta = tabMeta[id] || [id, ''];
 		$('#bm-topbar-title').text(meta[0] || id);
 		$('#bm-topbar-sub').text(meta[1] || '');
+
+		// Replay the attention pulse on this tab's explanatory notes. Panels are
+		// all in the DOM from page load, so without this the animation would run
+		// (and finish) inside a hidden panel and the admin would never see it.
+		$('#bm-tab-' + id).find('.bm-gs__info-note--attention').each(function () {
+			this.style.animation = 'none';
+			void this.offsetWidth; // force reflow so the animation restarts
+			this.style.animation = '';
+		});
+
 		bmGs.closeSidebar();
 
 		if (typeof bmGs.rememberTab === 'function') {
@@ -66,13 +76,52 @@
 			bmGs.closeSidebar();
 		});
 
-		// Topbar save button → submit active tab's form
+		// Topbar save button → submit the active tab's form(s).
 		// Uses HTMLFormElement.prototype.submit to avoid the "id=submit" shadow bug
 		// (WP submit_button() outputs <input id="submit"> which shadows form.submit).
 		$(document).on('click', '#bm-save-btn', function (e) {
 			e.preventDefault();
-			var $f = $('.bm-gs__tab-panel.bm-gs--active').find('form').first();
-			if ($f.length) { HTMLFormElement.prototype.submit.call($f[0]); }
+			var $btn   = $(this);
+			var $forms = $('.bm-gs__tab-panel.bm-gs--active').find('form');
+			if (!$forms.length) { return; }
+
+			// Single-section tab: plain browser POST, no JS in the save path.
+			if ($forms.length === 1) {
+				HTMLFormElement.prototype.submit.call($forms[0]);
+				return;
+			}
+
+			// Merged tab (e.g. Export Columns) holds one form per option group,
+			// because options.php only processes one registered option page per
+			// request. Post them in order, then reload once they have all landed —
+			// a plain submit would save the first form and drop the rest.
+			if ($btn.prop('disabled')) { return; }
+			$btn.prop('disabled', true);
+
+			$forms.toArray().reduce(function (chain, form) {
+				return chain.then(function () {
+					// getAttribute('action'), never form.action: settings_fields()
+					// emits <input name="action" value="update">, and a control's
+					// name shadows the form property, so form.action returns that
+					// input element rather than the URL — the same shadowing bug
+					// the submit() call below works around.
+					var url = form.getAttribute('action') || window.location.href;
+					return fetch(url, {
+						method: 'POST',
+						body: new FormData(form),
+						credentials: 'same-origin'
+					}).then(function (res) {
+						if (!res.ok) { throw new Error('save failed: ' + res.status); }
+					});
+				});
+			}, Promise.resolve()).then(function () {
+				window.location.reload();
+			})['catch'](function () {
+				// Never lose the admin's click: fall back to a normal submit, which
+				// at minimum saves the first form the way it always did.
+				$btn.prop('disabled', false);
+				HTMLFormElement.prototype.submit.call($forms[0]);
+			});
 		});
 
 		// Activate the tab the admin was last on (e.g. before clicking Save, which
