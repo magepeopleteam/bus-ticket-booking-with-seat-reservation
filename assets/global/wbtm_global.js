@@ -1375,6 +1375,8 @@
 		let startDate = parent.find(':input[name=j_date]').val() || this_btn.attr('data-date') || '';
 		let returnDate = parent.find(':input[name=r_date]').val() || '';
 		let fullBusJourneyType = this_btn.closest('#return_bus').length ? 'return' : 'departure';
+		// A round trip was requested whenever the return container is present.
+		let fullBusReturnRequested = $('#wbtm_return_container').length > 0;
 		let requestData = {
 			"action": "wbtm_ajax_add_to_cart",
 			"wbtm_booking_mode": "full_bus",
@@ -1382,6 +1384,13 @@
 			"wbtm_post_id": this_btn.attr('data-bus-id'),
 			"wbtm_price_leg": this_btn.attr('data-price-leg') || "outbound",
 			"wbtm_journey_type": fullBusJourneyType,
+			// Round-trip context for Standalone/Custom Payment mode (ignored by the WC
+			// cart flow, which only reads these in Pro's WBTM_Standalone_Payment): whether
+			// a return was requested so the outbound leg is staged instead of checked out,
+			// and the staged outbound group id the return leg must be linked to.
+			"wbtm_round_trip": fullBusReturnRequested ? '1' : '0',
+			"wbtm_return_group_id": (fullBusJourneyType === 'return') ? wbtm_standalone_outbound_group_id : 0,
+			"wbtm_prev_outbound_group_id": (fullBusJourneyType === 'return') ? 0 : wbtm_standalone_outbound_group_id,
 			"wbtm_start_point": this_btn.attr('data-start-point'),
 			"wbtm_start_time": this_btn.attr('data-start-time'),
 			"wbtm_bp_place": this_btn.attr('data-bp-place'),
@@ -1416,6 +1425,13 @@
 				data: requestData,
 				success: function (response) {
 					if (response.success) {
+						// Standalone round trip: the outbound leg is staged (no checkout yet)
+						// and its booking group id comes back so the return leg can join it.
+						if (response.data && response.data.outbound_group_id) {
+							wbtm_standalone_outbound_group_id = response.data.outbound_group_id;
+						}
+						// Standalone/Custom Payment mode: Pro answers with an inline checkout
+						// modal (preferred) or a checkout-page redirect — handle and stop here.
 						if (wbtm_handle_standalone_checkout_response(response)) {
 							this_btn.prop('disabled', false).html(defaultHtml);
 							return;
@@ -1425,7 +1441,10 @@
 						wbtm_filter_return_buses_by_outbound_time();
 						if (this_btn.closest('#start_bus').length && $('#return_bus .wtbm_bus_counter').length > 0) {
 							wtbm_active_return_bus_tab_data();
-						} else {
+						} else if (!wbtm_is_standalone_booking_mode()) {
+							// WooCommerce cart flow: the outbound is in the cart, go to checkout.
+							// In standalone the staged outbound card carries its own Checkout button
+							// ("checkout without return"), so no forced redirect here.
 							window.location.href = wbtm_wc_vars.checkout_url;
 						}
 					} else {

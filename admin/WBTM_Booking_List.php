@@ -1871,7 +1871,13 @@
 				foreach ($extra_services as $svc) {
 					$services_total += (float) ($svc['price'] ?? 0) * (int) ($svc['qty'] ?? 1);
 				}
-				$grand_total = $fare + $services_total + ($full_bus_base ? max(0, $full_bus_base - $full_bus_discount) : 0);
+				// For a full-bus booking, wbtm_bus_fare already holds the FINAL (discounted)
+				// price. The fare-breakdown below lists the pre-discount base fare plus a
+				// separate discount line, so the fare row shows the base and the total is
+				// base − discount (+ services) — adding $fare on top of that would count the
+				// full-bus price twice (the list row total uses $fare directly, unaffected).
+				$fare_line   = $full_bus_base > 0 ? $full_bus_base : $fare;
+				$grand_total = ($full_bus_base > 0 ? max(0, $full_bus_base - $full_bus_discount) : $fare) + $services_total;
 				// Tax-inclusive pricing: $grand_total already contains $detail_tax, so the
 				// tax is rendered as a breakdown line under the total, never added to it.
 				$detail_tax     = $this->booking_tax($id);
@@ -1987,11 +1993,11 @@
 											<tr>
 												<td><?php echo esc_html($ticket ?: esc_html__('Seat fare', 'bus-ticket-booking-with-seat-reservation')); ?> <?php echo $seat ? '(' . esc_html($seat) . ')' : ''; ?></td>
 												<td>1</td>
-												<td><?php echo wp_kses_post(WBTM_Global_Function::format_price($fare)); ?></td>
+												<td><?php echo wp_kses_post(WBTM_Global_Function::format_price($fare_line)); ?></td>
 											</tr>
-											<?php if ($full_bus_base) : ?>
+											<?php if ($full_bus_base && $full_bus_discount > 0) : ?>
 												<tr>
-													<td><span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e('Full Bus Discount', 'bus-ticket-booking-with-seat-reservation'); ?></td>
+													<td><span class="dashicons dashicons-minus"></span> <?php esc_html_e('Full Bus Discount', 'bus-ticket-booking-with-seat-reservation'); ?></td>
 													<td>1</td>
 													<td>&minus;<?php echo wp_kses_post(WBTM_Global_Function::format_price($full_bus_discount)); ?></td>
 												</tr>

@@ -526,16 +526,38 @@
 						</a>
 					</h2>
 					<?php if ( ! $wc_active ) : ?>
-						<div class="woocommerce-field">
-							<div class="wbtm-woo-warning-notice" style="background:#fff3cd;color:#856404;padding:15px;border-left:4px solid #ffeeba;border-radius:6px;margin:15px 0 10px;">
-								<div style="display:flex;flex-direction:column;align-items:flex-start;gap:15px;">
-									<div style="width:100%;">
-										<strong style="display:block;font-size:14px;margin-bottom:5px;"><i class="fas fa-exclamation-triangle" style="margin-right:5px;"></i><?php esc_html_e( 'Notice: WooCommerce is Not Activated', 'bus-ticket-booking-with-seat-reservation' ); ?></strong>
-										<span style="font-size:13px;display:block;"><?php esc_html_e( 'To process bookings through the WooCommerce cart/checkout flow, you must install and activate WooCommerce. Otherwise, use the Custom Payment tab.', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-									</div>
-									<div>
-										<button type="button" class="button button-primary wbtm-install-wc-trigger" style="white-space:nowrap;"><?php echo wp_kses_post( $btn_text ); ?></button>
-									</div>
+						<?php
+						/*
+						 * WooCommerce install/activate CTA. This is deliberately NOT inside a
+						 * `.woocommerce-field` wrapper: updateTabs() in payment_tabs_script()
+						 * hides every `.woocommerce-field` whenever the active sub-tab isn't
+						 * WooCommerce, and while WooCommerce is inactive the active flow is
+						 * always Custom Payment — which would hide the very button offering to
+						 * install it (leaving an empty gap). Keeping it in its own always-visible
+						 * block ensures the "Install & Activate" button is reachable exactly when
+						 * it's needed. The button opens the modal wired in render_wc_warning_modal().
+						 */
+						?>
+						<div class="wbtm-wc-install-cta">
+							<div class="wbtm-wc-cta">
+								<span class="wbtm-wc-cta__glow" aria-hidden="true"></span>
+								<span class="wbtm-wc-cta__icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+								</span>
+								<div class="wbtm-wc-cta__body">
+									<span class="wbtm-wc-cta__chip"><span class="wbtm-wc-cta__dot"></span><?php esc_html_e( 'Setup required', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+									<h3 class="wbtm-wc-cta__title"><?php esc_html_e( 'WooCommerce is not activated', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
+									<p class="wbtm-wc-cta__desc"><?php esc_html_e( 'To process bookings through the WooCommerce cart/checkout flow, you must install and activate WooCommerce. Otherwise, use the Custom Payment tab.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+								</div>
+								<div class="wbtm-wc-cta__action">
+									<button type="button" class="wbtm-wc-cta__btn wbtm-install-wc-trigger">
+										<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+										<span><?php echo wp_kses_post( $btn_text ); ?></span>
+									</button>
+									<span class="wbtm-wc-cta__hint">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+										<?php echo esc_html( $is_installed ? __( 'One-click activation', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Secure one-click setup', 'bus-ticket-booking-with-seat-reservation' ) ); ?>
+									</span>
 								</div>
 							</div>
 						</div>
@@ -694,29 +716,55 @@
 					? __( 'Activate WooCommerce Now', 'bus-ticket-booking-with-seat-reservation' )
 					: __( 'Install &amp; Activate Now', 'bus-ticket-booking-with-seat-reservation' );
 				?>
-				<div id="wbtm-wc-install-modal" style="display:none;position:fixed;z-index:999999;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
-					<div style="background:#fff;border-radius:12px;width:520px;max-width:92vw;box-shadow:0 10px 40px rgba(0,0,0,0.35);overflow:hidden;">
-						<div style="padding:18px 24px;border-bottom:1px solid #e2e4e7;display:flex;justify-content:space-between;align-items:center;background:#f8f9fa;">
-							<h3 style="margin:0;font-size:17px;color:#2c3338;display:flex;align-items:center;gap:8px;">
-								<span class="dashicons dashicons-plugins-checked" style="font-size:20px;color:#2271b1;"></span>
-								<?php esc_html_e( 'Set Up WooCommerce', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							</h3>
-							<button type="button" id="wbtm-wc-install-modal-close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:#666;padding:0;">&times;</button>
+				<div id="wbtm-wc-install-modal" class="wbtm-wcm-overlay" style="display:none;">
+					<div class="wbtm-wcm-card" role="dialog" aria-modal="true" aria-labelledby="wbtm-wcm-title">
+						<div class="wbtm-wcm-head">
+							<span class="wbtm-wcm-head-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+							</span>
+							<h3 id="wbtm-wcm-title" class="wbtm-wcm-title"><?php esc_html_e( 'Set Up WooCommerce', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
+							<button type="button" id="wbtm-wc-install-modal-close" class="wbtm-wcm-close" aria-label="<?php esc_attr_e( 'Close', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+							</button>
 						</div>
-						<div style="padding:24px;">
+						<div class="wbtm-wcm-body">
 							<div id="wbtm-wc-modal-info">
-								<p style="margin:0 0 18px;font-size:14px;color:#3c434a;line-height:1.6;"><?php echo esc_html( $modal_desc ); ?></p>
-								<button type="button" id="wbtm-wc-modal-action-btn" class="button button-primary" style="white-space:nowrap;padding:6px 18px;"><?php echo wp_kses_post( $modal_btn ); ?></button>
+								<p class="wbtm-wcm-desc"><?php echo esc_html( $modal_desc ); ?></p>
+								<button type="button" id="wbtm-wc-modal-action-btn" class="wbtm-wcm-btn">
+									<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+									<span><?php echo wp_kses_post( $modal_btn ); ?></span>
+								</button>
 							</div>
-							<div id="wbtm-wc-modal-progress" style="display:none;">
-								<div style="width:100%;height:8px;background:#f0f0f1;border-radius:100px;overflow:hidden;margin-bottom:10px;">
-									<div id="wbtm-wc-modal-progress-fill" style="height:100%;width:0%;border-radius:100px;background:linear-gradient(90deg,#7b5ea7,#9b72cf);transition:width 0.5s cubic-bezier(0.16,1,0.3,1);"></div>
-								</div>
-								<p id="wbtm-wc-modal-status-text" style="font-size:13px;color:#50575e;margin:0;text-align:center;min-height:20px;"></p>
+							<div id="wbtm-wc-modal-progress" class="wbtm-wcm-progress" style="display:none;">
+								<div class="wbtm-wcm-bar"><div id="wbtm-wc-modal-progress-fill" class="wbtm-wcm-bar-fill"></div></div>
+								<p id="wbtm-wc-modal-status-text" class="wbtm-wcm-status"></p>
 							</div>
 						</div>
 					</div>
 				</div>
+				<style>
+				.wbtm-wcm-overlay{position:fixed;inset:0;z-index:999999;background:rgba(24,18,43,0.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);align-items:center;justify-content:center;}
+				.wbtm-wcm-card{background:#fff;border-radius:18px;width:500px;max-width:92vw;box-shadow:0 24px 60px -12px rgba(24,18,43,0.5);overflow:hidden;animation:wbtmWcmIn .28s cubic-bezier(0.16,1,0.3,1);}
+				@keyframes wbtmWcmIn{from{opacity:0;transform:translateY(14px) scale(0.97);}to{opacity:1;transform:none;}}
+				.wbtm-wcm-head{position:relative;display:flex;align-items:center;gap:12px;padding:20px 22px;background:linear-gradient(120deg,#faf8fe,#f3edfb);border-bottom:1px solid #ece4f7;}
+				.wbtm-wcm-head-icon{flex:0 0 auto;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7f54b3,#674399);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -7px rgba(103,67,153,0.9);}
+				.wbtm-wcm-head-icon svg{width:22px;height:22px;}
+				.wbtm-wcm-title{margin:0;font-size:17px;font-weight:700;color:#1d2327;flex:1 1 auto;line-height:1.3;}
+				.wbtm-wcm-close{flex:0 0 auto;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(103,67,153,0.08);border:none;border-radius:8px;color:#674399;cursor:pointer;padding:0;transition:background .16s ease,color .16s ease;}
+				.wbtm-wcm-close:hover{background:rgba(103,67,153,0.16);color:#4b2e78;}
+				.wbtm-wcm-close svg{width:18px;height:18px;}
+				.wbtm-wcm-body{padding:24px 22px 26px;}
+				.wbtm-wcm-desc{margin:0 0 20px;font-size:14px;color:#4c5460;line-height:1.65;}
+				.wbtm-wcm-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;cursor:pointer;border:none;box-sizing:border-box;color:#fff !important;background:linear-gradient(135deg,#7f54b3,#674399) !important;font-weight:700;font-size:14.5px;border-radius:11px;padding:13px 22px;line-height:1.2;box-shadow:0 12px 26px -10px rgba(103,67,153,0.95);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;}
+				.wbtm-wcm-btn:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 18px 34px -12px rgba(103,67,153,1);}
+				.wbtm-wcm-btn:active{transform:translateY(0);}
+				.wbtm-wcm-btn:focus-visible{outline:2px solid #7f54b3;outline-offset:2px;}
+				.wbtm-wcm-btn svg{width:17px;height:17px;flex:0 0 auto;}
+				.wbtm-wcm-progress{padding:6px 0 2px;}
+				.wbtm-wcm-bar{width:100%;height:10px;background:#efeaf7;border-radius:100px;overflow:hidden;margin-bottom:12px;}
+				.wbtm-wcm-bar-fill{height:100%;width:0;border-radius:100px;background:linear-gradient(90deg,#7f54b3,#9b72cf);transition:width .5s cubic-bezier(0.16,1,0.3,1);}
+				.wbtm-wcm-status{margin:0;font-size:13px;font-weight:600;color:#50575e;text-align:center;min-height:20px;}
+				</style>
 				<script>
 				jQuery(function($){
 					var wbtmWcIsInstalled = <?php echo $is_installed ? 'true' : 'false'; ?>;
@@ -1146,6 +1194,35 @@
 				   warning notice this row may still hold. */
 				#bm-tab-payments .bm-gs__field-row.wbtm-field-wbtm_payment_tabs_html > .bm-gs__field-control-cell{
 					padding:0 18px !important;
+				}
+
+				/* WooCommerce install / activate CTA (shown only while WC is inactive).
+				   Uses WooCommerce's brand purple to read as an on-brand card, matching
+				   the per-gateway colour treatment of the Custom Payment cards below. */
+				.wbtm-wc-install-cta{margin:4px 0 22px;}
+				.wbtm-wc-cta{position:relative;display:flex;align-items:center;gap:20px;background:linear-gradient(180deg,#ffffff,#faf8fe);border:1px solid #ebe4f7;border-radius:16px;padding:22px 24px;box-shadow:0 6px 22px rgba(76,45,122,0.08);overflow:hidden;box-sizing:border-box;}
+				.wbtm-wc-cta:before{content:"";position:absolute;top:0;left:0;bottom:0;width:5px;background:linear-gradient(180deg,#9b5cb8,#674399);}
+				.wbtm-wc-cta__glow{position:absolute;top:-70px;right:-50px;width:190px;height:190px;background:radial-gradient(circle,rgba(127,84,179,0.16),transparent 70%);pointer-events:none;}
+				.wbtm-wc-cta__icon{flex:0 0 auto;width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#7f54b3,#674399);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 24px -10px rgba(103,67,153,0.9);}
+				.wbtm-wc-cta__icon svg{width:31px;height:31px;}
+				.wbtm-wc-cta__body{flex:1 1 auto;min-width:0;position:relative;z-index:1;}
+				.wbtm-wc-cta__chip{display:inline-flex;align-items:center;gap:6px;background:#fef3c7;color:#92660b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:4px 11px;border-radius:20px;margin-bottom:9px;}
+				.wbtm-wc-cta__dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,0.22);}
+				.wbtm-wc-cta__title{margin:0 0 5px;font-size:17px;font-weight:700;color:#1d2327;line-height:1.3;}
+				.wbtm-wc-cta__desc{margin:0;font-size:13px;color:#5c6470;line-height:1.6;max-width:640px;}
+				.wbtm-wc-cta__action{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:9px;position:relative;z-index:1;}
+				.wbtm-wc-cta__btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;white-space:nowrap;color:#fff !important;background:linear-gradient(135deg,#7f54b3,#674399) !important;font-weight:700;font-size:14px;border-radius:10px;padding:12px 24px;line-height:1.2;box-shadow:0 12px 24px -10px rgba(103,67,153,0.95);transition:transform 0.16s ease,box-shadow 0.16s ease,filter 0.16s ease;}
+				.wbtm-wc-cta__btn:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 18px 32px -12px rgba(103,67,153,1);}
+				.wbtm-wc-cta__btn:active{transform:translateY(0);}
+				.wbtm-wc-cta__btn:focus-visible{outline:2px solid #7f54b3;outline-offset:2px;}
+				.wbtm-wc-cta__btn svg{width:17px;height:17px;flex:0 0 auto;}
+				.wbtm-wc-cta__hint{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#8a8f98;}
+				.wbtm-wc-cta__hint svg{width:13px;height:13px;opacity:0.85;}
+				@media (max-width:640px){
+					.wbtm-wc-cta{flex-direction:column;align-items:flex-start;gap:16px;padding:20px;}
+					.wbtm-wc-cta__action{width:100%;align-items:stretch;}
+					.wbtm-wc-cta__btn{width:100%;}
+					.wbtm-wc-cta__hint{justify-content:center;}
 				}
 
 				/* Mobile: the gateway grid already collapses to a single column via

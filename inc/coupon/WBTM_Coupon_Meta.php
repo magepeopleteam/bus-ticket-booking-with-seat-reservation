@@ -137,14 +137,14 @@
 								<div class="wbtm-cpn__field">
 									<label for="wbtm_cpn_amount"><?php esc_html_e( 'Amount', 'bus-ticket-booking-with-seat-reservation' ); ?> <span class="req">*</span></label>
 									<div class="wbtm-cpn__inputgroup">
-										<span class="wbtm-cpn__addon" data-amount-symbol data-currency="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>"><?php echo $discount_type === 'percent' ? '%' : esc_html( get_woocommerce_currency_symbol() ); ?></span>
+										<span class="wbtm-cpn__addon" data-amount-symbol data-currency="<?php echo esc_attr( WBTM_Global_Function::get_currency_symbol() ); ?>"><?php echo $discount_type === 'percent' ? '%' : esc_html( WBTM_Global_Function::get_currency_symbol() ); ?></span>
 										<input type="number" step="0.01" min="0" id="wbtm_cpn_amount" name="wbtm_coupon[amount]" value="<?php echo esc_attr( $amount ); ?>" placeholder="0.00">
 									</div>
 								</div>
 								<div class="wbtm-cpn__field" data-show-for="percent" <?php echo $discount_type === 'percent' ? '' : 'style="display:none"'; ?>>
 									<label for="wbtm_cpn_max"><?php esc_html_e( 'Maximum Discount Cap', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
 									<div class="wbtm-cpn__inputgroup">
-										<span class="wbtm-cpn__addon"><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span>
+										<span class="wbtm-cpn__addon"><?php echo esc_html( WBTM_Global_Function::get_currency_symbol() ); ?></span>
 										<input type="number" step="0.01" min="0" id="wbtm_cpn_max" name="wbtm_coupon[max_discount]" value="<?php echo esc_attr( $max_discount ); ?>" placeholder="<?php esc_attr_e( '0 = no cap', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 									</div>
 									<p class="wbtm-cpn__hint"><?php esc_html_e( 'Caps a percentage discount at this amount. Leave 0 for no cap.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
@@ -196,7 +196,7 @@
 								<div class="wbtm-cpn__field">
 									<label for="wbtm_cpn_min_spend"><?php esc_html_e( 'Minimum Fare', 'bus-ticket-booking-with-seat-reservation' ); ?></label>
 									<div class="wbtm-cpn__inputgroup">
-										<span class="wbtm-cpn__addon"><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span>
+										<span class="wbtm-cpn__addon"><?php echo esc_html( WBTM_Global_Function::get_currency_symbol() ); ?></span>
 										<input type="number" step="0.01" min="0" id="wbtm_cpn_min_spend" name="wbtm_coupon[min_spend]" value="<?php echo esc_attr( $min_spend ); ?>" placeholder="0">
 									</div>
 								</div>

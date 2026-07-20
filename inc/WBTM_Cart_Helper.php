@@ -20,12 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * fatal with "Cannot redeclare". Every active plugin's main file has already
  * been require()'d by the time plugins_loaded fires, so checking there is
  * load-order-independent.
+ *
+ * We ALSO skip the stub whenever WooCommerce is present on disk (installed but
+ * not necessarily active). During WooCommerce *activation*, WordPress runs
+ * plugin_sandbox_scrape() which include()s woocommerce.php mid-request — long
+ * after this plugins_loaded callback already ran with WC still inactive. Had we
+ * declared the stub then, WC's own unguarded wc_price() would fatal on that
+ * include. Once WooCommerce is installed the site is on its way to using it, so
+ * deferring to WC's real wc_price() (present as soon as it loads) is correct.
  */
 add_action( 'plugins_loaded', function () {
-	if ( ! function_exists( 'wc_price' ) ) {
-		function wc_price( $price, $args = array() ) {
-			return number_format( (float) $price, 2 );
-		}
+	if ( function_exists( 'wc_price' ) ) {
+		return;
+	}
+	if ( defined( 'WP_PLUGIN_DIR' ) && file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+		return; // WooCommerce installed — its real wc_price() will load; don't collide with it.
+	}
+	function wc_price( $price, $args = array() ) {
+		return number_format( (float) $price, 2 );
 	}
 } );
 
