@@ -491,6 +491,17 @@
 				}
 				return number_format((float) $price, 2);
 			}
+			/**
+			 * WooCommerce-safe currency symbol. Returns WooCommerce's configured
+			 * symbol when WC is active, otherwise an empty string so standalone
+			 * (no-WC) admin screens never fatal on get_woocommerce_currency_symbol().
+			 */
+			public static function get_currency_symbol() {
+				if (function_exists('get_woocommerce_currency_symbol')) {
+					return get_woocommerce_currency_symbol();
+				}
+				return '';
+			}
 			//***********************************//
 			public static function get_image_url($post_id = '', $image_id = '', $size = 'full') {
 				if ($post_id) {

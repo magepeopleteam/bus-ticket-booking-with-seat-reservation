@@ -159,7 +159,7 @@ if ( ! class_exists( 'WBTM_Woo_Installer' ) ) {
 		 * @param mixed $response Pass-through filter value.
 		 * @return mixed
 		 */
-		private function reset_time_limit_before_copy( $response ) {
+		public function reset_time_limit_before_copy( $response ) {
 			if ( function_exists( 'set_time_limit' ) ) {
 				@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- disabled on some hosts, safe to suppress.
 			}
