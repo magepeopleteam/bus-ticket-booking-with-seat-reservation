@@ -49,6 +49,23 @@
 	var total = parseInt($root.data('total'), 10) || order.length;
 	var cur = 0;
 
+	// SEO title/description counters are shared by manual editing and the PRO
+	// AI generator (which triggers the same input event after filling fields).
+	function updateSeoCounter(counter) {
+		var $counter = $(counter);
+		var $field = $('#' + $counter.data('seo-counter'));
+		if (!$field.length) { return; }
+		var length = Array.from($field.val() || '').length;
+		var min = parseInt($counter.data('good-min'), 10) || 0;
+		var max = parseInt($counter.data('good-max'), 10) || 0;
+		$counter.text(length + '/' + max).toggleClass('is-good', length >= min && length <= max);
+	}
+
+	$root.on('input', '#wbtm-seo-title, #wbtm-seo-description', function () {
+		$root.find('[data-seo-counter="' + this.id + '"]').each(function () { updateSeoCounter(this); });
+	});
+	$root.find('[data-seo-counter]').each(function () { updateSeoCounter(this); });
+
 	function goStep(index) {
 		if (index < 0) { index = 0; }
 		if (index > order.length - 1) { index = order.length - 1; }

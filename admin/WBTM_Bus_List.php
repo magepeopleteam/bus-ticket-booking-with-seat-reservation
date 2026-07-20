@@ -455,21 +455,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * @return array|null { key: yoast|aioseo|rankmath, label: string } or null.
 			 */
 			private function seo_provider() {
-				static $provider = false; // false = not resolved yet, null = none active.
-				if ( $provider !== false ) {
-					return $provider;
-				}
-				if ( defined( 'WPSEO_VERSION' ) ) {
-					$provider = array( 'key' => 'yoast', 'label' => 'Yoast SEO' );
-				} elseif ( defined( 'AIOSEO_VERSION' ) || function_exists( 'aioseo' ) ) {
-					$provider = array( 'key' => 'aioseo', 'label' => 'All in One SEO' );
-				} elseif ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath', false ) ) {
-					$provider = array( 'key' => 'rankmath', 'label' => 'Rank Math' );
-				} else {
-					$provider = null;
-				}
-
-				return $provider;
+				return class_exists( 'WBTM_SEO' ) ? WBTM_SEO::provider() : null;
 			}
 
 			/**
@@ -481,28 +467,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * @return array<int,array> Map of post_id => row.
 			 */
 			private function aioseo_scores( array $ids ): array {
-				global $wpdb;
-				$ids = array_values( array_filter( array_map( 'absint', $ids ) ) );
-				if ( empty( $ids ) ) {
-					return array();
-				}
-				$table = $wpdb->prefix . 'aioseo_posts';
-				// Bail quietly if AIOSEO is detected but its table isn't there yet.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) {
-					return array();
-				}
-				$in = implode( ',', $ids ); // Ints only — safe to inline.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$rows = $wpdb->get_results( "SELECT post_id, seo_score, title, description, keyphrases FROM {$table} WHERE post_id IN ({$in})", ARRAY_A );
-				$map  = array();
-				if ( $rows ) {
-					foreach ( $rows as $row ) {
-						$map[ (int) $row['post_id'] ] = $row;
-					}
-				}
-
-				return $map;
+				return class_exists( 'WBTM_SEO' ) ? WBTM_SEO::aioseo_scores( $ids ) : array();
 			}
 
 			/**
@@ -514,99 +479,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * @return array
 			 */
 			private function get_seo_data( $post_id, array $provider, array $aioseo_map = array() ): array {
-				$data = array(
-					'analyzed'  => false,
-					'score'     => null,
-					'rating'    => 'na',
-					'label'     => esc_html__( 'Not analyzed', 'bus-ticket-booking-with-seat-reservation' ),
-					'keyword'   => '',
-					'has_desc'  => false,
-					'has_title' => false,
-					'provider'  => $provider['label'],
-				);
-
-				switch ( $provider['key'] ) {
-					case 'yoast':
-						$raw               = get_post_meta( $post_id, '_yoast_wpseo_linkdex', true );
-						$data['keyword']   = (string) get_post_meta( $post_id, '_yoast_wpseo_focuskw', true );
-						$data['has_desc']  = get_post_meta( $post_id, '_yoast_wpseo_metadesc', true ) !== '';
-						$data['has_title'] = get_post_meta( $post_id, '_yoast_wpseo_title', true ) !== '';
-						if ( $raw !== '' && $raw !== false ) {
-							$data['analyzed'] = true;
-							$data['score']    = (int) $raw;
-						}
-						break;
-
-					case 'aioseo':
-						$row = $aioseo_map[ $post_id ] ?? null;
-						if ( $row ) {
-							if ( isset( $row['seo_score'] ) && $row['seo_score'] !== null && $row['seo_score'] !== '' ) {
-								$data['analyzed'] = true;
-								$data['score']    = (int) $row['seo_score'];
-							}
-							$data['has_desc']  = ! empty( $row['description'] );
-							$data['has_title'] = ! empty( $row['title'] );
-							$keyphrases        = json_decode( (string) ( $row['keyphrases'] ?? '' ), true );
-							if ( is_array( $keyphrases ) && ! empty( $keyphrases['focus']['keyphrase'] ) ) {
-								$data['keyword'] = (string) $keyphrases['focus']['keyphrase'];
-							}
-						}
-						break;
-
-					case 'rankmath':
-						$raw = get_post_meta( $post_id, 'rank_math_seo_score', true );
-						$kw  = (string) get_post_meta( $post_id, 'rank_math_focus_keyword', true );
-						if ( $kw !== '' ) {
-							$parts           = explode( ',', $kw ); // Comma-list; first is primary.
-							$data['keyword'] = trim( $parts[0] );
-						}
-						$data['has_desc']  = get_post_meta( $post_id, 'rank_math_description', true ) !== '';
-						$data['has_title'] = get_post_meta( $post_id, 'rank_math_title', true ) !== '';
-						if ( $raw !== '' && $raw !== false ) {
-							$data['analyzed'] = true;
-							$data['score']    = (int) $raw;
-						}
-						break;
-				}
-
-				if ( $data['analyzed'] ) {
-					$rating         = $this->seo_rating( (int) $data['score'], $provider['key'] );
-					$data['rating'] = $rating['rating'];
-					$data['label']  = $rating['label'];
-				}
-
-				return $data;
-			}
-
-			/**
-			 * Map a 0-100 score to a rating + label using each plugin's own colour
-			 * bands (so the badge matches what the user sees inside that plugin).
-			 * A score of 0 (no focus keyword / not measurable) falls through to "na".
-			 */
-			private function seo_rating( int $score, string $key ): array {
-				$good = esc_html__( 'Good', 'bus-ticket-booking-with-seat-reservation' );
-				$ok   = esc_html__( 'Needs work', 'bus-ticket-booking-with-seat-reservation' );
-				$bad  = esc_html__( 'Poor', 'bus-ticket-booking-with-seat-reservation' );
-				$na   = esc_html__( 'Not analyzed', 'bus-ticket-booking-with-seat-reservation' );
-
-				switch ( $key ) {
-					case 'aioseo':
-						if ( $score >= 80 ) { return array( 'rating' => 'good', 'label' => $good ); }
-						if ( $score >= 50 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
-						if ( $score > 0 )   { return array( 'rating' => 'bad', 'label' => $bad ); }
-						break;
-					case 'rankmath':
-						if ( $score > 80 ) { return array( 'rating' => 'good', 'label' => $good ); }
-						if ( $score > 50 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
-						if ( $score > 0 )  { return array( 'rating' => 'bad', 'label' => $bad ); }
-						break;
-					default: // Yoast bands: 71-100 good, 41-70 ok, 1-40 bad.
-						if ( $score > 70 ) { return array( 'rating' => 'good', 'label' => $good ); }
-						if ( $score > 40 ) { return array( 'rating' => 'ok', 'label' => $ok ); }
-						if ( $score > 0 )  { return array( 'rating' => 'bad', 'label' => $bad ); }
-				}
-
-				return array( 'rating' => 'na', 'label' => $na );
+				return WBTM_SEO::get_data( $post_id, $provider, $aioseo_map );
 			}
 
 			/**

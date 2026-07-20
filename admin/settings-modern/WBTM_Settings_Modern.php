@@ -93,11 +93,11 @@
 			 * ------------------------------------------------------------------ */
 
 			/**
-			 * The 4 wizard steps. Each section reuses a classic renderer:
+			 * The wizard steps. Each section reuses a classic renderer:
 			 * [ class, method, title, subtitle ].
 			 */
 			private function get_steps() {
-				return array(
+				$steps = array(
 					array(
 						'id'       => 'general',
 						'label'    => __( 'General Info', 'bus-ticket-booking-with-seat-reservation' ),
@@ -142,6 +142,21 @@
 						),
 					),
 				);
+
+				// The SEO workflow is useful only when its native metadata owner is
+				// active. Omitting it here keeps the stepper, panel count and footer
+				// navigation in sync automatically on sites without an SEO plugin.
+				if ( class_exists( 'WBTM_SEO' ) && WBTM_SEO::provider() ) {
+					$steps[] = array(
+						'id'       => 'seo',
+						'label'    => __( 'SEO', 'bus-ticket-booking-with-seat-reservation' ),
+						'sections' => array(
+							array( 'WBTM_SEO', 'tab_content', __( 'Search Engine Optimization', 'bus-ticket-booking-with-seat-reservation' ), __( 'Optimize this bus using the native fields of your active SEO plugin.', 'bus-ticket-booking-with-seat-reservation' ) ),
+						),
+					);
+				}
+
+				return $steps;
 			}
 
 			/**
@@ -227,6 +242,7 @@
 					'seat'     => $card( 2, '25%' ) . $block( 280 ),
 					'pricing'  => $card( 3, '30%' ) . $card( 2, '25%' ),
 					'advanced' => $card( 3, '35%' ) . $card( 2, '30%' ) . $card( 3, '40%' ),
+					'seo'      => $card( 4, '30%' ) . $card( 3, '25%' ),
 				);
 
 				$inner = isset( $shapes[ $id ] ) ? $shapes[ $id ] : $card( 3, '30%' );
