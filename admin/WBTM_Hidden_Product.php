@@ -108,8 +108,21 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 			/**********************/
 			public function create_hidden_wc_product( $post_id) {
+				return self::create_hidden_wc_product_for( $post_id );
+			}
+			/**
+			 * Create a fresh hidden WC product for a bus and return its ID.
+			 *
+			 * Static twin of create_hidden_wc_product() so the self-healing helpers
+			 * below (and the AJAX add-to-cart controller) can (re)build the mirror
+			 * product and get its ID back without needing a class instance.
+			 *
+			 * @param int $bus_id wbtm_bus post ID.
+			 * @return int New product ID, or 0 on failure.
+			 */
+			public static function create_hidden_wc_product_for( $bus_id ) {
 				$new_post = array(
-					'post_title'    => get_the_title( $post_id ),
+					'post_title'    => get_the_title( $bus_id ),
 					'post_content'  => '',
 					'post_name'     => uniqid(),
 					'post_category' => array(),
@@ -117,15 +130,137 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'post_status'   => 'publish',
 					'post_type'     => 'product'
 				);
-				$pid      = wp_insert_post( $new_post );
-				update_post_meta( $post_id, 'link_wc_product', $pid );
-				update_post_meta( $pid, 'link_wbtm_bus', $post_id );
-				update_post_meta( $pid, '_price', 0.01 );
-				update_post_meta( $pid, '_sold_individually', 'yes' );
-				update_post_meta( $pid, '_virtual', 'yes' );
-				$terms = array( 'exclude-from-catalog', 'exclude-from-search' );
-				wp_set_object_terms( $pid, $terms, 'product_visibility' );
-				update_post_meta( $post_id, 'check_if_run_once', true );
+				$pid = wp_insert_post( $new_post );
+				if ( is_wp_error( $pid ) || ! $pid ) {
+					return 0;
+				}
+				update_post_meta( $bus_id, 'link_wc_product', $pid );
+				update_post_meta( $pid, 'link_wbtm_bus', $bus_id );
+				self::ensure_product_is_purchasable( $pid, $bus_id );
+				update_post_meta( $bus_id, 'check_if_run_once', true );
+				return (int) $pid;
+			}
+			/**
+			 * Force a hidden product into a state WooCommerce will accept in the cart:
+			 * published, priced, in stock, virtual, sold individually and excluded from
+			 * catalog/search. Only writes what is needed so it is cheap to call.
+			 *
+			 * @param int $product_id WC product ID.
+			 * @param int $bus_id     Owning wbtm_bus ID (to restore the back-link).
+			 * @return void
+			 */
+			public static function ensure_product_is_purchasable( $product_id, $bus_id = 0 ) {
+				$product_id = (int) $product_id;
+				if ( ! $product_id ) {
+					return;
+				}
+				if ( get_post_status( $product_id ) !== 'publish' ) {
+					wp_update_post( array( 'ID' => $product_id, 'post_status' => 'publish' ) );
+				}
+				$price = get_post_meta( $product_id, '_price', true );
+				if ( $price === '' || $price === null ) {
+					update_post_meta( $product_id, '_price', 0.01 );
+					update_post_meta( $product_id, '_regular_price', 0.01 );
+				}
+				update_post_meta( $product_id, '_stock_status', 'instock' );
+				update_post_meta( $product_id, '_manage_stock', 'no' );
+				update_post_meta( $product_id, '_virtual', 'yes' );
+				update_post_meta( $product_id, '_sold_individually', 'yes' );
+				wp_set_object_terms( $product_id, array( 'exclude-from-catalog', 'exclude-from-search' ), 'product_visibility' );
+				if ( $bus_id && ! get_post_meta( $product_id, 'link_wbtm_bus', true ) ) {
+					update_post_meta( $product_id, 'link_wbtm_bus', (int) $bus_id );
+				}
+				if ( function_exists( 'wc_delete_product_transients' ) ) {
+					wc_delete_product_transients( $product_id );
+				}
+			}
+			/**
+			 * Ensure a bus has a valid, purchasable hidden WC product and return its ID.
+			 *
+			 * Self-healing entry point used by the "Book Now" AJAX handler. Sites where
+			 * buses were imported/migrated (or where the mirror product was deleted) end
+			 * up with a missing/broken link_wc_product, which otherwise fails add-to-cart
+			 * with a generic "Cart error" (400). This rebuilds the link on demand:
+			 *   1. link resolves to a purchasable product -> return it (no writes),
+			 *   2. product exists but isn't buyable -> repair its meta,
+			 *   3. link lost but a back-linked orphan product exists -> re-adopt it,
+			 *   4. nothing exists -> create a fresh hidden product.
+			 *
+			 * @param int $bus_id wbtm_bus post ID.
+			 * @return int Linked WC product ID, or 0 if it could not be ensured.
+			 */
+			public static function ensure_hidden_wc_product( $bus_id ) {
+				$bus_id = (int) $bus_id;
+				if ( ! $bus_id || ! function_exists( 'wc_get_product' ) || get_post_type( $bus_id ) !== WBTM_Functions::get_cpt() ) {
+					return 0;
+				}
+				$product_id = (int) WBTM_Global_Function::get_post_info( $bus_id, 'link_wc_product' );
+				// Happy path: link already resolves to a buyable product — do nothing.
+				if ( $product_id && get_post_type( $product_id ) === 'product' && get_post_status( $product_id ) !== 'trash' ) {
+					$product = wc_get_product( $product_id );
+					if ( $product && $product->is_purchasable() && $product->is_in_stock() ) {
+						return $product_id;
+					}
+					// Product exists but isn't buyable (lost price/stock/visibility) — repair.
+					self::ensure_product_is_purchasable( $product_id, $bus_id );
+					return $product_id;
+				}
+				// Link missing/broken: re-adopt an orphan product that still back-links here.
+				$existing = get_posts( array(
+					'post_type'      => 'product',
+					'post_status'    => array( 'publish', 'pending', 'draft', 'private' ),
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'meta_query'     => array(
+						array(
+							'key'   => 'link_wbtm_bus',
+							'value' => $bus_id,
+						),
+					),
+				) );
+				if ( ! empty( $existing ) ) {
+					$product_id = (int) $existing[0];
+					update_post_meta( $bus_id, 'link_wc_product', $product_id );
+					self::ensure_product_is_purchasable( $product_id, $bus_id );
+					return $product_id;
+				}
+				// Nothing to adopt — build a new mirror product.
+				return (int) self::create_hidden_wc_product_for( $bus_id );
+			}
+			/**
+			 * Bulk-repair every published bus's hidden product link in one pass.
+			 *
+			 * Run once on a site whose buses lost their mirror products (the cause of
+			 * "Cart error" on Book Now), e.g. via WP-CLI:
+			 *   wp eval 'print_r( WBTM_Hidden_Product::repair_all_hidden_products() );'
+			 *
+			 * @return array{checked:int,repaired:int,created:int,links:array<int,int>}
+			 */
+			public static function repair_all_hidden_products() {
+				$result = array( 'checked' => 0, 'repaired' => 0, 'created' => 0, 'links' => array() );
+				if ( ! function_exists( 'wc_get_product' ) ) {
+					return $result;
+				}
+				$buses = get_posts( array(
+					'post_type'      => WBTM_Functions::get_cpt(),
+					'post_status'    => 'publish',
+					'numberposts'    => -1,
+					'fields'         => 'ids',
+				) );
+				foreach ( $buses as $bus_id ) {
+					$result['checked']++;
+					$before       = (int) WBTM_Global_Function::get_post_info( $bus_id, 'link_wc_product' );
+					$valid_before = $before && get_post_type( $before ) === 'product' && get_post_status( $before ) !== 'trash';
+					$pid          = self::ensure_hidden_wc_product( $bus_id );
+					if ( $pid && ! $valid_before ) {
+						$result['repaired']++;
+						if ( $pid !== $before ) {
+							$result['created']++;
+						}
+						$result['links'][ $bus_id ] = $pid;
+					}
+				}
+				return $result;
 			}
 			public function count_hidden_wc_product( $post_id ): int {
 				$args = array(

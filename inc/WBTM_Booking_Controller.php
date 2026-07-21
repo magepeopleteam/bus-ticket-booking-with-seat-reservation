@@ -113,6 +113,22 @@ if ( ! class_exists( 'WBTM_Booking_Controller' ) ) {
 				: '';
 
 			$product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+			// Self-heal the bus <-> hidden-product link. Sites where buses were imported
+			// or migrated (or where the mirror WC product was deleted) end up with a
+			// missing/broken link_wc_product, which made Book Now fail below with a generic
+			// "Cart error" (400) even though the data was fine on the origin site. Rebuild
+			// the mirror product on demand so add-to-cart succeeds instead of dying.
+			if ( class_exists( 'WBTM_Hidden_Product' ) ) {
+				$link_valid = $product_id
+					&& get_post_type( $product_id ) === 'product'
+					&& get_post_status( $product_id ) !== 'trash';
+				if ( ! $link_valid ) {
+					$healed_product_id = WBTM_Hidden_Product::ensure_hidden_wc_product( $post_id );
+					if ( $healed_product_id ) {
+						$product_id = $healed_product_id;
+					}
+				}
+			}
 			$booking_mode = isset( $_POST['wbtm_booking_mode'] ) ? sanitize_key( wp_unslash( $_POST['wbtm_booking_mode'] ) ) : '';
 			$bp           = sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ?? '' ) );
 			$dp           = sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ?? '' ) );
@@ -259,7 +275,30 @@ if ( ! class_exists( 'WBTM_Booking_Controller' ) ) {
 					}
 				}
 
-				wp_send_json_error( 'Cart error', 400 );
+				// Surface the real reason instead of the opaque "Cart error". When
+				// add_to_cart() fails it records a WooCommerce error notice (e.g. product
+				// not purchasable); relay it so the failure is diagnosable in the browser.
+				$reason = '';
+				if ( function_exists( 'wc_get_notices' ) ) {
+					$error_notices = wc_get_notices( 'error' );
+					if ( ! empty( $error_notices ) ) {
+						$messages = array_map(
+							static function ( $n ) {
+								return is_array( $n ) && isset( $n['notice'] ) ? $n['notice'] : (string) $n;
+							},
+							$error_notices
+						);
+						$reason = trim( wp_strip_all_tags( implode( ' ', $messages ) ) );
+						wc_clear_notices();
+					}
+				}
+				if ( ! $product_id ) {
+					$reason = esc_html__( 'This bus is not available for booking right now. Please contact the site administrator.', 'bus-ticket-booking-with-seat-reservation' );
+				}
+				wp_send_json_error(
+					$reason !== '' ? $reason : esc_html__( 'Could not add this ticket to the cart. Please try again.', 'bus-ticket-booking-with-seat-reservation' ),
+					400
+				);
 			} finally {
 				if ( $lock_acquired ) {
 					WBTM_Cart_Helper::release_trip_lock( $post_id, $bp, $dp, $date );
