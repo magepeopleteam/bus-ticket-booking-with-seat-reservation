@@ -320,7 +320,9 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 					// Without seat plan mode
 					$qty = isset( $_POST['wbtm_seat_qty'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['wbtm_seat_qty'] ) ) : [];
 					$passenger_type = isset( $_POST['wbtm_passenger_type'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['wbtm_passenger_type'] ) ) : [];
-					$submitted_prices = isset( $_POST['wbtm_seat_price'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['wbtm_seat_price'] ) ) : [];
+					// NOTE: the browser also posts wbtm_seat_price[], but it is deliberately
+					// never read — every price below is resolved server-side from the
+					// route's own fare table so a tampered form cannot set the amount.
 					$total_types = count( $passenger_type );
 					// Use a monotonic $count instead of the loop index $i: when a
 					// passenger type has qty 0 it is skipped, so indexing by $i left

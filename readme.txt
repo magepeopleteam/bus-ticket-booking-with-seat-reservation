@@ -426,3 +426,29 @@ Seat number rotation stopped
 * "Without Seat Plan" can no longer be selected while Multiple Cabin/Coach mode is on (cabins require a seat plan) — the option is clearly disabled instead of silently reverting
 * Drag-and-drop now works immediately on freshly added seat rows in the cabin and deck editors
 * Admin and booking-page assets are versioned by file change time, so editor and seat-plan updates are never served from a stale browser cache
+
+**Documents (New)**
+* New "Documents" submenu — a complete, searchable in-admin handbook for the plugin, so you no longer have to leave WordPress to look something up
+* Every screen is documented with screenshots: bus list, bus types, bus stops, pickup & drop-off points, features, coupons, terms, booking calendar, the 4-step bus editor, the frontend booking flow, checkout, booking list and sales report
+* A complete Settings Reference lists every Global Settings field with its purpose, type and default value — nothing is left undocumented
+* Live search across the whole handbook jumps straight to the field or screen you are looking for
+* When the PRO addon is active, its screens and settings appear inline alongside the free ones; without PRO they are clearly marked so you can see what an upgrade adds
+* Getting Started, shortcode reference, video tutorials and troubleshooting are all gathered in the same place
+
+**System Status Moved into Settings**
+* The separate "Status" menu item is gone — the system report now lives as a "Status" tab inside Global Settings, keeping the Bus menu shorter
+* Greatly expanded report with modern cards: WordPress environment, server and hosting details, database, PHP version and configuration limits, required PHP extensions, and active plugin/theme information
+* An at-a-glance health summary highlights anything that needs attention before you contact support
+* New "Copy report" button copies the whole environment report to your clipboard in one click, ready to paste into a support ticket
+* Add-on requirement checks (such as the PDF library) are preserved and continue to appear in the report
+
+**Settings Screen Improvements**
+* Settings tabs can now be linked to directly — any link to a specific tab (for example from a notice or an add-on) opens that tab instead of whichever tab you last viewed
+* The settings sidebar no longer covers the admin bar's notifications dropdown
+* The Save button is automatically hidden on informational tabs such as Status, where there is nothing to save
+* Settings styles are versioned by file change time so updates are never served from a stale browser cache
+
+**Double-Decker Cabin Fixes**
+* Fixed the Upper Deck and Lower Deck of the same cabin sharing a single seat price override — each deck now keeps its own per-seat prices, so an upper-deck seat can be priced independently of the lower-deck seat with the same number
+* Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
+* The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
