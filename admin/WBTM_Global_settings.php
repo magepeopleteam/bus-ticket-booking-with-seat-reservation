@@ -102,7 +102,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				foreach ($tab_configs as $tab_id => $config) {
 					$section_id = isset($config['section_id']) ? $config['section_id'] : $tab_id;
 					$is_license = ($section_id === 'wbtm_license_settings');
-					if (isset($sections[$section_id]) || $is_license) {
+					// Virtual tabs (e.g. Status) have no registered settings section, so they
+					// must be whitelisted here or the section check below would drop them.
+					$is_virtual = !empty($config['virtual']);
+					if (isset($sections[$section_id]) || $is_license || $is_virtual) {
 						$visible_tabs[$tab_id] = $config;
 					}
 				}
@@ -296,7 +299,14 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									$is_license = ($section_id === 'wbtm_license_settings');
 								?>
 								<div class="bm-gs__tab-panel<?php echo $tab_id === $first_tab ? ' bm-gs--active' : ''; ?>" id="bm-tab-<?php echo esc_attr($tab_id); ?>">
-									<?php if ($is_license): ?>
+									<?php if (!empty($config['virtual']) && $config['virtual'] === 'status'): ?>
+										<?php
+											// System Status — moved here from its own submenu.
+											if (class_exists('WBTM_Status')) {
+												WBTM_Status::render_status_cards();
+											}
+										?>
+									<?php elseif ($is_license): ?>
 										<div class="bm-gs__section-card">
 											<div class="bm-gs__section-head">
 												<span class="bm-gs__section-icon fas fa-key"></span>
@@ -435,6 +445,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'icon'       => 'fas fa-tags',
 						'subtitle'   => __('Search sidebar discount banner', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_promo_settings',
+					],
+					// Virtual tab: no settings section behind it, rendered by WBTM_Status.
+					'status' => [
+						'title'    => __('Status', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'     => 'fas fa-heart-pulse',
+						'subtitle' => __('Server & environment report', 'bus-ticket-booking-with-seat-reservation'),
+						'virtual'  => 'status',
 					],
 					'license' => [
 						'title'      => __('License', 'bus-ticket-booking-with-seat-reservation'),
