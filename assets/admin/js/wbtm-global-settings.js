@@ -124,6 +124,25 @@
 			});
 		});
 
+		// ── Ticket Sale Cut-off: reveal only the fields relevant to the chosen mode.
+		// Hidden when the cut-off is disabled; "Hours before" shows the hours field,
+		// "Specific time before" shows the days-before + cut-off-time fields.
+		var $cutoffEnable = $('select[name="wbtm_general_settings[ticket_sale_cutoff_enable]"]');
+		if ($cutoffEnable.length) {
+			var $cutoffType = $('select[name="wbtm_general_settings[ticket_sale_cutoff_type]"]');
+			var applyCutoffVisibility = function () {
+				var enabled = $cutoffEnable.val() === 'enable';
+				var type    = $cutoffType.val();
+				$('.wbtm-field-ticket_sale_cutoff_type').toggle(enabled);
+				$('.wbtm-field-ticket_sale_cutoff_hours').toggle(enabled && type === 'hours');
+				$('.wbtm-field-ticket_sale_cutoff_days_before').toggle(enabled && type === 'clock');
+				$('.wbtm-field-ticket_sale_cutoff_clock').toggle(enabled && type === 'clock');
+			};
+			$cutoffEnable.on('change', applyCutoffVisibility);
+			$cutoffType.on('change', applyCutoffVisibility);
+			applyCutoffVisibility();
+		}
+
 		// Activate the tab the admin was last on (e.g. before clicking Save, which
 		// does a full page reload via a real form POST), falling back to the
 		// server-provided default when nothing was remembered yet or the
