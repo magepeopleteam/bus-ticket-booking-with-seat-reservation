@@ -1649,7 +1649,15 @@
 	function wbtm_hold_badge(parent) {
 		var badge = parent.find('.wbtm_hold_badge');
 		if (!badge.length) {
-			var summary = parent.find('.wbtm_selected_seat_details');
+			// The redesigned layout hides .wbtm_selected_seat_details (display:none)
+			// and shows the .wbtm_booking_summary_preview card instead, so a badge
+			// appended to the old table would never be seen. Prefer the visible
+			// summary card, falling back to the classic table for layouts (e.g. the
+			// without-seat-plan flow or theme overrides) that have no preview card.
+			var summary = parent.find('.wbtm_booking_summary_preview');
+			if (!summary.length) {
+				summary = parent.find('.wbtm_selected_seat_details');
+			}
 			if (!summary.length) {
 				return $();
 			}
