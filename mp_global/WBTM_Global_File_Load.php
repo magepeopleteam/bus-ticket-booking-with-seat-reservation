@@ -1,6 +1,6 @@
 <?php
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if (!defined('ABSPATH')) {
@@ -44,16 +44,51 @@
 				wp_enqueue_script('mp_select_2', WBTM_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.js', array(), '4.0.13');
 				wp_enqueue_style('mp_owl_carousel', WBTM_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
 				wp_enqueue_script('mp_owl_carousel', WBTM_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
-				wp_enqueue_style('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.css', array(), time());
-				wp_enqueue_script('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.js', array('jquery'), time(), true);
+				wp_enqueue_style('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.css', array(), WBTM_VERSION);
+				wp_enqueue_script('wbtm_plugin_global', WBTM_GLOBAL_PLUGIN_URL . '/assets/mp_style/wbtm_plugin_global.js', array('jquery'), WBTM_VERSION, true);
 				do_action('wbtm_add_global_enqueue');
 			}
+			/**
+			 * Decide whether the (heavy) admin asset bundle should load on the current screen.
+			 * Performance: previously these libraries (select2, owl, codemirror, media, editor,
+			 * timepicker, plugin JS/CSS) loaded on EVERY wp-admin page site-wide. We now load
+			 * them only on plugin / WooCommerce / relevant editor screens. A filter escape hatch
+			 * (wbtm_load_admin_assets) lets site owners force-load on any edge screen.
+			 */
+			private function should_load_admin_assets(): bool {
+				// Never gate the custom MagePeople panel hook — it always needs the assets.
+				if ( current_action() !== 'admin_enqueue_scripts' ) {
+					return true;
+				}
+				$load = false;
+				$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+				if ( $screen ) {
+					$id   = (string) $screen->id;
+					$base = (string) $screen->base;
+					$pt   = (string) $screen->post_type;
+					if ( $pt === 'wbtm_bus' || $pt === 'wbtm_bus_booking' ) {
+						$load = true;
+					} elseif ( stripos( $id, 'wbtm' ) !== false || stripos( $id, 'mep' ) !== false || stripos( $id, 'mage' ) !== false ) {
+						$load = true;
+					} elseif ( stripos( $id, 'woocommerce' ) !== false || stripos( $id, 'wc-' ) !== false || $pt === 'shop_order' ) {
+						$load = true;
+					} elseif ( ( $base === 'edit-tags' || $base === 'term' ) && isset( $_GET['taxonomy'] ) && stripos( sanitize_key( wp_unslash( $_GET['taxonomy'] ) ), 'wbtm' ) !== false ) {
+						$load = true;
+					}
+				}
+				return (bool) apply_filters( 'wbtm_load_admin_assets', $load, $screen );
+			}
 			public function admin_enqueue() {
+				if ( ! $this->should_load_admin_assets() ) {
+					return;
+				}
 				$this->global_enqueue();
 				wp_enqueue_editor();
 				wp_enqueue_media();
 				//admin script
 				wp_enqueue_script('jquery-ui-sortable');
+				wp_enqueue_script('jquery-ui-draggable');
+				wp_enqueue_script('jquery-ui-droppable');
 				wp_enqueue_style('wp-color-picker');
 				wp_enqueue_script('wp-color-picker');
 				wp_enqueue_style('wp-codemirror');
@@ -65,11 +100,62 @@
 				//=====================//
 				wp_enqueue_script('form-field-dependency', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);
 				// admin setting global
-				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), time(), true);
-				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), time());
+				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), WBTM_VERSION, true);
+				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), WBTM_VERSION);
+				// Global toast notifications (window.wbtmToast) — available on every gated
+				// plugin admin screen so any settings/list-table script can call it instead
+				// of rolling its own status text or notice box. Versioned by filemtime()
+				// rather than WBTM_VERSION so edits are never served stale from cache.
+				$toast_css = WBTM_PLUGIN_DIR . '/assets/admin/css/wbtm-toast.css';
+				$toast_js  = WBTM_PLUGIN_DIR . '/assets/admin/js/wbtm-toast.js';
+				wp_enqueue_style('wbtm-toast', WBTM_PLUGIN_URL . '/assets/admin/css/wbtm-toast.css', array(), file_exists($toast_css) ? filemtime($toast_css) : WBTM_VERSION);
+				wp_enqueue_script('wbtm-toast', WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-toast.js', array('jquery'), file_exists($toast_js) ? filemtime($toast_js) : WBTM_VERSION, true);
 				do_action('wbtm_add_admin_enqueue');
 			}
+			/**
+			 * Decide whether the (heavy) frontend asset bundle should load on the current page.
+			 * Performance: previously these libraries (jQuery UI, Select2, Owl Carousel, Font Awesome,
+			 * timepicker) plus the plugin JS/CSS loaded on EVERY frontend page site-wide. We now load
+			 * them only where the booking UI can actually appear: the bus / booking single pages, the
+			 * search-results template, the WooCommerce cart / checkout / account pages, and any page
+			 * whose content embeds one of the plugin shortcodes. A filter escape hatch
+			 * (wbtm_load_frontend_assets) lets site owners force-load on page-builder / widget layouts
+			 * that inject the booking UI outside normal post content.
+			 *
+			 * NOTE: always-on, self-contained features (e.g. the AI chatbot) enqueue their own
+			 * dependency-free assets directly on wp_enqueue_scripts and are unaffected by this gate.
+			 */
+			private function should_load_frontend_assets(): bool {
+				$load = false;
+				// Bus / booking single pages and the dedicated search-results template.
+				if ( is_singular( array( 'wbtm_bus', 'wbtm_bus_booking' ) ) || get_query_var( 'bussearchlist' ) ) {
+					$load = true;
+				}
+				// WooCommerce cart / checkout / account pages render bus cart items, the booking
+				// dashboard, deposits and ticket views.
+				if ( ! $load && function_exists( 'is_cart' ) ) {
+					if ( is_cart() || is_checkout() || is_account_page() ) {
+						$load = true;
+					}
+				}
+				// Any singular post/page whose content embeds one of the plugin shortcodes.
+				if ( ! $load && is_singular() ) {
+					$current = get_post();
+					if ( $current instanceof WP_Post && ! empty( $current->post_content ) ) {
+						foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
+							if ( has_shortcode( $current->post_content, $shortcode ) ) {
+								$load = true;
+								break;
+							}
+						}
+					}
+				}
+				return (bool) apply_filters( 'wbtm_load_frontend_assets', $load );
+			}
 			public function frontend_enqueue() {
+				if ( ! $this->should_load_frontend_assets() ) {
+					return;
+				}
 				$this->global_enqueue();
 				do_action('wbtm_add_frontend_enqueue');
 			}
@@ -94,7 +180,13 @@
 					let wbtm_date_format_without_year = "<?php echo esc_attr(WBTM_Global_Function::get_settings('wbtm_global_settings', 'date_format_without_year', 'D d M')); ?>";
 				</script>
 				<?php
-				if (WBTM_Global_Function::check_woocommerce() == 1) {
+				// Fixed by Shahnur — 2026-05-04 01:35 PM (Asia/Dhaka)
+				// check_woocommerce() only checks the active-plugins option, not whether WooCommerce
+				// actually loaded its functions. Verify the functions exist to avoid a fatal at admin_head.
+				if ( WBTM_Global_Function::check_woocommerce() == 1
+					&& function_exists( 'get_woocommerce_currency_symbol' )
+					&& function_exists( 'wc_get_price_decimal_separator' )
+					&& function_exists( 'wc_get_price_thousand_separator' ) ) {
 					?>
 					<script type="text/javascript">
 						wbtm_currency_symbol = "<?php echo esc_html( get_woocommerce_currency_symbol() ); ?>";

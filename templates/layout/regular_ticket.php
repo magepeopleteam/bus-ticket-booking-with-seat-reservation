@@ -1,6 +1,6 @@
 <?php
 /*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 if (!defined('ABSPATH')) {
@@ -12,9 +12,11 @@ $start_route = $start_route ?? WBTM_Global_Function::data_sanitize($_POST['start
 $end_route = $end_route ?? WBTM_Global_Function::data_sanitize($_POST['end_route']);
 $date = $_POST['date'] ?? '';*/
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-$all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route);
+$wbtm_pl = isset( $wbtm_price_leg ) ? $wbtm_price_leg : WBTM_Functions::get_requested_price_leg();
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route);
+$all_info = $all_info ?? WBTM_Functions::get_bus_all_info($post_id, $date, $start_route, $end_route, $wbtm_pl);
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+$ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $start_route, $end_route, $wbtm_pl);
 ?>
 
 <table class="_layoutFixed_textCenter">
@@ -36,7 +38,7 @@ $ticket_infos = $ticket_infos ?? WBTM_Functions::get_ticket_info($post_id, $star
                     <input type="hidden" name="wbtm_seat_price[]" value="<?php echo esc_attr($ticket_info['price']); ?>">
                     <?php WBTM_Custom_Layout::qty_input('wbtm_seat_qty[]', $ticket_info['price'], $all_info['available_seat'], 0, 0, $all_info['available_seat']); ?>
                 </td>
-                <th><?php echo wp_kses_post( wc_price($ticket_info['price'] ) ); ?></th>
+                <th><?php echo wp_kses_post( WBTM_Global_Function::format_price($ticket_info['price'] ) ); ?></th>
             </tr>
         <?php } ?>
     </tbody>

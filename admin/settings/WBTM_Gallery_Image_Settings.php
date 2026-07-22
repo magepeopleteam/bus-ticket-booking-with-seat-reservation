@@ -1,6 +1,6 @@
 <?php
 /*
-   * @Author 		engr.sumonazma@gmail.com
+   * @Author 		MagePeople Team
    * Copyright: 	mage-people.com
    */
 if (!defined('ABSPATH')) {
@@ -15,8 +15,8 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
 
         public function section_header(){
             ?>
-            <h2><?php esc_html_e( 'Gallery Configuration', 'car-rental-manager' ); ?></h2>
-            <p><?php esc_html_e( 'Here you can configure gallery', 'car-rental-manager' ); ?></p>
+            <h2><?php esc_html_e( 'Gallery Configuration', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+            <p><?php esc_html_e( 'Here you can configure gallery', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 
             <?php
         }
@@ -41,7 +41,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
                         <div class='button upload' id='media_upload_<?php echo esc_attr($post_id); ?>'>
                             <?php echo __('Upload','pickplugins-options-framework');?>
                         </div>
-                        <div class='button clear' id='media_clear_<?php echo $post_id; ?>'>
+                        <div class='button clear' id='media_clear_<?php echo esc_attr($post_id); ?>'>
                             <?php echo __('Clear','pickplugins-options-framework');?>
                         </div>
                         <div class="wbtm_gallery-images-lists media-list-<?php echo esc_attr($post_id); ?> ">
@@ -87,7 +87,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
                             return false;
                         });
                         $('#media_clear_<?php echo esc_attr($post_id); ?>').click(function() {
-                            $('.media-list-<?php echo esc_attr($post_id); ?> .gallery-image').remove();
+                            $('.media-list-<?php echo esc_attr($post_id); ?> .wbtm_gallery-image').remove();
                         })
                     });
                 </script>
@@ -112,7 +112,7 @@ if (!class_exists('WBTM_Gallery_Image_Settings')) {
 
             if ( get_post_type( $post_id ) == WBTM_Functions::get_cpt() ) {
 
-                $gallery_images = isset( $_POST['wbtm_gallery_images'] ) ? array_map( 'esc_url', (array) $_POST['wbtm_gallery_images'] ) : [];
+                $gallery_images = isset( $_POST['wbtm_gallery_images'] ) ? array_map( 'intval', (array) $_POST['wbtm_gallery_images'] ) : [];
                 update_post_meta( $post_id, 'wbtm_gallery_images', $gallery_images );
 
             }

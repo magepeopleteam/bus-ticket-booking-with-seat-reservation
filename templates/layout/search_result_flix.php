@@ -1,6 +1,6 @@
 <?php
 /*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 if (!defined('ABSPATH')) {
@@ -37,16 +37,37 @@ if (sizeof($bus_ids) > 0) {
     $bus_types = [];
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $all_boarding_routes = [];
-
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_price_leg = ( $journey_type === 'return_journey' ) ? 'return' : 'outbound';
+
+    // Unpriced-route handling (Global Settings -> Frontend Display -> Unpriced Routes).
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_unpriced_action = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'unpriced_route_action', 'message');
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+    $wbtm_unpriced_msg = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'unpriced_route_message', __('This route is not currently available for booking.', 'bus-ticket-booking-with-seat-reservation'));
+
     foreach ($bus_ids as $bus_id) {
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route);
+        $wbtm_price_leg = WBTM_Functions::resolve_price_leg_for_od_pair(
+            $bus_id,
+            $start_route,
+            $end_route,
+            ( $journey_type === 'return_journey' ) ? 'return' : 'outbound'
+        );
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+        $all_info = WBTM_Functions::get_bus_all_info($bus_id, $date, $start_route, $end_route, $wbtm_price_leg);
         if (sizeof($all_info) > 0) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $route_priced = ($all_info['price'] !== false);
+            if (!$route_priced && $wbtm_unpriced_action === 'hide') {
+                continue;
+            }
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_data[] = [
                 'bus_id'   => $bus_id,
                 'all_info' => $all_info,
+                'price_leg' => $wbtm_price_leg,
+                'route_priced' => $route_priced,
             ];
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $bus_titles[] = get_the_title($bus_id);
@@ -95,11 +116,23 @@ if (sizeof($bus_ids) > 0) {
                 </div>
             </div>
         </div>
-        <?php if( !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
+        <?php
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+        $wbtm_fd_panel = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_panel', 'show') !== 'hide';
+        if( $wbtm_fd_panel && !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $width = 'calc( 100% - 180px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
+                <!-- Mobile-only hamburger toggle: collapses the filter panel so the
+                     bus list is visible immediately on small screens. Hidden ≥768px. -->
+                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="false">
+                    <span class="wbtm-mobile-filter-toggle-label">
+                        <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                        <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
+                    </span>
+                    <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
+                </button>
                 <?php
                 echo wp_kses_post( WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show ) );
                 ?>
@@ -115,6 +148,7 @@ if (sizeof($bus_ids) > 0) {
 		<input type="hidden" name="r_date" value="<?php echo esc_attr(array_key_exists('r_date', $search_info) ? $search_info['r_date'] : ''); ?>" />
 		<input type="hidden" name="wbtm_start_route" value="<?php echo esc_attr($start_route); ?>" />
 		<input type="hidden" name="wbtm_end_route" value="<?php echo esc_attr($end_route); ?>" />
+		<input type="hidden" name="wbtm_price_leg" value="<?php echo esc_attr( $wbtm_price_leg ); ?>" />
 		<input type="hidden" name="wbtm_date" value="<?php echo esc_attr(gmdate('Y-m-d', strtotime($date))); ?>" />
 
 		<?php
@@ -133,9 +167,13 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$all_info = $bus['all_info'];
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $wbtm_price_leg = array_key_exists('price_leg', $bus) ? $bus['price_leg'] : $wbtm_price_leg;
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$bus_count++;
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$price = $all_info['price'];
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $route_priced = array_key_exists('route_priced', $bus) ? $bus['route_priced'] : true;
 
             $bus_boarding_routes = WBTM_Functions::get_bus_route( $bus_id );
 
@@ -175,7 +213,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>">
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>" data-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -223,32 +261,51 @@ if (sizeof($bus_ids) > 0) {
                         </div>
                     </div>
                     <div class="price">
-                        <h4 class="textTheme"><?php echo wp_kses_post( wc_price($price) ); ?></h4>
+                        <?php if ( $route_priced ) { ?>
+                            <h4 class="textTheme"><?php echo wp_kses_post( WBTM_Global_Function::format_price($price) ); ?></h4>
+                        <?php } else { ?>
+                            <div class="wbtm-route-unavailable">
+                                <i class="fas fa-circle-info" aria-hidden="true"></i>
+                                <span><?php echo esc_html( $wbtm_unpriced_msg ); ?></span>
+                            </div>
+                        <?php } ?>
                     </div>
 
                 </div>
-                <div class="wbtm_bus_details_tabs_holder" >
+                <?php
+                $show_details_tabs = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'show_hide_bus_details_tabs', 'show' );
+                $details_tabs_class = $show_details_tabs === 'hide' ? ' wbtm_no_tabs' : '';
+                ?>
+                <div class="wbtm_bus_details_tabs_holder<?php echo esc_attr( $details_tabs_class ); ?>" >
                     <!--<div class="wbtm_bus_popup_links">
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_details" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
-                        <span class="wbtm_bus_popup_link" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
+                        <span class="wbtm_bus_popup_link" id="wbtm_bus_boarding_dropping" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Boarding/Dropping Points', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_image" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_term_condition" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                         <span class="wbtm_bus_popup_link" id="wbtm_bus_feature" data-post-id="<?php /*echo $bus_id; */?>"><?php /*esc_html_e( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' );*/?></span>
                     </div>-->
                     <?php
-                    echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                    if ( $show_details_tabs !== 'hide' ) {
+                        echo wp_kses_post( WBTM_Functions::single_bus_details_popup_tabs( $bus_id, $popup_tabs ) );
+                    }
 
                     if ($btn_show == 'hide' && $all_info['regi_status'] == 'no') {
                         WBTM_Layout::trigger_view_seat_details();
                     }
                     ?>
-                    <button type="button" class="_themeButton_xs wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>" id="get_wbtm_bus_details"
-                            data-bus_id="<?php echo esc_attr($bus_id); ?>"
-                            data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
-                            data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
-                            data-add-class="mActive">
-                        <?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
-                    </button>
+                    <?php if ( $route_priced ) { ?>
+                    <div class="wbtm-seat-book <?php echo esc_attr( $btn_show ); ?>">
+						<?php echo WBTM_Functions::full_bus_booking_button( $bus_id, $all_info, $date, $wbtm_price_leg ); ?>
+                        <button type="button" class="_themeButton_xs" id="get_wbtm_bus_details"
+                                data-bus_id="<?php echo esc_attr($bus_id); ?>"
+                                data-price-leg="<?php echo esc_attr( $wbtm_price_leg ); ?>"
+                                data-open-text="<?php echo esc_attr(WBTM_Translations::text_view_seat()); ?>"
+                                data-close-text="<?php echo esc_attr(WBTM_Translations::text_close_seat()); ?>"
+                                data-add-class="mActive">
+                            <?php echo esc_html(WBTM_Translations::text_view_seat()); ?>
+                        </button>
+                    </div>
+                    <?php } ?>
                 </div>
 			</div>
 

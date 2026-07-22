@@ -1,8 +1,8 @@
 === Bus Ticket Booking with Seat Reservation ===
-Contributors: magepeopleteam, aamahin , hamidxazad
+Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.5.7
+Stable tag: 5.9.0
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -33,6 +33,9 @@ The Mage team has innovated a data-driven solution, simplifying ticket and reser
 
 ## Let's Uncover What WpBusTicketly Offers You
 
+
+* **Ticket Sale Cut-off (New)**
+Automatically stop selling tickets a set time before each departure — choose a fixed number of hours before the bus leaves (e.g. 12 hours), or a specific time on a day before departure (e.g. 10:00 PM the night before). Closed trips are hidden from search and blocked at checkout, so you always have enough time to plan routes and prepare for every passenger.
 
 * **Search and Filter**
 Users can search for bus routes based on their origin, destination, and preferred travel dates. Advanced filtering options enhance the experience for a personalized journey.
@@ -336,7 +339,76 @@ Made compatiable with some of the major caching plugin
 = 5.5.3 =
 Translation Issue fixed
 
+
 = 5.5.6 =
 Cabin booking functionality added
 Bus default available seat selection added
 Seat number rotation stopped
+
+= 5.7.2 =
+*Release Date - 11 Jun 2026*
+
+**Return Bus on Single Bus Page**
+* Added return date picker on single bus details page when same-bus return is enabled
+* Added "Departure Bus" and "Return Bus" tabs in search results on single bus page
+* Return bus tab shows the same bus for the return trip with same-day time filtering
+* Previously return functionality was only available on the global search page
+
+**Admin - New Bus List Design**
+* Introduced modern responsive admin screen for bus fleet with grid/table views
+* New "New Bus List Design" setting (Enable/Disable) in General settings
+* Stat cards showing Total / Published / AC Coach / Non AC Coach counts
+* Card grid and table views with bus details, featured image, author and status
+* Edit, Trash, Restore and Delete actions with nonce protection
+* Trash management within the same styled layout
+* Live search by title and coach number with client-side pagination
+* Grid/list toggle persisted across sessions
+
+**Admin - Bus List UX Upgrades**
+* Table view now shows bus featured image thumbnail in Name column
+* Name column shows route details (start/end points with stop count)
+* Journey date info: schedule range for Repeated mode, first date + count for Particular mode
+* Return route displayed when same-bus return is enabled with "Return" tag
+* Action buttons converted to icon buttons (view/edit/trash) with accessible labels
+
+**Admin - Return Timetable Warning**
+* Added highlighted warning box in return route settings reminding to rearrange return timetable
+* Auto-generated reverse stops keep outbound clock times and need adjusting before saving
+
+**Frontend - Sold-Out Date Picker**
+* Journey and return date pickers now show sold-out dates as unselectable
+* Sold-out dates marked with red "Sold Out" style and legend
+* Works for both single bus and general search date pickers
+
+**Frontend - View Button**
+* Added "View on frontend" action in bus list to open bus permalink in new tab
+* Shown alongside Edit/Delete on card hover and in table view
+
+**Bug Fixes**
+* Fixed return-bus Details/Stops/Features popup not opening after outbound selection
+* Fixed duplicate ID issue causing popup to target wrong container
+* Fixed "Seal Plan" typo to "Seat Plan" in classic bus list column
+
+**Admin - Documents Tab**
+* Replaced video-only tutorials with searchable documentation system
+* New "Documents" tab with 24 sub-tabs organized by bus settings
+* 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
+* Shortcode reference table updated with PRO shortcodes
+
+= 5.9.0 =
+*Release Date - 22 Jul 2026*
+
+**Ticket Sale Cut-off (New)**
+* Automatically stop selling tickets a set time before each departure, so you have time to plan routes and get every shuttle out on schedule
+* Two cut-off styles: a fixed number of hours before departure (e.g. sales close 12 hours before), or a specific clock time on a day before departure (e.g. 10:00 PM the night before)
+* Enforced everywhere — closed trips are hidden from search results and blocked at checkout across WooCommerce, direct booking and admin counter sales
+* New "Ticket Sale Cut-off" control under General Settings → Booking behavior; disabled by default so existing sites are unaffected
+* The settings screen reveals only the fields relevant to the cut-off style you pick
+
+**Bus Stop Rename — No More Broken Routes**
+* Renaming a Bus Stop (for example, adding a gate number to the name) no longer breaks its route or fare configuration — the stop no longer has to be rebuilt from scratch
+* The old name is migrated automatically to the new one across every bus's route stops, fare table and existing bookings
+* Prevents a rename from silently reopening already-booked seats, avoiding accidental double-booking
+
+**Booking List**
+* New "Booked by" badge marks counter / admin-created bookings with the staff member's name, so they're easy to tell apart from customers' own checkouts

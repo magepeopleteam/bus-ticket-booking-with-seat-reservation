@@ -1,6 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if ( ! defined( 'ABSPATH' ) ) {

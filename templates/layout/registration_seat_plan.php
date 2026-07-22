@@ -1,6 +1,6 @@
 <?php
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if (!defined('ABSPATH')) {
@@ -29,10 +29,26 @@
 					<div class="col_7 col_12_1000 col_6_800 col_12_700">
 						<?php require WBTM_Functions::template_path('layout/selected_seat.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>
-						<?php require WBTM_Functions::template_path('layout/drop_off_point.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/extra_service.php'); ?>
+						<?php
+							// Only render the wrapper card if Pickup Point and/or Drop-Off
+							// Point actually output something — each template already
+							// checks its own "display_*"/points-configured conditions, but
+							// with the card wrapping them from the outside now, a bus with
+							// BOTH disabled would otherwise leave behind an empty
+							// <div class="wbtm_location_points_card"></div>.
+							ob_start();
+							require WBTM_Functions::template_path('layout/pickup_point.php');
+							require WBTM_Functions::template_path('layout/drop_off_point.php');
+							$wbtm_location_points_html = ob_get_clean();
+							if (trim($wbtm_location_points_html) !== '') {
+						?>
+							<div class="wbtm_location_points_card">
+								<?php echo $wbtm_location_points_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each included template already escapes its own output. ?>
+							</div>
+						<?php } ?>
 						<?php do_action('wbtm_attendee_form', $post_id); ?>
+						<?php require WBTM_Functions::template_path('layout/booking_summary_preview.php'); ?>
 						<?php require WBTM_Functions::template_path('layout/add_to_cart.php'); ?>
 					</div>
 				</div>

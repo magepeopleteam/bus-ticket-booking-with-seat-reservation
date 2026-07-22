@@ -1,6 +1,6 @@
 <?php
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if (!defined('ABSPATH')) {
@@ -9,8 +9,10 @@
 	if (!class_exists('WBTM_Woocommerce')) {
 		class WBTM_Woocommerce {
 			public function __construct() {
-				add_action('wp_ajax_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart'));
-				add_action('wp_ajax_nopriv_wbtm_ajax_add_to_cart', array($this, 'wbtm_ajax_add_to_cart'));
+				// wbtm_ajax_add_to_cart is registered by the always-loaded WBTM_Booking_Controller
+				// instead (inc/WBTM_Booking_Controller.php) — it must run regardless of WooCommerce
+				// state (it's the entry point for both the WC-cart flow and the Standalone flow),
+				// so it can no longer live only inside this WC-gated class.
 				add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
 				add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
 				add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
@@ -22,8 +24,14 @@
 				add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'), 90);
 				//add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'),90);
 				/**********************************************/
-				add_filter('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
-				add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				add_action('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
+				add_action('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				// make_processing_completed: also fire when order actually enters processing (async gateways)
+				add_action('woocommerce_order_status_processing', array($this, 'update_order_status'), 20);
+				add_action('woocommerce_payment_complete', array($this, 'update_order_status'), 20);
+				// Added hooks for robust auto-completion of successful payments
+				add_action('woocommerce_payment_complete', array($this, 'auto_complete_paid_order'));
+				add_action('woocommerce_order_status_processing', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
 				// Add redirect logic after adding to cart
 				add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
@@ -103,18 +111,47 @@
 										WC()->cart->remove_cart_item($key);
 //									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name, $seat_info['cabin_name']), 'error');
 										wc_add_notice(
-											sprintf('Seat %1$s in %2$s has already been booked by another user. Please choose another seat.',$seat_name,$seat_info['cabin_name']),
+											sprintf(
+												esc_html__( 'Seat %1$s in %2$s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+												esc_html( $seat_name ),
+												esc_html( $seat_info['cabin_name'] )
+											),
 											'error'
 										);
 									}
 								}
 							} elseif (!empty($legacy_seats)) {
-								// Legacy seat validation
-								foreach ($legacy_seats as $seat_info) {
-									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
-									if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
-										WC()->cart->remove_cart_item($key);
-										wc_add_notice(sprintf("Seat %s has already been booked by another user. Please choose another seat.", $seat_name), 'error');
+								/**
+								 * Added by Shahnur — 2026-07-05.
+								 * Whether this cart item books quantity tickets WITHOUT seat
+								 * labels (e.g. an addon booking flow with no customer-facing
+								 * seat plan). Such items have nothing to collide on, and an
+								 * empty seat name would make query_total_booked() run
+								 * unfiltered - counting every booking on the route/date and
+								 * falsely removing the item as "seat already booked".
+								 *
+								 * Default is FALSE, so standard seat-plan and cabin bookings
+								 * keep the full per-seat duplicate restriction unchanged.
+								 *
+								 * @param bool  $is_seatless Default false.
+								 * @param array $cart_item   The WooCommerce cart item.
+								 * @param int   $post_id     Bus post ID.
+								 */
+								$is_seatless_item = apply_filters( 'wbtm_cart_item_is_seatless', false, $cart_item, $post_id );
+								if ( ! $is_seatless_item ) {
+									// Legacy seat validation
+									foreach ($legacy_seats as $seat_info) {
+										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
+										if (WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
+											WC()->cart->remove_cart_item($key);
+											wc_add_notice(
+												sprintf(
+													esc_html__( 'Seat %s has already been booked by another user. Please choose another seat.', 'bus-ticket-booking-with-seat-reservation' ),
+													esc_html( $seat_name )
+												),
+												'error'
+											);
+										}
 									}
 								}
 							}
@@ -122,7 +159,128 @@
 					}
 				}
 			}
-			public function add_cart_item_data($cart_item_data, $product_id) {
+			/**
+			 * Booking-record helpers below (locks, availability check, cart-style POST
+			 * parsing, add_cpt_data further down) were relocated to WBTM_Cart_Helper,
+			 * which has no real WooCommerce dependency and is always loaded (unlike
+			 * this file), so the Pro plugin's Standalone/Custom Payment flow can use
+			 * the same logic without requiring WooCommerce active. These stay as thin
+			 * delegates so every existing WooCommerce-flow caller keeps working.
+			 */
+			public static function get_trip_lock_key( $post_id, $bp, $dp, $date ) {
+				return WBTM_Cart_Helper::get_trip_lock_key( $post_id, $bp, $dp, $date );
+			}
+			public static function acquire_trip_lock( $post_id, $bp, $dp, $date, $timeout = 30 ) {
+				return WBTM_Cart_Helper::acquire_trip_lock( $post_id, $bp, $dp, $date, $timeout );
+			}
+			public static function release_trip_lock( $post_id, $bp, $dp, $date ) {
+				WBTM_Cart_Helper::release_trip_lock( $post_id, $bp, $dp, $date );
+			}
+			public static function validate_bus_availability( $post_id, $bp, $dp, $date, $booking_mode = 'seat', $ticket_infos = [], $cabin_seats = [], $full_bus_seat_count = 0 ) {
+				return WBTM_Cart_Helper::validate_bus_availability( $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, $cabin_seats, $full_bus_seat_count );
+			}
+			/**
+			 * Detect and disable duplicate seat bookings.
+			 *
+			 * Iterates over all wbtm_bus_booking posts in priority order
+			 * (completed -> processing -> pending -> other active) and marks any
+			 * later record that conflicts on bus + journey date + seat as a duplicate.
+			 * Duplicate records get order_status 'failed' and meta wbtm_is_duplicate = 1,
+			 * so they no longer count toward availability.
+			 *
+			 * @param bool $dry_run If true, only counts without updating.
+			 * @param int  $limit   Max records to process (0 = unlimited).
+			 * @return array { processed:int, marked:int, groups:int }
+			 */
+			public static function disable_duplicate_seat_bookings( $dry_run = false, $limit = 0 ) {
+				$processed = 0;
+				$marked    = 0;
+				$groups    = 0;
+				$seen      = array();
+				$excluded  = array( 'failed', 'cancelled', 'canceled', 'refunded' );
+				$status_priority = array( 'completed', 'processing', 'pending', 'partially-paid', 'on-hold' );
+
+				foreach ( $status_priority as $status ) {
+					$page      = 1;
+					$per_page  = 100;
+					do {
+						$args = array(
+							'post_type'      => 'wbtm_bus_booking',
+							'posts_per_page' => $per_page,
+							'paged'          => $page,
+							'post_status'    => 'publish',
+							'fields'         => 'ids',
+							'orderby'        => 'ID',
+							'order'          => 'ASC',
+							'meta_query'     => array(
+								array(
+									'key'     => 'wbtm_order_status',
+									'value'   => $status,
+									'compare' => '=',
+								),
+							),
+						);
+						$query = new WP_Query( $args );
+						$ids   = $query->posts;
+
+						foreach ( $ids as $id ) {
+							$processed++;
+							if ( $limit > 0 && $processed > $limit ) {
+								wp_reset_postdata();
+								return compact( 'processed', 'marked', 'groups' );
+							}
+
+							$bus_id       = (int) get_post_meta( $id, 'wbtm_bus_id', true );
+							$start_time   = (string) get_post_meta( $id, 'wbtm_start_time', true );
+							$seat         = (string) get_post_meta( $id, 'wbtm_seat', true );
+							$booking_mode = (string) get_post_meta( $id, 'wbtm_booking_mode', true );
+							$order_status = (string) get_post_meta( $id, 'wbtm_order_status', true );
+
+							if ( ! $bus_id || ! $start_time || ! $seat ) {
+								continue;
+							}
+
+							// Only seat-plan and full-bus bookings have fixed seats. Without-seat-plan
+							// uses ticket-type names as the seat value, so grouping by seat would
+							// falsely mark multiple Adult tickets as duplicates.
+							$seat_type = WBTM_Global_Function::get_post_info( $bus_id, 'wbtm_seat_type_conf' );
+							if ( $seat_type !== 'wbtm_seat_plan' && $booking_mode !== 'full_bus' ) {
+								continue;
+							}
+
+							$date = gmdate( 'Y-m-d', strtotime( $start_time ) );
+							$key  = md5( $booking_mode . '|' . $bus_id . '|' . $date . '|' . strtolower( $seat ) );
+
+							if ( ! isset( $seen[ $key ] ) ) {
+								$seen[ $key ] = $id;
+								continue;
+							}
+
+							$groups++;
+							if ( ! $dry_run ) {
+								update_post_meta( $id, 'wbtm_order_status', 'failed' );
+								update_post_meta( $id, 'wbtm_is_duplicate', 1 );
+								update_post_meta(
+									$id,
+									'wbtm_duplicate_note',
+									esc_html__(
+										'Disabled as duplicate: this seat was already reserved by an earlier booking.',
+										'bus-ticket-booking-with-seat-reservation'
+									)
+								);
+							}
+							$marked++;
+						}
+
+						$page++;
+						wp_reset_postdata();
+					} while ( ! empty( $ids ) );
+				}
+
+				return compact( 'processed', 'marked', 'groups' );
+			}
+
+						public function add_cart_item_data($cart_item_data, $product_id) {
 
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
 					$linked_id = WBTM_Global_Function::get_post_info($product_id, 'link_wbtm_bus', $product_id);
@@ -131,6 +289,11 @@
 						$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
 						$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
 						$bp_time = isset($_POST['wbtm_bp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_time'])) : '';
+						$booking_mode = isset($_POST['wbtm_booking_mode']) ? sanitize_key(wp_unslash($_POST['wbtm_booking_mode'])) : '';
+						if ($booking_mode === 'full_bus' && !WBTM_Functions::is_full_bus_feature_enabled()) {
+							// Fixed by Shahnur — block full bus checkout when Pro addon is unavailable 2026-05-07 01:55 PM
+							$booking_mode = 'seat';
+						}
 						$cabin_mode_enabled = isset($_POST['wbtm_cabin_mode_enabled']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_mode_enabled'])) : 'no';
 						$ticket_infos = self::get_cart_ticket_info($post_id);
 						$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
@@ -162,6 +325,21 @@
 						if ($seat_price < 0) {
 							$seat_price = 0;
 						}
+						if ($booking_mode === 'full_bus') {
+							// Fixed by Shahnur — full bus checkout pricing and discount 2026-05-07 12:01 PM
+							$total_seat = (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+							$full_bus_pricing = WBTM_Functions::get_full_bus_pricing($post_id, $bp, $dp, WBTM_Functions::get_requested_price_leg());
+							$full_bus_price = sizeof($full_bus_pricing) > 0 ? (float) $full_bus_pricing['final_price'] : 0;
+							$ticket_infos = [[
+								'ticket_name' => esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation'),
+								'ticket_type' => 'full_bus',
+								'seat_name' => esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation'),
+								'ticket_price' => $full_bus_price,
+								'ticket_qty' => 1,
+								'date' => $bp_time,
+							]];
+							$seat_price = $full_bus_price;
+						}
 						$ex_service_infos = self::get_cart_extra_service_info($post_id);
 						$ex_service_price = self::get_cart_ex_service_price($ex_service_infos);
 						// Ensure ex_service_price is a valid number
@@ -179,10 +357,20 @@
 						$cart_item_data['wbtm_bp_time'] = $bp_time;
 						$cart_item_data['wbtm_dp_place'] = $dp;
 						$cart_item_data['wbtm_dp_time'] = isset($_POST['wbtm_dp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_time'])) : '';
+						$cart_item_data['wbtm_price_leg'] = WBTM_Functions::get_requested_price_leg();
+						// Journey role (departure vs return) is which tab the customer booked from.
+						// It is independent of the fare leg, which can be inverted on bidirectional
+						// same-bus-return routes (e.g. a "departure" trip that uses the return fares).
+						$journey_type_raw = isset( $_POST['wbtm_journey_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_journey_type'] ) ) : '';
+						$cart_item_data['wbtm_journey_type'] = $journey_type_raw === 'return' ? 'return' : 'departure';
+						$cart_item_data['wbtm_booking_mode'] = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
 						$cart_item_data['wbtm_pickup_point'] = isset($_POST['wbtm_pickup_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_pickup_point'])) : '';
 						$cart_item_data['wbtm_drop_off_point'] = isset($_POST['wbtm_drop_off_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_drop_off_point'])) : '';
 						// Handle cabin-specific seat data
-						if ($has_cabin_seats_selected) {
+						if ($booking_mode === 'full_bus') {
+							$cart_item_data['wbtm_seats'] = $ticket_infos;
+							$cart_item_data['wbtm_seats_qty'] = self::get_cart_ticket_qty($ticket_infos);
+						} elseif ($has_cabin_seats_selected) {
 							$cabin_seats = self::get_cart_cabin_seat_info($post_id, $cabin_config);
 							$cart_item_data['wbtm_cabin_seats'] = $cabin_seats;
 							$cart_item_data['wbtm_cabin_config'] = $cabin_config;
@@ -197,6 +385,11 @@
 						$cart_item_data['wbtm_base_ex_price'] = $ex_service_price;
 						$cart_item_data['wbtm_passenger_info'] = apply_filters('wbtm_add_user_info_data', array(), $post_id, $ticket_infos);
 						$cart_item_data['wbtm_tp'] = $total_price;
+						if ($booking_mode === 'full_bus' && isset($full_bus_pricing) && is_array($full_bus_pricing)) {
+							$cart_item_data['wbtm_full_bus_base_price'] = $full_bus_pricing['base_price'];
+							$cart_item_data['wbtm_full_bus_discount'] = $full_bus_pricing['discount'];
+							$cart_item_data['wbtm_full_bus_seat_count'] = max(1, (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0));
+						}
 						$cart_item_data['line_total'] = $total_price;
 						$cart_item_data['line_subtotal'] = $total_price;
 						$cart_item_data = apply_filters('wbtm_add_cart_item', $cart_item_data, $post_id);
@@ -209,6 +402,10 @@
             public static function get_cart_cabin_seat_price($post_id, $ticket_infos, $cabin_config) {
 				$total_price = 0;
 				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
+					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
+					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
+					$journey_date = isset($_POST['wbtm_bp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_time'])) : '';
+					$price_leg = WBTM_Functions::get_requested_price_leg();
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
 							continue;
@@ -221,18 +418,12 @@
 							$seat_types = $seat_types ? explode(',', $seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								// Find the corresponding ticket info
-								foreach ($ticket_infos as $ticket_info) {
-                                    /*if ($ticket_info['type'] == $
-                                    seat_type) {
-                                        $base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);*/
-									if ($ticket_info['seat_type'] == $seat_type) {
-										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['ticket_price']);
-										$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-										$total_price += $base_price * $price_multiplier;
-										break;
-									}
+								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index, $journey_date);
+								if ($base === false || $base < 0) {
+									$base = 0;
 								}
+								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+								$total_price += floatval($base) * floatval($price_multiplier);
 							}
 						}
 					}
@@ -240,47 +431,7 @@
 				return $total_price;
 			}
 			public static function get_cart_cabin_seat_info($post_id, $cabin_config) {
-				$cabin_seats = [];
-				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					// Get ticket information for price calculation
-					$bp = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
-					$dp = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
-					$ticket_infos = WBTM_Functions::get_ticket_info($post_id, $bp, $dp);
-					foreach ($cabin_config as $cabin_index => $cabin) {
-						if (($cabin['enabled'] ?? 'yes') !== 'yes')
-							continue;
-						$key_name = 'wbtm_selected_seat_cabin_' . $cabin_index;
-						$selected_seats = isset($_POST[$key_name]) ? sanitize_text_field(wp_unslash($_POST[$key_name])) : '';
-						$key_name_ = 'wbtm_selected_seat_type_cabin_' . $cabin_index;
-						$selected_seat_types = isset($_POST[$key_name_]) ? sanitize_text_field(wp_unslash($_POST[$key_name_])) : '';
-						if ($selected_seats) {
-							$seat_names = explode(',', $selected_seats);
-							$seat_types = $selected_seat_types ? explode(',', $selected_seat_types) : [];
-							foreach ($seat_names as $seat_index => $seat_name) {
-								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								// Find the ticket price for this seat type
-								$ticket_price = 0;
-								foreach ($ticket_infos as $ticket_info) {
-									if ($ticket_info['type'] == $seat_type) {
-										$base_price = WBTM_Global_Function::get_wc_raw_price($post_id, $ticket_info['price']);
-										$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-										$ticket_price = $base_price * $price_multiplier;
-										break;
-									}
-								}
-								$cabin_seats[] = [
-									'cabin_index' => $cabin_index,
-									'cabin_name' => $cabin['name'] ?? 'Cabin ' . ($cabin_index + 1),
-									'seat_name' => $seat_name,
-									'seat_type' => $seat_type,
-									'ticket_price' => $ticket_price,
-									'price_multiplier' => $cabin['price_multiplier'] ?? 1.0
-								];
-							}
-						}
-					}
-				}
-				return $cabin_seats;
+				return WBTM_Cart_Helper::get_cart_cabin_seat_info( $post_id, $cabin_config );
 			}
 			public static function get_cart_cabin_ticket_qty($cabin_seats) {
 				return count($cabin_seats);
@@ -289,45 +440,90 @@
 				foreach ($cart_object->cart_contents as $key => $value) {
 					$post_id = array_key_exists('wbtm_bus_id', $value) ? $value['wbtm_bus_id'] : 0;
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-						// Get stored total price
-						$total_price = isset($value['wbtm_tp']) ? floatval($value['wbtm_tp']) : 0;
-						// Check if we have cabin seats
-						$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
-						// Recalculate price if it's missing, zero, or we need to recalculate from seat data
-						if (empty($total_price) || $total_price <= 0) {
-							$seat_price = 0;
-							if ($has_cabin_seats) {
-								// Calculate price from cabin seats
-								foreach ($value['wbtm_cabin_seats'] as $cabin_seat) {
-									$ticket_price = isset($cabin_seat['ticket_price']) ? floatval($cabin_seat['ticket_price']) : 0;
-									$seat_price += $ticket_price;
-								}
-							} else {
-								// Try to use stored base price first
-								$base_price = isset($value['wbtm_base_price']) ? floatval($value['wbtm_base_price']) : 0;
-								if ($base_price > 0) {
-									$seat_price = $base_price;
-								} else {
-									// Calculate from seat ticket info
-									$seat_price = self::get_cart_seat_price($value['wbtm_seats'] ?? []);
-								}
-							}
-							// Get extra service price
-							$ex_base_price = isset($value['wbtm_base_ex_price']) ? floatval($value['wbtm_base_ex_price']) : 0;
-							if ($ex_base_price > 0) {
-								$ex_service_price = $ex_base_price;
-							} else {
-								$ex_service_price = self::get_cart_ex_service_price($value['wbtm_extra_services'] ?? []);
-							}
-							// Calculate total price
-							$total_price = floatval($seat_price) + floatval($ex_service_price);
-							// Ensure price is not negative
-							$total_price = max(0, $total_price);
-							// Update the cart item data with the calculated price
-							$cart_object->cart_contents[$key]['wbtm_tp'] = $total_price;
-							$cart_object->cart_contents[$key]['line_total'] = $total_price;
-							$cart_object->cart_contents[$key]['line_subtotal'] = $total_price;
+						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus' && !WBTM_Functions::is_full_bus_feature_enabled()) {
+							// Fixed by Shahnur — remove full bus cart item when Pro addon is unavailable 2026-05-07 01:55 PM
+							$cart_object->remove_cart_item($key);
+							continue;
 						}
+						// Security: always re-derive the canonical price from the DB
+						$bp        = array_key_exists('wbtm_bp_place', $value) ? $value['wbtm_bp_place'] : '';
+						$dp        = array_key_exists('wbtm_dp_place', $value) ? $value['wbtm_dp_place'] : '';
+						$journey_date = array_key_exists('wbtm_bp_time', $value) ? $value['wbtm_bp_time'] : '';
+						$price_leg = array_key_exists('wbtm_price_leg', $value) && $value['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
+						$seat_price = 0;
+						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus') {
+							$full_bus_pricing = WBTM_Functions::get_full_bus_pricing($post_id, $bp, $dp, $price_leg);
+							$seat_price = sizeof($full_bus_pricing) > 0 ? (float) $full_bus_pricing['final_price'] : 0;
+							$full_bus_qty = max(1, (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0));
+							if (isset($cart_object->cart_contents[$key]['wbtm_seats'][0])) {
+								$cart_object->cart_contents[$key]['wbtm_seats'][0]['seat_name'] = esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation');
+								$cart_object->cart_contents[$key]['wbtm_seats'][0]['ticket_price'] = $seat_price;
+								$cart_object->cart_contents[$key]['wbtm_seats'][0]['ticket_qty'] = 1;
+							}
+							if (sizeof($full_bus_pricing) > 0) {
+								$cart_object->cart_contents[$key]['wbtm_full_bus_base_price'] = $full_bus_pricing['base_price'];
+								$cart_object->cart_contents[$key]['wbtm_full_bus_discount'] = $full_bus_pricing['discount'];
+								$cart_object->cart_contents[$key]['wbtm_full_bus_seat_count'] = $full_bus_qty;
+							}
+						}
+						$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
+						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus') {
+							// Full-bus price is already re-derived from the route price row above.
+						} elseif ($has_cabin_seats) {
+							$cabin_config  = isset($value['wbtm_cabin_config']) && is_array($value['wbtm_cabin_config']) ? $value['wbtm_cabin_config'] : [];
+							foreach ($value['wbtm_cabin_seats'] as $idx => $cabin_seat) {
+								$seat_type = isset($cabin_seat['seat_type']) ? $cabin_seat['seat_type'] : 0;
+								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
+								$seat_label = isset($cabin_seat['seat_name']) ? $cabin_seat['seat_name'] : '';
+								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
+								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index, $journey_date);
+								if ($unit === false || $unit < 0) {
+									$unit = 0;
+								}
+								$canonical_price = floatval($unit) * floatval($price_multiplier);
+								$seat_price += $canonical_price;
+								$cart_object->cart_contents[$key]['wbtm_cabin_seats'][$idx]['ticket_price'] = $canonical_price;
+							}
+						} else {
+							$legacy_seats = isset($value['wbtm_seats']) && is_array($value['wbtm_seats']) ? $value['wbtm_seats'] : [];
+							if (!empty($legacy_seats)) {
+								foreach ($legacy_seats as $idx => $seat_info) {
+									$seat_type = isset($seat_info['ticket_type']) ? $seat_info['ticket_type'] : 0;
+									$seat_label = isset($seat_info['seat_name']) ? $seat_info['seat_name'] : '';
+									$is_dd = !empty($seat_info['dd']);
+									$qty = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
+									$canonical_unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $is_dd, $price_leg, $seat_label, null, $journey_date);
+									if ($canonical_unit === false || $canonical_unit < 0) {
+										$canonical_unit = 0;
+									}
+									$canonical_unit = floatval($canonical_unit);
+									$seat_price += $canonical_unit * $qty;
+									$cart_object->cart_contents[$key]['wbtm_seats'][$idx]['ticket_price'] = $canonical_unit;
+								}
+							}
+						}
+						// Re-derive extra-service prices from DB
+						$ex_service_price = 0;
+						$ex_services = isset($value['wbtm_extra_services']) && is_array($value['wbtm_extra_services']) ? $value['wbtm_extra_services'] : [];
+						foreach ($ex_services as $idx => $svc) {
+							$svc_name = isset($svc['name']) ? $svc['name'] : '';
+							$svc_qty  = isset($svc['qty']) ? max(1, intval($svc['qty'])) : 1;
+							$canonical_svc_price = WBTM_Functions::get_ex_service_price($post_id, $svc_name);
+							if ($canonical_svc_price !== false) {
+								$ex_service_price += floatval($canonical_svc_price) * $svc_qty;
+								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = floatval($canonical_svc_price);
+							} else {
+								// Service removed from DB — zero out rather than trust stale session data.
+								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = 0;
+							}
+						}
+						$total_price = max(0, floatval($seat_price) + floatval($ex_service_price));
+						// Update all cached price fields
+						$cart_object->cart_contents[$key]['wbtm_tp']           = $total_price;
+						$cart_object->cart_contents[$key]['wbtm_base_price']   = $seat_price;
+						$cart_object->cart_contents[$key]['wbtm_base_ex_price'] = $ex_service_price;
+						$cart_object->cart_contents[$key]['line_total']         = $total_price;
+						$cart_object->cart_contents[$key]['line_subtotal']      = $total_price;
 						// Always set the price on the product object (WooCommerce uses this for display)
 						$value['data']->set_price($total_price);
 						$value['data']->set_regular_price($total_price);
@@ -342,13 +538,55 @@
 					if (!$order_id) {
 						return;
 					}
-					$order = new WC_Order($order_id);
-					if ('processing' == $order->status) {
+					$order = wc_get_order($order_id);
+					if (!$order) {
+						return;
+					}
+					
+					// Security: Do not auto-complete offline payments where cash is not yet received
+					$offline_gateways = array( 'cod', 'bacs', 'cheque' );
+					if ( in_array( $order->get_payment_method(), $offline_gateways ) ) {
+						return;
+					}
+					
+					if ('processing' == $order->get_status()) {
 						$order->update_status('completed');
 					}
-					return;
 				}
 			}
+			
+			public function auto_complete_paid_order($order_id) {
+				if (!$order_id) {
+					return;
+				}
+				$auto_complete_setting = WBTM_Global_Function::get_settings('wbtm_general_settings', 'auto_complete_paid_orders', 'off');
+				if ($auto_complete_setting == 'on') {
+					$order = wc_get_order($order_id);
+					if (!$order || $order->has_status('completed')) {
+						return;
+					}
+					
+					// Security: Do not auto-complete offline payments where cash is not yet received
+					$offline_gateways = array( 'cod', 'bacs', 'cheque' );
+					if ( in_array( $order->get_payment_method(), $offline_gateways ) ) {
+						return;
+					}
+					
+					$has_bus_ticket = false;
+					foreach ($order->get_items() as $item_id => $item) {
+						$post_id = wc_get_order_item_meta($item_id, '_wbtm_bus_id');
+						if ($post_id && get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+							$has_bus_ticket = true;
+							break;
+						}
+					}
+					
+					if ($has_bus_ticket) {
+						$order->update_status('completed');
+					}
+				}
+			}
+			
 			public function cart_item_thumbnail($thumbnail, $cart_item) {
 				$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
@@ -378,7 +616,15 @@
 						$seats_qty = array_key_exists('wbtm_seats_qty', $cart_item) ? $cart_item['wbtm_seats_qty'] : '';
 						if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 							$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-							if ($seat_type == 'wbtm_seat_plan') {
+							if (isset($cart_item['wbtm_booking_mode']) && $cart_item['wbtm_booking_mode'] === 'full_bus') {
+								$total_seat = class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::count_actual_seats($post_id) : (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
+							$full_bus_seat_count = isset($cart_item['wbtm_full_bus_seat_count']) ? (int) $cart_item['wbtm_full_bus_seat_count'] : 0;
+							if ($sold_seat > 0 || $full_bus_seat_count < $total_seat) {
+								WC()->cart->empty_cart();
+								wc_add_notice(esc_html__("Sorry, this full bus is no longer available.", 'bus-ticket-booking-with-seat-reservation'), 'error');
+							}
+							} elseif ($seat_type == 'wbtm_seat_plan') {
 								$cart_seat_infos = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : '';
 								$cabin_seat_infos = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : '';
 								// Check regular seats
@@ -387,7 +633,7 @@
 										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
 											WC()->cart->empty_cart();
-											wc_add_notice(__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
+											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 										}
 									}
 								}
@@ -408,7 +654,7 @@
 								}
 								do_action('wbtm_something');
 							} else {
-								$total_seat = WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
+								$total_seat = class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::count_actual_seats($post_id) : (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 								$available_seat = max(0, $total_seat - $sold_seat);
 								if ($available_seat < $seats_qty) {
@@ -433,6 +679,21 @@
 					$dp_place = array_key_exists('wbtm_dp_place', $values) ? $values['wbtm_dp_place'] : '';
 					$dp_time = array_key_exists('wbtm_dp_time', $values) ? $values['wbtm_dp_time'] : '';
 					$item->add_meta_data(WBTM_Translations::text_dp(), $dp_place . '(' . WBTM_Global_Function::date_format($dp_time, 'full') . ')');
+					if (isset($values['wbtm_booking_mode']) && $values['wbtm_booking_mode'] === 'full_bus') {
+						$item->add_meta_data(esc_html__('Booking Type', 'bus-ticket-booking-with-seat-reservation'), esc_html__('Full Bus', 'bus-ticket-booking-with-seat-reservation'));
+						$full_bus_base_price = array_key_exists('wbtm_full_bus_base_price', $values) ? (float) $values['wbtm_full_bus_base_price'] : 0;
+						$full_bus_discount = array_key_exists('wbtm_full_bus_discount', $values) ? (float) $values['wbtm_full_bus_discount'] : 0;
+						if ($full_bus_base_price > 0) {
+							$item->add_meta_data(esc_html__('Full Bus Price', 'bus-ticket-booking-with-seat-reservation'), wc_price($full_bus_base_price));
+						}
+						$full_bus_seat_count = array_key_exists('wbtm_full_bus_seat_count', $values) ? (int) $values['wbtm_full_bus_seat_count'] : 0;
+						if ($full_bus_seat_count > 0) {
+							$item->add_meta_data(esc_html__('Full Bus Seats', 'bus-ticket-booking-with-seat-reservation'), $full_bus_seat_count);
+						}
+						if ($full_bus_discount > 0) {
+							$item->add_meta_data(esc_html__('Full Bus Discount', 'bus-ticket-booking-with-seat-reservation'), wc_price($full_bus_discount));
+						}
+					}
 					//==============//
 					$start_point = array_key_exists('wbtm_start_point', $values) ? $values['wbtm_start_point'] : '';
 					$start_time = array_key_exists('wbtm_start_time', $values) ? $values['wbtm_start_time'] : '';
@@ -458,7 +719,7 @@
 					if (!empty($cabin_seats)) {
 						foreach ($cabin_seats as $cabin_seat) {
 							$ticket_infos[] = [
-								'ticket_name' => $cabin_seat['cabin_name'] ?? 'Cabin Seat',
+								'ticket_name' => $cabin_seat['ticket_name'] ?? WBTM_Functions::get_ticket_name($cabin_seat['seat_type'] ?? '', $post_id),
 								'seat_name' => $cabin_seat['seat_name'] ?? '',
 								'ticket_type' => $cabin_seat['seat_type'] ?? 0,
 								'ticket_price' => $cabin_seat['ticket_price'] ?? 0,
@@ -476,7 +737,9 @@
 					$base_price = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
 					if (sizeof($ticket_infos) > 0) {
 						foreach ($ticket_infos as $ticket_info) {
-							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_info['ticket_name']);
+							$ticket_info = is_array($ticket_info) ? $ticket_info : [];
+							$ticket_name_label = $ticket_info['ticket_name'] ?? WBTM_Functions::get_ticket_name($ticket_info['ticket_type'] ?? '', $post_id);
+							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_name_label);
 							if (array_key_exists('seat_name', $ticket_info)) {
 								$seat_name = $ticket_info['seat_name'];
 								if (array_key_exists('dd', $ticket_info) && $ticket_info['dd']) {
@@ -484,8 +747,10 @@
 								}
 								$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_name);
 							}
-							$item->add_meta_data(WBTM_Translations::text_qty(), $ticket_info['ticket_qty']);
-							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $ticket_info["ticket_price"] . ' x ' . $ticket_info['ticket_qty'] . ' ) = ' . wc_price($ticket_info['ticket_price'] * $ticket_info['ticket_qty']));
+							$t_qty   = isset($ticket_info['ticket_qty']) ? $ticket_info['ticket_qty'] : 1;
+							$t_price = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
+							$item->add_meta_data(WBTM_Translations::text_qty(), $t_qty);
+							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . $t_price . ' x ' . $t_qty . ' ) = ' . wc_price($t_price * $t_qty));
 						}
 						$item->add_meta_data(WBTM_Translations::text_total_qty(), $ticket_qty);
 						$item->add_meta_data(WBTM_Translations::text_ticket_sub_total(), wc_price($base_price));
@@ -513,6 +778,14 @@
 					$item->add_meta_data('_wbtm_bp_time', $bp_time);
 					$item->add_meta_data('_wbtm_dp', $dp_place);
 					$item->add_meta_data('_wbtm_dp_time', $dp_time);
+					$item->add_meta_data('_wbtm_booking_mode', isset($values['wbtm_booking_mode']) && $values['wbtm_booking_mode'] === 'full_bus' ? 'full_bus' : 'seat');
+					$item->add_meta_data('_wbtm_full_bus_base_price', array_key_exists('wbtm_full_bus_base_price', $values) ? $values['wbtm_full_bus_base_price'] : 0);
+					$item->add_meta_data('_wbtm_full_bus_discount', array_key_exists('wbtm_full_bus_discount', $values) ? $values['wbtm_full_bus_discount'] : 0);
+					$item->add_meta_data('_wbtm_full_bus_seat_count', array_key_exists('wbtm_full_bus_seat_count', $values) ? (int) $values['wbtm_full_bus_seat_count'] : 0);
+					$price_leg = array_key_exists('wbtm_price_leg', $values) && $values['wbtm_price_leg'] === 'return' ? 'return' : 'outbound';
+					$item->add_meta_data('_wbtm_price_leg', $price_leg);
+					$journey_type = array_key_exists('wbtm_journey_type', $values) && $values['wbtm_journey_type'] === 'return' ? 'return' : 'departure';
+					$item->add_meta_data('_wbtm_journey_type', $journey_type);
 					$item->add_meta_data('_wbtm_start_point', $start_point);
 					$item->add_meta_data('_wbtm_start_time', $start_time);
 					$item->add_meta_data('_extra_services', $extra_service);
@@ -530,12 +803,57 @@
 					$order = wc_get_order($order_id);
 					$order_status = $order->get_status();
 					if ($order_status != 'failed') {
-						$check_attendee = WBTM_Query::query_check_order($order_id)->post_count;
-						if ($check_attendee == 0) {
-							foreach ($order->get_items() as $item_id => $item) {
-								self::add_billing_data($item_id, $order_id);
+						$order_lock_key = 'wbtm_order_processing_' . $order_id;
+						if ( get_transient( $order_lock_key ) ) {
+							return;
+						}
+						set_transient( $order_lock_key, 1, MINUTE_IN_SECONDS );
+						try {
+							$check_attendee = WBTM_Query::query_check_order($order_id)->post_count;
+							if ($check_attendee == 0) {
+								$locks = [];
+								try {
+									foreach ( $order->get_items() as $item_id => $item ) {
+										$post_id = wc_get_order_item_meta( $item_id, '_wbtm_bus_id' );
+										if ( get_post_type( $post_id ) != WBTM_Functions::get_cpt() ) {
+											continue;
+										}
+										$bp           = wc_get_order_item_meta( $item_id, '_wbtm_bp' );
+										$dp           = wc_get_order_item_meta( $item_id, '_wbtm_dp' );
+										$date         = wc_get_order_item_meta( $item_id, '_wbtm_bp_time' );
+										$booking_mode = wc_get_order_item_meta( $item_id, '_wbtm_booking_mode' );
+										$ticket_infos = wc_get_order_item_meta( $item_id, '_wbtm_ticket_info' );
+										$full_bus_seat_count = (int) wc_get_order_item_meta( $item_id, '_wbtm_full_bus_seat_count' );
+										$lock_key = self::get_trip_lock_key( $post_id, $bp, $dp, $date );
+										if ( ! isset( $locks[ $lock_key ] ) ) {
+											if ( ! self::acquire_trip_lock( $post_id, $bp, $dp, $date, 30 ) ) {
+												$failed_message = esc_html__( 'The system is busy. Please try again in a moment.', 'bus-ticket-booking-with-seat-reservation' );
+												wc_add_notice( $failed_message, 'error' );
+												$order->update_status( 'failed', $failed_message );
+												return;
+											}
+											$locks[ $lock_key ] = [ $post_id, $bp, $dp, $date ];
+										}
+										$valid = self::validate_bus_availability( $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, [], $full_bus_seat_count );
+										if ( is_wp_error( $valid ) ) {
+											$failed_message = $valid->get_error_message();
+											wc_add_notice( $failed_message, 'error' );
+											$order->update_status( 'failed', $failed_message );
+											return;
+										}
+									}
+									foreach ($order->get_items() as $item_id => $item) {
+										self::add_billing_data($item_id, $order_id);
+									}
+									do_action('wbtm_send_mail', $order_id);
+								} finally {
+									foreach ( $locks as $lock_args ) {
+										self::release_trip_lock( $lock_args[0], $lock_args[1], $lock_args[2], $lock_args[3] );
+									}
+								}
 							}
-							do_action('wbtm_send_mail', $order_id);
+						} finally {
+							delete_transient( $order_lock_key );
 						}
 					}
 				}
@@ -592,11 +910,18 @@
 					/*******************/
 					$ticket_infos = wc_get_order_item_meta($item_id, '_wbtm_ticket_info');
 					$ticket_infos = $ticket_infos ? WBTM_Global_Function::data_sanitize($ticket_infos) : [];
+					$order_price_leg = wc_get_order_item_meta($item_id, '_wbtm_price_leg', true);
+					$journey_leg     = ( $order_price_leg === 'return' ) ? 'return' : 'outbound';
+					$order_journey_type = wc_get_order_item_meta($item_id, '_wbtm_journey_type', true);
+					$journey_type_value = ( $order_journey_type === 'return' ) ? 'return' : 'departure';
 					/*************************/
 					if (sizeof($ticket_infos) > 0) {
 						$count = 0;
 						foreach ($ticket_infos as $ticket_info) {
-							$qty = $ticket_info['ticket_qty'];
+							$ticket_info = is_array($ticket_info) ? $ticket_info : [];
+							$t_name = isset($ticket_info['ticket_name']) ? $ticket_info['ticket_name'] : WBTM_Functions::get_ticket_name(isset($ticket_info['ticket_type']) ? $ticket_info['ticket_type'] : '', $post_id);
+							$t_seat = array_key_exists('seat_name', $ticket_info) && $ticket_info['seat_name'] ? $ticket_info['seat_name'] : $t_name;
+							$qty = isset($ticket_info['ticket_qty']) ? (int) $ticket_info['ticket_qty'] : 1;
 							for ($key = 0; $key < $qty; $key++) {
 								$data['wbtm_order_id'] = $order_id;
 								$data['wbtm_bus_id'] = $post_id;
@@ -612,8 +937,9 @@
 								$data['wbtm_booking_date'] = $now_full;
 								$data['wbtm_pickup_point'] = $pickup_point;
 								$data['wbtm_drop_off_point'] = $drop_off_point;
-								$data['wbtm_ticket'] = $ticket_info['ticket_name'];
-								$data['wbtm_seat'] = array_key_exists('seat_name', $ticket_info) ? $ticket_info['seat_name'] : $ticket_info['ticket_name'];
+								$data['wbtm_ticket'] = $t_name;
+								$data['wbtm_seat'] = $t_seat;
+								$is_full_bus_booking = isset($ticket_info['ticket_type']) && $ticket_info['ticket_type'] === 'full_bus';
 								// Enhanced by Shahnur Alam - 2025-10-08
 								// Save cabin information for cabin/coach bookings to display in passenger list
 								// Fix cabin seat storage: use cabin-specific seat identifier for proper availability tracking
@@ -624,12 +950,19 @@
 										'price_multiplier' => $ticket_info['price_multiplier'] ?? 1.0
 									];
 									// Store cabin-specific seat identifier to prevent cross-cabin conflicts
-									$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . $ticket_info['seat_name'];
+									$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . (isset($ticket_info['seat_name']) ? $ticket_info['seat_name'] : $t_seat);
 								} else {
+									// Fixed by Shahnur — full bus booking rows without seat_name warning 2026-05-07 12:55 PM
 									// Legacy seat storage for non-cabin bookings
-									$data['wbtm_seat'] = $ticket_info['seat_name'];
+									$data['wbtm_seat'] = $t_seat;
 								}
-								$data['wbtm_bus_fare'] = $ticket_info['ticket_price'];
+								$data['wbtm_bus_fare'] = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
+								if ($is_full_bus_booking) {
+									$data['wbtm_booking_mode'] = 'full_bus';
+									$data['wbtm_full_bus_base_price'] = wc_get_order_item_meta($item_id, '_wbtm_full_bus_base_price', true);
+									$data['wbtm_full_bus_discount'] = wc_get_order_item_meta($item_id, '_wbtm_full_bus_discount', true);
+									$data['wbtm_full_bus_seat_count'] = wc_get_order_item_meta($item_id, '_wbtm_full_bus_seat_count', true);
+								}
 								$data['wbtm_ticket_status'] = 1;
 								$data['wbtm_order_status'] = $order_status;
 								$data['wbtm_attendee_info'] = array_key_exists($count, $attendee_info) ? $attendee_info[$count] : [];
@@ -639,10 +972,17 @@
 								$data['wbtm_user_email'] = $billing_email;
 								$data['wbtm_user_phone'] = $billing_phone;
 								$data['wbtm_user_address'] = $billing_address;
+								$data['wbtm_price_leg']    = $journey_leg;
+								$data['wbtm_journey_type'] = $journey_type_value;
 								$booking_data = apply_filters('wbtm_add_booking_data', $data, $post_id, $count);
 								self::add_cpt_data('wbtm_bus_booking', $billing_name, $booking_data);
 								$count++;
 							}
+						}
+						// Booking records now block the seats — release the customer's
+						// temporary seat holds for them (WBTM_Seat_Hold).
+						if (class_exists('WBTM_Seat_Hold')) {
+							WBTM_Seat_Hold::release_booked_seats($post_id, $bp_time, $ticket_infos);
 						}
 						if (class_exists('Wbtm_Woocommerce_bus_Pro')) {
 							// Get seat type configuration
@@ -791,16 +1131,33 @@
 			/*********************/
 			public function order_status_changed($order_id) {
 				$order = wc_get_order($order_id);
+				if (!$order) {
+					return;
+				}
 				$order_status = $order->get_status();
+				// Only act on the statuses this plugin handles. This is an order-level
+				// check, so evaluate it once instead of re-checking it per line item.
+				if (!$order->has_status(array('processing', 'pending', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed', 'requested'))) {
+					return;
+				}
+				$representative_bus_id = 0;
+				// Per-bus attendee / service-booking status sync must run for EVERY bus
+				// line item, so this stays inside the loop.
 				foreach ($order->get_items() as $item_id => $item_values) {
 					$post_id = wc_get_order_item_meta($item_id, '_wbtm_bus_id');
 					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
-						if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
-							$this->wc_order_status_change($order_status, $post_id, $order_id);
-							//echo '<pre>';print_r($order_status);echo '</pre>';die();
-							do_action('wbtm_order_status_change', $order_status, $post_id, $order_id);
+						$this->wc_order_status_change($order_status, $post_id, $order_id);
+						if (!$representative_bus_id) {
+							$representative_bus_id = (int) $post_id;
 						}
 					}
+				}
+				// Fire the status-change action ONCE per order, not once per line item.
+				// Every listener (PDF-ticket email, marketplace commission, booked-seat
+				// cache flush) is order-scoped, so dispatching inside the loop above made
+				// an order with N bus line items send N identical confirmation emails.
+				if ($representative_bus_id) {
+					do_action('wbtm_order_status_change', $order_status, $representative_bus_id, $order_id);
 				}
 			}
 			public function wc_order_status_change($order_status, $post_id, $order_id) {
@@ -890,115 +1247,10 @@
 				return max(0, $total_price);
 			}
 			public static function get_cart_ticket_info($post_id) {
-				$ticket_info = [];
-				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
-					$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
-					$seat_column = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0);
-					/************************/
-					$start_place = isset($_POST['wbtm_bp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_place'])) : '';
-					$end_place = isset($_POST['wbtm_dp_place']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dp_place'])) : '';
-					$start_date = isset($_POST['wbtm_bp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_time'])) : '';
-					if ($seat_type == 'wbtm_seat_plan' && sizeof($seat_infos) > 0 && $seat_row > 0 && $seat_column > 0) {
-						$count = 0;
-						$selected_seat = isset($_POST['wbtm_selected_seat']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat'])) : '';
-						$selected_seat = $selected_seat ? explode(',', $selected_seat) : [];
-						$selected_ticket_type = isset($_POST['wbtm_selected_seat_type']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_type'])) : '';
-						$selected_ticket_type = $selected_ticket_type ? explode(',', $selected_ticket_type) : [0];
-						if (sizeof($selected_seat) > 0 && sizeof($selected_ticket_type) > 0) {
-							foreach ($selected_seat as $key => $seat_name) {
-								$type = isset($selected_ticket_type[$key]) ? $selected_ticket_type[$key] : 0;
-								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
-									// Handle false return value from get_seat_price
-									if ($seat_price === false || $seat_price < 0) {
-										$seat_price = 0;
-									}
-									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type);
-									$ticket_info[$count]['ticket_type'] = $type;
-									$ticket_info[$count]['seat_name'] = $seat_name;
-									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
-									$ticket_info[$count]['ticket_qty'] = 1;
-									$ticket_info[$count]['date'] = $start_date ?? '';
-									$ticket_info[$count]['dd'] = '';
-									$count++;
-								}
-							}
-						}
-						$selected_seat_dd = isset($_POST['wbtm_selected_seat_dd']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_dd'])) : '';
-						$selected_seat_dd = $selected_seat_dd ? explode(',', $selected_seat_dd) : [];
-						$selected_ticket_type_dd = isset($_POST['wbtm_selected_seat_dd_type']) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_dd_type'])) : '';
-						$selected_ticket_type_dd = $selected_ticket_type_dd ? explode(',', $selected_ticket_type_dd) : [0];
-						if (sizeof($selected_seat_dd) > 0 && sizeof($selected_ticket_type_dd) > 0) {
-							foreach ($selected_seat_dd as $key => $seat_name) {
-								$type = isset($selected_ticket_type_dd[$key]) ? $selected_ticket_type_dd[$key] : 0;
-								if ($seat_name) {
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type, true);
-									// Handle false return value from get_seat_price
-									if ($seat_price === false || $seat_price < 0) {
-										$seat_price = 0;
-									}
-									$ticket_info[$count]['ticket_name'] = WBTM_Functions::get_ticket_name($type);
-									$ticket_info[$count]['ticket_type'] = $type;
-									$ticket_info[$count]['seat_name'] = $seat_name;
-									$ticket_info[$count]['ticket_price'] = floatval($seat_price);
-									$ticket_info[$count]['ticket_qty'] = 1;
-									$ticket_info[$count]['date'] = $start_date ?? '';
-									$ticket_info[$count]['dd'] = 1;
-									$count++;
-								}
-							}
-						}
-					}
-                    else {
-						// Without seat plan mode
-						$qty = isset($_POST['wbtm_seat_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_qty'])) : [];
-						$passenger_type = isset($_POST['wbtm_passenger_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_passenger_type'])) : [];
-						$submitted_prices = isset($_POST['wbtm_seat_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_seat_price'])) : [];
-						$count = count($passenger_type);
-						if ($count > 0 && is_array($qty)) {
-							for ($i = 0; $i < count($passenger_type); $i++) {
-								if (isset($qty[$i]) && $qty[$i] > 0) {
-									$type = $passenger_type[$i] ?? '';
-									$ticket_name = WBTM_Functions::get_ticket_name($type);
-									$seat_price = WBTM_Functions::get_seat_price($post_id, $start_place, $end_place, $type);
-									// Fall back to the price submitted from the form when route name mismatch causes get_seat_price to return false
-									if ($seat_price === false || $seat_price < 0) {
-										$seat_price = isset($submitted_prices[$i]) ? floatval($submitted_prices[$i]) : 0;
-									}
-									$ticket_info[$i]['ticket_name'] = $ticket_name;
-									$ticket_info[$i]['seat_name'] = $ticket_name;
-									$ticket_info[$i]['ticket_type'] = $type;
-									$ticket_info[$i]['ticket_price'] = floatval($seat_price);
-									$ticket_info[$i]['ticket_qty'] = intval($qty[$i]);
-									$ticket_info[$i]['date'] = $start_date ?? '';
-								}
-							}
-						}
-					}
-				}
-				return apply_filters('wbtm_cart_ticket_info_data_prepare', $ticket_info, $post_id);
+				return WBTM_Cart_Helper::get_cart_ticket_info( $post_id );
 			}
 			public static function get_cart_extra_service_info($post_id): array {
-				$extra_service = array();
-				if (isset($_POST['wbtm_form_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_form_nonce'])), 'wbtm_form_nonce')) {
-					$start_date = isset($_POST['wbtm_bp_time']) ? sanitize_text_field(wp_unslash($_POST['wbtm_bp_time'])) : '';
-					$service_name = isset($_POST['extra_service_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['extra_service_name'])) : [];
-					$service_qty = isset($_POST['extra_service_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['extra_service_qty'])) : [];
-					if (sizeof($service_name) > 0) {
-						for ($i = 0; $i < count($service_name); $i++) {
-							if ($service_qty[$i] > 0) {
-								$name = $service_name[$i] ?? '';
-								$extra_service[$i]['name'] = $name;
-								$extra_service[$i]['price'] = WBTM_Functions::get_ex_service_price($post_id, $name);
-								$extra_service[$i]['qty'] = $service_qty[$i];
-								$extra_service[$i]['date'] = $start_date ?? '';
-							}
-						}
-					}
-				}
-				return $extra_service;
+				return WBTM_Cart_Helper::get_cart_extra_service_info( $post_id );
 			}
 			/*********************/
 			public function show_cart_item($cart_item, $post_id) {
@@ -1012,7 +1264,42 @@
                 </div>
 				<?php
 			}
+			/**
+			 * Whether the cart currently holds an explicit return-leg ticket.
+			 */
+			public static function cart_has_return_leg() {
+				if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+					return false;
+				}
+				foreach ( WC()->cart->get_cart() as $ci ) {
+					if ( ( $ci['wbtm_journey_type'] ?? '' ) === 'return' ) {
+						return true;
+					}
+				}
+				return false;
+			}
+			/**
+			 * Journey badge (Outbound / Return) for a cart line on a round trip. Returns ''
+			 * for a one-way cart so single trips stay uncluttered. Mirrors the ticket/PDF badge.
+			 */
+			public static function cart_journey_badge_html( $cart_item ) {
+				$journey_type = $cart_item['wbtm_journey_type'] ?? '';
+				if ( $journey_type === 'return' ) {
+					$kind = 'return';
+				} elseif ( $journey_type === 'departure' && self::cart_has_return_leg() ) {
+					$kind = 'outbound';
+				} else {
+					return '';
+				}
+				$map = [
+					'return'   => [ esc_html__( 'Return', 'bus-ticket-booking-with-seat-reservation' ), '#2271b1' ],
+					'outbound' => [ esc_html__( 'Outbound', 'bus-ticket-booking-with-seat-reservation' ), '#2e7d32' ],
+				];
+				list( $label, $color ) = $map[ $kind ];
+				return '<span class="wbtm-journey-leg-badge wbtm-journey-leg-' . esc_attr( $kind ) . '" style="display:inline-block;margin:0 0 6px 0;background:' . esc_attr( $color ) . ';color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;line-height:1.3;">' . $label . '</span>';
+			}
 			public function show_cart_route_details($cart_item) {
+				echo wp_kses_post( self::cart_journey_badge_html( $cart_item ) );
 				$bp = array_key_exists('wbtm_bp_place', $cart_item) ? $cart_item['wbtm_bp_place'] : '';
 				$bp_time = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
 				$dp = array_key_exists('wbtm_dp_place', $cart_item) ? $cart_item['wbtm_dp_place'] : '';
@@ -1063,6 +1350,39 @@
 				$wbtm_seats = array_key_exists('wbtm_seats', $cart_item) ? $cart_item['wbtm_seats'] : [];
 				$cabin_seats = array_key_exists('wbtm_cabin_seats', $cart_item) ? $cart_item['wbtm_cabin_seats'] : [];
 				$base_price = array_key_exists('wbtm_base_price', $cart_item) ? $cart_item['wbtm_base_price'] : '';
+				if (isset($cart_item['wbtm_booking_mode']) && $cart_item['wbtm_booking_mode'] === 'full_bus') { ?>
+                    <h5 class="_mB_xs"><?php esc_html_e('Ticket Information', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
+                    <div class="dLayout_xs">
+                        <ul class="cart_list">
+                            <li>
+                                <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_ticket_type()); ?> :</h6>
+                                <span><?php esc_html_e('Full Bus', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                            </li>
+							<li>
+								<h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_qty()); ?> :</h6>
+								<span><?php echo esc_html(array_key_exists('wbtm_seats_qty', $cart_item) ? $cart_item['wbtm_seats_qty'] : 1); ?></span>
+							</li>
+							<?php if (!empty($cart_item['wbtm_full_bus_seat_count'])) { ?>
+                                <li>
+                                    <h6 class="_mR_xs"><?php esc_html_e('Seats Covered', 'bus-ticket-booking-with-seat-reservation'); ?> :</h6>
+                                    <span><?php echo esc_html($cart_item['wbtm_full_bus_seat_count']); ?></span>
+                                </li>
+							<?php } ?>
+                            <li>
+                                <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_price()); ?> :</h6>
+                                <span><?php echo wp_kses_post(wc_price($base_price)); ?></span>
+                            </li>
+							<?php if (!empty($cart_item['wbtm_full_bus_discount'])) { ?>
+                                <li>
+                                    <h6 class="_mR_xs"><?php esc_html_e('Discount', 'bus-ticket-booking-with-seat-reservation'); ?> :</h6>
+                                    <span><?php echo wp_kses_post(wc_price($cart_item['wbtm_full_bus_discount'])); ?></span>
+                                </li>
+							<?php } ?>
+                        </ul>
+                    </div>
+					<?php
+					return;
+				}
 				$ticket_count = 0;
 				$tic_key = 0;
 				// Handle both regular seats and cabin seats
@@ -1083,6 +1403,7 @@
 								$ticket_name = $wbtm_seat['ticket_name'] ?? $wbtm_seat['cabin_name'] ?? '';
 								$seat_name = $wbtm_seat['seat_name'] ?? '';
 								$seat_type = $wbtm_seat['seat_type'] ?? 0;
+								$post_id = array_key_exists('wbtm_bus_id', $cart_item) ? $cart_item['wbtm_bus_id'] : 0;
 								$ticket_price = $wbtm_seat['ticket_price'] ?? $wbtm_seat['price'] ?? 0;
 								$qty = isset($wbtm_seat['ticket_qty']) ? max(1, intval($wbtm_seat['ticket_qty'])) : 1;
 								// Cabin seats are always single-quantity entries.
@@ -1098,7 +1419,7 @@
 								<?php } ?>
                                 <li>
                                     <h6 class="_mR_xs"><?php echo esc_attr(WBTM_Translations::text_ticket_type()); ?> :</h6>
-                                    <span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type)); ?></span>
+                                    <span><?php echo esc_html($ticket_name ?: WBTM_Functions::get_ticket_name($seat_type, $post_id)); ?></span>
                                 </li>
 								<?php if ($seat_name) { ?>
                                     <li>
@@ -1177,38 +1498,7 @@
 			}
 			/*********************/
 			public static function add_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array()) {
-				// Generate a privacy-safe post title and slug for bus bookings
-				if ($cpt_name === 'wbtm_bus_booking') {
-					// Use order ID and timestamp for privacy-safe identification
-					$order_id = isset($meta_data['wbtm_order_id']) ? $meta_data['wbtm_order_id'] : '';
-					$timestamp = current_time('Y-m-d-H-i-s');
-					$safe_title = 'Bus Booking #' . $order_id . '-' . $timestamp;
-					$new_post = array(
-						'post_title' => $safe_title,
-						'post_name' => 'bus-booking-' . $order_id . '-' . $timestamp, // Explicitly set slug
-						'post_content' => '',
-						'post_category' => $cat,
-						'tags_input' => array(),
-						'post_status' => $status,
-						'post_type' => $cpt_name
-					);
-				} else {
-					// For other post types, use original behavior
-					$new_post = array(
-						'post_title' => $title,
-						'post_content' => '',
-						'post_category' => $cat,
-						'tags_input' => array(),
-						'post_status' => $status,
-						'post_type' => $cpt_name
-					);
-				}
-				$post_id = wp_insert_post($new_post);
-				if (sizeof($meta_data) > 0) {
-					foreach ($meta_data as $key => $value) {
-						update_post_meta($post_id, $key, $value);
-					}
-				}
+				return WBTM_Cart_Helper::add_cpt_data( $cpt_name, $title, $meta_data, $status, $cat );
 			}
 			/**
 			 * Clean up existing booking posts that have customer names in URLs
@@ -1312,161 +1602,9 @@
 
             }*/
 
-            function wbtm_ajax_add_to_cart() {
-
-                // Nonce check
-                if (
-                    ! isset( $_POST['wbtm_form_nonce'] ) ||
-                    ! wp_verify_nonce(
-                        sanitize_text_field( wp_unslash( $_POST['wbtm_form_nonce'] ) ),
-                        'wbtm_form_nonce'
-                    )
-                ) {
-                    wp_send_json_error( 'Nonce failed', 403 );
-                }
-
-                /**
-                 * Block PHP Object Injection via serialized payloads
-                 */
-                $block_serialized = function ( $value ) {
-                    if ( is_string( $value ) && is_serialized( $value ) ) {
-                        wp_send_json_error( 'Invalid input detected', 400 );
-                        exit;
-                    }
-                };
-
-                /* -------------------------
-                 * Block dangerous inputs
-                 * ------------------------- */
-                $fields = [
-                    'wbtm_bp_place',
-                    'wbtm_dp_place',
-                    'wbtm_bp_time',
-                    'wbtm_dp_time',
-                    'wbtm_selected_seat',
-                    'price_val',
-                    'cabinSeats',
-                    'cabinSeatTypes',
-                    'j_date',
-                ];
-
-                foreach ( $fields as $field ) {
-                    if ( isset( $_POST[ $field ] ) ) {
-                        $block_serialized( $_POST[ $field ] );
-                    }
-                }
-
-                $post_id = isset( $_POST['wbtm_post_id'] )
-                    ? sanitize_text_field( wp_unslash( $_POST['wbtm_post_id'] ) )
-                    : '';
-
-                $product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
-
-                $cabin_mode_enabled = isset( $_POST['wbtm_cabin_mode_enabled'] )
-                    ? sanitize_text_field( wp_unslash( $_POST['wbtm_cabin_mode_enabled'] ) )
-                    : '';
-
-                $cabin_seats = false;
-                $selected_cabin_seats = '';
-
-                if ( $cabin_mode_enabled === 'yes' ) {
-
-                    $cabin_seats_raw = $_POST['cabinSeats'] ?? '';
-                    $block_serialized( $cabin_seats_raw );
-
-                    $cabin_seats = sanitize_text_field( wp_unslash( $cabin_seats_raw ) );
-                    $cabin_seats = self::wbtm_get_sanitized_cabin_seats( $cabin_seats );
-
-                    foreach ( $cabin_seats as $value ) {
-                        $_POST[ 'wbtm_selected_seat_cabin_' . $value['cabin'] ] = $value['seat'];
-                    }
-
-                    $cabin_seat_types_raw = $_POST['cabinSeatTypes'] ?? '';
-                    $block_serialized( $cabin_seat_types_raw );
-
-                    $cabin_seat_types = sanitize_text_field( wp_unslash( $cabin_seat_types_raw ) );
-                    $cabin_seat_types = self::wbtm_get_sanitized_cabin_seats( $cabin_seat_types );
-
-                    foreach ( $cabin_seat_types as $type_value ) {
-                        $_POST[ 'wbtm_selected_seat_type_cabin_' . $type_value['cabin'] ] = $type_value['seat'];
-                    }
-
-                    foreach ( $_POST as $key => $value ) {
-                        if ( strpos( $key, 'wbtm_selected_seat_cabin_' ) === 0 ) {
-                            $cabin_seats = true;
-                            $cabin = str_replace( 'wbtm_selected_seat_', '', $key );
-                            $cabin = sanitize_text_field( $cabin );
-                            $selected_cabin_seats .= $cabin . ' (' . sanitize_text_field( $value ) . ')' . PHP_EOL;
-                        }
-                    }
-                }
-
-                $selected_seats = $cabin_seats
-                    ? $selected_cabin_seats
-                    : sanitize_text_field( wp_unslash( $_POST['wbtm_selected_seat'] ?? '' ) );
-
-                /* -------------------------
-                 * Selected data
-                 * ------------------------- */
-                $selected_Data = [
-                    'post_id'            => $post_id,
-                    'j_date'             => sanitize_text_field( wp_unslash( $_POST['j_date'] ?? '' ) ),
-                    'wbtm_selected_seat' => $selected_seats,
-                    'wbtm_bp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ?? '' ) ),
-                    'wbtm_dp_place'      => sanitize_text_field( wp_unslash( $_POST['wbtm_dp_place'] ?? '' ) ),
-                    'wbtm_bp_time'       => sanitize_text_field( wp_unslash( $_POST['wbtm_bp_time'] ?? '' ) ),
-                    'wbtm_dp_time'       => sanitize_text_field( wp_unslash( $_POST['wbtm_dp_time'] ?? '' ) ),
-                    'price_val'          => sanitize_text_field( wp_unslash( $_POST['price_val'] ?? 0 ) ),
-                ];
-
-                if ( $product_id ) {
-                    $added = WC()->cart->add_to_cart( $product_id, 1 );
-                    if ( $added ) {
-                        $selected_bus = WBTM_Layout::selected_bus_display( $selected_Data );
-                        wp_send_json_success( [
-                            'message'      => 'Added successfully',
-                            'selected_bus' => $selected_bus,
-                        ] );
-                    }
-                }
-
-                wp_send_json_error( 'Cart error', 400 );
-            }
-
-
-            /**
-             * Sanitize cabin seats JSON and return safe array
-             *
-             * @param string $json Cabin seats JSON string
-             * @return array
-             */
-            public static function wbtm_get_sanitized_cabin_seats( $json ) {
-
-                if ( empty($json) || ! is_string($json) ) {
-                    return [];
-                }
-                $raw_json = wp_unslash( $json );
-                $decoded = json_decode( $raw_json, true );
-                if ( ! is_array($decoded) ) {
-                    return [];
-                }
-                $cabin_seats = [];
-                foreach ( $decoded as $item ) {
-                    if (
-                        ! isset($item['cabin'], $item['seat']) ||
-                        ! is_string($item['cabin']) ||
-                        ! is_string($item['seat'])
-                    ) {
-                        continue;
-                    }
-                    $cabin_seats[] = [
-                        'cabin' => sanitize_key( $item['cabin'] ),
-                        'seat'  => sanitize_text_field( $item['seat'] ),
-                    ];
-                }
-
-                return $cabin_seats;
-            }
+			// wbtm_ajax_add_to_cart() and wbtm_get_sanitized_cabin_seats() moved to the
+			// always-loaded WBTM_Booking_Controller (inc/WBTM_Booking_Controller.php) —
+			// see that file's docblock for why.
 
         }
 		new WBTM_Woocommerce();

@@ -179,6 +179,13 @@
         width: 80px;
         height: auto;
     }
+    .wbtm_search_route_icon_wrapper span.wbtm_search_route_bus_icon i{
+        font-size: 40px;
+        color: var(--wbtm_color_theme, #ff4500);
+        display: inline-block;
+        text-align: center;
+        width: 80px;
+    }
     .wbtm_search_route_icon_wrapper {
         width: 30%;
     }
@@ -241,7 +248,7 @@
         visibility: visible;
         opacity: 1;
         transform: scale(1);
-        padding: 5px;
+        padding: 0;
     }
     .wbtm-bus-popup {
         display: none;
@@ -317,7 +324,7 @@
 
     .wbtm_bus_list_area .wbtm_bus_popup_links {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: left;
         gap: 10px;
         visibility: hidden;
         opacity: 0;
@@ -336,6 +343,9 @@
         box-sizing: border-box;
         border-top: 1px solid #eee;
     }
+    .wbtm_bus_details_tabs_holder.wbtm_no_tabs{
+        justify-content: flex-end;
+    }
 }
 @media (min-width: 540px) {
 
@@ -346,3 +356,191 @@
     }
 }
 @media (min-width: 1240px) {}
+
+/* ---- Mobile fixes for search results ---- */
+@media only screen and (max-width: 768px) {
+    /* Popup inner full-width on mobile */
+    .wbtm-bus-popup-inner {
+        width: 95% !important;
+        margin: 3% auto !important;
+        padding: 14px !important;
+        max-height: 90vh;
+    }
+    .wbtm-popup-content {
+        max-width: 100% !important;
+    }
+    /* Popup tab bar scrolls horizontally */
+    .wbtm_bus_detail_popup_tabs {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .wbtm_bus_detail_popup_tab {
+        flex-shrink: 0 !important;
+    }
+    /* Bus popup links always visible on touch */
+    .wbtm_bus_list_area .wbtm_bus_popup_links {
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+    /* Route search result header */
+    .wbtm_search_result .wbtm-date-route,
+    .wbtm-date-return-route {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px;
+    }
+    /* Tab switcher full width on mobile */
+    .wbtm_bus_tab_wrapper {
+        gap: 6px;
+        padding: 2px;
+    }
+    .wbtm_bus_tab_wrapper .wtbm_start_route,
+    .wbtm_bus_tab_wrapper .wtbm_return_route {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    /* Route city sections side by side on small phones */
+    .wbtm_search_route_city_section,
+    .wbtm_search_route_city_section_right {
+        width: 50% !important;
+        padding: 6px !important;
+    }
+    .wbtm_search_route_label {
+        font-size: 12px;
+    }
+    .wbtm_search_route_city {
+        font-size: 11px;
+    }
+}
+
+/* ---- Mobile: results-first + collapsible "Filters" hamburger ----
+   The toggle button is rendered by both search_result.php and
+   search_result_flix.php inside .wbtm_bus_left_filter_holder.
+   Desktop/laptop (>=768px) is untouched: button hidden, sidebar as-is. */
+.wbtm-mobile-filter-toggle {
+    display: none;
+    /* Modern styling kept OUT of the mobile media query so the button looks good
+       wherever it is shown (it also appears on the desktop results header). Only
+       the display toggle is size-dependent. */
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 12px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #101828;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.wbtm-mobile-filter-toggle:hover {
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 4px 12px rgba(16, 24, 40, .10);
+}
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label i,
+.wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label svg {
+    color: var(--wbtm_color_theme, #e8510f);
+}
+.wbtm-mobile-filter-caret {
+    font-size: 12px;
+    color: #98a2b3;
+    transition: transform .2s ease;
+}
+.wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
+    transform: rotate(180deg);
+}
+
+@media only screen and (max-width: 767px) {
+    /* Stack the results page vertically, full width — the flix layout sets an
+       inline width (calc(100% - 180px)) on the list area, hence !important. */
+    .wbtm_search_result_holder {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    .wbtm_bus_list_area {
+        width: 100% !important;
+    }
+    .wbtm_bus_left_filter_holder {
+        width: 100% !important;
+        flex: none !important;
+        min-width: 0;
+    }
+
+    /* Hamburger "Filters" bar */
+    .wbtm-mobile-filter-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #e8ecf0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+    }
+    .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label i {
+        color: var(--wbtm_color_theme, #e8510f);
+    }
+    .wbtm-mobile-filter-caret {
+        font-size: 12px;
+        color: #666;
+        transition: transform .2s ease;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
+        transform: rotate(180deg);
+    }
+
+    /* Collapsed by default: only the toggle bar shows, so the first bus card
+       appears right below it. Opening reveals the filter panel. */
+    .wbtm_bus_left_filter_holder > *:not(.wbtm-mobile-filter-toggle) {
+        display: none !important;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open > *:not(.wbtm-mobile-filter-toggle) {
+        display: block !important;
+        margin-top: 10px;
+    }
+}
+
+/* Route with no fare configured (Frontend Display -> Unpriced Routes).
+   Shown in place of the price/Book button in the flix search layout. */
+.wbtm-route-unavailable {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #b45309;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.wbtm-route-unavailable i {
+    font-size: 15px;
+    flex-shrink: 0;
+}

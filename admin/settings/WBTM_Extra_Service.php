@@ -1,6 +1,6 @@
 <?php
 	/*
-   * @Author 		engr.sumonazma@gmail.com
+   * @Author 		MagePeople Team
    * Copyright: 	mage-people.com
    */
 	if (!defined('ABSPATH')) {
@@ -22,14 +22,6 @@
                     <h3><?php esc_html_e('Extra Services', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                     <p><?php esc_html_e('Add Extra Services for the passanger with bus seat reservation', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                     <div class="">
-                        <div class="_dLayout_bgLight_dFlex_justifyBetween">
-                            <div class="_dFlex_fdColumn">
-                                <label>
-									<?php esc_html_e('Extra service', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </label>
-                                <span><?php esc_html_e('Here you can add extra services. Also can be on/off extra service', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                            </div>
-                        </div>
                         <div class="_dLayout_dFlex_justifyBetween">
                             <div class="col_10 _dFlex_fdColumn">
                                 <label>
@@ -48,7 +40,6 @@
                                         <table>
                                             <thead>
                                             <tr>
-                                                <!--										<th>--><?php ////esc_html_e('Service Icon', 'bus-ticket-booking-with-seat-reservation'); ?><!--</th>-->
                                                 <th><?php esc_html_e('Service Name', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
@@ -79,7 +70,6 @@
 			}
 			public function extra_service_item($field = array()) {
 				$field = $field ?: array();
-				//$service_icon = array_key_exists('option_icon', $field) ? $field['option_icon'] : '';
 				$service_name = array_key_exists('option_name', $field) ? $field['option_name'] : '';
 				$service_price = array_key_exists('option_price', $field) ? $field['option_price'] : '';
 				$service_qty = array_key_exists('option_qty', $field) ? $field['option_qty'] : '';

@@ -1,6 +1,6 @@
 <?php
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if (!defined('ABSPATH')) {
@@ -87,7 +87,375 @@
         );
 		?>
         <div id="wbtm_area">
-            <div class="_dLayout wbtm_search_area <?php echo esc_attr($form_style_class); ?>">
+            <style>
+            /* ============================================================
+               WBTM Pill-Bar Search Form — scoped to .wbtm-bar-redesign
+               All rules prefixed with #wbtm_area .wbtm-bar-redesign so
+               they never bleed into other plugin areas.
+               ============================================================ */
+
+            /* Outer wrapper */
+            #wbtm_area .wbtm_search_area.wbtm-bar-redesign {
+                background: transparent;
+                padding: 0;
+            }
+            #wbtm_area .wbtm-bar-redesign h4 {
+                display: none;
+            }
+
+            /* ── Pill container ──────────────────────────────────── */
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
+                display:      flex;
+                flex-wrap:    nowrap;
+                align-items:  stretch;
+                background:   #ffffff;
+                border-radius: 10px;
+                border:       1.5px solid #dde1e7;
+                box-shadow:   0 2px 16px rgba(0,0,0,.09);
+                min-height:   64px;
+                padding:      0;
+            }
+
+            /* ── Row groups ──────────────────────────────────────── */
+            #wbtm_area .wbtm-bar-redesign .wbtm_input_fields_holder,
+            #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location,
+            #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_date {
+                display:        flex;
+                flex-direction: row;
+                align-items:    stretch;
+                flex:           1;
+                min-width:      0;
+            }
+
+            /* ── Each field segment ──────────────────────────────── */
+            #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
+                flex:         1;
+                min-width:    110px;
+                position:     relative;
+                padding:      30px 40px;
+                border-right: 1.5px solid #dde1e7;
+                display:      flex;
+                align-items:  center;
+                cursor:       pointer;
+                transition:   background 0.15s ease;
+            }
+            #wbtm_area .wbtm-bar-redesign .wtbm_inputList:last-child {
+                border-right: none;
+            }
+            #wbtm_area .wbtm-bar-redesign .wtbm_inputList:hover {
+                background: #f5f7fb;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location .wtbm_inputList:first-child:hover {
+                border-radius: 9px 0 0 9px;
+            }
+
+            /* ── Field label ("From", "Journey Date" …) ──────────── */
+            #wbtm_area .wbtm-bar-redesign label.wtbm_fdColumn {
+                display:        flex;
+                flex-direction: column;
+                width:          100%;
+                font-size:      11px;
+                font-weight:    700;
+                color:          #777;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                line-height:    1.2;
+                cursor:         pointer;
+                margin:         0;
+            }
+
+            /* ── Icon + value row ────────────────────────────────── */
+            /* wbtm.css sets .wbtm_search_area .marker i { position: absolute; left: 10px }
+               and compensates with input { padding-left: 30px }.
+               We reset both here so the flex gap controls spacing instead. */
+            #wbtm_area .wbtm-bar-redesign .marker,
+            #wbtm_area .wbtm-bar-redesign .calendar {
+                position:    static !important;  /* override position:relative used as absolute-icon parent */
+                display:     flex !important;
+                align-items: center !important;
+                gap:         7px !important;
+                margin-top:  5px;
+                font-size:   15px;
+                color:       #1a1a1a;
+            }
+            #wbtm_area .wbtm-bar-redesign .marker > i,
+            #wbtm_area .wbtm-bar-redesign .calendar > i {
+                position:    static !important;  /* reset from position:absolute */
+                top:         auto !important;
+                left:        auto !important;
+                transform:   none !important;
+                font-size:   15px !important;
+                color:       #666 !important;
+                flex-shrink: 0 !important;
+                width:       16px !important;
+                text-align:  center !important;
+            }
+
+            /* ── Input styled as plain readable text ─────────────── */
+            #wbtm_area .wbtm-bar-redesign .formControl {
+                border:       0 !important;
+                background:   transparent !important;
+                padding:      0 !important;         /* removes original 30px-left that accommodated absolute icon */
+                padding-left: 0 !important;
+                margin:       0 !important;
+                font-size:    15px !important;
+                font-weight:  600 !important;
+                color:        #1a1a1a !important;
+                box-shadow:   none !important;
+                outline:      none !important;
+                height:       auto !important;
+                line-height:  1.3 !important;
+                width:        100%;
+                min-width:    0;
+                cursor:       pointer;
+            }
+            #wbtm_area .wbtm-bar-redesign .formControl::placeholder {
+                color:       #aaa !important;
+                font-weight: 400 !important;
+            }
+
+            /* ── Swap toggle ⇄ (sits inline between From and To) ─── */
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle {
+                flex:            0 0 auto;
+                align-self:      center;
+                width:           34px;
+                height:          34px;
+                margin:          0 2px;
+                border-radius:   50%;
+                background:      #fff;
+                border:          1.5px solid #dde1e7;
+                box-shadow:      0 1px 5px rgba(0,0,0,.09);
+                display:         flex;
+                align-items:     center;
+                justify-content: center;
+                cursor:          pointer;
+                transition:      background 0.15s;
+                z-index:         2;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle:hover {
+                background: #f0f2f5;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle i {
+                font-size:  13px;
+                color:      #555;
+                transition: transform 0.25s;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle.rotate i {
+                transform: rotate(180deg);
+            }
+
+            /* ── Dropdown list — floats above content ─────────────── */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list {
+                position:      absolute !important;
+                top:           calc(100% + 8px) !important;
+                left:          0 !important;
+                width:         max-content !important;
+                min-width:     285px !important;
+                background:    #fff !important;
+                border:        1.5px solid #dde1e7 !important;
+                border-radius: 14px !important;
+                box-shadow:    0 8px 28px rgba(0,0,0,.13) !important;
+                z-index:       9999 !important;
+                margin:        0 !important;
+                padding:       0 !important;
+                overflow:      hidden !important;
+                max-height:    320px !important;
+                overflow-y:    auto !important;
+            }
+            /* Panel title sticky header via CSS ::before */
+            #wbtm_area .wbtm-bar-redesign .wbtm_start_point ul.wbtm_input_select_list::before {
+                content:        'Select Boarding Point' !important;
+                display:        block !important;
+                padding:        13px 16px 11px !important;
+                font-size:      11px !important;
+                font-weight:    700 !important;
+                color:          #6b7280 !important;
+                letter-spacing: 0.5px !important;
+                text-transform: uppercase !important;
+                border-bottom:  1px solid #f1f3f5 !important;
+                background:     #fff !important;
+                position:       sticky !important;
+                top:            0 !important;
+                z-index:        1 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_dropping_point ul.wbtm_input_select_list::before {
+                content:        'Select Dropping Point' !important;
+                display:        block !important;
+                padding:        13px 16px 11px !important;
+                font-size:      11px !important;
+                font-weight:    700 !important;
+                color:          #6b7280 !important;
+                letter-spacing: 0.5px !important;
+                text-transform: uppercase !important;
+                border-bottom:  1px solid #f1f3f5 !important;
+                background:     #fff !important;
+                position:       sticky !important;
+                top:            0 !important;
+                z-index:        1 !important;
+            }
+            /* List items — flex row: checkbox + city name + optional tick */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li {
+                display:       flex !important;
+                align-items:   center !important;
+                gap:           12px !important;
+                padding:       11px 16px !important;
+                font-size:     14px !important;
+                color:         #374151 !important;
+                border-bottom: 1px solid #f7f8fa !important;
+                margin:        0 !important;
+                cursor:        pointer !important;
+                transition:    background 0.1s !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li:last-child {
+                border-bottom: none !important;
+            }
+            /* Square checkbox on the left */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li::before {
+                content:       '' !important;
+                display:       inline-block !important;
+                width:         16px !important;
+                height:        16px !important;
+                min-width:     16px !important;
+                border:        2px solid #d1d5db !important;
+                border-radius: 4px !important;
+                background:    #fff !important;
+                box-sizing:    border-box !important;
+                flex-shrink:   0 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li:hover {
+                background: #f8f9fa !important;
+            }
+            /* Selected item — filled checkbox + right blue tick badge */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected {
+                font-weight: 600 !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected::before {
+                background:   #16213e !important;
+                border-color: #16213e !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_selected::after {
+                content:         '✓' !important;
+                margin-left:     auto !important;
+                display:         inline-flex !important;
+                align-items:     center !important;
+                justify-content: center !important;
+                width:           20px !important;
+                height:          20px !important;
+                min-width:       20px !important;
+                border-radius:   50% !important;
+                background:      #dbeafe !important;
+                color:           #1d4ed8 !important;
+                font-size:       11px !important;
+                font-weight:     700 !important;
+                flex-shrink:     0 !important;
+            }
+
+            .wtbm_inputList.wbtm_input_select.wbtm_dropping_point {
+                border-right: 1px solid #e9e5e5 !important;
+            }
+
+            /* ── Search button section ───────────────────────────── */
+            #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
+                display:      flex;
+                align-items:  center;
+                padding:      6px;
+                margin-right: 20px;
+                flex-shrink: 0;
+            }
+            /* Stack both buttons inside the holder; PHP inline style="display:none/block"
+               controls which one is visible — we must NOT override display with !important
+               or both buttons would show at once. */
+            #wbtm_area .wbtm-bar-redesign .search_button_holder {
+                display:        flex;
+                flex-direction: column;
+                align-items:    stretch;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_button_spacer {
+                display: none !important;
+            }
+
+            /* ── Button holder: vertically center the button ────────── */
+            #wbtm_area .wbtm-bar-redesign .search_button_holder {
+                justify-content: center !important;
+            }
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_button_spacer {
+                display: none !important;
+            }
+
+            /* ── Search / Modify button ───────────────────────────── */
+            /* No "display" property here — PHP inline style="display:none/block" controls
+               which of the two buttons is shown. We only restyle the visible one. */
+            #wbtm_area .wbtm-bar-redesign .wbtm_search_action_button {
+                border-radius: 50px !important;
+                padding:       13px 26px !important;
+                font-size:     15px !important;
+                font-weight:   600 !important;
+                white-space:   nowrap !important;
+                height:        auto !important;
+                line-height:   1.3 !important;
+                align-items:   center !important;
+                gap:           7px !important;
+                border:        none !important;
+                cursor:        pointer;
+                text-align:    center;
+            }
+
+            /* ── Mobile: stack vertically ────────────────────────── */
+            @media (max-width: 767px) {
+                #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
+                    flex-direction: column;
+                    border-radius:  10px;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_fields_holder,
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location,
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_date {
+                    flex-direction: column;
+                }
+                #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
+                    border-right:  none;
+                    border-bottom: 1.5px solid #dde1e7;
+                }
+                #wbtm_area .wbtm-bar-redesign .wtbm_inputList:last-child {
+                    border-bottom: none;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location {
+                    position: relative;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle {
+                    position:  absolute;
+                    right:     14px;
+                    top:       50%;
+                    transform: translateY(-50%);
+                    margin:    0;
+                }
+                #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
+                    padding: 10px;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_search_action_button {
+                    width:           100% !important;
+                    justify-content: center !important;
+                }
+            }
+            </style>
+            <script>
+            jQuery(document).ready(function($) {
+                // Mark the currently-selected li when the dropdown opens
+                $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select input.formControl', function() {
+                    var currentVal = $(this).val().toLowerCase().trim();
+                    $(this).closest('.wbtm_input_select').find('.wbtm_input_select_list li').each(function() {
+                        var liVal = ($(this).attr('data-value') || '').toLowerCase().trim();
+                        $(this).toggleClass('wbtm_city_selected', liVal === currentVal && currentVal !== '');
+                    });
+                });
+                // Update selected state when an li is clicked
+                $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select_list li', function() {
+                    $(this).closest('.wbtm_input_select_list').find('li').removeClass('wbtm_city_selected');
+                    $(this).addClass('wbtm_city_selected');
+                });
+            });
+            </script>
+
+            <div class="_dLayout wbtm_search_area wbtm-bar-redesign <?php echo esc_attr($form_style_class); ?>">
 				<?php if ($buy_ticket_text) { ?>
                     <h4><?php echo esc_html($buy_ticket_text); ?></h4>
 				<?php } ?>
@@ -96,7 +464,8 @@
 
                     <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
                     <input type="hidden" name='wbtm_list_btn_show' value="<?php echo esc_attr($btn_show); ?>"/>
-                    <input type="hidden" name='wbtm_left_filter_show' value="<?php echo esc_attr($left_filter); ?>"/>
+                    <?php /* Redesigned bar always enables the left filter sidebar regardless of is_page() context */ ?>
+                    <input type="hidden" name='wbtm_left_filter_show' value="on"/>
                     <input type="hidden" name='wbtm_left_filter_type' value="<?php echo esc_attr($left_filter_type); ?>"/>
                     <input type="hidden" name='wbtm_left_filter_operator' value="<?php echo esc_attr($left_filter_operator); ?>"/>
                     <input type="hidden" name='wbtm_left_filter_boarding' value="<?php echo esc_attr($left_filter_boarding); ?>"/>
@@ -139,7 +508,7 @@
                                 <div class="wtbm_inputList wbtm_journey_date">
                                     <?php WBTM_Layout::journey_date_picker( $post_id, $start_route, $end_route, $start_time ); ?>
                                 </div>
-                                <?php if ( $return_date_show == 'enable' && $post_id == 0 ) { ?>
+                                <?php if ( $return_date_show == 'enable' && ( $post_id == 0 || WBTM_Functions::is_same_bus_return_enabled( $post_id ) ) ) { ?>
                                     <div class="wtbm_inputList wbtm_return_date">
                                         <?php WBTM_Layout::return_date_picker( $post_id, $end_route, $start_route, $start_time, $end_time ); ?>
                                     </div>
@@ -148,7 +517,7 @@
                         </div>
                         <div class="wtbm_bus_search_button_holder" style="display: flex">
                             <div class="_dFlex_fdColumn_justifyBetween_fullHeight search_button_holder">
-                                <span>&nbsp;</span>
+                                <span class="wbtm_search_button_spacer" aria-hidden="true">&nbsp;</span>
                                 <?php if ( $active_redirect_page == 'on' && $search_page_redirect ) {
                                     $redirect_btn_display = 'block';
                                     $ajax_btn_display = 'none';
@@ -156,11 +525,11 @@
                                     $redirect_btn_display = 'none';
                                     $ajax_btn_display = 'block';
                                 }?>
-                                    <button type="submit" class="_themeButton_radius wbtm_bus_submit" style="display: <?php echo esc_attr( $redirect_btn_display );?>">
+                                    <button type="submit" class="_themeButton_radius wbtm_bus_submit wbtm_search_action_button" data-loading-text="<?php echo esc_attr__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ); ?>" style="display: <?php echo esc_attr( $redirect_btn_display );?>">
                                         <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
 <!--                                --><?php //} else { ?>
-                                    <button type="button" class="_themeButton_radius get_wbtm_bus_list" style=" display: <?php echo esc_attr( $ajax_btn_display ); ?>">
+                                    <button type="button" class="_themeButton_radius get_wbtm_bus_list wbtm_search_action_button" data-loading-text="<?php echo esc_attr__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ); ?>" style=" display: <?php echo esc_attr( $ajax_btn_display ); ?>">
                                         <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
 <!--                                --><?php //} ?>

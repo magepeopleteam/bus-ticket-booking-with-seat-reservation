@@ -1,4 +1,14 @@
 /******************************************************************** Date picker ************************************************/
+/* Mobile: the datepicker below is a fixed 342px wide, which overflows
+   320-360px phone screens — clamp it to the viewport. */
+@media only screen and (max-width: 400px) {
+  #ui-datepicker-div {
+    max-width: calc(100vw - 16px);
+  }
+  #ui-datepicker-div .ui-datepicker-calendar {
+    width: 100%;
+  }
+}
 @media only screen and (min-width: 10px) {
   #ui-datepicker-div {
     width: 342px;
@@ -161,19 +171,55 @@
     width: 100% !important;
   }
 
-  .search_button_holder {
-    width: 100%;
-  }
+.search_button_holder {
+  width: 100%;
+}
 
-  .search_button_holder span {
-    display: none !important;
-  }
+.wbtm_search_action_button {
+  align-items: center;
+  justify-content: center;
+}
+
+.wbtm_search_action_button.wbtm_is_loading {
+  cursor: wait;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.search_button_holder > .wbtm_search_button_spacer {
+  display: none !important;
+}
 
   .wbtm_bus_submit,
   .get_wbtm_bus_list {
     width: 100% !important;
     justify-content: center !important;
     padding: 12px !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+
+  .wbtm_input_start_end_location,
+  .wbtm_input_start_end_date {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .wtbm_inputList {
+    width: 100% !important;
+    margin: 0 0 10px 0 !important;
+  }
+
+  .wbtm_search_location_toggle {
+    top: 50% !important;
+    left: auto !important;
+    right: 15px !important;
+    transform: translateY(-50%) rotate(90deg) !important;
+  }
+
+  .wbtm_dropping_point {
+    margin-top: 5px !important;
   }
 }
 
@@ -219,855 +265,998 @@
 /*# sourceMappingURL=wbtm.css.map */
 @media (min-width:0px) {
 
-  div[class*=wbtm_loader] {
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--wbtm_color_theme);
-  }
-
-  div[class*=wbtm_loader] span {
-    width: initial !important;
-    margin: 0 !important;
-  }
-
-  div[class*=wbtm_loader].border_spin_loader span {
-    border-top: 5px solid var(--wbtm_color_theme_alter);
-    border-right: 5px solid var(--wbtm_color_theme);
-    border-bottom: 5px solid var(--wbtm_color_theme_alter);
-    border-left: 5px solid var(--wbtm_color_theme);
-    width: 60px;
-    height: 60px;
-    -webkit-animation: spin 1000ms linear infinite;
-    animation: spin 1000ms linear infinite;
-  }
-
-  div[class*=simpleSpinner] {
-    padding: var(--wbtm_dmp);
-    color: var(--wbtm_color_theme);
-  }
-
-  .wbtm_ex_service_area h3 {
-    font-size: 14px;
-    font-weight: normal;
-  }
-
-  /*****Text Theme*********/
-  div.wbtm_style .textTheme,
-  div.wbtm_style [class*=_textTheme] {
-    color: var(--wbtm_color_theme);
-  }
-
-  div.wbtm_style .bgTheme,
-  div.wbtm_style [class*=_bgTheme] {
-    background-color: var(--wbtm_color_theme);
-    color: var(--wbtm_color_theme_alter);
-  }
-
-  div.wbtm_style [class*=_bTheme],
-  .bTheme {
-    border: 1px solid var(--wbtm_color_theme);
-  }
-
-  .pickup-point,
-  .drop-off-point {
-    margin-left: 8px;
-    border-left: 1px solid;
-    flex-direction: column;
-  }
-
-  .pickup-point .point,
-  .drop-off-point .point {
-    margin-left: -0.57em;
-    padding: 15px 0;
-  }
-
-  .pickup-point .point:first-child,
-  .drop-off-point .point:first-child {
-    padding-top: 21px;
-  }
-
-  .pickup-point .point:last-child,
-  .drop-off-point .point:last-child {
-    padding-bottom: 0;
-    line-height: 0;
-    margin-bottom: 24px;
-  }
-
-  .wbtm_selected_seat_details table thead th {
-    font-size: 16px;
-    color: #666;
-    font-weight: normal;
-  }
-
-  .wbtm_selected_seat_details table tbody tr {
-    border-bottom: 1px solid #d8d8d8;
-  }
-
-  table.wbtm_totals tbody tr h5 {
-    font-size: 16px;
-    color: #333;
-  }
-
-  div.wbtm_selected_seat_details table tbody tr td {
-    border-bottom: 1px solid #d8d8d8;
-  }
-
-  .wbtm_ex_service_area table thead th {
-    font-size: 16px;
-    color: #666;
-  }
-
-  .wbtm_ex_service_area table tbody tr:nth-child(2n+1) {
-    background: none;
-  }
-
-  .wbtm_ex_service_area table tr:nth-child(2n) {
-    background: none;
-  }
-
-  .wbtm-seat-book.hide {
-    display: none;
-  }
-
-  /* Frontend Seat Rotation Styles */
-  .wbtm_seat_rotated_90 .mp_seat .seat_visual {
-    transform: rotate(90deg);
-    transform-origin: center;
-  }
-
-  .wbtm_seat_rotated_180 .mp_seat .seat_visual {
-    transform: rotate(180deg);
-    transform-origin: center;
-  }
-
-  .wbtm_seat_rotated_270 .mp_seat .seat_visual {
-    transform: rotate(270deg);
-    transform-origin: center;
-  }
-
-  /* Ensure seat number text never rotates */
-  .wbtm_seat_rotated_90 .mp_seat .seat_number,
-  .wbtm_seat_rotated_180 .mp_seat .seat_number,
-  .wbtm_seat_rotated_270 .mp_seat .seat_number {
-    transform: none !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    rotate: none !important;
-    transform-origin: initial !important;
-  }
-
-  /* Additional protection for seat numbers */
-  .mp_seat_item .seat_number {
-    transform: none !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    rotate: none !important;
-    transform-origin: initial !important;
-    position: relative !important;
-    z-index: 999 !important;
-  }
-
-  /* Ensure rotated seats maintain proper spacing and alignment */
-  .wbtm_seat_plan_area .mp_seat_item {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 40px;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .mp_seat {
-    transition: transform 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    flex-direction: column;
-    background-color: transparent;
-    border: none;
-  }
-
-  /* Seat structure styles */
-  .seat_visual {
-    width: 100%;
-    height: 100%;
-    background-color: inherit;
-    border: inherit;
-    border-radius: inherit;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    transition: transform 0.3s ease;
-  }
-
-  /* Ensure seat_visual inherits all visual styling from parent seat */
-  .mp_seat .seat_visual {
-    background-color: inherit;
-    border: inherit;
-    border-radius: inherit;
-    cursor: inherit;
-  }
-
-  /* Specific seat state styling for seat_visual */
-  .seat_available .seat_visual {
-    background-color: var(--wbtm_color_theme_alter);
-    cursor: pointer;
-  }
-
-  .seat_selected.seat_available .seat_visual {
-    background-color: var(--wbtm_color_theme);
-  }
-
-  .seat_booked .seat_visual {
-    cursor: not-allowed;
-    background-color: var(--wbtm_color_warning);
-  }
-
-  .seat_in_cart .seat_visual {
-    cursor: not-allowed;
-    background-color: var(--wbtm_color_light_3);
-  }
-
-  /* Override existing seat styling to move visual properties to seat_visual */
-  .mp_seat.seat_available {
-    background-color: transparent !important;
-    border: none !important;
-  }
-
-  .mp_seat.seat_booked {
-    background-color: transparent !important;
-    border: none !important;
-  }
-
-  .mp_seat.seat_in_cart {
-    background-color: transparent !important;
-    border: none !important;
-  }
-
-  /* Ensure seat_visual gets the border styling */
-  .seat_visual {
-    border: 1px solid var(--wbtm_color_border) !important;
-  }
-
-  .seat_number {
-    position: relative;
-    z-index: 2;
-    font-weight: bold;
-    color: inherit;
-    text-align: center;
-    line-height: 1;
-    pointer-events: none;
-    transform: none !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-  }
-
-  /* Ensure consistent seat styling for both lower and upper deck */
-  .wbtm_seat_plan_area table th,
-  .wbtm_seat_plan_area table td {
-    min-height: 60px !important;
-    text-align: center !important;
-    height: 60px !important;
-    width: 60px !important;
-    background-color: var(--wbtm_color_theme_alter) !important;
-    padding: 5px !important;
-    min-width: 60px !important;
-  }
-
-  /* Make upper deck exactly the same as lower deck */
-  .wbtm_seat_plan_upper {
-    /* Inherit all lower deck styles */
-  }
-
-  .wbtm_seat_plan_upper table {
-    margin: 0 auto !important;
-  }
-
-  .wbtm_seat_plan_upper table tr {
-    background-color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  .wbtm_seat_plan_upper table th,
-  .wbtm_seat_plan_upper table td {
-    min-height: 60px !important;
-    text-align: center !important;
-    height: 60px !important;
-    width: 60px !important;
-    background-color: var(--wbtm_color_theme_alter) !important;
-    padding: 5px !important;
-    min-width: 60px !important;
-  }
-
-  .wbtm_seat_plan_upper table thead th {
-    height: auto !important;
-  }
-
-  /* More specific selectors to override global CSS */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_area table th,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_area table td,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
-    min-height: 60px !important;
-    text-align: center !important;
-    height: 60px !important;
-    width: 60px !important;
-    background-color: var(--wbtm_color_theme_alter) !important;
-    padding: 5px !important;
-    min-width: 60px !important;
-  }
-
-  /* Ensure seat items have consistent styling */
-  .wbtm_seat_plan_area .mp_seat_item,
-  .wbtm_seat_plan_upper .mp_seat_item {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  /* Ensure seats have consistent styling */
-  .wbtm_seat_plan_area .mp_seat,
-  .wbtm_seat_plan_upper .mp_seat {
-    border: 1px solid var(--wbtm_color_border);
-    width: 100%;
-    height: 100%;
-    border-radius: 15px 15px 0 0;
-    border-bottom: 5px solid var(--wbtm_color_light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* More specific selectors for seat styling - moved visual properties to seat_visual */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_area div.mp_seat,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
-    border: none !important;
-    background-color: transparent !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Apply visual styling to seat_visual instead */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_area div.mp_seat .seat_visual,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat .seat_visual {
-    border: 1px solid var(--wbtm_color_border) !important;
-    border-radius: 15px 15px 0 0 !important;
-    border-bottom: 5px solid var(--wbtm_color_light) !important;
-  }
-
-  /* Force upper deck to use exact same styling as lower deck */
-  .wbtm_seat_plan_upper div.mp_seat_item {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  .wbtm_seat_plan_upper div.mp_seat {
-    border: 1px solid var(--wbtm_color_border) !important;
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 15px 15px 0 0 !important;
-    border-bottom: 5px solid var(--wbtm_color_light) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Most aggressive approach - copy exact lower deck styles to upper deck */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table {
-    margin: 0 auto !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table tr {
-    background-color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
-    min-height: 60px !important;
-    text-align: center !important;
-    height: 60px !important;
-    width: 60px !important;
-    background-color: var(--wbtm_color_theme_alter) !important;
-    padding: 5px !important;
-    min-width: 60px !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table thead th {
-    height: auto !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat_item {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
-    border: none !important;
-    background-color: transparent !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Ensure seat states are consistent - moved to seat_visual */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available {
-    background-color: transparent !important;
-    cursor: pointer !important;
-    color: var(--wbtm_d_color) !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked {
-    cursor: not-allowed !important;
-    background-color: transparent !important;
-    color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart {
-    cursor: not-allowed !important;
-    background-color: transparent !important;
-    color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  /* Apply seat state styling to seat_visual */
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available .seat_visual {
-    background-color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked .seat_visual {
-    background-color: var(--wbtm_color_warning) !important;
-  }
-
-  div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
-    background-color: var(--wbtm_color_light_3) !important;
-  }
-
-  /* ULTIMATE FIX - Force upper deck to be exactly like lower deck */
-  .wbtm_seat_plan_upper * {
-    box-sizing: border-box !important;
-  }
-
-  .wbtm_seat_plan_upper table {
-    table-layout: fixed !important;
-    margin: 0 auto !important;
-  }
-
-  .wbtm_seat_plan_upper table th,
-  .wbtm_seat_plan_upper table td {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    min-height: 60px !important;
-    max-width: 60px !important;
-    max-height: 60px !important;
-    padding: 0 35px !important;
-    margin: 0 !important;
-    border: none !important;
-    background-color: var(--wbtm_color_theme_alter) !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    box-sizing: border-box !important;
-    font-size: 17px !important;
-  }
-
-  .wbtm_seat_plan_upper .mp_seat_item {
-    width: 60px !important;
-    height: 50px !important;
-    min-width: 60px !important;
-    min-height: 50px !important;
-    max-width: 60px !important;
-    max-height: 50px !important;
-    position: relative !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  .wbtm_seat_plan_upper .mp_seat {
-    width: 60px !important;
-    height: 50px !important;
-    min-width: 60px !important;
-    min-height: 50px !important;
-    max-width: 60px !important;
-    max-height: 50px !important;
-    border: 1px solid var(--wbtm_color_border) !important;
-    border-radius: 15px 15px 0 0 !important;
-    border-bottom: 5px solid var(--wbtm_color_light) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-    font-size: 16px !important;
-    line-height: 1 !important;
-  }
-
-  /* Override any other styles that might be affecting upper deck */
-  .wbtm_seat_plan_upper {
-    font-size: inherit !important;
-  }
-
-  .wbtm_seat_plan_upper * {
-    font-size: inherit !important;
-  }
-
-  /* Force the same dimensions as lower deck */
-  .wbtm_seat_plan_upper table th,
-  .wbtm_seat_plan_upper table td {
-    font-size: 12px !important;
-    line-height: 1 !important;
-  }
-
-  /* Fix seat price dropdown positioning for ALL seat plans */
-  .wbtm_seat_plan_area .mp_seat_item,
-  .wbtm_seat_plan_upper .mp_seat_item,
-  .wbtm_cabin_seat_plan .mp_seat_item {
-    position: relative !important;
-    overflow: visible !important;
-    z-index: 1 !important;
-  }
-
-  /* Increase z-index when hovering to bring tooltip above other seats */
-  .wbtm_seat_plan_area .mp_seat_item:hover,
-  .wbtm_seat_plan_upper .mp_seat_item:hover,
-  .wbtm_cabin_seat_plan .mp_seat_item:hover {
-    z-index: 9999 !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list {
-    position: absolute !important;
-    left: 0 !important;
-    top: 100% !important;
-    min-width: 150px !important;
-    width: 100% !important;
-    display: none !important;
-    z-index: 99999 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style-type: none !important;
-    background-color: var(--wbtm_color_light) !important;
-    border: 1px solid var(--wbtm_color_theme) !important;
-    border-radius: var(--wbtm_dbr) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item:hover .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper .mp_seat_item:hover .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan .mp_seat_item:hover .wbtm_seat_item_list {
-    display: block !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list::before,
-  .wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list::before {
-    position: absolute !important;
-    content: "" !important;
-    width: 20px !important;
-    height: 20px !important;
-    left: 15px !important;
-    top: -20px !important;
-    border: 10px solid transparent !important;
-    border-bottom-color: var(--wbtm_color_theme) !important;
-    z-index: 99998 !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li,
-  .wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li,
-  .wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li {
-    cursor: pointer !important;
-    padding: 5px var(--wbtm_dmp_xs) !important;
-    background-color: var(--wbtm_color_light) !important;
-    border-bottom: 1px solid #eee !important;
-    position: relative !important;
-    z-index: 99999 !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:last-child,
-  .wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:last-child,
-  .wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:last-child {
-    border-bottom: none !important;
-  }
-
-  .wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:hover,
-  .wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:hover,
-  .wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:hover {
-    background-color: var(--wbtm_color_theme) !important;
-    color: var(--wbtm_color_theme_alter) !important;
-  }
-
-  /* Fix positioning for seats on the right side */
-  .wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list,
-  .wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list {
-    right: 0 !important;
-    left: inherit !important;
-  }
-
-  .wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list::before,
-  .wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
-  .wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list::before {
-    left: inherit !important;
-    right: 15px !important;
-  }
-
-  /* Fix positioning for seats on the bottom rows */
-  .wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list,
-  .wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list,
-  .wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list,
-  .wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list {
-    top: calc(-100% - 23px) !important;
-  }
-
-  .wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
-  .wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list::before,
-  .wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
-  .wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list::before {
-    top: 100% !important;
-    border-top-color: var(--wbtm_color_theme) !important;
-    border-bottom-color: transparent !important;
-  }
-
-  /* Ensure containers don't clip the dropdown */
-  .wbtm_seat_plan_area,
-  .wbtm_seat_plan_upper,
-  .wbtm_cabin_seat_plan {
-    overflow: visible !important;
-    position: relative !important;
-  }
-
-  .wbtm_seat_plan_area .ovAuto,
-  .wbtm_seat_plan_upper .ovAuto,
-  .wbtm_cabin_seat_plan .ovAuto {
-    overflow: visible !important;
-  }
-
-  /* Cabin-specific styles for train/bus multi-cabin support */
-  .wbtm_cabin_section {
-    margin-bottom: 15px;
-    border: 2px solid var(--wbtm_color_border);
-    border-radius: 8px;
-    background-color: var(--wbtm_color_light);
-    overflow: hidden;
-  }
-
-  .wbtm_cabin_section:last-child {
-    margin-bottom: 0;
-  }
-
-  /* Ensure collapsed cabins don't take extra space */
-  .wbtm_cabin_section.collapsed {
-    margin-bottom: 10px;
-  }
-
-  .wbtm_cabin_header {
-    background-color: var(--wbtm_color_theme);
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-  }
-
-  .wbtm_cabin_toggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+div[class*=wbtm_loader] {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--wbtm_color_theme);
+}
+div[class*=wbtm_loader] span{width:initial !important;margin: 0 !important;}
+div[class*=wbtm_loader].border_spin_loader span {
+  border-top: 5px solid var(--wbtm_color_theme_alter);
+  border-right: 5px solid var(--wbtm_color_theme);
+  border-bottom: 5px solid var(--wbtm_color_theme_alter);
+  border-left: 5px solid var(--wbtm_color_theme);
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 1000ms linear infinite;
+  animation: spin 1000ms linear infinite;
+}
+
+div[class*=simpleSpinner] {
+  padding: var(--wbtm_dmp);
+  color: var(--wbtm_color_theme);
+}
+.wbtm_ex_service_area h3{
+  font-size: 14px;
+  font-weight: normal;
+}
+/*****Text Theme*********/
+div.wbtm_style .textTheme,
+div.wbtm_style [class*=_textTheme] {
+  color: var(--wbtm_color_theme);
+}
+
+div.wbtm_style .bgTheme,
+div.wbtm_style [class*=_bgTheme] {
+  background-color: var(--wbtm_color_theme);
+  color: var(--wbtm_color_theme_alter);
+}
+
+div.wbtm_style [class*=_bTheme],
+.bTheme {
+  border: 1px solid var(--wbtm_color_theme);
+}
+
+.pickup-point,
+.drop-off-point {
+  margin-left: 8px;
+  border-left: 1px solid;
+  flex-direction: column;
+}
+.pickup-point .point,
+.drop-off-point .point {
+  margin-left: -0.57em;
+  padding: 15px 0;
+}
+.pickup-point .point:first-child,
+.drop-off-point .point:first-child {
+  padding-top: 21px;
+}
+.pickup-point .point:last-child,
+.drop-off-point .point:last-child {
+  padding-bottom: 0;
+  line-height: 0;
+  margin-bottom: 24px;
+}
+
+.wbtm_selected_seat_details table thead th {
+  font-size: 16px;
+  color: #666;
+  font-weight: normal;
+}
+.wbtm_selected_seat_details table tbody tr {
+  border-bottom: 1px solid #d8d8d8;
+}
+
+table.wbtm_totals tbody tr h5 {
+  font-size: 16px;
+  color: #333;
+}
+
+div.wbtm_selected_seat_details table tbody tr td {
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.wbtm_ex_service_area table thead th {
+  font-size: 16px;
+  color: #666;
+}
+.wbtm_ex_service_area table tbody tr:nth-child(2n+1) {
+  background: none;
+}
+.wbtm_ex_service_area table tr:nth-child(2n) {
+  background: none;
+}
+
+.wbtm-seat-book.hide {
+  display: none;
+}
+
+.wbtm_bus_details_tabs_holder .wbtm-seat-book {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+  width: auto;
+}
+
+.wbtm_bus_details_tabs_holder .wbtm-seat-book > button,
+.wbtm_bus_details_tabs_holder .wbtm-full-bus-booking > button {
+  width: auto;
+  white-space: nowrap;
+}
+
+.wbtm-full-bus-booking {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 0;
+  position: relative;
+}
+
+.wbtm-full-bus-booking > .wbtm_full_bus_book_now {
+  margin: 0;
+  border-radius: 4px 0 0 4px !important;
+}
+
+.wbtm-full-bus-booking.hide {
+  display: none;
+}
+
+.wbtm-full-bus-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  height: 38px;
+  min-height: 38px;
+}
+
+.wbtm-full-bus-tooltip-toggle {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 38px;
+  min-width: 34px;
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 0 4px 4px 0;
+  background: var(--wbtm_theme_color);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 1;
+  visibility: visible;
+}
+
+.wbtm-full-bus-tooltip-toggle span {
+  display: inline-block !important;
+  color: #fff;
+  opacity: 1;
+  visibility: visible;
+}
+
+.wbtm-full-bus-tooltip-toggle::before {
+  content: "?";
+  display: inline-block;
+  color: #fff;
+}
+
+.wbtm-full-bus-tooltip-toggle span {
+  display: none !important;
+}
+
+.wbtm-full-bus-tooltip-toggle:focus {
+  outline: 1px solid rgba(255, 255, 255, 0.55);
+  outline-offset: -3px;
+}
+
+.wbtm-full-bus-tooltip-panel {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid #d9dfe7;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.wbtm-full-bus-tooltip.is-open .wbtm-full-bus-tooltip-panel {
+  display: flex;
+}
+
+.wbtm-full-bus-tooltip-panel span {
+  font-size: 12px;
+  color: var(--wbtm_d_color);
+}
+
+.wbtm-full-bus-tooltip-panel del,
+.wbtm-full-bus-tooltip-panel small {
+  font-size: 12px;
+  color: #69727d;
+}
+
+.wbtm-full-bus-tooltip-panel del {
+  text-decoration-thickness: 1px;
+}
+
+.wbtm-full-bus-tooltip-panel strong {
+  color: var(--wbtm_theme_color);
+}
+
+@media only screen and (max-width: 767px) {
+  .wbtm_bus_details_tabs_holder .wbtm-seat-book {
+    flex-wrap: wrap;
+    justify-content: flex-start;
     width: 100%;
   }
+}
 
-  .wbtm_cabin_title_container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
+/* Frontend Seat Rotation Styles */
+.wbtm_seat_rotated_90 .mp_seat .seat_visual {
+  transform: rotate(90deg);
+  transform-origin: center;
+}
 
-  .wbtm_cabin_toggle_icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-  }
+.wbtm_seat_rotated_180 .mp_seat .seat_visual {
+  transform: rotate(180deg);
+  transform-origin: center;
+}
 
-  .wbtm_toggle_arrow {
-    font-size: 16px;
-    font-weight: bold;
-    transition: transform 0.3s ease;
-    display: inline-block;
-  }
+.wbtm_seat_rotated_270 .mp_seat .seat_visual {
+  transform: rotate(270deg);
+  transform-origin: center;
+}
 
-  .wbtm_cabin_title_container .wbtm_cabin_title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-  }
+/* Ensure seat number text never rotates */
+.wbtm_seat_rotated_90 .mp_seat .seat_number,
+.wbtm_seat_rotated_180 .mp_seat .seat_number,
+.wbtm_seat_rotated_270 .mp_seat .seat_number {
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  rotate: none !important;
+  transform-origin: initial !important;
+}
 
-  .wbtm_cabin_price_info {
-    display: flex;
-    align-items: center;
-  }
+/* Additional protection for seat numbers */
+.mp_seat_item .seat_number {
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  rotate: none !important;
+  transform-origin: initial !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
 
-  .wbtm_price_multiplier {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-  }
+/* Ensure rotated seats maintain proper spacing and alignment */
+.wbtm_seat_plan_area .mp_seat_item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
 
-  .wbtm_price_discount {
-    background-color: rgba(76, 175, 80, 0.8);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-  }
+.wbtm_seat_plan_area .mp_seat_item .mp_seat {
+  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  flex-direction: column;
+  background-color: transparent;
+  border: none;
+}
 
-  .wbtm_cabin_seat_plan {
-    padding: 20px;
-    background-color: white;
-  }
+/* Seat structure styles */
+.seat_visual {
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  border: inherit;
+  border-radius: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
 
-  .wbtm_cabin_seat_plan table {
-    margin: 0 auto;
-    border-collapse: separate;
-    border-spacing: 8px;
-  }
+/* Ensure seat_visual inherits all visual styling from parent seat */
+.mp_seat .seat_visual {
+  background-color: inherit;
+  border: inherit;
+  border-radius: inherit;
+  cursor: inherit;
+}
 
-  .wbtm_cabin_seat_plan .mp_seat_item {
-    position: relative;
-  }
+/* Specific seat state styling for seat_visual */
+.seat_available .seat_visual {
+  background-color: var(--wbtm_color_theme_alter);
+  cursor: pointer;
+}
 
-  .wbtm_cabin_direction {
-    text-align: center;
-    color: var(--wbtm_color_theme);
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
+.seat_selected.seat_available .seat_visual {
+  background-color: var(--wbtm_color_theme);
+  color: #ffffff;
+}
 
-  .wbtm_cabin_separator {
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, var(--wbtm_color_border) 50%, transparent 100%);
-    margin: 20px 0;
-  }
+.seat_booked .seat_visual {
+  cursor: not-allowed;
+  background-color: var(--wbtm_color_warning);
+}
 
-  .wbtm_cabin_seat_plan .seat_available {
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+.seat_in_cart .seat_visual {
+  cursor: not-allowed;
+  background-color: var(--wbtm_color_light_3);
+}
 
-  .wbtm_cabin_seat_plan .seat_available:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
+/* Override existing seat styling to move visual properties to seat_visual */
+.mp_seat.seat_available {
+  background-color: transparent !important;
+  border: none !important;
+}
 
-  .wbtm_cabin_seat_plan .seat_booked,
-  .wbtm_cabin_seat_plan .seat_in_cart {
-    opacity: 0.7;
-  }
+.mp_seat.seat_booked {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.mp_seat.seat_in_cart {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Ensure seat_visual gets the border styling */
+.seat_visual {
+  border: 1px solid var(--wbtm_color_border) !important;
+}
+
+.seat_number {
+  position: relative;
+  z-index: 2;
+  font-weight: bold;
+  color: inherit;
+  text-align: center;
+  line-height: 1;
+  pointer-events: none;
+  transform: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Ensure consistent seat styling for both lower and upper deck */
+.wbtm_seat_plan_area table th,
+.wbtm_seat_plan_area table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+/* Make upper deck exactly the same as lower deck */
+.wbtm_seat_plan_upper {
+  /* Inherit all lower deck styles */
+}
+
+.wbtm_seat_plan_upper table {
+  margin: 0 auto !important;
+}
+
+.wbtm_seat_plan_upper table tr {
+  background-color: var(--wbtm_color_theme_alter) !important;
+}
+
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+.wbtm_seat_plan_upper table thead th {
+  height: auto !important;
+}
+
+/* More specific selectors to override global CSS */
+div.wbtm_bus_list_area div.wbtm_seat_plan_area table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_area table td,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+/* Ensure seat items have consistent styling */
+.wbtm_seat_plan_area .mp_seat_item,
+.wbtm_seat_plan_upper .mp_seat_item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure seats have consistent styling */
+.wbtm_seat_plan_area .mp_seat,
+.wbtm_seat_plan_upper .mp_seat {
+  border: 1px solid var(--wbtm_color_border);
+  width: 100%;
+  height: 100%;
+  border-radius: 15px 15px 0 0;
+  border-bottom: 5px solid var(--wbtm_color_light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* More specific selectors for seat styling - moved visual properties to seat_visual */
+div.wbtm_bus_list_area div.wbtm_seat_plan_area div.mp_seat,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
+  border: none !important;
+  background-color: transparent !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Apply visual styling to seat_visual instead */
+div.wbtm_bus_list_area div.wbtm_seat_plan_area div.mp_seat .seat_visual,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat .seat_visual {
+  border: 1px solid var(--wbtm_color_border) !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+}
+
+/* Force upper deck to use exact same styling as lower deck */
+.wbtm_seat_plan_upper div.mp_seat_item {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.wbtm_seat_plan_upper div.mp_seat {
+  border: 1px solid var(--wbtm_color_border) !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Most aggressive approach - copy exact lower deck styles to upper deck */
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table {
+  margin: 0 auto !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table tr {
+  background-color: var(--wbtm_color_theme_alter) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
+  min-height: 60px !important;
+  text-align: center !important;
+  height: 60px !important;
+  width: 60px !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  padding: 5px !important;
+  min-width: 60px !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper table thead th {
+  height: auto !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat_item {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.mp_seat {
+  border: none !important;
+  background-color: transparent !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure seat states are consistent - moved to seat_visual */
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available {
+  background-color: transparent !important;
+  cursor: pointer !important;
+  /*color: var(--wbtm_d_color) !important;*/
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked {
+  cursor: not-allowed !important;
+  background-color: transparent !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart {
+  cursor: not-allowed !important;
+  background-color: transparent !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+/* Apply seat state styling to seat_visual */
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_available .seat_visual {
+  /*background-color: var(--wbtm_color_theme_alter) !important;*/
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_booked .seat_visual {
+  background-color: var(--wbtm_color_warning) !important;
+}
+
+div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
+  background-color: var(--wbtm_color_light_3) !important;
+}
+
+/* ULTIMATE FIX - Force upper deck to be exactly like lower deck */
+.wbtm_seat_plan_upper * {
+  box-sizing: border-box !important;
+}
+
+.wbtm_seat_plan_upper table {
+  table-layout: fixed !important;
+  margin: 0 auto !important;
+}
+
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
+  padding:0 35px !important;
+  margin: 0 !important;
+  border: none !important;
+  background-color: var(--wbtm_color_theme_alter) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+  font-size: 17px !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat_item {
+  width: 60px !important;
+  height: 50px !important;
+  min-width: 60px !important;
+  min-height: 50px !important;
+  max-width: 60px !important;
+  max-height: 50px !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.wbtm_seat_plan_upper .mp_seat {
+  width: 60px !important;
+  height: 50px !important;
+  min-width: 60px !important;
+  min-height: 50px !important;
+  max-width: 60px !important;
+  max-height: 50px !important;
+  border: 1px solid var(--wbtm_color_border) !important;
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 5px solid var(--wbtm_color_light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+/* Override any other styles that might be affecting upper deck */
+.wbtm_seat_plan_upper {
+  font-size: inherit !important;
+}
+
+.wbtm_seat_plan_upper * {
+  font-size: inherit !important;
+}
+
+/* Force the same dimensions as lower deck */
+.wbtm_seat_plan_upper table th,
+.wbtm_seat_plan_upper table td {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Fix seat price dropdown positioning for ALL seat plans */
+.wbtm_seat_plan_area .mp_seat_item,
+.wbtm_seat_plan_upper .mp_seat_item,
+.wbtm_cabin_seat_plan .mp_seat_item {
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 1 !important;
+}
+
+/* Increase z-index when hovering to bring tooltip above other seats */
+.wbtm_seat_plan_area .mp_seat_item:hover,
+.wbtm_seat_plan_upper .mp_seat_item:hover,
+.wbtm_cabin_seat_plan .mp_seat_item:hover {
+  z-index: 9999 !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list {
+  position: absolute !important;
+  left: 0 !important;
+  top: 100% !important;
+  min-width: 150px !important;
+  width: 100% !important;
+  display: none !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style-type: none !important;
+  background-color: var(--wbtm_color_light) !important;
+  border: 1px solid var(--wbtm_color_theme) !important;
+  border-radius: var(--wbtm_dbr) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item:hover .wbtm_seat_item_list,
+.wbtm_seat_plan_upper .mp_seat_item:hover .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan .mp_seat_item:hover .wbtm_seat_item_list {
+  display: block !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list::before {
+  position: absolute !important;
+  content: "" !important;
+  width: 20px !important;
+  height: 20px !important;
+  left: 15px !important;
+  top: -20px !important;
+  border: 10px solid transparent !important;
+  border-bottom-color: var(--wbtm_color_theme) !important;
+  z-index: 99998 !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li {
+  cursor: pointer !important;
+  padding: 5px var(--wbtm_dmp_xs) !important;
+  background-color: var(--wbtm_color_light) !important;
+  border-bottom: 1px solid #eee !important;
+  position: relative !important;
+  z-index: 99999 !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:last-child,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:last-child,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:last-child {
+  border-bottom: none !important;
+}
+
+.wbtm_seat_plan_area .mp_seat_item .wbtm_seat_item_list li:hover,
+.wbtm_seat_plan_upper .mp_seat_item .wbtm_seat_item_list li:hover,
+.wbtm_cabin_seat_plan .mp_seat_item .wbtm_seat_item_list li:hover {
+  background-color: var(--wbtm_color_theme) !important;
+  color: var(--wbtm_color_theme_alter) !important;
+}
+
+/* Fix positioning for seats on the right side */
+.wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list {
+  right: 0 !important;
+  left: inherit !important;
+}
+
+.wbtm_seat_plan_area table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_seat_plan_area table tr th:last-child .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr th:last-child .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr th:nth-last-child(2) .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr th:last-child .wbtm_seat_item_list::before {
+  left: inherit !important;
+  right: 15px !important;
+}
+
+/* Fix positioning for seats on the bottom rows */
+.wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list,
+.wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list {
+  top: calc(-100% - 23px) !important;
+}
+
+.wbtm_seat_plan_area table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_seat_plan_area table tr:last-child th .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_seat_plan_upper table tr:last-child th .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr:nth-last-child(2) th .wbtm_seat_item_list::before,
+.wbtm_cabin_seat_plan table tr:last-child th .wbtm_seat_item_list::before {
+  top: 100% !important;
+  border-top-color: var(--wbtm_color_theme) !important;
+  border-bottom-color: transparent !important;
+}
+
+/* Ensure containers don't clip the dropdown */
+.wbtm_seat_plan_area,
+.wbtm_seat_plan_upper,
+.wbtm_cabin_seat_plan {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.wbtm_seat_plan_area .ovAuto,
+.wbtm_seat_plan_upper .ovAuto,
+.wbtm_cabin_seat_plan .ovAuto {
+  overflow: visible !important;
+}
+
+/* Cabin-specific styles for train/bus multi-cabin support */
+.wbtm_cabin_section {
+  margin-bottom: 20px;
+  border: 1px solid var(--wbtm_color_border);
+  border-radius: 12px;
+  background-color: var(--wbtm_color_light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04), 0 6px 18px rgba(0, 0, 0, .05);
+  overflow: hidden;
+}
+
+.wbtm_cabin_section:last-child {
+  margin-bottom: 0;
+}
+
+/* Ensure collapsed cabins don't take extra space */
+.wbtm_cabin_section.collapsed {
+  margin-bottom: 10px;
+}
+
+.wbtm_cabin_header {
+  background-color: var(--wbtm_color_theme);
+  color: white;
+  padding: 16px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: filter .15s ease;
+}
+.wbtm_cabin_header:hover {
+  filter: brightness(1.06);
+}
+
+.wbtm_cabin_toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.wbtm_cabin_title_container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.wbtm_cabin_toggle_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  flex-shrink: 0;
+}
+
+.wbtm_toggle_arrow {
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.wbtm_cabin_title_container .wbtm_cabin_title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.wbtm_cabin_price_info {
+  display: flex;
+  align-items: center;
+}
+
+.wbtm_price_multiplier {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wbtm_price_discount {
+  background-color: rgba(76, 175, 80, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wbtm_cabin_seat_plan {
+  padding: 24px 20px;
+  background-color: white;
+}
+
+.wbtm_cabin_seat_plan table {
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 8px;
+}
+
+.wbtm_cabin_seat_plan .mp_seat_item {
+  position: relative;
+}
+
+.wbtm_cabin_direction {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 16px;
+}
+
+.wbtm_cabin_seat_plan .seat_available {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wbtm_cabin_seat_plan .seat_available:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wbtm_cabin_seat_plan .seat_booked,
+.wbtm_cabin_seat_plan .seat_in_cart {
+  opacity: 0.7;
+}
 
 
-  .wbtm_search_input_fields_holder {
-    display: flex;
-    width: 100%;
-    gap: 5px;
-  }
+.wbtm_search_input_fields_holder{
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: flex-end;
+}
 
-  .wbtm_input_start_end_location {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+.wbtm_input_start_end_location{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.wbtm_start_point,
+.wbtm_dropping_point{
+  width: 50%;
+}
+.wbtm_search_location_toggle{
+  position: absolute ;
+  margin: 9px -4px;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 2;
+  padding: 5px 7px;
+  width:30px;
+  height: 30px;
+  background-color: #ddd;
+  border-radius: 50%;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(50, 50, 50, 0.3);
+}
 
-  .wbtm_start_point,
-  .wbtm_dropping_point {
-    width: 50%;
-  }
+.wbtm_search_location_toggle:hover{
+  background: var(--wbtm_color_theme);
+  border: 1px solid rgba(50, 50, 50, 0.3);
+}
+.wbtm_search_location_toggle:hover i{
+  color: #fff;
+}
 
-  .wbtm_search_location_toggle {
-    position: absolute;
-    margin: 9px -4px;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    padding: 5px 7px;
-    width: 30px;
-    height: 30px;
-    background-color: #ddd;
-    border-radius: 50%;
-    border: 1px solid #bbb;
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(50, 50, 50, 0.3);
-  }
+.wbtm_search_location_toggle i{
+  font-size: 15px;
+  line-height: 0;
+  transition: transform 0.35s ease;
+  color: var(--wbtm_color_theme);
+}
 
-  .wbtm_search_location_toggle:hover {
-    background: var(--wbtm_color_theme);
-    border: 1px solid rgba(50, 50, 50, 0.3);
-  }
+.wbtm_search_location_toggle.rotate i{
+  transform: rotate(180deg);
+}
+.swap-animation{
+  transition: all .3s ease-in-out;
+  transform: translateY(6px);
+  opacity: 0.6;
+}
 
-  .wbtm_search_location_toggle:hover i {
-    color: #fff;
-  }
+.wbtm_input_fields_holder{
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.wbtm_search_action_button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.wbtm_search_action_button.wbtm_is_loading{
+  cursor: wait;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.wbtm_search_action_button .wbtm_search_button_text{
+  display: inline-block;
+  white-space: nowrap;
+}
 
-  .wbtm_search_location_toggle i {
-    font-size: 15px;
-    line-height: 0;
-    transition: transform 0.35s ease;
-    color: var(--wbtm_color_theme);
-  }
-
-  .wbtm_search_location_toggle.rotate i {
-    transform: rotate(180deg);
-  }
-
-  .swap-animation {
-    transition: all .3s ease-in-out;
-    transform: translateY(6px);
-    opacity: 0.6;
-  }
-
-  .wbtm_input_fields_holder {
-    display: flex;
-    width: calc(100% - 140px);
-    gap:5px;
-  }
-
-  .wtbm_bus_search_button_holder {
-    display: flex;
-    justify-content: center;
-  }
-
-  .wbtm_input_start_end_location,
-  .wbtm_input_start_end_date {
-    display: flex;
-    width: 50%;
-    position: relative;
-  }
-
+.wtbm_bus_search_button_holder{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+}
+.wbtm_input_start_end_location,
+.wbtm_input_start_end_date{
+  display: flex;
+  width: 50%;
+  position: relative;
+}
   .wbtm-bus-flix-style {
     display: flex;
     flex-direction: column;
@@ -1294,7 +1483,7 @@
   }
 
   .wbtm_search_result .wbtm-bus-list:hover {
-    transform: translateY(-3px);
+    transform: none;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 
@@ -1436,6 +1625,7 @@
     padding: 20px;
     border: 1px solid #d0d0d0;
     margin-bottom: 20px;
+    border-radius: 20px;
   }
 
 
@@ -1580,4 +1770,1335 @@
     border-top: 0;
     width: 25%;
   }
+}
+
+/* ===== Non-Seat Items (Frontend) ===== */
+.wbtm_non_seat_item {
+  text-align: center;
+  vertical-align: middle;
+  cursor: default !important;
+  user-select: none;
+  pointer-events: none;
+  padding: 6px 4px;
+  min-width: 50px;
+}
+
+.wbtm_non_seat_item .wbtm_non_seat_icon {
+  display: block;
+  font-size: 18px;
+  color: #6c757d;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+
+.wbtm_non_seat_item .wbtm_non_seat_label {
+  display: block;
+  font-size: 10px;
+  color: #868e96;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wbtm_seat_plan_area table td.wbtm_non_seat_item,
+.wbtm_seat_plan_upper table td.wbtm_non_seat_item,
+.wbtm_cabin_seat_plan table td.wbtm_non_seat_item {
+  background-color: #f1f3f5 !important;
+  border: 1px dashed #ced4da !important;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+
+/* Aisle is rendered as an empty <td> (no icon/label markup at all) — just
+   blank space, no border/background, unlike every other non-seat item above. */
+.wbtm_seat_plan_area table td.wbtm_aisle_blank,
+.wbtm_seat_plan_upper table td.wbtm_aisle_blank,
+.wbtm_cabin_seat_plan table td.wbtm_aisle_blank {
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .wbtm_non_seat_item .wbtm_non_seat_icon {
+    font-size: 14px;
+  }
+  .wbtm_non_seat_item .wbtm_non_seat_label {
+    font-size: 8px;
+  }
+}
+
+/* ============================================================
+   COMPREHENSIVE MOBILE RESPONSIVE FIXES
+   ============================================================ */
+
+/* ---- Search form layout ---- */
+._dFlex_fdColumn_justifyBetween_fullHeight {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+}
+/* Hide the blank spacer above the search button — alignment handled by flex-end */
+._dFlex_fdColumn_justifyBetween_fullHeight > span:first-child {
+  display: none !important;
+}
+
+@media only screen and (max-width: 960px) {
+  /* Stack search form fields vertically */
+  .wbtm_search_input_fields_holder {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .wbtm_input_fields_holder {
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .wbtm_input_start_end_location,
+  .wbtm_input_start_end_date {
+    width: 100% !important;
+    flex-direction: row;
+  }
+  .wtbm_bus_search_button_holder {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+  }
+  ._dFlex_fdColumn_justifyBetween_fullHeight {
+    width: 100% !important;
+  }
+  .wbtm_bus_submit,
+  .get_wbtm_bus_list {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  /* Stack From/To on very small screens */
+  .wbtm_input_start_end_location,
+  .wbtm_input_start_end_date {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .wtbm_inputList {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  /* Swap icon repositioned */
+  .wbtm_search_location_toggle {
+    position: static !important;
+    transform: rotate(90deg) !important;
+    margin: 4px auto !important;
+    left: auto !important;
+    top: auto !important;
+  }
+  /* Search form padding */
+  ._dLayout.wbtm_search_area {
+    padding: 12px !important;
+  }
+  .wbtm_style {
+    padding: 8px !important;
+  }
+}
+
+/* ---- Seat plan: scrollable on mobile ---- */
+.wbtm_seat_plan_holder,
+.wbtm_seat_plan_area,
+.wbtm_seat_plan_upper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media only screen and (max-width: 600px) {
+  /* Smaller seat cells on phones */
+  .wbtm_seat_plan_area table th,
+  .wbtm_seat_plan_area table td,
+  div.wbtm_bus_list_area div.wbtm_seat_plan_area table th,
+  div.wbtm_bus_list_area div.wbtm_seat_plan_area table td,
+  .wbtm_seat_plan_upper table th,
+  .wbtm_seat_plan_upper table td,
+  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
+  div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td,
+  .wbtm_cabin_seat_plan table th,
+  .wbtm_cabin_seat_plan table td {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 3px !important;
+  }
+  .seat_number {
+    font-size: 10px !important;
+  }
+}
+
+/* ---- Date suggestion bar: horizontal scroll ---- */
+.wbtm-date-suggetion {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  gap: 6px;
+  padding-bottom: 4px;
+}
+.wbtm-date-suggetion .wbtm_next_date {
+  flex-shrink: 0 !important;
+  white-space: nowrap;
+}
+
+/* ---- Search results: bus list cards ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm_search_result .wbtm-bus-list {
+    flex-direction: column !important;
+  }
+  .wbtm_search_result .wbtm-bus-list .wbtm-bus-image {
+    width: 100% !important;
+    height: 180px !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+  .wbtm_bus_info_details_holder {
+    width: 100% !important;
+  }
+  /* Route info container stacks */
+  .wbtm_search_route_container {
+    flex-direction: column !important;
+  }
+  .wbtm_search_route_cities_wrapper {
+    width: 100% !important;
+    flex-wrap: wrap;
+  }
+  .wbtm_search_route_icon_wrapper {
+    display: none !important;
+  }
+  .wbtm_search_route_city_section,
+  .wbtm_search_route_city_section_right {
+    width: 48% !important;
+    padding: 6px !important;
+  }
+  /* Bus info row stacks vertically */
+  .wbtm_bus_info_holder {
+    flex-direction: column !important;
+    gap: 8px;
+  }
+  /* Force all bus card children full width when stacked */
+  .wbtm_search_result .wbtm-bus-list .wbtm-bus-name,
+  .wbtm_search_result .wbtm-bus-route,
+  .wbtm_search_result .wbtm-bus-list .wbtm-seat-info {
+    width: 100% !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+  }
+  /* Show seat-info divs side by side (price + seats) */
+  .wbtm_bus_info_holder .wbtm-seat-info {
+    width: 50% !important;
+    display: inline-flex !important;
+    vertical-align: top;
+  }
+  /* Route display in flix-style */
+  .wbtm-bus-flix-style {
+    flex-direction: column !important;
+  }
+  .wbtm-bus-flix-style .title,
+  .wbtm-bus-flix-style .route,
+  .wbtm-bus-flix-style .feature,
+  .wbtm-bus-flix-style .price {
+    width: 100% !important;
+  }
+  /* Date-route header wraps */
+  .wbtm_search_result .wbtm-date-route,
+  .wbtm-date-return-route {
+    flex-direction: column !important;
+    gap: 8px;
+    align-items: flex-start !important;
+  }
+  /* Tabs scroll horizontally */
+  .wbtm_bus_detail_popup_tabs {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wbtm_bus_detail_popup_tab {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* ---- Popup / modal on mobile ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm-bus-popup-inner {
+    width: 95% !important;
+    margin: 3% auto !important;
+    padding: 14px !important;
+    border-radius: 8px !important;
+  }
+  .wbtm-popup-content {
+    max-width: 100% !important;
+  }
+}
+
+/* ---- Registration / passenger form ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm_registration_area,
+  .wbtm_selected_seat_details {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wbtm_selected_seat_details table {
+    min-width: 320px;
+  }
+  /* Totals table */
+  table.wbtm_totals {
+    width: 100% !important;
+  }
+  /* Passenger form fields full width */
+  .wbtm_passenger_form_area .col_6,
+  .wbtm_passenger_form_area .col_4,
+  .wbtm_passenger_form_area .col_3 {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+/* ---- Left filter panel ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm_bus_left_filter_holder {
+    width: 100% !important;
+    margin-bottom: 12px;
+  }
+  .wbtm_bus_list_area {
+    flex-direction: column !important;
+  }
+  .wbtm_bus_list_holder {
+    width: 100% !important;
+  }
+}
+
+/* ---- Bus details tabs ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm_bus_details_tabs_holder {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 5px;
+  }
+  .wbtm_bus_details_tabs_holder > * {
+    flex-shrink: 0;
+  }
+}
+
+/* ---- Single bus feature image ---- */
+@media only screen and (max-width: 600px) {
+  .wbtm_car_details_feature_image {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .wbtm_car_details_gallery img {
+    width: 70px !important;
+    height: 56px !important;
+  }
+}
+
+/* ---- General overflow guard ---- */
+@media only screen and (max-width: 768px) {
+  .wbtm_style {
+    overflow-x: hidden;
+  }
+  #wbtm_area {
+    overflow-x: hidden;
+  }
+}
+
+/* Editable Return Route (Pro): style the return From/To selectors to match the
+   plugin's main search inputs (boxed input with an inline marker icon), and show
+   the locked "From" (fixed to the outbound destination) as read-only. */
+.wbtm_return_route_selectors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+  margin: 12px 0 10px;
+  padding: 12px 14px;
+  background-color: var(--wbtm_color_white, #ffffff);
+  border: 1px solid var(--wbtm_color_border, #e5e7eb);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+.wbtm_return_route_selectors .wtbm_inputList {
+  position: relative;
+  flex: 1 1 calc(50% - 10px);
+  min-width: 180px;
+  margin: 0;
+}
+.wbtm_return_route_selectors .wtbm_fdColumn {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+  font-size: var(--wbtm_fs_label, 14px);
+  color: #555;
+}
+.wbtm_return_route_selectors .marker {
+  position: relative;
+}
+.wbtm_return_route_selectors .marker > i.fa-map-marker-alt {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+}
+.wbtm_return_route_selectors input.formControl {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px 0 32px;
+  font-size: 16px;
+  color: #333;
+  background-color: var(--wbtm_color_white, #ffffff);
+  border: 1px solid #7d7979;
+  border-radius: 6px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wbtm_return_route_selectors input.formControl:focus {
+  border-color: var(--wbtm_color_theme, #2271b1);
+  box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.12);
+}
+/* Locked "From" — read-only, with a lock icon on the right. */
+.wbtm_return_route_selectors .wbtm_return_from_fixed input.formControl {
+  padding-right: 30px;
+  cursor: not-allowed;
+  background-color: #f4f5f7;
+  color: #555;
+  pointer-events: none;
+}
+.wbtm_return_route_selectors .wbtm_return_from_fixed .wbtm_return_from_lock {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #9aa0a6;
+  pointer-events: none;
+}
+/* Reuse the main search dropdown look for the editable "To" list. */
+.wbtm_return_route_selectors ul.wbtm_input_select_list {
+  width: 100%;
+}
+@media only screen and (max-width: 767px) {
+  .wbtm_return_route_selectors .wtbm_inputList {
+    flex: 1 1 100%;
+  }
+}
+
+/* Available / Selected / Booked legend, shown below .wbtm_seat_plan_area. */
+.wbtm_seat_legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 4px 10px 20px;
+  padding-top: 18px;
+  border-top: 1px solid #eef1f5;
+}
+.wbtm_seat_legend_item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  line-height: 1;
+  color: #64748b;
+  white-space: nowrap;
+}
+.wbtm_seat_legend_swatch {
+  width: 13px;
+  height: 13px;
+  min-width: 13px;
+  border-radius: 3px;
+  display: inline-block;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  font-style: normal;
+  vertical-align: middle;
+}
+.wbtm_seat_legend_swatch.is_available {
+  /* A near-white fill with a visible border reads as ill-defined/misaligned
+     against the page's own white background — tinted very slightly so it
+     shows up as a clear, consistently-sized square like the other two. */
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+}
+.wbtm_seat_legend_swatch.is_selected {
+  background: #ef4444;
+  border: 1.5px solid #ef4444;
+}
+.wbtm_seat_legend_swatch.is_booked {
+  background: #cbd5e1;
+  border: 1.5px solid #cbd5e1;
+}
+
+/* ==================================================================== *
+ *  Booking summary column redesign — selected seats, totals, pickup /
+ *  drop-off, extra services, passenger info and the Book Now footer
+ *  (the right-hand column of the seat-booking form). Each section is
+ *  scoped to its own existing wrapper class. Shared component classes also
+ *  reused elsewhere in the plugin (.mpPanel_xs, .mpPanelHeader,
+ *  .mpPanelBody, .qtyIncDec, .groupContent, .mp_form_item) are always
+ *  qualified with a wrapper from this column (e.g. ".wbtm_attendee_area
+ *  .mpPanel_xs") so nothing here leaks into admin settings pages or other
+ *  frontend areas that reuse those same classes. !important is used only
+ *  on the box-model properties (background/border/padding/margin/radius)
+ *  that the classic [class*="_dLayout"]/[class*="_bgLight"] utility
+ *  classes already set on these same elements. *
+ * ==================================================================== */
+
+/* ---- Selected-seats table / totals table — hidden, not removed ----
+   Both are now redundant on-screen (the "Booking Summary" preview card
+   shows the same seat list + subtotal), but .wbtm_selected_seat_details
+   .wbtm_item_insert and .wbtm_sub_total are the live elements
+   wbtm_selected_seat_details()/wbtm_price_calculation() in wbtm_global.js
+   read from and write to on every seat click — and the exact source
+   wbtm_update_summary_preview() mirrors into the preview card. Removing
+   this markup from the template would break seat tracking and price
+   calculation everywhere, not just this duplicate display, so it's hidden
+   with CSS instead; the DOM keeps working exactly as before. */
+.wbtm_selected_seat_details,
+table.wbtm_totals {
+  display: none !important;
+}
+
+/* ---- Bottom Total/Book Now footer — hidden, not removed ----
+   Same reasoning as above: the "Booking Summary" preview card now shows the
+   total and its own Book Now button, but #wbtm_add_to_cart here is the real
+   button that button re-triggers via .trigger('click') (see the click
+   handler for .wbtm_summary_preview_book_now in wbtm_global.js), and
+   .wbtm_total is what wbtm_price_calculation() writes the grand total (incl.
+   extra services) and data-raw-total into. jQuery's .trigger('click') still
+   fires a hidden element's click handler, so hiding this with CSS rather
+   than removing it from the template keeps the preview's button working. */
+/* Hidden until a ticket quantity / seat is chosen. No !important here on
+   purpose: wbtm_price_calculation() (wbtm_global.js) reveals this footer via
+   jQuery .slideDown(), which sets an inline display that must be able to win
+   over this rule. The without-seat-plan flow has no Booking Summary preview
+   card, so this footer is its ONLY Book Now button and must stay revealable. */
+.wbtm_form_submit_area {
+  display: none;
+}
+
+/* Seat-plan flow renders a Booking Summary preview card whose own Book Now
+   button re-triggers the hidden #wbtm_add_to_cart, so the real submit footer
+   is kept permanently hidden there to avoid a duplicate button. !important
+   scoped to that flow blocks the shared slideDown() from revealing it — the
+   without-seat-plan flow (no preview card) is unaffected. */
+.wbtm_registration_area:has(.wbtm_booking_summary_preview) .wbtm_form_submit_area {
+  display: none !important;
+}
+
+/* ---- Shared card shell for every section in this column ----
+   .wbtm_pickup_point deliberately NOT included here — Pickup Point and
+   Drop-Off Point are merged into one shared card (.wbtm_location_points_card
+   below) instead of getting one each. */
+.wbtm_selected_seat_details,
+table.wbtm_totals,
+.wbtm_ex_service_area,
+.wbtm_attendee_area .wbtm_attendee_item,
+.wbtm_form_submit_area {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+  padding: 18px !important;
+  margin: 0 0 16px !important;
+  box-sizing: border-box;
+}
+.wbtm_attendee_area .wbtm_attendee_item + .wbtm_attendee_item {
+  margin-top: 16px !important;
+}
+
+/* ---- Selected seat(s) — table reshaped into a compact line-item list ---- */
+.wbtm_selected_seat_details table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.wbtm_selected_seat_details table,
+.wbtm_selected_seat_details tbody.wbtm_item_insert {
+  display: block;
+  width: 100%;
+}
+.wbtm_selected_seat_details tbody.wbtm_item_insert {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #eef1f5 !important;
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+.wbtm_selected_seat_details td.insert_seat_label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--wbtm_color_theme);
+  background: var(--wbtm_color_theme_alter, #fff1f4);
+  border-radius: 999px;
+  padding: 4px 10px;
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details td.insert_seat_name {
+  font-weight: 700;
+  color: #1f2937;
+  flex: 1 1 auto;
+}
+.wbtm_selected_seat_details td.insert_seat_price {
+  font-weight: 700;
+  color: #1f2937;
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details tr.wbtm_remove_area .allCenter,
+.wbtm_selected_seat_details tr.wbtm_remove_area .wbtm_item_remove {
+  flex: 0 0 auto;
+}
+.wbtm_selected_seat_details .wbtm_item_remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #eef1f5;
+  color: #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.wbtm_selected_seat_details .wbtm_item_remove:hover {
+  background: #fef2f2;
+}
+
+/* ---- Totals table — a clean flex row instead of a bordered grid ---- */
+table.wbtm_totals tbody,
+table.wbtm_totals tr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+table.wbtm_totals td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+table.wbtm_totals h5 {
+  margin: 0;
+  font-size: 15px !important;
+  color: #64748b !important;
+  font-weight: 600;
+}
+table.wbtm_totals .wbtm_sub_total {
+  color: #1f2937 !important;
+  font-weight: 700;
+}
+
+/* ---- Pickup / Drop-off point — merged into ONE shared card ----
+   Pickup Point and Drop-Off Point are two separate templates
+   (templates/layout/pickup_point.php, drop_off_point.php), each rendering
+   its own <div class="wbtm_pickup_point _bgLight ...">, and each only
+   conditionally (a bus may have only one of the two enabled). Rather than
+   editing both templates, they're wrapped in one new
+   .wbtm_location_points_card container (see registration_seat_plan.php)
+   which gets the card shell instead of each .wbtm_pickup_point getting its
+   own; the individual sections are stripped back to flush, borderless
+   blocks with a divider between them when both are present. */
+.wbtm_location_points_card {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+  padding: 18px !important;
+  margin: 0 0 16px !important;
+  box-sizing: border-box;
+}
+.wbtm_location_points_card .wbtm_pickup_point {
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.wbtm_location_points_card .wbtm_pickup_point + .wbtm_pickup_point {
+  margin-top: 16px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #eef1f5 !important;
+}
+.wbtm_pickup_point label.justifyBetween {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 6px;
+}
+.wbtm_pickup_point label span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.wbtm_pickup_point select.formControl {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  font-size: 13.5px !important;
+  background-color: #f8fafc !important;
+}
+.wbtm_pickup_point select.formControl:focus {
+  border-color: var(--wbtm_color_theme) !important;
+  background-color: #fff !important;
+}
+
+/* ---- Extra services — line items with a pill quantity stepper ----
+   Styled to match the passenger-information card: the shared 18px card
+   padding is zeroed out so the tinted header band (the h3) can bleed
+   edge-to-edge, with the padding moved onto the .mpPanel body instead. */
+.wbtm_ex_service_area {
+  padding: 0 !important;
+  border: 1px solid #e7eaf0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 28px -20px rgba(2, 6, 23, .28);
+  overflow: hidden;
+}
+/* Thin brand accent bar along the top edge of the card. */
+.wbtm_ex_service_area::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wbtm_color_theme, #2563eb), var(--wbtm_color_theme_alter, #93c5fd));
+}
+.wbtm_ex_service_area h3 {
+  text-transform: uppercase;
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: .01em;
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e7eaf0 !important;
+  padding: 14px 18px !important;
+}
+.wbtm_ex_service_area .mpPanel {
+  border: 0;
+  background: #fff;
+  padding: 18px;
+}
+.wbtm_style .wbtm_ex_service_area .mT {
+  margin-top: 0px;
+}
+.wbtm_ex_service_area table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.wbtm_ex_service_area table,
+.wbtm_ex_service_area tbody {
+  display: block;
+  width: 100%;
+}
+.wbtm_ex_service_area tbody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wbtm_ex_service_area tbody tr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 14px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
+  transition: border-color .15s ease;
+}
+.wbtm_ex_service_area tbody tr:hover {
+  border-color: #cbd5e1;
+}
+.wbtm_ex_service_area tbody td {
+  border: 0 !important;
+  padding: 0 !important;
+}
+.wbtm_ex_service_area td._textLeft {
+  flex: 1 1 auto;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 14px;
+  text-align: left !important;
+}
+.wbtm_ex_service_area td._textCenter {
+  flex: 0 0 auto;
+  text-align: center !important;
+}
+/* Swap visual order so Price sits to the left of the Quantity stepper — the
+   markup order (Name, Quantity, Price) is unchanged, this just reorders how
+   the row paints. Uses nth-child (fixed structural position), not :has(),
+   so it isn't at risk of the DOM-mutation reflow issue fixed for the
+   Passenger Information fields (the quantity stepper's +/- buttons only
+   change the input's value, they don't add/remove/re-tag DOM nodes). */
+.wbtm_ex_service_area tbody td:nth-child(2) { order: 3; }
+.wbtm_ex_service_area tbody td:nth-child(3) { order: 2; }
+/* Unit price rendered as a small white pill badge, like the seat badge on
+   the passenger card header. */
+.wbtm_ex_service_area td._textCenter .woocommerce-Price-amount {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--wbtm_color_theme);
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+}
+.wbtm_ex_service_area .qtyIncDec {
+  background: #fff;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+}
+.wbtm_ex_service_area .qtyIncDec .addonGroupContent {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  border: 0 !important;
+  transition: background-color .15s ease, color .15s ease;
+}
+.wbtm_ex_service_area .qtyIncDec .addonGroupContent:hover {
+  background: var(--wbtm_color_theme, #2563eb);
+  color: #fff;
+}
+.wbtm_ex_service_area .qtyIncDec input.formControl {
+  width: 40px !important;
+  height: 28px;
+  border: 0 !important;
+  text-align: center;
+  font-weight: 700;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* ---- Passenger information ---- */
+/* The shared card shell above pads every summary-column card 18px on all
+   sides; the passenger card zeroes that out so its tinted header can bleed
+   edge-to-edge, with the padding moved onto .mpPanelBody instead. */
+.wbtm_attendee_area .wbtm_attendee_item {
+  padding: 0 !important;
+  border: 1px solid #e7eaf0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 28px -20px rgba(2, 6, 23, .28);
+  overflow: hidden;
+}
+/* Thin brand accent bar along the top edge of the card. */
+.wbtm_attendee_area .wbtm_attendee_item::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wbtm_color_theme, #2563eb), var(--wbtm_color_theme_alter, #93c5fd));
+}
+.wbtm_attendee_area .mpPanelHeader {
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e7eaf0 !important;
+  padding: 14px 18px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
+}
+.wbtm_attendee_header_text {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.wbtm_attendee_area .mpPanelHeader h5 {
+  margin: 0;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+/* Seat assignment rendered as a small white pill badge under the title. */
+.wbtm_attendee_seat_label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+.wbtm_attendee_area .mpPanelHeader .wbtm_seat_name {
+  font-weight: 800;
+  color: var(--wbtm_color_theme);
+}
+/* Round person+pencil avatar, right side of the header — purely decorative. */
+.wbtm_attendee_header_icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Cpath d='M4 20c0-3.3 2.5-5.5 5.5-5.5'/%3E%3Cpath d='M15.5 20.5l4-4a1.4 1.4 0 0 0-2-2l-4 4-.6 2.6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px;
+}
+.wbtm_attendee_area .mpPanelBody {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px;
+  /* Card shell padding was zeroed so the header could bleed edge-to-edge;
+     the body carries it instead. */
+  padding: 18px !important;
+  background: #fff !important;
+}
+.wbtm_attendee_area .mp_form_item {
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Grid items default to min-width:auto, which refuses to shrink below
+     the item's own content size (e.g. the uppercase "PASSENGER ADDRESS"
+     label) — that alone can make the two 1fr tracks render at visibly
+     different widths even though they're an equal fr share. min-width:0
+     lets both columns actually end up equal, and width:100% stops this
+     flex column from shrink-wrapping instead of filling its grid track. */
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.wbtm_attendee_area .mp_form_item span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.wbtm_attendee_area .mp_form_item .textRequired {
+  color: #ef4444;
+  font-weight: 700;
+}
+.wbtm_attendee_area .mp_form_item .formControl {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 11px 14px !important;
+  font-size: 14px !important;
+  color: #0f172a !important;
+  background-color: #f8fafc !important;
+  background-repeat: no-repeat !important;
+  background-position: 12px center !important;
+  background-size: 16px !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+.wbtm_attendee_area .mp_form_item .formControl::placeholder {
+  color: #94a3b8;
+}
+.wbtm_attendee_area .mp_form_item .formControl:hover {
+  border-color: #cbd5e1 !important;
+}
+/* The blanket padding:10px 12px !important above clobbers the legacy
+   calendar icon's own padding-left:40px (div.wbtm_style .formControl.date_type
+   in wbtm_plugin_global.css, not !important, so it lost) — collapsing the
+   left padding back to 12px let the icon overlap the "D" in "Date of Birth".
+   Restored here, scoped to this form only. */
+.wbtm_attendee_area .mp_form_item .formControl.date_type {
+  padding-left: 40px !important;
+}
+.wbtm_attendee_area .mp_form_item .formControl:focus {
+  border-color: var(--wbtm_color_theme) !important;
+  background-color: #fff !important;
+  outline: 0 !important;
+  /* Soft focus ring in the theme color (falls back to blue). */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wbtm_color_theme, #2563eb) 15%, transparent);
+}
+.wbtm_attendee_area .mp_form_item:has(textarea) {
+  grid-column: 1 / -1;
+}
+/* Field order (Name, Email, Phone, DOB, Gender, Address) is now handled by
+   physically moving the DOM nodes once in JS — see wbtm_reorder_attendee_fields()
+   in wbtm_global.js. A CSS `order` + :has() version of this lived here
+   before, but interacting with the Date of Birth datepicker mutated the DOM
+   enough to re-trigger :has() and visibly reshuffle the grid (Passenger Name
+   and Date of Birth would swap on screen). Real DOM order isn't affected by
+   that.
+   Icon prefixes — matched by field name so no PHP template changes were
+   needed; each icon is a small inline SVG (not an icon font) so it renders
+   the same regardless of whether Font Awesome/Dashicons load on this page.
+   Selectors include .mp_form_item (not just .wbtm_attendee_area + the field)
+   so their specificity (0,3,1) beats .wbtm_attendee_area .mp_form_item
+   .formControl's padding:10px 12px !important (0,3,0) above — both are
+   !important, so without that extra class here padding-left silently lost
+   and the icon ended up drawn on top of the placeholder text. */
+.wbtm_attendee_area .mp_form_item input[name="wbtm_full_name[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
+}
+.wbtm_attendee_area .mp_form_item input[name="wbtm_reg_email[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M3 7l9 6 9-6'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
+}
+.wbtm_attendee_area .mp_form_item input[name="wbtm_reg_phone[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.6 3.5h2.7l1.5 4-2 1.4a10.8 10.8 0 0 0 5.3 5.3l1.4-2 4 1.5v2.7a1.8 1.8 0 0 1-2 1.8C11 17.4 6.6 13 5.8 6.5a1.8 1.8 0 0 1 1.8-2z'/%3E%3C/svg%3E") !important;
+  background-position: 12px center !important;
+}
+.wbtm_attendee_area .mp_form_item select[name="wbtm_user_gender[]"] {
+  padding-left: 36px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='7' r='2.6'/%3E%3Ccircle cx='16' cy='9.5' r='2.2'/%3E%3Cpath d='M4 20c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.6 20c.3-2 1.8-3.5 3.6-3.8'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-position: 12px center, right 12px center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-size: 16px, 14px !important;
+  padding-right: 34px !important;
+}
+.wbtm_attendee_area .mp_form_item textarea[name="wbtm_reg_address[]"] {
+  padding-left: 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.3'/%3E%3C/svg%3E") !important;
+  background-position: 12px 12px !important;
+  background-repeat: no-repeat !important;
+}
+/* Date of birth already gets a calendar icon from the classic
+   div.wbtm_style .formControl.date_type rule (wbtm_plugin_global.css) —
+   left as-is rather than duplicated here. */
+@media only screen and (max-width: 600px) {
+  .wbtm_attendee_area .mpPanelBody {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Footer: total + Book Now ---- */
+.wbtm_form_submit_area {
+  position: sticky;
+  bottom: 12px;
+}
+.wbtm_form_submit_area .justifyBetween {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.wbtm_form_submit_area h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+.wbtm_form_submit_area .wbtm_total {
+  display: block;
+  margin-top: 2px;
+  font-size: 22px;
+  font-weight: 800;
+}
+#wbtm_add_to_cart {
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 32px !important;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background: var(--wbtm_color_theme);
+  color: var(--wbtm_color_theme_alter);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transition: filter .15s, transform .15s;
+  cursor: pointer;
+}
+#wbtm_add_to_cart:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+@media only screen and (max-width: 600px) {
+  .wbtm_form_submit_area .justifyBetween {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #wbtm_add_to_cart {
+    width: 100%;
+  }
+}
+
+/* ==================================================================== *
+ *  Booking Summary preview card (templates/layout/booking_summary_preview.php)
+ *  A second, read-only summary shown right after Drop-Off Point — mirrors
+ *  the live seat list/subtotal (see wbtm_update_summary_preview() in
+ *  wbtm_global.js) and its Book Now button just re-triggers the real
+ *  #wbtm_add_to_cart button below, so nothing here duplicates cart logic.
+ * ==================================================================== */
+.wbtm_booking_summary_preview {
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+.wbtm_booking_summary_title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+.wbtm_booking_summary_route {
+  margin: 0 0 15px !important;
+  font-size: 12.5px;
+  color: #4f5ea3;
+}
+.wbtm_booking_summary_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+.wbtm_booking_summary_table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: #6b7280;
+  padding: 0 0 8px;
+  border-bottom: 1px solid #e0e7ff;
+}
+.wbtm_booking_summary_table tbody td {
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e9ff;
+}
+.wbtm_booking_summary_table tbody td:first-child {
+  color: #f97316;
+  padding: 10px;
+  font-weight: 700;
+}
+.wbtm_booking_summary_table tbody td:nth-child(2) {
+  font-weight: 700;
+  color: #1f2937;
+}
+.wbtm_booking_summary_table tbody td:last-child {
+  text-align: right;
+  padding: 10px;
+  font-weight: 700;
+  color: #1f2937;
+}
+/* "No seat selected yet" placeholder row (see booking_summary_preview.php /
+   wbtm_update_summary_preview()) — its lone <td> would otherwise inherit the
+   seat-type column's orange first-child styling above. */
+.wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row td {
+  text-align: center !important;
+  font-weight: 400 !important;
+  color: #9ca3af !important;
+  font-style: italic;
+}
+.wbtm_booking_summary_subtotal {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 15px;
+  margin-bottom: 14px;
+}
+.wbtm_booking_summary_subtotal .wbtm_summary_preview_subtotal {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.wbtm_booking_summary_total {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #e0e7ff;
+}
+.wbtm_booking_summary_total .wbtm_summary_preview_total {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.wbtm_summary_preview_book_now {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background-color: var(--wbtm_color_theme);
+  color: #fff;
+  cursor: pointer;
+  transition: filter .15s;
+}
+.wbtm_summary_preview_book_now:hover {
+  filter: brightness(1.08);
+}
+.wbtm_summary_preview_book_now:disabled {
+  background: #cbd5e1;
+  color: #f8fafc;
+  cursor: not-allowed;
+}
+.wbtm_summary_preview_book_now:disabled:hover {
+  filter: none;
+}
+.wbtm_booking_summary_note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  margin-top: 15px !important;
+  padding: 10px 12px;
+  background: #ecfdf5;
+  border: 1px solid #71d1a0;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #047857;
+}
+.wbtm_booking_summary_note::before {
+  content: "✓";
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+.wbtm_registration_area ._dLayout_xs {
+  border-radius: 10px;
+}
+.wbtm_registration_area .mpPanel {
+  border: none !important;
+}
+/* Desktop-only: widen the seat-plan column slightly. Was previously wrapped
+   in (min-width: 10px), which applied at ALL widths and — because this
+   selector out-specifies the responsive .col_12_800 / .col_12_700 grid
+   classes — locked the seat plan to 38% width on phones, squeezing the seat
+   grid and pushing the summary column off-screen. Scoped to >1000px so the
+   col_5_1000 / col_6_900 / col_12_800 breakpoints work again. */
+@media only screen and (min-width: 1001px) {
+  .wbtm_style .wbtm_registration_area .col_4 {
+    width: 38%;
+  }
+}
+
+/* ---- Mobile: expanded seat-plan / booking view ---- */
+@media only screen and (max-width: 800px) {
+  /* Stack the seat-plan column and the summary column full-width, whatever
+     grid class combination the templates use. */
+  .wbtm_style .wbtm_registration_area .mpRow.justifyBetween > [class*="col_"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+  /* Wide seat layouts (many columns / double-decker) scroll inside their
+     card instead of overflowing the viewport. */
+  .wbtm_style .wbtm_seat_plan_area {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wbtm_style .wbtm_seat_plan_area table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* The white card around the seat grid: trim side padding so the seat
+     grid gets the full phone width. */
+  .wbtm_style .wbtm_registration_area ._dLayout_xs {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  /* Legend sits inside the same card — keep it inside the card width and
+     let items wrap instead of forcing a wider box. */
+  .wbtm_style .wbtm_seat_legend {
+    margin-left: 0;
+    margin-right: 0;
+    gap: 10px 14px;
+  }
+}
+
+/* The small inline loader (e.g. the "To" field while its Drop-Off Point
+   options load) inherits a dark semi-transparent background from the
+   generic div[class*="wbtm_loader"] rule in wbtm_plugin_global.css, which
+   is shared with the big full-area loader used elsewhere (search results,
+   etc). Scoped to just .wbtm_loader_xs so only this small spinner loses its
+   background — the bigger loader's dimming overlay elsewhere is untouched. */
+div.wbtm_loader_xs {
+  background: transparent !important;
+}
+
+/* Seat-hold countdown badge (WBTM_Seat_Hold): shown in the selected-seat
+   summary while the customer's seats are temporarily held. */
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: #e8f4e8;
+  border: 1px solid #2e7d32;
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+}
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge--urgent {
+  background: #fdecea;
+  border-color: #c62828;
+  color: #c62828;
 }

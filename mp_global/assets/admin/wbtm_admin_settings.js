@@ -5,7 +5,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             .promise()
             .done(function () {
                 parent.find(".wbtm_sortable_area").sortable({
-                    handle: jQuery(this).find(".wbtm_sortable_button"),
+                    handle: ".wbtm_sortable_button",
                 });
                 wbtm_load_date_picker(parent);
             });
@@ -17,7 +17,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             .promise()
             .done(function () {
                 parent.find(".wbtm_sortable_area").sortable({
-                    handle: jQuery(this).find(".wbtm_sortable_button"),
+                    handle: ".wbtm_sortable_button",
                 });
                 wbtm_load_date_picker(parent);
             });
@@ -28,12 +28,22 @@ function wbtm_load_sortable_datepicker(parent, item) {
     "use strict";
     $(document).ready(function () {
         //=========Short able==============//
-        $(document)
-            .find(".wbtm_sortable_area")
-            .sortable({
-                handle: $(this).find(".wbtm_sortable_button"),
-            });
+        wbtmInitSortableAreas();
     });
+    // Row-reorder drag handle (.wbtm_sortable_button). Only ran once, at page
+    // load, before — any seat/cabin grid swapped in later via AJAX (Generate
+    // Bus Seat, Apply Template, Generate Seat Plan — see wbtm_admin.js /
+    // wbtm_admin_settings.js) never got sortable() applied, so its drag
+    // handle looked present but did nothing. Re-running this after every such
+    // update (via the existing wbtm_seat_plan_dom_updated event) fixes both
+    // old and newly-inserted areas; jQuery UI no-ops safely on ones that are
+    // already initialized.
+    function wbtmInitSortableAreas() {
+        $(".wbtm_sortable_area").sortable({
+            handle: ".wbtm_sortable_button",
+        });
+    }
+    $(document).on("wbtm_seat_plan_dom_updated", wbtmInitSortableAreas);
     // Clear optional datepicker fields (settings + metaboxes): readonly input cannot be cleared by typing.
     $(document).on("click", ".wbtm_clear_datepicker", function (e) {
         e.preventDefault();
@@ -108,6 +118,31 @@ function wbtm_load_sortable_datepicker(parent, item) {
         wp.media.editor.open($(this));
         return false;
     });
+    // wbtm_route_next_day[N] / wbtm_return_route_next_day[N] use an EXPLICIT
+    // index (not "[]"), and WBTM_Settings.php's save handler reads them via
+    // $next_days[$key] where $key is the stop's POSITION among the "[]"
+    // (auto-numbered) place/time/type fields. The hidden template row used
+    // by "Add New Stops"/"Add return stop" is rendered once, server-side,
+    // with a hardcoded index of 0 (see add_stops_item()/add_return_stops_item()
+    // in WBTM_Pricing_Routing.php) — so every dynamically-added row's Next Day
+    // Dropping checkbox was named [0], colliding with row 0's own checkbox and
+    // leaving the new row's actual position with no entry at all. Removing a
+    // row (not just adding one) causes the same kind of misalignment, since
+    // the remaining rows' explicit indices don't shift down on their own.
+    // Re-numbering every row's field after any add/remove keeps the explicit
+    // index in sync with each row's real position, so the right checkbox
+    // state is read back for the right stop.
+    function wbtmReindexNextDayField($items, fieldName) {
+        $items.each(function (index) {
+            $(this)
+                .find('input[name^="' + fieldName + '["]')
+                .attr("name", fieldName + "[" + index + "]");
+        });
+    }
+    function wbtmReindexRouteNextDay() {
+        wbtmReindexNextDayField($(".wbtm_stop_item"), "wbtm_route_next_day");
+        wbtmReindexNextDayField($(".wbtm_return_stop_item"), "wbtm_return_route_next_day");
+    }
     //=========Remove Setting Item ==============//
     $(document).on("click", ".wbtm_item_remove", function (e) {
         e.preventDefault();
@@ -117,6 +152,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             )
         ) {
             $(this).closest(".wbtm_remove_area").slideUp(250).remove();
+            wbtmReindexRouteNextDay();
             return true;
         } else {
             return false;
@@ -168,8 +204,47 @@ function wbtm_load_sortable_datepicker(parent, item) {
         }
         wbtm_load_sortable_datepicker(parent, item);
         parent.find(".wbtm_item_insert").find(".wbtm_add_select2").select2({});
+        wbtmReindexRouteNextDay();
         return true;
     });
+    // Optional return-route rows (same bus return); not .wbtm_stop_item so pricing reload ignores them.
+    $(document).on("click", ".wbtm_add_return_route_item", function () {
+        let parent = $(this).closest(".wbtm_return_route_settings_area");
+        let item = parent
+            .find(".wbtm_return_hidden_content .wbtm_hidden_item")
+            .html();
+        if (!item || item === "undefined" || item === " ") {
+            return true;
+        }
+        if (parent.find(".wbtm_return_item_insert_before").length > 0) {
+            jQuery(item)
+                .insertBefore(parent.find(".wbtm_return_item_insert_before").first())
+                .promise()
+                .done(function () {
+                    parent.find(".wbtm_sortable_area").sortable({
+                        handle: ".wbtm_sortable_button",
+                    });
+                    wbtm_load_date_picker(parent);
+                    wbtmReindexRouteNextDay();
+                });
+        }
+        return true;
+    });
+    $(document).on(
+        "change",
+        ".wbtm_return_route_settings_area .wbtm_return_route_type_select",
+        function () {
+            var type = $(this).val();
+            var box = $(this)
+                .closest(".wbtm_return_stop_item")
+                .find(".wbtm_return_next_day_dropping");
+            if (type == "dp" || type == "both") {
+                box.show();
+            } else {
+                box.hide();
+            }
+        }
+    );
 })(jQuery);
 (function ($) {
     "use strict";
@@ -215,6 +290,9 @@ function wbtm_load_sortable_datepicker(parent, item) {
 
     // Popup open
     $(document).on("click", ".wbtm_icon_add", function () {
+        // Remember which icon-area opened the popup so the selection
+        // only updates that specific field (not every field on the page).
+        window._wbtm_active_icon_area = $(this).closest(".wbtm_add_icon_image_area");
         $(".wbtm_add_icon_popup").addClass("active");
     });
     $(document).on("click", ".wbtm_add_icon_popup .popupClose", function () {
@@ -227,7 +305,9 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let iconClass = $(this).data("icon-class");
         if (!iconClass) return;
 
-        let parent = $(".wbtm_add_icon_image_area"); // সহজভাবে parent ধরা
+        let parent = (window._wbtm_active_icon_area && window._wbtm_active_icon_area.length)
+            ? window._wbtm_active_icon_area
+            : $(this).closest(".wbtm_add_icon_image_area");
 
         parent.find('input[type="hidden"]').val(iconClass);
         parent.find(".wbtm_add_icon_image_button_area, .wbtm_image_item").hide();
@@ -307,6 +387,28 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let cabin_list = parent.find('.wbtm_cabin_list');
         let current_cabin_count = cabin_list.find('.wbtm_cabin_item').length;
 
+        // Seat Template / Seat Numbering <option> lists, built from the same
+        // localized data PHP uses for the deck's own picker
+        // (get_seat_templates()/get_seat_numbering_schemes() in
+        // WBTM_Seat_Configuration.php — see WBTM_Dependencies.php), so a
+        // newly-added cabin's picker always matches what's already rendered
+        // server-side for existing cabins/decks.
+        let templateLabels = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_template_labels) ? wbtm_admin_var.seat_template_labels : {};
+        let numberingSchemes = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_numbering_schemes) ? wbtm_admin_var.seat_numbering_schemes : {};
+        let templateOptions = '<option value="">-- No template --</option>';
+        for (let tkey in templateLabels) {
+            if (templateLabels.hasOwnProperty(tkey)) {
+                templateOptions += '<option value="' + tkey + '">' + templateLabels[tkey] + '</option>';
+            }
+        }
+        let numberingOptions = '';
+        for (let nkey in numberingSchemes) {
+            if (numberingSchemes.hasOwnProperty(nkey)) {
+                numberingOptions += '<option value="' + nkey + '">' + numberingSchemes[nkey] + '</option>';
+            }
+        }
+        let aisleTitle = 'Choose aisle position after column (Left to Right). 0 = no automatic aisle.';
+
         if (current_cabin_count < cabin_count) {
             // Add more cabins
             for (let i = current_cabin_count; i < cabin_count; i++) {
@@ -329,30 +431,60 @@ function wbtm_load_sortable_datepicker(parent, item) {
 
                                     <div class="_dFlex_justifyBetween_alignCenter">
                                         <label>Enable Cabin</label>
-                                        <input type="checkbox" name="wbtm_cabin_enabled[]" value="1" checked/>
+                                        <label class="roundSwitchLabel">
+                                            <input type="checkbox" name="wbtm_cabin_enabled[${i}]" checked>
+                                            <span class="roundSwitch" data-collapse-target="#wbtm_cabin_enabled[${i}]"></span>
+                                        </label>
                                     </div>
                                     <div class="divider"></div>
 
-                                    <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Seat Rows</label>
-                                        <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_200 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="Ex: 10" value="0"/>
-                                    </div>
-                                    <div class="divider"></div>
+                                    <div class="wbtm_cabin_fields">
+                                        <div class="_dFlex_justifyBetween_alignCenter">
+                                            <label>Price Multiplier</label>
+                                            <input type="number" min="0" step="0.01" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.0" value="1.0"/>
+                                            <span class="help-text">1.0 = same price, 1.2 = 20% higher, 0.8 = 20% lower</span>
+                                        </div>
+                                        <div class="divider"></div>
 
-                                    <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Seat Columns</label>
-                                        <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_200 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="Ex: 4" value="0"/>
+                                        <div class="wbtm_seat_template_picker wbtm_cabin_seat_template_picker" data-cabin-index="${i}">
+                                            <div class="_dFlex_fdColumn">
+                                                <label>Seat Template</label>
+                                                <span>Generate a complete seat layout in one click, then edit freely as usual.</span>
+                                                <select class="formControl wbtm_cabin_seat_template_select">${templateOptions}</select>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="_dFlex_fdColumn">
+                                                <label>Seat Numbering</label>
+                                                <span>How seat labels are generated when the template is applied.</span>
+                                                <select class="formControl wbtm_cabin_seat_numbering_select">${numberingOptions}</select>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="_dFlex_justifyBetween_alignCenter">
+                                                <label class="mp_zero">Seat Rows</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="Ex: 10" value="0"/>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="_dFlex_justifyBetween_alignCenter">
+                                                <label class="mp_zero">Seat Columns</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="Ex: 4" value="0"/>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="_dFlex_justifyBetween_alignCenter">
+                                                <label class="mp_zero" title="${aisleTitle}">Aisle Position</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col" placeholder="Ex: 2 (0=none)" value="0" title="${aisleTitle}"/>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <button type="button" class="_themeButton_xs_mT_xs wbtm_apply_cabin_seat_template">
+                                                <span class="fas fa-magic"></span>
+                                                <span class="mL_xs">Apply Template</span>
+                                            </button>
+                                            <div class="divider"></div>
+                                        </div>
+                                        <button type="button" class="_themeButton_xs_mT_xs wbtm_generate_cabin_seats" data-cabin-index="${i}">
+                                            <span class="fas fa-plus-square"></span>
+                                            <span class="mL_xs">Generate Seat Plan</span>
+                                        </button>
                                     </div>
-                                    <div class="divider"></div>
-
-                                    <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Price Multiplier</label>
-                                        <input type="number" min="0" step="0.01" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.0" value="1.0"/>
-                                        <span class="help-text">1.0 = same price, 1.2 = 20% higher, 0.8 = 20% lower</span>
-                                    </div>
-                                    <div class="divider"></div>
-
-                                    <button type="button" class="button button-secondary wbtm_generate_cabin_seats" data-cabin-index="${i}">Generate Seat Plan</button>
                                 </div>
                                 <div class="col_6">
                                     <div class="wbtm_cabin_seat_preview" data-cabin-index="${i}">
@@ -367,6 +499,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
                     </div>
                 `;
                 cabin_list.append(cabin_html);
+                wbtmToggleCabinSeatTemplateMode(cabin_list.find('.wbtm_cabin_item[data-cabin-index="' + i + '"] .wbtm_cabin_seat_template_picker'));
             }
         } else if (current_cabin_count > cabin_count) {
             // Remove excess cabins
@@ -374,91 +507,157 @@ function wbtm_load_sortable_datepicker(parent, item) {
         }
     });
 
-    // Generate cabin seat plan
+    // Generate cabin seat plan — SAME AJAX action + rendering
+    // (WBTM_Seat_Configuration::render_cabin_seat_plan(), via the
+    // wbtm_create_cabin_seat_plan handler) the deck's own "Generate Bus
+    // Seat" button uses, so cabins get the full toolbar (drag-and-drop
+    // Door/Toilet/Driver/etc.), rotation controls, and per-seat price
+    // override button — not just a bare client-built grid.
     $(document).on('click', '.wbtm_generate_cabin_seats', function() {
         let button = $(this);
         let cabin_item = button.closest('.wbtm_cabin_item');
         let cabin_index = button.attr('data-cabin-index');
-        let rows_input = cabin_item.find('input[name="wbtm_cabin_rows[]"]');
-        let cols_input = cabin_item.find('input[name="wbtm_cabin_cols[]"]');
-        let rows = parseInt(rows_input.val()) || 0;
-        let cols = parseInt(cols_input.val()) || 0;
+        let row = parseInt(cabin_item.find('input[name="wbtm_cabin_rows[]"]').val()) || 0;
+        let column = parseInt(cabin_item.find('input[name="wbtm_cabin_cols[]"]').val()) || 0;
 
-        if (rows <= 0 || cols <= 0) {
-            alert('Please enter valid row and column numbers');
+        if (row <= 0 || column <= 0) {
+            alert((typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_row_col_error) ? wbtm_admin_var.seat_row_col_error : 'Number of rows & columns must be greater than 0');
             return;
         }
 
-        // Generate seat plan preview
-        let seat_plan_html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="${cols}">
-                            <div class="wbtm_cabin_direction">
-                                <span class="wbtm_direction_text">Front</span>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        let target = cabin_item.find('.wbtm_cabin_seat_plan');
+        let post_id = $('[name="wbtm_post_id"]').val();
 
-        for (let i = 0; i < rows; i++) {
-            seat_plan_html += '<tr>';
-            for (let j = 1; j <= cols; j++) {
-                seat_plan_html += `
-                    <th>
-                        <div class="wbtm_seat_container">
-                            <label>
-                                <input type="text" class="formControl wbtm_id_validation"
-                                    name="wbtm_cabin_${cabin_index}_seat${j}[]"
-                                    placeholder="Blank"
-                                    value=""
-                                />
-                            </label>
-                            <div class="wbtm_seat_rotation_controls">
-                                <button type="button" class="wbtm_rotate_seat _whiteButton_xs" 
-                                        data-seat="cabin_${cabin_index}_seat${j}" 
-                                        data-rotation="0"
-                                        title="Rotate Seat">
-                                    <span class="fas fa-redo"></span>
-                                </button>
-                                <input type="hidden" name="wbtm_cabin_${cabin_index}_seat${j}_rotation[]" 
-                                       value="0" 
-                                       class="wbtm_rotation_value" />
-                            </div>
-                        </div>
-                    </th>
-                `;
+        $.ajax({
+            type: 'POST',
+            url: wbtm_admin_var.url,
+            data: {
+                action: 'wbtm_create_cabin_seat_plan',
+                post_id: post_id,
+                row: row,
+                column: column,
+                cabin_index: cabin_index,
+                nonce: wbtm_admin_var.nonce
+            },
+            beforeSend: function () {
+                wbtm_loader(target);
+            },
+            success: function (data) {
+                target.html(data);
+                // Numbered per whichever "Seat Numbering" scheme is currently
+                // selected for THIS cabin, with an optional single aisle at
+                // the chosen "Aisle Position" — same convenience the deck's
+                // plain "Generate Bus Seat" button already offers.
+                if (window.wbtmSeatNumbering) {
+                    let picker = cabin_item.find('.wbtm_cabin_seat_template_picker');
+                    let numbering = picker.find('.wbtm_cabin_seat_numbering_select').val() || 'sequential';
+                    let aislePos = parseInt(picker.find('.wbtm_cabin_aisle_after_col').val()) || 0;
+                    let pattern = window.wbtmSeatNumbering.buildAislePattern(column, aislePos);
+                    window.wbtmSeatNumbering.fill(target, pattern, numbering);
+                }
+                $(document).trigger('wbtm_seat_plan_dom_updated');
+            },
+            error: function (response) {
+                console.log(response);
             }
-            seat_plan_html += `<th>
-                <div class="allCenter">
-                    <div class="buttonGroup max_100">
-                        <button class="_whiteButton_xs wbtm_item_remove" type="button">
-                            <span class="fas fa-trash-alt mp_zero"></span>
-                        </button>
-                        <button class="_whiteButton_xs wbtm_sortable_button" type="button">
-                            <span class="fas fa-arrows-alt mp_zero"></span>
-                        </button>
-                    </div>
-                </div>
-            </th></tr>`;
-        }
-
-        seat_plan_html += `
-                </tbody>
-            </table>
-        `;
-
-        // Update the row count input
-        let generate_rows_input = cabin_item.find('input[name="wbtm_cabin_rows[]"]');
-        if (generate_rows_input.length > 0) {
-            generate_rows_input.val(rows);
-        }
-
-        cabin_item.find('.wbtm_cabin_seat_plan').html(seat_plan_html);
+        });
     });
+
+    // Apply a predefined seat template to one cabin — cabin-scoped
+    // counterpart to applySeatTemplate() in wbtm_admin.js. Kept separate
+    // (rather than generalizing the deck function) because cabins use
+    // parallel-array field names (wbtm_cabin_rows[]/wbtm_cabin_cols[]) and
+    // per-cabin-item DOM scoping instead of the deck's single scoped field
+    // per picker.
+    function applyCabinSeatTemplate($picker) {
+        let cabinIndex = $picker.data('cabin-index');
+        let cabinItem = $picker.closest('.wbtm_cabin_item');
+        let templateKey = $picker.find('.wbtm_cabin_seat_template_select').val();
+        let numbering = $picker.find('.wbtm_cabin_seat_numbering_select').val();
+        let templates = (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_templates) ? wbtm_admin_var.seat_templates : {};
+        let pattern = templateKey ? templates[templateKey] : null;
+
+        if (!pattern) {
+            alert((typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_template_pick_error) ? wbtm_admin_var.seat_template_pick_error : 'Please choose a seat template first.');
+            return;
+        }
+
+        let row = parseInt(cabinItem.find('input[name="wbtm_cabin_rows[]"]').val());
+        let column = pattern.length;
+
+        if (!(row > 0)) {
+            alert((typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var.seat_row_col_error) ? wbtm_admin_var.seat_row_col_error : 'Number of rows & columns must be greater than 0');
+            return;
+        }
+
+        // Columns are derived from the template — reflect that back into the
+        // (still fully editable) Seat Columns field before generating.
+        cabinItem.find('input[name="wbtm_cabin_cols[]"]').val(column);
+
+        let target = cabinItem.find('.wbtm_cabin_seat_plan');
+        let post_id = $('[name="wbtm_post_id"]').val();
+
+        $.ajax({
+            type: 'POST',
+            url: wbtm_admin_var.url,
+            data: {
+                action: 'wbtm_create_cabin_seat_plan',
+                post_id: post_id,
+                row: row,
+                column: column,
+                cabin_index: cabinIndex,
+                nonce: wbtm_admin_var.nonce
+            },
+            beforeSend: function () {
+                wbtm_loader(target);
+            },
+            success: function (data) {
+                target.html(data);
+                if (window.wbtmSeatNumbering) {
+                    window.wbtmSeatNumbering.fill(target, pattern, numbering);
+                }
+                $(document).trigger('wbtm_seat_plan_dom_updated');
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    $(document).on('click', '.wbtm_apply_cabin_seat_template', function () {
+        applyCabinSeatTemplate($(this).closest('.wbtm_cabin_seat_template_picker'));
+    });
+
+    // Toggle between "no template" mode (Seat Columns + Aisle Position +
+    // Generate Seat Plan button) and "template chosen" mode (those two
+    // fields hidden — the template supplies columns/aisle — and Apply
+    // Template shown instead). Cabin counterpart to
+    // wbtmToggleSeatTemplateMode() in wbtm_admin.js.
+    function wbtmToggleCabinSeatTemplateMode($picker) {
+        if (!$picker || !$picker.length) { return; }
+        let hasTemplate = !!$picker.find('.wbtm_cabin_seat_template_select').val();
+        let $generateBtn = $picker.siblings('.wbtm_generate_cabin_seats');
+        let $applyBtn = $picker.find('.wbtm_apply_cabin_seat_template');
+        let $colsRow = $picker.find('input[name="wbtm_cabin_cols[]"]').closest('._dFlex_justifyBetween_alignCenter');
+        let $aisleRow = $picker.find('.wbtm_cabin_aisle_after_col').closest('._dFlex_justifyBetween_alignCenter');
+        let $rowsRow = $picker.find('input[name="wbtm_cabin_rows[]"]').closest('._dFlex_justifyBetween_alignCenter');
+
+        $generateBtn.toggle(!hasTemplate);
+        $applyBtn.toggle(hasTemplate);
+        $colsRow.toggle(!hasTemplate);
+        $aisleRow.toggle(!hasTemplate);
+        $rowsRow.toggleClass('wbtm-bme__seat-row-solo', hasTemplate);
+    }
+
+    $(document).on('change', '.wbtm_cabin_seat_template_select', function () {
+        wbtmToggleCabinSeatTemplateMode($(this).closest('.wbtm_cabin_seat_template_picker'));
+    });
+
+    function wbtmInitCabinSeatTemplateToggles() {
+        $('.wbtm_cabin_seat_template_picker').each(function () {
+            wbtmToggleCabinSeatTemplateMode($(this));
+        });
+    }
 
     // Handle row deletion for cabin seat plans
     $(document).on('click', '.wbtm_cabin_seat_plan .wbtm_item_remove', function() {
@@ -579,7 +778,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
     // Handle master cabin mode enable/disable toggle
     function toggleCabinModeFields(checkbox) {
         let cabin_mode_fields = $('.wbtm_cabin_mode_fields');
-        let traditional_seat_plan = $('[data-collapse="#wbtm_seat_plan"]');
+        let traditional_seat_plan = $('.wbtm_traditional_seat_plan_fields');
         let seat_type_select = $('select[name="wbtm_seat_type_conf"]');
         let seat_type = seat_type_select.val();
         
@@ -596,7 +795,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             traditional_seat_plan.slideUp(300);
         } else {
             // When cabin mode is disabled, automatically disable all individual cabin toggles
-            $('input[name="wbtm_cabin_enabled[]"]').each(function() {
+            $('input[name^="wbtm_cabin_enabled"]').each(function() {
                 if ($(this).is(':checked')) {
                     $(this).data('programmatic-change', true).prop('checked', false).trigger('change');
                 }
@@ -611,29 +810,58 @@ function wbtm_load_sortable_datepicker(parent, item) {
         }
     }
 
+    // Reflects the real <select name="wbtm_seat_type_conf"> value (kept in the
+    // DOM, visually hidden, for validation/collapse compatibility) onto the
+    // wbtm_seat_type_card UI that replaced the visible dropdown.
+    function syncSeatTypeCards(value) {
+        $('.wbtm_seat_type_card').removeClass('wbtm_seat_type_card_active');
+        $('.wbtm_seat_type_card[data-seat-type-card="' + value + '"]').addClass('wbtm_seat_type_card_active');
+    }
+
+    // Card click/keyboard drives the real select so every existing behavior
+    // wired to its change event (collapse sections, cabin-mode coupling below)
+    // keeps working unchanged.
+    $(document).on('click', '.wbtm_seat_type_card', function () {
+        let value = $(this).data('seat-type-card');
+        let $select = $('select[name="wbtm_seat_type_conf"]');
+        if ($select.val() !== value) {
+            $select.val(value).trigger('change');
+        }
+    });
+    $(document).on('keydown', '.wbtm_seat_type_card', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).trigger('click');
+        }
+    });
+
     // Initialize cabin field visibility on page load
     $(document).ready(function() {
         // Initialize individual cabin toggles
-        $('input[name="wbtm_cabin_enabled[]"]').each(function() {
+        $('input[name^="wbtm_cabin_enabled"]').each(function() {
             toggleCabinFields($(this));
         });
+
+        syncSeatTypeCards($('select[name="wbtm_seat_type_conf"]').val());
+
+        wbtmInitCabinSeatTemplateToggles();
 
         // Initialize master cabin mode toggle
         let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
         if (cabin_mode_checkbox.length > 0) {
             toggleCabinModeFields(cabin_mode_checkbox);
-            
+
             // Also check seat type selection - if cabin mode is enabled but seat type is 'without_seat_plan',
             // we should still show the traditional interface
             let seat_type = $('select[name="wbtm_seat_type_conf"]').val();
             if (cabin_mode_checkbox.is(':checked') && seat_type === 'wbtm_seat_plan') {
-                $('[data-collapse="#wbtm_seat_plan"]').hide();
+                $('.wbtm_traditional_seat_plan_fields').hide();
             }
         }
     });
 
     // Handle individual cabin enable checkbox change
-    $(document).on('change', 'input[name="wbtm_cabin_enabled[]"]', function() {
+    $(document).on('change', 'input[name^="wbtm_cabin_enabled"]', function() {
         // Prevent infinite loops by checking if this change was programmatically triggered
         if (!$(this).data('programmatic-change')) {
             toggleCabinFields($(this));
@@ -656,7 +884,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
     $(document).on('change', 'select[name="wbtm_seat_type_conf"]', function() {
         let seat_type = $(this).val();
         let cabin_mode_checkbox = $('input[name="wbtm_cabin_mode_enabled"]');
-        let traditional_seat_plan = $('[data-collapse="#wbtm_seat_plan"]');
+        let traditional_seat_plan = $('.wbtm_traditional_seat_plan_fields');
         
         // If cabin mode is enabled, force seat type to be 'wbtm_seat_plan'
         if (cabin_mode_checkbox.is(':checked') && seat_type !== 'wbtm_seat_plan') {
@@ -673,6 +901,8 @@ function wbtm_load_sortable_datepicker(parent, item) {
             // If seat type is 'wbtm_seat_plan' but cabin mode is disabled, show traditional seat plan
             traditional_seat_plan.show();
         }
+
+        syncSeatTypeCards(seat_type);
     });
 
 })(jQuery);

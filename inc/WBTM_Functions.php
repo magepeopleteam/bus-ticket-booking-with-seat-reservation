@@ -1,6 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -8,12 +11,187 @@
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'WBTM_Functions' ) ) {
 		class WBTM_Functions {
+			/**
+			 * Single source of truth for "is WooCommerce active right now?" — used to
+			 * gate every WC-only sub-loader (cart/checkout hooks, hidden-product mirror,
+			 * coupon-cart bridge) so the rest of the plugin (CPT, admin, search, seat
+			 * plan) keeps working when WooCommerce is inactive.
+			 */
+			public static function is_wc_active() {
+				return class_exists( 'WBTM_Global_Function' ) && WBTM_Global_Function::check_woocommerce() === 1;
+			}
+			public static function is_pro_active() {
+				if ( class_exists( 'WBTM_Dependencies_Pro' ) || class_exists( 'Wbtm_Woocommerce_bus_Pro' ) ) {
+					return true;
+				}
+				if ( ! function_exists( 'is_plugin_active' ) && defined( 'ABSPATH' ) && file_exists( ABSPATH . 'wp-admin/includes/plugin.php' ) ) {
+					include_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+				return function_exists( 'is_plugin_active' )
+					&& is_plugin_active( 'addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' )
+					&& file_exists( WP_PLUGIN_DIR . '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' );
+			}
+			//*********** Booking mode (WooCommerce vs. future standalone Custom Payment) ***********//
+
+			/** Option + key the explicit Booking Mode choice is stored under. */
+			const MODE_OPTION = 'wbtm_payment_settings';
+			const MODE_KEY    = 'wbtm_booking_mode';
+
+			/**
+			 * Which booking systems can actually process a booking right now. When only
+			 * one side is available there is nothing to choose — the mode is simply
+			 * whichever one can run (see booking_mode()). Mirrors the same concept in
+			 * the sibling rental plugin's RBFW_Function::mode_availability().
+			 *
+			 * @return string 'both' | 'woocommerce_only' | 'custom_only' | 'none'
+			 */
+			public static function mode_availability(): string {
+				$woo = self::is_wc_active();
+				$pro = self::is_pro_active();
+				if ( $woo && $pro ) {
+					return 'both';
+				}
+				if ( $woo ) {
+					return 'woocommerce_only';
+				}
+				if ( $pro ) {
+					return 'custom_only';
+				}
+				return 'none';
+			}
+
+			/** True only when a real choice exists and the admin hasn't made it yet. */
+			public static function needs_mode_selection(): bool {
+				return 'both' === self::mode_availability() && '' === self::stored_booking_mode();
+			}
+
+			/**
+			 * The admin's explicit stored choice ('woocommerce'|'standalone'), or '' if
+			 * never made. Unlike the rental plugin's equivalent, there is no legacy
+			 * option shape to migrate from here — this is a brand new option in the bus
+			 * plugin — so this simply reads the stored value.
+			 */
+			public static function stored_booking_mode(): string {
+				$opts = get_option( self::MODE_OPTION, array() );
+				$opts = is_array( $opts ) ? $opts : array();
+				if ( ! empty( $opts[ self::MODE_KEY ] ) && in_array( $opts[ self::MODE_KEY ], array( 'woocommerce', 'standalone' ), true ) ) {
+					return $opts[ self::MODE_KEY ];
+				}
+				return '';
+			}
+
+			/**
+			 * Persist an explicit mode choice and keep a legacy-style "Enable WooCommerce
+			 * Payment" mirror in sync, so any future code reading that flag agrees with
+			 * booking_mode(). Only meaningful when mode_availability() === 'both'.
+			 */
+			public static function set_booking_mode( $mode ) {
+				if ( ! in_array( $mode, array( 'woocommerce', 'standalone' ), true ) ) {
+					return false;
+				}
+				$opts                           = get_option( self::MODE_OPTION, array() );
+				$opts                           = is_array( $opts ) ? $opts : array();
+				$opts[ self::MODE_KEY ]         = $mode;
+				$opts['wbtm_enable_wc_payment'] = ( 'woocommerce' === $mode ) ? 'on' : 'off';
+				return update_option( self::MODE_OPTION, $opts );
+			}
+
+			/**
+			 * Active booking mode: 'woocommerce' | 'standalone'.
+			 *
+			 * Auto-resolves when only one system can run, so the two payment systems can
+			 * never both think they own the same booking; falls back to the admin's
+			 * stored choice (default WooCommerce) only when both are available.
+			 */
+			public static function booking_mode(): string {
+				switch ( self::mode_availability() ) {
+					case 'woocommerce_only':
+						return 'woocommerce';
+					case 'custom_only':
+					case 'none':
+						return 'standalone';
+					case 'both':
+					default:
+						return 'standalone' === self::stored_booking_mode() ? 'standalone' : 'woocommerce';
+				}
+			}
+
+			/**
+			 * Retained for parity with the rental plugin's naming: whether the
+			 * WooCommerce cart/checkout should own bookings. Derived from the resolved
+			 * booking mode.
+			 */
+			public static function wc_payment_enabled(): bool {
+				return self::is_wc_active() && 'woocommerce' === self::booking_mode();
+			}
+
+			/**
+			 * Whether the WooCommerce cart/checkout/order flow should be used for bookings.
+			 *
+			 * True only when WooCommerce is active AND the resolved mode is WooCommerce.
+			 * Otherwise bookings would use a future native (standalone) flow.
+			 */
+			public static function use_wc(): bool {
+				return self::is_wc_active() && 'woocommerce' === self::booking_mode();
+			}
+
+			/**
+			 * Whether a customer must be logged in to place / view a booking, scoped to
+			 * the standalone (custom payment) flow — in WooCommerce mode, WooCommerce's
+			 * own account / guest-checkout settings apply instead.
+			 */
+			public static function login_required(): bool {
+				if ( self::use_wc() ) {
+					return false;
+				}
+				$opts = get_option( self::MODE_OPTION, array() );
+				$opts = is_array( $opts ) ? $opts : array();
+				$val  = isset( $opts['wbtm_require_login'] ) ? $opts['wbtm_require_login'] : 'on';
+				return $val !== 'off';
+			}
+
+			/**
+			 * Whether the Pro plugin has at least one custom payment method enabled.
+			 *
+			 * The free plugin never references Pro classes directly: when Pro is active
+			 * it exposes its enabled gateways/offline method via the
+			 * `wbtm_pro_enabled_payment_methods` filter. Without Pro the filter is never
+			 * added, so this is false — there is no standalone checkout to take payment.
+			 */
+			public static function has_enabled_custom_payment(): bool {
+				if ( ! self::is_pro_active() ) {
+					return false;
+				}
+				$methods = apply_filters( 'wbtm_pro_enabled_payment_methods', array() );
+				return ! empty( $methods );
+			}
+
+			/**
+			 * Whether the free plugin can actually complete a booking in this request.
+			 *
+			 * A working checkout path must exist for the *current* mode, not merely a
+			 * plugin being active:
+			 *  - WooCommerce mode: WooCommerce owns checkout, so it is always available.
+			 *  - Standalone mode: at least one Pro custom payment method (PayPal / Stripe
+			 *    / Offline) must be enabled.
+			 */
+			public static function is_booking_available(): bool {
+				if ( self::use_wc() ) {
+					return true;
+				}
+				return self::has_enabled_custom_payment();
+			}
+
 			public static function template_path( $file_name ): string {
 				$template_path = get_stylesheet_directory() . '/templates/';
 				$default_dir   = WBTM_PLUGIN_DIR . '/templates/';
 				$dir           = is_dir( $template_path ) ? $template_path : $default_dir;
 				$file_path     = $dir . $file_name;
 				return locate_template( array( 'templates/' . $file_name ) ) ? $file_path : $default_dir . $file_name;
+			}
+			// Fixed by Shahnur — Pro-only full bus feature gate 2026-05-07 01:55 PM
+			public static function is_full_bus_feature_enabled() {
+				return self::is_pro_active();
 			}
 			//==========================//
 			public static function get_bus_route( $post_id = 0, $start_route = '' ) {
@@ -42,16 +220,92 @@
 				return array_unique( $all_routes );
 			}
 			public static function single_bus_route( $post_id, $start_route = '' ) {
-				$all_routes       = [];
-				$count_next       = 0;
-				$full_route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				$forward = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				if ( ! $start_route ) {
+					return self::single_bus_route_from_infos( $forward, '' );
+				}
+				$forward_dests = self::single_bus_route_from_infos( $forward, $start_route );
+				$r             = $forward_dests;
+
+				if ( self::is_same_bus_return_enabled( $post_id ) ) {
+					// Destinations reachable on the return leg from this same boarding point.
+					$return_dests = [];
+					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward ) as $infos ) {
+						$candidate = self::single_bus_route_from_infos( $infos, $start_route );
+						if ( sizeof( $candidate ) > 0 ) {
+							$return_dests = $candidate;
+							break;
+						}
+					}
+
+					/**
+					 * Bidirectional stop search (Pro feature).
+					 *
+					 * When TRUE, a passenger boarding at an intermediate stop can pick a
+					 * destination in EITHER direction, so the forward and return
+					 * destination lists are merged (e.g. from Nelspruit you can reach both
+					 * O.R. Tambo outbound and Marloth Park on the return leg).
+					 *
+					 * When FALSE (default / free), behaviour is unchanged: the return leg
+					 * is only used as a fallback for terminal stops that have no forward
+					 * destination (e.g. the final stop of the outbound route).
+					 *
+					 * @param bool   $enabled     Default false.
+					 * @param int    $post_id     Bus post ID.
+					 * @param string $start_route Selected boarding point.
+					 */
+					$bidirectional = (bool) apply_filters( 'wbtm_enable_bidirectional_route_search', false, $post_id, $start_route );
+
+					if ( $bidirectional ) {
+						// Offer every stop reachable later on EITHER physical leg (by position) so
+						// intermediate->intermediate trips work even when stops are boarding-only.
+						$merged = [];
+						foreach ( self::get_same_bus_physical_legs( $post_id, $forward ) as $leg ) {
+							$merged = self::merge_unique_routes( $merged, self::dests_after_by_position( $leg, $start_route ) );
+						}
+						$r = $merged;
+					} elseif ( sizeof( $forward_dests ) === 0 ) {
+						$r = $return_dests;
+					}
+				}
+				return $r;
+			}
+
+			/**
+			 * Merge two route-place lists, preserving order and removing
+			 * case-insensitive duplicates.
+			 *
+			 * @param array<int, string> $a
+			 * @param array<int, string> $b
+			 * @return array<int, string>
+			 */
+			private static function merge_unique_routes( $a, $b ) {
+				$out  = [];
+				$seen = [];
+				foreach ( array_merge( (array) $a, (array) $b ) as $place ) {
+					$key = strtolower( (string) $place );
+					if ( $place !== '' && $place !== null && ! isset( $seen[ $key ] ) ) {
+						$seen[ $key ] = true;
+						$out[]        = $place;
+					}
+				}
+				return $out;
+			}
+
+			/**
+			 * @param array<int, array<string, mixed>> $full_route_infos
+			 * @return array<int, string>
+			 */
+			private static function single_bus_route_from_infos( $full_route_infos, $start_route = '' ) {
+				$all_routes = [];
+				$count_next = 0;
 				if ( sizeof( $full_route_infos ) > 0 ) {
 					foreach ( $full_route_infos as $info ) {
 						if ( $start_route ) {
 							if ( $count_next > 0 && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 								$all_routes[] = $info['place'];
 							}
-							if ( ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtolower( $info['place'] ) == strtolower( $start_route ) ) {
+							if ( ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtolower( (string) $info['place'] ) === strtolower( (string) $start_route ) ) {
 								$count_next = 1;
 							}
 						} else {
@@ -63,58 +317,736 @@
 				}
 				return $all_routes;
 			}
-			
-			public static function get_ticket_info( $post_id, $start_route, $end_route ) {
+
+			public static function is_same_bus_return_enabled( $post_id ) {
+				return WBTM_Global_Function::get_post_info( $post_id, 'wbtm_same_bus_return_enabled', 'no' ) === 'yes';
+			}
+
+			/**
+			 * Reverse outbound stops for return direction; swap bp/dp types.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<int, array<string, mixed>>
+			 */
+			public static function reverse_wbtm_route_infos( $route_infos ) {
+				if ( ! is_array( $route_infos ) || count( $route_infos ) < 2 ) {
+					return is_array( $route_infos ) ? $route_infos : [];
+				}
+				$rev = array_reverse( $route_infos );
+				foreach ( $rev as $k => $row ) {
+					if ( ! is_array( $row ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( $t === 'bp' ) {
+						$rev[ $k ]['type'] = 'dp';
+					} elseif ( $t === 'dp' ) {
+						$rev[ $k ]['type'] = 'bp';
+					}
+				}
+				return $rev;
+			}
+
+			/**
+			 * Ordered return-route definitions to try when same-bus return is on (custom timetable may be entered forward or reverse).
+			 *
+			 * @param array<int, array<string, mixed>> $forward_route_infos
+			 * @return array<int, array<int, array<string, mixed>>>
+			 */
+			private static function get_same_bus_return_route_candidates( $post_id, $forward_route_infos ) {
+				$custom = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+				$rev_forward = self::reverse_wbtm_route_infos( $forward_route_infos );
+				$out         = [];
+				if ( is_array( $custom ) && count( $custom ) > 1 ) {
+					$out[] = $custom;
+					$out[] = self::reverse_wbtm_route_infos( $custom );
+				}
+				$out[] = $rev_forward;
+				return $out;
+			}
+
+			/**
+			 * Whether this place can be used as a boarding point on the route row list.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function wbtm_route_infos_has_boarding_place( $route_infos, $place ) {
+				if ( ! is_array( $route_infos ) || $place === '' || $place === null ) {
+					return false;
+				}
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( ( $t === 'bp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $place ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+			 * Whether start can board before end can drop along the ordered route (bp/both then later dp/both).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function wbtm_route_infos_support_od_leg( $route_infos, $start_route, $end_route ) {
+				if ( ! is_array( $route_infos ) || $start_route === '' || $end_route === '' ) {
+					return false;
+				}
+				$started = false;
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$t = isset( $row['type'] ) ? $row['type'] : '';
+					if ( ! $started && ( $t === 'bp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $start_route ) ) {
+						$started = true;
+						continue;
+					}
+					if ( $started && ( $t === 'dp' || $t === 'both' ) && strtolower( (string) $row['place'] ) === strtolower( (string) $end_route ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+		 * @param array<int, string> $dir
+		 */
+			public static function route_place_index( $dir, $place ) {
+				if ( ! is_array( $dir ) || $place === '' || $place === null ) {
+					return null;
+				}
+				foreach ( $dir as $i => $p ) {
+					if ( strtolower( (string) $p ) === strtolower( (string) $place ) ) {
+						return (int) $i;
+					}
+				}
+				return null;
+			}
+
+			public static function resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $fallback_leg = 'outbound' ) {
+				$fallback_leg = $fallback_leg === 'return' ? 'return' : 'outbound';
+				if ( ! $post_id || ! $start_route || ! $end_route ) {
+					return $fallback_leg;
+				}
+				$resolved = self::resolve_od_leg( $post_id, $start_route, $end_route );
+				return $resolved['leg'] !== null ? $resolved['leg'] : $fallback_leg;
+			}
+
+			/**
+			 * Route rows used for date/time math (forward vs return leg).
+			 *
+			 * @param array<int, array<string, mixed>>|null $forward_route_infos
+			 * @return array<int, array<string, mixed>>
+			 */
+			public static function resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route, $forward_route_infos = null ) {
+				$resolved = self::resolve_od_leg( $post_id, $start_route, $end_route, $forward_route_infos );
+				return $resolved['route_infos'];
+			}
+
+			/**
+			 * Decide which leg (outbound vs return) and which route-row set serves an
+			 * origin/destination pair, choosing the leg that connects the two stops with
+			 * the SHORTEST forward (non day-wrapping) travel time.
+			 *
+			 * This is more robust than ordering stops via the stored `wbtm_route_direction`
+			 * list: on a bidirectional "same bus return" trip a pair such as Berlin -> Hamburg
+			 * exists on BOTH legs (outbound 07:00->08:00 and the reversed return 14:00->13:00+1d).
+			 * We always want the natural same-day leg, regardless of how the direction array
+			 * happens to be ordered.
+			 *
+			 * @param array<int, array<string, mixed>>|null $forward_route_infos
+			 * @return array{leg: string|null, route_infos: array<int, array<string, mixed>>}
+			 */
+			private static function resolve_od_leg( $post_id, $start_route, $end_route, $forward_route_infos = null ) {
+				if ( $forward_route_infos === null ) {
+					$forward_route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+				}
+				if ( ! is_array( $forward_route_infos ) ) {
+					$forward_route_infos = [];
+				}
+				$result = [ 'leg' => null, 'route_infos' => $forward_route_infos ];
+				if ( count( $forward_route_infos ) < 2 || ! $start_route || ! $end_route ) {
+					return $result;
+				}
+
+				$same_bus_return = $post_id && self::is_same_bus_return_enabled( $post_id );
+
+				// Physical legs the bus actually runs (index 0 = outbound, 1 = return).
+				$candidates = $same_bus_return
+					? self::get_same_bus_physical_legs( $post_id, $forward_route_infos )
+					: [ $forward_route_infos ];
+
+				$ref_date = current_time( 'Y-m-d' );
+				$best_dur = null;
+				foreach ( $candidates as $index => $candidate_rows ) {
+					// Same-bus-return (bidirectional) buses connect any stop to a later stop on a
+					// leg regardless of bp/dp type; normal buses honour the configured types.
+					$supported = $same_bus_return
+						? self::route_infos_support_od_by_position( $candidate_rows, $start_route, $end_route )
+						: self::wbtm_route_infos_support_od_leg( $candidate_rows, $start_route, $end_route );
+					if ( ! $supported ) {
+						continue;
+					}
+					$times = self::od_leg_times_from_infos( $post_id, $candidate_rows, $start_route, $end_route, $ref_date );
+					if ( empty( $times ) ) {
+						continue;
+					}
+					$duration = strtotime( $times['dp_time'] ) - strtotime( $times['bp_time'] );
+					// Strict "<" so the outbound leg (checked first) wins ties.
+					if ( $best_dur === null || $duration < $best_dur ) {
+						$best_dur               = $duration;
+						$result['leg']         = $index === 0 ? 'outbound' : 'return';
+						$result['route_infos'] = $candidate_rows;
+					}
+				}
+				return $result;
+			}
+
+			/**
+			 * The two physical legs a same-bus-return bus runs: [outbound, return].
+			 * The return leg is the custom return timetable when set, else the reversed outbound.
+			 *
+			 * @param array<int, array<string, mixed>> $forward_route_infos
+			 * @return array<int, array<int, array<string, mixed>>>
+			 */
+			private static function get_same_bus_physical_legs( $post_id, $forward_route_infos ) {
+				$legs   = [ $forward_route_infos ];
+				$custom = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_return_route_info', [] );
+				if ( is_array( $custom ) && count( $custom ) > 1 ) {
+					$legs[] = $custom;
+				} else {
+					$legs[] = self::reverse_wbtm_route_infos( $forward_route_infos );
+				}
+				return $legs;
+			}
+
+			/**
+			 * Stops reachable after $start_route on a leg, by position (ignoring bp/dp type).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<int, string>
+			 */
+			private static function dests_after_by_position( $route_infos, $start_route ) {
+				$out     = [];
+				$started = false;
+				if ( is_array( $route_infos ) ) {
+					foreach ( $route_infos as $row ) {
+						if ( ! is_array( $row ) || ! isset( $row['place'] ) || $row['place'] === '' ) {
+							continue;
+						}
+						if ( $started ) {
+							$out[] = $row['place'];
+						} elseif ( strtolower( (string) $row['place'] ) === strtolower( (string) $start_route ) ) {
+							$started = true;
+						}
+					}
+				}
+				return $out;
+			}
+
+			/**
+			 * Whether $end_route appears after $start_route on a leg, by position (type-agnostic).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 */
+			private static function route_infos_support_od_by_position( $route_infos, $start_route, $end_route ) {
+				if ( ! is_array( $route_infos ) || $start_route === '' || $end_route === '' ) {
+					return false;
+				}
+				$started = false;
+				foreach ( $route_infos as $row ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+						continue;
+					}
+					$place = strtolower( (string) $row['place'] );
+					if ( ! $started && $place === strtolower( (string) $start_route ) ) {
+						$started = true;
+						continue;
+					}
+					if ( $started && $place === strtolower( (string) $end_route ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/**
+			 * Boarding/dropping datetimes for an OD pair within a specific set of route rows on a
+			 * given date, honouring day-wrapping. Same-bus-return buses match stops by position
+			 * (type-agnostic) so a boarding-only intermediate stop still yields times when used as
+			 * a drop point in the opposite direction.
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos
+			 * @return array<string, string>
+			 */
+			private static function od_leg_times_from_infos( $post_id, $route_infos, $start_route, $end_route, $date ) {
+				if ( ! is_array( $route_infos ) || count( $route_infos ) < 2 || ! $start_route || ! $end_route || ! $date ) {
+					return [];
+				}
+				$ignore_types = $post_id && self::is_same_bus_return_enabled( $post_id );
+				$expanded = self::get_route_all_date_info( $post_id, [ gmdate( 'Y-m-d', strtotime( $date ) ) ], $route_infos );
+				foreach ( $expanded as $rows ) {
+					$bp_time = '';
+					foreach ( $rows as $info ) {
+						$is_bp = $ignore_types || $info['type'] === 'bp' || $info['type'] === 'both';
+						$is_dp = $ignore_types || $info['type'] === 'dp' || $info['type'] === 'both';
+						if ( ! $bp_time && $is_bp && strtolower( (string) $info['place'] ) === strtolower( (string) $start_route ) ) {
+							$bp_time = $info['time'];
+							continue;
+						}
+						if ( $bp_time && $is_dp && strtolower( (string) $info['place'] ) === strtolower( (string) $end_route ) ) {
+							return [ 'bp_time' => $bp_time, 'dp_time' => $info['time'] ];
+						}
+					}
+				}
+				return [];
+			}
+
+			/**
+			 * Public: boarding/dropping datetimes for an OD pair on a date, using the
+			 * automatically resolved leg (outbound vs return).
+			 *
+			 * @return array<string, string>
+			 */
+			public static function get_od_leg_datetimes( $post_id, $start_route, $end_route, $date ) {
+				if ( ! $post_id || ! $start_route || ! $end_route || ! $date ) {
+					return [];
+				}
+				$route_infos = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
+				return self::od_leg_times_from_infos( $post_id, $route_infos, $start_route, $end_route, $date );
+			}
+
+			/**
+			 * Earliest operational date on/after $r_date whose return bus departs at or after
+			 * $floor_ts (the outbound arrival). Lets a same-day round trip whose mirror leg only
+			 * runs earlier in the day roll forward to the next available day.
+			 *
+			 * @param int $floor_ts Unix timestamp the return boarding must be >=.
+			 * @return string Y-m-d
+			 */
+			public static function resolve_return_date_after( $post_id, $return_start, $return_end, $r_date, $floor_ts ) {
+				$base = $r_date ? gmdate( 'Y-m-d', strtotime( $r_date ) ) : '';
+				if ( ! $post_id || ! $return_start || ! $return_end || ! $base || ! $floor_ts ) {
+					return $base;
+				}
+				$dates = self::get_route_date( $post_id, $return_start );
+				$dates = array_unique( is_array( $dates ) ? $dates : [] );
+				usort( $dates, 'WBTM_Global_Function::sort_date' );
+				foreach ( $dates as $date ) {
+					$date = gmdate( 'Y-m-d', strtotime( $date ) );
+					if ( strtotime( $date ) < strtotime( $base ) ) {
+						continue;
+					}
+					$times = self::get_od_leg_datetimes( $post_id, $return_start, $return_end, $date );
+					if ( ! empty( $times ) && strtotime( $times['bp_time'] ) >= $floor_ts ) {
+						return $date;
+					}
+				}
+				return $base;
+			}
+
+			/**
+			 * Boarding dates from a given route definition (forward or return).
+			 *
+			 * @param array<int, array<string, mixed>> $route_infos_raw
+			 * @return array<int, string>
+			 */
+			private static function collect_boarding_dates_for_route_infos( $post_id, $date_infos, $route_infos_raw, $start_route ) {
+				$out = [];
+				if ( ! is_array( $route_infos_raw ) || count( $route_infos_raw ) === 0 || ! $start_route ) {
+					return $out;
+				}
+				$expanded = self::get_route_all_date_info( $post_id, $date_infos, $route_infos_raw );
+				foreach ( $expanded as $route_info ) {
+					if ( sizeof( $route_info ) > 0 ) {
+						foreach ( $route_info as $info ) {
+							if ( ( $info['type'] === 'bp' || $info['type'] === 'both' ) && strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) ) {
+								$out[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
+							}
+						}
+					}
+				}
+				return $out;
+			}
+
+			public static function default_ticket_types() {
+				return [
+					[
+						'id'    => 'adult',
+						'label' => WBTM_Translations::text_adult(),
+					],
+					[
+						'id'    => 'child',
+						'label' => WBTM_Translations::text_child(),
+					],
+					[
+						'id'    => 'infant',
+						'label' => WBTM_Translations::text_infant(),
+					],
+				];
+			}
+
+			public static function legacy_ticket_type_aliases() {
+				return [
+					'adult'  => 'adult',
+					'0'      => 'adult',
+					0        => 'adult',
+					'child'  => 'child',
+					'1'      => 'child',
+					1        => 'child',
+					'infant' => 'infant',
+					'2'      => 'infant',
+					2        => 'infant',
+				];
+			}
+
+			public static function generate_ticket_type_id( $raw_id = '', $label = '', $used_ids = [], $index = 0 ) {
+				$ticket_type_id = sanitize_key( $raw_id );
+				if ( ! $ticket_type_id && $label ) {
+					$ticket_type_id = str_replace( '-', '_', sanitize_title( $label ) );
+				}
+				if ( ! $ticket_type_id ) {
+					$ticket_type_id = 'ticket_type_' . ( absint( $index ) + 1 );
+				}
+				$base_ticket_type_id = $ticket_type_id;
+				$suffix              = 2;
+				while ( in_array( $ticket_type_id, $used_ids, true ) ) {
+					$ticket_type_id = $base_ticket_type_id . '_' . $suffix;
+					$suffix ++;
+				}
+				return $ticket_type_id;
+			}
+
+			public static function get_ticket_types( $post_id = 0 ) {
+				$stored_ticket_types = $post_id > 0 ? WBTM_Global_Function::get_post_info( $post_id, 'wbtm_ticket_types', [] ) : [];
+				$source_ticket_types = is_array( $stored_ticket_types ) && sizeof( $stored_ticket_types ) > 0 ? $stored_ticket_types : self::default_ticket_types();
+				$ticket_types        = [];
+				$used_ids            = [];
+
+				foreach ( $source_ticket_types as $index => $ticket_type ) {
+					if ( ! is_array( $ticket_type ) ) {
+						$ticket_type = [
+							'label' => $ticket_type,
+						];
+					}
+					$label = array_key_exists( 'label', $ticket_type ) ? sanitize_text_field( $ticket_type['label'] ) : '';
+					if ( ! $label && array_key_exists( 'name', $ticket_type ) ) {
+						$label = sanitize_text_field( $ticket_type['name'] );
+					}
+					if ( ! $label && array_key_exists( 'id', $ticket_type ) ) {
+						$label = self::get_ticket_name( $ticket_type['id'] );
+					}
+					if ( ! $label ) {
+						continue;
+					}
+					$requested_id = array_key_exists( 'id', $ticket_type ) ? $ticket_type['id'] : '';
+					if ( ! $requested_id && array_key_exists( 'slug', $ticket_type ) ) {
+						$requested_id = $ticket_type['slug'];
+					}
+					$ticket_type_id = self::generate_ticket_type_id( $requested_id, $label, $used_ids, $index );
+					$ticket_types[] = [
+						'id'    => $ticket_type_id,
+						'label' => $label,
+					];
+					$used_ids[] = $ticket_type_id;
+				}
+
+				return sizeof( $ticket_types ) > 0 ? $ticket_types : self::default_ticket_types();
+			}
+
+			public static function get_ticket_type_map( $post_id = 0 ) {
+				$ticket_type_map = [];
+				foreach ( self::get_ticket_types( $post_id ) as $ticket_type ) {
+					$ticket_type_map[ $ticket_type['id'] ] = $ticket_type['label'];
+				}
+				return $ticket_type_map;
+			}
+
+			public static function get_ticket_price_by_type( $price_info, $ticket_type_id ) {
+				$ticket_type_id = (string) $ticket_type_id;
+				$dynamic_prices = array_key_exists( 'wbtm_ticket_prices', $price_info ) && is_array( $price_info['wbtm_ticket_prices'] ) ? $price_info['wbtm_ticket_prices'] : [];
+				if ( array_key_exists( $ticket_type_id, $dynamic_prices ) && $dynamic_prices[ $ticket_type_id ] !== '' ) {
+					return (float) $dynamic_prices[ $ticket_type_id ];
+				}
+
+				$legacy_aliases = self::legacy_ticket_type_aliases();
+				$legacy_ticket  = array_key_exists( $ticket_type_id, $legacy_aliases ) ? $legacy_aliases[ $ticket_type_id ] : $ticket_type_id;
+				if ( $legacy_ticket === 'adult' && array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_price'];
+				}
+				if ( $legacy_ticket === 'child' && array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_child_price'];
+				}
+				if ( $legacy_ticket === 'infant' && array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ) {
+					return (float) $price_info['wbtm_bus_infant_price'];
+				}
+				return '';
+			}
+
+			/**
+			 * Passenger types for the per-seat pricing modal: any type with at least one route fare in
+			 * wbtm_bus_prices, or a non-empty saved per-seat override (so existing overrides stay editable).
+			 *
+			 * @param int $post_id Bus post ID.
+			 * @return array<int, array{id: string, label: string}>
+			 */
+			public static function get_ticket_types_for_seat_price_modal( $post_id ) {
+				$post_id = absint( $post_id );
+				if ( ! $post_id || ! self::is_pro_active() ) {
+					return [];
+				}
+				$all_types = self::get_ticket_types( $post_id );
+				if ( empty( $all_types ) ) {
+					return [];
+				}
+				$has_route = [];
+				$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+				if ( is_array( $price_infos ) && sizeof( $price_infos ) > 0 ) {
+					foreach ( $all_types as $tt ) {
+						$tid = (string) $tt['id'];
+						foreach ( $price_infos as $row ) {
+							$p = self::get_ticket_price_by_type( $row, $tid );
+							if ( $p !== '' ) {
+								$has_route[ $tid ] = true;
+								break;
+							}
+						}
+					}
+				}
+				$has_override = [];
+				$overrides    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_price_overrides', [] );
+				if ( is_array( $overrides ) && sizeof( $overrides ) > 0 ) {
+					foreach ( $overrides as $row ) {
+						if ( ! is_array( $row ) ) {
+							continue;
+						}
+						foreach ( $row as $tid => $val ) {
+							if ( $val !== '' && $val !== null ) {
+								$has_override[ (string) $tid ] = true;
+							}
+						}
+					}
+				}
+				$out = [];
+				foreach ( $all_types as $tt ) {
+					$tid = (string) $tt['id'];
+					if ( ! empty( $has_route[ $tid ] ) || ! empty( $has_override[ $tid ] ) ) {
+						$out[] = $tt;
+					}
+				}
+				return $out;
+			}
+
+			public static function get_legacy_price_fields( $ticket_prices = [] ) {
+				return [
+					'wbtm_bus_price'        => array_key_exists( 'adult', $ticket_prices ) ? $ticket_prices['adult'] : '',
+					'wbtm_bus_child_price'  => array_key_exists( 'child', $ticket_prices ) ? $ticket_prices['child'] : '',
+					'wbtm_bus_infant_price' => array_key_exists( 'infant', $ticket_prices ) ? $ticket_prices['infant'] : '',
+				];
+			}
+
+			/**
+			 * Outbound vs return fares: rows with wbtm_price_leg === 'return' are used when $price_leg is 'return'.
+			 * Missing wbtm_price_leg on stored rows counts as outbound. If no return row matches, falls back to outbound.
+			 *
+			 * @param bool $try_reverse_return When leg is return, try swapped boarding/dropping on return-priced rows once (avoids recursion).
+			 */
+			public static function get_ticket_info( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				$price_leg    = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
-					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
-					
+					$price_infos  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					$ticket_types = self::get_ticket_types( $post_id );
+
 					if ( sizeof( $price_infos ) > 0 ) {
 						foreach ( $price_infos as $price_info ) {
-							if ( strtolower( $price_info['wbtm_bus_bp_price_stop'] ) == strtolower( $start_route ) && strtolower( $price_info['wbtm_bus_dp_price_stop'] ) == strtolower( $end_route ) ) {
-								$adult_price  = array_key_exists( 'wbtm_bus_price', $price_info ) && $price_info['wbtm_bus_price'] !== '' ? (float) $price_info['wbtm_bus_price'] : '';
-								$child_price  = array_key_exists( 'wbtm_bus_child_price', $price_info ) && $price_info['wbtm_bus_child_price'] !== '' ? (float) $price_info['wbtm_bus_child_price'] : '';
-								$infant_price = array_key_exists( 'wbtm_bus_infant_price', $price_info ) && $price_info['wbtm_bus_infant_price'] !== '' ? (float) $price_info['wbtm_bus_infant_price'] : '';
-								
-								if ( $adult_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_adult(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $adult_price ),
-										'type'  => 0
-									];
-								}
-								if ( $child_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_child(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $child_price ),
-										'type'  => 1
-									];
-								}
-								
-								if ( $infant_price !== '' ) {
-									$ticket_infos[] = [
-										'name'  => WBTM_Translations::text_infant(),
-										'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $infant_price ),
-										'type'  => 2
-									];
+							$row_leg = ( isset( $price_info['wbtm_price_leg'] ) && $price_info['wbtm_price_leg'] === 'return' ) ? 'return' : 'outbound';
+							if ( $row_leg !== $price_leg ) {
+								continue;
+							}
+							if ( strtolower( (string) $price_info['wbtm_bus_bp_price_stop'] ) === strtolower( (string) $start_route ) && strtolower( (string) $price_info['wbtm_bus_dp_price_stop'] ) === strtolower( (string) $end_route ) ) {
+								foreach ( $ticket_types as $ticket_type ) {
+									$ticket_price = self::get_ticket_price_by_type( $price_info, $ticket_type['id'] );
+									if ( $ticket_price !== '' ) {
+										$ticket_infos[] = [
+											'name'  => $ticket_type['label'],
+											'price' => WBTM_Global_Function::get_wc_raw_price( $post_id, $ticket_price ),
+											'type'  => $ticket_type['id'],
+										];
+									}
 								}
 							}
 						}
 					}
 				}
+				if ( sizeof( $ticket_infos ) === 0 && $try_reverse_return
+					&& ( $price_leg === 'return' || self::is_same_bus_return_enabled( $post_id ) ) ) {
+					// On a same-bus-return bus a city-pair is the same physical segment in both
+					// directions, so when this direction has no fare row configured, fall back to
+					// the mirror pair's fare (resolve_price_leg picks the right leg for it).
+					$reverse = self::get_ticket_info( $post_id, $end_route, $start_route, $price_leg, false );
+					if ( sizeof( $reverse ) > 0 ) {
+						return $reverse;
+					}
+					if ( $price_leg !== 'outbound' ) {
+						return self::get_ticket_info( $post_id, $start_route, $end_route, 'outbound', false );
+					}
+				}
 				return $ticket_infos;
 			}
-			public static function get_ticket_name( $type = 0 ) {
-				$ticket[0] = WBTM_Translations::text_adult();
-				$ticket[1] = WBTM_Translations::text_child();
-				$ticket[2] = WBTM_Translations::text_infant();
-				return $ticket[ $type ];
+
+			public static function get_full_bus_pricing( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				if ( ! self::is_full_bus_feature_enabled() ) {
+					return [];
+				}
+				$price_leg = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
+				if ( $post_id && $start_route && $end_route ) {
+					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
+					if ( sizeof( $price_infos ) > 0 ) {
+						foreach ( $price_infos as $price_info ) {
+							$row_leg = ( isset( $price_info['wbtm_price_leg'] ) && $price_info['wbtm_price_leg'] === 'return' ) ? 'return' : 'outbound';
+							if ( $row_leg !== $price_leg ) {
+								continue;
+							}
+							if (
+								strtolower( (string) $price_info['wbtm_bus_bp_price_stop'] ) === strtolower( (string) $start_route ) &&
+								strtolower( (string) $price_info['wbtm_bus_dp_price_stop'] ) === strtolower( (string) $end_route ) &&
+								isset( $price_info['wbtm_full_bus_price'] ) &&
+								$price_info['wbtm_full_bus_price'] !== ''
+							) {
+								$base_price = WBTM_Global_Function::get_wc_raw_price( $post_id, (float) $price_info['wbtm_full_bus_price'] );
+								$discount = self::calculate_full_bus_discount( $post_id, $base_price, isset( $price_info['wbtm_full_bus_discount'] ) ? $price_info['wbtm_full_bus_discount'] : '' );
+								$discount = min( (float) $base_price, max( 0, (float) $discount ) );
+								return [
+									'base_price' => (float) $base_price,
+									'discount'   => $discount,
+									'final_price' => max( 0, (float) $base_price - $discount ),
+								];
+							}
+						}
+					}
+				}
+				if ( $price_leg === 'return' && $try_reverse_return ) {
+					$reverse_return_price = self::get_full_bus_pricing( $post_id, $end_route, $start_route, 'return', false );
+					if ( sizeof( $reverse_return_price ) > 0 ) {
+						return $reverse_return_price;
+					}
+					return self::get_full_bus_pricing( $post_id, $start_route, $end_route, 'outbound', false );
+				}
+				return [];
 			}
-			public static function get_route_all_date_info( $post_id, $all_dates = [] ) {
+
+			public static function get_full_bus_price( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
+				$pricing = self::get_full_bus_pricing( $post_id, $start_route, $end_route, $price_leg, $try_reverse_return );
+				return sizeof( $pricing ) > 0 ? $pricing['final_price'] : '';
+			}
+
+			public static function calculate_full_bus_discount( $post_id, $base_price, $discount_value ) {
+				$discount_value = trim( (string) $discount_value );
+				if ( $discount_value === '' ) {
+					return 0;
+				}
+				if ( substr( $discount_value, -1 ) === '%' ) {
+					$percent = max( 0, (float) str_replace( '%', '', $discount_value ) );
+					$percent = min( 100, $percent );
+					return ( (float) $base_price * $percent ) / 100;
+				}
+				return WBTM_Global_Function::get_wc_raw_price( $post_id, max( 0, (float) $discount_value ) );
+			}
+
+			public static function full_bus_booking_button( $post_id, $all_info, $date, $price_leg = 'outbound', $btn_show = '' ) {
+				if ( ! self::is_full_bus_feature_enabled() ) {
+					return '';
+				}
+				if ( ! is_array( $all_info ) || empty( $all_info['bp'] ) || empty( $all_info['dp'] ) || empty( $all_info['available_seat'] ) || empty( $all_info['total_seat'] ) ) {
+					return '';
+				}
+				if ( (int) $all_info['available_seat'] < (int) $all_info['total_seat'] ) {
+					return '';
+				}
+				$full_bus_pricing = self::get_full_bus_pricing( $post_id, $all_info['bp'], $all_info['dp'], $price_leg );
+				$full_bus_price = sizeof( $full_bus_pricing ) > 0 ? $full_bus_pricing['final_price'] : '';
+				if ( $full_bus_price === '' || (float) $full_bus_price <= 0 ) {
+					return '';
+				}
+				ob_start();
+				?>
+				<div class="wbtm-full-bus-booking <?php echo esc_attr( $btn_show ); ?>">
+					<button
+						type="button"
+						class="_themeButton_xs wbtm_full_bus_book_now"
+						data-bus-id="<?php echo esc_attr( $post_id ); ?>"
+						data-start-point="<?php echo esc_attr( $all_info['start_point'] ); ?>"
+						data-start-time="<?php echo esc_attr( $all_info['start_time'] ); ?>"
+						data-bp-place="<?php echo esc_attr( $all_info['bp'] ); ?>"
+						data-bp-time="<?php echo esc_attr( $all_info['bp_time'] ); ?>"
+						data-dp-place="<?php echo esc_attr( $all_info['dp'] ); ?>"
+						data-dp-time="<?php echo esc_attr( $all_info['dp_time'] ); ?>"
+						data-date="<?php echo esc_attr( $date ); ?>"
+						data-price-leg="<?php echo esc_attr( $price_leg ); ?>"
+						data-price="<?php echo esc_attr( $full_bus_price ); ?>"
+						data-available-seat="<?php echo esc_attr( $all_info['available_seat'] ); ?>"
+						data-form-nonce="<?php echo esc_attr( wp_create_nonce( 'wbtm_form_nonce' ) ); ?>"
+						data-loading-text="<?php echo esc_attr__( 'Booking full bus...', 'bus-ticket-booking-with-seat-reservation' ); ?>"
+					>
+						<?php esc_html_e( 'Book Full Bus', 'bus-ticket-booking-with-seat-reservation' ); ?>
+					</button>
+					<div class="wbtm-full-bus-tooltip">
+						<button type="button" class="wbtm-full-bus-tooltip-toggle" aria-expanded="false" aria-label="<?php esc_attr_e( 'Full bus price details', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+							<span aria-hidden="true">?</span>
+						</button>
+						<div class="wbtm-full-bus-tooltip-panel" role="status">
+							<span><?php esc_html_e( 'Full Bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+							<?php if ( ! empty( $full_bus_pricing['discount'] ) ) { ?>
+								<del><?php echo wp_kses_post( WBTM_Global_Function::format_price( $full_bus_pricing['base_price'] ) ); ?></del>
+								<small><?php echo esc_html( sprintf( __( 'Discount %s', 'bus-ticket-booking-with-seat-reservation' ), wp_strip_all_tags( WBTM_Global_Function::format_price( $full_bus_pricing['discount'] ) ) ) ); ?></small>
+							<?php } ?>
+							<strong><?php echo wp_kses_post( WBTM_Global_Function::format_price( $full_bus_price ) ); ?></strong>
+						</div>
+					</div>
+				</div>
+				<?php
+				return ob_get_clean();
+			}
+
+			/**
+			 * From booking AJAX / add-to-cart POST.
+			 */
+			public static function get_requested_price_leg() {
+				if ( empty( $_POST['wbtm_price_leg'] ) ) {
+					return 'outbound';
+				}
+				$leg = sanitize_text_field( wp_unslash( $_POST['wbtm_price_leg'] ) );
+				return $leg === 'return' ? 'return' : 'outbound';
+			}
+			public static function get_ticket_name( $type = 0, $post_id = 0 ) {
+				$ticket_type_map = self::get_ticket_type_map( $post_id );
+				if ( array_key_exists( $type, $ticket_type_map ) ) {
+					return $ticket_type_map[ $type ];
+				}
+
+				$legacy_aliases = self::legacy_ticket_type_aliases();
+				$legacy_ticket  = array_key_exists( $type, $legacy_aliases ) ? $legacy_aliases[ $type ] : '';
+				if ( $legacy_ticket && array_key_exists( $legacy_ticket, $ticket_type_map ) ) {
+					return $ticket_type_map[ $legacy_ticket ];
+				}
+
+				if ( is_string( $type ) && $type !== '' ) {
+					return ucwords( str_replace( [ '_', '-' ], ' ', $type ) );
+				}
+				return '';
+			}
+			public static function get_route_all_date_info( $post_id, $all_dates = [], $route_infos_override = null ) {
 				$all_dates   = sizeof( $all_dates ) > 0 ? $all_dates : self::get_post_date( $post_id );
 				$all_infos   = [];
-				$route_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
-				
+				$route_infos = $route_infos_override !== null
+					? $route_infos_override
+					: WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+
 				if ( sizeof( $all_dates ) > 0 ) {
 					foreach ( $all_dates as $date ) {
 						if ( $date ) {
@@ -144,26 +1076,39 @@
 				return $all_infos;
 		}
 
-			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route ) {
+			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route, $price_leg = 'outbound' ) {
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {
-					$all_dates   = WBTM_Functions::get_post_date( $post_id );
-					$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates );
-					if ( sizeof( $route_infos ) > 0 ) {
+					$all_dates        = WBTM_Functions::get_post_date( $post_id );
+					$resolved_leg     = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
+					// Same-bus-return buses connect stops by position, so a boarding-only intermediate
+					// stop can still serve as a drop point on the opposite-direction leg.
+					$ignore_types     = self::is_same_bus_return_enabled( $post_id );
+					$route_date_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates, $resolved_leg );
+					if ( sizeof( $route_date_infos ) > 0 ) {
 						$now_full = current_time( 'Y-m-d H:i' );
-						foreach ( $route_infos as $route_info ) {
+						foreach ( $route_date_infos as $route_info ) {
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
 								foreach ( $route_info as $info ) {
-									if ( strtolower( $start_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
+									if ( strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
 										$bp_date = $info['time'];
 									}
-									if ( $bp_date && strtolower( $end_route ) == strtolower( $info['place'] ) && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
-										$slice_time = self::slice_buffer_time( $bp_date );
+									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
+										// Ticket-sale deadline = operational buffer AND the optional
+										// admin "Ticket Sale Cut-off" (whichever closes sales first).
+										$slice_time = self::ticket_sale_deadline( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
-											$total_seat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
+											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
+												$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
+											} else {
+												$total_seat = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+											}
 											if ( $seat_type == 'wbtm_seat_plan' ) {
-												$sold_seat = sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) );
+												$sold_seat = max(
+													sizeof( array_unique( WBTM_Query::query_seat_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] ) ) ),
+													WBTM_Query::query_total_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] )
+												);
 											} else {
 												$sold_seat = WBTM_Query::query_total_booked( $post_id, $start_route, $end_route, $route_info[0]['time'] );
 											}
@@ -175,7 +1120,7 @@
 												'bp_time'        => $bp_date,
 												'dp'             => $end_route,
 												'dp_time'        => $info['time'],
-												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route ),
+												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg, '', null, $bp_date ),
 												'total_seat'     => $total_seat,
 												'sold_seat'      => $sold_seat,
 												'available_seat' => max( 0, $available_seat ),
@@ -189,6 +1134,162 @@
 					}
 				}
 				return [];
+			}
+			/**
+			 * Get dates where the bus is fully booked (no available seats).
+			 *
+			 * @param int    $post_id     Bus post ID (0 for general search).
+			 * @param string $start_route Starting route/boarding point.
+			 * @param string $end_route   Ending route/dropping point.
+			 * @return array Array of sold-out dates in Y-m-d format.
+			 */
+			public static function get_soldout_dates( $post_id = 0, $start_route = '', $end_route = '' ) {
+				$soldout_dates = [];
+				$all_dates     = self::get_all_dates( $post_id, $start_route, $end_route );
+
+				if ( empty( $all_dates ) || ! $start_route || ! $end_route ) {
+					return $soldout_dates;
+				}
+
+				// For specific bus (single bus page)
+				if ( $post_id > 0 ) {
+					// Batch every date's booking counts into one query up-front; the per-date
+					// availability checks below then resolve from cache instead of hitting the DB.
+					WBTM_Query::prime_booked_map( $post_id, $start_route, $end_route );
+					foreach ( $all_dates as $date ) {
+						$all_info = self::get_bus_all_info( $post_id, $date, $start_route, $end_route );
+						if ( ! empty( $all_info ) && isset( $all_info['available_seat'] ) && (int) $all_info['available_seat'] <= 0 ) {
+							$soldout_dates[] = $date;
+						}
+					}
+				} else {
+					// For general search (multiple buses) — a date is sold out only if ALL buses on that date are sold out
+					$bus_ids = WBTM_Query::get_bus_id( $start_route, $end_route );
+					if ( sizeof( $bus_ids ) > 0 ) {
+						// Batch each bus's booking counts once before the date loop, so the
+						// dates × buses availability checks resolve from cache (no per-cell query).
+						foreach ( $bus_ids as $bus_id ) {
+							WBTM_Query::prime_booked_map( $bus_id, $start_route, $end_route );
+						}
+						foreach ( $all_dates as $date ) {
+							$all_buses_soldout = true;
+							foreach ( $bus_ids as $bus_id ) {
+								$bus_dates = self::get_route_date( $bus_id, $start_route );
+								if ( ! in_array( $date, $bus_dates ) ) {
+									continue;
+								}
+								$all_info = self::get_bus_all_info( $bus_id, $date, $start_route, $end_route );
+								if ( empty( $all_info ) || ! isset( $all_info['available_seat'] ) || (int) $all_info['available_seat'] > 0 ) {
+									$all_buses_soldout = false;
+									break;
+								}
+							}
+							if ( $all_buses_soldout ) {
+								$soldout_dates[] = $date;
+							}
+						}
+					}
+				}
+
+				return array_unique( $soldout_dates );
+			}
+			/**
+			 * Fast sold-out date scan for the async calendar "chunk".
+			 *
+			 * Same result as get_soldout_dates() but built from ONE booking query per bus
+			 * (future dates only) instead of two queries per date. No caching — fresh on
+			 * every call — so it is safe to drive a live calendar from it.
+			 */
+			public static function get_soldout_dates_fast( $post_id = 0, $start_route = '', $end_route = '' ) {
+				$soldout_dates = [];
+				$all_dates     = self::get_all_dates( $post_id, $start_route, $end_route );
+				if ( empty( $all_dates ) || ! $start_route || ! $end_route ) {
+					return $soldout_dates;
+				}
+				$min_date = current_time( 'Y-m-d' );
+
+				if ( $post_id > 0 ) {
+					$avail = self::bus_availability_map( $post_id, $start_route, $end_route, $min_date );
+					foreach ( $all_dates as $date ) {
+						if ( isset( $avail[ $date ] ) && (int) $avail[ $date ] <= 0 ) {
+							$soldout_dates[] = $date;
+						}
+					}
+				} else {
+					$bus_ids = WBTM_Query::get_bus_id( $start_route, $end_route );
+					if ( sizeof( $bus_ids ) > 0 ) {
+						$bus_avail = [];
+						foreach ( $bus_ids as $bus_id ) {
+							$bus_avail[ $bus_id ] = self::bus_availability_map( $bus_id, $start_route, $end_route, $min_date );
+						}
+						foreach ( $all_dates as $date ) {
+							$all_buses_soldout = true;
+							foreach ( $bus_ids as $bus_id ) {
+								if ( ! in_array( $date, self::get_route_date( $bus_id, $start_route ) ) ) {
+									continue;
+								}
+								// No booking entry for the date => seats free; otherwise check availability.
+								if ( ! isset( $bus_avail[ $bus_id ][ $date ] ) || (int) $bus_avail[ $bus_id ][ $date ] > 0 ) {
+									$all_buses_soldout = false;
+									break;
+								}
+							}
+							if ( $all_buses_soldout ) {
+								$soldout_dates[] = $date;
+							}
+						}
+					}
+				}
+				return array_unique( $soldout_dates );
+			}
+			/**
+			 * Build a [ date => available_seat ] map for a single bus/route from a single
+			 * booking query. Mirrors get_bus_all_info()'s seat-count rules exactly
+			 * (seat-plan: max(distinct booked seats, total booked units); else total units).
+			 * Only dates that have bookings appear in the map.
+			 */
+			private static function bus_availability_map( $post_id, $start, $end, $min_date ) {
+				$map = [];
+				$seat_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
+				if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
+					$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
+				} else {
+					$total_seat = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
+				}
+				$rows = WBTM_Query::query_booking_rows_for_route( $post_id, $start, $end, $min_date );
+				if ( empty( $rows ) ) {
+					return $map;
+				}
+				$units   = [];
+				$seats   = [];
+				$counted = []; // booking_id => true, so a booking counts once even if meta rows duplicate
+				foreach ( $rows as $row ) {
+					if ( empty( $row->start_time ) ) {
+						continue;
+					}
+					$date = gmdate( 'Y-m-d', strtotime( $row->start_time ) );
+					if ( empty( $counted[ $row->booking_id ] ) ) {
+						$counted[ $row->booking_id ] = true;
+						$full = (int) $row->full_count;
+						$units[ $date ] = ( isset( $units[ $date ] ) ? $units[ $date ] : 0 ) + ( ( $row->booking_mode === 'full_bus' && $full > 0 ) ? $full : 1 );
+					}
+					$seat_name = $row->seat;
+					if ( class_exists( 'WBTM_Seat_Configuration' ) ) {
+						$seat_name = WBTM_Seat_Configuration::normalize_saved_seat_value( $seat_name );
+					}
+					if ( $seat_name && ! ( class_exists( 'WBTM_Seat_Configuration' ) && WBTM_Seat_Configuration::is_non_seat_item( $seat_name ) ) ) {
+						if ( ! isset( $seats[ $date ] ) ) {
+							$seats[ $date ] = [];
+						}
+						$seats[ $date ][ $seat_name ] = true;
+					}
+				}
+				$is_seat_plan = ( $seat_type == 'wbtm_seat_plan' );
+				foreach ( $units as $date => $u ) {
+					$sold = $is_seat_plan ? max( ( isset( $seats[ $date ] ) ? count( $seats[ $date ] ) : 0 ), $u ) : $u;
+					$map[ $date ] = $total_seat - $sold;
+				}
+				return $map;
 			}
 			//==========================//
 			public static function get_all_dates( $post_id = 0, $start_route = '' ,$end_route='') {
@@ -213,18 +1314,29 @@
 			public static function get_route_date( $post_id, $start_route = '' ) {
 				$all_dates = [];
 				if ( $post_id > 0 ) {
-					$date_infos  = self::get_post_date( $post_id );
-					$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $date_infos );
-					if ( sizeof( $route_infos ) > 0 ) {
-						foreach ( $route_infos as $route_info ) {
-							if ( sizeof( $route_info ) > 0 ) {
-								foreach ( $route_info as $info ) {
-									if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
-										if ( $start_route ) {
-											if ( $start_route == $info['place'] ) {
-												$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
-											}
-										} else {
+					$date_infos   = self::get_post_date( $post_id );
+					$forward_ri   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] );
+					$all_dates    = array_merge(
+						$all_dates,
+						self::collect_boarding_dates_for_route_infos( $post_id, $date_infos, $forward_ri, $start_route )
+					);
+					if ( self::is_same_bus_return_enabled( $post_id ) && $start_route ) {
+						foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward_ri ) as $return_ri ) {
+							if ( self::wbtm_route_infos_has_boarding_place( $return_ri, $start_route ) ) {
+								$all_dates = array_merge(
+									$all_dates,
+									self::collect_boarding_dates_for_route_infos( $post_id, $date_infos, $return_ri, $start_route )
+								);
+							}
+						}
+					}
+					if ( ! $start_route && sizeof( $all_dates ) === 0 ) {
+						$route_infos = WBTM_Functions::get_route_all_date_info( $post_id, $date_infos );
+						if ( sizeof( $route_infos ) > 0 ) {
+							foreach ( $route_infos as $route_info ) {
+								if ( sizeof( $route_info ) > 0 ) {
+									foreach ( $route_info as $info ) {
+										if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
 											$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 										}
 									}
@@ -235,109 +1347,113 @@
 				}
 				return array_unique( $all_dates );
 			}
+			/**
+			 * Collect a bus's off dates and off weekdays.
+			 *
+			 * off dates come from the date ranges (wbtm_offday_range) plus the
+			 * individual off dates (wbtm_off_dates, either Y-m-d or a recurring MM-DD).
+			 * off days are weekday names (wbtm_off_days, e.g. "saturday,sunday").
+			 *
+			 * @return array{0: string[], 1: string[]} [ off_dates (Y-m-d), off_day_array ]
+			 */
+			public static function get_off_dates_and_days( $post_id, $year, $now ) {
+				$off_dates = [];
+				// Off-day date ranges.
+				$off_day_ranges = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_offday_range', array() );
+				if ( sizeof( $off_day_ranges ) ) {
+					foreach ( $off_day_ranges as $off_day_range ) {
+						if ( isset( $off_day_range['from_date'] ) && isset( $off_day_range['to_date'] ) ) {
+							$from_date = gmdate( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
+							$to_date   = gmdate( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
+							$off_date_lists = WBTM_Global_Function::date_separate_period( $from_date, $to_date );
+							foreach ( $off_date_lists as $off_date_list ) {
+								$off_dates[] = $off_date_list->format( 'Y-m-d' );
+							}
+						}
+					}
+				}
+				// Individual off dates (Y-m-d, or recurring MM-DD rolled to the next occurrence).
+				$particular_off_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
+				if ( sizeof( $particular_off_dates ) > 0 ) {
+					foreach ( $particular_off_dates as $particular_off_date ) {
+						if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_off_date ) ) {
+							$processed_date = $particular_off_date;
+						} else {
+							$processed_date = gmdate( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
+							if ( strtotime( $processed_date ) < strtotime( $now ) ) {
+								$processed_date = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
+							}
+						}
+						$off_dates[] = $processed_date;
+					}
+				}
+				$off_dates     = array_unique( $off_dates );
+				$off_days      = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
+				$off_day_array = $off_days ? array_map( 'strtolower', array_map( 'trim', explode( ',', $off_days ) ) ) : [];
+				return [ $off_dates, $off_day_array ];
+			}
 			public static function get_post_date( $post_id ) {
-                $all_dates = [];
-                if ( $post_id > 0 ) {
-                    $show_on_dates = WBTM_Global_Function::get_post_info( $post_id, 'show_operational_on_day', 'no' );
-                    $now           = current_time( 'Y-m-d' );
-                    $year          = current_time( 'Y' );
-
-                if ( $show_on_dates == 'yes' ) {
-                    $on_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_particular_dates', array() );
-                    if ( ! empty( $on_dates ) ) {
-                        foreach ( $on_dates as $on_date ) {
-                            if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $on_date ) ) {
-                                $date_item = $on_date;
-                            } else {
-                                $date_item = gmdate( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
-                            }
-                            if ( strtotime( $date_item ) < strtotime( $now ) ) {
-                                $date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
-                            }
-                            if ( strtotime( $date_item ) >= strtotime( $now ) ) {
-                                $all_dates[] = $date_item;
-                            }
-                        }
-                    }
-                } else {
-                    // Handling of regular operational dates without specific operational days
-                    $sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
-                    $sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
-                    $active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
-                    $start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
-                    if ( strtotime( $now ) >= strtotime( $start_date ) ) {
-                        $start_date = $now;
-                    }
-                    $end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
-
-                    if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
-                        $end_date = $sale_end_date;
-                    }
-
-                    if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
-                        $off_dates = [];
-
-                        // Process defined off day ranges
-                        $off_day_ranges = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_offday_range', array() );
-                        if ( sizeof( $off_day_ranges ) ) {
-                            foreach ( $off_day_ranges as $off_day_range ) {
-                                if ( isset( $off_day_range['from_date'] ) && isset( $off_day_range['to_date'] ) ) {
-                                    $from_date = gmdate( 'Y-m-d', strtotime( $off_day_range['from_date'] ) );
-                                    $to_date   = gmdate( 'Y-m-d', strtotime( $off_day_range['to_date'] ) );
-
-                                    // Collect all off dates within this range
-                                    $off_date_lists = WBTM_Global_Function::date_separate_period( $from_date, $to_date );
-                                    foreach ( $off_date_lists as $off_date_list ) {
-                                        $off_dates[] = $off_date_list->format( 'Y-m-d' );
-                                    }
-                                }
-                            }
-                        }
-
-                        // Unique off dates generated from the ranges
-                        $off_dates = array_unique( $off_dates );
-
-                            $particular_off_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_dates', array() );
-                            if ( sizeof( $particular_off_dates ) > 0 ) {
-                                foreach ( $particular_off_dates as $particular_off_date ) {
-                                    // Check if the date is already in 'Y-m-d' format
-                                    if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $particular_off_date ) ) {
-                                        $processed_date = $particular_off_date;
-                                    } else {
-                                        // Assume date is in 'MM-DD' format, prepend year
-                                        $processed_date = gmdate( 'Y-m-d', strtotime( $year . '-' . $particular_off_date ) );
-                                        // Move to next year if the date is in the past
-                                        if ( strtotime( $processed_date ) < strtotime( $now ) ) {
-                                            $processed_date = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $particular_off_date ) );
-                                        }
-                                    }
-                                    $off_dates[] = $processed_date;
-                                }
-                            }
-
-                            // Remove duplicates from the off dates array
-                            $off_dates = array_unique( $off_dates );
-                            $off_days      = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_off_days' );
-                            $off_day_array = $off_days ? explode( ',', $off_days ) : [];
-                            $repeat        = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
-
-                            // Generate the date range
-                            $dates = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
-                            foreach ( $dates as $date ) {
-                                $date = $date->format( 'Y-m-d' );
-                                if ( strtotime( $date ) >= strtotime( $now ) ) {
-                                    $day = strtolower( gmdate( 'l', strtotime( $date ) ) ); // Get the day of the week
-                                    // Add date if it is not an off date and not an off day
-                                    if ( ! in_array( $date, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
-                                        $all_dates[] = $date;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return array_unique( $all_dates ); // Return unique available dates
-            }
+				$all_dates = [];
+				if ( $post_id > 0 ) {
+					$show_on_dates = WBTM_Global_Function::get_post_info( $post_id, 'show_operational_on_day', 'no' );
+					$now           = current_time( 'Y-m-d' );
+					$year          = current_time( 'Y' );
+			
+					// Off days / off dates apply in BOTH modes, so a bus never runs on a day or
+					// date the operator marked off. Previously the "operate on specific dates"
+					// mode ignored these, so off days/dates leaked into search and the calendar.
+					list( $off_dates, $off_day_array ) = self::get_off_dates_and_days( $post_id, $year, $now );
+			
+					if ( $show_on_dates == 'yes' ) {
+						$on_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_particular_dates', array() );
+						if ( ! empty( $on_dates ) ) {
+							foreach ( $on_dates as $on_date ) {
+								if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $on_date ) ) {
+									$date_item = $on_date;
+								} else {
+									$date_item = gmdate( 'Y-m-d', strtotime( $year . '-' . $on_date ) );
+								}
+								if ( strtotime( $date_item ) < strtotime( $now ) ) {
+									$date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
+								}
+								if ( strtotime( $date_item ) >= strtotime( $now ) ) {
+									$day = strtolower( gmdate( 'l', strtotime( $date_item ) ) );
+									if ( ! in_array( $date_item, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
+										$all_dates[] = $date_item;
+									}
+								}
+							}
+						}
+					} else {
+						// Regular operational window (start -> end, repeating every N days).
+						$sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
+						$sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
+						$active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
+						$start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
+						if ( strtotime( $now ) >= strtotime( $start_date ) ) {
+							$start_date = $now;
+						}
+						$end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
+						if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
+							$end_date = $sale_end_date;
+						}
+						if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
+							$repeat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
+							$dates  = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
+							foreach ( $dates as $date ) {
+								$date = $date->format( 'Y-m-d' );
+								if ( strtotime( $date ) >= strtotime( $now ) ) {
+									$day = strtolower( gmdate( 'l', strtotime( $date ) ) );
+									if ( ! in_array( $date, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
+										$all_dates[] = $date;
+									}
+								}
+							}
+						}
+					}
+				}
+				return array_unique( $all_dates );
+			}
 
 			public static function slice_buffer_time( $date ) {
 				$buffer_time = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ) * 60;
@@ -346,25 +1462,164 @@
 				}
 				return $date;
 			}
+			/**
+			 * Latest moment a ticket for a given departure may be sold.
+			 *
+			 * Combines the existing operational buffer (slice_buffer_time) with the
+			 * optional, admin-configurable "Ticket Sale Cut-off" (General Settings ->
+			 * Booking behavior). The cut-off lets operators stop sales a set time before
+			 * each departure so they have time to plan routes — either a fixed number of
+			 * hours before departure, or a specific clock time on a day before departure
+			 * ("10 PM the night before"). Whichever comes first (buffer or cut-off) wins.
+			 * When the cut-off is disabled this returns exactly the buffer-adjusted
+			 * departure, so existing behaviour is unchanged.
+			 *
+			 * @param string $bp_date Departure/boarding datetime (Y-m-d H:i or parseable).
+			 * @return string Deadline as 'Y-m-d H:i', or '' when the departure is unparseable.
+			 */
+			public static function ticket_sale_deadline( $bp_date ) {
+				$departure_ts = strtotime( (string) $bp_date );
+				if ( ! $departure_ts ) {
+					return '';
+				}
+				$deadline_ts = strtotime( self::slice_buffer_time( $bp_date ) );
+				$cutoff_ts   = self::ticket_sale_cutoff_ts( $departure_ts );
+				if ( $cutoff_ts !== null && $cutoff_ts < $deadline_ts ) {
+					$deadline_ts = $cutoff_ts;
+				}
+				return gmdate( 'Y-m-d H:i', $deadline_ts );
+			}
+			/**
+			 * Whether ticket sales for a given departure are still open right now.
+			 *
+			 * @param string $bp_date Departure/boarding datetime.
+			 * @return bool True when sales are open (or the deadline can't be determined).
+			 */
+			public static function is_ticket_sale_open( $bp_date ) {
+				$deadline = self::ticket_sale_deadline( $bp_date );
+				if ( $deadline === '' ) {
+					return true;
+				}
+				return strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( $deadline );
+			}
+			/**
+			 * Resolve the configured ticket-sale cut-off to a unix timestamp for a
+			 * specific departure, or null when the cut-off is disabled/misconfigured.
+			 *
+			 * @param int $departure_ts Departure unix timestamp.
+			 * @return int|null
+			 */
+			private static function ticket_sale_cutoff_ts( $departure_ts ) {
+				if ( 'enable' !== WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_enable', 'disable' ) ) {
+					return null;
+				}
+				$type = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_type', 'hours' );
+				if ( 'clock' === $type ) {
+					$days  = max( 0, (int) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_days_before', 1 ) );
+					$clock = trim( (string) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_clock', '22:00' ) );
+					if ( ! preg_match( '/^([01]?\d|2[0-3]):([0-5]\d)$/', $clock, $m ) ) {
+						return null;
+					}
+					$cutoff_day = gmdate( 'Y-m-d', strtotime( "-{$days} day", $departure_ts ) );
+					return strtotime( $cutoff_day . ' ' . sprintf( '%02d:%02d', (int) $m[1], (int) $m[2] ) );
+				}
+				// Fixed hours before departure.
+				$hours = (float) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_hours', 12 );
+				if ( $hours <= 0 ) {
+					return null;
+				}
+				return $departure_ts - (int) round( $hours * 3600 );
+			}
 			//==========================//
-			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false ) {
+			/**
+			 * Storage key for per-seat ticket price overrides (post meta wbtm_seat_price_overrides).
+			 * Lower deck: l|{seatLabel}, upper: u|{seatLabel}, cabin: c|{index}|{seatLabel}.
+			 *
+			 * @param string       $seat_name     Seat label (e.g. A1).
+			 * @param bool         $is_upper_deck Upper deck leg uses u| prefix when $cabin_index is null.
+			 * @param int|null     $cabin_index   Null for lower/upper; integer cabin index for cabin coaches.
+			 */
+			public static function seat_price_override_storage_key( $seat_name, $is_upper_deck, $cabin_index ) {
+				$seat_name = trim( (string) $seat_name );
+				if ( $seat_name === '' ) {
+					return '';
+				}
+				if ( null !== $cabin_index && $cabin_index !== '' ) {
+					return 'c|' . (int) $cabin_index . '|' . $seat_name;
+				}
+				return ( $is_upper_deck ? 'u' : 'l' ) . '|' . $seat_name;
+			}
+
+			/**
+			 * @param string $storage_key From seat_price_override_storage_key().
+			 * @param string $ticket_type_id Ticket type id (slug) as used in wbtm_ticket_types.
+			 * @return float|null Override amount in store raw price units, or null to use route fare.
+			 */
+			public static function get_seat_price_override_raw( $post_id, $storage_key, $ticket_type_id ) {
+				if ( ! $post_id || $storage_key === '' || ! self::is_pro_active() ) {
+					return null;
+				}
+				if ( class_exists( 'WBTM_Seat_Configuration' ) && ! WBTM_Seat_Configuration::is_seat_price_override_enabled( $post_id ) ) {
+					return null;
+				}
+				$map = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_price_overrides', [] );
+				if ( ! is_array( $map ) || ! isset( $map[ $storage_key ] ) || ! is_array( $map[ $storage_key ] ) ) {
+					return null;
+				}
+				$row  = $map[ $storage_key ];
+				$tkey = (string) $ticket_type_id;
+				if ( ! isset( $row[ $tkey ] ) || $row[ $tkey ] === '' || $row[ $tkey ] === null ) {
+					return null;
+				}
+				return max( 0, (float) $row[ $tkey ] );
+			}
+
+			public static function get_seat_price( $post_id, $start_route, $end_route, $seat_type = 0, $dd = false, $price_leg = 'outbound', $seat_name = '', $cabin_index = null, $journey_date = '' ) {
 				if ( $post_id && $start_route && $end_route ) {
-					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route );
+					$ticket_infos = self::get_ticket_info( $post_id, $start_route, $end_route, $price_leg );
 					if ( sizeof( $ticket_infos ) > 0 ) {
+						$requested_seat_type = (string) $seat_type;
+						if ( $requested_seat_type === '' || $requested_seat_type === '0' ) {
+							$requested_seat_type = (string) $ticket_infos[0]['type'];
+						}
 						foreach ( $ticket_infos as $ticket_info ) {
-							if ( $ticket_info['type'] == $seat_type ) {
+							if ( (string) $ticket_info['type'] === $requested_seat_type ) {
 								$price          = $ticket_info['price'];
+								$key            = self::seat_price_override_storage_key( $seat_name, (bool) $dd, $cabin_index );
+								$override_price = self::get_seat_price_override_raw( $post_id, $key, $requested_seat_type );
+								if ( null !== $override_price ) {
+									$price = $override_price;
+								}
 								$seat_plan_type = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 								if ( $seat_plan_type == 'wbtm_seat_plan' && $dd ) {
 									$seat_dd_increase = (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_dd_price_parcent', 0 );
 									$price            = $price + ( $price * $seat_dd_increase / 100 );
 								}
+								// Seasonal/date-based pricing (Pro): applied AFTER the per-seat
+								// override and double-decker % uplift above. $journey_date defaults
+								// to '' so any caller without date context degrades gracefully
+								// (no seasonal adjustment).
+								$price = apply_filters( 'wbtm_ticket_price', $price, $post_id, $journey_date, $requested_seat_type );
 								return $price;
 							}
 						}
 					}
 				}
 				return false;
+			}
+			/**
+			 * Whether an origin -> destination segment has a fare configured.
+			 *
+			 * get_seat_price() returns boolean false when no price row exists for the
+			 * OD pair (a configured free route returns numeric 0, not false), so this
+			 * cleanly distinguishes "not priced / not bookable" from "priced at 0".
+			 * Reuses get_seat_price(), so it honors the same return-leg / same-bus-return
+			 * fallbacks used everywhere else.
+			 *
+			 * @return bool True if bookable (a fare exists), false if unpriced.
+			 */
+			public static function route_price_configured( $post_id, $start_route, $end_route, $price_leg = 'outbound' ) {
+				return self::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg ) !== false;
 			}
 			public static function get_ex_service_price( $post_id, $service_name ) {
 				$show_extra_service = WBTM_Global_Function::get_post_info( $post_id, 'show_extra_service', 'no' );
@@ -384,6 +1639,10 @@
 			}
 			//==========================//
 			public static function check_seat_in_cart( $bus_id, $bp, $dp, $bp_date, $seat_name ) {
+				if ( ! self::is_wc_active() ) {
+					// No WooCommerce: no cart exists, so nothing can be "in cart" yet.
+					return false;
+				}
 				$cart_items = WC()->cart->get_cart();
 				if ( sizeof( $cart_items ) > 0 ) {
 					foreach ( $cart_items as $cart_item ) {
@@ -479,13 +1738,291 @@
 				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus', 'bus' );
 			}
 			public static function get_icon() {
-				$svg = '<svg width="60" height="51" viewBox="0 0 60 51" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path fill-rule="evenodd" clip-rule="evenodd" d="M24.2388 0.0864429L25.7288 0.0839404C26.7632 0.0824146 27.7975 0.0819873 28.832 0.0821094C29.4503 0.0821094 30.0687 0.081377 30.687 0.0801563C31.3833 0.0787525 32.0797 0.0767383 32.776 0.07448C33.7996 0.0717334 34.8232 0.0712451 35.8469 0.0713672C36.0709 0.0712451 36.2949 0.07094 36.5189 0.0704517C36.7791 0.0699024 37.0394 0.0691089 37.2997 0.0680713C45.2414 0.0392017 47.522 0.0309009 49.2498 1.00405C49.9457 1.39601 50.5519 1.94728 51.4023 2.72048L51.4028 2.72103C52.5543 4.04988 52.8179 5.03646 52.7754 6.76595L52.7686 7.29036C52.7628 7.71529 52.7539 8.14015 52.7444 8.56502L53.5508 8.51845C55.7673 8.52632 57.7653 9.09499 59.4443 10.5501C60.6074 12.8764 59.6877 16.8532 59.0139 19.2517C58.6736 20.0405 58.3959 20.46 57.7073 20.9722C57.4002 21.0286 57.2446 21.0572 57.0878 21.0691C56.9268 21.0814 56.7645 21.0761 56.4355 21.0653L55.7822 21.0556C55.6635 21.0378 55.5701 21.0238 55.4919 21.008C55.4052 20.9904 55.3369 20.9707 55.2734 20.9409C55.1254 20.8718 55.0026 20.749 54.7296 20.4759C54.7137 20.2223 54.7017 19.972 54.6934 19.7226C54.6877 19.5524 54.6837 19.3826 54.6813 19.2125C54.6776 18.9498 54.6776 18.6862 54.6811 18.419L54.6832 17.8036C54.686 17.1538 54.6922 16.504 54.6985 15.8542C54.701 15.4141 54.7032 14.9741 54.7053 14.534C54.7108 13.4542 54.7194 12.3744 54.7296 11.2946L52.7444 11.0464L52.7471 11.5306C52.7691 15.4201 52.7855 19.3095 52.7958 23.1991C52.8009 25.08 52.8079 26.961 52.8193 28.8419C52.8292 30.4816 52.8356 32.1212 52.8378 33.7609C52.8391 34.6289 52.8421 35.4968 52.8493 36.3648C52.8574 37.3343 52.8575 38.3038 52.8571 39.2734L52.8679 40.1431C52.8599 41.6914 52.7986 42.6287 51.7518 43.8014C50.8229 44.6814 50.3075 44.8619 49.0222 45.2903L48.7741 49.7569C47.7635 50.2622 47.3414 50.3168 46.2451 50.319L45.349 50.321L44.4161 50.3152L43.4802 50.321L42.585 50.319L41.7654 50.3174C41.4659 50.2893 41.2976 50.2735 41.1405 50.2229C40.939 50.158 40.7557 50.036 40.3377 49.7572L40.3372 49.7569V46.531H19.4931V49.7569C18.4825 50.2622 18.0604 50.3168 16.9642 50.319L16.0681 50.321L15.1351 50.3152L14.1992 50.321L13.3041 50.319L12.4844 50.3174C12.185 50.2893 12.0167 50.2735 11.8596 50.2229C11.658 50.158 11.4748 50.036 11.0568 49.7572L11.0562 49.7569C11.0174 49.5427 10.9964 49.4269 10.9862 49.3101C10.9742 49.1726 10.9771 49.0338 10.9835 48.7313L10.9908 48.1255L11.0097 47.4926L11.0198 46.8538C11.0286 46.3325 11.042 45.8114 11.0562 45.2903L10.4998 45.2089C9.77643 45.0326 9.38013 44.8073 8.79193 44.3598L8.2937 43.9914C7.57916 43.3158 7.13495 42.6558 6.99432 41.6716L6.9964 40.9764L6.99329 40.174L7.0014 39.3016L7.0011 38.3769C7.00153 37.5423 7.00525 36.7078 7.01044 35.8732C7.01459 35.091 7.01538 34.3087 7.01617 33.5264L7.01642 33.2543C7.0177 32.3358 7.0202 31.4174 7.02338 30.499C7.02594 29.7653 7.02899 29.0316 7.03229 28.2978C7.04065 26.4165 7.04474 24.5352 7.04846 22.6538C7.0531 20.3334 7.05969 18.013 7.06781 15.6925C7.07098 14.786 7.0744 13.8795 7.078 12.973C7.08051 12.3308 7.08319 11.6886 7.08594 11.0464L5.34888 11.2946L5.33398 12.1295C5.31519 13.1497 5.29315 14.1699 5.27014 15.19C5.26666 15.3526 5.26324 15.5152 5.26001 15.6778C5.25439 15.9571 5.24915 16.2364 5.2442 16.5158C5.23291 17.1503 5.21851 17.7846 5.20349 18.419L5.19482 19.0199C5.17133 19.8953 5.16254 20.2232 5.02393 20.4813C4.94092 20.6358 4.81146 20.7652 4.60449 20.9722L4.60229 20.9726L4.59955 20.9729C4.34528 21.011 4.20776 21.0316 4.06952 21.0436C3.90814 21.0576 3.74573 21.0601 3.39478 21.0653L2.74536 21.0866C1.90491 20.9321 1.64685 20.6544 1.13043 19.9796C0.233765 17.9011 0.0394897 15.7376 0.0137939 13.4968L0 12.8198C0.00952148 11.8062 0.0502319 11.1975 0.566345 10.3078C2.36505 8.70687 4.78479 8.52535 7.08594 8.56502L7.0423 7.82057V7.81984V7.81929C6.95599 5.73537 6.92511 4.99013 7.19006 4.37154C7.33752 4.02724 7.57654 3.72219 7.94861 3.24733L8.32666 2.85768L8.67365 2.49904C11.8582 -0.200544 17.4107 -0.0635815 21.8657 0.0463428C22.7032 0.0670337 23.5019 0.0867481 24.2388 0.0864429ZM24.1652 6.75331C24.6938 6.7524 25.2224 6.7513 25.751 6.75014C26.8495 6.74831 27.9481 6.74831 29.0466 6.74965C30.4437 6.75112 31.8406 6.74684 33.2376 6.74111C34.3259 6.73744 35.4142 6.73726 36.5026 6.73799C37.0173 6.73787 37.5321 6.73665 38.0469 6.73409C43.077 6.71242 44.6772 6.70552 46.0911 7.21523C46.7508 7.45302 47.3699 7.80324 48.2778 8.31685C48.8853 8.92433 48.8734 9.53237 48.8587 10.2905V10.2951C48.8561 10.4238 48.8536 10.5568 48.854 10.6948L48.8615 11.2831C48.8656 11.6442 48.8685 12.0054 48.8706 12.3665C48.8723 12.6492 48.8737 12.932 48.8749 13.2148L48.8834 14.5556C48.8887 15.4937 48.8915 16.4318 48.8932 17.3699C48.896 18.5716 48.9079 19.773 48.9221 20.9746C48.925 21.2692 48.9272 21.5638 48.929 21.8584C48.9328 22.4875 48.9341 23.1165 48.9346 23.7456C48.9362 24.1886 48.9401 24.6315 48.9467 25.0744C48.9551 25.6947 48.9542 26.3143 48.9509 26.9347L48.9648 27.4884C48.9534 28.189 48.9123 28.7455 48.4561 29.2976C44.3609 32.8057 37.2667 32.742 31.7675 32.6925H31.7642L31.2797 32.6882C31.1296 32.6869 30.9808 32.6857 30.8334 32.6848C30.5259 32.6827 30.2247 32.6814 29.9306 32.6815L29.3867 32.6822C25.8061 32.6817 22.2106 32.6254 18.6866 31.937L17.9886 31.8036C15.1982 31.2534 14.426 31.1011 13.7063 30.8164C13.431 30.7074 13.1633 30.5791 12.7932 30.4016L12.354 30.2024C11.7476 29.827 11.4399 29.521 11.0562 28.9128C10.8024 27.4871 10.821 26.0708 10.8401 24.6293L10.843 24.4055C10.843 23.9594 10.8425 23.5132 10.8415 23.0671C10.8411 22.1337 10.8468 21.2008 10.857 20.2675C10.8697 19.0714 10.8691 17.8757 10.8643 16.6795C10.8618 15.759 10.8653 14.8386 10.8708 13.9181C10.8729 13.4771 10.8733 13.036 10.8719 12.5949C10.8715 12.271 10.8732 11.9472 10.8765 11.6234C10.8793 11.3314 10.8833 11.0394 10.8878 10.7473L10.8825 10.1956C10.9051 9.29408 10.9819 8.8918 11.6095 8.22695C12.9818 7.41561 14.1765 7.19667 15.7426 7.04976L16.4022 6.98647C18.988 6.7585 21.5711 6.7513 24.1652 6.75331ZM48.02 34.8266L47.3783 34.8217C45.7564 34.7943 44.392 35.2532 42.9805 36.0412L42.5395 36.2951C41.6074 36.8006 40.8197 37.3009 40.1123 38.1009C39.4811 38.9972 39.4664 39.5016 39.5928 40.5756C39.6323 40.6151 39.6663 40.6491 39.7004 40.6785C39.7184 40.6941 39.7365 40.7084 39.7554 40.7215C39.9595 40.8631 40.2595 40.8664 41.6821 40.8819L42.4309 40.8858C44.6152 40.9326 47.0839 40.9285 48.7741 39.3349L48.7745 39.3316C48.8414 38.7061 48.8658 38.4782 48.873 38.2497C48.8753 38.1788 48.8759 38.1079 48.8756 38.025C48.8754 37.9557 48.8745 37.8781 48.8735 37.7851V37.782L48.8516 37.1946C48.8431 36.4976 48.8188 35.8129 48.7741 35.1164C48.6703 35.0127 48.61 34.9523 48.5378 34.9141C48.4374 34.8609 48.3143 34.8508 48.02 34.8266ZM12.3589 34.7752C15.181 34.8154 17.6597 36.2817 19.7412 38.0941C20.3275 38.9735 20.2994 39.4745 20.2429 40.4783L20.2375 40.5755C19.7841 41.0289 18.813 40.9654 18.0303 40.9142C17.7971 40.8989 17.5805 40.8848 17.3994 40.8857L16.6768 40.9012C14.7117 40.9118 12.5556 40.7486 11.0562 39.3348C10.9761 38.5871 10.951 37.9382 10.9786 37.1945L10.9859 36.6013C11.0051 35.6325 11.0137 35.1939 11.2371 34.9862C11.4218 34.8145 11.7533 34.8006 12.3589 34.7752ZM23.1732 2.07985L22.6463 2.08119C22.4789 2.08132 22.3055 2.06844 22.1341 2.05574C21.4312 2.00368 20.7637 1.95424 20.7009 2.81117L20.7028 3.35402C20.7009 3.89681 20.7009 3.89681 20.7338 4.34657C20.8206 4.43331 20.877 4.48976 20.9439 4.52779C21.0683 4.59859 21.2289 4.60573 21.6884 4.62624L22.6463 4.62685C23.2007 4.62819 23.755 4.62917 24.3094 4.62856C24.5839 4.62813 24.8585 4.62795 25.133 4.62789L25.5014 4.62795C26.3269 4.62856 27.1524 4.62886 27.978 4.62795C29.0553 4.62648 30.1326 4.62563 31.2099 4.62709C31.7462 4.62782 32.2823 4.62831 32.8186 4.62844C33.121 4.6285 33.4233 4.6285 33.7257 4.62837L34.9246 4.6277C35.5021 4.6285 36.0795 4.62923 36.657 4.62813L37.184 4.62685C37.4457 4.62667 37.7074 4.62502 37.9691 4.62074C38.2623 4.61592 38.5554 4.60781 38.8483 4.59474C38.9586 4.48445 39.0199 4.42317 39.0568 4.34969C39.103 4.25777 39.1111 4.14675 39.1294 3.89681L39.1275 3.35402C39.1294 2.81117 39.1294 2.81117 39.0965 2.36141C39.0098 2.27468 38.9533 2.21828 38.8864 2.18025C38.762 2.10945 38.6014 2.10225 38.1419 2.08174L37.184 2.08119C36.6296 2.07979 36.0753 2.07881 35.5209 2.07948C35.1235 2.08003 34.7262 2.08022 34.3289 2.0801C33.5034 2.07942 32.6779 2.07912 31.8524 2.08003C30.775 2.0815 29.6977 2.08235 28.6204 2.08095C27.7818 2.07979 26.9432 2.07924 26.1046 2.07961L24.9058 2.08034C24.3282 2.07948 23.7507 2.07875 23.1732 2.07985Z" fill="#9BA2A6"/>
-				</svg>';
-				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'data:image/svg+xml;base64,' . base64_encode( $svg ) );
+				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', 'fas fa-bus' );
+				// Default bus icon as an SVG data URI. WP admin menus cannot render a
+				// FontAwesome class directly, so FA values fall back to this too.
+				$fallback = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="black" d="M5 2c-1.7 0-3 1.3-3 3v7c0 1.1.9 2 2 2v2h2v-2h8v2h2v-2c1.1 0 2-.9 2-2V5c0-1.7-1.3-3-3-3H5zm0 2h10c.6 0 1 .4 1 1v4H4V5c0-.6.4-1 1-1zm0 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm10 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5 6h2v2H5V6zm4 0h6v2H9V6z"/></svg>' );
+				if ( $icon ) {
+					// Uploaded image (icon_image stores the attachment ID) → resolve to URL.
+					// If the attachment was deleted, use the default icon.
+					if ( is_numeric( $icon ) ) {
+						$url = wp_get_attachment_url( (int) $icon );
+						return $url ? $url : $fallback;
+					}
+					// Dashicons class → WP menus render it natively.
+					if ( strpos( $icon, 'dashicons' ) === 0 ) {
+						return $icon;
+					}
+					// FontAwesome class → not renderable by WP menus, use the bus SVG.
+					if ( preg_match( '/^(fa[srlbdt]?)\s+fa-/', $icon ) ) {
+						return $fallback;
+					}
+					// Otherwise it's already a data URI or image URL → use as-is.
+					return $icon;
+				}
+				return $fallback;
+			}
+
+			public static function output_dynamic_menu_icon_css() {
+				$icon = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'icon', '' );
+				// Target all possible WP admin menu item IDs for this CPT
+				$item_ids = [
+					'#adminmenu #menu-posts-wbtm_bus .wp-menu-image',
+					'#adminmenu #toplevel_page_wbtm_bus .wp-menu-image',
+					'#adminmenu li.menu-top.wp-has-submenu.wp-menu-open .wp-menu-image',
+				];
+				$img_sel    = implode( ', ', array_map( function($s){ return $s . ' img'; }, $item_ids ) );
+				$before_sel = implode( ', ', $item_ids );
+
+				// ── FontAwesome class → render via :before + FA font ──
+				if ( $icon && preg_match( '/^(fa[srlbdt]?)\s+fa-(.+)$/', $icon, $m ) ) {
+					$style   = $m[1];
+					$unicode = self::fa_unicode( $m[2] );
+					if ( $unicode ) {
+						$weight = ( $style === 'fas' || $style === 'fa' ) ? 900 : 400;
+						echo '<style>'
+							. esc_html( $img_sel ) . ' { display: none !important; }'
+							. esc_html( $before_sel ) . ':before {'
+							. 'content: "\\' . esc_attr( $unicode ) . '" !important;'
+							. 'font-family: "Font Awesome 6 Free" !important;'
+							. 'font-weight: ' . esc_attr( (string) $weight ) . ' !important;'
+							. 'font-size: 20px !important;'
+							. 'padding-top: 4px !important;'
+							. '}'
+							. '</style>' . "\n";
+					}
+					return;
+				}
+
+				// ── Dashicons class ──
+				if ( $icon && strpos( $icon, 'dashicons' ) === 0 ) {
+					echo '<style>' . esc_html( $img_sel ) . ' { display: none !important; }'
+						. esc_html( $before_sel ) . '.dashicons-before:before {'
+						. 'content: "\\' . esc_attr( self::dashicon_unicode( $icon ) ) . '" !important;'
+						. 'font-family: dashicons !important; }'
+						. '</style>' . "\n";
+					return;
+				}
+
+				// ── Image URL / attachment ID / data URI ──
+				if ( $icon && ( filter_var( $icon, FILTER_VALIDATE_URL ) || strpos( $icon, 'data:image' ) === 0 || is_numeric( $icon ) ) ) {
+					if ( is_numeric( $icon ) ) {
+						$url = wp_get_attachment_url( (int) $icon );
+						if ( ! $url ) return;
+						$icon = $url;
+					}
+					echo '<style>'
+						. esc_html( $before_sel ) . '.dashicons-before:before { content: none !important; }'
+						. esc_html( $img_sel ) . ' { width: 20px !important; height: 20px !important; padding: 7px 0 0 !important; display: inline-block !important; }'
+						. '</style>' . "\n";
+					echo '<script>jQuery(function($){'
+						. 'var s=' . wp_json_encode( $img_sel ) . ';'
+						. '$(s).attr("src",' . wp_json_encode( $icon ) . ').show();'
+						. '});</script>' . "\n";
+					return;
+				}
+			}
+
+			private static function fa_unicode( $name ) {
+				// Frequently used Font Awesome icons — Unicode private-use area codes
+				$map = [
+					'bus' => 'f207', 'bus-simple' => 'f55e', 'bus-alt' => 'f55e',
+					'train' => 'f238', 'train-subway' => 'f239', 'train-tram' => 'f8b4',
+					'car' => 'f1b9', 'car-side' => 'f5e4', 'car-alt' => 'f5de',
+					'taxi' => 'f1ba', 'truck' => 'f0d1', 'truck-moving' => 'f4df',
+					'ship' => 'f21a', 'plane' => 'f072', 'plane-departure' => 'f5af',
+					'bicycle' => 'f206', 'motorcycle' => 'f21c', 'walking' => 'f554',
+					'shuttle-van' => 'f5b6', 'shuttle-space' => 'f197',
+					'ticket' => 'f145', 'ticket-alt' => 'f3ff', 'tickets' => 'e658',
+					'location-dot' => 'f3c5', 'map-marker-alt' => 'f3c5', 'map-marker' => 'f041',
+					'map-pin' => 'f276', 'map' => 'f279', 'location-arrow' => 'f124',
+					'route' => 'f4d7', 'road' => 'f018', 'signs-post' => 'f277',
+					'calendar' => 'f133', 'calendar-alt' => 'f073', 'calendar-days' => 'f073',
+					'calendar-check' => 'f274', 'calendar-plus' => 'f271', 'calendar-week' => 'f784',
+					'clock' => 'f017', 'clock-four' => 'f017', 'hourglass' => 'f254',
+					'user' => 'f007', 'users' => 'f0c0', 'user-check' => 'f4fc',
+					'user-plus' => 'f234', 'user-tie' => 'f508', 'address-card' => 'f2bb',
+					'id-card' => 'f2c2', 'id-badge' => 'f2c1', 'passport' => 'f5ab',
+					'credit-card' => 'f09d', 'credit-card-alt' => 'f283', 'money-bill' => 'f0d6',
+					'money-check' => 'f53c', 'dollar-sign' => 'f155', 'wallet' => 'f555',
+					'shopping-cart' => 'f07a', 'cart-shopping' => 'f07a', 'basket-shopping' => 'f291',
+					'store' => 'f54e', 'shop' => 'f54f', 'bag-shopping' => 'f290',
+					'gear' => 'f013', 'cog' => 'f013', 'gears' => 'f085', 'cogs' => 'f085',
+					'wrench' => 'f0ad', 'tools' => 'f7d9', 'screwdriver-wrench' => 'f7d9',
+					'sliders' => 'f1de', 'sliders-h' => 'f1de', 'toggle-on' => 'f205',
+					'check' => 'f00c', 'check-circle' => 'f058', 'check-square' => 'f14a',
+					'xmark' => 'f00d', 'times' => 'f00d', 'circle-xmark' => 'f057',
+					'exclamation' => 'f12a', 'exclamation-circle' => 'f06a', 'exclamation-triangle' => 'f071',
+					'triangle-exclamation' => 'f071', 'circle-exclamation' => 'f06a',
+					'info' => 'f129', 'info-circle' => 'f05a', 'circle-info' => 'f05a',
+					'question' => 'f128', 'question-circle' => 'f059', 'circle-question' => 'f059',
+					'plus' => '2b', 'plus-circle' => 'f055', 'minus' => 'f068', 'minus-circle' => 'f056',
+					'star' => 'f005', 'star-half' => 'f089', 'star-half-stroke' => 'f5c0',
+					'heart' => 'f004', 'thumbs-up' => 'f164', 'thumbs-down' => 'f165',
+					'home' => 'f015', 'house' => 'f015', 'building' => 'f1ad',
+					'globe' => 'f0ac', 'earth-americas' => 'f0ac', 'earth' => 'f57d',
+					'phone' => 'f095', 'phone-flip' => 'f879', 'envelope' => 'f0e0',
+					'at' => '40', 'hashtag' => '23', 'signal' => 'f012',
+					'wifi' => 'f1eb', 'bluetooth' => 'f293', 'bluetooth-b' => 'f294',
+					'battery-full' => 'f240', 'battery-three-quarters' => 'f241',
+					'battery-half' => 'f242', 'battery-quarter' => 'f243', 'battery-empty' => 'f244',
+					'plug' => 'f1e6', 'charging-station' => 'f5e7', 'gas-pump' => 'f52f',
+					'leaf' => 'f06c', 'tree' => 'f1bb', 'seedling' => 'f4d8',
+					'sun' => 'f185', 'moon' => 'f186', 'cloud' => 'f0c2', 'cloud-sun' => 'f6c4',
+					'snowflake' => 'f2dc', 'umbrella' => 'f0e9', 'bolt' => 'f0e7',
+					'fire' => 'f06d', 'shield' => 'f132', 'shield-halved' => 'f3ed',
+					'lock' => 'f023', 'unlock' => 'f09c', 'key' => 'f084',
+					'eye' => 'f06e', 'eye-slash' => 'f070', 'fingerprint' => 'f577',
+					'magnifying-glass' => 'f002', 'search' => 'f002', 'filter' => 'f0b0',
+					'bars' => 'f0c9', 'list' => 'f03a', 'table' => 'f0ce', 'grip' => 'f58d',
+					'print' => 'f02f', 'download' => 'f019', 'upload' => 'f093',
+					'cloud-arrow-up' => 'f0ee', 'cloud-arrow-down' => 'f0ed',
+					'link' => 'f0c1', 'paperclip' => 'f0c6', 'copy' => 'f0c5',
+					'paste' => 'f0ea', 'clipboard' => 'f328', 'scissors' => 'f0c4',
+					'trash' => 'f1f8', 'trash-can' => 'f2ed', 'trash-alt' => 'f2ed',
+					'pen' => 'f304', 'pen-to-square' => 'f044', 'edit' => 'f044',
+					'pencil' => 'f303', 'pencil-alt' => 'f303', 'eraser' => 'f12d',
+					'file' => 'f15b', 'file-lines' => 'f15c', 'file-alt' => 'f15c',
+					'file-pdf' => 'f1c1', 'file-word' => 'f1c2', 'file-excel' => 'f1c3',
+					'file-image' => 'f1c5', 'file-video' => 'f1c8', 'file-audio' => 'f1c7',
+					'file-csv' => 'f6dd', 'file-code' => 'f1c9', 'file-zipper' => 'f1c6',
+					'folder' => 'f07b', 'folder-open' => 'f07c', 'folder-plus' => 'f65e',
+					'image' => 'f03e', 'images' => 'f302', 'camera' => 'f030',
+					'video' => 'f03d', 'film' => 'f008', 'music' => 'f001',
+					'headphones' => 'f025', 'volume-high' => 'f028', 'volume-xmark' => 'f6a9',
+					'microphone' => 'f130', 'microphone-slash' => 'f131',
+					'desktop' => 'f108', 'laptop' => 'f109', 'tablet' => 'f3fa',
+					'mobile' => 'f3cd', 'mobile-screen' => 'f3cf', 'display' => 'e163',
+					'server' => 'f233', 'database' => 'f1c0', 'hard-drive' => 'f0a0',
+					'circle' => 'f111', 'square' => 'f0c8', 'ban' => 'f05e',
+					'play' => 'f04b', 'pause' => 'f04c', 'stop' => 'f04d',
+					'backward' => 'f04a', 'forward' => 'f04e', 'backward-step' => 'f048',
+					'forward-step' => 'f051', 'rotate' => 'f2f1', 'rotate-right' => 'f2f9',
+					'arrows-rotate' => 'f021', 'sync' => 'f021', 'refresh' => 'f021',
+					'arrow-right' => 'f061', 'arrow-left' => 'f060', 'arrow-up' => 'f062', 'arrow-down' => 'f063',
+					'chevron-right' => 'f054', 'chevron-left' => 'f053', 'chevron-up' => 'f077', 'chevron-down' => 'f078',
+					'angle-right' => 'f105', 'angle-left' => 'f104', 'angle-up' => 'f106', 'angle-down' => 'f107',
+					'caret-right' => 'f0da', 'caret-left' => 'f0d9', 'caret-up' => 'f0d8', 'caret-down' => 'f0d7',
+					'arrow-up-right-from-square' => 'f08e', 'external-link-alt' => 'f08e',
+					'spinner' => 'f110', 'circle-notch' => 'f1ce', 'compass' => 'f14e',
+					'bell' => 'f0f3', 'bell-slash' => 'f1f6', 'comment' => 'f075',
+					'comments' => 'f086', 'message' => 'f27a', 'envelope-open' => 'f2b6',
+					'rocket' => 'f135', 'paper-plane' => 'f1d8', 'tag' => 'f02b', 'tags' => 'f02c',
+					'bookmark' => 'f02e', 'book' => 'f02d', 'book-open' => 'f518',
+					'newspaper' => 'f1ea', 'scroll' => 'f70e', 'sticky-note' => 'f249',
+					'cube' => 'f1b2', 'cubes' => 'f1b3', 'box' => 'f466', 'boxes' => 'f468',
+					'inbox' => 'f01c', 'outbox' => 'e6bf', 'archive' => 'f187',
+					'palette' => 'f53f', 'paint-brush' => 'f1fc', 'droplet' => 'f043',
+					'bug' => 'f188', 'code' => 'f121', 'terminal' => 'f120',
+					'quote-right' => 'f10e', 'quote-left' => 'f10d', 'language' => 'f1ab',
+					'barcode' => 'f02a', 'qrcode' => 'f029', 'rss' => 'f09e',
+					'glasses' => 'f530', 'graduation-cap' => 'f19d', 'school' => 'f549',
+					'briefcase' => 'f0b1', 'suitcase' => 'f0f2', 'suitcase-rolling' => 'f5c1',
+					'gift' => 'f06b', 'award' => 'f559', 'trophy' => 'f091',
+					'hand' => 'f256', 'handshake' => 'f2b5', 'hand-holding-heart' => 'f4be',
+					'person' => 'f183', 'people-group' => 'e533', 'people-arrows' => 'e068',
+					'wheelchair' => 'f193', 'wheelchair-move' => 'e2ce', 'accessible-icon' => 'f368',
+					'child' => 'f1ae', 'baby' => 'f77c', 'dog' => 'f6d3', 'cat' => 'f6be',
+					'crow' => 'f520', 'fish' => 'f578', 'paw' => 'f1b0',
+					'smoking' => 'f48d', 'ban-smoking' => 'f54d', 'wine-glass' => 'f4e3',
+					'mug-saucer' => 'f0f4', 'coffee' => 'f0f4', 'beer-mug-empty' => 'f0fc',
+					'utensils' => 'f2e7', 'pizza-slice' => 'f818', 'hamburger' => 'f805',
+					'apple-whole' => 'f5d1', 'lemon' => 'f094', 'carrot' => 'f787',
+				];
+				return isset( $map[ $name ] ) ? $map[ $name ] : '';
+			}
+
+			private static function dashicon_unicode( $class ) {
+				$map = [
+					'dashicons-menu' => 'f333', 'dashicons-admin-site' => 'f319', 'dashicons-dashboard' => 'f226',
+					'dashicons-admin-post' => 'f109', 'dashicons-admin-media' => 'f104', 'dashicons-admin-links' => 'f103',
+					'dashicons-admin-page' => 'f105', 'dashicons-admin-comments' => 'f101', 'dashicons-admin-appearance' => 'f100',
+					'dashicons-admin-plugins' => 'f106', 'dashicons-admin-users' => 'f110', 'dashicons-admin-tools' => 'f107',
+					'dashicons-admin-settings' => 'f108', 'dashicons-admin-network' => 'f112', 'dashicons-admin-home' => 'f102',
+					'dashicons-admin-generic' => 'f111', 'dashicons-admin-collapse' => 'f148', 'dashicons-filter' => 'f536',
+					'dashicons-admin-customizer' => 'f540', 'dashicons-admin-multisite' => 'f541',
+					'dashicons-welcome-write-blog' => 'f119', 'dashicons-welcome-add-page' => 'f133', 'dashicons-welcome-view-site' => 'f115',
+					'dashicons-welcome-widgets-menus' => 'f116', 'dashicons-welcome-comments' => 'f117', 'dashicons-welcome-learn-more' => 'f118',
+					'dashicons-format-aside' => 'f123', 'dashicons-format-image' => 'f128', 'dashicons-format-gallery' => 'f161',
+					'dashicons-format-video' => 'f126', 'dashicons-format-status' => 'f130', 'dashicons-format-quote' => 'f122',
+					'dashicons-format-chat' => 'f125', 'dashicons-format-audio' => 'f127', 'dashicons-camera' => 'f306',
+					'dashicons-images-alt' => 'f232', 'dashicons-images-alt2' => 'f233', 'dashicons-video-alt' => 'f234',
+					'dashicons-video-alt2' => 'f235', 'dashicons-video-alt3' => 'f236', 'dashicons-media-archive' => 'f501',
+					'dashicons-media-audio' => 'f500', 'dashicons-media-code' => 'f499', 'dashicons-media-default' => 'f498',
+					'dashicons-media-document' => 'f497', 'dashicons-media-interactive' => 'f496', 'dashicons-media-spreadsheet' => 'f495',
+					'dashicons-media-text' => 'f491', 'dashicons-media-video' => 'f490', 'dashicons-playlist-audio' => 'f492',
+					'dashicons-playlist-video' => 'f493', 'dashicons-controls-play' => 'f522', 'dashicons-controls-pause' => 'f523',
+					'dashicons-controls-forward' => 'f519', 'dashicons-controls-skipforward' => 'f517', 'dashicons-controls-back' => 'f518',
+					'dashicons-controls-skipback' => 'f516', 'dashicons-controls-repeat' => 'f515', 'dashicons-controls-volumeon' => 'f521',
+					'dashicons-controls-volumeoff' => 'f520', 'dashicons-image-crop' => 'f165', 'dashicons-image-rotate' => 'f531',
+					'dashicons-image-rotate-left' => 'f166', 'dashicons-image-rotate-right' => 'f167', 'dashicons-image-flip-vertical' => 'f168',
+					'dashicons-image-flip-horizontal' => 'f169', 'dashicons-image-filter' => 'f533', 'dashicons-undo' => 'f171',
+					'dashicons-redo' => 'f172', 'dashicons-editor-bold' => 'f200', 'dashicons-editor-italic' => 'f201',
+					'dashicons-editor-ul' => 'f203', 'dashicons-editor-ol' => 'f204', 'dashicons-editor-quote' => 'f205',
+					'dashicons-editor-alignleft' => 'f206', 'dashicons-editor-aligncenter' => 'f207', 'dashicons-editor-alignright' => 'f208',
+					'dashicons-editor-insertmore' => 'f209', 'dashicons-editor-spellcheck' => 'f210', 'dashicons-editor-expand' => 'f211',
+					'dashicons-editor-contract' => 'f506', 'dashicons-editor-kitchensink' => 'f212', 'dashicons-editor-underline' => 'f213',
+					'dashicons-editor-justify' => 'f214', 'dashicons-editor-textcolor' => 'f215', 'dashicons-editor-paste-word' => 'f216',
+					'dashicons-editor-paste-text' => 'f217', 'dashicons-editor-removeformatting' => 'f218', 'dashicons-editor-video' => 'f219',
+					'dashicons-editor-customchar' => 'f220', 'dashicons-editor-outdent' => 'f221', 'dashicons-editor-indent' => 'f222',
+					'dashicons-editor-help' => 'f223', 'dashicons-editor-strikethrough' => 'f224', 'dashicons-editor-unlink' => 'f225',
+					'dashicons-editor-rtl' => 'f320', 'dashicons-editor-break' => 'f474', 'dashicons-editor-code' => 'f475',
+					'dashicons-editor-paragraph' => 'f476', 'dashicons-editor-table' => 'f535',
+					'dashicons-align-left' => 'f135', 'dashicons-align-right' => 'f136', 'dashicons-align-center' => 'f134',
+					'dashicons-align-none' => 'f138', 'dashicons-lock' => 'f160', 'dashicons-unlock' => 'f528',
+					'dashicons-calendar' => 'f145', 'dashicons-calendar-alt' => 'f508', 'dashicons-visibility' => 'f177',
+					'dashicons-hidden' => 'f530', 'dashicons-post-status' => 'f173', 'dashicons-edit' => 'f464',
+					'dashicons-trash' => 'f182', 'dashicons-sticky' => 'f537', 'dashicons-external' => 'f504',
+					'dashicons-arrow-up' => 'f142', 'dashicons-arrow-down' => 'f140', 'dashicons-arrow-right' => 'f139',
+					'dashicons-arrow-left' => 'f141', 'dashicons-arrow-up-alt' => 'f342', 'dashicons-arrow-down-alt' => 'f346',
+					'dashicons-arrow-right-alt' => 'f344', 'dashicons-arrow-left-alt' => 'f340', 'dashicons-arrow-up-alt2' => 'f343',
+					'dashicons-arrow-down-alt2' => 'f347', 'dashicons-arrow-right-alt2' => 'f345', 'dashicons-arrow-left-alt2' => 'f341',
+					'dashicons-sort' => 'f156', 'dashicons-leftright' => 'f229', 'dashicons-randomize' => 'f503',
+					'dashicons-list-view' => 'f163', 'dashicons-exerpt-view' => 'f164', 'dashicons-grid-view' => 'f509',
+					'dashicons-move' => 'f545', 'dashicons-share' => 'f237', 'dashicons-share-alt' => 'f240',
+					'dashicons-share-alt2' => 'f242', 'dashicons-twitter' => 'f301', 'dashicons-rss' => 'f303',
+					'dashicons-email' => 'f465', 'dashicons-email-alt' => 'f466', 'dashicons-facebook' => 'f304',
+					'dashicons-facebook-alt' => 'f305', 'dashicons-googleplus' => 'f462', 'dashicons-networking' => 'f325',
+					'dashicons-hammer' => 'f308', 'dashicons-art' => 'f309', 'dashicons-migrate' => 'f310',
+					'dashicons-performance' => 'f311', 'dashicons-universal-access' => 'f483', 'dashicons-universal-access-alt' => 'f507',
+					'dashicons-tickets' => 'f486', 'dashicons-nametag' => 'f484', 'dashicons-clipboard' => 'f481',
+					'dashicons-heart' => 'f487', 'dashicons-megaphone' => 'f488', 'dashicons-schedule' => 'f489',
+					'dashicons-wordpress' => 'f120', 'dashicons-wordpress-alt' => 'f324', 'dashicons-pressthis' => 'f157',
+					'dashicons-update' => 'f463', 'dashicons-screenoptions' => 'f180', 'dashicons-info' => 'f348',
+					'dashicons-cart' => 'f174', 'dashicons-feedback' => 'f175', 'dashicons-cloud' => 'f176',
+					'dashicons-translation' => 'f326', 'dashicons-tag' => 'f323', 'dashicons-category' => 'f318',
+					'dashicons-archive' => 'f480', 'dashicons-tagcloud' => 'f479', 'dashicons-text' => 'f478',
+					'dashicons-yes' => 'f147', 'dashicons-no' => 'f158', 'dashicons-no-alt' => 'f335',
+					'dashicons-plus' => 'f132', 'dashicons-plus-alt' => 'f502', 'dashicons-minus' => 'f460',
+					'dashicons-dismiss' => 'f153', 'dashicons-marker' => 'f159', 'dashicons-star-filled' => 'f155',
+					'dashicons-star-half' => 'f459', 'dashicons-star-empty' => 'f154', 'dashicons-flag' => 'f227',
+					'dashicons-warning' => 'f534', 'dashicons-location' => 'f230', 'dashicons-location-alt' => 'f231',
+					'dashicons-vault' => 'f178', 'dashicons-shield' => 'f332', 'dashicons-shield-alt' => 'f334',
+					'dashicons-sos' => 'f468', 'dashicons-search' => 'f179', 'dashicons-slides' => 'f181',
+					'dashicons-analytics' => 'f183', 'dashicons-chart-pie' => 'f184', 'dashicons-chart-bar' => 'f185',
+					'dashicons-chart-line' => 'f238', 'dashicons-chart-area' => 'f239', 'dashicons-groups' => 'f307',
+					'dashicons-businessman' => 'f338', 'dashicons-id' => 'f336', 'dashicons-id-alt' => 'f337',
+					'dashicons-products' => 'f312', 'dashicons-awards' => 'f313', 'dashicons-forms' => 'f314',
+					'dashicons-testimonial' => 'f473', 'dashicons-portfolio' => 'f322', 'dashicons-book' => 'f330',
+					'dashicons-book-alt' => 'f331', 'dashicons-download' => 'f316', 'dashicons-upload' => 'f317',
+					'dashicons-backup' => 'f321', 'dashicons-clock' => 'f469', 'dashicons-lightbulb' => 'f339',
+					'dashicons-microphone' => 'f482', 'dashicons-desktop' => 'f472', 'dashicons-laptop' => 'f547',
+					'dashicons-tablet' => 'f471', 'dashicons-smartphone' => 'f470', 'dashicons-phone' => 'f525',
+					'dashicons-index-card' => 'f510', 'dashicons-carrot' => 'f511', 'dashicons-building' => 'f512',
+					'dashicons-store' => 'f513', 'dashicons-album' => 'f514', 'dashicons-palmtree' => 'f527',
+					'dashicons-tickets-alt' => 'f524', 'dashicons-money' => 'f526', 'dashicons-smiley' => 'f328',
+					'dashicons-thumbs-up' => 'f529', 'dashicons-thumbs-down' => 'f542', 'dashicons-layout' => 'f538',
+					'dashicons-paperclip' => 'f546', 'dashicons-rest-api' => 'f124', 'dashicons-code-standards' => 'f13a',
+				];
+				return isset( $map[ $class ] ) ? $map[ $class ] : 'f333';
 			}
 
             public static function wbtm_left_filter_disppaly( $bus_types, $bus_titles, $start_routes, $filter_by_box, $left_filter_show ): void {
+                // Frontend Display settings (Global Settings → Frontend Display).
+                // Default 'show' keeps existing behavior; only an explicit 'hide' turns a filter off.
+                $fd_type     = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_bus_type', 'show' ) !== 'hide';
+                $fd_operator = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_bus_operator', 'show' ) !== 'hide';
+                $fd_boarding = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_boarding_point', 'show' ) !== 'hide';
                 ?>
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_left_filter_title_holder">
@@ -497,7 +2034,7 @@
                         </div>
                     </div>
                     <div class="wbtm_left_filter_element_holder">
-                        <?php if( $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
+                        <?php if( $fd_type && $left_filter_show['left_filter_type'] === 'on' && !empty( $bus_types ) ) {?>
                         <div class="wbtm_bus_filter_items">
                                 <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_type()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                                 <?php
@@ -531,7 +2068,7 @@
                         <?php }
 						
 						
-                        if( $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
+                        if( $fd_operator && $left_filter_show['left_filter_operator'] === 'on' && !empty( $bus_titles ) ) { ?>
                         <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_bus_operator()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
                             <?php
@@ -547,7 +2084,7 @@
                         </div>
                         <?php }
 						
-                        if( $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
+                        if( $fd_boarding && $left_filter_show['left_filter_boarding'] === 'on' && is_array( $start_routes ) && count( $start_routes ) >0 ){
                         ?>
                         <div class="wbtm_bus_filter_items">
                             <span class="wbtm_bus_toggle-header"><?php echo esc_html(WBTM_Translations::text_boarding_point()); ?> <span class="wbtm_bus_toggle-icon"></span></span>
@@ -633,13 +2170,13 @@
 				$bus_logo = !empty($bus_logo)?wp_get_attachment_url( $bus_logo):$thumbnail;
 				$default_logo = WBTM_PLUGIN_URL . '/assets/images/bus-logo.svg';
 				?>
-				<img src="<?php echo $bus_logo; ?>" onerror="this.onerror=null; this.src='<?php echo $default_logo; ?>';">
+				<img src="<?php echo esc_url($bus_logo); ?>" onerror="this.onerror=null; this.src='<?php echo esc_url($default_logo); ?>';">
 				<?php
 			}
 			public static function single_bus_details_tabs( $bus_id) {
 				$tabs = [
 					'wbtm_bus_details'           => __( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' ),
-					'wbtm_bus_boarding_dropping' => __( 'Boarding/Dripping Points', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_boarding_dropping' => __( 'Boarding/Dropping Points', 'bus-ticket-booking-with-seat-reservation' ),
 					'wbtm_bus_feature'           => __( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ),
 					'wbtm_bus_term_condition'    => __( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' ),
 					'wbtm_bus_image'             => __( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' ),
@@ -653,6 +2190,7 @@
 				$feature_ids = get_post_meta( $bus_id, 'wbbm_bus_features_term_id', true );
 				$term_condition = get_post_meta( $bus_id, 'wbtm_term_condition_list', true );
 				$gallery_images       = get_post_meta( $bus_id, 'wbtm_gallery_images', true );
+				$gallery_enabled      = get_post_meta( $bus_id, 'wbtm_gallery_enabled', true ) !== 'no';
 
 				if ( empty( $boarding_routes ) ) {
 					unset( $tabs['wbtm_bus_boarding_dropping'] );
@@ -663,7 +2201,7 @@
 				if ( empty( $term_condition ) ) {
 					unset( $tabs['wbtm_bus_term_condition'] );
 				}
-				if ( empty( $gallery_images ) ) {
+				if ( empty( $gallery_images ) || ! $gallery_enabled ) {
 					unset( $tabs['wbtm_bus_image'] );
 				}
 				return $tabs;
@@ -675,7 +2213,7 @@
 			?>
                 <div class="wbtm_bus_popup_links">
 					<?php foreach ( $popup_tabs as $key => $tab ):?>
-						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo $bus_id; ?>"><?php echo esc_html( $tab );?></span>
+						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo esc_attr( $bus_id ); ?>"><?php echo esc_html( $tab );?></span>
 					<?php endforeach ?>
                 </div>
             <?php

@@ -1,6 +1,6 @@
 <?php
 /*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 if (!defined('ABSPATH')) {
@@ -109,7 +109,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                             <div class="divider"></div>
                             <?php if ( $bus_id ) : ?>
                                 <p>
-                                    <span><?php echo _e("Bus No:",'bus-booking-manager'); ?></span>
+                                    <span><?php esc_html_e("Bus No:", 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                     <strong><?php echo esc_html( $bus_id ); ?></strong>
                                 </p>
                             <?php endif; ?>

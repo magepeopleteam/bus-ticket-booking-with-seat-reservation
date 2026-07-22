@@ -1,6 +1,6 @@
 <?php
 	/*
-* @Author 		engr.sumonazma@gmail.com
+* @Author 		MagePeople Team
 * Copyright: 	mage-people.com
 */
 	if (!defined('ABSPATH')) {
@@ -22,7 +22,7 @@
 				$end = $params['end'];
 				$column = $params['column'];
 				$style = $params['style'];
-				$pagination = "";
+				$pagination = $params['pagination'];
 				
 				// For pagination, we need to get total count and limit results
 				if ($pagination === 'yes' && $show > 0) {

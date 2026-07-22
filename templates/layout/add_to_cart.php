@@ -1,6 +1,6 @@
 <?php
 /*
-* Author: engr.sumonazma@gmail.com
+* Author: MagePeople Team
 * Copyright: mage-people.com
 */
 
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     <div class="_dLayout_xs col_12 wbtm_form_submit_area mT_xs">
         <div class="justifyBetween _alignCenter">
             <div>
-                <h5><?php echo esc_html( WBTM_Translations::text_total() ) ; ?> : <span class="wbtm_total _textTheme"><?php echo wp_kses_post( wc_price(0 ) ); ?></span></h5>
+                <h5><?php echo esc_html( WBTM_Translations::text_total() ) ; ?> : <span class="wbtm_total _textTheme"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0 ) ); ?></span></h5>
             </div>
             <?php if ($backend_order > 0) { ?>
                 <button type="submit" class="_themeButton">
@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
                     <?php /*echo WBTM_Translations::text_book_now(); */?>
                 </button>-->
 
-                <button type="button" id="wbtm_add_to_cart" class="_themeButton" value="<?php echo esc_attr($link_wc_product);?>">
+                <button type="button" id="wbtm_add_to_cart" class="_themeButton wbtm_loading_button" data-loading-text="<?php echo esc_attr__( 'Placing order...', 'bus-ticket-booking-with-seat-reservation' ); ?>" value="<?php echo esc_attr($link_wc_product);?>">
                     <?php echo esc_html( WBTM_Translations::text_book_now() ); ?>
                 </button>
             <?php } ?>

@@ -102,6 +102,31 @@ function wbtm_load_date_picker(parent = jQuery('.wbtm_style')) {
 function wbtm_alert($this, attr = 'alert') {
     alert($this.data(attr));
 }
+function wbtm_toast(message, type = 'error') {
+    let body = jQuery('body');
+    let toast = body.find('#wbtm_global_toast');
+    if (toast.length < 1) {
+        body.append('<div id="wbtm_global_toast" role="status" aria-live="polite"></div>');
+        toast = body.find('#wbtm_global_toast');
+    }
+
+    toast.stop(true, true).removeClass('wbtm_toast_error wbtm_toast_success').addClass('wbtm_toast_' + type).text(message).css({
+        position: 'fixed',
+        top: '24px',
+        right: '24px',
+        'max-width': '360px',
+        padding: '14px 18px',
+        'border-radius': '8px',
+        'background-color': type === 'success' ? '#0f9d58' : '#d93025',
+        color: '#fff',
+        'font-size': '14px',
+        'font-weight': '600',
+        'line-height': '1.4',
+        'box-shadow': '0 12px 30px rgba(0,0,0,0.18)',
+        'z-index': '999999',
+        display: 'none'
+    }).fadeIn(200).delay(2200).fadeOut(300);
+}
 //=====================================================Load initial=================//
 (function ($) {
     "use strict";

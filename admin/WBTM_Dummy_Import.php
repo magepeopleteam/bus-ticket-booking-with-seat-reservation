@@ -1,82 +1,296 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'WBTM_Dummy_Import' ) ) {
 		class WBTM_Dummy_Import {
+
+			/**
+			 * Final "import completed" flag (kept for backward compatibility with
+			 * sites that already imported the demo data before this refactor).
+			 */
+			const DONE_OPTION = 'wbtm_bus_seat_plan_data_input_done';
+
+			/**
+			 * In-flight progress state for the chunked importer.
+			 * Shape: array( 'phase' => 'tax'|'posts', 'index' => int ).
+			 */
+			const STATE_OPTION = 'wbtm_dummy_import_state';
+
+			/**
+			 * How many bus posts to insert per AJAX request. One keeps each
+			 * request tiny so even hosts with a very low PHP memory_limit /
+			 * max_execution_time (e.g. default shared hosting) never time out.
+			 */
+			const BATCH_SIZE = 1;
+
 			public function __construct() {
-				add_action( 'admin_init', array( $this, 'dummy_import' ), 98 );
+				// The demo is now imported in small AJAX batches instead of one
+				// heavy synchronous admin_init pass, so low-memory hosts don't
+				// fatal on the first plugin page load.
+				add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+				add_action( 'admin_footer', array( $this, 'render_progress_ui' ) );
+				add_action( 'wp_ajax_wbtm_dummy_import_batch', array( $this, 'ajax_import_batch' ) );
 			}
 
-			public function dummy_import() {
-				$dummy_post_inserted  = get_option( 'wbtm_bus_seat_plan_data_input_done', 'no' );
-				$count_existing_event = wp_count_posts( 'wbtm_bus' )->publish;
-				$plugin_active        = WBTM_Global_Function::check_plugin( 'bus-ticket-booking-with-seat-reservation', 'woocommerce-bus.php' );
-				if ( $count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes' ) {
-					$dummy_taxonomies = $this->dummy_taxonomy();
-					if ( array_key_exists( 'taxonomy', $dummy_taxonomies ) ) {
-						foreach ( $dummy_taxonomies['taxonomy'] as $taxonomy => $dummy_taxonomy ) {
-							if ( taxonomy_exists( $taxonomy ) ) {
-								$check_terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
-								if ( is_string( $check_terms ) || sizeof( $check_terms ) == 0 ) {
-									foreach ( $dummy_taxonomy as $taxonomy_data ) {
-										unset( $term );
-										$term = wp_insert_term( $taxonomy_data['name'], $taxonomy );
-										if ( array_key_exists( 'tax_data', $taxonomy_data ) ) {
-											foreach ( $taxonomy_data['tax_data'] as $meta_key => $data ) {
-												update_term_meta( $term['term_id'], $meta_key, $data );
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-					$dummy_cpt = $this->dummy_cpt();
-					if ( array_key_exists( 'custom_post', $dummy_cpt ) ) {
-						foreach ( $dummy_cpt['custom_post'] as $custom_post => $dummy_post ) {
-							unset( $args );
-							$args = array(
-								'post_type'      => $custom_post,
-								'posts_per_page' => - 1,
-							);
-							unset( $post );
-							$post = new WP_Query( $args );
-							if ( $post->post_count == 0 ) {
-								foreach ( $dummy_post as $dummy_data ) {
-									if ( isset( $dummy_data['name'] ) ) {
-										$args['post_title'] = $dummy_data['name'];
-									}
-									if ( isset( $dummy_data['content'] ) ) {
-										$args['post_content'] = $dummy_data['content'];
-									}
-									$args['post_status'] = 'publish';
-									$args['post_type']   = $custom_post;
-									$post_id             = wp_insert_post( $args );
-									if ( array_key_exists( 'taxonomy_terms', $dummy_data ) && count( $dummy_data['taxonomy_terms'] ) ) {
-										foreach ( $dummy_data['taxonomy_terms'] as $taxonomy_term ) {
-											wp_set_object_terms( $post_id, $taxonomy_term['terms'], $taxonomy_term['taxonomy_name'], true );
-										}
-									}
-									if ( array_key_exists( 'post_data', $dummy_data ) ) {
-										foreach ( $dummy_data['post_data'] as $meta_key => $data ) {
-											if ( $meta_key == 'feature_image' ) {
-												$url   = $data;
-												$desc  = "The Demo Dummy Image of the bus booking";
-												$image = media_sideload_image( $url, $post_id, $desc, 'id' );
-												set_post_thumbnail( $post_id, $image );
-											} else {
-												update_post_meta( $post_id, $meta_key, $data );
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-					flush_rewrite_rules();
-					update_option( 'wbtm_bus_seat_plan_data_input_done', 'yes' );
+			/**
+			 * Whether the demo import should run/resume for this site.
+			 *
+			 * A *fresh* import only starts when there are no published buses yet,
+			 * but an already-started import always resumes (even though the first
+			 * inserted bus makes the count non-zero), otherwise batching would
+			 * abort itself after the first post.
+			 *
+			 * @return bool
+			 */
+			private function is_eligible() {
+				if ( 'yes' === get_option( self::DONE_OPTION, 'no' ) ) {
+					return false;
 				}
+				if ( ! post_type_exists( 'wbtm_bus' ) ) {
+					return false; // Plugin/CPT not ready.
+				}
+				// Resume an in-progress import regardless of current post count.
+				if ( is_array( get_option( self::STATE_OPTION, null ) ) ) {
+					return true;
+				}
+				// Fresh start only on an empty site.
+				return 0 === (int) wp_count_posts( 'wbtm_bus' )->publish;
+			}
+
+			/**
+			 * Only run the auto-importer on this plugin's own admin screens
+			 * (the post-activation redirect lands on edit.php?post_type=wbtm_bus),
+			 * so we never surprise the user with a background import + reload
+			 * while they are working on an unrelated admin page.
+			 *
+			 * @return bool
+			 */
+			private function is_plugin_screen() {
+				if ( ! function_exists( 'get_current_screen' ) ) {
+					return false;
+				}
+				$screen = get_current_screen();
+				if ( ! $screen ) {
+					return false;
+				}
+				if ( isset( $screen->post_type ) && 0 === strpos( (string) $screen->post_type, 'wbtm_' ) ) {
+					return true;
+				}
+				// Plugin settings / welcome / dashboard pages live under the bus menu.
+				return isset( $screen->id ) && false !== strpos( (string) $screen->id, 'wbtm' );
+			}
+
+			/**
+			 * Enqueue the tiny importer script only when an import is pending.
+			 */
+			public function enqueue_assets() {
+				if ( ! current_user_can( 'edit_wbtm_bus' ) || ! $this->is_plugin_screen() || ! $this->is_eligible() ) {
+					return;
+				}
+
+				wp_enqueue_style(
+					'wbtm-dummy-import',
+					WBTM_PLUGIN_URL . '/assets/admin/wbtm_dummy_import.css',
+					array(),
+					WBTM_VERSION
+				);
+				wp_enqueue_script(
+					'wbtm-dummy-import',
+					WBTM_PLUGIN_URL . '/assets/admin/wbtm_dummy_import.js',
+					array( 'jquery' ),
+					WBTM_VERSION,
+					true
+				);
+				wp_localize_script( 'wbtm-dummy-import', 'wbtm_dummy_import', array(
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+					'nonce'    => wp_create_nonce( 'wbtm_dummy_import' ),
+					'i18n'     => array(
+						'importing' => __( 'Importing demo data...', 'bus-ticket-booking-with-seat-reservation' ),
+						'done'      => __( 'Demo data imported successfully.', 'bus-ticket-booking-with-seat-reservation' ),
+						'error'     => __( 'Demo import could not finish. It will retry on the next page load.', 'bus-ticket-booking-with-seat-reservation' ),
+					),
+				) );
+			}
+
+			/**
+			 * Print the small progress toast (hidden until JS starts a batch).
+			 */
+			public function render_progress_ui() {
+				if ( ! current_user_can( 'edit_wbtm_bus' ) || ! $this->is_plugin_screen() || ! $this->is_eligible() ) {
+					return;
+				}
+				?>
+				<div id="wbtm-dummy-import-toast" class="wbtm-di-toast" style="display:none;">
+					<div class="wbtm-di-toast-inner">
+						<span class="wbtm-di-spinner" aria-hidden="true"></span>
+						<div class="wbtm-di-body">
+							<p id="wbtm-di-text" class="wbtm-di-text"><?php esc_html_e( 'Importing demo data...', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+							<div class="wbtm-di-bar"><div id="wbtm-di-fill" class="wbtm-di-fill"></div></div>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
+
+			/**
+			 * AJAX: process a single demo-import batch and report progress.
+			 * The browser calls this repeatedly until 'done' is true.
+			 */
+			public function ajax_import_batch() {
+				check_ajax_referer( 'wbtm_dummy_import', 'nonce' );
+
+				if ( ! current_user_can( 'edit_wbtm_bus' ) ) {
+					wp_send_json_error( array( 'message' => __( 'Permission denied.', 'bus-ticket-booking-with-seat-reservation' ) ) );
+				}
+
+				// Nothing to do (already imported, or a fresh start on a non-empty site).
+				if ( ! $this->is_eligible() ) {
+					update_option( self::DONE_OPTION, 'yes' );
+					delete_option( self::STATE_OPTION );
+					wp_send_json_success( array( 'done' => true, 'percent' => 100 ) );
+				}
+
+				// Give this one small batch a little headroom without demanding a lot.
+				if ( function_exists( 'set_time_limit' ) ) {
+					@set_time_limit( 60 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				}
+				if ( function_exists( 'wp_raise_memory_limit' ) ) {
+					wp_raise_memory_limit( 'admin' );
+				}
+
+				$state = get_option( self::STATE_OPTION, array( 'phase' => 'tax', 'index' => 0 ) );
+				$state = wp_parse_args( (array) $state, array( 'phase' => 'tax', 'index' => 0 ) );
+
+				// --- Phase 1: taxonomies (categories, stops, pickup points) ---
+				if ( 'tax' === $state['phase'] ) {
+					$this->insert_taxonomies();
+					update_option( self::STATE_OPTION, array( 'phase' => 'posts', 'index' => 0 ) );
+					wp_send_json_success( array(
+						'done'    => false,
+						'percent' => 10,
+						'message' => __( 'Bus categories & stops created...', 'bus-ticket-booking-with-seat-reservation' ),
+					) );
+				}
+
+				// --- Phase 2: bus posts, BATCH_SIZE at a time ---
+				$buses = $this->dummy_cpt()['custom_post']['wbtm_bus'];
+				$total = count( $buses );
+				$index = (int) $state['index'];
+
+				$processed = 0;
+				while ( $index < $total && $processed < self::BATCH_SIZE ) {
+					if ( isset( $buses[ $index ] ) ) {
+						$this->insert_single_bus( 'wbtm_bus', $buses[ $index ] );
+					}
+					$index++;
+					$processed++;
+				}
+
+				if ( $index < $total ) {
+					update_option( self::STATE_OPTION, array( 'phase' => 'posts', 'index' => $index ) );
+					$percent = 10 + (int) round( ( $index / $total ) * 85 );
+					wp_send_json_success( array(
+						'done'    => false,
+						'percent' => $percent,
+						/* translators: 1: imported count, 2: total count */
+						'message' => sprintf( __( 'Importing buses %1$d / %2$d...', 'bus-ticket-booking-with-seat-reservation' ), $index, $total ),
+					) );
+				}
+
+				// --- All done: flush rewrite rules once and mark complete ---
+				flush_rewrite_rules();
+				update_option( self::DONE_OPTION, 'yes' );
+				delete_option( self::STATE_OPTION );
+
+				wp_send_json_success( array(
+					'done'    => true,
+					'percent' => 100,
+					'message' => __( 'Demo data imported successfully.', 'bus-ticket-booking-with-seat-reservation' ),
+				) );
+			}
+
+			/**
+			 * Insert all demo taxonomy terms. Idempotent: only fills a taxonomy
+			 * that currently has no terms, exactly like the original importer.
+			 */
+			private function insert_taxonomies() {
+				$dummy_taxonomies = $this->dummy_taxonomy();
+				if ( ! array_key_exists( 'taxonomy', $dummy_taxonomies ) ) {
+					return;
+				}
+				foreach ( $dummy_taxonomies['taxonomy'] as $taxonomy => $dummy_taxonomy ) {
+					if ( ! taxonomy_exists( $taxonomy ) ) {
+						continue;
+					}
+					$check_terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
+					if ( ! is_string( $check_terms ) && sizeof( $check_terms ) != 0 ) {
+						continue; // Already populated.
+					}
+					foreach ( $dummy_taxonomy as $taxonomy_data ) {
+						$term = wp_insert_term( $taxonomy_data['name'], $taxonomy );
+						if ( is_wp_error( $term ) ) {
+							continue;
+						}
+						if ( array_key_exists( 'tax_data', $taxonomy_data ) ) {
+							foreach ( $taxonomy_data['tax_data'] as $meta_key => $data ) {
+								update_term_meta( $term['term_id'], $meta_key, $data );
+							}
+						}
+					}
+				}
+			}
+
+			/**
+			 * Insert a single demo bus post with its taxonomy terms and meta.
+			 * Mirrors the per-post logic of the original bulk importer.
+			 *
+			 * @param string $custom_post Post type slug.
+			 * @param array  $dummy_data  One bus definition from dummy_cpt().
+			 * @return int|false New post ID, or false on failure.
+			 */
+			private function insert_single_bus( $custom_post, $dummy_data ) {
+				$args = array(
+					'post_status' => 'publish',
+					'post_type'   => $custom_post,
+				);
+				if ( isset( $dummy_data['name'] ) ) {
+					$args['post_title'] = $dummy_data['name'];
+				}
+				if ( isset( $dummy_data['content'] ) ) {
+					$args['post_content'] = $dummy_data['content'];
+				}
+				$post_id = wp_insert_post( $args );
+				if ( ! $post_id || is_wp_error( $post_id ) ) {
+					return false;
+				}
+				if ( array_key_exists( 'taxonomy_terms', $dummy_data ) && count( $dummy_data['taxonomy_terms'] ) ) {
+					foreach ( $dummy_data['taxonomy_terms'] as $taxonomy_term ) {
+						wp_set_object_terms( $post_id, $taxonomy_term['terms'], $taxonomy_term['taxonomy_name'], true );
+					}
+				}
+				if ( array_key_exists( 'post_data', $dummy_data ) ) {
+					foreach ( $dummy_data['post_data'] as $meta_key => $data ) {
+						if ( $meta_key == 'feature_image' ) {
+							// media_sideload_image() lives in admin media includes,
+							// which are not loaded during an AJAX request.
+							require_once ABSPATH . 'wp-admin/includes/media.php';
+							require_once ABSPATH . 'wp-admin/includes/file.php';
+							require_once ABSPATH . 'wp-admin/includes/image.php';
+							$desc  = 'The Demo Dummy Image of the bus booking';
+							$image = media_sideload_image( $data, $post_id, $desc, 'id' );
+							if ( ! is_wp_error( $image ) ) {
+								set_post_thumbnail( $post_id, $image );
+							}
+						} else {
+							update_post_meta( $post_id, $meta_key, $data );
+						}
+					}
+				}
+				return $post_id;
 			}
 
 			public function dummy_taxonomy(): array {

@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
@@ -7,6 +10,8 @@
 			protected $settings_sections = array();
 			protected $settings_fields = array();
 			public function __construct() { }
+			public function get_sections() { return $this->settings_sections; }
+			public function get_fields()   { return $this->settings_fields; }
 			function set_sections( $sections ) {
 				$this->settings_sections = $sections;
 				return $this;
@@ -188,6 +193,24 @@
                 </fieldset>
 				<?php
 			}
+			function callback_toggle( $args ) {
+				// Show / Hide switch. A hidden "hide" field guarantees a value is
+				// always posted, so an unchecked toggle reliably saves as 'hide'
+				// instead of silently reverting to the default.
+				$std     = isset( $args['std'] ) ? $args['std'] : 'show';
+				$value   = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $std );
+				$name    = $args['section'] . '[' . $args['id'] . ']';
+				$checked = ( $value === 'hide' ) ? '' : ' checked';
+				?>
+                <fieldset>
+                    <label class="roundSwitchLabel">
+                        <input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="hide"/>
+                        <input type="checkbox" name="<?php echo esc_attr( $name ); ?>" value="show"<?php echo esc_attr( $checked ); ?>>
+                        <span class="roundSwitch"></span>
+                    </label>
+                </fieldset>
+				<?php
+			}
 			function callback_multicheck( $args ) {
 				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
@@ -280,6 +303,23 @@
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
 				$label       = $args['options']['button_label'] ?? esc_html_e( 'Choose File', 'bus-ticket-booking-with-seat-reservation' );
 				do_action( 'wbtm_add_single_image', $name, $value );
+			}
+			function callback_icon( $args ) {
+				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
+				$name  = $args['section'] . '[' . $args['id'] . ']';
+				do_action( 'wbtm_input_add_icon', $name, $value );
+			}
+			function callback_icon_image( $args ) {
+				$value = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
+				$name  = $args['section'] . '[' . $args['id'] . ']';
+				$icon  = '';
+				$image = '';
+				if ( $value && is_numeric( $value ) ) {
+					$image = $value;
+				} elseif ( $value ) {
+					$icon = $value;
+				}
+				do_action( 'wbtm_add_icon_image', $name, $icon, $image );
 			}
 			function callback_password( $args ) {
 				$value       = WBTM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );

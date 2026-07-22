@@ -11,11 +11,17 @@
 	#wbtm_meta_box_panel div.wbtm_seat_plan_settings table tr:nth-child(odd) {background-color: transparent;}
 	div.wbtm_settings_pricing_routing div.mp_stop_items {position: relative;}
 	div.wbtm_settings_pricing_routing div.mp_stop_items::before { position: absolute; content: ""; left: 0; top: -21px; height: 100%; border: 1px solid var(--wbtm_d_color); margin-left: 20px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item { position: relative; width: 98%; padding-left: 50px; }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
-	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
+	/* Outbound (.wbtm_stop_item) and same-bus return (.wbtm_return_stop_item): identical timeline + map pin (return must not use .wbtm_stop_item — pricing AJAX / collapse) */
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item { position: relative; width: 98%; padding-left: 50px; }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::before,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item::before { position: absolute; top: 25px; left: 5px; width: 32px; height: 32px; border-radius: 50%; background-color: var(--wbtm_color_light); background-image: url("../images/map-location.svg"); content: ""; transform: translateY(-50%); background-repeat: no-repeat; background-position: center; background-size: 47%; border: 1px solid var(--wbtm_d_color); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item::after,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item::after { position: absolute; top: 25px; left: 40px; content: ""; width: 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_header,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item .wbtm_stop_item_header { padding: 5px 10px; border: 1px solid var(--wbtm_color_border); }
+	div.wbtm_settings_pricing_routing div.wbtm_stop_item .wbtm_stop_item_content,
+	div.wbtm_settings_pricing_routing div.wbtm_return_stop_item .wbtm_stop_item_content { padding: 5px; border: 1px solid var(--wbtm_color_border); border-top: 0; }
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
@@ -58,6 +64,37 @@
 	background-size: contain;
 	width: 100%;
 	background-position: center center;
+	min-height: 22px;
+}
+/* Return-leg price rows: distinct background + reversed arrow */
+.wbtm_price_setting_area tbody tr.wbtm_price_row_return td {
+	background-color: #eef4ff;
+	border-top: 1px solid #c5d4f0;
+}
+.wbtm_price_setting_area tbody tr.wbtm_price_row_return:hover td {
+	background-color: #e2ebfb;
+}
+.wbtm_price_setting_area tbody tr.wbtm_price_row_outbound td {
+	background-color: transparent;
+}
+.wbtm_price_arrow_return.long-arrow {
+	transform: scaleX(-1);
+}
+.wbtm_price_leg_badge {
+	display: inline-block;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 2px 6px;
+	border-radius: 3px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+.wbtm_price_leg_badge_return {
+	background: #4a6cf7;
+	color: #fff;
 }
 
 /* Seat Rotation Styles */
@@ -69,6 +106,54 @@
 /* Show rotation controls when rotation is enabled */
 .wbtm_enable_rotation .wbtm_seat_rotation_controls {
   display: flex;
+}
+
+/* "Add New Row" + inline "Enable Rotation" toggle, one per deck (lower/upper
+   each have their own independent rotation setting — see
+   create_seat_plan() / wbtm_enable_seat_rotation[_dd]). */
+.wbtm_seat_row_actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.wbtm_seat_rotation_inline_toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.wbtm_seat_rotation_text_toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.wbtm_seat_rotation_checkbox {
+  display: none;
+}
+.wbtm_seat_rotation_inline_label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #606060;
+  border: 1px solid #ddd;
+  padding: 5px;
+  white-space: nowrap;
+}
+.wbtm_seat_rotation_icon {
+  color: #606060;
+}
+.wbtm_seat_rotation_text_disable {
+  display: none;
+}
+.wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_enable {
+  display: none;
+}
+.wbtm_seat_rotation_checkbox:checked ~ .wbtm_seat_rotation_inline_label .wbtm_seat_rotation_text_disable {
+  display: inline;
 }
 
 /* Ensure proper spacing for rotation controls */
@@ -171,6 +256,107 @@
 	flex-wrap: wrap;
 }
 
+/* ===== Seat Plan Drag & Drop Toolbar ===== */
+.wbtm_seat_toolbar {
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+	padding: 10px 12px;
+	margin-bottom: 12px;
+}
+.wbtm_seat_toolbar_label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #495057;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.wbtm_seat_toolbar_items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.wbtm_draggable_item {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	background: #ffffff;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 12px;
+	color: #495057;
+	cursor: grab;
+	transition: all 0.15s ease;
+	user-select: none;
+}
+.wbtm_draggable_item:hover {
+	background: #e9ecef;
+	border-color: #adb5bd;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.wbtm_draggable_item:active {
+	cursor: grabbing;
+}
+.wbtm_draggable_item .fas {
+	font-size: 13px;
+	color: #6c757d;
+}
+.wbtm_draggable_eraser {
+	border-color: #dc3545;
+	color: #dc3545;
+}
+.wbtm_draggable_eraser .fas {
+	color: #dc3545;
+}
+.wbtm_draggable_eraser:hover {
+	background: #fff5f5;
+	border-color: #dc3545;
+}
+.wbtm_toolbar_item_label {
+	white-space: nowrap;
+}
+
+/* Drop target highlighting */
+.wbtm_seat_container.wbtm_drop_highlight {
+	outline: 2px dashed #4a6cf7;
+	outline-offset: -2px;
+	border-radius: 4px;
+}
+.wbtm_seat_container.wbtm_drop_hover {
+	background-color: #e8f0fe !important;
+	outline-color: #1a73e8;
+}
+
+/* Non-seat badge overlay on admin cells */
+.wbtm_nonseat_badge {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 22px;
+	height: 22px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #6c757d;
+	color: #fff;
+	border-radius: 50%;
+	font-size: 10px;
+	pointer-events: auto;
+	cursor: pointer;
+	z-index: 2;
+	line-height: 1;
+}
+.wbtm_nonseat_badge:hover {
+	background: #dc3545;
+}
+.wbtm_seat_container.wbtm_has_nonseat input.formControl {
+	background-color: #f1f3f5;
+	color: #868e96;
+	font-style: italic;
+}
+
 /* Responsive adjustments */
 @media only screen and (max-width: 768px) {
 	.wbtm_seat_container {
@@ -187,4 +373,175 @@
 		min-height: 60px;
 		padding: 4px 2px;
 	}
+
+	.wbtm_seat_toolbar_items {
+		gap: 4px;
+	}
+	.wbtm_draggable_item {
+		padding: 4px 6px;
+		font-size: 11px;
+	}
+	.wbtm_toolbar_item_label {
+		display: none;
+	}
+}
+
+/* Per-seat overrides JSON field (offscreen textarea; submitted with post) */
+textarea#wbtm_seat_price_overrides_field.wbtm_seat_price_overrides_field,
+textarea.wbtm_seat_price_overrides_field {
+	position: fixed;
+	left: -9999px;
+	top: 0;
+	width: 2px;
+	height: 2px;
+	min-height: 0;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+	resize: none;
+	opacity: 0;
+	pointer-events: none;
+	z-index: -1;
+}
+
+/* Per-seat pricing modal (seat plan admin) */
+.wbtm_seat_container .wbtm_seat_price_view {
+	display: block;
+	width: 100%;
+	margin-top: 6px;
+	font-size: 11px;
+	line-height: 1.2;
+	text-align: center;
+	position: relative;
+}
+.wbtm_seat_container .wbtm_seat_price_view_disabled {
+	display: none;
+}
+.wbtm_seat_price_view .wbtm_seat_price_badge {
+	position: absolute;
+	top: -7px;
+	right: -5px;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: 9px;
+	background: #d63638;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 18px;
+	text-align: center;
+	box-sizing: border-box;
+	pointer-events: none;
+	z-index: 2;
+}
+.wbtm_seat_price_modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100050;
+}
+.wbtm_seat_price_modal .wbtm_seat_price_modal_overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+}
+.wbtm_seat_price_modal_box {
+	position: relative;
+	max-width: 520px;
+	margin: 6vh auto;
+	background: #fff;
+	border-radius: 6px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+	padding: 0;
+	overflow: hidden;
+}
+.wbtm_seat_price_modal_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 18px;
+	background: #f6f7f9;
+	border-bottom: 1px solid #e0e0e0;
+}
+.wbtm_seat_price_modal_header h4 {
+	margin: 0;
+	font-size: 16px;
+}
+.wbtm_seat_price_modal_close {
+	background: none;
+	border: none;
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0 6px;
+	color: #444;
+}
+.wbtm_seat_price_modal_hint,
+.wbtm_seat_price_modal_seat_label {
+	padding: 12px 18px 0;
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.45;
+}
+.wbtm_seat_price_modal_body {
+	padding: 14px 18px 10px;
+	max-height: 55vh;
+	overflow-y: auto;
+}
+.wbtm_seat_price_row {
+	margin-bottom: 12px;
+}
+.wbtm_seat_price_row label.wbtm_seat_price_label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+	font-size: 13px;
+}
+.wbtm_seat_price_row .formControl {
+	width: 100%;
+}
+.wbtm_seat_price_modal_footer {
+	padding: 14px 18px 18px;
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	border-top: 1px solid #eee;
+	background: #fafafa;
+}
+/* Same bus return - rearrange timetable highlight */
+.wbtm_return_time_warning {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 14px;
+	padding: 12px 14px;
+	border: 1px solid #f0c36d;
+	border-left: 4px solid #f0a000;
+	border-radius: 8px;
+	background: #fff8e5;
+	box-shadow: 0 1px 4px rgba(240, 160, 0, .12);
+}
+.wbtm_return_time_warning_icon {
+	color: #e08a00;
+	font-size: 22px;
+	line-height: 1;
+	flex: 0 0 auto;
+	margin-top: 1px;
+}
+.wbtm_return_time_warning_text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+.wbtm_return_time_warning_text strong {
+	font-size: 14px;
+	color: #8a5a00;
+}
+.wbtm_return_time_warning_text span {
+	font-size: 13px;
+	color: #6b5520;
+	line-height: 1.45;
 }

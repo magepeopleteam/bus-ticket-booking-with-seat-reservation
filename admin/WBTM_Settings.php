@@ -1,6 +1,6 @@
 <?php
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if (!defined('ABSPATH')) {
@@ -62,21 +62,9 @@
                             <li data-tabs-target="#wbtm_bus_feature_settings">
                                 <span class="mi mi-features"></span><?php esc_html_e('Bus Feature', 'bus-ticket-booking-with-seat-reservation'); ?>
                             </li>
-							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
-                                <li data-tabs-target="#mp_pp_deposits_type">
-                                    <span class=""></span>&nbsp;&nbsp;<?php esc_html_e('Partial Payment', 'bus-ticket-booking-with-seat-reservation'); ?>
-                                </li>
-							<?php } ?>
                         </ul>
                         <div class="tabsContent tab-content">
 							<?php do_action('wbtm_add_settings_tab_content', $post_id); ?>
-							<?php if (is_plugin_active('mage-partial-payment-pro/mage_partial_pro.php')) { ?>
-                                <div class="tabsItem" data-tabs="#mp_pp_deposits_type">
-                                    <h5><?php esc_html_e('Partial Payment Settings : ', 'bus-ticket-booking-with-seat-reservation'); ?></h5>
-                                    <div class="divider"></div>
-									<?php //do_action('wcpp_partial_product_settings', get_post_custom($post_id)); ?>
-                                </div>
-							<?php } ?>
                         </div>
                     </div>
                 </div>
@@ -88,8 +76,6 @@
 					'wbtm_bus_category' => esc_html__('Please add your bus category', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_reservation' => esc_html__('Turn on or off, bus seat registration', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_reservation_tips' => esc_html__('By default Registration is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
-					'show_boarding_time' => esc_html__('By default Boarding Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
-					'show_dropping_time' => esc_html__('By default Dropping Time is ON but you can keep it off by switching this option', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_seat_type_conf' => esc_html__('Please select your bus seat type . Default Without Seat Plan', 'bus-ticket-booking-with-seat-reservation'),
 					'wbtm_get_total_seat' => esc_html__('Please Type your bus total seat.', 'bus-ticket-booking-with-seat-reservation'),
 					'show_operational_on_day' => esc_html__('Select Particular Date or Repeated Date.', 'bus-ticket-booking-with-seat-reservation'),
@@ -115,7 +101,13 @@
 				}
 			}
 			public function save_settings($post_id) {
-				if (!isset($_POST['wbtm_type_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wbtm_type_nonce'])), 'wbtm_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
+				if ( ! isset( $_POST['wbtm_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_type_nonce'] ) ), 'wbtm_type_nonce' ) ) {
+					return;
+				}
+				if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+					return;
+				}
+				if ( ! current_user_can( 'manage_options' ) ) {
 					return;
 				}
 				//General settings
@@ -186,21 +178,8 @@
 					}
 					update_post_meta($post_id, 'wbtm_off_dates', $_off_dates);
 					//**********************//
-					$off_schedules = [];
-					$from_dates = isset($_POST['wbtm_from_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_from_date'])) : [];
-					$to_dates = isset($_POST['wbtm_to_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_to_date'])) : [];
-					if (sizeof($from_dates) > 0) {
-						foreach ($from_dates as $key => $from_date) {
-							if ($from_date && $to_dates[$key]) {
-								$off_schedules[] = [
-									'from_date' => $from_date,
-									'to_date' => $to_dates[$key],
-								];
-							}
-						}
-					}
-					update_post_meta($post_id, 'wbtm_offday_schedule', $off_schedules);
-					//***********************************//
+					// Off-day date ranges (live mechanism; the deprecated
+					// 'wbtm_offday_schedule' duplicate that nothing fed/ read was removed).
 					$from_dates = isset($_POST['wbtm_from_off_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_from_off_date'])) : [];
 					$to_dates = isset($_POST['wbtm_to_off_date']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_to_off_date'])) : [];
 					$off_date_ranges = [];
@@ -255,37 +234,146 @@
 							}
 						}
 					}
-					update_post_meta($post_id, 'wbtm_route_info', $route_infos);
-					update_post_meta($post_id, 'wbtm_bus_bp_stops', $bp);
-					update_post_meta($post_id, 'wbtm_bus_next_stops', $dp);
+					$route_direction = [];
 					if (sizeof($route_infos) > 0) {
-						$route_direction = [];
 						foreach ($route_infos as $route) {
 							$route_direction[] = $route['place'];
 						}
-						$route_direction = array_unique($route_direction);
+						$route_direction = array_values(array_unique($route_direction));
+					}
+
+					// Truthy check (not a strict 'yes' match): the toggle now uses the
+					// shared WBTM_Custom_Layout::switch_button() component, whose
+					// checkbox has no explicit value attribute and so submits the
+					// browser default "on" when checked — same pattern every other
+					// switch_button()-driven field in this file already uses.
+					$same_return = (isset($_POST['wbtm_same_bus_return_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_same_bus_return_enabled']))) ? 'yes' : 'no';
+					update_post_meta($post_id, 'wbtm_same_bus_return_enabled', $same_return);
+
+					if ($same_return === 'yes' && sizeof($route_direction) > 1) {
+						$n = count($route_direction);
+						$return_bp_merge = [];
+						$return_dp_merge = [];
+						for ($ri = 1; $ri < $n; $ri++) {
+							$return_bp_merge[] = $route_direction[ $ri ];
+						}
+						for ($ri = 0; $ri < $n - 1; $ri++) {
+							$return_dp_merge[] = $route_direction[ $ri ];
+						}
+						$bp = array_values(array_unique(array_merge($bp, $return_bp_merge)));
+						$dp = array_values(array_unique(array_merge($dp, $return_dp_merge)));
+					}
+
+					$return_route_infos = [];
+					$r_stops = isset($_POST['wbtm_return_route_place']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_place'])) : [];
+					$r_times = isset($_POST['wbtm_return_route_time']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_time'])) : [];
+					$r_types = isset($_POST['wbtm_return_route_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_type'])) : [];
+					$r_next_days = isset($_POST['wbtm_return_route_next_day']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_return_route_next_day'])) : [];
+					if (sizeof($r_stops) > 0) {
+						foreach ($r_stops as $r_key => $r_stop) {
+							$r_time = isset($r_times[ $r_key ]) ? $r_times[ $r_key ] : '';
+							$r_type = isset($r_types[ $r_key ]) ? $r_types[ $r_key ] : '';
+							if ($r_stop && $r_time && $r_type) {
+								$r_nd = is_array($r_next_days) && array_key_exists($r_key, $r_next_days) ? $r_next_days[ $r_key ] : '0';
+								$return_route_infos[] = [
+									'place' => $r_stop,
+									'time' => $r_time,
+									'type' => $r_type,
+									'next_day' => $r_nd === '1' || $r_nd === 1 || $r_nd === true,
+								];
+							}
+						}
+					}
+					$r_count = sizeof($return_route_infos);
+					if ($r_count > 0) {
+						$return_route_infos[0]['type'] = 'bp';
+						$return_route_infos[ $r_count - 1 ]['type'] = 'dp';
+						update_post_meta($post_id, 'wbtm_return_route_info', $return_route_infos);
+					} else {
+						delete_post_meta($post_id, 'wbtm_return_route_info');
+					}
+
+					update_post_meta($post_id, 'wbtm_route_info', $route_infos);
+					update_post_meta($post_id, 'wbtm_bus_bp_stops', $bp);
+					update_post_meta($post_id, 'wbtm_bus_next_stops', $dp);
+					if (sizeof($route_direction) > 0) {
 						update_post_meta($post_id, 'wbtm_route_direction', $route_direction);
 					}
 					/********************************************/
 					$price_infos = [];
 					$stops_bps = isset($_POST['wbtm_price_bp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_bp'])) : [];
 					$stops_dps = isset($_POST['wbtm_price_dp']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_dp'])) : [];
-					$adult_price = isset($_POST['wbtm_adult_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_adult_price'])) : [];
-					$child_price = isset($_POST['wbtm_child_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_child_price'])) : [];
-					$infant_price = isset($_POST['wbtm_infant_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_infant_price'])) : [];
+					$price_legs = isset($_POST['wbtm_price_leg']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_price_leg'])) : [];
+					$ticket_type_ids = isset($_POST['wbtm_ticket_type_id']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_id'])) : [];
+					$ticket_type_labels = isset($_POST['wbtm_ticket_type_label']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_ticket_type_label'])) : [];
+					$ticket_price_rows = isset($_POST['wbtm_ticket_price']) ? wp_unslash($_POST['wbtm_ticket_price']) : [];
+					$full_bus_enabled = WBTM_Functions::is_full_bus_feature_enabled();
+					$full_bus_price_rows = $full_bus_enabled && isset($_POST['wbtm_full_bus_price']) ? wp_unslash($_POST['wbtm_full_bus_price']) : [];
+					$full_bus_discount_rows = $full_bus_enabled && isset($_POST['wbtm_full_bus_discount']) ? wp_unslash($_POST['wbtm_full_bus_discount']) : [];
+					$ticket_types = [];
+					$used_ticket_type_ids = [];
+					foreach ($ticket_type_labels as $ticket_type_index => $ticket_type_label) {
+						$ticket_type_label = sanitize_text_field($ticket_type_label);
+						if (!$ticket_type_label) {
+							continue;
+						}
+						$requested_ticket_type_id = array_key_exists($ticket_type_index, $ticket_type_ids) ? $ticket_type_ids[$ticket_type_index] : '';
+						$ticket_type_id = WBTM_Functions::generate_ticket_type_id($requested_ticket_type_id, $ticket_type_label, $used_ticket_type_ids, $ticket_type_index);
+						$ticket_types[] = [
+							'id' => $ticket_type_id,
+							'label' => $ticket_type_label,
+						];
+						$used_ticket_type_ids[] = $ticket_type_id;
+					}
+					$ticket_types = sizeof($ticket_types) > 0 ? $ticket_types : WBTM_Functions::default_ticket_types();
+					update_post_meta($post_id, 'wbtm_ticket_types', $ticket_types);
 					if (sizeof($stops_bps) > 0) {
 						foreach ($stops_bps as $key => $stops_bp) {
-							if ($stops_bp && $stops_dps[$key] && isset($adult_price[$key])) {
-								$adult = $adult_price[$key] === '' ? '' : (float)$adult_price[$key];
-								$child = !isset($child_price[$key]) || $child_price[$key] === '' ? '' : (float)$child_price[$key];
-								$infant = !isset($infant_price[$key]) || $infant_price[$key] === '' ? '' : (float)$infant_price[$key];
-								$price_infos[] = [
+							if ($stops_bp && isset($stops_dps[$key]) && $stops_dps[$key]) {
+								$ticket_prices = [];
+								foreach ($ticket_types as $ticket_type) {
+									$ticket_type_id = $ticket_type['id'];
+									$ticket_price = '';
+									if (
+										is_array($ticket_price_rows) &&
+										array_key_exists($key, $ticket_price_rows) &&
+										is_array($ticket_price_rows[$key]) &&
+										array_key_exists($ticket_type_id, $ticket_price_rows[$key])
+									) {
+										$raw_ticket_price = sanitize_text_field((string) $ticket_price_rows[$key][$ticket_type_id]);
+										$ticket_price = $raw_ticket_price === '' ? '' : (float) $raw_ticket_price;
+									}
+									$ticket_prices[$ticket_type_id] = $ticket_price;
+								}
+								$legacy_prices = WBTM_Functions::get_legacy_price_fields($ticket_prices);
+								$row_leg = (array_key_exists($key, $price_legs) && $price_legs[$key] === 'return') ? 'return' : 'outbound';
+								$full_bus_price = '';
+								if ($full_bus_enabled && is_array($full_bus_price_rows) && array_key_exists($key, $full_bus_price_rows)) {
+									$raw_full_bus_price = sanitize_text_field((string) $full_bus_price_rows[$key]);
+									$full_bus_price = $raw_full_bus_price === '' ? '' : (float) $raw_full_bus_price;
+								}
+								$full_bus_discount = '';
+								if ($full_bus_enabled && is_array($full_bus_discount_rows) && array_key_exists($key, $full_bus_discount_rows)) {
+									$raw_full_bus_discount = sanitize_text_field((string) $full_bus_discount_rows[$key]);
+									if ($raw_full_bus_discount !== '') {
+										$is_percent_discount = substr(trim($raw_full_bus_discount), -1) === '%';
+										$discount_number = max(0, (float) str_replace('%', '', $raw_full_bus_discount));
+										$full_bus_discount = $is_percent_discount ? $discount_number . '%' : $discount_number;
+									}
+								}
+								// Fixed by Shahnur — full bus route pricing and fixed/percent discount 2026-05-07 12:01 PM
+								$price_info_row = array_merge([
 									'wbtm_bus_bp_price_stop' => $stops_bp,
 									'wbtm_bus_dp_price_stop' => $stops_dps[$key],
-									'wbtm_bus_price' => $adult,
-									'wbtm_bus_child_price' => $child,
-									'wbtm_bus_infant_price' => $infant,
-								];
+									'wbtm_ticket_prices' => $ticket_prices,
+									'wbtm_price_leg' => $row_leg,
+								], $legacy_prices);
+								if ($full_bus_enabled) {
+									// Fixed by Shahnur — Pro-only full bus route pricing and discount save 2026-05-07 01:55 PM
+									$price_info_row['wbtm_full_bus_price'] = $full_bus_price;
+									$price_info_row['wbtm_full_bus_discount'] = $full_bus_discount;
+								}
+								$price_infos[] = $price_info_row;
 							}
 						}
 					}
@@ -356,7 +444,7 @@
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					$cabin_mode_enabled = isset($_POST['wbtm_cabin_mode_enabled']) && sanitize_text_field(wp_unslash($_POST['wbtm_cabin_mode_enabled'])) ? 'yes' : 'no';
 					update_post_meta($post_id, 'wbtm_cabin_mode_enabled', $cabin_mode_enabled);
-					$cabin_count = isset($_POST['wbtm_cabin_count']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_count'])) : 1;
+					$cabin_count = isset($_POST['wbtm_cabin_count']) ? max(1, min(20, absint(wp_unslash($_POST['wbtm_cabin_count'])))) : 1;
 					$cabin_names = isset($_POST['wbtm_cabin_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_name'])) : [];
 					$cabin_enabled = isset($_POST['wbtm_cabin_enabled']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_enabled'])) : [];
 					$cabin_rows = isset($_POST['wbtm_cabin_rows']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_rows'])) : [];
@@ -377,8 +465,14 @@
 					if ($cabin_mode_enabled === 'yes') {
 						$total_seat = 0;
 						$has_enabled_cabin = false;
-						$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation');
 						foreach ($cabin_config as $cabin_index => $cabin) {
+							// Each cabin has its own independent rotation toggle — mirrors
+							// the lower/upper deck pattern (wbtm_enable_seat_rotation /
+							// wbtm_enable_seat_rotation_dd), never shared across cabins.
+							// Saved before the enabled-cabin skip below so a disabled
+							// cabin's toggle state is preserved for when it's re-enabled.
+							$enable_rotation = isset($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index]) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index])) ? 'yes' : 'no';
+							update_post_meta($post_id, 'wbtm_enable_seat_rotation_cabin_' . $cabin_index, $enable_rotation);
 							if (($cabin['enabled'] ?? 'yes') !== 'yes')
 								continue;
 							$has_enabled_cabin = true;
@@ -387,10 +481,12 @@
 							$cabin_seat_info = [];
 							if ($rows > 0 && $cols > 0) {
 								for ($j = 1; $j <= $cols; $j++) {
-									/*$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])) : null;
-									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])) : null;*/
-									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]) ?$_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j] : null;
-									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']) ? $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'] : null;
+									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])
+										? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j]))
+										: null;
+									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])
+										? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']))
+										: null;
 									if ($col_infos === null) {
 										$col_infos = [];
 									} elseif (is_array($col_infos)) {
@@ -407,13 +503,13 @@
 									}
 									for ($i = 0; $i < $rows; $i++) {
 										if (isset($col_infos[$i])) {
-											$seat_value = $col_infos[$i];
+											$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i]);
 											$rotation_value = $col_rotation_infos[$i] ?? '0';
 											$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j] = $seat_value;
 											if ($enable_rotation == 'yes') {
 												$cabin_seat_info[$i]['cabin_' . $cabin_index . '_seat' . $j . '_rotation'] = $rotation_value;
 											}
-											if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+											if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 												$total_seat++;
 											}
 										}
@@ -433,19 +529,22 @@
 					$rows = isset($_POST['wbtm_seat_rows_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_hidden'])) : 0;
 					$columns = isset($_POST['wbtm_seat_cols_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_cols_hidden'])) : 0;
 					$wbtm_enable_seat_rotation = isset($_POST['wbtm_enable_seat_rotation']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation'])) ? 'yes' : 'no';
+					$wbtm_enable_seat_price_override = isset($_POST['wbtm_enable_seat_price_override']) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_price_override'])) ? 'yes' : 'no';
 					update_post_meta($post_id, 'driver_seat_position', $driver_seat_position);
 					update_post_meta($post_id, 'wbtm_seat_rows', $rows);
 					update_post_meta($post_id, 'wbtm_seat_cols', $columns);
 					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
+					update_post_meta($post_id, 'wbtm_enable_seat_price_override', $wbtm_enable_seat_price_override);
 					$lower_deck_info = [];
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
-							/*$col_infos = isset($_POST['wbtm_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j])) : '';
-							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat' . $j . '_rotation'])) : '';*/
-
-                            $col_infos = isset($_POST['wbtm_seat' . $j]) ? $_POST['wbtm_seat' . $j] : '';
-                            $col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation']) ? $_POST['wbtm_seat' . $j . '_rotation'] : '';
+							$col_infos = isset($_POST['wbtm_seat' . $j])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_seat' . $j]))
+								: [];
+							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation'])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_seat' . $j . '_rotation']))
+								: [];
 
 							if ($col_infos === null) {
 								$col_infos = [];
@@ -462,13 +561,13 @@
 								$col_rotation_infos = [$col_rotation_infos];
 							}
 							for ($i = 0; $i < $rows; $i++) {
-								$seat_value = $col_infos[$i] ?? '';
+								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
 								$lower_deck_info[$i]['seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$lower_deck_info[$i]['seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 									$total_seat++;
 								}
 							}
@@ -479,7 +578,7 @@
 					$wbtm_show_upper_desk = isset($_POST['wbtm_show_upper_desk']) && sanitize_text_field(wp_unslash($_POST['wbtm_show_upper_desk'])) ? 'yes' : 'no';
 					$rows_dd = isset($_POST['wbtm_seat_rows_dd_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_dd_hidden'])) : 0;
 					$cols_dd = isset($_POST['wbtm_seat_cols_dd_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_cols_dd_hidden'])) : 0;
-					$wbtm_seat_dd_price_parcent = isset($_POST['wbtm_seat_dd_price_parcent']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_dd_price_parcent'])) : '';
+					$wbtm_seat_dd_price_parcent = isset($_POST['wbtm_seat_dd_price_parcent']) ? max(0, absint(wp_unslash($_POST['wbtm_seat_dd_price_parcent']))) : 0;
 					update_post_meta($post_id, 'show_upper_desk', $wbtm_show_upper_desk);
 					update_post_meta($post_id, 'wbtm_seat_rows_dd', $rows_dd);
 					update_post_meta($post_id, 'wbtm_seat_cols_dd', $cols_dd);
@@ -487,11 +586,12 @@
 					$upper_deck_info = [];
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
-							/*$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j])) : null;
-							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? sanitize_text_field(wp_unslash($_POST['wbtm_dd_seat' . $j . '_rotation'])) : null;*/
-
-							$col_infos = isset($_POST['wbtm_dd_seat' . $j]) ?$_POST['wbtm_dd_seat' . $j] : null;
-							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation']) ? $_POST['wbtm_dd_seat' . $j . '_rotation'] : null;
+							$col_infos = isset($_POST['wbtm_dd_seat' . $j])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_dd_seat' . $j]))
+								: null;
+							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation'])
+								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_dd_seat' . $j . '_rotation']))
+								: null;
 							if ($col_infos === null) {
 								$col_infos = [];
 							} elseif (is_array($col_infos)) {
@@ -507,13 +607,13 @@
 								$col_rotation_infos = [$col_rotation_infos];
 							}
 							for ($i = 0; $i < $rows_dd; $i++) {
-								$seat_value = $col_infos[$i] ?? '';
+								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
 								$upper_deck_info[$i]['dd_seat' . $j] = $seat_value;
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && $seat_value != 'door' && $seat_value != 'wc' && $wbtm_show_upper_desk == 'yes') {
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value) && $wbtm_show_upper_desk == 'yes') {
 									$total_seat++;
 								}
 							}
@@ -527,6 +627,38 @@
 						$total_seat = $seat_type == 'wbtm_seat_plan' ? $total_seat : $current_seat;
 						update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
 					}
+					// Per-seat ticket price overrides (modal in seat plan admin; JSON object of scope key => [ type_id => raw price ]).
+					if (array_key_exists('wbtm_seat_price_overrides', $_POST)) {
+						$raw = wp_unslash((string) $_POST['wbtm_seat_price_overrides']);
+						if ($raw !== '') {
+							$decoded = json_decode($raw, true);
+							if (JSON_ERROR_NONE === json_last_error() && is_array($decoded)) {
+								$clean = [];
+								foreach ($decoded as $scope => $rows) {
+									$scope_s = (string) $scope;
+									// Keys must match l|Seat, u|Seat, or c|N|Seat — reject anything malformed.
+									if ( ! preg_match( '/^(l|u)\|[^|]+$|^c\|\d+\|[^|]+$/', $scope_s ) || ! is_array( $rows ) ) {
+										continue;
+									}
+									$clean[ $scope_s ] = [];
+									foreach ($rows as $tid => $price) {
+										$t_s = sanitize_text_field((string) $tid);
+										if ($t_s === '' || $price === '' || $price === null) {
+											continue;
+										}
+										if (!is_numeric($price)) {
+											continue;
+										}
+										$clean[ $scope_s ][ $t_s ] = (string) max(0, floatval($price));
+									}
+									if (empty($clean[ $scope_s ])) {
+										unset($clean[ $scope_s ]);
+									}
+								}
+								update_post_meta($post_id, 'wbtm_seat_price_overrides', $clean);
+							}
+						}
+					}
 				}
 				//Extra service configuration
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
@@ -538,7 +670,6 @@
 					$extra_count = count($extra_names);
 					for ($i = 0; $i < $extra_count; $i++) {
 						if ($extra_names[$i] && $extra_price[$i] && $extra_qty[$i] > 0) {
-							//$new_extra_service[$i]['option_icon'] = $extra_icon[$i] ?? '';
 							$new_extra_service[$i]['option_name'] = $extra_names[$i];
 							$new_extra_service[$i]['option_price'] = $extra_price[$i];
 							$new_extra_service[$i]['option_qty'] = $extra_qty[$i];
@@ -557,7 +688,6 @@
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}
 				do_action('wbtm_settings_save', $post_id);
-				//do_action('wcpp_partial_settings_saved', $post_id);
 			}
 		}
 		new WBTM_Settings();

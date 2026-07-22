@@ -1,6 +1,6 @@
 <?php
 	/*
-   * @Author 		engr.sumonazma@gmail.com
+   * @Author 		MagePeople Team
    * Copyright: 	mage-people.com
    */
 	if (!defined('ABSPATH')) {
@@ -37,7 +37,7 @@
 					/* translators: %s: event name */
 					'all_items' => sprintf(__('All %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
-					'add_new_item' => sprintf(__('All New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
+					'add_new_item' => sprintf(__('Add New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
 					'add_new' => sprintf(__('Add New %s ', 'bus-ticket-booking-with-seat-reservation'), $name),
 					/* translators: %s: event name */
@@ -116,6 +116,20 @@
 					'rest_base' => 'wbtm_bus_bookings'
 				));
 				register_post_type('wbtm_bus_booking', $argsl);
+				register_post_type('wbtm_service_booking', array(
+					'public' => false,
+					'publicly_queryable' => false,
+					'label' => __('Extra Service Booking', 'bus-ticket-booking-with-seat-reservation'),
+					'supports' => array('title'),
+					'exclude_from_search' => true,
+					'show_in_menu' => false,
+					'capability_type' => 'post',
+					'capabilities' => array(
+						'create_posts' => 'do_not_allow',
+					),
+					'map_meta_cap' => true,
+					'show_in_rest' => false,
+				));
 			}
 			//************************************//
 			public function set_custom_columns($column) {
@@ -134,7 +148,7 @@
 			}
 			public function custom_column_data($column, $post_id) {
 				$seat_plan = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
-				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seal Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seal Plan', 'bus-ticket-booking-with-seat-reservation');
+				$seat_plan_text = $seat_plan == 'wbtm_seat_plan' ? esc_html__('Seat Plan', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Without Seat Plan', 'bus-ticket-booking-with-seat-reservation');
 				switch ($column) {
 					case 'wbtm_bus_no':
 						echo wp_kses_post("<span class=''>" . WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_no') . "</span>");

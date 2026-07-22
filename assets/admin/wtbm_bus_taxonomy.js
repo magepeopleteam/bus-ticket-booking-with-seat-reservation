@@ -31,7 +31,7 @@
         $(document).on('click', '.wtbm_edit_term', function() {
             const row = $(this).closest('tr');
             $('#wtbm_term_condition_key').val(row.data('key'));
-            $('#wtbm_term_condition_title').val(row.find('.term-title').text());
+            $('#wtbm_term_condition_title').val(row.data('title'));
             $('#wtbm_term_modal_title').text('Edit Term & Condition');
             $('#wtbm_term_condition_modal').show();
 
@@ -41,7 +41,7 @@
                 targetBtn.attr('id', 'wtbm_save_term_condition_btn');
             }
 
-            const answer = row.find('.term-answer').text();
+            const answer = row.data('answer');
             setTimeout(() => {
                 if (tinymce.get('wtbm_term_condition_answer_editor')) {
                     tinymce.get('wtbm_term_condition_answer_editor').setContent(answer);

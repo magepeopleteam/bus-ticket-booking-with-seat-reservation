@@ -1,6 +1,6 @@
 <?php
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if (!defined('ABSPATH')) {
@@ -9,7 +9,14 @@
 	if (!class_exists('WBTM_Global_Function')) {
 		class WBTM_Global_Function {
 			public function __construct() {
-				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 2);
+				add_action('wbtm_load_date_picker_js', [$this, 'date_picker_js'], 10, 4);
+				// Keep the per-request get_post_info() sanitize cache coherent: drop a cached entry
+				// the moment its underlying post meta is added/updated/deleted (all plugin writes
+				// go through these), plus a full-post purge whenever a post's cache is cleared.
+				add_action('added_post_meta',   [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('updated_post_meta',  [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('deleted_post_meta',  [__CLASS__, 'purge_info_cache_meta'], 10, 3);
+				add_action('clean_post_cache',   [__CLASS__, 'purge_info_cache_post'], 10, 1);
 			}
 			public static function query_post_type($post_type, $show = -1, $page = 1): WP_Query {
 				$args = array(
@@ -30,9 +37,50 @@
 				));
 				return array_unique($all_data);
 			}
+			/**
+			 * Per-request memo of get_post_info() results, keyed "post_id|meta_key".
+			 * data_sanitize() is pure, so caching its output for a given raw meta value is safe;
+			 * entries are invalidated on any meta change (see __construct) so they never go stale.
+			 */
+			private static $info_cache = array();
 			public static function get_post_info($post_id, $key, $default = '') {
-				$data = get_post_meta($post_id, $key, true) ?: $default;
-				return self::data_sanitize($data);
+				$cache_key = $post_id . '|' . $key;
+				if ( ! array_key_exists( $cache_key, self::$info_cache ) ) {
+					$raw = get_post_meta( $post_id, $key, true );
+					self::$info_cache[ $cache_key ] = array(
+						'raw'       => $raw,
+						// Only the truthy-meta branch uses this; falsy meta falls back to $default below.
+						'sanitized' => $raw ? self::data_sanitize( $raw ) : '',
+					);
+				}
+				$entry = self::$info_cache[ $cache_key ];
+				// Preserve original semantics exactly: `get_post_meta() ?: $default` — a falsy stored
+				// value ('' / 0 / '0' / false / []) falls back to the (sanitized) caller default.
+				if ( $entry['raw'] ) {
+					return $entry['sanitized'];
+				}
+				return self::data_sanitize( $default );
+			}
+			/** Invalidate one cached entry when its meta is added/updated/deleted. */
+			public static function purge_info_cache_meta( $meta_id, $object_id = 0, $meta_key = '' ) {
+				if ( $object_id && $meta_key ) {
+					unset( self::$info_cache[ $object_id . '|' . $meta_key ] );
+				}
+			}
+			/** Invalidate every cached entry for a post when its object cache is cleared. */
+			public static function purge_info_cache_post( $post_id ) {
+				$post_id = (int) $post_id;
+				if ( ! $post_id ) {
+					self::$info_cache = array();
+					return;
+				}
+				$prefix = $post_id . '|';
+				$len    = strlen( $prefix );
+				foreach ( array_keys( self::$info_cache ) as $cache_key ) {
+					if ( strncmp( (string) $cache_key, $prefix, $len ) === 0 ) {
+						unset( self::$info_cache[ $cache_key ] );
+					}
+				}
 			}
 			//***********************************//
 			public static function get_taxonomy($name) {
@@ -59,10 +107,26 @@
 			public static function get_submit_info_get_method($key, $default = '') {
 				return isset($_GET[$key]) ? sanitize_text_field(wp_unslash($_GET[$key])) : $default;
 			}
+			/**
+			 * SECURITY FIX: unserialize user input without allowing object instantiation.
+			 */
+			public static function safe_unserialize($data) {
+				if (!is_string($data) || '' === $data) {
+					return $data;
+				}
+				$data = trim($data);
+				if ('a:' === substr($data, 0, 2) || 's:' === substr($data, 0, 2) || 'b:' === substr($data, 0, 2) || 'i:' === substr($data, 0, 2) || 'd:' === substr($data, 0, 2) || 'N;' === $data) {
+					$unserialized = @unserialize($data, array('allowed_classes' => false));
+					if (false !== $unserialized || $data === serialize(false)) {
+						return $unserialized;
+					}
+				}
+				return $data;
+			}
 			public static function data_sanitize($data) {
-				$data = maybe_unserialize($data);
+				$data = self::safe_unserialize($data);
 				if (is_string($data)) {
-					$data = maybe_unserialize($data);
+					$data = self::safe_unserialize($data);
 					if (is_array($data)) {
 						$data = self::data_sanitize($data);
 					} else {
@@ -110,7 +174,7 @@
 				$date_format = $format == 'M d , yy' ? 'M  j, Y' : $date_format;
 				return $format == 'D M d , yy' ? 'D M  j, Y' : $date_format;
 			}
-			public function date_picker_js($selector, $dates) {
+			public function date_picker_js($selector, $dates, $soldout_dates = [], $async = []) {
 
                 $empty_dates = 0;
                 if( empty( $dates ) ){
@@ -133,10 +197,54 @@
                     }
                 }
 
+				$soldout_date_arr = [];
+				if ( ! empty( $soldout_dates ) && is_array( $soldout_dates ) ) {
+					foreach ( $soldout_dates as $so_date ) {
+						$soldout_date_arr[] = '"' . gmdate('j-n-Y', strtotime($so_date)) . '"';
+					}
+				}
+
 				?>
+                <style>
+                    td.wbtm-soldout-date a {
+                        background: #dc3545 !important;
+                        color: #fff !important;
+                        border-color: #dc3545 !important;
+                        cursor: not-allowed !important;
+                        position: relative;
+                        opacity: 0.85;
+                    }
+                    td.wbtm-soldout-date a:after {
+                        content: '';
+                        display: block;
+                    }
+                    td.wbtm-soldout-date span.ui-state-default {
+                        color: #fff !important;
+                    }
+                    .wbtm-soldout-legend {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        margin-top: 8px;
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    .wbtm-soldout-legend-box {
+                        display: inline-block;
+                        width: 14px;
+                        height: 14px;
+                        background: #dc3545;
+                        border-radius: 2px;
+                    }
+                </style>
                 <script>
                     jQuery(document).ready(function () {
-                        jQuery("<?php echo esc_attr($selector); ?>").datepicker({
+                        var wbtmPicker = jQuery("<?php echo esc_attr($selector); ?>");
+                        var availableDates = [<?php echo wp_kses_post(implode(',', $all_date)); ?>];
+                        // Mutable: starts with whatever was rendered inline (usually empty) and is
+                        // replaced when the async sold-out "chunk" returns.
+                        var soldoutDates = [<?php echo wp_kses_post(implode(',', $soldout_date_arr)); ?>];
+                        wbtmPicker.datepicker({
                             dateFormat: wbtm_date_format,
                             minDate: new Date(<?php echo esc_attr($start_year); ?>, <?php echo esc_attr($start_month); ?>, <?php echo esc_attr($start_day); ?>),
                             maxDate: new Date(<?php echo esc_attr($end_year); ?>, <?php echo esc_attr($end_month); ?>, <?php echo esc_attr($end_day); ?>),
@@ -150,14 +258,35 @@
                             }
                         });
                         function WorkingDates(date) {
-                            let availableDates = [<?php echo wp_kses_post(implode(',', $all_date)); ?>];
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-                            if (jQuery.inArray(dmy, availableDates) !== -1) {
+                            if (jQuery.inArray(dmy, soldoutDates) !== -1) {
+                                return [false, "wbtm-soldout-date", "<?php echo esc_js(__( 'Sold Out', 'bus-ticket-booking-with-seat-reservation' )); ?>"];
+                            } else if (jQuery.inArray(dmy, availableDates) !== -1) {
                                 return [true, "", "<?php echo esc_js(WBTM_Translations::text_date_available_status()); ?>"];
                             } else {
                                 return [false, "", "<?php echo esc_js(WBTM_Translations::text_date_unavailable_status()); ?>"];
                             }
                         }
+						<?php if ( ! empty( $async ) && isset( $async['post_id'], $async['start'], $async['end'] ) ) : ?>
+                        // Load sold-out dates as a separate, non-blocking request and re-paint
+                        // the already-visible calendar once it arrives.
+                        jQuery.post(wbtm_ajax_url, {
+                            action: 'get_wbtm_soldout_dates',
+                            nonce: wbtm_nonce,
+                            post_id: <?php echo wp_json_encode( (string) $async['post_id'] ); ?>,
+                            start_route: <?php echo wp_json_encode( (string) $async['start'] ); ?>,
+                            end_route: <?php echo wp_json_encode( (string) $async['end'] ); ?>,
+                            leg: <?php echo wp_json_encode( isset($async['leg']) ? (string) $async['leg'] : 'outbound' ); ?>,
+                            j_date: <?php echo wp_json_encode( isset($async['j_date']) ? (string) $async['j_date'] : '' ); ?>
+                        }).done(function (res) {
+                            if (res && res.success && res.data && Array.isArray(res.data.soldout) && res.data.soldout.length) {
+                                soldoutDates = res.data.soldout;
+                                if (wbtmPicker.hasClass('hasDatepicker')) {
+                                    wbtmPicker.datepicker('refresh');
+                                }
+                            }
+                        });
+						<?php endif; ?>
                     });
                 </script>
 				<?php
@@ -266,6 +395,13 @@
 			}
 			//***********************************//
 			public static function price_convert_raw($price) {
+				if (self::check_woocommerce() !== 1) {
+					// No WooCommerce: nothing to strip (currency symbol/separators are
+					// WC-formatted), just pull the numeric value back out.
+					$price = wp_strip_all_tags($price);
+					$price = preg_replace('/[^0-9.\-]/', '', (string) $price);
+					return max((float) $price, 0);
+				}
 				$price = wp_strip_all_tags($price);
 				$price = str_replace(get_woocommerce_currency_symbol(), '', $price);
 				$price = str_replace(wc_get_price_thousand_separator(), 't_s', $price);
@@ -276,6 +412,11 @@
 				return max($price, 0);
 			}
 			public static function wc_price($post_id, $price, $args = array()): string {
+				// No WooCommerce: skip all product/tax lookups (WC_Tax, wc_get_product(),
+				// WC()->customer below aren't available) and just format the raw number.
+				if (self::check_woocommerce() !== 1) {
+					return number_format((float) $price, 2);
+				}
 				$num_of_decimal = get_option('woocommerce_price_num_decimals', 2);
 				$args = wp_parse_args($args, array(
 					'qty' => '',
@@ -337,6 +478,29 @@
 			public static function get_wc_raw_price($post_id, $price, $args = array()) {
 				$price = self::wc_price($post_id, $price, $args);
 				return self::price_convert_raw($price);
+			}
+			/**
+			 * WooCommerce-safe price formatter for plain display (no per-product tax
+			 * calculation). Uses wc_price() when WooCommerce is active, otherwise falls
+			 * back to a plain formatted number so templates never fatal in standalone
+			 * (no-WC) mode.
+			 */
+			public static function format_price($price) {
+				if (self::check_woocommerce() === 1 && function_exists('wc_price')) {
+					return wc_price($price);
+				}
+				return number_format((float) $price, 2);
+			}
+			/**
+			 * WooCommerce-safe currency symbol. Returns WooCommerce's configured
+			 * symbol when WC is active, otherwise an empty string so standalone
+			 * (no-WC) admin screens never fatal on get_woocommerce_currency_symbol().
+			 */
+			public static function get_currency_symbol() {
+				if (function_exists('get_woocommerce_currency_symbol')) {
+					return get_woocommerce_currency_symbol();
+				}
+				return '';
 			}
 			//***********************************//
 			public static function get_image_url($post_id = '', $image_id = '', $size = 'full') {
@@ -412,6 +576,9 @@
 			//***********************************//
 			public static function all_tax_list(): array {
 				$classes = array();
+				if (self::check_woocommerce() !== 1 || !class_exists('WC_Tax')) {
+					return $classes;
+				}
 				foreach (WC_Tax::get_tax_classes() as $name) {
 					$slug = sanitize_title($name);
 					$classes[$slug] = $name;

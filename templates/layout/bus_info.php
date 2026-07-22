@@ -1,6 +1,6 @@
 <?php
 /*
-* Author: engr.sumonazma@gmail.com
+* Author: MagePeople Team
 * Copyright: mage-people.com
 */
 
@@ -76,7 +76,7 @@ $seat_price = $seat_price ?? WBTM_Functions::get_seat_price($post_id, $start_rou
                 <?php echo esc_html( WBTM_Translations::text_fare() ); ?>
             </th>
             <td>
-                <?php echo wp_kses_post( wc_price($seat_price ) ); ?>
+                <?php echo wp_kses_post( WBTM_Global_Function::format_price($seat_price ) ); ?>
                 <small>/<?php echo esc_html( WBTM_Translations::text_seat() ); ?></small>
             </td>
         </tr>

@@ -12,6 +12,37 @@ jQuery(document).ready(function ($) {
             this.loadBookings();
         },
 
+        // Escape HTML to prevent XSS from stored booking/passenger data.
+        escapeHtml: function (str) {
+            if (str === null || str === undefined) {
+                return '';
+            }
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        },
+
+        // Added by Shahnur — format a raw amount using the WooCommerce store currency 2026-06-02
+        formatPrice: function (amount) {
+            const c = (typeof wbtm_dashboard_ajax !== 'undefined' && wbtm_dashboard_ajax.currency) ? wbtm_dashboard_ajax.currency : null;
+            const num = parseFloat(amount);
+            if (isNaN(num)) {
+                return 'N/A';
+            }
+            if (!c) {
+                return '$' + num.toFixed(2);
+            }
+            const decimals = parseInt(c.decimals, 10);
+            let fixed = num.toFixed(isNaN(decimals) ? 2 : decimals);
+            let parts = fixed.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.thousand_sep || ',');
+            const formatted = parts.join(c.decimal_sep || '.');
+            return (c.format || '%1$s%2$s').replace('%1$s', c.symbol || '$').replace('%2$s', formatted);
+        },
+
         bindEvents: function () {
             // Search functionality
             $('#wbtm-search-btn').on('click', this.handleSearch.bind(this));
@@ -99,22 +130,22 @@ jQuery(document).ready(function ($) {
         },
 
         getBookingHTML: function (booking) {
-            const statusClass = booking.status.replace('-', '');
-            const journeyDate = booking.journey_date || 'Not specified';
+            const statusClass = this.escapeHtml(booking.status).replace('-', '');
+            const journeyDate = this.escapeHtml(booking.journey_date || 'Not specified');
             const route = booking.boarding_point && booking.dropping_point
-                ? `${booking.boarding_point} → ${booking.dropping_point}`
+                ? `${this.escapeHtml(booking.boarding_point)} → ${this.escapeHtml(booking.dropping_point)}`
                 : 'Route not specified';
-            const price = booking.total ? `$${parseFloat(booking.total).toFixed(2)}` : 'N/A';
+            const price = booking.total ? this.formatPrice(booking.total) : 'N/A';
 
             return `
-                <div class="wbtm-booking-item" data-order-id="${booking.order_id}">
+                <div class="wbtm-booking-item" data-order-id="${this.escapeHtml(booking.order_id)}">
                     <div class="wbtm-booking-cell wbtm-order-info">
-                        <div class="wbtm-order-number">#${booking.order_number}</div>
-                        <div class="wbtm-order-date">${booking.order_date}</div>
+                        <div class="wbtm-order-number">#${this.escapeHtml(booking.order_number)}</div>
+                        <div class="wbtm-order-date">${this.escapeHtml(booking.order_date)}</div>
                     </div>
                     <div class="wbtm-booking-cell wbtm-event-details">
                         <div class="wbtm-bus-name">
-                            ${booking.bus_name}
+                            ${this.escapeHtml(booking.bus_name)}
                             ${booking.has_extra_services ? '<span class="wbtm-services-badge" title="Includes extra services"><i class="fas fa-plus-circle"></i></span>' : ''}
                         </div>
                         <div class="wbtm-journey-details">
@@ -129,20 +160,20 @@ jQuery(document).ready(function ($) {
                         </div>
                     </div>
                     <div class="wbtm-booking-cell">
-                        <div class="wbtm-ticket-count">${booking.ticket_count}</div>
+                        <div class="wbtm-ticket-count">${this.escapeHtml(booking.ticket_count)}</div>
                     </div>
                     <div class="wbtm-booking-cell">
                         <div class="wbtm-price">${price}</div>
                     </div>
                     <div class="wbtm-booking-cell">
-                        <span class="wbtm-status ${statusClass}">${booking.status}</span>
+                        <span class="wbtm-status ${statusClass}">${this.escapeHtml(booking.status)}</span>
                     </div>
                     <div class="wbtm-booking-cell wbtm-actions">
-                        <button class="wbtm-btn wbtm-btn-primary wbtm-view-btn" data-order-id="${booking.order_id}">
+                        <button class="wbtm-btn wbtm-btn-primary wbtm-view-btn" data-order-id="${this.escapeHtml(booking.order_id)}">
                             <i class="fas fa-eye"></i> View
                         </button>
                         ${booking.pdf_url ?
-                    `<button class="wbtm-btn wbtm-btn-success wbtm-pdf-btn _themeButton" data-href="${booking.pdf_url}" data-order-id="${booking.order_id}">
+                    `<button class="wbtm-btn wbtm-btn-success wbtm-pdf-btn _themeButton" data-href="${this.escapeHtml(booking.pdf_url)}" data-order-id="${this.escapeHtml(booking.order_id)}">
                                 <i class="fas fa-file-pdf"></i> PDF
                             </button>` :
                     `<div class="wbtm-pdf-disabled">
@@ -304,7 +335,7 @@ jQuery(document).ready(function ($) {
                     if (response.success) {
                         WBTMDashboard.renderBookingDetails(response.data);
                     } else {
-                        $body.html('<div class="wbtm-error">' + (response.data.message || wbtm_dashboard_ajax.strings.error) + '</div>');
+                        $body.html('<div class="wbtm-error">' + WBTMDashboard.escapeHtml(response.data.message || wbtm_dashboard_ajax.strings.error) + '</div>');
                     }
                 },
                 error: function () {
@@ -315,6 +346,7 @@ jQuery(document).ready(function ($) {
 
         renderBookingDetails: function (data) {
             const $body = $('#wbtm-modal-body');
+            const escape = this.escapeHtml.bind(this);
 
             let html = '<div class="wbtm-booking-details">';
 
@@ -325,21 +357,21 @@ jQuery(document).ready(function ($) {
                     <div class="wbtm-detail-grid">
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Order Number</div>
-                            <div class="wbtm-detail-value">#${data.order.number}</div>
+                            <div class="wbtm-detail-value">#${escape(data.order.number)}</div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Order Date</div>
-                            <div class="wbtm-detail-value">${data.order.date}</div>
+                            <div class="wbtm-detail-value">${escape(data.order.date)}</div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Status</div>
                             <div class="wbtm-detail-value">
-                                <span class="wbtm-status ${data.order.status.replace('-', '')}">${data.order.status}</span>
+                                <span class="wbtm-status ${escape(data.order.status).replace('-', '')}">${escape(data.order.status)}</span>
                             </div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Total Amount</div>
-                            <div class="wbtm-detail-value">$${data.order.total}</div>
+                            <div class="wbtm-detail-value">${WBTMDashboard.formatPrice(data.order.total)}</div>
                         </div>
                     </div>
                 </div>
@@ -352,19 +384,19 @@ jQuery(document).ready(function ($) {
                     <div class="wbtm-detail-grid">
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Bus</div>
-                            <div class="wbtm-detail-value">${data.bus.name}</div>
+                            <div class="wbtm-detail-value">${escape(data.bus.name)}</div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">Journey Date</div>
-                            <div class="wbtm-detail-value">${data.journey.date ? new Date(data.journey.date).toLocaleString() : 'Not specified'}</div>
+                            <div class="wbtm-detail-value">${data.journey.date ? escape(new Date(data.journey.date).toLocaleString()) : 'Not specified'}</div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">From</div>
-                            <div class="wbtm-detail-value">${data.journey.boarding_point || 'Not specified'}</div>
+                            <div class="wbtm-detail-value">${escape(data.journey.boarding_point) || 'Not specified'}</div>
                         </div>
                         <div class="wbtm-detail-item">
                             <div class="wbtm-detail-label">To</div>
-                            <div class="wbtm-detail-value">${data.journey.dropping_point || 'Not specified'}</div>
+                            <div class="wbtm-detail-value">${escape(data.journey.dropping_point) || 'Not specified'}</div>
                         </div>
                     </div>
                 </div>
@@ -382,9 +414,9 @@ jQuery(document).ready(function ($) {
                     html += `
                         <div class="wbtm-attendee-card">
                             <div class="wbtm-attendee-header">
-                                <div class="wbtm-seat-number">Seat: ${attendee.seat || 'Not assigned'}</div>
+                                <div class="wbtm-seat-number">Seat: ${escape(attendee.seat) || 'Not assigned'}</div>
                                 <div class="wbtm-attendee-actions">
-                                    <button class="wbtm-btn wbtm-btn-primary wbtm-edit-btn" data-attendee-id="${attendee.id}">
+                                    <button class="wbtm-btn wbtm-btn-primary wbtm-edit-btn" data-attendee-id="${escape(attendee.id)}">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
                                 </div>
@@ -392,7 +424,7 @@ jQuery(document).ready(function ($) {
                             <div class="wbtm-attendee-info">
                                 <div class="wbtm-detail-item">
                                     <div class="wbtm-detail-label">Fare</div>
-                                    <div class="wbtm-detail-value">$${attendee.fare || '0.00'}</div>
+                                    <div class="wbtm-detail-value">${WBTMDashboard.formatPrice(attendee.fare || 0)}</div>
                                 </div>
                     `;
 
@@ -403,8 +435,8 @@ jQuery(document).ready(function ($) {
                             if (field.value) {
                                 html += `
                                     <div class="wbtm-detail-item">
-                                        <div class="wbtm-detail-label">${field.label || key}</div>
-                                        <div class="wbtm-detail-value">${field.value}</div>
+                                        <div class="wbtm-detail-label">${escape(field.label || key)}</div>
+                                        <div class="wbtm-detail-value">${escape(field.value)}</div>
                                     </div>
                                 `;
                             }
@@ -431,9 +463,9 @@ jQuery(document).ready(function ($) {
 
                             html += `
                                 <div class="wbtm-service-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                    <div class="wbtm-service-name" style="font-weight: 500; color: #111827;">${serviceName}</div>
+                                    <div class="wbtm-service-name" style="font-weight: 500; color: #111827;">${escape(serviceName)}</div>
                                     <div class="wbtm-service-details" style="color: #6b7280; font-size: 0.9rem;">
-                                        x${serviceQty} | $${parseFloat(servicePrice).toFixed(2)} = $${parseFloat(totalPrice).toFixed(2)}
+                                        x${escape(serviceQty)} | ${WBTMDashboard.formatPrice(servicePrice)} = ${WBTMDashboard.formatPrice(totalPrice)}
                                     </div>
                                 </div>
                             `;
@@ -575,7 +607,7 @@ jQuery(document).ready(function ($) {
                 <div class="wbtm-error-state">
                     <i class="fas fa-exclamation-triangle"></i>
                     <h3>Error</h3>
-                    <p>${message}</p>
+                    <p>${this.escapeHtml(message)}</p>
                     <button class="wbtm-btn wbtm-btn-primary" onclick="WBTMDashboard.loadBookings()">
                         <i class="fas fa-redo"></i> Try Again
                     </button>

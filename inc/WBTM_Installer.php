@@ -42,6 +42,19 @@ if (!class_exists('WBTM_Installer')) {
                 );
                 update_option('wbtm_dashboard_settings', $default_settings);
             }
+
+            // Set default general settings with bus icon if not already set
+            $general_settings = get_option('wbtm_general_settings');
+            if ( ! $general_settings || ! is_array( $general_settings ) ) {
+                $general_settings = array();
+            }
+            if ( empty( $general_settings['icon'] ) ) {
+                $general_settings['icon'] = 'fas fa-bus';
+            }
+            if ( empty( $general_settings['bus_search_list_direction_icon'] ) ) {
+                $general_settings['bus_search_list_direction_icon'] = 'fas fa-bus';
+            }
+            update_option('wbtm_general_settings', $general_settings);
         }
 
         public static function create_pages()

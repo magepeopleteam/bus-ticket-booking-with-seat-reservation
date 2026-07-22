@@ -1,5 +1,8 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
+
 /*
 	   * @Author 		MagePeople Team
 	   * Copyright: 	mage-people.com
@@ -21,6 +24,10 @@ if ( ! class_exists( 'WBTM_Term_Condition_Setting' ) ) {
 
         public function wtbm_save_term_and_condition() {
             check_ajax_referer( 'wbtm_admin_nonce', 'nonce' );
+
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( __( 'You do not have permission to perform this action.', 'bus-ticket-booking-with-seat-reservation' ) );
+            }
 
             $title  = sanitize_text_field( wp_unslash( $_POST['title']  ?? '' ) );
             $answer = wp_kses_post( $_POST['answer'] ?? '' );
@@ -50,6 +57,10 @@ if ( ! class_exists( 'WBTM_Term_Condition_Setting' ) ) {
          */
         public function wtbm_delete_term() {
             check_ajax_referer( 'wbtm_admin_nonce', 'nonce' );
+
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( __( 'You do not have permission to perform this action.', 'bus-ticket-booking-with-seat-reservation' ) );
+            }
 
             $key = sanitize_text_field( $_POST['key'] ?? '' );
             $term_condition = get_option( $this->term_option_key, [] );
@@ -86,6 +97,7 @@ if ( ! class_exists( 'WBTM_Term_Condition_Setting' ) ) {
                                 <tr
                                     data-key="<?php echo esc_attr( $key ); ?>"
                                     data-title="<?php echo esc_attr( $term_and_condition['title'] ); ?>"
+                                    data-answer="<?php echo esc_attr( array_key_exists( 'answer', $term_and_condition ) ? $term_and_condition['answer'] : '' ); ?>"
                                 >
                                     <td class="faq-title">
                                         <?php echo array_key_exists( 'title', $term_and_condition ) ? esc_html( $term_and_condition['title'] ) : ''; ?>

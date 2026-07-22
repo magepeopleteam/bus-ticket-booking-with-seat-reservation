@@ -13,7 +13,7 @@
 					'edit.php?post_type=wbtm_bus',
 					__('Analytics Dashboard', 'bus-ticket-booking-with-seat-reservation'),
 					__('Analytics', 'bus-ticket-booking-with-seat-reservation'),
-					'manage_options',
+					apply_filters('wbtm_analytics_menu_capability', 'manage_options'),
 					'wbtm-analytics',
 					array($this, 'analytics_dashboard_page')
 				);
@@ -64,6 +64,26 @@
 						'post_status' => 'any'
 					);
 					$bookings = get_posts($args);
+					// Performance: the original code called wc_get_order() once per booking (an N+1
+					// that scales with booking volume). Batch-load the related WooCommerce orders in
+					// a single wc_get_orders() call instead. Any id not returned falls back to
+					// wc_get_order() in the loop, so the data used is identical to before.
+					// (Booking post-meta is already primed by get_posts() above, so no extra work
+					// is needed for the per-booking get_post_meta() reads.)
+					$order_map = array();
+					$order_ids = array();
+					foreach ( $bookings as $booking ) {
+						$oid = (int) get_post_meta( $booking->ID, 'wbtm_order_id', true );
+						if ( $oid ) {
+							$order_ids[ $oid ] = true;
+						}
+					}
+					if ( ! empty( $order_ids ) && function_exists( 'wc_get_orders' ) ) {
+						$loaded_orders = wc_get_orders( array( 'include' => array_keys( $order_ids ), 'limit' => -1 ) );
+						foreach ( $loaded_orders as $loaded_order ) {
+							$order_map[ $loaded_order->get_id() ] = $loaded_order;
+						}
+					}
 					// Initialize monthly revenue array for last 6 months
 					for ($i = 5; $i >= 0; $i--) {
 						$month = gmdate('M Y', strtotime("-$i months"));
@@ -72,7 +92,7 @@
 					foreach ($bookings as $booking) {
 						$order_id = get_post_meta($booking->ID, 'wbtm_order_id', true);
 						if ($order_id) {
-							$order = wc_get_order($order_id);
+							$order = isset( $order_map[ (int) $order_id ] ) ? $order_map[ (int) $order_id ] : ( function_exists( 'wc_get_order' ) ? wc_get_order($order_id) : false );
 							if ($order) {
 								$order_status = $order->get_status();
 								$total = $order->get_total();
@@ -188,7 +208,7 @@
                                 <span class="dashicons dashicons-money-alt"></span>
                             </div>
                             <div class="stat-content">
-                                <h3><?php echo wp_kses_post(wc_price($stats['total_revenue'])); ?></h3>
+                                <h3><?php echo wp_kses_post(WBTM_Global_Function::format_price($stats['total_revenue'])); ?></h3>
                                 <p><?php esc_html_e('Total Revenue', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                             </div>
                         </div>

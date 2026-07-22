@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { die; }
+
 /*
 	   * @Author 		MagePeople Team
 	   * Copyright: 	mage-people.com
@@ -43,7 +46,7 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
 
                 <div class="wtbm_all_selected_term_condition">
                     <div class="wtbm_all_term_condition">
-                        <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
+                        <h3><?php esc_html_e( 'Available Term & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
                         <div class="wtbm_term_all_question">
                             <?php if (!empty($terms)) : ?>
                                 <?php foreach ($terms as $key => $term) :
@@ -54,17 +57,17 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
                                          data-title="<?php echo esc_attr( $term['title'] ); ?>"
                                     >
                                         <div class="wtbm_term_title"><?php echo esc_html($term['title']); ?></div>
-                                        <button type="button" class="button button-small wtbm_add_term_condition"><?php esc_html_e( 'Add', 'car-rental-manager' ); ?></button>
+                                        <button type="button" class="button button-small wtbm_add_term_condition"><?php esc_html_e( 'Add', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition available.', 'car-rental-manager' ); ?></p>
+                                <p><?php esc_html_e( 'No Term & Condition available.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="wtbm_selected_term_question_box">
-                        <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
+                        <h3><?php esc_html_e( 'Added Term & Condition', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
                         <div class="wtbm_selected_term_condition">
                             <?php if (!empty($selected_terms_data)) : ?>
                                 <?php foreach ($selected_terms_data as $key => $term) : ?>
@@ -73,16 +76,16 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
                                          data-title="<?php echo esc_attr( $term['title'] ); ?>"
                                     >
                                         <div class="wtbm_term_title"><?php echo esc_html($term['title']); ?></div>
-                                        <button type="button" class="button button-small wtbm_remove_term_condition"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
+                                        <button type="button" class="button button-small wtbm_remove_term_condition"><?php esc_html_e( 'Remove', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'car-rental-manager' ); ?></p>
+                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" id="wtbm_added_term_condition_input" name="wtbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_terms_data)); ?>">
+                <input type="hidden" id="wtbm_added_term_input" name="wtbm_added_term_condition" value="<?php echo esc_attr(json_encode(array_keys($selected_terms_data))); ?>">
             </div>
 
         <?php }
@@ -103,20 +106,13 @@ if ( ! class_exists( 'WTBM_Term_Condition_Add_Bus' ) ) {
             }
 
             if ( $post_id && is_array( $data ) ) {
-                // Sanitize the term data array
-                $sanitized_data = [];
-                foreach ( $data as $term ) {
-                    if ( is_array( $term ) ) {
-                        $sanitized_term = [
-                            'title'   => isset( $term['title'] ) ? sanitize_text_field( wp_unslash( $term['title'] ) ) : '',
-                            'answer'  => isset( $term['answer'] ) ? wp_kses_post( wp_unslash( $term['answer'] ) ) : '',
-                        ];
-                        $sanitized_data[] = $sanitized_term;
-                    }
-                }
+                // The frontend sends an array of term keys referencing the global
+                // term list option. Store the sanitized keys, not full term arrays.
+                $sanitized_data = array_values( array_filter( array_map( 'sanitize_text_field', $data ) ) );
+
                 update_post_meta( $post_id, $this->term_option_key, $sanitized_data );
 
-                wp_send_json_success( [ 'message' => 'FAQ saved successfully!', 'data' => $sanitized_data ] );
+                wp_send_json_success( [ 'message' => 'Term & Condition saved successfully!', 'data' => $sanitized_data ] );
             } else {
                 wp_send_json_error( [ 'message' => 'Invalid data' ] );
             }

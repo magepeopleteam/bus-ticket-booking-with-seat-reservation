@@ -1,0 +1,431 @@
+/**
+ * WBTM Booking List admin screen.
+ * Scoped under .wbtm-bkl-wrap so it never leaks into the rest of wp-admin.
+ */
+
+.wbtm-bkl-wrap { margin: 18px 20px 40px 2px; color: #1e293b; font-size: 13px; }
+.wbtm-bkl-wrap *, .wbtm-bkl-wrap *::before, .wbtm-bkl-wrap *::after { box-sizing: border-box; }
+
+/* Header */
+.wbtm-bkl-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.wbtm-bkl-title { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700; margin: 0; color: #0f172a; }
+.wbtm-bkl-title .dashicons { font-size: 22px; width: 22px; height: 22px; color: #e63946; }
+.wbtm-bkl-subtitle { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+.wbtm-bkl-pro-cta {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+  background: linear-gradient(135deg, #e63946, #b3212f); color: #fff;
+  padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px;
+}
+.wbtm-bkl-pro-cta:hover { color: #fff; filter: brightness(1.05); }
+.wbtm-bkl-pro-cta .dashicons { font-size: 16px; width: 16px; height: 16px; }
+
+/* Locked (blurred) sections — non-interactive when free, no real data behind the blur */
+.wbtm-bkl-locked { position: relative; margin-bottom: 16px; border-radius: 12px; overflow: hidden; }
+.wbtm-bkl-locked.is-locked > .wbtm-bkl-stats,
+.wbtm-bkl-locked.is-locked > .wbtm-bkl-filters { filter: blur(5px); opacity: .55; pointer-events: none; user-select: none; }
+.wbtm-bkl-lock-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; text-align: center;
+  background: rgba(255,255,255,.35); padding: 12px;
+}
+.wbtm-bkl-lock-overlay p { margin: 0; font-size: 13px; font-weight: 600; color: #334155; }
+.wbtm-bkl-pro-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, #e63946, #b3212f); color: #fff;
+  padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+}
+.wbtm-bkl-pro-badge .dashicons { font-size: 14px; width: 14px; height: 14px; }
+
+/* Stats */
+.wbtm-bkl-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.wbtm-bkl-stat { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 18px; }
+.wbtm-bkl-stat-icon { font-size: 26px; width: 26px; height: 26px; color: #e63946; flex-shrink: 0; }
+.wbtm-bkl-stat-value { display: block; font-size: 21px; font-weight: 700; color: #0f172a; }
+.wbtm-bkl-stat-label { display: block; font-size: 12px; color: #64748b; margin-top: 2px; }
+
+/* Collapsible Filters panel */
+.wbtm-bkl-filters-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+.wbtm-bkl-filters-toggle {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 13px 16px; border: none;
+  background: none; cursor: pointer; font-size: 13px; font-weight: 700; color: #334155; text-align: left;
+}
+.wbtm-bkl-filters-toggle:hover { background: #f8fafc; }
+.wbtm-bkl-filters-toggle .dashicons:first-child { color: #e63946; font-size: 16px; width: 16px; height: 16px; }
+.wbtm-bkl-filters-active-dot { width: 7px; height: 7px; border-radius: 50%; background: #e63946; }
+.wbtm-bkl-filters-arrow { margin-left: auto; transition: transform .2s; color: #94a3b8; }
+.wbtm-bkl-filters-toggle[aria-expanded="true"] .wbtm-bkl-filters-arrow { transform: rotate(180deg); }
+.wbtm-bkl-filters-body { display: none; border-top: 1px solid #eef2f6; padding: 16px; }
+.wbtm-bkl-filters-body.is-open { display: block; }
+
+.wbtm-bkl-filters { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 14px; align-items: end; }
+.wbtm-bkl-filter-wide { grid-column: 1 / -1; }
+.wbtm-bkl-filter-field { position: relative; display: flex; align-items: center; }
+.wbtm-bkl-filter-field .dashicons { position: absolute; left: 8px; color: #94a3b8; font-size: 16px; pointer-events: none; }
+.wbtm-bkl-filters input[type="text"] { padding: 8px 10px 8px 30px; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; }
+.wbtm-bkl-filters select,
+.wbtm-bkl-filters input[type="date"] { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; }
+.wbtm-bkl-filters .button { border-radius: 8px; }
+.wbtm-bkl-filter-group { display: flex; flex-direction: column; gap: 5px; }
+.wbtm-bkl-filter-group label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .03em; }
+.wbtm-bkl-filter-daterange { grid-column: span 2; }
+.wbtm-bkl-filter-daterange-inputs { display: flex; align-items: center; gap: 6px; }
+.wbtm-bkl-filter-daterange-inputs input { min-width: 0; }
+.wbtm-bkl-filter-daterange-inputs span { color: #94a3b8; flex-shrink: 0; }
+.wbtm-bkl-filter-actions { grid-column: 1 / -1; display: flex; gap: 10px; padding-top: 4px; }
+
+/* Table */
+.wbtm-bkl-table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow-x: auto; overflow-y: visible; }
+.wbtm-bkl-table-toolbar { padding: 12px 16px; border-bottom: 1px solid #eef2f6; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wbtm-bkl-bulk-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wbtm-bkl-bulk-bar select { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12.5px; }
+.wbtm-bkl-bulk-bar .button { border-radius: 8px; }
+.wbtm-bkl-count { font-size: 13px; font-weight: 600; color: #475569; margin-left: 6px; }
+.wbtm-bkl-col-check { width: 34px; }
+.wbtm-bkl-col-check input,
+.wbtm-bkl-row-check { margin: 0; }
+.wbtm-bkl-pagination-top { padding: 0; }
+.wbtm-bkl-table { width: 100%; border-collapse: collapse; min-width: 980px; }
+/* Narrower tables (e.g. the detail page's 3-column fare breakdown) don't need
+   the main list's 980px floor — that's what forced a pointless horizontal
+   scrollbar on a table that already fits its container. */
+.wbtm-bkl-table-wrap-plain { overflow-x: visible; }
+.wbtm-bkl-table-plain { min-width: 0; }
+.wbtm-bkl-table thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.wbtm-bkl-table tbody td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: top; color: #334155; }
+.wbtm-bkl-table tbody tr:last-child td { border-bottom: none; }
+.wbtm-bkl-table tbody tr:hover { background: #fafbfc; }
+.wbtm-bkl-sub { display: block; font-size: 11px; color: #94a3b8; margin-top: 3px; }
+.wbtm-bkl-table small { color: #94a3b8; font-size: 11px; }
+.wbtm-bkl-pill { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+
+/* Status pills */
+.wbtm-bkl-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+.wbtm-bkl-badge.green { background: #d1fae5; color: #065f46; }
+.wbtm-bkl-badge.blue { background: #dbeafe; color: #1e40af; }
+.wbtm-bkl-badge.orange { background: #fef3c7; color: #92400e; }
+.wbtm-bkl-badge.red { background: #fee2e2; color: #991b1b; }
+
+/* Booking source badge (WooCommerce vs Custom/Standalone order) */
+.wbtm-bkl-source { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 8px 2px 6px; border-radius: 12px; font-size: 10.5px; font-weight: 700; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; }
+.wbtm-bkl-source .dashicons { font-size: 12px; width: 12px; height: 12px; }
+.wbtm-bkl-source-woo { background: #ede9fe; color: #6d28d9; }
+.wbtm-bkl-source-custom { background: #ffedd5; color: #9a3412; }
+.wbtm-bkl-source-admin { background: #dbeafe; color: #1e40af; }
+
+/* Outbound / Return leg tag (round-trip bookings) */
+.wbtm-bkl-leg { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 8px 2px 6px; border-radius: 12px; font-size: 10.5px; font-weight: 700; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; }
+.wbtm-bkl-leg .dashicons { font-size: 12px; width: 12px; height: 12px; }
+.wbtm-bkl-leg-outbound { background: #e0e7ff; color: #4338ca; }
+.wbtm-bkl-leg-return { background: #d1fae5; color: #047857; }
+
+/* Actions dropdown */
+.wbtm-bkl-col-actions { white-space: nowrap; text-align: right; overflow: visible; }
+.wbtm-bkl-dropdown { position: relative; display: inline-block; text-align: left; }
+.wbtm-bkl-dropdown-toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+  border-radius: 7px; border: 1px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer;
+}
+.wbtm-bkl-dropdown-toggle:hover { background: #f8fafc; border-color: #cbd5e1; }
+.wbtm-bkl-dropdown-toggle .dashicons { font-size: 18px; width: 18px; height: 18px; }
+.wbtm-bkl-dropdown-menu {
+  display: none; position: absolute; right: 0; top: calc(100% + 4px); z-index: 99999;
+  min-width: 190px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.15); padding: 6px; text-align: left;
+}
+.wbtm-bkl-dropdown.is-open .wbtm-bkl-dropdown-menu { display: block; }
+.wbtm-bkl-dropdown.drop-up .wbtm-bkl-dropdown-menu { top: auto; bottom: calc(100% + 4px); }
+.wbtm-bkl-dropdown-item {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border-radius: 7px;
+  font-size: 12.5px; font-weight: 600; color: #334155; text-decoration: none; cursor: pointer;
+  background: none; border: none; text-align: left; box-sizing: border-box;
+}
+.wbtm-bkl-dropdown-item:hover { background: #f1f5f9; color: #334155; }
+.wbtm-bkl-dropdown-item .dashicons { font-size: 16px; width: 16px; height: 16px; color: #64748b; flex-shrink: 0; }
+.wbtm-bkl-dropdown-item.is-disabled { color: #b8c0cc; cursor: not-allowed; }
+.wbtm-bkl-dropdown-item.is-disabled .dashicons { color: #cbd5e1; }
+.wbtm-bkl-dropdown-item.is-disabled:hover { background: none; }
+.wbtm-bkl-dropdown-divider { height: 1px; background: #eef2f6; margin: 5px 6px; }
+.wbtm-bkl-mini-pro { margin-left: auto; font-size: 9px; font-weight: 700; color: #e63946; background: #fdedef; border-radius: 4px; padding: 1px 4px; letter-spacing: .03em; }
+.wbtm-bkl-del-btn:hover { background: #fef2f2; color: #ef4444; }
+.wbtm-bkl-del-btn .dashicons { color: #ef4444; }
+
+.wbtm-bkl-empty { text-align: center; padding: 48px 16px !important; color: #94a3b8; }
+.wbtm-bkl-empty .dashicons { font-size: 34px; width: 34px; height: 34px; opacity: .5; }
+.wbtm-bkl-empty p { margin: 8px 0 0; }
+
+/* Pagination */
+.wbtm-bkl-pagination { padding: 14px 16px; display: flex; justify-content: flex-end; gap: 4px; }
+.wbtm-bkl-pagination .page-numbers { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 8px; border: 1px solid #e2e8f0; border-radius: 7px; text-decoration: none; color: #475569; font-size: 13px; }
+.wbtm-bkl-pagination .page-numbers.current { background: #e63946; border-color: #e63946; color: #fff; }
+.wbtm-bkl-pagination .page-numbers:hover:not(.current) { border-color: #e63946; color: #e63946; }
+
+/* Delete modal */
+.wbtm-bkl-modal { position: fixed; inset: 0; z-index: 100000; background: rgba(15,23,42,.5); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.wbtm-bkl-modal-card { background: #fff; border-radius: 14px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: hidden; }
+.wbtm-bkl-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #eef2f6; }
+.wbtm-bkl-modal-head h2 { display: flex; align-items: center; gap: 8px; font-size: 16px; margin: 0; color: #0f172a; }
+.wbtm-bkl-modal-head h2 .dashicons { color: #ef4444; }
+.wbtm-bkl-modal-close { cursor: pointer; color: #94a3b8; }
+.wbtm-bkl-modal-close:hover { color: #475569; }
+.wbtm-bkl-modal-body { padding: 18px; font-size: 14px; color: #334155; line-height: 1.6; }
+.wbtm-bkl-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.wbtm-bkl-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid transparent; }
+.wbtm-bkl-btn .dashicons { font-size: 15px; width: 15px; height: 15px; }
+.wbtm-bkl-btn-outline { background: #fff; border-color: #cbd5e1; color: #475569; }
+.wbtm-bkl-btn-outline:hover { border-color: #94a3b8; }
+.wbtm-bkl-btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+.wbtm-bkl-btn-danger:hover { filter: brightness(1.05); }
+.wbtm-bkl-btn-primary { background: linear-gradient(135deg, #e63946, #b3212f); color: #fff; }
+.wbtm-bkl-btn-primary:hover { filter: brightness(1.05); }
+.wbtm-bkl-btn-sm { padding: 6px 12px; font-size: 12px; }
+.wbtm-bkl-btn[disabled] { opacity: .6; cursor: default; }
+
+/* Booking Detail page */
+.wbtm-bkl-badge-inline { font-size: 12px; vertical-align: middle; margin-left: 4px; }
+.wbtm-bkl-detail-columns { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.wbtm-bkl-detail-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.wbtm-bkl-detail-sidebar { display: flex; flex-direction: column; gap: 20px; }
+.wbtm-bkl-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.wbtm-bkl-detail-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+.wbtm-bkl-detail-card-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #eef2f6; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #475569; }
+.wbtm-bkl-detail-card-header .dashicons { color: #e63946; font-size: 16px; width: 16px; height: 16px; }
+.wbtm-bkl-detail-card-body { padding: 16px; }
+.wbtm-bkl-dl { display: grid; grid-template-columns: 130px 1fr; row-gap: 10px; column-gap: 10px; margin: 0; }
+.wbtm-bkl-dl dt { font-size: 12px; color: #94a3b8; font-weight: 600; }
+.wbtm-bkl-dl dd { margin: 0; font-size: 13px; color: #1e293b; }
+.wbtm-bkl-detail-section { display: flex; flex-direction: column; gap: 10px; }
+.wbtm-bkl-section-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; margin: 0; color: #0f172a; }
+.wbtm-bkl-section-title .dashicons { color: #e63946; }
+.wbtm-bkl-addon-row td:first-child { color: #64748b; }
+.wbtm-bkl-total-row td { border-top: 2px solid #e2e8f0; }
+
+/* Fare-breakdown tax rows — these are a breakdown OF the total above (store
+   prices include tax), never an addition, so they read as muted sub-lines. */
+.wbtm-bkl-tax-row td { color: #64748b; font-size: 12px; border-top: none; padding-top: 2px; padding-bottom: 2px; }
+
+/* Deposit rows: what was actually collected vs what is still owed. */
+.wbtm-bkl-deposit-row td { font-size: 12px; }
+.wbtm-bkl-deposit-row td:first-child { color: #64748b; }
+.wbtm-bkl-deposit-row .dashicons { font-size: 14px; width: 14px; height: 14px; vertical-align: -2px; color: #16a34a; }
+.wbtm-bkl-deposit-row.is-due td { color: #b91c1c; font-weight: 600; }
+.wbtm-bkl-deposit-row.is-due td:first-child { color: #b91c1c; }
+.wbtm-bkl-deposit-row.is-due .dashicons { color: #b91c1c; }
+.wbtm-bkl-deposit-row.is-due small { font-weight: 400; color: #ef4444; }
+
+/* Stats scope notice — shown only while a filter narrows the set, so the cards
+   are never mistaken for site-wide totals. */
+.wbtm-bkl-stats-scope {
+	display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+	margin: 0 0 10px; padding: 7px 12px; border-radius: 8px;
+	background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;
+	font-size: 12px; font-weight: 600;
+}
+.wbtm-bkl-stats-scope .dashicons { font-size: 15px; width: 15px; height: 15px; }
+.wbtm-bkl-stats-scope a { color: #1d4ed8; font-weight: 700; }
+
+/* List Total column: tax note + deposit pill */
+.wbtm-bkl-tax-note { color: #94a3b8; }
+.wbtm-bkl-deposit-note {
+	display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 6px;
+	font-size: 11px; font-weight: 700; line-height: 1.6; white-space: nowrap;
+	background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+}
+.wbtm-bkl-deposit-note.is-settled { background: #dcfce7; color: #166534; border-color: #86efac; }
+
+/* Notes / Activity Log */
+.wbtm-bkl-note-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.wbtm-bkl-note-form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; resize: vertical; }
+.wbtm-bkl-note-form .wbtm-bkl-btn { align-self: flex-end; }
+.wbtm-bkl-log-list { display: flex; flex-direction: column; gap: 12px; max-height: 340px; overflow-y: auto; }
+.wbtm-bkl-log-entry { border-left: 2px solid #e2e8f0; padding-left: 10px; }
+.wbtm-bkl-log-entry.wbtm-bkl-log-note { border-left-color: #f59e0b; }
+.wbtm-bkl-log-entry.wbtm-bkl-log-created { border-left-color: #16a34a; }
+.wbtm-bkl-log-entry.wbtm-bkl-log-status { border-left-color: #1d4ed8; }
+.wbtm-bkl-log-text { margin: 0; font-size: 12.5px; color: #334155; display: flex; align-items: flex-start; gap: 6px; }
+.wbtm-bkl-log-text .dashicons { font-size: 14px; width: 14px; height: 14px; margin-top: 1px; color: #94a3b8; flex-shrink: 0; }
+.wbtm-bkl-log-meta { display: block; margin-top: 3px; font-size: 10.5px; color: #94a3b8; }
+.wbtm-bkl-log-empty { color: #94a3b8; font-size: 12.5px; margin: 0; }
+
+/* Change Status modal */
+.wbtm-bkl-modal-status .wbtm-bkl-modal-card { max-width: 420px; }
+.wbtm-bkl-modal-subtitle { margin: -6px 0 14px; color: #64748b; font-size: 13px; }
+.wbtm-bkl-status-options { display: flex; flex-direction: column; gap: 6px; }
+.wbtm-bkl-status-option-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; position: relative; }
+.wbtm-bkl-status-option-row:hover { border-color: #cbd5e1; background: #f8fafc; }
+.wbtm-bkl-status-option-row input[type="radio"] { position: absolute; opacity: 0; }
+.wbtm-bkl-status-dot { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; }
+.wbtm-bkl-status-dot-completed .wbtm-bkl-status-dot { background: #16a34a; }
+.wbtm-bkl-status-dot-processing .wbtm-bkl-status-dot { background: #1d4ed8; }
+.wbtm-bkl-status-dot-pending .wbtm-bkl-status-dot,
+.wbtm-bkl-status-dot-on-hold .wbtm-bkl-status-dot { background: #f59e0b; }
+.wbtm-bkl-status-dot-cancelled .wbtm-bkl-status-dot,
+.wbtm-bkl-status-dot-refunded .wbtm-bkl-status-dot { background: #ef4444; }
+.wbtm-bkl-status-option-label { flex: 1; font-size: 13px; font-weight: 600; color: #334155; }
+.wbtm-bkl-status-check { opacity: 0; color: #e63946 !important; }
+.wbtm-bkl-status-option-row input:checked ~ .wbtm-bkl-status-check { opacity: 1; }
+.wbtm-bkl-status-option-row:has(input:checked) { border-color: #e63946; background: #fdedef; }
+
+@media (max-width: 1100px) {
+  .wbtm-bkl-detail-columns { grid-template-columns: 1fr; }
+}
+
+/* QR bulk check-in buttons (only present when the QR Code add-on is active) */
+.wbtm-bkl-qr-bulk { display: inline-flex; align-items: center; gap: 6px; }
+.wbtm-bkl-qr-bulk .button { border-radius: 8px; }
+.wbtm-bkl-btn-checkin { color: #047857; border-color: #a7f3d0; }
+.wbtm-bkl-btn-checkin:hover { background: #ecfdf5; border-color: #6ee7b7; color: #047857; }
+.wbtm-bkl-btn-revoke { color: #b91c1c; border-color: #fecaca; }
+.wbtm-bkl-btn-revoke:hover { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
+.wbtm-bkl-checkin-btn:hover { background: #ecfdf5; }
+
+/* Check-In column cell. The inner controls are rendered by the QR add-on's
+   `wbtm_qr_ticket_status_text` action (its _xs_fullWidth button classes ship no
+   CSS on this screen), so we restyle that markup here into modern pills that
+   match the Booking List — without touching the add-on or its click handlers. */
+.wbtm-bkl-checkin-cell { white-space: nowrap; }
+.wbtm-bkl-checkin-cell > div { align-items: flex-start !important; gap: 5px !important; }
+.wbtm-bkl-checkin-cell button {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: none; border-radius: 20px; cursor: pointer;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .02em;
+  padding: 5px 12px; line-height: 1; box-shadow: none;
+  transition: filter .15s ease, background .15s ease, transform .05s ease;
+}
+.wbtm-bkl-checkin-cell button .fas,
+.wbtm-bkl-checkin-cell button .fa,
+.wbtm-bkl-checkin-cell button [class^="fa-"] { font-size: 10.5px; }
+.wbtm-bkl-checkin-cell button:active { transform: translateY(1px); }
+/* Not Checked → amber "tap to check in" pill */
+.wbtm-bkl-checkin-cell ._warningButton_xs_fullWidth { background: #fef3c7; color: #92400e; }
+.wbtm-bkl-checkin-cell ._warningButton_xs_fullWidth:hover { background: #fde68a; color: #78350f; }
+/* Checked → solid green chip (the add-on renders it disabled) */
+.wbtm-bkl-checkin-cell ._successButton_xs_fullWidth { background: linear-gradient(135deg, #10b981, #059669); color: #fff; cursor: default; opacity: 1; }
+/* Revoke → subtle red outline */
+.wbtm-bkl-checkin-cell ._dangerButton_xs_fullWidth { background: #fff; color: #b91c1c; border: 1px solid #fecaca; padding: 4px 11px; border-radius: 8px; }
+.wbtm-bkl-checkin-cell ._dangerButton_xs_fullWidth:hover { background: #fef2f2; border-color: #fca5a5; }
+.wbtm-bkl-checkin-cell small { color: #64748b !important; font-size: 10.5px; line-height: 1.35; }
+
+/* Shared box + dashicon centering for the new toolbar buttons. The .wbtm-bkl-wrap
+   prefix raises specificity above WP core's `.button { display:inline-block }`,
+   which otherwise wins the cascade (it loads after this file) and leaves the icon
+   baseline-raised above the text. With flex actually applied, align-items centres
+   the fixed-size icon box against the label. */
+.wbtm-bkl-wrap .wbtm-bkl-qr-bulk .button,
+.wbtm-bkl-wrap .wbtm-bkl-columns-toggle {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  height: 32px; line-height: 1; box-sizing: border-box; padding: 0 12px; vertical-align: middle;
+}
+.wbtm-bkl-wrap .wbtm-bkl-qr-bulk .button .dashicons,
+.wbtm-bkl-wrap .wbtm-bkl-columns-toggle .dashicons {
+  font-size: 16px; width: 16px; height: 16px; line-height: 16px;
+  display: block; margin: 0; flex: 0 0 auto;
+}
+
+/* Columns show/hide popover (Pro) */
+.wbtm-bkl-toolbar-right { position: relative; display: flex; align-items: center; }
+.wbtm-bkl-columns-toggle { border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; height: 32px; line-height: 1; }
+/* position:fixed (JS-anchored to the button) so the panel escapes the
+   .wbtm-bkl-table-wrap overflow clip — the same technique the row actions
+   dropdown uses. Its lower half was otherwise cut off by the wrap's box. */
+.wbtm-bkl-columns-panel {
+  position: fixed; z-index: 100001;
+  width: 244px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(15,23,42,.16);
+}
+.wbtm-bkl-columns-panel-head { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid #eef2f6; font-size: 12.5px; color: #334155; }
+.wbtm-bkl-columns-panel-head .dashicons { font-size: 15px; width: 15px; height: 15px; line-height: 15px; display: inline-flex; align-items: center; justify-content: center; }
+.wbtm-bkl-columns-panel-head .dashicons:first-child { color: #e63946; }
+.wbtm-bkl-columns-close { margin-left: auto; cursor: pointer; color: #94a3b8; }
+.wbtm-bkl-columns-close:hover { color: #475569; }
+/* Tall enough to show every column without scrolling (only falls back to a scroll
+   on a very short viewport), so no column ever looks "missing" behind a fold. */
+.wbtm-bkl-columns-panel-body { padding: 8px; max-height: 60vh; overflow-y: auto; }
+.wbtm-bkl-columns-opt { display: flex; align-items: center; gap: 9px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #334155; line-height: 1.2; }
+.wbtm-bkl-columns-opt:hover { background: #f8fafc; }
+.wbtm-bkl-columns-opt input { margin: 0; width: 16px; height: 16px; flex-shrink: 0; }
+.wbtm-bkl-columns-opt span { flex: 1; }
+.wbtm-bkl-columns-panel-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-top: 1px solid #eef2f6; }
+.wbtm-bkl-columns-msg { font-size: 11.5px; color: #16a34a; }
+.wbtm-bkl-columns-msg.is-error { color: #ef4444; }
+
+/* Toast notifications are handled by the shared global wbtm-toast.css/js
+   (assets/admin/css/wbtm-toast.css, loaded plugin-wide) — no local copy here. */
+
+/* ============================================================
+   Responsive / mobile
+   ============================================================ */
+
+/* Tablet: stats to one column, stat cards to two, header stacks a little. */
+@media (max-width: 960px) {
+  .wbtm-bkl-wrap { margin: 12px; }
+  .wbtm-bkl-stats { grid-template-columns: 1fr; }
+  .wbtm-bkl-header { flex-direction: column; align-items: stretch; }
+  .wbtm-bkl-header-actions { flex-wrap: wrap; }
+}
+
+/* Phones (matches WP admin's own 782px mobile breakpoint). The wide list table
+   is reflowed into one card per booking so nothing needs sideways scrolling. */
+@media (max-width: 782px) {
+  /* Header actions share the row */
+  .wbtm-bkl-header-actions { gap: 8px; }
+  .wbtm-bkl-header-actions .wbtm-bkl-pro-cta { flex: 1 1 auto; justify-content: center; }
+
+  /* Toolbar stacks; give it its own card since the table-wrap goes transparent */
+  .wbtm-bkl-table-toolbar { flex-direction: column; align-items: stretch; gap: 10px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; }
+  .wbtm-bkl-bulk-bar { flex-wrap: wrap; }
+  .wbtm-bkl-bulk-bar select { flex: 1 1 auto; }
+  .wbtm-bkl-toolbar-right { justify-content: flex-start; }
+  .wbtm-bkl-pagination-top { justify-content: center; }
+
+  /* Let the table container breathe; cards provide their own chrome */
+  .wbtm-bkl-table-wrap { overflow: visible; border: none; background: transparent; border-radius: 0; }
+
+  /* Reflow the LIST table into cards. The detail fare-breakdown table
+     (.wbtm-bkl-table-plain) is deliberately excluded so it stays a real table. */
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) { min-width: 0; }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) thead {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain),
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) tbody,
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) tr,
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td { display: block; width: 100%; }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) tr {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    margin-bottom: 12px; padding: 4px 6px; box-shadow: 0 1px 2px rgba(15,23,42,.04);
+  }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) tbody tr:hover { background: #fff; }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+    padding: 9px 10px; border-bottom: 1px solid #f1f5f9; text-align: right; white-space: normal;
+  }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) tr td:last-child { border-bottom: none; }
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td[data-label]::before {
+    content: attr(data-label); flex: 0 0 38%; text-align: left; padding-top: 2px;
+    font-weight: 700; font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em; color: #64748b;
+  }
+  /* Row checkbox: top of the card, no label */
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td.wbtm-bkl-col-check { justify-content: flex-start; }
+  /* Value-side sub text keeps to the right edge */
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td small,
+  .wbtm-bkl-table:not(.wbtm-bkl-table-plain) td .wbtm-bkl-sub { text-align: right; }
+  .wbtm-bkl-checkin-cell { white-space: normal; }
+  .wbtm-bkl-checkin-cell > div { align-items: flex-end !important; }
+  .wbtm-bkl-col-actions { text-align: right; }
+
+  .wbtm-bkl-pagination { justify-content: center; }
+
+  /* Detail page: cards to one column */
+  .wbtm-bkl-detail-grid { grid-template-columns: 1fr; }
+}
+
+/* Small phones */
+@media (max-width: 600px) {
+  .wbtm-bkl-title { font-size: 18px; }
+  .wbtm-bkl-dl { grid-template-columns: 1fr; row-gap: 4px; }
+  .wbtm-bkl-dl dt { margin-top: 6px; }
+  .wbtm-bkl-modal { padding: 12px; }
+  .wbtm-bkl-modal-card { max-width: 100%; }
+  .wbtm-bkl-columns-panel { width: calc(100vw - 24px); }
+}
