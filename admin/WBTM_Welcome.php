@@ -957,7 +957,7 @@
                                         <h3><i class="fas fa-book-open"></i> <?php esc_html_e('Documentation', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
                                         <p><?php esc_html_e('Explore our detailed guides and knowledge base for advanced configurations.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
                                         <div style="margin-top: 20px;">
-                                            <a href="https://mage-people.com/docs/bus-ticket-booking-with-seat-reservation/" class="wbtm-btn" target="_blank"><?php esc_html_e('Read Documentation', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+                                            <a href="https://docs.mage-people.com/plugins/wpbusticketly/overview" class="wbtm-btn" target="_blank"><?php esc_html_e('Read Documentation', 'bus-ticket-booking-with-seat-reservation'); ?></a>
                                         </div>
                                     </div>
                                     <div class="wbtm-card">
