@@ -46,7 +46,10 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.25s ease;
-  z-index: 99999;
+  /* Keep the desktop sticky sidebar BELOW the WP admin bar (z-index 99999) so
+     admin-bar dropdowns (e.g. the notifications panel) are not covered by it.
+     The mobile off-canvas drawer re-raises this in the ≤782px media query. */
+  z-index: 30;
   position: sticky;
   top: 32px;
   align-self: flex-start;
@@ -688,6 +691,8 @@
     left: 0;
     height: 100%;
     transform: translateX(-100%);
+    /* Off-canvas drawer must sit above the mobile overlay (99998) + content. */
+    z-index: 99999;
   }
   .bm-gs__sidebar.bm-gs--open {
     transform: translateX(0);

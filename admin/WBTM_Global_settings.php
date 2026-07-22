@@ -36,11 +36,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
 				if ($page !== 'wbtm_settings_page') return;
 
+				$wbtm_gs_css = WBTM_PLUGIN_DIR . '/assets/admin/css/wbtm-global-settings.css';
 				wp_enqueue_style(
 					'wbtm-global-settings',
 					WBTM_PLUGIN_URL . '/assets/admin/css/wbtm-global-settings.css',
 					[],
-					WBTM_VERSION
+					file_exists( $wbtm_gs_css ) ? filemtime( $wbtm_gs_css ) : WBTM_VERSION
 				);
 				wp_enqueue_script(
 					'wbtm-global-settings-js',
