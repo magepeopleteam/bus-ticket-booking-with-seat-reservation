@@ -56,6 +56,11 @@
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Welcome.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Bus_List.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Status.php';
+				//========Unified Documents screen (free + PRO in one handbook)==========//
+				require_once WBTM_PLUGIN_DIR . '/admin/docs/WBTM_Docs_Content.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/docs/WBTM_Docs_Settings.php';
+				require_once WBTM_PLUGIN_DIR . '/admin/docs/WBTM_Docs.php';
+				new WBTM_Docs();
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Dummy_Import.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Analytics_Dashboard.php';
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Booking_List.php';
