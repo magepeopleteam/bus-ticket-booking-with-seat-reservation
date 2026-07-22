@@ -22,7 +22,7 @@ Enjoy hassle-free payments, Customize unique routes, set dynamic prices, and per
 ## Explore The Demo:
 &#9989;  [Live Demo for Transportation with Seat Plan](https://bus.mage-people.com/)
 &#9989;  [Live Demo for Transportation without Seat Plan ](https://withoutseatplan.mage-people.com/)
-&#9989;  [Online Documentation](https://docs.mage-people.com/bus-ticket-booking-with-seat-reservation/)
+&#9989;  [Online Documentation](https://docs.mage-people.com/plugins/wpbusticketly/overview)
 &#9989;  [Buy PRO Addon](https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/)
 
 
