@@ -1,10 +1,10 @@
 === Bus Ticket Booking with Seat Reservation ===
-Contributors: magepeopleteam, aamahin , hamidxazad
+Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.8.5
+Stable tag: 5.9.0
 Tested up to: 6.9
-Requires PHP: 8.0
+Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,9 @@ The Mage team has innovated a data-driven solution, simplifying ticket and reser
 
 ## Let's Uncover What WpBusTicketly Offers You
 
+
+* **Ticket Sale Cut-off (New)**
+Automatically stop selling tickets a set time before each departure — choose a fixed number of hours before the bus leaves (e.g. 12 hours), or a specific time on a day before departure (e.g. 10:00 PM the night before). Closed trips are hidden from search and blocked at checkout, so you always have enough time to plan routes and prepare for every passenger.
 
 * **Search and Filter**
 Users can search for bus routes based on their origin, destination, and preferred travel dates. Advanced filtering options enhance the experience for a personalized journey.
@@ -342,7 +345,7 @@ Cabin booking functionality added
 Bus default available seat selection added
 Seat number rotation stopped
 
-= 5.5.7 =
+= 5.7.2 =
 *Release Date - 11 Jun 2026*
 
 **Return Bus on Single Bus Page**
@@ -392,68 +395,20 @@ Seat number rotation stopped
 * 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
 * Shortcode reference table updated with PRO shortcodes
 
-= 5.7.8 =
-*Release Date - 12 Jun 2026*
+= 5.9.0 =
+*Release Date - 22 Jul 2026*
 
-**Bidirectional Stop Search & Editable Return Route (enabled via PRO toggles)**
-* Bidirectional stop search: on "same bus return" routes a passenger boarding at an intermediate stop can now choose a destination in EITHER direction (outbound or return). The "To" list merges every stop reachable on either physical leg.
-* Reworked origin/destination resolution to pick the natural same-day leg by stop position and real times, instead of relying on the stored route-direction order. Fixes the return leg showing reversed times with a wrong multi-hour duration (e.g. "23 H 0 M").
-* Boarding-only intermediate stops can now be used as a drop point in the opposite direction, so a return such as Paris -> Frankfurt uses the real outbound times (11:00 -> 12:30) instead of the reversed return.
-* Editable Return Route: the Return tab gets its own From / To selectors. The "From" is fixed (locked) to the outbound destination; only the "To" is editable, and the return bus list reloads for the chosen route.
-* Next-day return fallback: when a same-day round trip's return leg only departs before the outbound arrives, the return automatically rolls forward to the next available operational day.
-* Mirror-fare fallback: on same-bus-return routes a city-pair with no fare row configured for its direction now uses the reverse pair's fare instead of showing 0 / Free.
+**Ticket Sale Cut-off (New)**
+* Automatically stop selling tickets a set time before each departure, so you have time to plan routes and get every shuttle out on schedule
+* Two cut-off styles: a fixed number of hours before departure (e.g. sales close 12 hours before), or a specific clock time on a day before departure (e.g. 10:00 PM the night before)
+* Enforced everywhere — closed trips are hidden from search results and blocked at checkout across WooCommerce, direct booking and admin counter sales
+* New "Ticket Sale Cut-off" control under General Settings → Booking behavior; disabled by default so existing sites are unaffected
+* The settings screen reveals only the fields relevant to the cut-off style you pick
 
-**Journey Badge (Departure vs Return)**
-* The journey role (which tab a ticket was booked from) is now recorded separately from the internal fare leg, so the badge stays correct even when the fare leg is inverted on bidirectional routes.
-* Cart and checkout now show an "Outbound" / "Return" badge per leg on round trips.
-* The same role drives the PRO ticket PDF, passenger list and booking calendar so they no longer mislabel bidirectional or reverse-direction one-way trips.
+**Bus Stop Rename — No More Broken Routes**
+* Renaming a Bus Stop (for example, adding a gate number to the name) no longer breaks its route or fare configuration — the stop no longer has to be rebuilt from scratch
+* The old name is migrated automatically to the new one across every bus's route stops, fare table and existing bookings
+* Prevents a rename from silently reopening already-booked seats, avoiding accidental double-booking
 
-**Bug Fixes & UI**
-* Fixed the return route title weekday showing the outbound day instead of the return leg's own date.
-* Styled the editable Return From / To selectors to match the main search form (boxed inputs, inline marker icon, locked-field styling, responsive layout).
-
-= 5.7.9 =
-*Release Date - 02 Jul 2026*
-
-**Seat Layout Drag-and-Drop Toolbar now Free**
-* The seat-grid toolbar (Door, Toilet, Driver, Window, Food Stall, Luggage, Stairs, Aisle, Emergency Exit, Eraser) is no longer gated behind a PRO license — available to every install.
-* Per-seat ticket price override remains a PRO-only feature; unaffected by this change.
-
-= 5.7.10 =
-*Release Date - 02 Jul 2026*
-
-* Added a "Double click to Remove" tooltip on placed seat-layout items (Door, Toilet, Driver, etc.) shown on hover, for discoverability.
-
-= 5.8.0 =
-*Release Date - 02 Jul 2026*
-
-**Predefined Seat Template System**
-* New "Seat Template" + "Seat Numbering" pickers in Seat Configuration (both lower and upper deck): choose a common seat arrangement (2+2, 2+1, 1+2, 1+1, 3+2) and a numbering scheme (Sequential or Row Letter), then click "Apply Template" to auto-generate the full seat grid in one click.
-* Reuses the existing "Generate Bus Seat" grid-creation flow and the same editable seat inputs, so the result is a normal, fully-editable seat plan — no new data format, no change to existing buses' saved seat data.
-* Aisle columns are placed automatically using the existing Aisle toolbar item; driver/door placement is left to the existing drag-and-drop toolbar for bus-specific accuracy.
-
-= 5.8.1 =
-*Release Date - 02 Jul 2026*
-
-* The "Seat Numbering" scheme (Sequential / Row Letter) now also applies to the plain "Generate Bus Seat" / "Create seat Plan" buttons, not just "Apply Template" — every generated grid is auto-numbered per whichever scheme is currently selected.
-
-= 5.8.2 =
-*Release Date - 02 Jul 2026*
-
-* Added an "Aisle Position" field next to Seat Rows / Seat Columns (both decks): enter the column number the aisle should sit after (Left to Right), and "Generate Bus Seat" places that single aisle automatically — a lighter-weight alternative to picking a full Seat Template for simple/custom layouts. 0 = no automatic aisle (unchanged default behavior).
-
-= 5.8.3 =
-*Release Date - 02 Jul 2026*
-
-* "Enable Rotation" moved inline next to each deck's own "Add New Row" button, and is now an independent setting per deck (Lower Deck / Upper Deck) instead of one shared toggle — turning rotation on for one deck no longer affects the other.
-
-= 5.8.4 =
-*Release Date - 02 Jul 2026*
-
-* Bus list admin page: search box and "All Types" filter now share the exact same height (both 38px, matching padding/border-box), and are right-aligned together as a group while the status tabs (All/Published/Draft/Trash) stay left.
-
-= 5.8.5 =
-*Release Date - 02 Jul 2026*
-
-* Redesigned the frontend "Bus Details" popup (Details / Boarding-Dropping / Features / Photo tabs): refreshed tab pills, a clean summary card for Bus Details, a timeline-style stop list for Boarding/Dropping Points, chip-style Bus Features, and a modernized close button and popup shell shadow. CSS-only — no markup or JS changes.
-
+**Booking List**
+* New "Booked by" badge marks counter / admin-created bookings with the staff member's name, so they're easy to tell apart from customers' own checkouts
