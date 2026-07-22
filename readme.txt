@@ -58,8 +58,8 @@ Experience efficient booking management with our unique plugin. Website owners e
 * **Dynamic Intermediate Route Allocation**
 Leverage our unique feature for fluid transitions. Seats become instantly available for the next customer upon drop-off or arrival, ensuring an efficient booking process.
 
-* **Cabin Booking Fucntionalities for train**
-You can add cabin for each train and sell cabin based seat selling also for train.
+* **Cabin & Double-Decker Coach Booking (New)**
+Add multiple cabins or coaches to a train or bus and sell seats cabin by cabin. Each cabin can now be double-decker too — give it an Upper Deck alongside its Lower Deck, design each deck with the full seat editor, and price the two decks independently. Passengers switch between Lower and Upper Deck with a tab and pick their seat on either level, and the chosen deck is shown on every ticket, list, PDF and export.
 
 
 * **Automated Email Notifications**
@@ -412,3 +412,17 @@ Seat number rotation stopped
 
 **Booking List**
 * New "Booked by" badge marks counter / admin-created bookings with the staff member's name, so they're easy to tell apart from customers' own checkouts
+
+**Double-Decker Cabins (New)**
+* Cabins and coaches can now be double-decker — each cabin gets its own optional Upper Deck alongside its Lower Deck, perfect for double-decker buses and train carriages
+* Build each deck independently with the full seat editor (seat templates, drag-and-drop doors/toilets/driver, rotation and add/remove rows) in both the classic and modern bus editors
+* Set a different price for each deck — separate Lower Deck and Upper Deck price multipliers per cabin, so an upper-deck seat can cost more (or less) than a lower-deck one
+* On the booking page, passengers switch between Lower Deck and Upper Deck with a simple tab inside the cabin and pick seats on either deck
+* Upper- and lower-deck seats are tracked separately end-to-end, so the same seat number on each deck never clashes for availability, holds, cart or orders
+* The chosen deck is shown everywhere the seat appears — Booking List, Passenger List, PDF tickets, thermal tickets, email, admin counter orders, the booking calendar and CSV exports (e.g. "Coach A - Upper Deck - 3")
+* Fully backward compatible — existing single-deck cabins and all past bookings are unchanged; a cabin only becomes double-decker when you turn its Upper Deck on
+
+**Seat Editor Improvements**
+* "Without Seat Plan" can no longer be selected while Multiple Cabin/Coach mode is on (cabins require a seat plan) — the option is clearly disabled instead of silently reverting
+* Drag-and-drop now works immediately on freshly added seat rows in the cabin and deck editors
+* Admin and booking-page assets are versioned by file change time, so editor and seat-plan updates are never served from a stale browser cache
