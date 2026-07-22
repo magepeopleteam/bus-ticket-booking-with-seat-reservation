@@ -80,7 +80,9 @@
 								WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $cabin_seat_identifier)
 								|| (!$wbtm_grid_is_upper && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name))
 							);
-							$cell_base_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], false, $wbtm_pl, $seat_name, $wbtm_grid_cabin_index, $date);
+							// Pass THIS deck (not a hardcoded lower) so an upper-deck seat reads
+							// its own price override instead of inheriting the lower deck's.
+							$cell_base_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_infos[0]['type'], $wbtm_grid_is_upper, $wbtm_pl, $seat_name, $wbtm_grid_cabin_index, $date);
 							if ($cell_base_cabin === false) {
 								$cell_base_cabin = 0;
 							}
@@ -114,7 +116,7 @@
 												<ul class="mp_list">
 													<?php foreach ($ticket_infos as $key => $ticket_info): ?>
 														<?php
-														$cell_t_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], false, $wbtm_pl, $seat_name, $wbtm_grid_cabin_index, $date);
+														$cell_t_cabin = WBTM_Functions::get_seat_price($post_id, $start_route, $end_route, $ticket_info['type'], $wbtm_grid_is_upper, $wbtm_pl, $seat_name, $wbtm_grid_cabin_index, $date);
 														if ($cell_t_cabin === false) {
 															$cell_t_cabin = 0;
 														}

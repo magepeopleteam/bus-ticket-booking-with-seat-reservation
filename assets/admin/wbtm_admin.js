@@ -824,13 +824,18 @@
         }
         return $('input[name="wbtm_enable_seat_price_override"]').is(':checked');
     }
-    function wbtmBuildScopeKey(scope, cabinIndex, seatName) {
+    function wbtmBuildScopeKey(scope, cabinIndex, seatName, isUpper) {
         seatName = (seatName || '').trim();
         if (!seatName) {
             return '';
         }
         if (scope === 'c') {
-            return 'c|' + String(parseInt(cabinIndex, 10)) + '|' + seatName;
+            // parseInt('0_dd') === 0, so a deck-suffixed index would silently collapse
+            // onto the lower deck — treat that suffix as the upper deck as well.
+            isUpper = isUpper || /_dd$/.test(String(cabinIndex));
+            // Upper deck of a double-decker cabin keys separately; the lower deck keeps
+            // the original "c|{index}|{seat}" form so saved overrides keep applying.
+            return 'c|' + String(parseInt(cabinIndex, 10)) + (isUpper ? '|u' : '') + '|' + seatName;
         }
         return scope + '|' + seatName;
     }
@@ -908,7 +913,8 @@
             }
             let scope = $btn.attr('data-override-scope') || 'l';
             let cabinIdx = $btn.attr('data-cabin-index');
-            let key = wbtmBuildScopeKey(scope, cabinIdx, seatName);
+            let isUpper = $btn.attr('data-cabin-deck') === 'upper';
+            let key = wbtmBuildScopeKey(scope, cabinIdx, seatName, isUpper);
             let c = wbtmCountOverridesForKey(all, key);
             let $badge = $btn.find('.wbtm_seat_price_badge');
             if (c > 0) {
@@ -954,7 +960,8 @@
         }
         let scope = $btn.attr('data-override-scope') || 'l';
         let cabinIdx = $btn.attr('data-cabin-index');
-        wbtmPriceModalKey = wbtmBuildScopeKey(scope, cabinIdx, seatName);
+        let isUpperDeck = $btn.attr('data-cabin-deck') === 'upper';
+        wbtmPriceModalKey = wbtmBuildScopeKey(scope, cabinIdx, seatName, isUpperDeck);
         if (!wbtmPriceModalKey) {
             return;
         }

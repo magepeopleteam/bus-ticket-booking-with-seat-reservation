@@ -206,7 +206,7 @@
 			 * SOLVED: 2026-05-15
 			 * CONTEXT: Drag-and-drop items like Door, Window, and Aisle are layout markers, not sellable seats, so the per-seat ticket-price button must not appear active for them.
 			 */
-			private static function render_seat_price_button($scope, $seat_name = '', $cabin_index = null, $is_template = false, $is_feature_enabled = true) {
+			private static function render_seat_price_button($scope, $seat_name = '', $cabin_index = null, $is_template = false, $is_feature_enabled = true, $is_upper = false) {
 				$is_non_seat = !$is_template && !empty($seat_name) && self::is_non_seat_item($seat_name);
 				$is_disabled = $is_template || !$is_feature_enabled || $is_non_seat;
 				$classes = ['button', 'button-small', 'wbtm_seat_price_view'];
@@ -230,6 +230,11 @@
 						data-feature-disabled-title="<?php echo esc_attr__('Enable Seat-wise Price Override to manage custom seat fares', 'bus-ticket-booking-with-seat-reservation'); ?>"
 						<?php if ($cabin_index !== null) { ?>
 						data-cabin-index="<?php echo esc_attr($cabin_index); ?>"
+						<?php // Deck marker: the upper deck of a double-decker cabin stores its
+						      // prices under its own key, so it must not share the lower deck's. ?>
+						<?php if ($is_upper) { ?>
+						data-cabin-deck="upper"
+						<?php } ?>
 						<?php } ?>
 						<?php if ($is_template) { ?>
 						data-price-view-template="1"
@@ -790,7 +795,8 @@
                                            value="<?php echo esc_attr($seat_name); ?>"
                                     />
                                 </label>
-								<?php self::render_seat_price_button('c', $seat_name, $cabin_index, false, $enable_seat_price_override); ?>
+								<?php // $dd carries the deck for this row — pass it so the upper deck keys its own prices. ?>
+								<?php self::render_seat_price_button('c', $seat_name, $cabin_index, false, $enable_seat_price_override, $dd); ?>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
