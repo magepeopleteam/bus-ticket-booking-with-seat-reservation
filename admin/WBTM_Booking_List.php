@@ -957,6 +957,29 @@
 			}
 
 			/**
+			 * "Booked by <operator>" badge for counter / admin-created bookings.
+			 *
+			 * The Pro "Purchase Ticket" screen (WBTM_Backend_Order) stamps every
+			 * booking record it creates with wbtm_booked_by = the logged-in operator's
+			 * user id. Customer-placed orders never carry that meta, so they stay
+			 * unbadged — this is the only reliable way to tell a staff booking apart
+			 * from a customer's own WooCommerce checkout (both are real WC orders).
+			 */
+			private function booked_by_badge($id) {
+				$operator_id = (int) get_post_meta($id, 'wbtm_booked_by', true);
+				if ($operator_id <= 0) {
+					return '';
+				}
+				$user = get_userdata($operator_id);
+				$name = $user ? ($user->display_name ?: $user->user_login) : '';
+				/* translators: %s: staff/operator display name who created the booking. */
+				$label = $name
+					? sprintf(esc_html__('Booked by %s', 'bus-ticket-booking-with-seat-reservation'), $name)
+					: esc_html__('Booked by admin', 'bus-ticket-booking-with-seat-reservation');
+				return '<span class="wbtm-bkl-source wbtm-bkl-source-admin" title="' . esc_attr($label) . '"><span class="dashicons dashicons-admin-users"></span>' . esc_html($label) . '</span>';
+			}
+
+			/**
 			 * Outbound / Return tag for a booking row.
 			 *
 			 * Returns a "Return" tag for a return leg, and an "Outbound" tag for the
@@ -1595,6 +1618,7 @@
 					<td data-col="booking" data-label="<?php echo esc_attr__('Booking', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'booking'); ?>>
 						<strong><?php echo esc_html($reference); ?></strong>
 						<?php echo wp_kses_post($this->source_badge($this->booking_source($id))); ?>
+						<?php echo wp_kses_post($this->booked_by_badge($id)); ?>
 						<span class="wbtm-bkl-sub">ID <?php echo esc_html($id); ?></span>
 					</td>
 					<td data-col="customer" data-label="<?php echo esc_attr__('Customer', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'customer'); ?>>
