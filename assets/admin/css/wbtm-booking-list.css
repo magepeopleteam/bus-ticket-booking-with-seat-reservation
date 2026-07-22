@@ -110,6 +110,7 @@
 .wbtm-bkl-source .dashicons { font-size: 12px; width: 12px; height: 12px; }
 .wbtm-bkl-source-woo { background: #ede9fe; color: #6d28d9; }
 .wbtm-bkl-source-custom { background: #ffedd5; color: #9a3412; }
+.wbtm-bkl-source-admin { background: #dbeafe; color: #1e40af; }
 
 /* Outbound / Return leg tag (round-trip bookings) */
 .wbtm-bkl-leg { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 8px 2px 6px; border-radius: 12px; font-size: 10.5px; font-weight: 700; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; }
