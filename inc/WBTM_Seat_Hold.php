@@ -100,10 +100,13 @@
 
 			/**
 			 * Cabin-aware seat identifier used by both the booking records and the
-			 * hold keys: cabin_{index}_{seat} for cabin seats, plain name otherwise.
+			 * hold keys: cabin_{index}_{seat} for cabin seats (cabin_{index}_dd_{seat}
+			 * for a double-decker cabin's upper deck), plain name otherwise.
 			 */
-			public static function seat_identifier($seat_name, $cabin_index = '') {
-				return ($cabin_index !== '' && $cabin_index !== null) ? 'cabin_' . $cabin_index . '_' . $seat_name : $seat_name;
+			public static function seat_identifier($seat_name, $cabin_index = '', $is_upper = false) {
+				return ($cabin_index !== '' && $cabin_index !== null)
+					? 'cabin_' . $cabin_index . ($is_upper ? '_dd_' : '_') . $seat_name
+					: $seat_name;
 			}
 
 			/* ================= read API ================= */
@@ -151,7 +154,9 @@
 						continue;
 					}
 					$cabin_index = isset($seat_info['cabin_index']) ? $seat_info['cabin_index'] : '';
-					$identifier = self::seat_identifier($seat_name, $cabin_index);
+					$identifier = !empty($seat_info['seat_identifier'])
+						? $seat_info['seat_identifier']
+						: self::seat_identifier($seat_name, $cabin_index, !empty($seat_info['is_upper']));
 					if (self::is_held_by_other($bus_id, $date, $identifier, $token)) {
 						$conflicts[] = $identifier;
 					}
@@ -276,7 +281,9 @@
 						continue;
 					}
 					$cabin_index = isset($seat_info['cabin_index']) ? $seat_info['cabin_index'] : '';
-					$seats[] = self::seat_identifier($seat_name, $cabin_index);
+					$seats[] = !empty($seat_info['seat_identifier'])
+						? $seat_info['seat_identifier']
+						: self::seat_identifier($seat_name, $cabin_index, !empty($seat_info['is_upper']));
 				}
 				if (!empty($seats)) {
 					self::release_seats($bus_id, $date, $seats, $token);

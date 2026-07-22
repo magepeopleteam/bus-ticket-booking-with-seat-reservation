@@ -595,22 +595,39 @@
 				});
 			}
 
-			// Handle multi-cabin seat plans
+			// Handle multi-cabin seat plans (lower deck + optional upper deck).
+			// A cabin can be a double-decker coach: selected seats are collected
+			// per deck pane and written to that deck's own hidden inputs so the
+			// server can rebuild the deck-scoped "cabin_{i}[_dd]_{seat}" identifier.
 			parent.find('.wbtm_cabin_section').each(function () {
 				let cabin_section = $(this);
 				let cabin_index = cabin_section.find('.wbtm_cabin_seat_plan').attr('data-cabin-index');
 				if (cabin_index !== undefined) {
+					// Lower deck
 					let cabin_target = parent.find('[name="wbtm_selected_seat_cabin_' + cabin_index + '"]');
 					let cabin_target_type = parent.find('[name="wbtm_selected_seat_type_cabin_' + cabin_index + '"]');
 					let seats = '';
 					let seats_type = '';
-					cabin_section.find('.seat_available.seat_selected').each(function () {
+					cabin_section.find('.wbtm_deck_pane_lower .seat_available.seat_selected').each(function () {
 						seats = seats ? seats + ',' + $(this).attr('data-seat_name') : $(this).attr('data-seat_name');
 						seats_type = seats_type ? seats_type + ',' + $(this).attr('data-seat_type') : $(this).attr('data-seat_type');
-					}).promise().done(function () {
-						cabin_target.val(seats);
-						cabin_target_type.val(seats_type);
 					});
+					cabin_target.val(seats);
+					cabin_target_type.val(seats_type);
+
+					// Upper deck (only present on double-decker cabins)
+					let cabin_target_dd = parent.find('[name="wbtm_selected_seat_cabin_dd_' + cabin_index + '"]');
+					if (cabin_target_dd.length) {
+						let cabin_target_dd_type = parent.find('[name="wbtm_selected_seat_type_cabin_dd_' + cabin_index + '"]');
+						let seats_up = '';
+						let seats_up_type = '';
+						cabin_section.find('.wbtm_deck_pane_upper .seat_available.seat_selected').each(function () {
+							seats_up = seats_up ? seats_up + ',' + $(this).attr('data-seat_name') : $(this).attr('data-seat_name');
+							seats_up_type = seats_up_type ? seats_up_type + ',' + $(this).attr('data-seat_type') : $(this).attr('data-seat_type');
+						});
+						cabin_target_dd.val(seats_up);
+						cabin_target_dd_type.val(seats_up_type);
+					}
 				}
 			});
 
@@ -843,6 +860,20 @@
 			cabin_section.removeClass('collapsed').addClass('expanded');
 			arrow.text('▲'); // Show up arrow when expanded
 		}
+	});
+
+	// Handle Lower/Upper deck switch inside a double-decker cabin — shows the
+	// chosen deck's seat pane and hides the other. Selection state is preserved
+	// because both panes stay in the DOM (just hidden), so seats picked on one
+	// deck remain selected when switching back.
+	$(document).on('click', '.wbtm_cabin_deck_tab', function () {
+		let tab = $(this);
+		let deck = tab.attr('data-deck');
+		let plan = tab.closest('.wbtm_cabin_seat_plan');
+		plan.find('.wbtm_cabin_deck_tab').removeClass('wbtm_cabin_deck_tab_active');
+		tab.addClass('wbtm_cabin_deck_tab_active');
+		plan.find('.wbtm_deck_pane').hide();
+		plan.find('.wbtm_deck_pane[data-deck="' + deck + '"]').show();
 	});
 
 	// Initialize cabin arrows and classes on page load

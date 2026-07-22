@@ -3102,3 +3102,35 @@ div.wbtm_loader_xs {
   border-color: #c62828;
   color: #c62828;
 }
+
+/* Lower/Upper deck switch inside a double-decker cabin/coach */
+.wbtm_style .wbtm_cabin_deck_tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px 0;
+}
+.wbtm_style .wbtm_cabin_deck_tab {
+  flex: 1 1 auto;
+  padding: 8px 12px;
+  border: 1px solid #d7dce3;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: #f4f6f9;
+  color: #55606e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.wbtm_style .wbtm_cabin_deck_tab:hover {
+  background: #eaeef3;
+}
+.wbtm_style .wbtm_cabin_deck_tab.wbtm_cabin_deck_tab_active {
+  background: #fff;
+  color: #1f2733;
+  border-color: #c9d2dc;
+  box-shadow: 0 -2px 0 0 #2d7ff9 inset;
+}
+.wbtm_style .wbtm_deck_pane {
+  border-top: 1px solid #e4e9ef;
+}

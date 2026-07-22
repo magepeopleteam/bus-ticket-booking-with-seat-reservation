@@ -257,6 +257,10 @@
 					foreach ($cabin_config as $index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes') continue;
 						$cabin_seats = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $index, []);
+						if (($cabin['upper_enabled'] ?? 'no') === 'yes') {
+							// Include the upper deck of a double-decker cabin in the capacity count.
+							$cabin_seats = array_merge($cabin_seats, WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_dd_' . $index, []));
+						}
 						foreach ($cabin_seats as $row) {
 							foreach ($row as $key => $val) {
 								if (strpos($key, '_rotation') !== false) continue;
@@ -676,27 +680,32 @@
                 </tr>
 				<?php
 			}
-			public function render_cabin_seat_plan($post_id, $cabin_index, $rows, $cols) {
+			public function render_cabin_seat_plan($post_id, $cabin_index, $rows, $cols, $dd = false) {
 				if ($rows > 0 && $cols > 0) {
-					$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
-					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, []);
-					// Independent per cabin — mirrors the lower/upper deck pattern
-					// (wbtm_enable_seat_rotation / wbtm_enable_seat_rotation_dd);
+					// Deck-aware keys: the upper deck of a cabin mirrors the lower
+					// deck but with a "_dd_" infix so seat labels never collide
+					// (e.g. lower cabin_0_seat1 vs upper cabin_0_dd_seat1) and can
+					// be booked independently on both decks of the same coach.
+					$deck_infix = $dd ? '_dd' : '';
+					$seat_key_prefix = 'cabin_' . $cabin_index . $deck_infix . '_seat';
+					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info' . $deck_infix . '_' . $cabin_index, []);
+					// Independent per cabin AND per deck — mirrors the lower/upper deck
+					// pattern (wbtm_enable_seat_rotation / wbtm_enable_seat_rotation_dd);
 					// never shared across cabins or with the deck's own setting.
-					$rotation_key = 'wbtm_enable_seat_rotation_cabin_' . $cabin_index;
+					$rotation_key = 'wbtm_enable_seat_rotation_cabin' . $deck_infix . '_' . $cabin_index;
 					$enable_rotation = WBTM_Global_Function::get_post_info($post_id, $rotation_key);
 					$checked_rotation = $enable_rotation == 'yes' ? 'checked' : '';
 					$enable_seat_price_override = self::is_seat_price_override_enabled($post_id);
 					$rotation_class = $enable_rotation == 'yes' ? 'wbtm_enable_rotation' : '';
 					?>
-                    <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>">
+                    <div class="wbtm_cabin_settings_area <?php echo esc_attr($rotation_class); ?>" data-deck="<?php echo esc_attr($dd ? 'upper' : 'lower'); ?>">
 						<?php $this->render_seat_item_toolbar(); ?>
                         <div class="ovAuto">
                             <table>
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
 								<?php for ($i = 0; $i < $rows; $i++) { ?>
 									<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
-									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info, $enable_seat_price_override); ?>
+									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info, $enable_seat_price_override, $dd); ?>
 								<?php } ?>
                                 </tbody>
                             </table>
@@ -723,7 +732,7 @@
 								?>
                                 <tr class="wbtm_remove_area wbtm_template_row">
 									<?php for ($j = 1; $j <= $cols; $j++) { ?>
-										<?php $key = 'cabin_' . $cabin_index . '_seat' . $j; ?>
+										<?php $key = 'cabin_' . $cabin_index . $deck_infix . '_seat' . $j; ?>
                                         <th>
                                                                 <div class="wbtm_seat_container">
                                                 <label>
@@ -761,10 +770,11 @@
 					<?php
 				}
 			}
-			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = [], $enable_seat_price_override = true) {
-				$seat_key_prefix = 'cabin_' . $cabin_index . '_seat';
+			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = [], $enable_seat_price_override = true, $dd = false) {
+				$deck_infix = $dd ? '_dd' : '';
+				$seat_key_prefix = 'cabin_' . $cabin_index . $deck_infix . '_seat';
 				$post_id = get_the_ID();
-				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation_cabin_' . $cabin_index);
+				$enable_rotation = WBTM_Global_Function::get_post_info($post_id, 'wbtm_enable_seat_rotation_cabin' . $deck_infix . '_' . $cabin_index);
 				?>
                 <tr class="wbtm_remove_area">
 					<?php for ($j = 1; $j <= $cols; $j++) { ?>
@@ -813,21 +823,26 @@
 			 * it's a one-time generation aid, never saved to post meta, so it's
 			 * deliberately excluded from form submission entirely.
 			 */
-			public function render_cabin_seat_template_picker($index, $seat_row = 0, $seat_column = 0) {
+			public function render_cabin_seat_template_picker($index, $seat_row = 0, $seat_column = 0, $dd = false) {
 				if (!self::has_seat_toolbar_features()) {
 					return;
 				}
 				$templates   = self::get_seat_templates();
 				$schemes     = self::get_seat_numbering_schemes();
 				$aisle_title = __('Choose aisle position after column (Left to Right). 0 = no automatic aisle.', 'bus-ticket-booking-with-seat-reservation');
+				// Deck-aware field names/classes so a cabin's upper deck picker
+				// never collides with its lower deck picker in the same panel.
+				$dd_c        = $dd ? '_dd' : '';
+				$rows_name   = $dd ? 'wbtm_cabin_rows_dd[]' : 'wbtm_cabin_rows[]';
+				$cols_name   = $dd ? 'wbtm_cabin_cols_dd[]' : 'wbtm_cabin_cols[]';
 				?>
-				<div class="wbtm_seat_template_picker wbtm_cabin_seat_template_picker" data-cabin-index="<?php echo esc_attr($index); ?>">
+				<div class="wbtm_seat_template_picker wbtm_cabin_seat_template_picker<?php echo esc_attr($dd_c); ?>" data-cabin-index="<?php echo esc_attr($index); ?>" data-deck="<?php echo esc_attr($dd ? 'upper' : 'lower'); ?>">
 					<div class="_dFlex_fdColumn">
 						<label>
 							<?php esc_html_e('Seat Template', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</label>
 						<span><?php esc_html_e('Generate a complete seat layout in one click, then edit freely as usual.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-						<select class="formControl wbtm_cabin_seat_template_select">
+						<select class="formControl wbtm_cabin_seat_template_select<?php echo esc_attr($dd_c); ?>">
 							<option value=""><?php esc_html_e('-- No template --', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 							<?php foreach ($templates as $key => $tpl) : ?>
 								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($tpl['label']); ?></option>
@@ -840,7 +855,7 @@
 							<?php esc_html_e('Seat Numbering', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</label>
 						<span><?php esc_html_e('How seat labels are generated when the template is applied.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-						<select class="formControl wbtm_cabin_seat_numbering_select">
+						<select class="formControl wbtm_cabin_seat_numbering_select<?php echo esc_attr($dd_c); ?>">
 							<?php foreach ($schemes as $key => $label) : ?>
 								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
 							<?php endforeach; ?>
@@ -851,24 +866,24 @@
 						<label class="mp_zero">
 							<?php esc_html_e('Seat Rows', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</label>
-						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="Ex: 10" value="<?php echo esc_attr($seat_row); ?>"/>
+						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="<?php echo esc_attr($rows_name); ?>" placeholder="Ex: 10" value="<?php echo esc_attr($seat_row); ?>"/>
 					</div>
 					<div class="divider"></div>
 					<div class="_dFlex_justifyBetween_alignCenter">
 						<label class="mp_zero">
 							<?php esc_html_e('Seat Columns', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</label>
-						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="Ex: 4" value="<?php echo esc_attr($seat_column); ?>"/>
+						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="<?php echo esc_attr($cols_name); ?>" placeholder="Ex: 4" value="<?php echo esc_attr($seat_column); ?>"/>
 					</div>
 					<div class="divider"></div>
 					<div class="_dFlex_justifyBetween_alignCenter">
 						<label class="mp_zero" title="<?php echo esc_attr($aisle_title); ?>">
 							<?php esc_html_e('Aisle Position', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</label>
-						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col" placeholder="Ex: 2 (0=none)" value="0" title="<?php echo esc_attr($aisle_title); ?>"/>
+						<input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col<?php echo esc_attr($dd_c); ?>" placeholder="Ex: 2 (0=none)" value="0" title="<?php echo esc_attr($aisle_title); ?>"/>
 					</div>
 					<div class="divider"></div>
-					<button type="button" class="_themeButton_xs_mT_xs wbtm_apply_cabin_seat_template">
+					<button type="button" class="_themeButton_xs_mT_xs wbtm_apply_cabin_seat_template<?php echo esc_attr($dd_c); ?>">
 						<span class="fas fa-magic"></span>
 						<span class="mL_xs"><?php esc_html_e('Apply Template', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 					</button>
@@ -921,9 +936,9 @@
                                         <!-- Cabin fields that should be hidden when disabled -->
                                         <div class="wbtm_cabin_fields">
                                             <div class="_dFlex_justifyBetween_alignCenter">
-                                                <label><?php esc_html_e('Price Multiplier', 'bus-ticket-booking-with-seat-reservation'); ?></label>
-                                                <input type="number" min="0" step="0.01" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.0" value="<?php echo esc_attr($cabin['price_multiplier'] ?? 1.0); ?>"/>
-                                                <span class="help-text"><?php esc_html_e('1.0 = same price, 1.2 = 20% higher, 0.8 = 20% lower', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                                <label><?php esc_html_e('Price Multiplier (Lower Deck)', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                                <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.2" value="<?php echo esc_attr($cabin['price_multiplier'] ?? 1.0); ?>"/>
+                                                <span class="help-text"><?php esc_html_e('Decimals allowed. 1.0 = same as base price, 1.2 = 20% higher, 0.8 = 20% lower.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
                                             </div>
                                             <div class="divider"></div>
 											<?php $this->render_cabin_seat_template_picker($index, $cabin['rows'] ?? 0, $cabin['cols'] ?? 0); ?>
@@ -935,7 +950,7 @@
                                     </div>
                                     <div class="col_6 wbtm_cabin_fields">
                                         <div class="wbtm_cabin_seat_preview" data-cabin-index="<?php echo esc_attr($index); ?>">
-                                            <label><?php echo esc_html(sprintf('Cabin %d Preview', $index + 1)); ?></label>
+                                            <label><?php echo esc_html(sprintf('Cabin %d Lower Deck Preview', $index + 1)); ?></label>
                                             <div class="wbtm_cabin_seat_plan">
 												<?php
 													$cabin_rows = $cabin['rows'] ?? 0;
@@ -944,6 +959,56 @@
 														$this->render_cabin_seat_plan($post_id, $index, $cabin_rows, $cabin_cols);
 													}
 												?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+									// Per-cabin Upper Deck (double-decker coach). Kept inside
+									// .wbtm_cabin_fields so it hides with the rest when the cabin
+									// is disabled; the inner .wbtm_cabin_upper_fields toggles on
+									// the cabin's own "Enable Upper Deck" switch. Mirrors the
+									// bus-level Lower/Upper deck pattern, scoped per cabin.
+									$cabin_upper_enabled = ($cabin['upper_enabled'] ?? 'no') == 'yes';
+								?>
+                                <div class="wbtm_cabin_fields">
+                                    <div class="divider"></div>
+                                    <div class="_dFlex_justifyBetween_alignCenter">
+                                        <div class="_dFlex_fdColumn">
+                                            <label><?php esc_html_e('Enable Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                            <span><?php esc_html_e('Turn on to add an upper deck to this cabin/coach (double-decker).', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                        </div>
+										<?php WBTM_Custom_Layout::switch_button('wbtm_cabin_upper_enabled[' . $index . ']', $cabin_upper_enabled ? 'checked' : ''); ?>
+                                    </div>
+                                    <div class="wbtm_cabin_upper_fields" style="display: <?php echo esc_attr($cabin_upper_enabled ? 'block' : 'none'); ?>;">
+                                        <div class="divider"></div>
+                                        <div class="_dFlex_justifyBetween_alignCenter">
+                                            <label><?php esc_html_e('Price Multiplier (Upper Deck)', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+                                            <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_upper_price_multiplier[]" placeholder="Ex: 1.5" value="<?php echo esc_attr($cabin['upper_price_multiplier'] ?? 1.0); ?>"/>
+                                            <span class="help-text"><?php esc_html_e('Set the upper deck price independently. Decimals allowed. 1.0 = same as base, 1.5 = 50% higher, 0.8 = 20% lower.', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="_dFlex">
+                                            <div class="col_6 _bR">
+												<?php $this->render_cabin_seat_template_picker($index, $cabin['upper_rows'] ?? 0, $cabin['upper_cols'] ?? 0, true); ?>
+                                                <button type="button" class="_themeButton_xs_mT_xs wbtm_generate_cabin_seats_dd" data-cabin-index="<?php echo esc_attr($index); ?>">
+                                                    <span class="fas fa-plus-square"></span>
+                                                    <span class="mL_xs"><?php esc_html_e('Generate Upper Deck Seat Plan', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+                                                </button>
+                                            </div>
+                                            <div class="col_6">
+                                                <div class="wbtm_cabin_seat_preview" data-cabin-index="<?php echo esc_attr($index); ?>">
+                                                    <label><?php echo esc_html(sprintf('Cabin %d Upper Deck Preview', $index + 1)); ?></label>
+                                                    <div class="wbtm_cabin_seat_plan_dd">
+														<?php
+															$cabin_up_rows = $cabin['upper_rows'] ?? 0;
+															$cabin_up_cols = $cabin['upper_cols'] ?? 0;
+															if ($cabin_up_rows > 0 && $cabin_up_cols > 0) {
+																$this->render_cabin_seat_plan($post_id, $index, $cabin_up_rows, $cabin_up_cols, true);
+															}
+														?>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -998,10 +1063,11 @@
 				$row         = isset( $_POST['row'] ) ? intval( wp_unslash( $_POST['row'] ) ) : 0;
 				$column      = isset( $_POST['column'] ) ? intval( wp_unslash( $_POST['column'] ) ) : 0;
 				$cabin_index = isset( $_POST['cabin_index'] ) ? intval( wp_unslash( $_POST['cabin_index'] ) ) : -1;
+				$dd          = isset( $_POST['deck'] ) && sanitize_text_field( wp_unslash( $_POST['deck'] ) ) === 'upper';
 				if ( ! $post_id || ! $row || ! $column || $cabin_index < 0 ) {
 					wp_send_json_error( 'Invalid parameters' );
 				}
-				$this->render_cabin_seat_plan( $post_id, $cabin_index, $row, $column );
+				$this->render_cabin_seat_plan( $post_id, $cabin_index, $row, $column, $dd );
 				die();
 			}
 		}

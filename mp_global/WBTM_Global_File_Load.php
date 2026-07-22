@@ -99,9 +99,12 @@
 				wp_enqueue_script('jquery.timepicker.min', WBTM_GLOBAL_PLUGIN_URL.'/assets/time_picker/jquery.timepicker.min.js', array('jquery'), 1, true);
 				//=====================//
 				wp_enqueue_script('form-field-dependency', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);
-				// admin setting global
-				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), WBTM_VERSION, true);
-				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), WBTM_VERSION);
+				// admin setting global — versioned by filemtime() (not WBTM_VERSION) so
+				// edits are never served stale from the browser cache between releases.
+				$admin_settings_js  = WBTM_GLOBAL_PLUGIN_DIR . '/assets/admin/wbtm_admin_settings.js';
+				$admin_settings_css = WBTM_GLOBAL_PLUGIN_DIR . '/assets/admin/wbtm_admin_settings.css';
+				wp_enqueue_script('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.js', array('jquery'), file_exists($admin_settings_js) ? filemtime($admin_settings_js) : WBTM_VERSION, true);
+				wp_enqueue_style('wbtm_admin_settings', WBTM_GLOBAL_PLUGIN_URL . '/assets/admin/wbtm_admin_settings.css', array(), file_exists($admin_settings_css) ? filemtime($admin_settings_css) : WBTM_VERSION);
 				// Global toast notifications (window.wbtmToast) — available on every gated
 				// plugin admin screen so any settings/list-table script can call it instead
 				// of rolling its own status text or notice box. Versioned by filemtime()
