@@ -1094,7 +1094,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 										$bp_date = $info['time'];
 									}
 									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
-										$slice_time = self::slice_buffer_time( $bp_date );
+										// Ticket-sale deadline = operational buffer AND the optional
+										// admin "Ticket Sale Cut-off" (whichever closes sales first).
+										$slice_time = self::ticket_sale_deadline( $bp_date );
 										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
@@ -1459,6 +1461,74 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$date = gmdate( 'Y-m-d H:i', strtotime( $date ) - $buffer_time );
 				}
 				return $date;
+			}
+			/**
+			 * Latest moment a ticket for a given departure may be sold.
+			 *
+			 * Combines the existing operational buffer (slice_buffer_time) with the
+			 * optional, admin-configurable "Ticket Sale Cut-off" (General Settings ->
+			 * Booking behavior). The cut-off lets operators stop sales a set time before
+			 * each departure so they have time to plan routes — either a fixed number of
+			 * hours before departure, or a specific clock time on a day before departure
+			 * ("10 PM the night before"). Whichever comes first (buffer or cut-off) wins.
+			 * When the cut-off is disabled this returns exactly the buffer-adjusted
+			 * departure, so existing behaviour is unchanged.
+			 *
+			 * @param string $bp_date Departure/boarding datetime (Y-m-d H:i or parseable).
+			 * @return string Deadline as 'Y-m-d H:i', or '' when the departure is unparseable.
+			 */
+			public static function ticket_sale_deadline( $bp_date ) {
+				$departure_ts = strtotime( (string) $bp_date );
+				if ( ! $departure_ts ) {
+					return '';
+				}
+				$deadline_ts = strtotime( self::slice_buffer_time( $bp_date ) );
+				$cutoff_ts   = self::ticket_sale_cutoff_ts( $departure_ts );
+				if ( $cutoff_ts !== null && $cutoff_ts < $deadline_ts ) {
+					$deadline_ts = $cutoff_ts;
+				}
+				return gmdate( 'Y-m-d H:i', $deadline_ts );
+			}
+			/**
+			 * Whether ticket sales for a given departure are still open right now.
+			 *
+			 * @param string $bp_date Departure/boarding datetime.
+			 * @return bool True when sales are open (or the deadline can't be determined).
+			 */
+			public static function is_ticket_sale_open( $bp_date ) {
+				$deadline = self::ticket_sale_deadline( $bp_date );
+				if ( $deadline === '' ) {
+					return true;
+				}
+				return strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( $deadline );
+			}
+			/**
+			 * Resolve the configured ticket-sale cut-off to a unix timestamp for a
+			 * specific departure, or null when the cut-off is disabled/misconfigured.
+			 *
+			 * @param int $departure_ts Departure unix timestamp.
+			 * @return int|null
+			 */
+			private static function ticket_sale_cutoff_ts( $departure_ts ) {
+				if ( 'enable' !== WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_enable', 'disable' ) ) {
+					return null;
+				}
+				$type = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_type', 'hours' );
+				if ( 'clock' === $type ) {
+					$days  = max( 0, (int) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_days_before', 1 ) );
+					$clock = trim( (string) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_clock', '22:00' ) );
+					if ( ! preg_match( '/^([01]?\d|2[0-3]):([0-5]\d)$/', $clock, $m ) ) {
+						return null;
+					}
+					$cutoff_day = gmdate( 'Y-m-d', strtotime( "-{$days} day", $departure_ts ) );
+					return strtotime( $cutoff_day . ' ' . sprintf( '%02d:%02d', (int) $m[1], (int) $m[2] ) );
+				}
+				// Fixed hours before departure.
+				$hours = (float) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_hours', 12 );
+				if ( $hours <= 0 ) {
+					return null;
+				}
+				return $departure_ts - (int) round( $hours * 3600 );
 			}
 			//==========================//
 			/**

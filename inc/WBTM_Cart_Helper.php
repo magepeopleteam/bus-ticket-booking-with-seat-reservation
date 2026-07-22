@@ -114,6 +114,16 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 			if ( get_post_type( $post_id ) != WBTM_Functions::get_cpt() ) {
 				return true;
 			}
+			// Enforce the ticket-sale cut-off (and past-departure): a departure whose
+			// sale deadline has passed can't be booked, even via a crafted request that
+			// bypasses the hidden search UI. Covers the WooCommerce, Standalone and
+			// backend (counter) flows, since they all validate through this method.
+			if ( $date && ! WBTM_Functions::is_ticket_sale_open( $date ) ) {
+				return new WP_Error(
+					'wbtm_sale_closed',
+					esc_html__( 'Ticket sales for this trip are closed.', 'bus-ticket-booking-with-seat-reservation' )
+				);
+			}
 			$booking_mode = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
 			// Reject segments with no fare configured so they can't be booked at 0,
 			// even via a crafted request that bypasses the hidden UI. Full-bus pricing

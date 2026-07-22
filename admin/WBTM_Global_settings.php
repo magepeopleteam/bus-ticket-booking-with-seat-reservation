@@ -450,7 +450,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'booking' => [
 							'icon'     => 'fas fa-calendar-check',
 							'label'    => __('Booking behavior', 'bus-ticket-booking-with-seat-reservation'),
-							'field_names' => ['set_book_status', 'label', 'slug', 'icon', 'bus_buffer_time'],
+							'field_names' => ['set_book_status', 'label', 'slug', 'icon', 'bus_buffer_time', 'ticket_sale_cutoff_enable', 'ticket_sale_cutoff_type', 'ticket_sale_cutoff_hours', 'ticket_sale_cutoff_days_before', 'ticket_sale_cutoff_clock'],
 						],
 						'search' => [
 							'icon'     => 'fas fa-search',
@@ -1181,6 +1181,59 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'type'        => 'number',
 							'default'     => 0,
 							'placeholder' => esc_html__( 'Ex:50', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						// Ticket sale cut-off: stop selling a set time before each departure so
+						// operators have time to plan routes. Enforced in search results and at
+						// checkout. Supports either a fixed number of hours before departure, or a
+						// specific clock time on a day before departure ("10 PM the night before").
+						array(
+							'name'    => 'ticket_sale_cutoff_enable',
+							'label'   => esc_html__( 'Ticket Sale Cut-off', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Automatically stop selling tickets a set time before each departure, so you have time to plan routes. Applies to search results and checkout. Default: disabled.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'disable',
+							'options' => array(
+								'disable' => esc_html__( 'Disable', 'bus-ticket-booking-with-seat-reservation' ),
+								'enable'  => esc_html__( 'Enable', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'    => 'ticket_sale_cutoff_type',
+							'label'   => esc_html__( 'Cut-off Type', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'    => esc_html__( 'Choose how the cut-off is measured. Only applies when the cut-off is enabled.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'    => 'select',
+							'default' => 'hours',
+							'options' => array(
+								'hours' => esc_html__( 'Fixed hours before departure', 'bus-ticket-booking-with-seat-reservation' ),
+								'clock' => esc_html__( 'Specific time before departure', 'bus-ticket-booking-with-seat-reservation' ),
+							),
+						),
+						array(
+							'name'        => 'ticket_sale_cutoff_hours',
+							'label'       => esc_html__( 'Hours Before Departure', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Used with "Fixed hours before departure". Example: 12 = sales close 12 hours before the bus departs.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'number',
+							'default'     => 12,
+							'min'         => 0,
+							'step'        => 0.5,
+							'placeholder' => esc_html__( 'Ex: 12', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						array(
+							'name'        => 'ticket_sale_cutoff_days_before',
+							'label'       => esc_html__( 'Days Before Departure', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Used with "Specific time before departure". Example: 1 = the day before departure. Combine with the cut-off time below for "10:00 PM the night before".', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'number',
+							'default'     => 1,
+							'min'         => 0,
+							'placeholder' => esc_html__( 'Ex: 1', 'bus-ticket-booking-with-seat-reservation' ),
+						),
+						array(
+							'name'        => 'ticket_sale_cutoff_clock',
+							'label'       => esc_html__( 'Cut-off Time (HH:MM, 24h)', 'bus-ticket-booking-with-seat-reservation' ),
+							'desc'        => esc_html__( 'Used with "Specific time before departure". Example: 22:00 with 1 day before = sales close at 10:00 PM the night before departure.', 'bus-ticket-booking-with-seat-reservation' ),
+							'type'        => 'text',
+							'default'     => '22:00',
+							'placeholder' => '22:00',
 						),
 						array(
 							'name'    => 'show_hide_view_seats_button',
