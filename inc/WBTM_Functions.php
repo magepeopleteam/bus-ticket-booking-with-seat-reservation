@@ -1085,7 +1085,6 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$ignore_types     = self::is_same_bus_return_enabled( $post_id );
 					$route_date_infos = WBTM_Functions::get_route_all_date_info( $post_id, $all_dates, $resolved_leg );
 					if ( sizeof( $route_date_infos ) > 0 ) {
-						$now_full = current_time( 'Y-m-d H:i' );
 						foreach ( $route_date_infos as $route_info ) {
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
@@ -1095,9 +1094,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									}
 									if ( $bp_date && strtolower( (string) $end_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 										// Ticket-sale deadline = operational buffer AND the optional
-										// admin "Ticket Sale Cut-off" (whichever closes sales first).
-										$slice_time = self::ticket_sale_deadline( $bp_date );
-										if ( strtotime( $now_full ) < strtotime( $slice_time ) ) {
+										// admin "Ticket Sale Cut-off" (whichever closes sales first),
+										// evaluated in the WordPress timezone.
+										if ( self::is_ticket_sale_open( $bp_date ) ) {
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
 												$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
@@ -1463,53 +1462,135 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				return $date;
 			}
 			/**
-			 * Latest moment a ticket for a given departure may be sold.
+			 * The WordPress site timezone, honouring the Settings -> General timezone
+			 * (either a named zone or a raw UTC offset). Every ticket-sale calculation
+			 * is done in this zone so departure times, cut-offs and "now" all line up
+			 * with what the operator sees in the dashboard.
 			 *
-			 * Combines the existing operational buffer (slice_buffer_time) with the
-			 * optional, admin-configurable "Ticket Sale Cut-off" (General Settings ->
-			 * Booking behavior). The cut-off lets operators stop sales a set time before
-			 * each departure so they have time to plan routes — either a fixed number of
-			 * hours before departure, or a specific clock time on a day before departure
-			 * ("10 PM the night before"). Whichever comes first (buffer or cut-off) wins.
-			 * When the cut-off is disabled this returns exactly the buffer-adjusted
-			 * departure, so existing behaviour is unchanged.
-			 *
-			 * @param string $bp_date Departure/boarding datetime (Y-m-d H:i or parseable).
-			 * @return string Deadline as 'Y-m-d H:i', or '' when the departure is unparseable.
+			 * @return DateTimeZone
 			 */
-			public static function ticket_sale_deadline( $bp_date ) {
-				$departure_ts = strtotime( (string) $bp_date );
-				if ( ! $departure_ts ) {
-					return '';
+			public static function wbtm_timezone() {
+				if ( function_exists( 'wp_timezone' ) ) {
+					return wp_timezone();
 				}
-				$deadline_ts = strtotime( self::slice_buffer_time( $bp_date ) );
-				$cutoff_ts   = self::ticket_sale_cutoff_ts( $departure_ts );
-				if ( $cutoff_ts !== null && $cutoff_ts < $deadline_ts ) {
-					$deadline_ts = $cutoff_ts;
+				$tz = get_option( 'timezone_string' );
+				if ( $tz ) {
+					try {
+						return new DateTimeZone( $tz );
+					} catch ( \Exception $e ) {
+						// fall through to the offset
+					}
 				}
-				return gmdate( 'Y-m-d H:i', $deadline_ts );
+				$offset  = (float) get_option( 'gmt_offset', 0 );
+				$hours   = (int) $offset;
+				$minutes = (int) round( abs( $offset - $hours ) * 60 );
+				return new DateTimeZone( sprintf( '%+03d:%02d', $hours, $minutes ) );
 			}
 			/**
-			 * Whether ticket sales for a given departure are still open right now.
+			 * "Now" as a timezone-aware moment in the WordPress timezone.
+			 *
+			 * @return DateTimeImmutable
+			 */
+			private static function wbtm_now() {
+				if ( function_exists( 'current_datetime' ) ) {
+					return current_datetime();
+				}
+				try {
+					return new DateTimeImmutable( 'now', self::wbtm_timezone() );
+				} catch ( \Exception $e ) {
+					return new DateTimeImmutable();
+				}
+			}
+			/**
+			 * Read a stored departure/boarding time (a wall-clock string as the
+			 * operator entered it) as a timezone-aware moment in the WordPress
+			 * timezone — so "10:00" means 10:00 in the site's zone, not in UTC.
+			 *
+			 * @param string $value Departure datetime (Y-m-d H:i or any parseable form).
+			 * @return DateTimeImmutable|null Null when unparseable.
+			 */
+			private static function wbtm_local_datetime( $value ) {
+				$value = trim( (string) $value );
+				if ( '' === $value ) {
+					return null;
+				}
+				$tz = self::wbtm_timezone();
+				try {
+					// A bare wall-clock string (no explicit zone) is interpreted in $tz.
+					return new DateTimeImmutable( $value, $tz );
+				} catch ( \Exception $e ) {
+					// Defensive fallback for any exotic format DateTime rejects.
+					$ts = strtotime( $value );
+					if ( ! $ts ) {
+						return null;
+					}
+					try {
+						return new DateTimeImmutable( gmdate( 'Y-m-d H:i:s', $ts ), $tz );
+					} catch ( \Exception $e2 ) {
+						return null;
+					}
+				}
+			}
+			/**
+			 * Latest moment a ticket for a given departure may be sold, as a
+			 * timezone-aware moment. Combines the operational buffer (Buffer Time,
+			 * in minutes) with the optional, admin-configurable "Ticket Sale Cut-off"
+			 * (General Settings -> Booking behavior) — either a fixed number of hours
+			 * before departure, or a specific clock time on a day before departure
+			 * ("10 PM the night before"). Whichever closes sales first wins. Everything
+			 * is computed in the WordPress timezone.
+			 *
+			 * @param string $bp_date Departure/boarding datetime.
+			 * @return DateTimeImmutable|null Null when the departure is unparseable.
+			 */
+			private static function ticket_sale_deadline_dt( $bp_date ) {
+				$departure = self::wbtm_local_datetime( $bp_date );
+				if ( ! $departure ) {
+					return null;
+				}
+				// Operational buffer: Buffer Time is stored in minutes.
+				$buffer_min = max( 0, (int) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ) );
+				$deadline   = $buffer_min > 0 ? $departure->modify( "-{$buffer_min} minutes" ) : $departure;
+
+				$cutoff = self::ticket_sale_cutoff_dt( $departure );
+				if ( $cutoff instanceof DateTimeInterface && $cutoff < $deadline ) {
+					$deadline = $cutoff;
+				}
+				return $deadline;
+			}
+			/**
+			 * Latest moment a ticket for a given departure may be sold, as a
+			 * 'Y-m-d H:i' wall-clock string in the WordPress timezone.
+			 *
+			 * @param string $bp_date Departure/boarding datetime.
+			 * @return string Deadline, or '' when the departure is unparseable.
+			 */
+			public static function ticket_sale_deadline( $bp_date ) {
+				$dt = self::ticket_sale_deadline_dt( $bp_date );
+				return $dt ? $dt->format( 'Y-m-d H:i' ) : '';
+			}
+			/**
+			 * Whether ticket sales for a given departure are still open right now,
+			 * compared in the WordPress timezone.
 			 *
 			 * @param string $bp_date Departure/boarding datetime.
 			 * @return bool True when sales are open (or the deadline can't be determined).
 			 */
 			public static function is_ticket_sale_open( $bp_date ) {
-				$deadline = self::ticket_sale_deadline( $bp_date );
-				if ( $deadline === '' ) {
+				$deadline = self::ticket_sale_deadline_dt( $bp_date );
+				if ( ! $deadline ) {
 					return true;
 				}
-				return strtotime( current_time( 'Y-m-d H:i' ) ) < strtotime( $deadline );
+				return self::wbtm_now() < $deadline;
 			}
 			/**
-			 * Resolve the configured ticket-sale cut-off to a unix timestamp for a
-			 * specific departure, or null when the cut-off is disabled/misconfigured.
+			 * Resolve the configured ticket-sale cut-off for a specific departure to a
+			 * timezone-aware moment, or null when the cut-off is disabled/misconfigured.
 			 *
-			 * @param int $departure_ts Departure unix timestamp.
-			 * @return int|null
+			 * @param DateTimeImmutable $departure Departure moment (WP timezone).
+			 * @return DateTimeImmutable|null
 			 */
-			private static function ticket_sale_cutoff_ts( $departure_ts ) {
+			private static function ticket_sale_cutoff_dt( DateTimeImmutable $departure ) {
 				if ( 'enable' !== WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_enable', 'disable' ) ) {
 					return null;
 				}
@@ -1520,15 +1601,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					if ( ! preg_match( '/^([01]?\d|2[0-3]):([0-5]\d)$/', $clock, $m ) ) {
 						return null;
 					}
-					$cutoff_day = gmdate( 'Y-m-d', strtotime( "-{$days} day", $departure_ts ) );
-					return strtotime( $cutoff_day . ' ' . sprintf( '%02d:%02d', (int) $m[1], (int) $m[2] ) );
+					// The clock time on the calendar day $days before departure, in the
+					// site timezone (so "22:00, 1 day before" is 22:00 local).
+					return $departure->modify( "-{$days} day" )->setTime( (int) $m[1], (int) $m[2], 0 );
 				}
 				// Fixed hours before departure.
 				$hours = (float) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_hours', 12 );
 				if ( $hours <= 0 ) {
 					return null;
 				}
-				return $departure_ts - (int) round( $hours * 3600 );
+				$seconds = (int) round( $hours * 3600 );
+				return $departure->modify( "-{$seconds} seconds" );
 			}
 			//==========================//
 			/**
