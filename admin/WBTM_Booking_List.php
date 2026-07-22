@@ -497,7 +497,7 @@
 						get_post_meta($id, 'wbtm_boarding_point', true),
 						get_post_meta($id, 'wbtm_dropping_point', true),
 						get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true),
-						get_post_meta($id, 'wbtm_seat', true),
+						$this->seat_label($id),
 						get_post_meta($id, 'wbtm_ticket', true),
 						$fare,
 						$extras,
@@ -566,7 +566,7 @@
 
 					$route = trim($bp . ($dp ? ' → ' . $dp : ''));
 					$cust  = esc_html($name ?: '—') . ($phone ? '<br><span style="color:#777;">' . esc_html($phone) . '</span>' : '');
-					$seatt = esc_html($seat) . ($ticket ? '<br><span style="color:#777;">' . esc_html($ticket) . '</span>' : '');
+					$seatt = esc_html($this->seat_label($id)) . ($ticket ? '<br><span style="color:#777;">' . esc_html($ticket) . '</span>' : '');
 					$exlabel = $this->extra_services_label($id);
 					$excell  = $extras > 0
 						? wp_strip_all_tags(WBTM_Global_Function::format_price($extras)) . ($exlabel ? '<br><span style="color:#777;">' . esc_html($exlabel) . '</span>' : '')
@@ -949,6 +949,20 @@
 				return 'woocommerce';
 			}
 
+			/**
+			 * Deck-aware display label for a booking's stored seat. Shows the cabin
+			 * name and, for a double-decker cabin's upper deck, the "Upper Deck"
+			 * marker (e.g. "Coach A - Upper Deck - U3"). Non-cabin seats unchanged.
+			 */
+			private function seat_label($id) {
+				if (!class_exists('WBTM_Functions')) {
+					return get_post_meta($id, 'wbtm_seat', true);
+				}
+				return WBTM_Functions::format_cabin_seat_label(
+					get_post_meta($id, 'wbtm_seat', true),
+					get_post_meta($id, 'wbtm_cabin_info', true)
+				);
+			}
 			private function source_badge($source) {
 				if ($source === 'standalone') {
 					return '<span class="wbtm-bkl-source wbtm-bkl-source-custom" title="' . esc_attr__('Booked via Custom Payment (no WooCommerce order)', 'bus-ticket-booking-with-seat-reservation') . '"><span class="dashicons dashicons-money-alt"></span>' . esc_html__('Custom', 'bus-ticket-booking-with-seat-reservation') . '</span>';
@@ -1638,7 +1652,7 @@
 					</td>
 					<td data-col="journey_date" data-label="<?php echo esc_attr__('Journey Date', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'journey_date'); ?>><?php echo esc_html($journey_date ?: '—'); ?></td>
 					<td data-col="seat_ticket" data-label="<?php echo esc_attr__('Seat / Ticket', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'seat_ticket'); ?>>
-						<?php if ($seat) : ?><span class="wbtm-bkl-pill"><?php echo esc_html($seat); ?></span><?php endif; ?>
+						<?php if ($seat) : ?><span class="wbtm-bkl-pill"><?php echo esc_html($this->seat_label($id)); ?></span><?php endif; ?>
 						<?php if ($ticket) : ?><br><small><?php echo esc_html($ticket); ?></small><?php endif; ?>
 					</td>
 					<td data-col="total" data-label="<?php echo esc_attr__('Total', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'total'); ?>>
@@ -1961,7 +1975,7 @@
 											<?php endif; ?>
 											<dt><?php esc_html_e('Journey Date', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo esc_html($journey_date ?: '—'); ?></dd>
 											<?php if ($dp_time) : ?><dt><?php esc_html_e('Arrival', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo esc_html($dp_time); ?></dd><?php endif; ?>
-											<dt><?php esc_html_e('Seat', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo $seat ? '<span class="wbtm-bkl-pill">' . esc_html($seat) . '</span>' : '—'; ?></dd>
+											<dt><?php esc_html_e('Seat', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo $seat ? '<span class="wbtm-bkl-pill">' . esc_html($this->seat_label($id)) . '</span>' : '—'; ?></dd>
 											<dt><?php esc_html_e('Ticket Type', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo esc_html($ticket ?: '—'); ?></dd>
 											<dt><?php esc_html_e('Payment Method', 'bus-ticket-booking-with-seat-reservation'); ?></dt><dd><?php echo esc_html($billing_type ? ucfirst($billing_type) : '—'); ?></dd>
 										</dl>
@@ -2015,7 +2029,7 @@
 										</thead>
 										<tbody>
 											<tr>
-												<td><?php echo esc_html($ticket ?: esc_html__('Seat fare', 'bus-ticket-booking-with-seat-reservation')); ?> <?php echo $seat ? '(' . esc_html($seat) . ')' : ''; ?></td>
+												<td><?php echo esc_html($ticket ?: esc_html__('Seat fare', 'bus-ticket-booking-with-seat-reservation')); ?> <?php echo $seat ? '(' . esc_html($this->seat_label($id)) . ')' : ''; ?></td>
 												<td>1</td>
 												<td><?php echo wp_kses_post(WBTM_Global_Function::format_price($fare_line)); ?></td>
 											</tr>

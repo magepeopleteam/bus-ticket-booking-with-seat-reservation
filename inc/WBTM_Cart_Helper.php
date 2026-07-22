@@ -157,7 +157,14 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 							continue;
 						}
 						$cabin_index = array_key_exists( 'cabin_index', $seat_info ) ? $seat_info['cabin_index'] : '';
-						$check_seat  = ( $cabin_index !== '' ) ? 'cabin_' . $cabin_index . '_' . $seat_name : $seat_name;
+						// Prefer the pre-built deck-scoped identifier (lower vs upper
+						// deck of a double-decker cabin); fall back to the legacy
+						// lower-deck form for entries that predate it.
+						if ( ! empty( $seat_info['seat_identifier'] ) ) {
+							$check_seat = $seat_info['seat_identifier'];
+						} else {
+							$check_seat = ( $cabin_index !== '' ) ? 'cabin_' . $cabin_index . '_' . $seat_name : $seat_name;
+						}
 						if ( WBTM_Query::query_total_booked( $post_id, $bp, $dp, $date, '', $check_seat ) > 0 ) {
 							return new WP_Error(
 								'wbtm_seat_unavailable',
@@ -198,11 +205,25 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 				foreach ( $cabin_config as $cabin_index => $cabin ) {
 					if ( ( $cabin['enabled'] ?? 'yes' ) !== 'yes' )
 						continue;
-					$key_name = 'wbtm_selected_seat_cabin_' . $cabin_index;
-					$selected_seats = isset( $_POST[ $key_name ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key_name ] ) ) : '';
-					$key_name_ = 'wbtm_selected_seat_type_cabin_' . $cabin_index;
-					$selected_seat_types = isset( $_POST[ $key_name_ ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key_name_ ] ) ) : '';
-					if ( $selected_seats ) {
+					$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+					// A cabin can be a double-decker coach: gather selections from
+					// both its lower deck and (when present) its upper deck. Each
+					// resulting entry carries a deck-scoped seat_identifier so the
+					// two decks never collide downstream (availability/cart/order).
+					$deck_sources = [
+						[ 'is_upper' => false, 'seat_key' => 'wbtm_selected_seat_cabin_' . $cabin_index, 'type_key' => 'wbtm_selected_seat_type_cabin_' . $cabin_index ],
+						[ 'is_upper' => true,  'seat_key' => 'wbtm_selected_seat_cabin_dd_' . $cabin_index, 'type_key' => 'wbtm_selected_seat_type_cabin_dd_' . $cabin_index ],
+					];
+					$upper_multiplier = isset( $cabin['upper_price_multiplier'] ) ? (float) $cabin['upper_price_multiplier'] : 1.0;
+					foreach ( $deck_sources as $deck_source ) {
+						$selected_seats = isset( $_POST[ $deck_source['seat_key'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ $deck_source['seat_key'] ] ) ) : '';
+						if ( ! $selected_seats ) {
+							continue;
+						}
+						$is_upper = $deck_source['is_upper'];
+						// Each deck is priced by its own multiplier (upper can differ from lower).
+						$deck_multiplier = $is_upper ? $upper_multiplier : $price_multiplier;
+						$selected_seat_types = isset( $_POST[ $deck_source['type_key'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ $deck_source['type_key'] ] ) ) : '';
 						$seat_names = explode( ',', $selected_seats );
 						$seat_types = $selected_seat_types ? explode( ',', $selected_seat_types ) : [];
 						foreach ( $seat_names as $seat_index => $seat_name ) {
@@ -211,16 +232,18 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 							if ( $base_price === false || $base_price < 0 ) {
 								$base_price = 0;
 							}
-							$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-							$ticket_price = floatval( $base_price ) * floatval( $price_multiplier );
+							$ticket_price = floatval( $base_price ) * floatval( $deck_multiplier );
 							$cabin_seats[] = [
 								'cabin_index' => $cabin_index,
 								'cabin_name' => $cabin['name'] ?? 'Cabin ' . ( $cabin_index + 1 ),
+								'deck' => $is_upper ? 'upper' : 'lower',
+								'is_upper' => $is_upper,
 								'seat_name' => $seat_name,
+								'seat_identifier' => WBTM_Functions::cabin_seat_identifier( $cabin_index, $seat_name, $is_upper ),
 								'seat_type' => $seat_type,
 								'ticket_name' => WBTM_Functions::get_ticket_name( $seat_type, $post_id ),
 								'ticket_price' => $ticket_price,
-								'price_multiplier' => $cabin['price_multiplier'] ?? 1.0
+								'price_multiplier' => $deck_multiplier
 							];
 						}
 					}

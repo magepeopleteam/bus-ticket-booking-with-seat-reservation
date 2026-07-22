@@ -208,8 +208,8 @@ if ( ! class_exists( 'WBTM_Booking_Controller' ) ) {
 						if ( $cabin_mode_enabled === 'yes' && ! empty( $cabin_config ) ) {
 							foreach ( $cabin_config as $cabin_index => $cabin ) {
 								if ( ( $cabin['enabled'] ?? 'yes' ) === 'yes' && ( $cabin['rows'] ?? 0 ) > 0 && ( $cabin['cols'] ?? 0 ) > 0 ) {
-									$key_name = 'wbtm_selected_seat_cabin_' . $cabin_index;
-									if ( ! empty( $_POST[ $key_name ] ) ) {
+									// Detect a selection on either deck of a double-decker cabin.
+									if ( ! empty( $_POST[ 'wbtm_selected_seat_cabin_' . $cabin_index ] ) || ! empty( $_POST[ 'wbtm_selected_seat_cabin_dd_' . $cabin_index ] ) ) {
 										$has_cabin_seats = true;
 										break;
 									}

@@ -248,6 +248,13 @@ div.wbtm_style .info_text span {margin: 0 5px 0 0;}
 	font-size: 11px;
 	color: transparent;
 }
+.wbtm_seat_type_card_disabled,
+.wbtm_seat_type_card_disabled:hover {
+	cursor: not-allowed;
+	opacity: 0.55;
+	border-color: #e2e8f0;
+	background: #f8fafc;
+}
 .wbtm_seat_type_card_active {
 	border-color: #22c55e;
 	box-shadow: 0 0 0 1px #22c55e;

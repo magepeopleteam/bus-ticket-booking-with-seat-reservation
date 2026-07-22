@@ -1551,6 +1551,98 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 
 			/**
+			 * Canonical booking identifier for a cabin seat. Lower deck stays
+			 * "cabin_{index}_{seat}" (unchanged, backward compatible); the upper
+			 * deck of a double-decker cabin uses "cabin_{index}_dd_{seat}" so a
+			 * seat labelled the same on both decks never collides for
+			 * availability, holds, cart, or stored order meta.
+			 *
+			 * @param int|string $cabin_index Cabin position.
+			 * @param string     $seat_name   Seat label (e.g. A1).
+			 * @param bool       $is_upper    True for the cabin's upper deck.
+			 * @return string
+			 */
+			public static function cabin_seat_identifier( $cabin_index, $seat_name, $is_upper = false ) {
+				return 'cabin_' . $cabin_index . ( $is_upper ? '_dd_' : '_' ) . $seat_name;
+			}
+
+			/**
+			 * Parse a stored cabin seat value into its parts. Handles both decks:
+			 *   "cabin_0_A1"     -> [ cabin_index=0, is_upper=false, seat=A1 ]
+			 *   "cabin_0_dd_A1"  -> [ cabin_index=0, is_upper=true,  seat=A1 ]
+			 * Returns null for a non-cabin seat (plain label like "A1").
+			 *
+			 * @param string $stored_seat
+			 * @return array|null
+			 */
+			public static function parse_cabin_seat( $stored_seat ) {
+				// The optional "dd_" group marks the upper deck of a double-decker cabin.
+				if ( preg_match( '/^cabin_(\d+)_(dd_)?(.+)$/', (string) $stored_seat, $m ) ) {
+					return array(
+						'cabin_index' => (int) $m[1],
+						'is_upper'    => $m[2] !== '',
+						'seat'        => $m[3],
+					);
+				}
+				return null;
+			}
+
+			/**
+			 * Human-friendly display label for a stored seat value, deck-aware.
+			 * Non-cabin seats are returned unchanged. Cabin seats become
+			 * "Coach A - Upper Deck - A1" (upper) or "Coach A - A1" (lower).
+			 *
+			 * @param string $stored_seat Stored wbtm_seat value.
+			 * @param array  $cabin_info  Optional wbtm_cabin_info (cabin_name/is_upper).
+			 * @param string $sep         Separator between parts.
+			 * @return string
+			 */
+			public static function format_cabin_seat_label( $stored_seat, $cabin_info = array(), $sep = ' - ' ) {
+				$parts = self::parse_cabin_seat( $stored_seat );
+				if ( ! $parts ) {
+					return (string) $stored_seat;
+				}
+				// Prefer the stored deck flag when present (survives even if the
+				// identifier format ever changes); fall back to the parsed "dd_".
+				$is_upper = $parts['is_upper'];
+				if ( is_array( $cabin_info ) && array_key_exists( 'is_upper', $cabin_info ) ) {
+					$is_upper = ! empty( $cabin_info['is_upper'] );
+				}
+				$cabin_name = ( is_array( $cabin_info ) && ! empty( $cabin_info['cabin_name'] ) )
+					? $cabin_info['cabin_name']
+					: sprintf( __( 'Cabin %d', 'bus-ticket-booking-with-seat-reservation' ), $parts['cabin_index'] + 1 );
+				$bits = array( $cabin_name );
+				if ( $is_upper ) {
+					$bits[] = __( 'Upper Deck', 'bus-ticket-booking-with-seat-reservation' );
+				}
+				$bits[] = $parts['seat'];
+				return implode( $sep, $bits );
+			}
+
+			/**
+			 * Just the seat label with a deck suffix but no cabin name — for
+			 * surfaces that already print the cabin name separately.
+			 * "A1" (lower) or "A1 (Upper Deck)" (upper). Non-cabin seats unchanged.
+			 *
+			 * @param string $stored_seat
+			 * @param array  $cabin_info
+			 * @return string
+			 */
+			public static function cabin_seat_short_label( $stored_seat, $cabin_info = array() ) {
+				$parts = self::parse_cabin_seat( $stored_seat );
+				if ( ! $parts ) {
+					return (string) $stored_seat;
+				}
+				$is_upper = $parts['is_upper'];
+				if ( is_array( $cabin_info ) && array_key_exists( 'is_upper', $cabin_info ) ) {
+					$is_upper = ! empty( $cabin_info['is_upper'] );
+				}
+				return $is_upper
+					? $parts['seat'] . ' (' . __( 'Upper Deck', 'bus-ticket-booking-with-seat-reservation' ) . ')'
+					: $parts['seat'];
+			}
+
+			/**
 			 * @param string $storage_key From seat_price_override_storage_key().
 			 * @param string $ticket_type_id Ticket type id (slug) as used in wbtm_ticket_types.
 			 * @return float|null Override amount in store raw price units, or null to use route fare.
@@ -1672,10 +1764,13 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								foreach ( $cabin_seat_infos as $seat_info ) {
 									$cart_seat_name = array_key_exists( 'seat_name', $seat_info ) ? $seat_info['seat_name'] : '';
 									$cabin_index = array_key_exists( 'cabin_index', $seat_info ) ? $seat_info['cabin_index'] : '';
-													
-									// Create cabin-specific identifier for comparison
-									$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $cart_seat_name;
-													
+
+									// Deck-scoped identifier (lower vs upper deck of a
+									// double-decker cabin), with legacy fallback.
+									$cabin_seat_identifier = ! empty( $seat_info['seat_identifier'] )
+										? $seat_info['seat_identifier']
+										: 'cabin_' . $cabin_index . '_' . $cart_seat_name;
+
 									if ( $cabin_seat_identifier == $seat_name ) {
 										return true;
 									}

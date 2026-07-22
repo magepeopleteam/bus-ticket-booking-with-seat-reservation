@@ -105,8 +105,11 @@
 								foreach ($cabin_seats as $seat_info) {
 									$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 									$cabin_index = array_key_exists('cabin_index', $seat_info) ? $seat_info['cabin_index'] : '';
-									// Create cabin-specific seat identifier to prevent cross-cabin conflicts
-									$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+									// Create cabin-specific seat identifier to prevent cross-cabin
+									// (and cross-deck, for double-decker cabins) conflicts.
+									$cabin_seat_identifier = !empty($seat_info['seat_identifier'])
+										? $seat_info['seat_identifier']
+										: 'cabin_' . $cabin_index . '_' . $seat_name;
 									if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 										WC()->cart->remove_cart_item($key);
 //									wc_add_notice(sprintf(__("Seat %s in %s has already been booked by another user. Please choose another seat.", 'bus-ticket-booking-with-seat-reservation'), $seat_name, $seat_info['cabin_name']), 'error');
@@ -303,9 +306,10 @@
 							// Check if any cabin has seats selected
 							foreach ($cabin_config as $cabin_index => $cabin) {
 								if (($cabin['enabled'] ?? 'yes') === 'yes' && ($cabin['rows'] ?? 0) > 0 && ($cabin['cols'] ?? 0) > 0) {
-									$key_name = 'wbtm_selected_seat_cabin_' . $cabin_index;
-									$selected_seats = isset($_POST[$key_name]) ? sanitize_text_field(wp_unslash($_POST[$key_name])) : '';
-									if (!empty($selected_seats)) {
+									// Detect a selection on either deck of a double-decker cabin.
+									$lower_sel = isset($_POST['wbtm_selected_seat_cabin_' . $cabin_index]) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_cabin_' . $cabin_index])) : '';
+									$upper_sel = isset($_POST['wbtm_selected_seat_cabin_dd_' . $cabin_index]) ? sanitize_text_field(wp_unslash($_POST['wbtm_selected_seat_cabin_dd_' . $cabin_index])) : '';
+									if (!empty($lower_sel) || !empty($upper_sel)) {
 										$has_cabin_seats_selected = true;
 										break;
 									}
@@ -409,11 +413,22 @@
 					foreach ($cabin_config as $cabin_index => $cabin) {
 						if (($cabin['enabled'] ?? 'yes') !== 'yes')
 							continue;
-						$key_name = 'wbtm_selected_seat_cabin_' . $cabin_index;
-						$selected_seats = isset($_POST[$key_name]) ? sanitize_text_field(wp_unslash($_POST[$key_name])) : '';
-						if ($selected_seats) {
+						$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
+						$upper_multiplier = isset($cabin['upper_price_multiplier']) ? (float) $cabin['upper_price_multiplier'] : 1.0;
+						// Sum both decks of a double-decker cabin (lower + upper), each priced
+						// by its own multiplier.
+						$deck_keys = [
+							'wbtm_selected_seat_cabin_' . $cabin_index    => [ 'type' => 'wbtm_selected_seat_type_cabin_' . $cabin_index, 'mult' => $price_multiplier ],
+							'wbtm_selected_seat_cabin_dd_' . $cabin_index => [ 'type' => 'wbtm_selected_seat_type_cabin_dd_' . $cabin_index, 'mult' => $upper_multiplier ],
+						];
+						foreach ($deck_keys as $key_name => $deck_meta) {
+							$selected_seats = isset($_POST[$key_name]) ? sanitize_text_field(wp_unslash($_POST[$key_name])) : '';
+							if (!$selected_seats) {
+								continue;
+							}
+							$key_name_ = $deck_meta['type'];
+							$deck_multiplier = $deck_meta['mult'];
 							$seat_names = explode(',', $selected_seats);
-							$key_name_ = 'wbtm_selected_seat_type_cabin_' . $cabin_index;
 							$seat_types = isset($_POST[$key_name_]) ? sanitize_text_field(wp_unslash($_POST[$key_name_])) : '';
 							$seat_types = $seat_types ? explode(',', $seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
@@ -422,8 +437,7 @@
 								if ($base === false || $base < 0) {
 									$base = 0;
 								}
-								$price_multiplier = $cabin['price_multiplier'] ?? 1.0;
-								$total_price += floatval($base) * floatval($price_multiplier);
+								$total_price += floatval($base) * floatval($deck_multiplier);
 							}
 						}
 					}
@@ -644,8 +658,11 @@
 									foreach ($cabin_seat_infos as $seat_info) {
 										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 										$cabin_index = array_key_exists('cabin_index', $seat_info) ? $seat_info['cabin_index'] : '';
-										// Create cabin-specific seat identifier to prevent cross-cabin conflicts
-										$cabin_seat_identifier = 'cabin_' . $cabin_index . '_' . $seat_name;
+										// Create cabin-specific seat identifier to prevent cross-cabin
+										// (and cross-deck, for double-decker cabins) conflicts.
+										$cabin_seat_identifier = !empty($seat_info['seat_identifier'])
+											? $seat_info['seat_identifier']
+											: 'cabin_' . $cabin_index . '_' . $seat_name;
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
 											WC()->cart->empty_cart();
 											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
@@ -944,13 +961,21 @@
 								// Save cabin information for cabin/coach bookings to display in passenger list
 								// Fix cabin seat storage: use cabin-specific seat identifier for proper availability tracking
 								if (array_key_exists('cabin_name', $ticket_info) && array_key_exists('cabin_index', $ticket_info)) {
+									// Preserve the deck (lower/upper) so the passenger list,
+									// PDF, email and exports can show it for double-decker cabins.
+									$cabin_is_upper = !empty($ticket_info['is_upper']);
 									$data['wbtm_cabin_info'] = [
 										'cabin_name' => $ticket_info['cabin_name'],
 										'cabin_index' => $ticket_info['cabin_index'],
+										'deck' => $cabin_is_upper ? 'upper' : 'lower',
+										'is_upper' => $cabin_is_upper,
 										'price_multiplier' => $ticket_info['price_multiplier'] ?? 1.0
 									];
-									// Store cabin-specific seat identifier to prevent cross-cabin conflicts
-									$data['wbtm_seat'] = 'cabin_' . $ticket_info['cabin_index'] . '_' . (isset($ticket_info['seat_name']) ? $ticket_info['seat_name'] : $t_seat);
+									// Store the deck-scoped seat identifier to prevent cross-cabin
+									// AND cross-deck conflicts (availability tracking keys on this).
+									$data['wbtm_seat'] = !empty($ticket_info['seat_identifier'])
+										? $ticket_info['seat_identifier']
+										: WBTM_Functions::cabin_seat_identifier($ticket_info['cabin_index'], (isset($ticket_info['seat_name']) ? $ticket_info['seat_name'] : $t_seat), $cabin_is_upper);
 								} else {
 									// Fixed by Shahnur — full bus booking rows without seat_name warning 2026-05-07 12:55 PM
 									// Legacy seat storage for non-cabin bookings

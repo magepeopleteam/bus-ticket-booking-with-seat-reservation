@@ -92,7 +92,8 @@
 				wp_enqueue_style('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.css', array(), WBTM_VERSION);
 				wp_enqueue_style('mage-icon', WBTM_PLUGIN_URL . '/assets/mage-icon/css/mage-icon.css', array(), WBTM_VERSION);
 				wp_enqueue_style('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.css', array(), WBTM_VERSION);
-				wp_enqueue_script('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.js', array('jquery'), WBTM_VERSION, true);
+				$wbtm_global_js = WBTM_PLUGIN_DIR . '/assets/global/wbtm_global.js';
+				wp_enqueue_script('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.js', array('jquery'), file_exists($wbtm_global_js) ? filemtime($wbtm_global_js) : WBTM_VERSION, true);
 				wp_enqueue_script('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.js', array('jquery'), WBTM_VERSION, true);
 				do_action('wbtm_add_common_script');
 			}
@@ -171,7 +172,8 @@
 				do_action('wbtm_add_admin_script');
 			}
 			public function frontend_enqueue() {
-				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), WBTM_VERSION);
+				$wbtm_css = WBTM_PLUGIN_DIR . '/assets/frontend/wbtm.css';
+				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), file_exists($wbtm_css) ? filemtime($wbtm_css) : WBTM_VERSION);
 				wp_enqueue_style('wtbm_search', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_search.css', array(), WBTM_VERSION);
 				wp_enqueue_style('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.css', array(), WBTM_VERSION);
 				wp_enqueue_script('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.js', array('jquery'), WBTM_VERSION, true);

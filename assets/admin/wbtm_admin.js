@@ -171,6 +171,8 @@
                 let value = parseInt(target.val()) + 1;
                 target.val(value);
                 parent.find('[name="wbtm_seat_rows_hidden"]').val(value);
+                // Bind drag-and-drop + badges on the freshly cloned row's cells.
+                $(document).trigger("wbtm_seat_plan_dom_updated");
             }
         }
     );
@@ -247,6 +249,8 @@
                 let value = parseInt(target.val()) + 1;
                 target.val(value);
                 parent.find('[name="wbtm_seat_rows_dd_hidden"]').val(value);
+                // Bind drag-and-drop + badges on the freshly cloned row's cells.
+                $(document).trigger("wbtm_seat_plan_dom_updated");
             }
         }
     );

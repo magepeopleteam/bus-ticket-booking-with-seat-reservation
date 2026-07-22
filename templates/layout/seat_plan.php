@@ -213,6 +213,26 @@
                                     <div class="wbtm_cabin_seat_plan ovAuto" style="<?php echo $wbtm_cabin_is_first ? '' : 'display: none;'; ?>" aria-expanded="<?php echo $wbtm_cabin_is_first ? 'true' : 'false'; ?>" role="region" aria-labelledby="cabin-<?php echo esc_attr($cabin_index); ?>-title" data-cabin-index="<?php echo esc_attr($cabin_index); ?>">
                                         <input type="hidden" name="wbtm_selected_seat_cabin_<?php echo esc_attr($cabin_index); ?>" value=""/>
                                         <input type="hidden" name="wbtm_selected_seat_type_cabin_<?php echo esc_attr($cabin_index); ?>" value=""/>
+                                        <?php
+                                            // Upper deck of this cabin (double-decker coach), if configured.
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                            $wbtm_cabin_has_upper    = (($cabin['upper_enabled'] ?? 'no') === 'yes');
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                            $cabin_up_cols           = intval($cabin['upper_cols'] ?? 0);
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                            $cabin_up_seat_infos     = $wbtm_cabin_has_upper ? WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info_dd_' . $cabin_index, []) : [];
+                                            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                            $wbtm_cabin_render_upper = ($wbtm_cabin_has_upper && $cabin_up_cols > 0 && !empty($cabin_up_seat_infos));
+                                        ?>
+                                        <?php if ($wbtm_cabin_render_upper): ?>
+                                            <input type="hidden" name="wbtm_selected_seat_cabin_dd_<?php echo esc_attr($cabin_index); ?>" value=""/>
+                                            <input type="hidden" name="wbtm_selected_seat_type_cabin_dd_<?php echo esc_attr($cabin_index); ?>" value=""/>
+                                            <div class="wbtm_cabin_deck_tabs">
+                                                <button type="button" class="wbtm_cabin_deck_tab wbtm_cabin_deck_tab_active" data-deck="lower"><?php esc_html_e('Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+                                                <button type="button" class="wbtm_cabin_deck_tab" data-deck="upper"><?php esc_html_e('Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="wbtm_deck_pane wbtm_deck_pane_lower" data-deck="lower">
                                         <table>
                                             <thead>
                                             <tr>
@@ -339,6 +359,25 @@
                                             <?php endforeach; ?>
                                             </tbody>
                                         </table>
+                                        </div>
+                                        <?php if ($wbtm_cabin_render_upper): ?>
+                                        <div class="wbtm_deck_pane wbtm_deck_pane_upper" data-deck="upper" style="display: none;">
+                                            <?php
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                $wbtm_grid_cabin_index      = $cabin_index;
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                $wbtm_grid_cols             = $cabin_up_cols;
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                $wbtm_grid_seat_infos       = $cabin_up_seat_infos;
+                                                // Upper deck is priced by its OWN multiplier so it can differ from the lower deck.
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                $wbtm_grid_price_multiplier = isset($cabin['upper_price_multiplier']) ? floatval($cabin['upper_price_multiplier']) : 1.0;
+                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                $wbtm_grid_deck             = 'upper';
+                                                require WBTM_Functions::template_path('layout/cabin_seat_grid.php');
+                                            ?>
+                                        </div>
+                                        <?php endif; ?>
                                         <?php wbtm_render_seat_legend_check(); ?>
                                     </div>
                                 </div>
@@ -472,7 +511,7 @@
                             </table>
                         </div>
                     <?php } ?>
-                    <?php if ($show_upper_desk == 'yes' && sizeof($seat_infos_dd) > 0) { ?>
+                    <?php if (!$has_cabin_seat_plan && $show_upper_desk == 'yes' && sizeof($seat_infos_dd) > 0) { ?>
                         <div class="wbtm_seat_plan_upper ovAuto">
                             <input type="hidden" name="wbtm_selected_seat_dd" value=""/>
                             <input type="hidden" name="wbtm_selected_seat_dd_type" value=""/>

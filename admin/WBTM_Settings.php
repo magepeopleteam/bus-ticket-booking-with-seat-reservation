@@ -450,6 +450,14 @@
 					$cabin_rows = isset($_POST['wbtm_cabin_rows']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_rows'])) : [];
 					$cabin_cols = isset($_POST['wbtm_cabin_cols']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_cols'])) : [];
 					$cabin_price_multipliers = isset($_POST['wbtm_cabin_price_multiplier']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_price_multiplier'])) : [];
+					// Per-cabin upper deck (double-decker coach). upper_enabled is an
+					// indexed checkbox array (like wbtm_cabin_enabled — unchecked
+					// boxes never submit); upper rows/cols are parallel arrays that
+					// stay index-aligned because every cabin always renders one each.
+					$cabin_upper_enabled = isset($_POST['wbtm_cabin_upper_enabled']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_upper_enabled'])) : [];
+					$cabin_rows_dd = isset($_POST['wbtm_cabin_rows_dd']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_rows_dd'])) : [];
+					$cabin_cols_dd = isset($_POST['wbtm_cabin_cols_dd']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_cols_dd'])) : [];
+					$cabin_upper_multipliers = isset($_POST['wbtm_cabin_upper_price_multiplier']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_cabin_upper_price_multiplier'])) : [];
 					$cabin_config = [];
 					for ($i = 0; $i < $cabin_count; $i++) {
 						$cabin_config[] = [
@@ -457,7 +465,11 @@
 							'enabled' => isset($cabin_enabled[$i]) ? 'yes' : 'no',
 							'rows' => intval($cabin_rows[$i] ?? 0),
 							'cols' => intval($cabin_cols[$i] ?? 0),
-							'price_multiplier' => floatval($cabin_price_multipliers[$i] ?? 1.0)
+							'price_multiplier' => floatval($cabin_price_multipliers[$i] ?? 1.0),
+							'upper_enabled' => isset($cabin_upper_enabled[$i]) ? 'yes' : 'no',
+							'upper_rows' => intval($cabin_rows_dd[$i] ?? 0),
+							'upper_cols' => intval($cabin_cols_dd[$i] ?? 0),
+							'upper_price_multiplier' => floatval($cabin_upper_multipliers[$i] ?? 1.0)
 						];
 					}
 					update_post_meta($post_id, 'wbtm_cabin_config', $cabin_config);
@@ -473,6 +485,11 @@
 							// cabin's toggle state is preserved for when it's re-enabled.
 							$enable_rotation = isset($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index]) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation_cabin_' . $cabin_index])) ? 'yes' : 'no';
 							update_post_meta($post_id, 'wbtm_enable_seat_rotation_cabin_' . $cabin_index, $enable_rotation);
+							// Upper-deck rotation toggle — saved before the enabled-cabin
+							// skip below (same reasoning as the lower deck above) so a
+							// disabled cabin keeps its upper-deck rotation state.
+							$up_enable_rotation = isset($_POST['wbtm_enable_seat_rotation_cabin_dd_' . $cabin_index]) && sanitize_text_field(wp_unslash($_POST['wbtm_enable_seat_rotation_cabin_dd_' . $cabin_index])) ? 'yes' : 'no';
+							update_post_meta($post_id, 'wbtm_enable_seat_rotation_cabin_dd_' . $cabin_index, $up_enable_rotation);
 							if (($cabin['enabled'] ?? 'yes') !== 'yes')
 								continue;
 							$has_enabled_cabin = true;
@@ -517,6 +534,54 @@
 								}
 							}
 							update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);
+							// ---- Upper deck of this cabin (double-decker coach) ----
+							// Mirrors the lower-deck grid save above, but reads the
+							// "_dd_" seat inputs and stores under wbtm_cabin_seats_info_dd_{index}.
+							// Its seats add to the same $total_seat accumulator so the bus's
+							// available-seat math counts both decks.
+							if (($cabin['upper_enabled'] ?? 'no') === 'yes') {
+								$up_rows = $cabin['upper_rows'] ?? 0;
+								$up_cols = $cabin['upper_cols'] ?? 0;
+								$cabin_up_seat_info = [];
+								if ($up_rows > 0 && $up_cols > 0) {
+									for ($j = 1; $j <= $up_cols; $j++) {
+										$up_col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j])
+											? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j]))
+											: null;
+										$up_col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_rotation'])
+											? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_rotation']))
+											: null;
+										if ($up_col_infos === null) {
+											$up_col_infos = [];
+										} elseif (is_array($up_col_infos)) {
+											$up_col_infos = array_values($up_col_infos);
+										} else {
+											$up_col_infos = [$up_col_infos];
+										}
+										if ($up_col_rotation_infos === null) {
+											$up_col_rotation_infos = [];
+										} elseif (is_array($up_col_rotation_infos)) {
+											$up_col_rotation_infos = array_values($up_col_rotation_infos);
+										} else {
+											$up_col_rotation_infos = [$up_col_rotation_infos];
+										}
+										for ($i = 0; $i < $up_rows; $i++) {
+											if (isset($up_col_infos[$i])) {
+												$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($up_col_infos[$i]);
+												$rotation_value = $up_col_rotation_infos[$i] ?? '0';
+												$cabin_up_seat_info[$i]['cabin_' . $cabin_index . '_dd_seat' . $j] = $seat_value;
+												if ($up_enable_rotation == 'yes') {
+													$cabin_up_seat_info[$i]['cabin_' . $cabin_index . '_dd_seat' . $j . '_rotation'] = $rotation_value;
+												}
+												if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
+													$total_seat++;
+												}
+											}
+										}
+									}
+								}
+								update_post_meta($post_id, 'wbtm_cabin_seats_info_dd_' . $cabin_index, $cabin_up_seat_info);
+							}
 						}
 						if ($has_enabled_cabin) {
 							update_post_meta($post_id, 'wbtm_get_total_seat', $total_seat);
