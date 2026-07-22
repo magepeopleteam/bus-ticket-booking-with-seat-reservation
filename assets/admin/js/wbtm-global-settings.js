@@ -19,6 +19,17 @@
 		try { return sessionStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; }
 	};
 
+	/** Tab explicitly requested by the URL, so other screens can deep-link straight
+	 *  to one (e.g. the AI Chatbot page's "Configure" button → ...&tab=chatbot).
+	 *  Accepts ?tab=<id>, #<id> or #bm-tab-<id>. */
+	bmGs.urlTab = function () {
+		try {
+			var m = /[?&]tab=([\w-]+)/.exec(window.location.search || '');
+			if (m && m[1]) { return m[1]; }
+			return (window.location.hash || '').replace(/^#/, '').replace(/^bm-tab-/, '');
+		} catch (e) { return ''; }
+	};
+
 	/** Switch to a tab panel */
 	bmGs.switchTab = function (id, btn) {
 		$('.bm-gs__tab-panel').removeClass('bm-gs--active');
@@ -39,6 +50,10 @@
 		});
 
 		bmGs.closeSidebar();
+
+		// Informational tabs (e.g. Status) carry no settings form, so the topbar
+		// Save button would be a confusing no-op there — hide it on those panels.
+		$('#bm-save-btn').toggle($('#bm-tab-' + id).find('form').length > 0);
 
 		if (typeof bmGs.rememberTab === 'function') {
 			bmGs.rememberTab(id);
@@ -143,12 +158,23 @@
 			applyCutoffVisibility();
 		}
 
-		// Activate the tab the admin was last on (e.g. before clicking Save, which
-		// does a full page reload via a real form POST), falling back to the
-		// server-provided default when nothing was remembered yet or the
-		// remembered tab no longer exists (e.g. a Pro-only tab after deactivation).
+		// Which tab to open, in priority order:
+		//  1. an explicit tab in the URL — a deep link from another screen must win,
+		//     otherwise the remembered tab would silently override where the admin
+		//     asked to go (e.g. AI Chatbot page → "Configure" → &tab=chatbot);
+		//  2. the tab the admin was last on (survives the full page reload the Save
+		//     button triggers via a real form POST to options.php);
+		//  3. the server-provided default.
+		// Each candidate is only used when its panel actually exists, so a stale or
+		// Pro-only tab (after deactivation) falls through instead of showing nothing.
+		var urlTab      = bmGs.urlTab();
 		var recalledTab = bmGs.recallTab();
-		var startTab = (recalledTab && $('#bm-tab-' + recalledTab).length) ? recalledTab : defaultTab;
+		var startTab    = defaultTab;
+		if (urlTab && $('#bm-tab-' + urlTab).length) {
+			startTab = urlTab;
+		} else if (recalledTab && $('#bm-tab-' + recalledTab).length) {
+			startTab = recalledTab;
+		}
 		if (startTab && $('#bm-tab-' + startTab).length) {
 			bmGs.switchTab(startTab, $('.bm-gs__nav-item[data-tab="' + startTab + '"]').first()[0]);
 		}

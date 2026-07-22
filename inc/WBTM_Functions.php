@@ -1533,11 +1533,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			//==========================//
 			/**
 			 * Storage key for per-seat ticket price overrides (post meta wbtm_seat_price_overrides).
-			 * Lower deck: l|{seatLabel}, upper: u|{seatLabel}, cabin: c|{index}|{seatLabel}.
+			 * Lower deck: l|{seatLabel}, upper: u|{seatLabel}, cabin lower: c|{index}|{seatLabel},
+			 * cabin upper: c|{index}|u|{seatLabel}.
+			 *
+			 * The cabin LOWER form is deliberately left unchanged so overrides saved before
+			 * double-decker cabins existed keep applying; only the upper deck gains a new key.
+			 * Without this, "A1" on a cabin's upper deck and "A1" on its lower deck collapsed
+			 * onto one entry and shared a single price.
 			 *
 			 * @param string       $seat_name     Seat label (e.g. A1).
-			 * @param bool         $is_upper_deck Upper deck leg uses u| prefix when $cabin_index is null.
-			 * @param int|null     $cabin_index   Null for lower/upper; integer cabin index for cabin coaches.
+			 * @param bool         $is_upper_deck Upper deck of the bus (cabin_index null) or of the cabin.
+			 * @param int|null     $cabin_index   Null for the plain seat plan; cabin index for cabin coaches.
 			 */
 			public static function seat_price_override_storage_key( $seat_name, $is_upper_deck, $cabin_index ) {
 				$seat_name = trim( (string) $seat_name );
@@ -1545,7 +1551,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					return '';
 				}
 				if ( null !== $cabin_index && $cabin_index !== '' ) {
-					return 'c|' . (int) $cabin_index . '|' . $seat_name;
+					// A deck-suffixed index ("0_dd") can reach us from the seat grid's data
+					// attribute. Detect it here, because the (int) cast below would otherwise
+					// silently drop the "_dd" and quietly key the upper deck onto the lower one.
+					if ( is_string( $cabin_index ) && substr( $cabin_index, -3 ) === '_dd' ) {
+						$is_upper_deck = true;
+					}
+					return $is_upper_deck
+						? 'c|' . (int) $cabin_index . '|u|' . $seat_name
+						: 'c|' . (int) $cabin_index . '|' . $seat_name;
 				}
 				return ( $is_upper_deck ? 'u' : 'l' ) . '|' . $seat_name;
 			}
@@ -1628,6 +1642,30 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * @param array  $cabin_info
 			 * @return string
 			 */
+			/**
+			 * Split a stored seat value into its display parts, for UIs that render the
+			 * deck as its own element (small text / badge) instead of baking "(Upper Deck)"
+			 * into the string. Non-cabin seats come back unchanged with is_upper = false.
+			 *
+			 * @param string $stored_seat Stored wbtm_seat value.
+			 * @param array  $cabin_info  Optional wbtm_cabin_info (cabin_name/is_upper).
+			 * @return array{seat:string,is_upper:bool,cabin_name:string}
+			 */
+			public static function cabin_seat_display_parts( $stored_seat, $cabin_info = array() ) {
+				$parts    = self::parse_cabin_seat( $stored_seat );
+				$is_upper = $parts ? $parts['is_upper'] : false;
+				// Prefer the stored deck flag when present — it survives even if the
+				// identifier format ever changes.
+				if ( is_array( $cabin_info ) && array_key_exists( 'is_upper', $cabin_info ) ) {
+					$is_upper = ! empty( $cabin_info['is_upper'] );
+				}
+				return array(
+					'seat'       => $parts ? $parts['seat'] : (string) $stored_seat,
+					'is_upper'   => (bool) $is_upper,
+					'cabin_name' => ( is_array( $cabin_info ) && ! empty( $cabin_info['cabin_name'] ) ) ? (string) $cabin_info['cabin_name'] : '',
+				);
+			}
+
 			public static function cabin_seat_short_label( $stored_seat, $cabin_info = array() ) {
 				$parts = self::parse_cabin_seat( $stored_seat );
 				if ( ! $parts ) {
