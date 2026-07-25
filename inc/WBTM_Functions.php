@@ -1850,6 +1850,46 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				return false;
 			}
+			/**
+			 * Charging mode configured for an extra service on a bus.
+			 *
+			 * @return string 'per_passenger' or 'per_booking' (default). Services
+			 *                saved before this option existed return 'per_booking',
+			 *                preserving the legacy once-per-booking behaviour.
+			 */
+			public static function get_ex_service_charge_type( $post_id, $service_name ) {
+				$ex_services = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_extra_services', [] );
+				if ( is_array( $ex_services ) && sizeof( $ex_services ) > 0 ) {
+					foreach ( $ex_services as $ex_service ) {
+						if ( isset( $ex_service['option_name'] ) && $ex_service['option_name'] == $service_name ) {
+							$type = $ex_service['option_charge_type'] ?? 'per_booking';
+							return ( $type === 'per_passenger' ) ? 'per_passenger' : 'per_booking';
+						}
+					}
+				}
+				return 'per_booking';
+			}
+			/**
+			 * Effective price of one selected extra-service line, given the number
+			 * of passengers (seats) in the booking. This is the single source of
+			 * truth for extra-service pricing so cart, checkout, standalone payment,
+			 * order/e-voucher display, exports and reports all agree.
+			 *
+			 * per_booking  : price × qty            (charged once for the booking)
+			 * per_passenger: price × qty × seats    (charged for every passenger)
+			 *
+			 * @param array $service   Selected service: ['price','qty','charge_type'].
+			 * @param int   $seat_count Number of passengers/seats in the booking.
+			 * @return float
+			 */
+			public static function ex_service_line_total( $service, $seat_count = 1 ) {
+				$price = isset( $service['price'] ) ? floatval( $service['price'] ) : 0;
+				$qty   = isset( $service['qty'] ) ? max( 0, intval( $service['qty'] ) ) : 0;
+				$type  = $service['charge_type'] ?? 'per_booking';
+				$seats = max( 1, intval( $seat_count ) );
+				$multiplier = ( $type === 'per_passenger' ) ? $seats : 1;
+				return max( 0, $price * $qty * $multiplier );
+			}
 			//==========================//
 			public static function check_seat_in_cart( $bus_id, $bp, $dp, $bp_date, $seat_name ) {
 				if ( ! self::is_wc_active() ) {

@@ -214,6 +214,42 @@
 			closeAllDropdowns();
 		});
 
+		/* Resend E-Voucher: prompt for the recipient (pre-filled with the current
+		   billing email so the admin can correct a wrong/changed address), then AJAX. */
+		$(document).on('click', '.wbtm-bkl-resend-btn', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var $btn = $(this);
+			var id = String($btn.data('id'));
+			var current = String($btn.data('email') || '');
+			closeAllDropdowns();
+			var email = window.prompt(
+				(i18n.resendPrompt || 'Send the E-Voucher to this email address (edit it to send to a different address):'),
+				current
+			);
+			if (email === null) {
+				return; // cancelled
+			}
+			email = $.trim(email);
+			$btn.prop('disabled', true);
+			$.post(vars.ajaxUrl, {
+				action: 'wbtm_bkl_resend',
+				nonce: vars.nonce,
+				booking_id: id,
+				email: email
+			}).done(function (response) {
+				if (response && response.success) {
+					toast((response.data && response.data.message) || 'E-Voucher sent.', 'success');
+				} else {
+					toast((response && response.data && response.data.message) || 'Could not send the e-voucher.', 'error');
+				}
+			}).fail(function () {
+				toast('Could not send the e-voucher.', 'error');
+			}).always(function () {
+				$btn.prop('disabled', false);
+			});
+		});
+
 		function openDeleteModal(ids, refText) {
 			$deleteModal.find('#wbtm-bkl-delete-id').val(ids.join(','));
 			$deleteModal.find('#wbtm-bkl-delete-ref').text(refText);

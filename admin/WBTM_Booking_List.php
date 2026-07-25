@@ -33,6 +33,7 @@
 				add_action('wp_ajax_wbtm_bkl_delete', array($this, 'ajax_delete'));
 				add_action('wp_ajax_wbtm_bkl_change_status', array($this, 'ajax_change_status'));
 				add_action('wp_ajax_wbtm_bkl_bulk_change_status', array($this, 'ajax_bulk_change_status'));
+				add_action('wp_ajax_wbtm_bkl_resend', array($this, 'ajax_resend'));
 				add_action('wp_ajax_wbtm_bkl_add_note', array($this, 'ajax_add_note'));
 				add_action('wp_ajax_wbtm_bkl_save_columns', array($this, 'ajax_save_columns'));
 				add_action('admin_post_wbtm_bkl_export_csv', array($this, 'handle_export_csv'));
@@ -241,6 +242,74 @@
 					'log_entry' => $this->render_log_entry($log_entry),
 					'message'   => esc_html__('Status updated.', 'bus-ticket-booking-with-seat-reservation'),
 				));
+			}
+
+			/**
+			 * AJAX: resend the e-voucher (PDF ticket) for a booking row. Optionally
+			 * to a different email address (the admin can correct a wrong/changed
+			 * address). Delegates to the PRO mailer via the wbtm_send_mail action,
+			 * forcing it past the once-per-recipient guard.
+			 */
+			public function ajax_resend() {
+				check_ajax_referer('wbtm_bkl_actions', 'nonce');
+				if (!current_user_can('manage_options')) {
+					wp_send_json_error(array('message' => esc_html__('Unauthorized.', 'bus-ticket-booking-with-seat-reservation')), 403);
+				}
+				$id    = isset($_POST['booking_id']) ? absint(wp_unslash($_POST['booking_id'])) : 0;
+				$email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+				if (!$id || get_post_type($id) !== 'wbtm_bus_booking') {
+					wp_send_json_error(array('message' => esc_html__('Invalid booking.', 'bus-ticket-booking-with-seat-reservation')));
+				}
+				$result = $this->resend_evoucher($id, $email);
+				if (is_wp_error($result)) {
+					wp_send_json_error(array('message' => $result->get_error_message()));
+				}
+				wp_send_json_success(array(
+					'email'   => $result,
+					/* translators: %s: recipient email address */
+					'message' => sprintf(esc_html__('E-Voucher resent to %s.', 'bus-ticket-booking-with-seat-reservation'), $result),
+				));
+			}
+
+			/**
+			 * Shared resend routine. Returns the recipient email on success or a
+			 * WP_Error explaining why it could not send.
+			 *
+			 * @param int    $booking_id wbtm_bus_booking post id.
+			 * @param string $email      Optional new recipient; blank = keep billing email.
+			 * @return string|WP_Error
+			 */
+			private function resend_evoucher($booking_id, $email = '') {
+				$order_id = get_post_meta($booking_id, 'wbtm_order_id', true);
+				if (!$order_id) {
+					return new WP_Error('no_order', esc_html__('No order is linked to this booking.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				// The e-voucher mailer only handles real WooCommerce orders (PRO).
+				if (!function_exists('wc_get_order') || !has_action('wbtm_send_mail')) {
+					return new WP_Error('unsupported', esc_html__('E-Voucher resend requires WooCommerce and the PRO add-on.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				$order = wc_get_order($order_id);
+				if (!$order) {
+					return new WP_Error('no_wc_order', esc_html__('This booking is not linked to a WooCommerce order, so the e-voucher cannot be resent from here.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				// Correct the billing email if a new one was supplied.
+				if ($email && is_email($email) && strcasecmp($order->get_billing_email(), $email) !== 0) {
+					$order->set_billing_email($email);
+					$order->save();
+					$order = wc_get_order($order_id);
+				}
+				$target = $order->get_billing_email();
+				// Force past the once-per-recipient guard, then trigger the send.
+				add_filter('wbtm_ticket_mail_force_resend', '__return_true');
+				do_action('wbtm_send_mail', $order_id);
+				remove_filter('wbtm_ticket_mail_force_resend', '__return_true');
+				// Confirm delivery via the meta the mailer writes on success.
+				$sent    = get_post_meta($order_id, '_wbtm_email_sent', true);
+				$sent_to = (string) get_post_meta($order_id, '_wbtm_email_sent_to', true);
+				if ($sent && $target && strcasecmp($sent_to, $target) === 0) {
+					return $target;
+				}
+				return new WP_Error('not_sent', esc_html__('The e-voucher could not be sent. Check that "Send Ticket?" is enabled and the order status is eligible under Email settings.', 'bus-ticket-booking-with-seat-reservation'));
 			}
 
 			/**
@@ -1747,6 +1816,13 @@
 										<span class="dashicons dashicons-media-document"></span><?php esc_html_e('Download Ticket (PDF)', 'bus-ticket-booking-with-seat-reservation'); ?>
 										<span class="wbtm-bkl-mini-pro"><?php esc_html_e('PRO', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 									</span>
+								<?php endif; ?>
+
+								<?php if ($is_pro && $is_admin && $wc_active && $order_id && $this->booking_source($id) === 'woocommerce') : ?>
+									<div class="wbtm-bkl-dropdown-divider" role="separator"></div>
+									<button type="button" class="wbtm-bkl-dropdown-item wbtm-bkl-resend-btn" data-id="<?php echo esc_attr($id); ?>" data-ref="<?php echo esc_attr($reference); ?>" data-email="<?php echo esc_attr(get_post_meta($id, 'wbtm_user_email', true)); ?>">
+										<span class="dashicons dashicons-email-alt"></span><?php esc_html_e('Resend E-Voucher', 'bus-ticket-booking-with-seat-reservation'); ?>
+									</button>
 								<?php endif; ?>
 
 								<?php if ($is_admin) : ?>

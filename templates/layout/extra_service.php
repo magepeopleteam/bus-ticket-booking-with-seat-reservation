@@ -50,9 +50,11 @@
 							$sold = WBTM_Query::query_ex_service_sold($post_id, $date, $ex_name);
                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$available_ex_service = $total_ex - $sold;
+							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+							$charge_type = $ex_service['option_charge_type'] ?? 'per_booking';
 							?>
 							<tr>
-								<td class="_textLeft"><?php echo esc_html($ex_name); ?></td>
+								<td class="_textLeft"><?php echo esc_html($ex_name); ?><?php if ($charge_type === 'per_passenger') : ?> <small class="wbtm_ex_per_passenger">(<?php esc_html_e('per passenger', 'bus-ticket-booking-with-seat-reservation'); ?>)</small><?php endif; ?></td>
 								<td class="_textCenter">
 									<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
 									<?php WBTM_Custom_Layout::qty_input('extra_service_qty[]', $row_price, $available_ex_service, 0, 0, $available_ex_service, $qty_type, $ex_name); ?>

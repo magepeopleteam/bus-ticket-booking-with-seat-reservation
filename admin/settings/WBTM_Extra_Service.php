@@ -44,6 +44,7 @@
                                                 <th><?php esc_html_e('Service Price', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Available Qty', 'bus-ticket-booking-with-seat-reservation'); ?><i class="textRequired">&nbsp;*</i></th>
                                                 <th><?php esc_html_e('Qty Box Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
+                                                <th><?php esc_html_e('Charging Mode', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                                                 <th><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                                             </tr>
                                             </thead>
@@ -74,6 +75,11 @@
 				$service_price = array_key_exists('option_price', $field) ? $field['option_price'] : '';
 				$service_qty = array_key_exists('option_qty', $field) ? $field['option_qty'] : '';
 				$input_type = array_key_exists('option_qty_type', $field) ? $field['option_qty_type'] : 'inputbox';
+				// Charging mode: 'per_booking' (default = legacy behaviour, charged
+				// once for the whole booking) or 'per_passenger' (multiplied by the
+				// number of passengers/seats). Existing services without this key keep
+				// the legacy per-booking behaviour.
+				$charge_type = array_key_exists('option_charge_type', $field) ? $field['option_charge_type'] : 'per_booking';
 				?>
                 <tr class="wbtm_remove_area">
                     <td>
@@ -96,6 +102,14 @@
                             <select name="ex_option_qty_type[]" class='formControl'>
                                 <option value="inputbox" <?php echo esc_attr($input_type == 'inputbox' ? 'selected' : ''); ?>><?php esc_html_e('Input Box', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                                 <option value="dropdown" <?php echo esc_attr($input_type == 'dropdown' ? 'selected' : ''); ?>><?php esc_html_e('Dropdown List', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                            </select>
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            <select name="ex_option_charge_type[]" class='formControl'>
+                                <option value="per_booking" <?php echo esc_attr($charge_type == 'per_booking' ? 'selected' : ''); ?>><?php esc_html_e('Per Booking', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                                <option value="per_passenger" <?php echo esc_attr($charge_type == 'per_passenger' ? 'selected' : ''); ?>><?php esc_html_e('Per Passenger', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                             </select>
                         </label>
                     </td>

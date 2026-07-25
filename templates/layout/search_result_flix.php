@@ -232,6 +232,9 @@ if (sizeof($bus_ids) > 0) {
 
 
                 <div class="wbtm-bus-flix-style_bus">
+                    <div class="wbtm-flix-photo">
+                        <?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
+                    </div>
                     <div class="title">
                         <h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_attr( get_the_title($bus_id ) ) ; ?></h5>
                         <p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>

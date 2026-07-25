@@ -1276,6 +1276,29 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     font-family: sans-serif;
   }
 
+  /* Per-departure bus/boat photo (restored: the modern card rewrite
+     dropped the thumbnail; helper + fallback logic still intact). */
+  .wbtm-bus-flix-style_bus .wbtm-flix-photo {
+    flex: 0 0 110px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 14px;
+    background: #eef3fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* !important beats themes that force `img { height:auto }`. */
+  .wbtm-bus-flix-style_bus .wbtm-flix-photo img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
   .wbtm-bus-flix-style .title {
     width: 100%;
   }

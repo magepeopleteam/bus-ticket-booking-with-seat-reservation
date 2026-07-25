@@ -699,6 +699,29 @@ div#wbtm_date_start_route { height: 50px; }
     box-shadow:   0 22px 48px rgba(15, 23, 42, 0.1);
 }
 
+/* ── Bus / boat photo (per-departure card thumbnail) ────────────── */
+.wbtm-card-photo {
+    flex:            0 0 150px;
+    align-self:      stretch;
+    display:         flex;
+    align-items:     center;      /* vertical-center the image in the card */
+    justify-content: center;      /* horizontal-center */
+    overflow:        hidden;
+    background:      #eef3fb;
+    border-right:    1px solid #e5edf7;
+}
+/* height:100% !important beats themes that force `img { height:auto }`, so the
+   photo fills the column instead of sitting top-aligned; the flex centering
+   above keeps it centred if a theme still wins the height rule. */
+.wbtm-card-photo img {
+    width:           100% !important;
+    height:          100% !important;
+    max-width:       100%;
+    object-fit:      cover;
+    object-position: center;
+    display:         block;
+}
+
 /* ── LEFT: times + duration track ───────────────────────────────── */
 .wbtm-card-times {
     flex:                  0 0 350px;
@@ -1031,6 +1054,13 @@ div#wbtm_date_start_route { height: 50px; }
     /* Bus card: 3 columns become 3 stacked rows */
     .wbtm-card-wrap { flex-direction: column; min-height: 0; border-radius: 18px; }
     .wbtm-bus-list  { min-width: 0; }
+    .wbtm-card-photo {
+        flex:          none;
+        width:         100%;
+        height:        170px;
+        border-right:  none;
+        border-bottom: 1px solid #e5edf7;
+    }
     .wbtm-card-times {
         flex:          none;
         width:         100%;
@@ -1329,7 +1359,13 @@ div#wbtm_date_start_route { height: 50px; }
                 <!-- ── 3-column card ──────────────────────────────── -->
                 <div class="wbtm-card-wrap">
 
-                    <!-- LEFT: times + duration visual -->
+                    <!-- LEFT: bus / boat photo (restored in 5.9.x; the modern
+                         card rewrite dropped the per-departure thumbnail) -->
+                    <div class="wbtm-card-photo">
+                        <?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
+                    </div>
+
+                    <!-- times + duration visual -->
                     <div class="wbtm-card-times">
                         <div class="wbtm-time-depart">
                             <?php echo esc_html(date_i18n('H:i', $bp_ts)); ?>
