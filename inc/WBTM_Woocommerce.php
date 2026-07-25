@@ -345,7 +345,19 @@
 							$seat_price = $full_bus_price;
 						}
 						$ex_service_infos = self::get_cart_extra_service_info($post_id);
-						$ex_service_price = self::get_cart_ex_service_price($ex_service_infos);
+						// Passenger/seat count drives per_passenger extra-service
+						// pricing. Mirrors the wbtm_seats_qty stored below;
+						// before_calculate_totals() re-derives it authoritatively at
+						// checkout, so this is only the initial cart figure.
+						if ($booking_mode === 'full_bus') {
+							$ex_seat_count = self::get_cart_ticket_qty($ticket_infos);
+						} elseif ($has_cabin_seats_selected) {
+							$ex_seat_count = self::get_cart_cabin_ticket_qty(self::get_cart_cabin_seat_info($post_id, $cabin_config));
+						} else {
+							$ex_seat_count = self::get_cart_ticket_qty($ticket_infos);
+						}
+						$ex_seat_count = max(1, intval($ex_seat_count));
+						$ex_service_price = self::get_cart_ex_service_price($ex_service_infos, $ex_seat_count);
 						// Ensure ex_service_price is a valid number
 						$ex_service_price = floatval($ex_service_price);
 						if ($ex_service_price < 0) {
@@ -516,6 +528,21 @@
 								}
 							}
 						}
+						// Passenger/seat count for per_passenger extra-service pricing.
+						// Prefer the cached qty; recount defensively if it is missing.
+						$ex_seat_count = isset($value['wbtm_seats_qty']) ? intval($value['wbtm_seats_qty']) : 0;
+						if ($ex_seat_count < 1) {
+							if ($has_cabin_seats) {
+								$ex_seat_count = is_array($value['wbtm_cabin_seats']) ? count($value['wbtm_cabin_seats']) : 1;
+							} else {
+								$legacy_seats_for_count = isset($value['wbtm_seats']) && is_array($value['wbtm_seats']) ? $value['wbtm_seats'] : [];
+								$ex_seat_count = 0;
+								foreach ($legacy_seats_for_count as $s) {
+									$ex_seat_count += isset($s['ticket_qty']) ? max(1, intval($s['ticket_qty'])) : 1;
+								}
+							}
+						}
+						$ex_seat_count = max(1, intval($ex_seat_count));
 						// Re-derive extra-service prices from DB
 						$ex_service_price = 0;
 						$ex_services = isset($value['wbtm_extra_services']) && is_array($value['wbtm_extra_services']) ? $value['wbtm_extra_services'] : [];
@@ -524,8 +551,16 @@
 							$svc_qty  = isset($svc['qty']) ? max(1, intval($svc['qty'])) : 1;
 							$canonical_svc_price = WBTM_Functions::get_ex_service_price($post_id, $svc_name);
 							if ($canonical_svc_price !== false) {
-								$ex_service_price += floatval($canonical_svc_price) * $svc_qty;
+								// Re-derive the charging mode from the DB (authoritative)
+								// so a change in bus settings is reflected at checkout;
+								// multiply by the passenger count when per_passenger.
+								$svc_charge_type = WBTM_Functions::get_ex_service_charge_type($post_id, $svc_name);
+								$svc_multiplier  = ($svc_charge_type === 'per_passenger') ? $ex_seat_count : 1;
+								$ex_service_price += floatval($canonical_svc_price) * $svc_qty * $svc_multiplier;
 								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = floatval($canonical_svc_price);
+								// Keep the stored charge_type in sync with the DB so the
+								// order line item and e-voucher display match the charge.
+								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['charge_type'] = $svc_charge_type;
 							} else {
 								// Service removed from DB — zero out rather than trust stale session data.
 								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = 0;
@@ -778,9 +813,20 @@
 					if (sizeof($extra_service) > 0) {
 						$item->add_meta_data(WBTM_Translations::text_ex_service(), '');
 						foreach ($extra_service as $service) {
+							// per_passenger services are multiplied by the passenger
+							// count; show that factor in the breakdown so the line items
+							// reconcile with the extra-service subtotal.
+							$svc_charge_type = $service['charge_type'] ?? 'per_booking';
+							$svc_seats       = ($svc_charge_type === 'per_passenger') ? max(1, intval($ticket_qty)) : 1;
+							$svc_qty         = isset($service['qty']) ? max(0, intval($service['qty'])) : 0;
+							$svc_line_total  = WBTM_Functions::ex_service_line_total($service, $svc_seats);
 							$item->add_meta_data(WBTM_Translations::text_name(), $service['name']);
 							$item->add_meta_data(WBTM_Translations::text_total_qty(), $service['qty']);
-							$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . wc_price($service['price']) . ' x ' . $service['qty'] . ' ) = ' . wc_price($service['price'] * $service['qty']));
+							if ($svc_charge_type === 'per_passenger') {
+								$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . wc_price($service['price']) . ' x ' . $svc_qty . ' x ' . $svc_seats . ' ) = ' . wc_price($svc_line_total));
+							} else {
+								$item->add_meta_data(WBTM_Translations::text_price(), ' ( ' . wc_price($service['price']) . ' x ' . $svc_qty . ' ) = ' . wc_price($svc_line_total));
+							}
 						}
 						$item->add_meta_data(WBTM_Translations::text_ex_service_sub_total(), $ex_base_price);
 					}
@@ -1262,11 +1308,14 @@
 				}
 				return max(0, $total_qty);
 			}
-			public static function get_cart_ex_service_price($ex_service_infos = []) {
+			public static function get_cart_ex_service_price($ex_service_infos = [], $seat_count = 1) {
 				$total_price = 0;
 				if (sizeof($ex_service_infos) > 0) {
 					foreach ($ex_service_infos as $ticket_info) {
-						$total_price = $total_price + $ticket_info['price'] * $ticket_info['qty'];
+						// per_booking: price × qty; per_passenger: price × qty × seats.
+						// Services without a charge_type default to per_booking, so the
+						// legacy once-per-booking total is unchanged.
+						$total_price += WBTM_Functions::ex_service_line_total($ticket_info, $seat_count);
 					}
 				}
 				return max(0, $total_price);
@@ -1487,12 +1536,18 @@
 			public function show_cart_ex_service($cart_item) {
 				$ex_base_price = array_key_exists('wbtm_base_ex_price', $cart_item) ? $cart_item['wbtm_base_ex_price'] : '';
 				$extra_service = array_key_exists('wbtm_extra_services', $cart_item) ? $cart_item['wbtm_extra_services'] : [];
+				$ex_seat_count = array_key_exists('wbtm_seats_qty', $cart_item) ? max(1, intval($cart_item['wbtm_seats_qty'])) : 1;
 				$ex_count = 0;
 				if (sizeof($extra_service) > 0) { ?>
                     <h5 class="_mB_xs"><?php echo esc_html(WBTM_Translations::text_ex_service()); ?></h5>
                     <div class="dLayout_xs">
                         <ul class="cart_list">
-							<?php foreach ($extra_service as $service) { ?>
+							<?php foreach ($extra_service as $service) {
+								$svc_charge_type = $service['charge_type'] ?? 'per_booking';
+								$svc_seats       = ($svc_charge_type === 'per_passenger') ? $ex_seat_count : 1;
+								$svc_qty         = isset($service['qty']) ? max(0, intval($service['qty'])) : 0;
+								$svc_line_total  = WBTM_Functions::ex_service_line_total($service, $svc_seats);
+							?>
 								<?php if ($ex_count > 0) { ?>
                                     <li>
                                         <div class="_divider"></div>
@@ -1508,7 +1563,13 @@
                                 </li>
                                 <li>
                                     <h6 class="_mR_xs"><?php echo esc_html(WBTM_Translations::text_price()); ?> :</h6>
-                                    <span><?php echo ' ( ' . wp_kses_post(wc_price($service['price'])) . ' x ' . esc_attr($service['qty']) . ' ) = ' . wp_kses_post(wc_price(($service['price'] * $service['qty']))); ?></span>
+                                    <span><?php
+										if ($svc_charge_type === 'per_passenger') {
+											echo ' ( ' . wp_kses_post(wc_price($service['price'])) . ' x ' . esc_html($svc_qty) . ' x ' . esc_html($svc_seats) . ' ) = ' . wp_kses_post(wc_price($svc_line_total));
+										} else {
+											echo ' ( ' . wp_kses_post(wc_price($service['price'])) . ' x ' . esc_html($svc_qty) . ' ) = ' . wp_kses_post(wc_price($svc_line_total));
+										}
+									?></span>
                                 </li>
 								<?php $ex_count++; ?>
 							<?php } ?>

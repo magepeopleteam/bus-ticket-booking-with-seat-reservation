@@ -42,6 +42,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	register_activation_hook( __FILE__, 'wbtm_on_plugin_activation' );
 	function wbtm_on_plugin_activation() {
 		set_transient( 'wbtm_plugin_activated', true, 60 );
+		// Allow the default search pages to be (re)provisioned exactly once after
+		// this activation. on_activation_page_create() sets this flag again as soon
+		// as it has run, so it never loops. Clearing it here gives admins a clean
+		// recovery path (deactivate → reactivate) if they need the pages rebuilt.
+		delete_option( 'wbtm_default_pages_created_v1' );
 	}
 
 	/**
@@ -130,6 +135,33 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					}
 				}
 				public static function on_activation_page_create() {
+					// Run the default-page creation EXACTLY ONCE per site.
+					//
+					// This callback is hooked to `init`, which fires on every single
+					// request (front-end, wp-admin, admin-ajax.php, REST and cron). The
+					// slug guards below (get_page_by_slug) only find *published* pages,
+					// so on any request where a default page is momentarily not found as
+					// published the block re-creates it. That happens routinely:
+					//   * a page moved to Trash is renamed by WP to "<slug>__trashed",
+					//     so the original slug no longer matches — the next request
+					//     recreates it (this is the "the more I delete, the more get
+					//     created" symptom reported in the field);
+					//   * two concurrent requests can both pass the guard in the race
+					//     window before the first wp_insert_post() commits, each
+					//     inserting a duplicate (WP then appends -2, -3, … to the slug).
+					// On a busy booking site this spawned hundreds of duplicate
+					// "Global search form" / "Search Result" pages.
+					//
+					// The pages only ever need to be created once (on activation / first
+					// load after an update). A one-time option flag makes this idempotent
+					// and stops the runaway creation without resurrecting pages an admin
+					// has intentionally deleted. Deactivating + reactivating the plugin
+					// clears the flag (see wbtm_on_plugin_activation) so a legitimate
+					// re-provision is still possible.
+					if (get_option('wbtm_default_pages_created_v1')) {
+						return;
+					}
+
 					$created_a_page = false;
 
 					if (!WBTM_Global_Function::get_page_by_slug('bus-global-search')) {
@@ -182,6 +214,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						update_option('wbtm_queue_flush_rewrite_rules', 'yes');
 						update_option('wbtm_woo_pages_flush_done_v1', 'yes');
 					}
+
+					// Mark the one-time provisioning as done so this callback never
+					// re-enters the creation block on subsequent init requests. This is
+					// what actually stops the runaway page creation described above.
+					update_option('wbtm_default_pages_created_v1', 'yes');
 				}
 
 				// Performs a rewrite flush queued by on_activation_page_create(), but

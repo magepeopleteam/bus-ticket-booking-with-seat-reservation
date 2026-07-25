@@ -722,10 +722,11 @@
 			target.append(hidden_target_tr.clone());
 		});
 	}
-	// Passenger Information fields are visually reordered to Name, Email,
-	// Phone, Date of Birth, Gender, Address (see templates/layout/
-	// WBTM_Attendee_form.php's form_item() loop, which renders Address before
-	// Gender). This used to be done with CSS `order` + :has() selectors, but
+	// Passenger Information fields are visually reordered so the DEFAULT fields
+	// come FIRST — Passenger Name, Email, Phone, Date of Birth, Gender, Address
+	// (see templates/layout/WBTM_Attendee_form.php's form_item() loop) — followed
+	// by the admin-configured custom form fields, which keep their own relative
+	// order. This used to be done with CSS `order` + :has() selectors, but
 	// interacting with the Date of Birth datepicker (which mutates the DOM —
 	// adds a dynamic id/hasDatepicker class, appends/removes the calendar
 	// popup) was re-triggering :has() re-evaluation and visibly reshuffling
@@ -734,6 +735,13 @@
 	// against that — nothing about opening the datepicker touches DOM order
 	// afterwards. Safe to call repeatedly (e.g. once per seat) since moving
 	// an already-correctly-placed field is a no-op.
+	//
+	// NOTE: the defaults are moved to the FRONT (prepend), not the end. Using
+	// append() here pushed every default field *after* the custom fields, so the
+	// panel rendered as [Custom1, Custom2, …, Name, …] — i.e. Passenger Name
+	// ended up last. Iterating field_order in reverse and prepending puts the
+	// first selector (Passenger Name) first in the DOM, ahead of the untouched
+	// custom fields.
 	function wbtm_reorder_attendee_fields(form_target) {
 		var field_order = [
 			'input[name="wbtm_full_name[]"]',
@@ -745,12 +753,12 @@
 		];
 		form_target.find('.wbtm_attendee_item .mpPanelBody').each(function () {
 			var panel_body = $(this);
-			field_order.forEach(function (selector) {
-				var field = panel_body.find('.mp_form_item').has(selector);
+			for (var i = field_order.length - 1; i >= 0; i--) {
+				var field = panel_body.find('.mp_form_item').has(field_order[i]);
 				if (field.length) {
-					panel_body.append(field);
+					panel_body.prepend(field);
 				}
-			});
+			}
 		});
 	}
 	function wbtm_attendee_management(parent, total_qty) {

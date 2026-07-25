@@ -732,6 +732,7 @@
 					$extra_price = isset($_POST['ex_option_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['ex_option_price'])) : [];
 					$extra_qty = isset($_POST['ex_option_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['ex_option_qty'])) : [];
 					$extra_qty_type = isset($_POST['ex_option_qty_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['ex_option_qty_type'])) : [];
+					$extra_charge_type = isset($_POST['ex_option_charge_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['ex_option_charge_type'])) : [];
 					$extra_count = count($extra_names);
 					for ($i = 0; $i < $extra_count; $i++) {
 						if ($extra_names[$i] && $extra_price[$i] && $extra_qty[$i] > 0) {
@@ -739,6 +740,11 @@
 							$new_extra_service[$i]['option_price'] = $extra_price[$i];
 							$new_extra_service[$i]['option_qty'] = $extra_qty[$i];
 							$new_extra_service[$i]['option_qty_type'] = $extra_qty_type[$i] ?? 'inputbox';
+							// Charging mode: only 'per_passenger' or 'per_booking' are
+							// valid; anything else (incl. missing) falls back to the
+							// legacy 'per_booking' behaviour.
+							$charge_type = $extra_charge_type[$i] ?? 'per_booking';
+							$new_extra_service[$i]['option_charge_type'] = ($charge_type === 'per_passenger') ? 'per_passenger' : 'per_booking';
 						}
 					}
 					update_post_meta($post_id, 'wbtm_extra_services', $new_extra_service);

@@ -385,6 +385,11 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 							$extra_service[ $i ]['name'] = $name;
 							$extra_service[ $i ]['price'] = WBTM_Functions::get_ex_service_price( $post_id, $name );
 							$extra_service[ $i ]['qty'] = $service_qty[ $i ];
+							// Charging mode travels with the selection so every
+							// downstream consumer (cart, checkout recalc, standalone
+							// payment, order/e-voucher display, exports, reports) can
+							// price it consistently without re-querying the bus meta.
+							$extra_service[ $i ]['charge_type'] = WBTM_Functions::get_ex_service_charge_type( $post_id, $name );
 							$extra_service[ $i ]['date'] = $start_date ?? '';
 						}
 					}
