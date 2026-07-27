@@ -59,6 +59,29 @@ if ( ! class_exists( 'WBTM_Standalone_Mail' ) ) {
 			}
 		}
 
+		/**
+		 * Admin-triggered resend of a Standalone booking's confirmation email
+		 * (e.g. the "Resend E-Voucher" action on the Booking List). Unlike
+		 * maybe_send_status_emails() this bypasses the per-status "already sent"
+		 * guard and the configured pdf_email_status list, so it always sends for
+		 * the booking's current status — it still honours pdf_send_status (the
+		 * master "Send Ticket?" on/off switch).
+		 *
+		 * @param int $booking_id Group head (or any member) wbtm_bus_booking id.
+		 * @return bool True if the email was sent.
+		 */
+		public static function force_resend( $booking_id ) {
+			if ( self::setting( 'pdf_send_status', 'yes' ) !== 'yes' ) {
+				return false;
+			}
+			$summary = class_exists( 'WBTM_Standalone_Payment' ) ? WBTM_Standalone_Payment::get_booking_summary( $booking_id ) : null;
+			if ( ! $summary || ! is_email( $summary['customer_email'] ) ) {
+				return false;
+			}
+			$status = get_post_meta( $booking_id, 'wbtm_order_status', true ) ?: 'processing';
+			return (bool) self::send_mail( $summary, $status );
+		}
+
 		private static function status_label( $status ) {
 			$labels = array(
 				'pending'    => __( 'Pending Payment', 'bus-ticket-booking-with-seat-reservation' ),

@@ -284,6 +284,12 @@
 				if (!$order_id) {
 					return new WP_Error('no_order', esc_html__('No order is linked to this booking.', 'bus-ticket-booking-with-seat-reservation'));
 				}
+				// Standalone / Custom Payment booking: wbtm_order_id points at the group-head
+				// wbtm_bus_booking (not a real WooCommerce order), so resend via the standalone
+				// mailer instead of the WooCommerce e-voucher path.
+				if (get_post_type($order_id) === 'wbtm_bus_booking') {
+					return $this->resend_standalone_evoucher((int) $order_id, $email);
+				}
 				// The e-voucher mailer only handles real WooCommerce orders (PRO).
 				if (!function_exists('wc_get_order') || !has_action('wbtm_send_mail')) {
 					return new WP_Error('unsupported', esc_html__('E-Voucher resend requires WooCommerce and the PRO add-on.', 'bus-ticket-booking-with-seat-reservation'));
@@ -310,6 +316,45 @@
 					return $target;
 				}
 				return new WP_Error('not_sent', esc_html__('The e-voucher could not be sent. Check that "Send Ticket?" is enabled and the order status is eligible under Email settings.', 'bus-ticket-booking-with-seat-reservation'));
+			}
+
+			/**
+			 * Resend the confirmation email for a Standalone / Custom Payment booking
+			 * (Offline etc.), which has no WooCommerce order. Uses the standalone mailer's
+			 * admin force-resend, which bypasses the "already sent" + status gates but still
+			 * honours the "Send Ticket?" master switch. When a new email is supplied it is
+			 * written across the whole booking group first.
+			 *
+			 * @param int    $head_id Group-head wbtm_bus_booking id (its wbtm_order_id === itself).
+			 * @param string $email   Optional new recipient; blank keeps the stored email.
+			 * @return string|WP_Error Recipient email on success.
+			 */
+			private function resend_standalone_evoucher($head_id, $email = '') {
+				if (!class_exists('WBTM_Standalone_Mail') || !method_exists('WBTM_Standalone_Mail', 'force_resend')) {
+					return new WP_Error('unsupported', esc_html__('Standalone confirmation email requires the booking engine (update the plugin/add-on).', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				// Correct the recipient across the whole booking group if a new one was given.
+				if ($email && is_email($email)) {
+					$group = get_posts(array(
+						'post_type'      => 'wbtm_bus_booking',
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'no_found_rows'  => true,
+						'meta_key'       => 'wbtm_order_id',
+						'meta_value'     => $head_id,
+					));
+					if (empty($group)) {
+						$group = array($head_id);
+					}
+					foreach ($group as $gid) {
+						update_post_meta($gid, 'wbtm_user_email', $email);
+					}
+				}
+				$sent = WBTM_Standalone_Mail::force_resend($head_id);
+				if ($sent) {
+					return (string) get_post_meta($head_id, 'wbtm_user_email', true);
+				}
+				return new WP_Error('not_sent', esc_html__('The confirmation email could not be sent. Check that "Send Ticket?" is enabled under Email settings and the booking has a valid customer email.', 'bus-ticket-booking-with-seat-reservation'));
 			}
 
 			/**
@@ -1818,7 +1863,18 @@
 									</span>
 								<?php endif; ?>
 
-								<?php if ($is_pro && $is_admin && $wc_active && $order_id && $this->booking_source($id) === 'woocommerce') : ?>
+								<?php
+									// Resend the confirmation email. WooCommerce bookings use the PRO
+									// e-voucher mailer; Standalone / Custom Payment (Offline) bookings
+									// use the standalone mailer's force-resend. Show for whichever path
+									// this booking supports.
+									$wbtm_src = $this->booking_source($id);
+									$wbtm_can_resend = $is_admin && (
+										($is_pro && $wc_active && $order_id && 'woocommerce' === $wbtm_src) ||
+										('standalone' === $wbtm_src && class_exists('WBTM_Standalone_Mail') && method_exists('WBTM_Standalone_Mail', 'force_resend'))
+									);
+									if ($wbtm_can_resend) :
+								?>
 									<div class="wbtm-bkl-dropdown-divider" role="separator"></div>
 									<button type="button" class="wbtm-bkl-dropdown-item wbtm-bkl-resend-btn" data-id="<?php echo esc_attr($id); ?>" data-ref="<?php echo esc_attr($reference); ?>" data-email="<?php echo esc_attr(get_post_meta($id, 'wbtm_user_email', true)); ?>">
 										<span class="dashicons dashicons-email-alt"></span><?php esc_html_e('Resend E-Voucher', 'bus-ticket-booking-with-seat-reservation'); ?>
