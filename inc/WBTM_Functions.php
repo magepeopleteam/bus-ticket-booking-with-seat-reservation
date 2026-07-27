@@ -47,14 +47,18 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 */
 			public static function mode_availability(): string {
 				$woo = self::is_wc_active();
-				$pro = self::is_pro_active();
-				if ( $woo && $pro ) {
+				// Offline is a FREE standalone gateway, so it makes the Custom Payment flow a
+				// genuine choice even without Pro — same treatment as the sibling rental plugin.
+				// This is what lets a free site that also has WooCommerce active switch the
+				// active flow to Offline / Custom Payment. (PayPal & Stripe remain Pro.)
+				$custom = self::is_pro_active() || self::offline_payment_enabled();
+				if ( $woo && $custom ) {
 					return 'both';
 				}
 				if ( $woo ) {
 					return 'woocommerce_only';
 				}
-				if ( $pro ) {
+				if ( $custom ) {
 					return 'custom_only';
 				}
 				return 'none';
@@ -159,11 +163,25 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * added, so this is false — there is no standalone checkout to take payment.
 			 */
 			public static function has_enabled_custom_payment(): bool {
+				// Offline is a FREE standalone gateway — it alone makes custom payment usable.
+				if ( self::offline_payment_enabled() ) {
+					return true;
+				}
 				if ( ! self::is_pro_active() ) {
 					return false;
 				}
 				$methods = apply_filters( 'wbtm_pro_enabled_payment_methods', array() );
 				return ! empty( $methods );
+			}
+
+			/**
+			 * Whether the FREE Offline custom-payment method is enabled. Offline is the
+			 * one standalone gateway that works without Pro (PayPal & Stripe remain Pro).
+			 * Reads the same wbtm_payment_settings option the Payments screen writes.
+			 */
+			public static function offline_payment_enabled(): bool {
+				$opts = get_option( self::MODE_OPTION, array() );
+				return is_array( $opts ) && isset( $opts['wbtm_offline_enable'] ) && 'on' === $opts['wbtm_offline_enable'];
 			}
 
 			/**

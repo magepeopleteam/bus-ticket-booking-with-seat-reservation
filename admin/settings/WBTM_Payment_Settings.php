@@ -17,10 +17,11 @@
 	 * saved in real time over AJAX from their own modals, so they are protected
 	 * from being wiped when the Settings API saves the rest of the form.
 	 *
-	 * All three Custom Payment gateways (PayPal, Stripe, Offline) are Pro-only — Configure
-	 * is gated behind the Pro plugin (WBTM_Functions::is_pro_active()); the free version
-	 * shows a PRO badge instead for each of them. (Unlike the sibling rental plugin, where
-	 * Offline is fully functional in free — this plugin deliberately keeps all three gated.)
+	 * Offline Payment is FREE: its card, Configure modal and save path are always
+	 * available, and the free standalone engine (inc/standalone/*) processes an
+	 * Offline booking end-to-end without WooCommerce. PayPal & Stripe remain Pro-only
+	 * — their Configure buttons are gated behind WBTM_Functions::is_pro_active() and
+	 * the free version shows a PRO badge instead (matching the sibling rental plugin).
 	 */
 
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -126,6 +127,15 @@
 					}
 					return $names;
 				}
+				// Free Offline gateway (Pro reports it via the filter below; add it here for
+				// the free build so the active-gateway display isn't blank when it's on).
+				$is_pro = class_exists( 'WBTM_Functions' ) && WBTM_Functions::is_pro_active();
+				if ( ! $is_pro && $checker->offline_payment_enabled() ) {
+					$opts    = get_option( self::OPTION, array() );
+					$names[] = ( is_array( $opts ) && ! empty( $opts['wbtm_offline_label'] ) )
+						? $opts['wbtm_offline_label']
+						: __( 'Offline Payment', 'bus-ticket-booking-with-seat-reservation' );
+				}
 				foreach ( $checker->get_enabled_pro_payment_methods() as $label ) {
 					$names[] = is_string( $label ) ? $label : (string) $label;
 				}
@@ -176,7 +186,6 @@
 				?>
 				<div class="wbtm-edit-payment-panel">
 					<?php $this->render_mode_selector(); ?>
-					<?php $this->render_sub_tabs(); ?>
 					<div class="woocommerce-field wc-payment-methods-field">
 						<?php $this->render_wc_payment_manager(); ?>
 					</div>
@@ -216,11 +225,6 @@
 						'name'     => 'wbtm_booking_mode_selector',
 						'label'    => '',
 						'callback' => array( $this, 'render_mode_selector' ),
-					),
-					array(
-						'name'     => 'wbtm_payment_tabs_html',
-						'label'    => '',
-						'callback' => array( $this, 'render_sub_tabs' ),
 					),
 					array(
 						'name'     => 'wbtm_wc_payment_gateways_manager',
@@ -297,83 +301,63 @@
 					return;
 				}
 				$availability = WBTM_Functions::mode_availability();
+				$mode         = WBTM_Functions::booking_mode();
 
-				if ( 'none' === $availability ) {
-					?>
-					<div class="wbtm-bm-auto-note wbtm-bm-auto-note--warn">
-						<span class="dashicons dashicons-warning"></span>
-						<p><?php esc_html_e( 'No booking flow is available yet: WooCommerce is not active and the Pro plugin is not active. Activate WooCommerce or the Pro plugin to start taking bookings.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-					</div>
-					<?php
-					$this->booking_mode_styles();
-					return;
-				}
+				// A short, plain-language "how this works" strip shown in every state, so the
+				// page reads as a guided setup rather than a wall of controls.
+				$this->render_mode_intro( $mode, ( 'both' === $availability ) );
 
-				if ( 'woocommerce_only' === $availability ) {
-					?>
-					<div class="wbtm-bm-auto-note">
-						<span class="dashicons dashicons-yes-alt"></span>
-						<p><?php esc_html_e( 'Bookings are automatically processed through WooCommerce — it\'s the only booking flow available right now. Activate the Pro plugin to unlock the standalone Custom Payment flow (and a mode switch here).', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-					</div>
-					<?php
-					$this->booking_mode_styles();
-					return;
-				}
-
-				if ( 'custom_only' === $availability ) {
-					?>
-					<div class="wbtm-bm-auto-note">
-						<span class="dashicons dashicons-yes-alt"></span>
-						<p><?php esc_html_e( 'Bookings are automatically processed through the Custom Payment flow — WooCommerce is not active. Activate WooCommerce to unlock the WooCommerce checkout flow (and a mode switch here).', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-					</div>
-					<?php
-					$this->booking_mode_styles();
-					return;
-				}
-
-				// $availability === 'both': a real choice.
-				$mode        = WBTM_Functions::booking_mode();
-				$is_wc       = ( 'woocommerce' === $mode );
-				$is_custom   = ( 'standalone' === $mode );
-				$checker     = class_exists( 'WBTM_Payment_Status_Checker' ) ? new WBTM_Payment_Status_Checker() : null;
-				$has_gateway = $checker ? $checker->has_gateway_for_active_mode() : true;
+				// The two flow cards are ALWAYS shown as the modern switcher. A flow that
+				// isn't available right now — WooCommerce inactive, or Custom Payment with
+				// no gateway on a free/no-Pro site — renders DISABLED with a CTA to unlock
+				// it, instead of collapsing the whole switcher to a plain note.
+				$woo_available    = $this->has_woo();
+				$custom_available = ( class_exists( 'WBTM_Functions' ) && ( WBTM_Functions::is_pro_active() || WBTM_Functions::offline_payment_enabled() ) );
+				$is_wc            = ( 'woocommerce' === $mode );
+				$is_custom        = ( 'standalone' === $mode );
+				$checker          = class_exists( 'WBTM_Payment_Status_Checker' ) ? new WBTM_Payment_Status_Checker() : null;
+				$has_gateway      = $checker ? $checker->has_gateway_for_active_mode() : true;
 				?>
-				<div class="wbtm-bm-wrap" data-nonce="<?php echo esc_attr( wp_create_nonce( 'wbtm_save_booking_mode' ) ); ?>">
+				<div class="wbtm-bm-wrap<?php echo ( 'both' === $availability ) ? '' : ' wbtm-bm-single'; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'wbtm_save_booking_mode' ) ); ?>">
 					<div class="wbtm-bm-head">
-						<h3><?php esc_html_e( 'Booking Mode', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
-						<p><?php esc_html_e( 'Choose exactly one flow to process bookings. This single switch decides everything below, so WooCommerce and Custom Payment never both try to handle the same booking. Your choice is saved instantly.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+						<h3><?php esc_html_e( 'Step 1 — Choose your booking flow', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
+						<p><?php esc_html_e( 'Pick exactly one flow to process bookings. This single switch decides everything below, so WooCommerce and Custom Payment never both try to handle the same booking. Your choice is saved instantly, and only the matching settings are shown.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 					</div>
 
 					<div class="wbtm-bm-cards">
-						<label class="wbtm-bm-card<?php echo $is_wc ? ' is-selected' : ''; ?>" data-mode="woocommerce">
-							<input type="radio" name="wbtm_booking_mode_radio" value="woocommerce" <?php checked( $is_wc ); ?>>
+						<label class="wbtm-bm-card<?php echo $is_wc ? ' is-selected' : ''; echo $woo_available ? '' : ' is-disabled'; ?>" data-mode="woocommerce"<?php echo $woo_available ? '' : ' aria-disabled="true"'; ?>>
+							<input type="radio" name="wbtm_booking_mode_radio" value="woocommerce" <?php checked( $is_wc ); ?> <?php disabled( ! $woo_available ); ?>>
 							<span class="wbtm-bm-card-icon dashicons dashicons-cart"></span>
 							<span class="wbtm-bm-card-body">
 								<span class="wbtm-bm-card-title-row">
 									<strong><?php esc_html_e( 'WooCommerce Checkout', 'bus-ticket-booking-with-seat-reservation' ); ?></strong>
-									<span class="wbtm-bm-card-badge"><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+									<span class="wbtm-bm-card-badge"><span class="wbtm-bm-dot wbtm-blink"></span><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								</span>
 								<span class="wbtm-bm-card-desc"><?php esc_html_e( 'Bookings go through the WooCommerce cart, checkout, and orders.', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<?php if ( ! $woo_available ) : ?>
+									<span class="wbtm-bm-card-cta"><?php echo $this->wc_install_button(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts. ?></span>
+								<?php endif; ?>
 							</span>
 						</label>
-						<label class="wbtm-bm-card<?php echo $is_custom ? ' is-selected' : ''; ?>" data-mode="standalone">
-							<input type="radio" name="wbtm_booking_mode_radio" value="standalone" <?php checked( $is_custom ); ?>>
+						<label class="wbtm-bm-card<?php echo $is_custom ? ' is-selected' : ''; echo $custom_available ? '' : ' is-disabled'; ?>" data-mode="standalone"<?php echo $custom_available ? '' : ' aria-disabled="true"'; ?>>
+							<input type="radio" name="wbtm_booking_mode_radio" value="standalone" <?php checked( $is_custom ); ?> <?php disabled( ! $custom_available ); ?>>
 							<span class="wbtm-bm-card-icon dashicons dashicons-money-alt"></span>
 							<span class="wbtm-bm-card-body">
 								<span class="wbtm-bm-card-title-row">
 									<strong><?php esc_html_e( 'Custom Payment (Standalone)', 'bus-ticket-booking-with-seat-reservation' ); ?></strong>
-									<span class="wbtm-bm-card-badge"><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+									<span class="wbtm-bm-card-badge"><span class="wbtm-bm-dot wbtm-blink"></span><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								</span>
 								<span class="wbtm-bm-card-desc"><?php esc_html_e( 'Bookings are taken directly via PayPal, Stripe, or Offline payment — no WooCommerce.', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<?php if ( ! $custom_available ) : ?>
+									<span class="wbtm-bm-card-cta wbtm-bm-card-cta--hint"><?php esc_html_e( 'Enable the free Offline gateway below (or upgrade to PRO for PayPal & Stripe).', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<?php endif; ?>
 							</span>
 						</label>
 					</div>
 
-					<p class="wbtm-bm-status" role="status" aria-live="polite"></p>
-
 					<div class="wbtm-bm-gateway-warning-slot">
 						<?php if ( ! $has_gateway ) : ?>
-							<div class="wbtm-bm-gateway-warning">
+							<div class="wbtm-bm-gateway-warning wbtm-blink-soft">
 								<span class="dashicons dashicons-warning"></span>
 								<p>
 									<?php if ( $is_wc ) : ?>
@@ -387,72 +371,117 @@
 					</div>
 				</div>
 
-				<?php $this->booking_mode_styles(); ?>
+				<?php
+				$this->render_mode_context_banner( $mode );
+				$this->booking_mode_styles();
+				?>
 				<script>
 				jQuery(function($){
 					var $wrap = $('.wbtm-bm-wrap');
 					if (!$wrap.length) { return; }
 					var nonce = $wrap.data('nonce');
 					var i18n = {
-						saving: <?php echo wp_json_encode( __( 'Saving…', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
-						saved:  <?php echo wp_json_encode( __( 'Booking mode saved.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
-						error:  <?php echo wp_json_encode( __( 'Could not save. Please try again.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
-						wcWarn: <?php echo wp_json_encode( __( 'WooCommerce mode is selected, but no WooCommerce payment gateway is enabled yet. Customers won\'t be able to complete a booking until you enable one below.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
+						savedTpl:   <?php echo wp_json_encode( __( 'Bookings now go through %s.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
+						error:      <?php echo wp_json_encode( __( 'Something went wrong — your previous booking flow was restored. Please try again.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
+						wcWarn:     <?php echo wp_json_encode( __( 'WooCommerce mode is selected, but no WooCommerce payment gateway is enabled yet. Customers won\'t be able to complete a booking until you enable one below.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
 						customWarn: <?php echo wp_json_encode( __( 'Custom Payment mode is selected, but no gateway (PayPal, Stripe, or Offline) is enabled yet. Customers won\'t be able to complete a booking until you enable one below.', 'bus-ticket-booking-with-seat-reservation' ) ); ?>
 					};
-
-					// window.wbtmToast is the plugin's shared global toast helper (see
-					// assets/admin/js/wbtm-toast.js, loaded on every plugin admin screen
-					// via WBTM_Global_File_Load::admin_enqueue()) — falls back to the old
-					// inline status text if it's somehow unavailable, so this never breaks.
+					// window.wbtmToast is the plugin's shared global toast helper.
 					function notify(message, type) {
-						if (window.wbtmToast) {
-							window.wbtmToast[type](message);
-						} else {
-							$wrap.find('.wbtm-bm-status').show().text(message)
-								.css('color', type === 'success' ? '#0a7c2f' : '#d63638');
-						}
+						if (window.wbtmToast && typeof window.wbtmToast[type] === 'function') { window.wbtmToast[type](message); }
 					}
 
-					$wrap.on('click', '.wbtm-bm-card', function(){
+					var saving = false;
+					$wrap.on('click', '.wbtm-bm-card:not(.is-disabled)', function(){
 						var $card = $(this), mode = $card.data('mode');
-						if ($card.hasClass('is-selected')) { return; }
+						if (saving || $card.hasClass('is-selected')) { return; }
 
+						var $prev     = $wrap.find('.wbtm-bm-card.is-selected');
+						var prevMode  = $prev.data('mode') || (mode === 'woocommerce' ? 'standalone' : 'woocommerce');
+						var modeLabel = $.trim($card.find('.wbtm-bm-card-title-row strong').text());
+
+						saving = true;
+						$wrap.addClass('is-saving');
+
+						// Optimistic switch: reflect the choice immediately (cards + settings + banner).
 						$wrap.find('.wbtm-bm-card').removeClass('is-selected');
 						$card.addClass('is-selected').find('input[type=radio]').prop('checked', true);
-						var $status = $wrap.find('.wbtm-bm-status').text(i18n.saving);
+						if (typeof window.wbtmApplyPaymentMode === 'function') { window.wbtmApplyPaymentMode(mode); }
+
+						function rollback(){
+							$wrap.find('.wbtm-bm-card').removeClass('is-selected');
+							$prev.addClass('is-selected').find('input[type=radio]').prop('checked', true);
+							if (typeof window.wbtmApplyPaymentMode === 'function') { window.wbtmApplyPaymentMode(prevMode); }
+						}
 
 						$.post(ajaxurl, { action:'wbtm_save_booking_mode', nonce:nonce, mode:mode })
 							.done(function(res){
 								if (res && res.success) {
-									$status.text('');
-									notify(i18n.saved, 'success');
-
-									// Refresh the "Active" badge on the sub-tab bar.
-									$('.wbtm-pay-subtab-badge').hide();
-									$('.wbtm-pay-subtab-badge[data-badge-for="'+mode+'"]').show();
-
-									// Jump to the matching sub-tab so it can be configured right away.
-									var targetHref = (mode === 'standalone') ? '#no-woocommerce-field' : '#woocommerce-field';
-									$('.payment-sub-tabs .nav-tab[href="'+targetHref+'"]').trigger('click');
-
-									// Refresh the "no gateway enabled" warning for the newly active mode.
+									notify(i18n.savedTpl.replace('%s', modeLabel), 'success');
 									var $slot = $wrap.find('.wbtm-bm-gateway-warning-slot').empty();
 									if (res.data && res.data.has_gateway === false) {
 										var msg = (mode === 'woocommerce') ? i18n.wcWarn : i18n.customWarn;
-										$slot.append('<div class="wbtm-bm-gateway-warning"><span class="dashicons dashicons-warning"></span><p>'+msg+'</p></div>');
+										$slot.append('<div class="wbtm-bm-gateway-warning wbtm-blink-soft"><span class="dashicons dashicons-warning"></span><p>'+msg+'</p></div>');
 										notify(msg, 'warning');
 									}
 								} else {
-									$status.text('');
+									rollback();
 									notify((res && res.data) ? res.data : i18n.error, 'error');
 								}
 							})
-							.fail(function(){ $status.text(''); notify(i18n.error, 'error'); });
+							.fail(function(){ rollback(); notify(i18n.error, 'error'); })
+							.always(function(){ saving = false; $wrap.removeClass('is-saving'); });
 					});
 				});
 				</script>
 				<?php
+			}
+
+			/** Short, plain-language "how this works" strip printed above the mode chooser. */
+			private function render_mode_intro( $mode, $has_choice ) {
+				?>
+				<div class="wbtm-pay-intro">
+					<div class="wbtm-pay-intro-title">
+						<span class="dashicons dashicons-info-outline"></span>
+						<?php esc_html_e( 'How payments work here', 'bus-ticket-booking-with-seat-reservation' ); ?>
+					</div>
+					<ol class="wbtm-pay-steps">
+						<li><span class="wbtm-pay-step-n">1</span><?php echo $has_choice
+							? esc_html__( 'Choose one booking flow below — WooCommerce Checkout or Custom Payment.', 'bus-ticket-booking-with-seat-reservation' )
+							: esc_html__( 'Your booking flow is set automatically (only one is available right now).', 'bus-ticket-booking-with-seat-reservation' ); ?></li>
+						<li><span class="wbtm-pay-step-n">2</span><?php esc_html_e( 'Enable and configure the payment methods for that flow — only its settings are shown.', 'bus-ticket-booking-with-seat-reservation' ); ?></li>
+						<li><span class="wbtm-pay-step-n">3</span><?php esc_html_e( 'That\'s it — customers can now pay. You can switch flows anytime; the change is saved instantly.', 'bus-ticket-booking-with-seat-reservation' ); ?></li>
+					</ol>
+				</div>
+				<?php
+			}
+
+			/**
+			 * The live "You're configuring: <flow>" banner that sits directly above the
+			 * settings. It replaces the old pill bar as the single, unmistakable label for
+			 * which flow the settings below belong to; wbtmApplyPaymentMode() keeps it in sync.
+			 */
+			private function render_mode_context_banner( $mode ) {
+				$is_wc = ( 'woocommerce' === $mode );
+				?>
+				<div class="wbtm-bm-context" data-mode="<?php echo esc_attr( $mode ); ?>">
+					<span class="wbtm-bm-context-dot wbtm-blink"></span>
+					<span class="wbtm-bm-context-label"><?php esc_html_e( 'You\'re configuring:', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+					<span class="wbtm-bm-context-icon dashicons <?php echo $is_wc ? 'dashicons-cart' : 'dashicons-money-alt'; ?>"></span>
+					<span class="wbtm-bm-context-mode"><?php echo esc_html( $is_wc
+						? __( 'WooCommerce Checkout', 'bus-ticket-booking-with-seat-reservation' )
+						: __( 'Custom Payment (Standalone)', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span>
+				</div>
+				<?php
+			}
+
+			/** Markup for the "Install / Activate WooCommerce" button (opens the footer modal). */
+			private function wc_install_button() {
+				$is_installed = file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' );
+				$btn_text     = $is_installed
+					? __( 'Activate WooCommerce Now', 'bus-ticket-booking-with-seat-reservation' )
+					: __( 'Install &amp; Activate Now', 'bus-ticket-booking-with-seat-reservation' );
+				return '<button type="button" class="button button-primary wbtm-install-wc-trigger" style="white-space:nowrap;">' . wp_kses_post( $btn_text ) . '</button>';
 			}
 
 			/** Styles for the Booking Mode selector + its auto-detected notices. Printed once. */
@@ -470,101 +499,69 @@
 				.wbtm-bm-head p{margin:0 0 12px;font-size:12.5px;color:#6b7280;max-width:680px;line-height:1.55;}
 				.wbtm-bm-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:100%;}
 				.wbtm-bm-card{position:relative;display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1.5px solid #e5e7eb;border-radius:12px;background:#fafafb;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s;min-width:0;}
-				.wbtm-bm-card:hover{border-color:#d4b3c3;box-shadow:0 4px 14px rgba(16,24,40,0.06);}
-				.wbtm-bm-card.is-selected{border-color:#F12971;background:#fff;box-shadow:0 6px 18px rgba(241,41,113,0.12);}
+				.wbtm-bm-card:hover{border-color:#eab8bd;box-shadow:0 4px 14px rgba(16,24,40,0.06);}
+				.wbtm-bm-card.is-selected{border-color:#e63946;background:#fff;box-shadow:0 6px 18px rgba(230,57,70,0.12);}
 				.wbtm-bm-card input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
-				.wbtm-bm-card-icon{flex:0 0 auto;width:36px;height:36px;border-radius:9px;background:rgba(241,41,113,0.1);color:#F12971;display:flex !important;align-items:center !important;justify-content:center !important;font-size:18px;}
+				.wbtm-bm-card-icon{flex:0 0 auto;width:36px;height:36px;border-radius:9px;background:rgba(230,57,70,0.1);color:#e63946;display:flex !important;align-items:center !important;justify-content:center !important;font-size:18px;}
 				.wbtm-bm-card-body{display:block !important;flex:1;min-width:0;white-space:normal !important;}
 				.wbtm-bm-card-title-row{display:flex !important;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px;width:100%;}
 				.wbtm-bm-card-body strong{display:inline-block !important;font-size:14px;line-height:1.3;color:#1d2327;}
 				.wbtm-bm-card-desc{display:block !important;font-size:12px;color:#6b7280;line-height:1.5;overflow-wrap:break-word;}
-				.wbtm-bm-card-badge{flex:0 0 auto;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;background:#dcfce7;color:#166534;padding:1px 8px;border-radius:20px;display:none !important;}
-				.wbtm-bm-card.is-selected .wbtm-bm-card-badge{display:inline-block !important;}
-				.wbtm-bm-status{min-height:16px;margin:8px 2px 0;font-size:12px;font-weight:600;}
+				.wbtm-bm-card-badge{flex:0 0 auto;display:none !important;align-items:center;gap:5px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;background:#dcfce7;color:#166534;padding:2px 9px;border-radius:20px;}
+				.wbtm-bm-card.is-selected .wbtm-bm-card-badge{display:inline-flex !important;}
+				.wbtm-bm-dot{width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block;flex:0 0 auto;}
+				.wbtm-bm-wrap.is-saving .wbtm-bm-card:not(.is-disabled){cursor:progress;}
+				/* Unavailable flow: shown but not selectable, with a CTA to unlock it. */
+				.wbtm-bm-card.is-disabled{cursor:default;background:#f6f7f9;border-style:dashed;}
+				.wbtm-bm-card.is-disabled:hover{border-color:#e5e7eb;box-shadow:none;}
+				.wbtm-bm-card.is-disabled .wbtm-bm-card-icon{background:#eef0f3;color:#9ca3af;}
+				.wbtm-bm-card.is-disabled .wbtm-bm-card-body strong{color:#6b7280;}
+				.wbtm-bm-card-cta{display:block;margin-top:10px;}
+				.wbtm-bm-card-cta .button{white-space:nowrap;}
+				.wbtm-bm-card-cta--hint{font-size:11.5px;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:6px 9px;line-height:1.45;}
 				.wbtm-bm-gateway-warning{display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;}
 				.wbtm-bm-gateway-warning p{margin:0;}
-				.wbtm-bm-auto-note{display:flex;align-items:flex-start;gap:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:10px 14px;margin:4px 0 14px;font-size:12.5px;}
+				.wbtm-bm-auto-note{display:flex;align-items:flex-start;gap:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:12px 16px;margin:4px 0 14px;font-size:12.5px;}
 				.wbtm-bm-auto-note--warn{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
-				.wbtm-bm-auto-note p{margin:0;}
-				.wbtm-pay-subtab-badge{margin-left:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;background:rgba(255,255,255,0.9);color:#166534;padding:1px 7px;border-radius:20px;vertical-align:middle;}
+				.wbtm-bm-auto-note .dashicons{flex:0 0 auto;}
+				.wbtm-bm-auto-note p{margin:0 0 2px;line-height:1.55;}
+				.wbtm-bm-auto-note-cta{margin-top:10px !important;}
+
+				/* "How payments work here" intro strip */
+				.wbtm-pay-intro{background:linear-gradient(135deg,#fff5f6 0%,#fdfdff 100%);border:1px solid #f7d4d9;border-radius:12px;padding:14px 18px;margin:2px 0 16px;}
+				.wbtm-pay-intro-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#b3212f;margin-bottom:9px;}
+				.wbtm-pay-intro-title .dashicons{color:#e63946;}
+				.wbtm-pay-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+				.wbtm-pay-steps li{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:#4b5563;line-height:1.5;}
+				.wbtm-pay-step-n{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#e63946;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+				@media (max-width:782px){.wbtm-pay-steps{grid-template-columns:1fr;}}
+
+				/* Live "You're configuring: <flow>" context banner (replaces the old pill bar) */
+				.wbtm-bm-context{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px;padding:11px 16px;border-radius:10px;background:#fdeef0;border:1px solid #f7d4d9;border-left:4px solid #e63946;}
+				.wbtm-bm-context-dot{width:9px;height:9px;border-radius:50%;background:#e63946;flex:0 0 auto;box-shadow:0 0 0 4px rgba(230,57,70,0.18);}
+				.wbtm-bm-context-label{font-size:12.5px;font-weight:600;color:#6b7280;}
+				.wbtm-bm-context-icon{color:#e63946;}
+				.wbtm-bm-context-mode{font-size:14px;font-weight:700;color:#b3212f;}
+
+				/* Attention "blink" — a gentle pulse, disabled for reduced-motion users */
+				@keyframes wbtmBlink{0%,100%{opacity:1;}50%{opacity:.25;}}
+				@keyframes wbtmBlinkSoft{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,0);}50%{box-shadow:0 0 0 3px rgba(234,88,12,0.18);}}
+				.wbtm-blink{animation:wbtmBlink 1.1s ease-in-out infinite;}
+				.wbtm-blink-soft{animation:wbtmBlinkSoft 1.4s ease-in-out infinite;}
+				@media (prefers-reduced-motion:reduce){.wbtm-blink,.wbtm-blink-soft{animation:none !important;}}
+
 				@media (max-width:680px){.wbtm-bm-cards{grid-template-columns:1fr;}}
 				</style>
 				<?php
 			}
 
-			/** Sub-tab bar (WooCommerce / Custom Payment) + WC-inactive warning. */
-			public function render_sub_tabs() {
-				$wc_active    = $this->has_woo();
-				$is_installed = file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' );
-				$btn_text     = $is_installed
-					? __( 'Activate WooCommerce Now', 'bus-ticket-booking-with-seat-reservation' )
-					: __( 'Install &amp; Activate Now', 'bus-ticket-booking-with-seat-reservation' );
-
-				// Default the active sub-tab to whichever flow currently owns bookings, so the
-				// Custom Payment gateways aren't the first thing shown when WooCommerce is the mode.
-				$mode           = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce';
-				$custom_is_mode = ( 'standalone' === $mode );
-				?>
-				<div class="payment-sub-tabs-wrapper">
-					<?php
-					/*
-					 * The pill bar duplicates the Booking Mode cards rendered just above
-					 * (render_mode_selector), so it's kept out of view with aria-hidden +
-					 * display:none. It must stay in the DOM: the accordion / panel-switch
-					 * JS in render_wc_payment_manager() reads its .nav-tab-active state and
-					 * the Booking Mode script triggers its tabs to switch panels.
-					 */
-					?>
-					<h2 class="nav-tab-wrapper payment-sub-tabs" aria-hidden="true" style="display:none;">
-						<a href="#woocommerce-field" class="nav-tab<?php echo $custom_is_mode ? '' : ' nav-tab-active'; ?>">
-							<?php esc_html_e( 'WooCommerce', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<span class="wbtm-pay-subtab-badge" data-badge-for="woocommerce"<?php echo $custom_is_mode ? ' style="display:none;"' : ''; ?>><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-						</a>
-						<a href="#no-woocommerce-field" class="nav-tab<?php echo $custom_is_mode ? ' nav-tab-active' : ''; ?>">
-							<?php esc_html_e( 'Custom Payment', 'bus-ticket-booking-with-seat-reservation' ); ?>
-							<span class="wbtm-pay-subtab-badge" data-badge-for="standalone"<?php echo $custom_is_mode ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-						</a>
-					</h2>
-					<?php if ( ! $wc_active ) : ?>
-						<?php
-						/*
-						 * WooCommerce install/activate CTA. This is deliberately NOT inside a
-						 * `.woocommerce-field` wrapper: updateTabs() in payment_tabs_script()
-						 * hides every `.woocommerce-field` whenever the active sub-tab isn't
-						 * WooCommerce, and while WooCommerce is inactive the active flow is
-						 * always Custom Payment — which would hide the very button offering to
-						 * install it (leaving an empty gap). Keeping it in its own always-visible
-						 * block ensures the "Install & Activate" button is reachable exactly when
-						 * it's needed. The button opens the modal wired in render_wc_warning_modal().
-						 */
-						?>
-						<div class="wbtm-wc-install-cta">
-							<div class="wbtm-wc-cta">
-								<span class="wbtm-wc-cta__glow" aria-hidden="true"></span>
-								<span class="wbtm-wc-cta__icon" aria-hidden="true">
-									<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-								</span>
-								<div class="wbtm-wc-cta__body">
-									<span class="wbtm-wc-cta__chip"><span class="wbtm-wc-cta__dot"></span><?php esc_html_e( 'Setup required', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
-									<h3 class="wbtm-wc-cta__title"><?php esc_html_e( 'WooCommerce is not activated', 'bus-ticket-booking-with-seat-reservation' ); ?></h3>
-									<p class="wbtm-wc-cta__desc"><?php esc_html_e( 'To process bookings through the WooCommerce cart/checkout flow, you must install and activate WooCommerce. Otherwise, use the Custom Payment tab.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-								</div>
-								<div class="wbtm-wc-cta__action">
-									<button type="button" class="wbtm-wc-cta__btn wbtm-install-wc-trigger">
-										<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-										<span><?php echo wp_kses_post( $btn_text ); ?></span>
-									</button>
-									<span class="wbtm-wc-cta__hint">
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-										<?php echo esc_html( $is_installed ? __( 'One-click activation', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Secure one-click setup', 'bus-ticket-booking-with-seat-reservation' ) ); ?>
-									</span>
-								</div>
-							</div>
-						</div>
-					<?php endif; ?>
-				</div>
-				<?php
-			}
+			/*
+			 * render_sub_tabs() (the WooCommerce / Custom Payment pill bar) was removed:
+			 * the Booking Mode cards in render_mode_selector() are now the single flow
+			 * switch, and the WooCommerce install CTA moved into wc_install_button() (shown
+			 * inside the mode selector's auto-note). Content is toggled by booking mode via
+			 * window.wbtmApplyPaymentMode() in payment_tabs_script().
+			 */
 
 			/** PayPal / Stripe / Offline gateway cards + booking confirmation page. */
 			public function render_gateway_cards( $show_standalone_fields = true ) {
@@ -643,21 +640,16 @@
 									<path d="M2 10h20M6 14h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
 								</svg>
 							</span>
-							<?php if ( $is_pro ) : ?>
-								<span class="gateway-status <?php echo $off_enabled ? 'active' : ''; ?>"><?php echo esc_html( $off_enabled ? $enabled_txt : $disabled_txt ); ?></span>
-							<?php else : ?>
-								<?php echo wp_kses_post( $pro_badge ); ?>
-							<?php endif; ?>
+							<?php // Offline Payment is FREE — always show its live status + Configure (PayPal/Stripe stay Pro-gated above). ?>
+							<span class="gateway-status <?php echo $off_enabled ? 'active' : ''; ?>"><?php echo esc_html( $off_enabled ? $enabled_txt : $disabled_txt ); ?></span>
 						</div>
 						<span class="gateway-meta">
 							<span class="gateway-name"><?php esc_html_e( 'Offline Payment', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 							<span class="gateway-sub"><?php esc_html_e( 'Bank transfer, cash, pay on pickup', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 						</span>
-						<?php if ( $is_pro ) : ?>
-							<div class="gateway-actions">
-								<button type="button" class="gateway-configure-btn" id="wbtm-offline-configure-btn"><span class="dashicons dashicons-admin-generic"></span><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
-							</div>
-						<?php endif; ?>
+						<div class="gateway-actions">
+							<button type="button" class="gateway-configure-btn" id="wbtm-offline-configure-btn"><span class="dashicons dashicons-admin-generic"></span><?php esc_html_e( 'Configure', 'bus-ticket-booking-with-seat-reservation' ); ?></button>
+						</div>
 					</div>
 				</div>
 
@@ -871,7 +863,7 @@
 				.wbtm-gw-field{margin-bottom:18px;}
 				.wbtm-gw-field label.wbtm-gw-label{display:block;font-weight:600;font-size:13px;color:#374151;margin-bottom:7px;}
 				.wbtm-gw-field input[type="text"],.wbtm-gw-field input[type="password"]{width:100%;padding:11px 14px;border:1.5px solid #e0e2e8;border-radius:10px;font-size:14px;color:#111;background:#f7f8fa;box-sizing:border-box;transition:border-color 0.15s ease,box-shadow 0.15s ease,background 0.15s ease;}
-				.wbtm-gw-field input[type="text"]:focus,.wbtm-gw-field input[type="password"]:focus{border-color:#F12971;box-shadow:0 0 0 3px rgba(241,41,113,0.12);outline:none;background:#fff;}
+				.wbtm-gw-field input[type="text"]:focus,.wbtm-gw-field input[type="password"]:focus{border-color:#e63946;box-shadow:0 0 0 3px rgba(230,57,70,0.12);outline:none;background:#fff;}
 				.wbtm-gw-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 16px;background:#f7f8fa;border-radius:12px;margin-bottom:14px;border:1.5px solid #eceef2;transition:border-color 0.16s ease,box-shadow 0.16s ease;}
 				.wbtm-gw-toggle-row:hover{border-color:#dfe1e7;box-shadow:0 2px 8px rgba(16,24,40,0.05);}
 				.wbtm-gw-toggle-label{font-weight:600;font-size:14px;color:#111827;}
@@ -995,8 +987,9 @@
 						</div>
 					</div>
 				</div>
+				<?php endif; // end PayPal/Stripe (Pro-only) modals ?>
 
-				<!-- Offline Payment Config Modal -->
+				<!-- Offline Payment Config Modal (FREE gateway — always rendered; PayPal/Stripe modals above are Pro-only) -->
 				<div id="wbtm-offline-modal" class="wbtm-gw-modal">
 					<div class="wbtm-gw-modal-box">
 						<div class="wbtm-gw-modal-header" style="background:linear-gradient(135deg,#0f766e 0%,#115e59 100%);">
@@ -1031,7 +1024,6 @@
 							<span class="wbtm-gw-save-msg"></span>
 						</div>
 					</div>
-				<?php endif; ?>
 				</div>
 
 				<script>
@@ -1091,19 +1083,25 @@
 					return;
 				}
 				$wc_active = $this->has_woo() ? 'true' : 'false';
+				$mode      = class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce';
 				?>
 				<style>
-				:root{--wbtm-pay-accent:#F12971;}
+				:root{--wbtm-pay-accent:#e63946;}
 				.wbtm-edit-payment-panel-foot{margin:14px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;font-size:12px;text-align:right;}
 				.wbtm-edit-payment-panel-foot a{color:#2271b1;text-decoration:underline;font-weight:600;}
 				.wbtm-edit-payment-panel .wbtm-acc-header .wbtm-acc-bar{margin:14px 0 4px;}
-				/* Sub-tab bar — pill bar hidden (Booking Mode cards are the sole selector);
-				   the wrapper is now a plain container so it leaves no empty box behind. */
-				.payment-sub-tabs-wrapper{margin:0;padding:0;background:transparent;border:none;box-shadow:none;display:block;}
-				.payment-sub-tabs.nav-tab-wrapper{border-bottom:none !important;padding:0 !important;margin:0 !important;display:flex;gap:6px;}
-				.payment-sub-tabs .nav-tab{background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 20px;font-size:14px;font-weight:600;color:#50575e !important;text-decoration:none;margin:0;transition:all 0.18s ease;}
-				.payment-sub-tabs .nav-tab:hover{background:#fbeaf1;color:var(--wbtm-pay-accent) !important;}
-				.payment-sub-tabs .nav-tab-active,.payment-sub-tabs .nav-tab-active:hover{background:var(--wbtm-pay-accent);color:#fff !important;box-shadow:0 4px 12px rgba(241,41,113,0.28);}
+				/* Sub-tab pill bar (visible) — "WooCommerce" | "Custom Payment" view switch. */
+				.payment-sub-tabs-wrapper{margin:0 0 14px;padding:0;background:transparent;border:none;box-shadow:none;display:block;}
+				/* Modern segmented pill tabs — a light track with a gradient active pill.
+				   Overrides the WP core .nav-tab look entirely (classes kept only so the
+				   existing tab-switch JS selectors still match). */
+				.wbtm-pay-tabs{display:inline-flex;gap:4px;max-width:100%;box-sizing:border-box;padding:5px;margin:0;background:#eef1f5;border:1px solid #e6e9ef;border-radius:14px;}
+				.wbtm-pay-tabs .wbtm-pay-tab{display:inline-flex;align-items:center;gap:8px;background:transparent;border:0 !important;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;line-height:1.2;color:#5b616e !important;text-decoration:none;margin:0 !important;box-shadow:none !important;cursor:pointer;transition:color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease;}
+				.wbtm-pay-tabs .wbtm-pay-tab:hover{color:var(--wbtm-pay-accent) !important;background:rgba(230,57,70,.08);}
+				.wbtm-pay-tabs .wbtm-pay-tab:focus,.wbtm-pay-tabs .wbtm-pay-tab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(230,57,70,.28) !important;}
+				.wbtm-pay-tabs .wbtm-pay-tab__ico{font-size:18px;width:18px;height:18px;line-height:18px;}
+				.wbtm-pay-tabs .wbtm-pay-tab.nav-tab-active,.wbtm-pay-tabs .wbtm-pay-tab.nav-tab-active:hover{background:linear-gradient(135deg,#e63946,#b3212f);color:#fff !important;box-shadow:0 6px 16px rgba(230,57,70,.32);transform:translateY(-1px);}
+				.wbtm-pay-tabs .wbtm-pay-tab.nav-tab-active .wbtm-pay-subtab-badge{background:rgba(255,255,255,.92);color:#166534;}
 
 				/* Custom Payment intro */
 				.wbtm-gw-intro{margin:4px 0 18px;}
@@ -1117,7 +1115,7 @@
 				.payment-gateways-container th{display:none;}
 				.payment-gateways-container td{padding:0 !important;}
 				.wbtm-gw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-bottom:22px;}
-				.gateway-card{--gw:#F12971;--gw2:#F12971;position:relative;display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid #eceef2;border-radius:16px;padding:22px 20px 18px;box-shadow:0 4px 14px rgba(16,24,40,0.06);overflow:hidden;box-sizing:border-box;transition:transform 0.18s ease,box-shadow 0.18s ease,border-color 0.18s ease;}
+				.gateway-card{--gw:#e63946;--gw2:#e63946;position:relative;display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid #eceef2;border-radius:16px;padding:22px 20px 18px;box-shadow:0 4px 14px rgba(16,24,40,0.06);overflow:hidden;box-sizing:border-box;transition:transform 0.18s ease,box-shadow 0.18s ease,border-color 0.18s ease;}
 				.gateway-card:before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gw),var(--gw2));}
 				.gateway-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(16,24,40,0.13);border-color:var(--gw);}
 				.gateway-card.paypal-card{--gw:#0079C1;--gw2:#003087;}
@@ -1148,8 +1146,8 @@
 
 				/* WooCommerce sub-tab accordions (plain divs — this shell has no <table>) */
 				.wbtm-acc-header .wbtm-acc-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none;background:#fff;border:1px solid #e7e8ec;border-radius:10px;padding:13px 16px;margin:14px 18px 4px;transition:background 0.2s ease,border-color 0.2s ease,box-shadow 0.2s ease;}
-				.wbtm-acc-header .wbtm-acc-bar:hover{border-color:#d4b3c3;box-shadow:0 2px 8px rgba(16,24,40,0.06);}
-				.wbtm-acc-header.open .wbtm-acc-bar{background:#fdf2f7;border-color:var(--wbtm-pay-accent);}
+				.wbtm-acc-header .wbtm-acc-bar:hover{border-color:#eab8bd;box-shadow:0 2px 8px rgba(16,24,40,0.06);}
+				.wbtm-acc-header.open .wbtm-acc-bar{background:#fdeef0;border-color:var(--wbtm-pay-accent);}
 				.wbtm-acc-header .wbtm-acc-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#1d2327;margin:0;}
 				.wbtm-acc-header.open .wbtm-acc-title{color:var(--wbtm-pay-accent);}
 				.wbtm-acc-header .wbtm-acc-arrow{transition:transform 0.2s ease;color:#50575e;line-height:1;}
@@ -1189,11 +1187,11 @@
 					   holds chunky elements (cards, tab bars) rather than a single input. */
 					padding:16px 18px !important;width:100%;display:block;box-sizing:border-box;
 				}
-				/* The sub-tab pill bar is hidden, so collapse its row's vertical padding
-				   to avoid an empty gap; keep horizontal rhythm for the WooCommerce-inactive
-				   warning notice this row may still hold. */
+				/* The sub-tab pill bar (and, while WooCommerce is inactive, its Activate CTA)
+				   live in this row; give it the same 16px/18px rhythm as the other payment
+				   rows now that the bar is visible. */
 				#bm-tab-payments .bm-gs__field-row.wbtm-field-wbtm_payment_tabs_html > .bm-gs__field-control-cell{
-					padding:0 18px !important;
+					padding:16px 18px !important;
 				}
 
 				/* WooCommerce install / activate CTA (shown only while WC is inactive).
@@ -1228,15 +1226,22 @@
 				/* Mobile: the gateway grid already collapses to a single column via
 				   its auto-fit minmax track; just let the sub-tab pills wrap. */
 				@media (max-width: 480px) {
-					.payment-sub-tabs.nav-tab-wrapper{flex-wrap:wrap;}
+					.wbtm-pay-tabs{flex-wrap:wrap;}
+					.wbtm-pay-tabs .wbtm-pay-tab{flex:1 1 auto;justify-content:center;}
 				}
 				</style>
 				<script>
 				jQuery(function($){
-					var wcActive = <?php echo $wc_active; ?>;
-					if ($('.payment-sub-tabs').length === 0) { return; }
+					var wcActive   = <?php echo $wc_active; ?>;
+					var activeMode = <?php echo wp_json_encode( $mode ); ?>;
+					var modeLabels = {
+						woocommerce: <?php echo wp_json_encode( __( 'WooCommerce Checkout', 'bus-ticket-booking-with-seat-reservation' ) ); ?>,
+						standalone:  <?php echo wp_json_encode( __( 'Custom Payment (Standalone)', 'bus-ticket-booking-with-seat-reservation' ) ); ?>
+					};
+					// Only run on the Payments tab / edit panel.
+					if ($('.wbtm-bm-wrap, .wbtm-bm-auto-note, .no-woocommerce-field').length === 0) { return; }
 
-					// --- WooCommerce sub-tab accordions: Payment Methods (open) + Additional Settings (collapsed) ---
+					// --- WooCommerce settings accordions: Payment Methods (open) + Additional Settings (collapsed) ---
 					// This shell renders each field as a `.bm-gs__field-row` div (no <table>/<tr>),
 					// so the accordion headers built below are plain divs too.
 					var $methodsRows      = $('.bm-gs__field-row.wc-payment-methods-field');
@@ -1261,17 +1266,19 @@
 						if ($additionalHeader.hasClass('open')) { $additionalRows.show(); } else { $additionalRows.hide(); }
 					}
 
-					if ($methodsRows.length || $additionalRows.length) {
-						// Anchor the accordion headers on the sub-tab row (the field row that
-						// holds the .payment-sub-tabs-wrapper). Captured before it's detached below.
-						var $toggleRow = $('.payment-sub-tabs-wrapper').closest('.bm-gs__field-row');
+					if (wcActive && ($methodsRows.length || $additionalRows.length)) {
+						// Anchor the accordion headers on the Booking Mode selector row — the
+						// single switch that now decides which settings show (the old pill bar
+						// that used to anchor them was removed as a confusing duplicate).
+						var $anchorRow = $('.bm-gs__field-row.wbtm-field-wbtm_booking_mode_selector');
+						if (!$anchorRow.length) { $anchorRow = $methodsRows.first().prev(); }
 						$methodsHeader    = buildAccordionHeader('wbtm-acc-methods', <?php echo wp_json_encode( __( 'WooCommerce Payment Methods', 'bus-ticket-booking-with-seat-reservation' ) ); ?>, true);
 						$additionalHeader = buildAccordionHeader('wbtm-acc-additional', <?php echo wp_json_encode( __( 'Additional Settings', 'bus-ticket-booking-with-seat-reservation' ) ); ?>, false);
 
-						// Re-order: toggle -> [Methods header + rows] -> [Additional header + rows].
+						// Re-order: anchor -> [Methods header + rows] -> [Additional header + rows].
 						$methodsRows.detach();
 						$additionalRows.detach();
-						$toggleRow.after($methodsHeader);
+						$anchorRow.after($methodsHeader);
 						$methodsHeader.after($methodsRows);
 						$methodsRows.last().after($additionalHeader);
 						$additionalHeader.after($additionalRows);
@@ -1291,25 +1298,29 @@
 						});
 					}
 
-					function updateTabs(){
-						var activeTabId = $('.payment-sub-tabs .nav-tab-active').attr('href').replace('#','');
+					// Show ONLY the active flow's settings, and keep the "You're configuring: …"
+					// context banner in sync. Exposed globally so the Booking Mode cards
+					// (render_mode_selector) can call it on switch. Replaces the old pill toggle.
+					window.wbtmApplyPaymentMode = function(mode){
+						var isWoo = ( mode === 'woocommerce' );
 						$('.bm-gs__field-row.woocommerce-field, div.woocommerce-field, .bm-gs__field-row.no-woocommerce-field, .wbtm-edit-payment-panel .no-woocommerce-field').hide();
-						if (activeTabId === 'woocommerce-field') {
+						if (isWoo) {
 							$('div.woocommerce-field').show();
-							if (wcActive) { $('.bm-gs__field-row.woocommerce-field').stop(true,true).show(); refreshAccordions(); }
+							$('.bm-gs__field-row.woocommerce-field').stop(true,true).show();
+							refreshAccordions();
 						} else {
-							$('.bm-gs__field-row.' + activeTabId).show();
-							$('.wbtm-edit-payment-panel .' + activeTabId).show();
+							$('.bm-gs__field-row.no-woocommerce-field').show();
+							$('.wbtm-edit-payment-panel .no-woocommerce-field').show();
 						}
-					}
-					$('.payment-sub-tabs .nav-tab').on('click', function(e){
-						e.preventDefault();
-						$('.payment-sub-tabs .nav-tab').removeClass('nav-tab-active');
-						$(this).addClass('nav-tab-active');
-						updateTabs();
-					});
+						var $ctx = $('.wbtm-bm-context');
+						if ($ctx.length) {
+							$ctx.attr('data-mode', mode);
+							$ctx.find('.wbtm-bm-context-icon').removeClass('dashicons-cart dashicons-money-alt').addClass(isWoo ? 'dashicons-cart' : 'dashicons-money-alt');
+							$ctx.find('.wbtm-bm-context-mode').text(isWoo ? modeLabels.woocommerce : modeLabels.standalone);
+						}
+					};
 
-					updateTabs();
+					window.wbtmApplyPaymentMode(activeMode);
 				});
 				</script>
 				<?php
@@ -1339,9 +1350,9 @@
 					wp_send_json_error( __( 'Invalid gateway.', 'bus-ticket-booking-with-seat-reservation' ) );
 				}
 
-				// All three custom-payment gateways (PayPal, Stripe, Offline) are Pro-only in
-				// this plugin; never persist their settings from the free build.
-				if ( ! $this->is_pro() ) {
+				// Offline is FREE. PayPal & Stripe remain Pro-only — never persist their
+				// settings from the free build (the cards show a PRO badge instead).
+				if ( 'offline' !== $gateway && ! $this->is_pro() ) {
 					wp_send_json_error( __( 'This gateway is available in the Pro version.', 'bus-ticket-booking-with-seat-reservation' ) );
 				}
 

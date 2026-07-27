@@ -59,7 +59,15 @@ if ( ! class_exists( 'WBTM_Payment_Status_Checker' ) ) {
 
 		/** Total number of payment methods available to customers right now. */
 		public function count_available_payment_methods() {
-			return count( $this->get_enabled_woocommerce_gateways() ) + count( $this->get_enabled_pro_payment_methods() );
+			$count = count( $this->get_enabled_woocommerce_gateways() ) + count( $this->get_enabled_pro_payment_methods() );
+			// Free Offline gateway. When Pro is active it already reports Offline through
+			// the wbtm_pro_enabled_payment_methods filter above, so only add it here for
+			// the free build to avoid double-counting.
+			$is_pro = class_exists( 'WBTM_Functions' ) && WBTM_Functions::is_pro_active();
+			if ( ! $is_pro && $this->offline_payment_enabled() ) {
+				$count++;
+			}
+			return $count;
 		}
 
 		/** Whether the booking system has at least one usable payment method. */
@@ -80,7 +88,13 @@ if ( ! class_exists( 'WBTM_Payment_Status_Checker' ) ) {
 			if ( 'woocommerce' === $this->active_mode() ) {
 				return count( $this->get_enabled_woocommerce_gateways() ) > 0;
 			}
-			return count( $this->get_enabled_pro_payment_methods() ) > 0;
+			// Standalone: the FREE Offline gateway counts on its own, plus any Pro methods.
+			return $this->offline_payment_enabled() || count( $this->get_enabled_pro_payment_methods() ) > 0;
+		}
+
+		/** Whether the FREE Offline standalone gateway is enabled. */
+		public function offline_payment_enabled() {
+			return class_exists( 'WBTM_Functions' ) && WBTM_Functions::offline_payment_enabled();
 		}
 
 		/** The active booking mode, exposed for mode-aware messaging. */

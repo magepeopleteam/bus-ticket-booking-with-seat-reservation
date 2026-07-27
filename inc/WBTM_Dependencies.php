@@ -63,6 +63,19 @@
 				// Payment mode / gateway availability checks (WooCommerce-optional).
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Payment_Status_Checker.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Payment_Provider_Interface.php';
+				// Standalone / Custom Payment booking engine with a FREE Offline gateway
+				// (PayPal & Stripe remain Pro). Loaded only when the Pro addon is NOT
+				// active — Pro ships its own fuller standalone engine (incl. PayPal/Stripe),
+				// so we stand down there to avoid duplicate handlers. These classes only
+				// DO anything in Standalone booking mode (booking_mode() === 'standalone').
+				if ( ! WBTM_Functions::is_pro_active() ) {
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/gateways/WBTM_Payment_Gateway_Manager.php';
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/WBTM_Standalone_Mail.php';
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/WBTM_Standalone_Payment.php';
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/WBTM_Standalone_Checkout.php';
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/WBTM_Standalone_Confirmation.php';
+					require_once WBTM_PLUGIN_DIR . '/inc/standalone/WBTM_Standalone_Auth.php';
+				}
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin.php';
 				//==================//
