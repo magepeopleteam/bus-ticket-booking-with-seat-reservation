@@ -1398,11 +1398,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$now           = current_time( 'Y-m-d' );
 					$year          = current_time( 'Y' );
 			
-					// Off days / off dates apply in BOTH modes, so a bus never runs on a day or
-					// date the operator marked off. Previously the "operate on specific dates"
-					// mode ignored these, so off days/dates leaked into search and the calendar.
+					// Off dates and off ranges apply in BOTH modes, so a bus never runs on a
+					// date the operator explicitly marked off. Previously the "operate on
+					// specific dates" mode ignored these, so off dates leaked into search
+					// and the calendar.
 					list( $off_dates, $off_day_array ) = self::get_off_dates_and_days( $post_id, $year, $now );
-			
+
 					if ( $show_on_dates == 'yes' ) {
 						$on_dates = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_particular_dates', array() );
 						if ( ! empty( $on_dates ) ) {
@@ -1416,8 +1417,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 									$date_item = gmdate( 'Y-m-d', strtotime( ($year + 1) . '-' . $on_date ) );
 								}
 								if ( strtotime( $date_item ) >= strtotime( $now ) ) {
-									$day = strtolower( gmdate( 'l', strtotime( $date_item ) ) );
-									if ( ! in_array( $date_item, $off_dates ) && ! in_array( $day, $off_day_array ) ) {
+									// Only an explicit off DATE may veto a hand-picked date. The weekday
+									// off-day list ($off_day_array) is deliberately NOT applied here:
+									// naming an exact date is a more specific instruction than a
+									// recurring weekday rule, and the two are contradictory by nature.
+									//
+									// Holiday buses are the real-world case — they are configured with
+									// every normal weekday marked off so they stay out of the regular
+									// timetable, and then given the public holidays as specific dates.
+									// Applying the weekday rule here silently dropped every holiday
+									// that did not happen to fall on the bus's one open weekday.
+									if ( ! in_array( $date_item, $off_dates ) ) {
 										$all_dates[] = $date_item;
 									}
 								}
