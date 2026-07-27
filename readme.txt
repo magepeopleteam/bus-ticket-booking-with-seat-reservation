@@ -452,3 +452,36 @@ Seat number rotation stopped
 * Fixed the Upper Deck and Lower Deck of the same cabin sharing a single seat price override — each deck now keeps its own per-seat prices, so an upper-deck seat can be priced independently of the lower-deck seat with the same number
 * Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
 * The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
+
+= 5.9.1 =
+*Release Date - 27 Jul 2026*
+
+**Book Without WooCommerce (New)**
+* Bookings can now be taken and paid for without WooCommerce, using a built-in Standalone checkout
+* Offline Payment is included free — bank transfer, cash or pay on boarding — so a site can start selling with no payment plugin at all
+* Payment gateways are pluggable: a gateway interface and manager sit behind the checkout, so PayPal, Stripe and other gateways slot in without touching the booking flow
+* Passengers can log in or register inline during checkout, without leaving the booking page
+* Booking confirmation and notification emails are sent by the plugin itself in this mode
+* New shortcodes: [wbtm-standalone-checkout] for the checkout page and [wbtm-booking-confirmation] for the confirmation page
+
+**Payments Settings Redesigned**
+* A single, clear switch chooses the booking flow — WooCommerce checkout or Standalone Custom Payment — so the two can never both handle the same booking
+* Both flows stay visible: whichever one is not ready shows exactly what unlocks it, either activating WooCommerce or enabling the free Offline gateway
+* Each gateway now has its own card showing whether it is enabled, with its settings in place
+* The page warns clearly when the selected flow has no usable payment method yet
+
+**E-Voucher**
+* E-Vouchers can now be resent for Standalone and Offline bookings, not just WooCommerce orders
+
+**Seat Holds**
+* Seats held during booking now stay held all the way through cart and checkout, instead of being released part-way
+* Fixed the hold countdown timer so the time shown matches the time actually remaining
+
+**Fixes**
+* Fixed hand-picked operating dates being blocked by weekday off-days — a bus set to run on specific dates (such as a holiday service) no longer disappears from search
+* Ticket Sale Cut-off and Buffer Time are now evaluated in the site's WordPress timezone rather than the server's, so cut-offs close when you expect
+* Fixed runaway pagination on the booking list
+* Fixed the missing bus image in search results
+* Fixed passenger names appearing in the wrong order
+* Fixed the extra-service charging mode being applied incorrectly
+* Fixed mobile layout issues and the gap in the bus search box
