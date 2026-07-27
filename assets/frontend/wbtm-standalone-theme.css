@@ -1,0 +1,1056 @@
+/*
+ * Shared visual system for the Standalone/Custom Payment booking pages
+ * (checkout + confirmation). The signature device is a die-cut "ticket
+ * stub" card — a perforated divider with punched notches — echoing a
+ * physical bus ticket rather than a generic e-commerce cart summary.
+ */
+
+.wbtm-ticket-page {
+	--wbtm-ink: #0f172a;
+	--wbtm-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+	--wbtm-paper: rgba(255, 255, 255, 0.94);
+	--wbtm-paper-line: #dbe4f0;
+	--wbtm-route: #4f46e5;
+	--wbtm-route-dark: #3730a3;
+	--wbtm-green: #0f9f6e;
+	--wbtm-red: #dc2626;
+	--wbtm-amber: #b7791f;
+	--wbtm-muted: #64748b;
+	--wbtm-text: #1e293b;
+	--wbtm-radius: 24px;
+	--wbtm-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--wbtm-mono: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace;
+
+	background: var(--wbtm-page-bg);
+	padding: clamp(20px, 5vw, 56px) 16px;
+	font-family: var(--wbtm-font);
+	color: var(--wbtm-text);
+	box-sizing: border-box;
+}
+
+/*
+ * Width comes from the "alignwide" class on the markup itself (WordPress
+ * block-theme convention: wider than the default narrow content column,
+ * capped at the theme's own --wp--style--global--wide-size and centered —
+ * unlike "alignfull", it stays inside the page's actual container instead
+ * of spilling to the browser edges). No custom width/margin override here
+ * on purpose — fighting the theme's own alignwide sizing with !important
+ * is exactly what made it overshoot the container previously.
+ */
+
+.wbtm-ticket-page *,
+.wbtm-ticket-page *::before,
+.wbtm-ticket-page *::after {
+	box-sizing: border-box;
+}
+
+.wbtm-ticket-shell {
+	margin: 0 auto;
+	max-width: 1040px;
+}
+
+.wbtm-ticket-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--wbtm-route);
+	margin: 0 0 14px;
+	border-radius: 999px;
+	background: rgba(79, 70, 229, 0.08);
+	border: 1px solid rgba(79, 70, 229, 0.12);
+}
+
+.wbtm-ticket-eyebrow::before {
+	content: "";
+	width: 18px;
+	height: 2px;
+	background: var(--wbtm-route);
+	border-radius: 2px;
+}
+
+.wbtm-ticket-heading {
+	font-size: clamp(28px, 3vw, 36px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.08;
+	margin: 0 0 30px;
+	color: var(--wbtm-ink);
+}
+
+/* ---------- Ticket stub ---------- */
+
+.wbtm-ticket-stub {
+	background: var(--wbtm-paper);
+	border-radius: var(--wbtm-radius);
+	border: 1px solid rgba(219, 228, 240, 0.9);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 22px 48px rgba(15, 23, 42, 0.09);
+	overflow: hidden;
+}
+
+.wbtm-ticket-stub__header {
+	background:
+		radial-gradient(circle at top right, rgba(129, 140, 248, 0.4), transparent 32%),
+		linear-gradient(135deg, #111827 0%, #312e81 100%);
+	color: #fff;
+	padding: 30px 30px 28px;
+}
+
+.wbtm-ticket-stub__label {
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.7);
+	margin: 0 0 10px;
+}
+
+.wbtm-ticket-route {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	font-size: clamp(22px, 2.8vw, 28px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	margin: 0 0 10px;
+	flex-wrap: wrap;
+}
+
+.wbtm-ticket-route__arrow {
+	color: #a5b4fc;
+	font-weight: 400;
+}
+
+.wbtm-ticket-route__time {
+	font-family: var(--wbtm-mono);
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.8);
+	letter-spacing: 0.01em;
+}
+
+.wbtm-ticket-perf {
+	position: relative;
+	border-top: 1px dashed rgba(148, 163, 184, 0.55);
+	margin: 0 24px;
+}
+
+.wbtm-ticket-perf::before,
+.wbtm-ticket-perf::after {
+	content: "";
+	position: absolute;
+	top: -11px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #f3f6fd;
+}
+
+.wbtm-ticket-perf::before {
+	left: -35px;
+}
+
+.wbtm-ticket-perf::after {
+	right: -35px;
+}
+
+.wbtm-ticket-stub__body {
+	padding: 24px 28px 28px;
+}
+
+.wbtm-ticket-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	padding: 11px 0;
+	gap: 16px;
+}
+
+.wbtm-ticket-row + .wbtm-ticket-row {
+	border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.wbtm-ticket-row__label {
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--wbtm-muted);
+}
+
+.wbtm-ticket-row__value {
+	font-family: var(--wbtm-mono);
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--wbtm-ink);
+	text-align: right;
+	white-space: nowrap;
+}
+
+.wbtm-ticket-row__sub {
+	font-family: var(--wbtm-font);
+	font-weight: 400;
+	color: var(--wbtm-muted);
+}
+
+.wbtm-ticket-section-label {
+	margin: 18px 0 6px;
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--wbtm-muted);
+}
+
+.wbtm-ticket-section-label:first-child {
+	margin-top: 0;
+}
+
+/* Round-trip: per-leg breakdown (outbound + return) */
+.wbtm-ticket-trip-badge {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 2px 9px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.18);
+	color: #fff;
+	font-size: 9.5px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.wbtm-ticket-leg {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px dashed rgba(148, 163, 184, 0.35);
+}
+
+.wbtm-ticket-leg:first-of-type {
+	margin-top: 6px;
+	padding-top: 0;
+	border-top: none;
+}
+
+.wbtm-ticket-leg__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.wbtm-ticket-leg__badge {
+	flex: 0 0 auto;
+	padding: 3px 10px;
+	border-radius: 999px;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	background: rgba(79, 70, 229, 0.12);
+	color: var(--wbtm-route);
+}
+
+.wbtm-ticket-leg__badge--return {
+	background: rgba(15, 159, 110, 0.14);
+	color: var(--wbtm-green);
+}
+
+.wbtm-ticket-leg__route {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--wbtm-ink);
+}
+
+.wbtm-ticket-leg__meta {
+	margin: 4px 0 2px;
+	font-size: 12px;
+	color: var(--wbtm-muted);
+}
+
+.wbtm-ticket-leg__subtotal .wbtm-ticket-row__label {
+	font-weight: 700;
+	color: var(--wbtm-ink);
+}
+
+.wbtm-ticket-leg__subtotal .wbtm-ticket-row__value {
+	color: var(--wbtm-ink);
+}
+
+.wbtm-ticket-total {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-top: 18px;
+	padding-top: 18px;
+	border-top: 1px solid rgba(79, 70, 229, 0.18);
+}
+
+.wbtm-ticket-total__label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--wbtm-ink);
+}
+
+.wbtm-ticket-total__value {
+	font-family: var(--wbtm-mono);
+	font-size: 24px;
+	font-weight: 800;
+	color: var(--wbtm-route);
+}
+
+/* ---------- Layout: checkout page (ticket + pay panel side by side) ---------- */
+
+.wbtm-checkout-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+	gap: 30px;
+	align-items: start;
+}
+
+/* Row layout holds down to tablet width; only real phone screens stack. */
+@media (max-width: 600px) {
+	.wbtm-checkout-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.wbtm-pay-panel {
+	background: var(--wbtm-paper);
+	border-radius: var(--wbtm-radius);
+	border: 1px solid rgba(219, 228, 240, 0.9);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 22px 48px rgba(15, 23, 42, 0.09);
+	padding: 30px;
+}
+
+.wbtm-pay-panel__title {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--wbtm-muted);
+	margin: 0 0 18px;
+}
+
+.wbtm-pay-panel__title:not(:first-child) {
+	margin-top: 26px;
+}
+
+.wbtm-field-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+@media (max-width: 480px) {
+	.wbtm-field-row {
+		grid-template-columns: 1fr;
+	}
+}
+
+.wbtm-field {
+	display: block;
+	margin-bottom: 16px;
+}
+
+.wbtm-field span {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--wbtm-muted);
+	margin-bottom: 8px;
+}
+
+.wbtm-field input {
+	width: 100%;
+	padding: 13px 14px;
+	border: 1px solid var(--wbtm-paper-line);
+	border-radius: 14px;
+	font-size: 14.5px;
+	font-family: var(--wbtm-font);
+	color: var(--wbtm-text);
+	background: rgba(248, 250, 252, 0.92);
+	transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.wbtm-field input:focus-visible {
+	outline: none;
+	border-color: var(--wbtm-route);
+	background: #fff;
+	box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.wbtm-gateway-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.wbtm-gateway-option {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px 16px;
+	border: 1px solid var(--wbtm-paper-line);
+	border-radius: 16px;
+	cursor: pointer;
+	background: rgba(248, 250, 252, 0.9);
+	transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.wbtm-gateway-option:hover {
+	border-color: rgba(79, 70, 229, 0.3);
+	transform: translateY(-1px);
+	box-shadow: 0 10px 24px rgba(79, 70, 229, 0.08);
+}
+
+.wbtm-gateway-option.is-selected {
+	border-color: var(--wbtm-route);
+	background: rgba(79, 70, 229, 0.08);
+	box-shadow: 0 12px 26px rgba(79, 70, 229, 0.1);
+}
+
+.wbtm-gateway-option input[type="radio"] {
+	width: 18px;
+	height: 18px;
+	accent-color: var(--wbtm-route);
+	flex-shrink: 0;
+}
+
+.wbtm-gateway-icon {
+	width: 42px;
+	height: 42px;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--wbtm-route);
+	border-radius: 14px;
+	background: rgba(79, 70, 229, 0.1);
+}
+
+.wbtm-gateway-icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.wbtm-gateway-label {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--wbtm-ink);
+}
+
+.wbtm-pay-cta {
+	width: 100%;
+	margin-top: 24px;
+	padding: 16px 22px;
+	border: none;
+	border-radius: 16px;
+	font-size: 15.5px;
+	font-weight: 700;
+	color: #fff;
+	background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+	box-shadow: 0 16px 34px rgba(79, 70, 229, 0.28);
+}
+
+.wbtm-pay-cta:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 18px 38px rgba(79, 70, 229, 0.34);
+	filter: saturate(1.03);
+}
+
+.wbtm-pay-cta:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.wbtm-pay-message {
+	margin-top: 16px;
+	padding: 13px 14px;
+	border-radius: 14px;
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.wbtm-pay-message.is-error {
+	background: rgba(196, 59, 59, 0.09);
+	color: var(--wbtm-red);
+}
+
+.wbtm-pay-message.is-info {
+	background: rgba(23, 26, 33, 0.05);
+	color: var(--wbtm-muted);
+}
+
+/* ---------- Coupon box (standalone checkout card) ---------- */
+
+.wbtm-coupon-box {
+	margin-bottom: 4px;
+}
+
+.wbtm-coupon-form {
+	display: flex;
+	gap: 10px;
+}
+
+.wbtm-coupon-form input {
+	flex: 1;
+	min-width: 0;
+	padding: 13px 14px;
+	border: 1px solid var(--wbtm-paper-line);
+	border-radius: 14px;
+	font-size: 14.5px;
+	font-family: var(--wbtm-font);
+	color: var(--wbtm-text);
+	background: rgba(248, 250, 252, 0.92);
+}
+
+.wbtm-coupon-form input:focus-visible {
+	outline: none;
+	border-color: var(--wbtm-route);
+	background: #fff;
+	box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.wbtm-coupon-apply-btn {
+	padding: 13px 20px;
+	border: none;
+	border-radius: 14px;
+	font-size: 14px;
+	font-weight: 700;
+	color: #fff;
+	background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+	cursor: pointer;
+	transition: filter 0.15s ease;
+}
+
+.wbtm-coupon-apply-btn:hover {
+	filter: saturate(1.05) brightness(1.03);
+}
+
+.wbtm-coupon-apply-btn:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+
+.wbtm-coupon-applied {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 12px 14px;
+	border: 1px dashed rgba(79, 70, 229, 0.35);
+	border-radius: 14px;
+	background: rgba(79, 70, 229, 0.06);
+}
+
+.wbtm-coupon-applied__code {
+	font-family: var(--wbtm-mono);
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	color: var(--wbtm-route);
+}
+
+.wbtm-coupon-remove-btn {
+	padding: 0;
+	border: none;
+	background: none;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--wbtm-red);
+	cursor: pointer;
+}
+
+.wbtm-coupon-remove-btn:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+
+.wbtm-coupon-message {
+	margin: 10px 0 0;
+	padding: 11px 14px;
+	border-radius: 12px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.wbtm-coupon-message.is-error {
+	background: rgba(196, 59, 59, 0.09);
+	color: var(--wbtm-red);
+}
+
+.wbtm-coupon-message.is-info {
+	background: rgba(23, 26, 33, 0.05);
+	color: var(--wbtm-muted);
+}
+
+.wbtm-ticket-coupon .wbtm-ticket-row__value {
+	color: var(--wbtm-red);
+}
+
+.wbtm-coupon-code {
+	font-family: var(--wbtm-mono);
+}
+
+.wbtm-no-gateway {
+	padding: 16px 18px;
+	border-radius: 12px;
+	background: rgba(185, 121, 26, 0.1);
+	color: var(--wbtm-amber);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* ---------- Confirmation page ---------- */
+
+.wbtm-confirm-shell {
+	max-width: 500px;
+	margin: 0 auto;
+}
+
+.wbtm-confirm-card {
+	background: var(--wbtm-paper);
+	border-radius: var(--wbtm-radius);
+	border: 1px solid rgba(219, 228, 240, 0.9);
+	box-shadow: 0 20px 44px rgba(15, 23, 42, 0.08);
+	padding: 24px 24px 20px;
+	text-align: center;
+}
+
+.wbtm-confirm-stamp {
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 14px;
+	border-radius: 50%;
+	border: 2px dashed currentColor;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform: rotate(-6deg);
+}
+
+.wbtm-confirm-stamp svg {
+	width: 28px;
+	height: 28px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wbtm-confirm-stamp {
+		animation: wbtmStampIn 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+	}
+}
+
+@keyframes wbtmStampIn {
+	0% {
+		opacity: 0;
+		transform: rotate(-6deg) scale(1.6);
+	}
+	100% {
+		opacity: 1;
+		transform: rotate(-6deg) scale(1);
+	}
+}
+
+.wbtm-confirm-card.is-success .wbtm-confirm-stamp {
+	color: var(--wbtm-green);
+}
+
+.wbtm-confirm-card.is-failed .wbtm-confirm-stamp {
+	color: var(--wbtm-red);
+}
+
+.wbtm-confirm-card.is-cancelled .wbtm-confirm-stamp {
+	color: var(--wbtm-amber);
+}
+
+.wbtm-confirm-title {
+	font-size: 18px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.15;
+	margin: 0 0 6px;
+	color: var(--wbtm-ink);
+}
+
+.wbtm-confirm-text {
+	font-size: 13px;
+	color: var(--wbtm-muted);
+	line-height: 1.45;
+	margin: 0 0 14px;
+}
+
+.wbtm-confirm-ref {
+	display: inline-block;
+	font-family: var(--wbtm-mono);
+	font-size: 12px;
+	font-weight: 600;
+	padding: 5px 10px;
+	border-radius: 999px;
+	background: rgba(79, 70, 229, 0.08);
+	color: var(--wbtm-ink);
+	margin-bottom: 16px;
+}
+
+.wbtm-confirm-summary {
+	text-align: left;
+	border-top: 1px dashed rgba(148, 163, 184, 0.42);
+	padding-top: 12px;
+	margin-bottom: 16px;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-row {
+	padding: 8px 0;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-row__label {
+	font-size: 13px;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-row__value {
+	font-size: 13px;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-section-label {
+	margin: 14px 0 4px;
+	font-size: 10px;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-total {
+	margin-top: 12px;
+	padding-top: 12px;
+}
+
+.wbtm-confirm-summary .wbtm-ticket-total__value {
+	font-size: 18px;
+}
+
+.wbtm-confirm-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.wbtm-confirm-btn {
+	display: block;
+	padding: 11px 16px;
+	border-radius: 14px;
+	font-size: 13.5px;
+	font-weight: 700;
+	text-decoration: none;
+	text-align: center;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wbtm-confirm-btn:hover {
+	transform: translateY(-1px);
+}
+
+.wbtm-confirm-btn.is-primary {
+	background: linear-gradient(135deg, var(--wbtm-route), var(--wbtm-route-dark));
+	color: #fff;
+	box-shadow: 0 12px 24px rgba(79, 70, 229, 0.22);
+}
+
+.wbtm-confirm-btn.is-secondary {
+	background: rgba(255, 255, 255, 0.65);
+	color: var(--wbtm-ink);
+	border: 1px solid var(--wbtm-paper-line);
+}
+
+.wbtm-checkout-modal .wbtm-confirm-shell {
+	max-width: 470px;
+}
+
+.wbtm-checkout-modal__body > .wbtm-confirm-card {
+	--wbtm-ink: #0f172a;
+	--wbtm-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+	--wbtm-paper: rgba(255, 255, 255, 0.94);
+	--wbtm-paper-line: #dbe4f0;
+	--wbtm-route: #4f46e5;
+	--wbtm-route-dark: #3730a3;
+	--wbtm-green: #0f9f6e;
+	--wbtm-red: #dc2626;
+	--wbtm-amber: #b7791f;
+	--wbtm-muted: #64748b;
+	--wbtm-text: #1e293b;
+	--wbtm-radius: 24px;
+	--wbtm-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--wbtm-mono: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace;
+	max-width: 470px;
+	margin: 0 auto;
+	font-family: var(--wbtm-font);
+	color: var(--wbtm-text);
+}
+
+.wbtm-checkout-modal .wbtm-confirm-card {
+	padding: 20px 20px 18px;
+}
+
+.wbtm-checkout-modal__dialog.is-confirmation .wbtm-confirm-card {
+	width: min(470px, calc(100vw - 40px));
+	max-width: none;
+	margin: 0;
+}
+
+.wbtm-checkout-modal .wbtm-confirm-summary {
+	margin-bottom: 14px;
+}
+
+@media (max-width: 720px) {
+	.wbtm-confirm-card {
+		padding: 18px 16px 16px;
+	}
+
+	.wbtm-confirm-stamp {
+		width: 56px;
+		height: 56px;
+		margin-bottom: 12px;
+	}
+
+	.wbtm-confirm-title {
+		font-size: 17px;
+	}
+
+	.wbtm-confirm-text {
+		font-size: 12.5px;
+	}
+}
+
+/*
+ * Deliberately no @media (prefers-color-scheme: dark) override — the
+ * checkout/confirmation pages always use the light "ticket paper" theme
+ * regardless of the visitor's system preference.
+ */
+
+/* ---------- Inline checkout modal (bus booking page) ---------- */
+
+.wbtm-checkout-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(12px, 3vw, 28px);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.wbtm-checkout-modal.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+body.wbtm-checkout-modal-open {
+	overflow: hidden;
+}
+
+.wbtm-checkout-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 18, 24, 0.62);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+}
+
+.wbtm-checkout-modal__dialog {
+	position: relative;
+	z-index: 1;
+	width: min(1080px, 100%);
+	max-height: min(92vh, 920px);
+	overflow: auto;
+	border-radius: 28px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	box-shadow: 0 32px 90px rgba(15, 18, 24, 0.3);
+}
+
+.wbtm-checkout-modal__body {
+	position: relative;
+}
+
+.wbtm-checkout-modal__close {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	z-index: 3;
+	width: 40px;
+	height: 40px;
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.92);
+	color: var(--wbtm-ink, #171a21);
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0;
+	box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+}
+
+.wbtm-checkout-modal__close:hover {
+	background: #fff;
+}
+
+.wbtm-checkout-modal .wbtm-ticket-page {
+	padding: clamp(22px, 3.4vw, 34px);
+	background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+	border-radius: 28px;
+}
+
+.wbtm-checkout-modal .wbtm-ticket-heading {
+	margin-bottom: 20px;
+}
+
+.wbtm-checkout-modal__dialog.is-confirmation {
+	width: auto;
+	max-width: min(500px, calc(100vw - 24px));
+	max-height: none;
+	overflow: visible;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	background: transparent;
+	margin: 0 auto;
+}
+
+.wbtm-checkout-modal__dialog.is-confirmation .wbtm-checkout-modal__body {
+	padding: 0;
+	display: flex;
+	justify-content: center;
+}
+
+.wbtm-checkout-modal__dialog.is-confirmation .wbtm-checkout-modal__close {
+	top: 8px;
+	right: 8px;
+}
+
+@media (max-width: 720px) {
+	.wbtm-checkout-modal__dialog {
+		max-height: 96vh;
+		border-radius: 16px;
+	}
+
+	.wbtm-checkout-modal .wbtm-ticket-page {
+		padding: 16px 12px 20px;
+		border-radius: 16px;
+	}
+
+	.wbtm-ticket-heading {
+		font-size: 26px;
+	}
+
+	.wbtm-ticket-stub__header,
+	.wbtm-ticket-stub__body,
+	.wbtm-pay-panel {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+}
+
+.wbtm-checkout-modal__dialog.is-loading .wbtm-checkout-modal__body,
+.wbtm-checkout-modal__dialog.is-loading .wbtm-checkout-modal__close {
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.wbtm-checkout-modal__dialog.is-preparing {
+	min-height: 220px;
+	min-width: min(360px, 92vw);
+}
+
+.wbtm-checkout-modal__loader {
+	display: none;
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 14px;
+	background: rgba(253, 251, 246, 0.92);
+	border-radius: inherit;
+}
+
+.wbtm-checkout-modal__dialog.is-loading .wbtm-checkout-modal__loader {
+	display: flex;
+}
+
+.wbtm-checkout-modal__spinner,
+.wbtm-page-loader__spinner {
+	width: 42px;
+	height: 42px;
+	border: 3px solid rgba(216, 87, 42, 0.18);
+	border-top-color: var(--wbtm-route, #d8572a);
+	border-radius: 50%;
+	animation: wbtm-spin 0.75s linear infinite;
+}
+
+.wbtm-checkout-modal__loader-text,
+.wbtm-page-loader__text {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--wbtm-ink, #171a21);
+}
+
+/* Full-page loader shown while navigating to the confirmation page. */
+.wbtm-page-loader {
+	position: fixed;
+	inset: 0;
+	z-index: 100001;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(15, 18, 24, 0.72);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.wbtm-page-loader.is-active {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+body.wbtm-page-loader-open {
+	overflow: hidden;
+}
+
+.wbtm-page-loader__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	padding: 28px 32px;
+	border-radius: 18px;
+	background: #fdfbf6;
+	box-shadow: 0 24px 60px rgba(15, 18, 24, 0.28);
+	min-width: min(320px, 88vw);
+	text-align: center;
+}
+
+@keyframes wbtm-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

@@ -1,0 +1,195 @@
+.wbtm-auth-modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	background: rgba(10, 10, 30, 0.65);
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(3px);
+}
+
+.wbtm-auth-modal.is-open {
+	display: flex;
+}
+
+body.wbtm-auth-modal-open {
+	overflow: hidden;
+}
+
+.wbtm-auth-modal-box {
+	background: #fff;
+	border-radius: 16px;
+	width: 420px;
+	max-width: 94vw;
+	max-height: 92vh;
+	overflow-y: auto;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+	padding: 0 0 26px;
+}
+
+.wbtm-auth-modal-header {
+	padding: 22px 26px 6px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.wbtm-auth-modal-header h2 {
+	margin: 0;
+	font-size: 19px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.wbtm-auth-modal-close {
+	box-sizing: border-box;
+	background: #f3f4f6;
+	border: none;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	font-size: 18px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #374151;
+}
+
+.wbtm-auth-modal-subtitle {
+	margin: 0 26px 18px;
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.wbtm-auth-tabs {
+	display: flex;
+	margin: 0 26px 18px;
+	border-bottom: 1.5px solid #e5e7eb;
+}
+
+.wbtm-auth-tab {
+	flex: 1;
+	background: none;
+	border: none;
+	padding: 10px 4px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #9ca3af;
+	cursor: pointer;
+	border-bottom: 2.5px solid transparent;
+	margin-bottom: -1.5px;
+}
+
+.wbtm-auth-tab.is-active {
+	color: #F12971;
+	border-bottom-color: #F12971;
+}
+
+.wbtm-auth-error {
+	margin: 0 26px 14px;
+	padding: 10px 14px;
+	border-radius: 8px;
+	background: #fef2f2;
+	color: #b91c1c;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.wbtm-auth-panel {
+	display: none;
+	padding: 0 26px;
+}
+
+.wbtm-auth-panel.is-active {
+	display: block;
+}
+
+.wbtm-auth-field {
+	display: block;
+	margin-bottom: 16px;
+}
+
+.wbtm-auth-field span {
+	display: block;
+	font-weight: 600;
+	font-size: 13px;
+	color: #374151;
+	margin-bottom: 6px;
+}
+
+.wbtm-auth-field input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1.5px solid #d1d5db;
+	border-radius: 8px;
+	font-size: 14px;
+	color: #111;
+	background: #f9fafb;
+	box-sizing: border-box;
+}
+
+.wbtm-auth-field input:focus {
+	border-color: #F12971;
+	box-shadow: 0 0 0 3px rgba(241, 41, 113, 0.12);
+	outline: none;
+	background: #fff;
+}
+
+.wbtm-auth-password-wrap {
+	position: relative;
+	display: block;
+}
+
+.wbtm-auth-password-wrap input {
+	padding-right: 40px;
+}
+
+.wbtm-auth-password-toggle {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 15px;
+	line-height: 1;
+	padding: 4px;
+}
+
+.wbtm-auth-lost-password {
+	display: inline-block;
+	font-size: 12.5px;
+	color: #6b7280;
+	margin-bottom: 18px;
+	text-decoration: none;
+}
+
+.wbtm-auth-lost-password:hover {
+	color: #F12971;
+	text-decoration: underline;
+}
+
+.wbtm-auth-submit {
+	width: 100%;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 8px;
+	font-size: 15px;
+	font-weight: 700;
+	cursor: pointer;
+	color: #fff;
+	background: linear-gradient(135deg, #F12971, #d81b60);
+}
+
+.wbtm-auth-submit:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+/* Deliberately no dark-mode override — stays consistent with the light
+ * "ticket paper" theme used across the whole Custom Payment booking flow. */
