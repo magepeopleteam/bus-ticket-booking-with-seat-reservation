@@ -85,7 +85,82 @@
                     if (!inRange) { showBus = false; }
                 }
 
-                showBus ? $bus.fadeIn(350) : $bus.fadeOut(250);
+                var $details = $bus.next('.wbtm_bus_details');
+                if (showBus) {
+                    $bus.stop(true, true).show();
+                } else {
+                    $bus.stop(true, true).hide();
+                    // The AJAX-loaded details panel is a separate sibling. Hiding
+                    // only the result card left an orphaned seat/details panel in
+                    // the filtered list.
+                    $details.stop(true, true).hide();
+                }
+            });
+
+            updateVisibleCounts();
+        }
+
+        function updateVisibleCounts() {
+            $('.wbtm_bus_list_area').each(function () {
+                var $area = $(this);
+                var visible = $area.children('.wtbm_bus_counter:visible').length;
+                $area.find('.wbtm-list-count strong').first().text(visible);
+            });
+        }
+
+        /**
+         * Reorder a result card together with its immediately following details
+         * panel. The old Sort by select had no event handler, and sorting only the
+         * cards would detach each seat/details panel from its bus.
+         */
+        function sortResults($select) {
+            var mode  = $select.val();
+            var $area = $select.closest('.wbtm_bus_list_area');
+            var rows  = $area.children('.wtbm_bus_counter').map(function (index) {
+                return {
+                    card: this,
+                    details: $(this).next('.wbtm_bus_details')[0] || null,
+                    index: index
+                };
+            }).get();
+
+            function numberValue(row, attr) {
+                var value = parseFloat($(row.card).attr(attr));
+                return Number.isFinite(value) ? value : null;
+            }
+
+            rows.sort(function (a, b) {
+                var av;
+                var bv;
+
+                if (mode === 'price_asc' || mode === 'price_desc') {
+                    av = numberValue(a, 'data-price');
+                    bv = numberValue(b, 'data-price');
+                } else if (mode === 'duration_asc') {
+                    av = numberValue(a, 'data-duration');
+                    bv = numberValue(b, 'data-duration');
+                } else {
+                    av = numberValue(a, 'data-departure');
+                    bv = numberValue(b, 'data-departure');
+                }
+
+                // Unpriced/invalid rows always stay at the bottom.
+                if (av === null && bv === null) { return a.index - b.index; }
+                if (av === null) { return 1; }
+                if (bv === null) { return -1; }
+
+                var comparison = av - bv;
+                if (mode === 'latest' || mode === 'price_desc') {
+                    comparison *= -1;
+                }
+                return comparison || (a.index - b.index);
+            });
+
+            $.each(rows, function (_, row) {
+                $area.append(row.card);
+                if (row.details) {
+                    $area.append(row.details);
+                }
             });
         }
 
@@ -99,18 +174,24 @@
             filterBuses('wbtm_bus_search_journey_return', 'return_filter-checkbox');
         });
 
-        /* Reset — show all cards and clear checkboxes */
-        $(document).on('click', '.wbtm_reset_filter-checkbox, .wbtm-filter-reset-btn', function () {
-            $(this).closest('.wbtm-filter-card, #wbtm_bus_filter-options')
-                   .find('input[type="checkbox"]').prop('checked', false);
-            $('.wbtm_bus_search_journey_start').fadeIn(350);
+        /* Reset the filter panel that owns the clicked button. This works for
+           both outbound and return panels (the old generic reset always reset
+           the outbound list). */
+        $(document).on('click', '.wbtm_reset_filter-checkbox, .wbtm-filter-reset-btn, .wbtm_reset_return_filter-checkbox', function () {
+            var $panel = $(this).closest('.wbtm-filter-card, #wbtm_bus_filter-options');
+            var isReturn = $panel.find('.return_filter-checkbox').length > 0;
+            $panel.find('input[type="checkbox"]').prop('checked', false);
+            filterBuses(
+                isReturn ? 'wbtm_bus_search_journey_return' : 'wbtm_bus_search_journey_start',
+                isReturn ? 'return_filter-checkbox' : 'filter-checkbox'
+            );
         });
 
-        $(document).on('click', '.wbtm_reset_return_filter-checkbox', function () {
-            $(this).closest('.wbtm-filter-card, #wbtm_bus_filter-options')
-                   .find('input[type="checkbox"]').prop('checked', false);
-            $('.wbtm_bus_search_journey_return').fadeIn(350);
+        $(document).on('change', '.wbtm-sort-select', function () {
+            sortResults($(this));
         });
+
+        updateVisibleCounts();
 
     });
 

@@ -10,7 +10,20 @@
 		class WBTM_Translations {
 			private static function get_translation($key, $default) {
 				$translations = get_option('wbtm_translations', array());
-				return isset($translations[$key]) ? $translations[$key] : $default;
+				$override = isset($translations[$key]) ? trim((string) $translations[$key]) : '';
+
+				/*
+				 * Translation Settings used to save every displayed English default
+				 * as an override. Once that happened, the stored value bypassed
+				 * gettext and Loco Translate could no longer replace it. Pass explicit
+				 * overrides through the plugin text domain as well: a custom value
+				 * such as "Boat" remains unchanged when no catalog entry exists,
+				 * while legacy stored defaults such as "Bus Details" once again
+				 * honour the site's MO/Loco translation.
+				 */
+				return $override !== ''
+					? translate($override, 'bus-ticket-booking-with-seat-reservation')
+					: $default;
 			}
 
 			public static function text_journey_date() { 
@@ -119,6 +132,36 @@
 				return self::get_translation(__FUNCTION__,
 					esc_html__('Bus Type', 'bus-ticket-booking-with-seat-reservation')
 				); 
+			}
+
+			public static function text_bus() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation')
+				);
+			}
+
+			public static function text_bus_no() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus No', 'bus-ticket-booking-with-seat-reservation')
+				);
+			}
+
+			public static function text_bus_details() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus Details', 'bus-ticket-booking-with-seat-reservation')
+				);
+			}
+
+			public static function text_bus_features() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus Features', 'bus-ticket-booking-with-seat-reservation')
+				);
+			}
+
+			public static function text_bus_photo() {
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Bus Photo', 'bus-ticket-booking-with-seat-reservation')
+				);
 			}
 			
 			public static function text_bus_operator() { 

@@ -1,5 +1,16 @@
 jQuery(document).ready(function ($) {
 
+    function syncFilterToggleState() {
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+        $('.wbtm_bus_left_filter_holder .wbtm-mobile-filter-toggle').each(function () {
+            var $holder = $(this).closest('.wbtm_bus_left_filter_holder');
+            var expanded = isMobile
+                ? $holder.hasClass('wbtm-mobile-open')
+                : !$holder.hasClass('wbtm-filter-collapsed');
+            $(this).attr('aria-expanded', expanded ? 'true' : 'false');
+        });
+    }
+
     $(document).on( 'click', '#wbtm_search_location_toggle', function () {
 
         let toggleBtn = $(this);
@@ -25,12 +36,27 @@ jQuery(document).ready(function ($) {
         toggleBtn.toggleClass('rotate');
     });
 
-    // Mobile: collapsible "Filters" panel on search results.
+    // Responsive collapsible "Filters" panel on search results.
     // Delegated handler so it also works for AJAX-injected result markup.
     $(document).on('click', '.wbtm-mobile-filter-toggle', function () {
         var holder = $(this).closest('.wbtm_bus_left_filter_holder');
-        holder.toggleClass('wbtm-mobile-open');
-        $(this).attr('aria-expanded', holder.hasClass('wbtm-mobile-open') ? 'true' : 'false');
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+        var expanded;
+
+        if (isMobile) {
+            holder.removeClass('wbtm-filter-collapsed').toggleClass('wbtm-mobile-open');
+            expanded = holder.hasClass('wbtm-mobile-open');
+        } else {
+            holder.removeClass('wbtm-mobile-open').toggleClass('wbtm-filter-collapsed');
+            expanded = !holder.hasClass('wbtm-filter-collapsed');
+        }
+
+        $(this).attr('aria-expanded', expanded ? 'true' : 'false');
     });
+
+    // Mobile starts results-first (collapsed); desktop starts with filters open.
+    // Search results are AJAX-injected, so repeat the state sync after requests.
+    syncFilterToggleState();
+    $(document).ajaxComplete(syncFilterToggleState);
 
 });

@@ -419,12 +419,13 @@
     }
 }
 
-/* ---- Mobile: results-first + collapsible "Filters" hamburger ----
+/* ---- Results filter toggle ----
    The toggle button is rendered by both search_result.php and
    search_result_flix.php inside .wbtm_bus_left_filter_holder.
-   Desktop/laptop (>=768px) is untouched: button hidden, sidebar as-is. */
+   It is available on desktop as well as mobile so customers can give the
+   result cards (especially their photos) the full content width. */
 .wbtm-mobile-filter-toggle {
-    display: none;
+    display: flex;
     /* Modern styling kept OUT of the mobile media query so the button looks good
        wherever it is shown (it also appears on the desktop results header). Only
        the display toggle is size-dependent. */
@@ -441,6 +442,8 @@
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
     transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    width: 100%;
+    margin-bottom: 10px;
 }
 .wbtm-mobile-filter-toggle:hover {
     border-color: var(--wbtm_color_theme, #e8510f);
@@ -464,6 +467,41 @@
     transform: rotate(180deg);
 }
 
+@media only screen and (min-width: 768px) {
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed {
+        flex: 0 0 150px !important;
+        width: 150px !important;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed > *:not(.wbtm-mobile-filter-toggle) {
+        display: none !important;
+    }
+    .wbtm_bus_left_filter_holder:not(.wbtm-filter-collapsed) .wbtm-mobile-filter-caret {
+        transform: rotate(180deg);
+    }
+}
+
+/* Shared count/sort bar styling also covers the Flix result template. */
+.wbtm-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.wbtm-list-count {
+    font-size: 14px;
+    color: #475467;
+}
+.wbtm-list-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.wbtm-sort-select {
+    min-width: 150px;
+}
+
 @media only screen and (max-width: 767px) {
     /* Stack the results page vertically, full width — the flix layout sets an
        inline width (calc(100% - 180px)) on the list area, hence !important. */
@@ -482,7 +520,6 @@
 
     /* Hamburger "Filters" bar */
     .wbtm-mobile-filter-toggle {
-        display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
@@ -495,6 +532,7 @@
         color: #111;
         cursor: pointer;
         box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+        margin-bottom: 0;
     }
     .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
         display: flex;
@@ -521,6 +559,10 @@
     .wbtm_bus_left_filter_holder.wbtm-mobile-open > *:not(.wbtm-mobile-filter-toggle) {
         display: block !important;
         margin-top: 10px;
+    }
+
+    .wbtm-list-header {
+        flex-wrap: wrap;
     }
 }
 

@@ -1304,7 +1304,7 @@
 
 		function handleBookingFailure(response) {
 			if (response.data && typeof response.data === 'object' && response.data.require_login) {
-				// Custom Payment mode requires an account. Pro's inline login/register
+				// Custom Payment mode may require an account. Its inline login/register
 				// panel (if loaded) handles it and calls trySubmitBooking again once
 				// the visitor is authenticated — same requestData, fresh nonce.
 				suppressCompleteRedirect = true;
@@ -1469,7 +1469,7 @@
 						if (response.data && response.data.outbound_group_id) {
 							wbtm_standalone_outbound_group_id = response.data.outbound_group_id;
 						}
-						// Standalone/Custom Payment mode: Pro answers with an inline checkout
+						// Standalone/Custom Payment mode answers with an inline checkout
 						// modal (preferred) or a checkout-page redirect — handle and stop here.
 						if (wbtm_handle_standalone_checkout_response(response)) {
 							this_btn.prop('disabled', false).html(defaultHtml);

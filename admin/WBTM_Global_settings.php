@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					'wbtm-global-settings-js',
 					WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-global-settings.js',
 					['jquery'],
-					WBTM_VERSION,
+					file_exists( WBTM_PLUGIN_DIR . '/assets/admin/js/wbtm-global-settings.js' ) ? filemtime( WBTM_PLUGIN_DIR . '/assets/admin/js/wbtm-global-settings.js' ) : WBTM_VERSION,
 					true
 				);
 				wp_enqueue_style('wp-color-picker');

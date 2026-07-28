@@ -72,6 +72,20 @@
 		$('#bm-overlay').removeClass('bm-gs--open');
 	};
 
+	/**
+	 * Copy every TinyMCE iframe back into its underlying textarea before a
+	 * programmatic save. HTMLFormElement.prototype.submit() deliberately skips
+	 * the browser submit event, so WordPress/TinyMCE never gets its usual chance
+	 * to run triggerSave(). The result looked like an uneditable field: content
+	 * could be typed, but the old textarea value was posted and reappeared after
+	 * reload.
+	 */
+	bmGs.syncEditors = function () {
+		if (window.tinyMCE && typeof window.tinyMCE.triggerSave === 'function') {
+			window.tinyMCE.triggerSave();
+		}
+	};
+
 	$(function () {
 
 		// Nav item click
@@ -99,6 +113,8 @@
 			var $btn   = $(this);
 			var $forms = $('.bm-gs__tab-panel.bm-gs--active').find('form');
 			if (!$forms.length) { return; }
+
+			bmGs.syncEditors();
 
 			// Single-section tab: plain browser POST, no JS in the save path.
 			if ($forms.length === 1) {
