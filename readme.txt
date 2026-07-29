@@ -453,7 +453,6 @@ Seat number rotation stopped
 * Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
 * The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
 
-
 **Passenger Form Fields in Booking List Exports (Fix)**
 * Custom fields you add to the Passenger Form — for example "Emergency Contact Name" and "Emergency Contact Phone" — are now included automatically in both the Booking List CSV and PDF exports, with no setup needed
 * Restores the custom-field export that was available in the Passenger List before it was merged into the Booking List, so passenger manifests are complete again
@@ -479,7 +478,3 @@ Seat number rotation stopped
 * Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in the PDF ticket and the Thermal (POS) ticket
 * Fixed Thermal (POS) tickets printing a long blank stretch of paper after each receipt; every ticket is now sized to its own content, and a multi-ticket run prints one receipt per page
 * Fixed a passenger field appearing twice in exports when the same question existed under two field ids (after a form field was renamed)
-
-**Settings Fixes**
-* Fixed rich-text settings not saving — most visibly "Terms & Condition Text" under PDF settings. Anything typed in the editor's Visual tab was discarded on save; the Text tab happened to work. Applies to every rich-text setting on the Global Settings screen, including the email content fields
-
