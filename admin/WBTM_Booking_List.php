@@ -854,8 +854,12 @@
 					$mpdf = new \Mpdf\Mpdf(array(
 						'mode'          => 'utf-8',
 						'format'        => 'A4',
-						'margin_top'    => 10,
-						'margin_bottom' => 12,
+						// Tight margins on purpose: the card is ~264mm tall, so 10/12 left
+						// only ~11mm of slack — a single extra passenger field tipped it onto
+						// a second page and left a large void behind. 6/6 gives ~21mm of
+						// headroom and shrinks the unused strip under the card.
+						'margin_top'    => 6,
+						'margin_bottom' => 8,
 						'margin_left'   => 10,
 						'margin_right'  => 10,
 						// Match the card stylesheet so the footer resolves the same glyphs.
