@@ -100,6 +100,18 @@
 			var $forms = $('.bm-gs__tab-panel.bm-gs--active').find('form');
 			if (!$forms.length) { return; }
 
+			// Flush any TinyMCE (wysiwyg) field back into its <textarea> first.
+			// TinyMCE holds the edited content in an iframe and only writes it to the
+			// textarea when the form fires its native submit event — and NEITHER path
+			// below fires one: HTMLFormElement.prototype.submit() bypasses handlers by
+			// design, and FormData reads the DOM as it stands. Without this, a wysiwyg
+			// setting (Terms & Condition Text) posted its pre-edit value, so editing it
+			// in the Visual tab looked like saving did nothing. Editing in the Text tab
+			// happened to work, because that writes straight to the textarea.
+			if (window.tinymce && typeof window.tinymce.triggerSave === 'function') {
+				window.tinymce.triggerSave();
+			}
+
 			// Single-section tab: plain browser POST, no JS in the save path.
 			if ($forms.length === 1) {
 				HTMLFormElement.prototype.submit.call($forms[0]);

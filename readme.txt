@@ -452,3 +452,6 @@ Seat number rotation stopped
 * Fixed the Upper Deck and Lower Deck of the same cabin sharing a single seat price override — each deck now keeps its own per-seat prices, so an upper-deck seat can be priced independently of the lower-deck seat with the same number
 * Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
 * The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
+
+**Settings Fixes**
+* Fixed rich-text settings not saving — most visibly "Terms & Condition Text" under PDF settings. Anything typed in the editor's Visual tab was discarded on save; the Text tab happened to work. Applies to every rich-text setting on the Global Settings screen, including the email content fields
