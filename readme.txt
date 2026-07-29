@@ -461,3 +461,18 @@ Seat number rotation stopped
 * Answers collected before a field was renamed or removed from the form still appear in exports, so nothing already gathered is ever lost
 * In the PDF, passenger details print as a compact line beneath each booking, so the table stays readable no matter how many custom fields your form has
 * The booking detail screen now labels each passenger field with your form label instead of its internal field name
+
+**One Export Button, With Rules (New)**
+* The separate "Export CSV" and "Export PDF" buttons are now a single **Export** button that opens a dialog — pick the format and exactly what to export, in one place
+* Three formats: CSV spreadsheet, printable PDF manifest, and Thermal (POS) tickets — one receipt per booking on a 58/80mm roll, so a whole departure can be printed in one run
+* Six ways to choose the rows: the current filtered view, only the bookings you ticked, today's bookings (day-end sales sheet), today's departures (driver's manifest), a date range, or every booking
+* A date range can mean travel dates or booking dates — pick which, so "everything sold last week" and "everyone travelling next week" are both one click
+* Any scope can be narrowed further by bus and by status, giving bus-wise, route-wise and status-wise exports without touching the filter bar
+* Formats that are unavailable on your site (no PDF library, or Thermal tickets switched off) are shown greyed out with the reason, instead of failing after you click
+* Thermal printing is capped at 200 tickets per run and tells you when a selection is too large, so a mis-click can never spool thousands of receipts
+
+**PDF Export Redesign**
+* The PDF manifest has been redesigned: a clean light layout with a summary strip (bookings, revenue, net of tax, buses), fixed column widths, clearer passenger detail lines and page numbering on every page
+* Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in both the PDF manifest and the Thermal (POS) ticket
+* Fixed Thermal (POS) tickets printing a long blank stretch of paper after each receipt; every ticket is now sized to its own content, and a multi-ticket run prints one receipt per page
+* Fixed a passenger field appearing twice in exports when the same question existed under two field ids (after a form field was renamed)
