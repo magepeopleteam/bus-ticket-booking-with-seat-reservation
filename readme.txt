@@ -473,8 +473,10 @@ Seat number rotation stopped
 * Thermal printing is capped at 200 tickets per run and tells you when a selection is too large, so a mis-click can never spool thousands of receipts
 
 **PDF Export Redesign**
-* The PDF manifest has been redesigned: a clean light layout with a summary strip (bookings, revenue, net of tax, buses), fixed column widths, clearer passenger detail lines and page numbering on every page
-* Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in both the PDF manifest and the Thermal (POS) ticket
+* Export PDF now produces proper **Booking Confirmation tickets** — one printable card per booking, on its own page: company header with the bus image and a status badge, perforated tear lines, the full trip, customer and passenger details, an itemised price summary, your terms, and a thank-you footer
+* It is the very same card a passenger gets from "Download Ticket (PDF)", so what you hand over the counter and what you print in bulk are identical documents
+* Passenger form answers (including your custom fields) get their own "Passenger Information" section on the card, separate from the billing customer
+* Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in the PDF ticket and the Thermal (POS) ticket
 * Fixed Thermal (POS) tickets printing a long blank stretch of paper after each receipt; every ticket is now sized to its own content, and a multi-ticket run prints one receipt per page
 * Fixed a passenger field appearing twice in exports when the same question existed under two field ids (after a form field was renamed)
 
