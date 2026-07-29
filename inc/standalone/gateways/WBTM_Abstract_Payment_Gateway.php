@@ -15,7 +15,25 @@ if ( ! class_exists( 'WBTM_Abstract_Payment_Gateway' ) ) {
 		protected $settings;
 
 		public function __construct() {
-			$this->settings = get_option( self::OPTION, array() );
+			$settings = get_option( self::OPTION, array() );
+
+			// Older installs can have this option stored as an empty string because
+			// the shared Settings API previously created sections without an array
+			// default. Gateway lookups require an array, so repair that legacy shape
+			// before array_key_exists() is called.
+			if ( ! is_array( $settings ) ) {
+				$legacy_mode = is_string( $settings ) ? sanitize_key( $settings ) : '';
+				$settings    = array();
+
+				if ( in_array( $legacy_mode, array( 'woocommerce', 'standalone' ), true ) ) {
+					$settings['wbtm_booking_mode'] = $legacy_mode;
+					$settings['wbtm_enable_wc_payment'] = ( 'woocommerce' === $legacy_mode ) ? 'on' : 'off';
+				}
+
+				update_option( self::OPTION, $settings );
+			}
+
+			$this->settings = $settings;
 			$this->init_gateway();
 		}
 
