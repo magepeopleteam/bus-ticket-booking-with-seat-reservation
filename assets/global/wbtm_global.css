@@ -42,7 +42,7 @@ body.wbtm-plugin-page .has-global-padding > h1 {
 @media only screen and (min-width: 769px) {
   body.wbtm-plugin-page .wp-block-post-content,
   body.wbtm-plugin-page .entry-content {
-    max-width: 1340px !important;
+    /* max-width: 1340px !important; */
     margin-left:  auto !important;
     margin-right: auto !important;
   }
