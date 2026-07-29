@@ -579,6 +579,11 @@
 				$args = $this->build_query_args(-1, 1);
 				$ids  = get_posts(array_merge($args, array('fields' => 'ids')));
 
+				// Every passenger-form field (built-in + custom, e.g. "Emergency Contact
+				// Name") becomes a trailing column, so anything the booking form collects
+				// leaves in the export — see passenger_field_columns().
+				$pax_cols = $this->passenger_field_columns($ids);
+
 				nocache_headers();
 				header('Content-Type: text/csv; charset=utf-8');
 				header('Content-Disposition: attachment; filename=wbtm-bookings-' . gmdate('Y-m-d') . '.csv');
@@ -586,7 +591,11 @@
 				// 'Total' is tax-inclusive (store prices include tax); 'Tax (incl.)' is the
 				// portion of it that is tax and 'Net (excl. Tax)' the remainder — they are
 				// breakdowns of Total, not additions to it.
-				fputcsv($out, array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On'));
+				$header = array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On');
+				foreach ($pax_cols as $pax_label) {
+					$header[] = $pax_label;
+				}
+				fputcsv($out, $header);
 				foreach ($ids as $id) {
 					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
 					$pax    = $this->passenger_bits($id);
@@ -597,7 +606,7 @@
 					$extras = $this->extra_services_total($id);
 					$tax    = $this->booking_tax($id);
 					$dep    = $this->deposit_info($id);
-					fputcsv($out, array(
+					$row    = array(
 						$id,
 						get_post_meta($id, 'wbtm_order_id', true),
 						$this->booking_source($id) === 'standalone' ? 'Custom' : 'WooCommerce',
@@ -625,10 +634,159 @@
 						$dep['due_date'],
 						get_post_meta($id, 'wbtm_order_status', true),
 						get_post_meta($id, 'wbtm_booking_date', true) ?: get_the_date('Y-m-d H:i', $id),
-					));
+					);
+					if (!empty($pax_cols)) {
+						$answers = $this->passenger_field_answers($id);
+						foreach ($pax_cols as $field_id => $pax_label) {
+							$row[] = $this->passenger_field_answer($answers, $field_id, $pax_label);
+						}
+					}
+					fputcsv($out, $row);
 				}
 				fclose($out);
 				exit;
+			}
+
+			/**
+			 * The passenger-form columns an export should carry: field_id => label.
+			 *
+			 * Buses configure their booking form as two post-meta lists — the built-in
+			 * fields (wbtm_attendee_info) and the admin's own additions
+			 * (wbtm_custom_attendee_info) — and every booked seat stores whatever the
+			 * passenger typed under the same field ids. The bus config is read first so
+			 * headers use the configured labels in the configured order (and stay
+			 * consistent even when a passenger left a field blank); a second pass over
+			 * the bookings themselves picks up any field that has since been removed or
+			 * renamed in the form, so previously-collected answers can never silently
+			 * drop out of the export.
+			 *
+			 * Only buses present in the exported set are inspected, so a filtered export
+			 * gets exactly that bus's fields rather than every field on the site.
+			 */
+			private function passenger_field_columns(array $ids) {
+				$cols    = array();
+				$bus_ids = array();
+				foreach ($ids as $id) {
+					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
+					if ($bus_id > 0) {
+						$bus_ids[$bus_id] = true;
+					}
+				}
+				foreach (array_keys($bus_ids) as $bus_id) {
+					foreach (array('wbtm_attendee_info', 'wbtm_custom_attendee_info') as $meta_key) {
+						$fields = get_post_meta($bus_id, $meta_key, true);
+						if (!is_array($fields)) {
+							continue;
+						}
+						foreach ($fields as $field) {
+							if (!is_array($field) || empty($field['field_id'])) {
+								continue;
+							}
+							// 'active' absent means active (older bus configs predate the flag).
+							if (array_key_exists('active', $field) && !$field['active']) {
+								continue;
+							}
+							$field_id = (string) $field['field_id'];
+							if (isset($cols[$field_id])) {
+								continue;
+							}
+							$label = '';
+							if (!empty($field['field_label'])) {
+								$label = $field['field_label'];
+							} elseif (!empty($field['d_label'])) {
+								$label = $field['d_label'];
+							}
+							$cols[$field_id] = $label !== '' ? $label : $this->humanize_field_id($field_id);
+						}
+					}
+				}
+				foreach ($ids as $id) {
+					$info = get_post_meta($id, 'wbtm_attendee_info', true);
+					if (!is_array($info)) {
+						continue;
+					}
+					foreach ($info as $field_id => $field) {
+						// Legacy bookings store a numerically-indexed list instead of a
+						// field_id map; those are matched by label in passenger_field_answer().
+						if (!is_string($field_id) || $field_id === '' || isset($cols[$field_id])) {
+							continue;
+						}
+						$label = (is_array($field) && !empty($field['name'])) ? $field['name'] : '';
+						$cols[$field_id] = $label !== '' ? $label : $this->humanize_field_id($field_id);
+					}
+				}
+				return $cols;
+			}
+
+			/**
+			 * A booking's passenger-form answers, indexed both by field id and by the
+			 * label stored alongside each answer. The label index is what lets legacy
+			 * bookings (stored as a numeric list of {name, value} pairs rather than a
+			 * field_id map) still line up with the columns.
+			 */
+			private function passenger_field_answers($id) {
+				$answers = array('by_id' => array(), 'by_label' => array());
+				$info    = get_post_meta($id, 'wbtm_attendee_info', true);
+				if (!is_array($info)) {
+					return $answers;
+				}
+				foreach ($info as $field_id => $field) {
+					$value = is_array($field) ? ($field['value'] ?? '') : $field;
+					$value = is_array($value) ? implode(', ', $value) : (string) $value;
+					if (is_string($field_id) && $field_id !== '') {
+						$answers['by_id'][$field_id] = $value;
+					}
+					$label = (is_array($field) && !empty($field['name'])) ? (string) $field['name'] : '';
+					if ($label !== '' && !isset($answers['by_label'][$label])) {
+						$answers['by_label'][$label] = $value;
+					}
+				}
+				return $answers;
+			}
+
+			/**
+			 * One passenger-form answer for one column — by field id, falling back to
+			 * the column label for legacy bookings. Missing answers export as blank so
+			 * every row keeps the same column count as the header.
+			 */
+			private function passenger_field_answer(array $answers, $field_id, $label) {
+				if (isset($answers['by_id'][$field_id])) {
+					return $answers['by_id'][$field_id];
+				}
+				if ($label !== '' && isset($answers['by_label'][$label])) {
+					return $answers['by_label'][$label];
+				}
+				return '';
+			}
+
+			/**
+			 * One booking's answered passenger-form fields as an escaped "Label: value"
+			 * strip for the PDF export, or '' when the passenger filled nothing in.
+			 * Column order follows $pax_cols so the strips stay consistent down the page.
+			 */
+			private function passenger_field_strip($id, array $pax_cols) {
+				if (empty($pax_cols)) {
+					return '';
+				}
+				$answers = $this->passenger_field_answers($id);
+				$bits    = array();
+				foreach ($pax_cols as $field_id => $label) {
+					$value = $this->passenger_field_answer($answers, $field_id, $label);
+					if ($value === '') {
+						continue;
+					}
+					$bits[] = '<span style="color:#64748b;">' . esc_html($label) . ':</span> ' . esc_html($value);
+				}
+				return $bits ? implode(' &nbsp;&bull;&nbsp; ', $bits) : '';
+			}
+
+			/**
+			 * Readable header for a field that carries no configured label
+			 * (wbtm_emergency_contact => "Emergency Contact").
+			 */
+			private function humanize_field_id($field_id) {
+				$clean = preg_replace('/^wbtm[_-]/', '', (string) $field_id);
+				return ucwords(str_replace(array('_', '-'), ' ', $clean));
 			}
 
 			/**
@@ -649,6 +807,9 @@
 
 				$args = $this->build_query_args(-1, 1);
 				$ids  = get_posts(array_merge($args, array('fields' => 'ids')));
+
+				// Same passenger-form fields the CSV exports — see passenger_field_columns().
+				$pax_cols = $this->passenger_field_columns($ids);
 
 				$rows = '';
 				$grand_total  = 0;
@@ -713,6 +874,15 @@
 						. '<td>' . esc_html(ucfirst(str_replace('wc-', '', (string) $status)) ?: '—') . '</td>'
 						. '<td>' . esc_html($leg) . '</td>'
 						. '</tr>';
+					// Passenger-form answers (built-in + custom fields such as "Emergency
+					// Contact Name") ride along as a full-width continuation strip under the
+					// booking rather than one column per field: a booking form can carry any
+					// number of fields, and extra columns would collapse this already
+					// 13-column landscape table. Bookings with nothing filled in get no strip.
+					$pax_strip = $this->passenger_field_strip($id, $pax_cols);
+					if ($pax_strip !== '') {
+						$rows .= '<tr><td class="pax" colspan="13">' . $pax_strip . '</td></tr>';
+					}
 				}
 				if ($rows === '') {
 					$rows = '<tr><td colspan="13" style="text-align:center;color:#999;padding:18px;">' . esc_html__('No bookings found.', 'bus-ticket-booking-with-seat-reservation') . '</td></tr>';
@@ -727,6 +897,7 @@
 					. 'table{width:100%;border-collapse:collapse;}'
 					. 'th{background:#f1f5f9;text-align:left;padding:6px 7px;font-size:8.5px;text-transform:uppercase;border-bottom:1px solid #cbd5e1;}'
 					. 'td{padding:6px 7px;border-bottom:1px solid #eef2f6;vertical-align:top;}'
+					. 'td.pax{background:#f8fafc;color:#334155;font-size:8.5px;padding:4px 7px 5px;}'
 					. 'tfoot td{font-weight:bold;border-top:1px solid #cbd5e1;}'
 					. '</style>';
 				$html .= '<h1>' . esc_html__('Booking List', 'bus-ticket-booking-with-seat-reservation') . '</h1>';
@@ -2142,8 +2313,14 @@
 													$value = is_array($field) ? ($field['value'] ?? '') : $field;
 													$value = is_array($value) ? implode(', ', $value) : $value;
 													if ($value === '') continue;
+													// Each answer carries the form label it was collected under; fall
+													// back to the field id only when that label is missing.
+													$field_label = (is_array($field) && !empty($field['name'])) ? $field['name'] : '';
+													if ($field_label === '') {
+														$field_label = is_string($field_key) ? $this->humanize_field_id($field_key) : __('Field', 'bus-ticket-booking-with-seat-reservation');
+													}
 												?>
-													<dt><?php echo esc_html(is_string($field_key) ? ucwords(str_replace('_', ' ', $field_key)) : esc_html__('Field', 'bus-ticket-booking-with-seat-reservation')); ?></dt>
+													<dt><?php echo esc_html($field_label); ?></dt>
 													<dd><?php echo esc_html($value); ?></dd>
 												<?php endforeach; ?>
 											</dl>
