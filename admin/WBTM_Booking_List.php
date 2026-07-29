@@ -38,6 +38,7 @@
 				add_action('wp_ajax_wbtm_bkl_save_columns', array($this, 'ajax_save_columns'));
 				add_action('admin_post_wbtm_bkl_export_csv', array($this, 'handle_export_csv'));
 				add_action('admin_post_wbtm_bkl_export_pdf', array($this, 'handle_export_pdf'));
+				add_action('admin_post_wbtm_bkl_export_thermal', array($this, 'handle_export_thermal'));
 			}
 
 			public function register_menu() {
@@ -124,6 +125,20 @@
 					// there is no duplicate handler. When it is not active these stay inert.
 					'qrActive' => class_exists('WBTM_QR_CODE_Functions'),
 					'qrNonce'  => wp_create_nonce('wbtm_pro_admin_nonce'),
+					// Export modal: the JS assembles wbtm_bl_* args from the chosen scope
+					// and posts them to admin-post.php, one nonce per format handler.
+					// 'currentFilters' is the filter bar's live state, so the "Current view"
+					// scope exports exactly what is on screen; 'today' comes from the server
+					// so a day-boundary export follows the site's timezone, not the browser's.
+					'exportBase'     => admin_url('admin-post.php'),
+					'exportNonces'   => array(
+						'csv'     => wp_create_nonce('wbtm_bkl_export_csv'),
+						'pdf'     => wp_create_nonce('wbtm_bkl_export_pdf'),
+						'thermal' => wp_create_nonce('wbtm_bkl_export_thermal'),
+					),
+					'currentFilters' => $this->current_filter_query_args(),
+					'today'          => current_time('Y-m-d'),
+					'maxThermal'     => self::MAX_THERMAL_TICKETS,
 					'i18n'    => array(
 						'proOnly'     => esc_html__('This is a PRO feature. Upgrade to unlock it.', 'bus-ticket-booking-with-seat-reservation'),
 						'deleted'     => esc_html__('Booking deleted.', 'bus-ticket-booking-with-seat-reservation'),
@@ -140,6 +155,12 @@
 						'checkinError'      => esc_html__('Could not update check-in.', 'bus-ticket-booking-with-seat-reservation'),
 						'confirmCheckin'    => esc_html__('Check in %d booking(s)?', 'bus-ticket-booking-with-seat-reservation'),
 						'confirmRevoke'     => esc_html__('Revoke check-in for %d booking(s)?', 'bus-ticket-booking-with-seat-reservation'),
+						'exportNoFormat'    => esc_html__('Please choose an export format.', 'bus-ticket-booking-with-seat-reservation'),
+						'exportNoRows'      => esc_html__('Tick the bookings you want to export first, or choose a different scope.', 'bus-ticket-booking-with-seat-reservation'),
+						'exportBadRange'    => esc_html__('Please pick both a From and a To date.', 'bus-ticket-booking-with-seat-reservation'),
+						'exportRangeOrder'  => esc_html__('The From date cannot be after the To date.', 'bus-ticket-booking-with-seat-reservation'),
+						'exportTooManyThermal' => esc_html__('Thermal printing is capped at %d tickets per run. Narrow the selection down.', 'bus-ticket-booking-with-seat-reservation'),
+						'exportStarted'     => esc_html__('Preparing your export…', 'bus-ticket-booking-with-seat-reservation'),
 					),
 				));
 			}
@@ -567,8 +588,8 @@
 
 			/**
 			 * Pro-only: stream all matching bookings (respecting the current filters)
-			 * as a CSV download. Gated on is_pro() so "Export CSV" is never wired up
-			 * to a working action in free installs.
+			 * as a CSV download. Gated on is_pro() so the Export dialog is never wired
+			 * up to a working action in free installs.
 			 */
 			public function handle_export_csv() {
 				if (!current_user_can('manage_options') || !$this->is_pro()) {
@@ -700,6 +721,15 @@
 						}
 					}
 				}
+				// Labels already claimed by the bus config, lowercased for comparison. A
+				// booking-level field carrying one of these is the SAME question under a
+				// different id (a renamed field id, an older form revision), so it must
+				// merge into the existing column — passenger_field_answer() finds its value
+				// by label. Adding a second column instead printed the answer twice.
+				$claimed = array();
+				foreach ($cols as $existing_label) {
+					$claimed[strtolower(trim((string) $existing_label))] = true;
+				}
 				foreach ($ids as $id) {
 					$info = get_post_meta($id, 'wbtm_attendee_info', true);
 					if (!is_array($info)) {
@@ -712,7 +742,13 @@
 							continue;
 						}
 						$label = (is_array($field) && !empty($field['name'])) ? $field['name'] : '';
-						$cols[$field_id] = $label !== '' ? $label : $this->humanize_field_id($field_id);
+						$label = $label !== '' ? $label : $this->humanize_field_id($field_id);
+						$key   = strtolower(trim($label));
+						if (isset($claimed[$key])) {
+							continue;
+						}
+						$claimed[$key]   = true;
+						$cols[$field_id] = $label;
 					}
 				}
 				return $cols;
@@ -775,9 +811,31 @@
 					if ($value === '') {
 						continue;
 					}
-					$bits[] = '<span style="color:#64748b;">' . esc_html($label) . ':</span> ' . esc_html($value);
+					$bits[] = '<span class="lbl">' . esc_html($label) . ':</span> ' . esc_html($value);
 				}
 				return $bits ? implode(' &nbsp;&bull;&nbsp; ', $bits) : '';
+			}
+
+			/**
+			 * A price formatted for the PDF.
+			 *
+			 * Amounts are deliberately NEVER bold. mPDF resolves each weight to a
+			 * separate font file, and the bold faces bundled with it are missing several
+			 * currency glyphs that the regular faces have — the Bangladeshi Taka (৳)
+			 * among them — so a bold price printed the amount with a tofu box where the
+			 * symbol should be. Emphasis in the totals row comes from its tint and rule
+			 * instead of weight, which costs nothing and always renders.
+			 *
+			 * @param float $amount Value to format.
+			 * @param bool  $markup Wrap in a span (false when the caller escapes the
+			 *                      result itself, e.g. inside a translated sentence).
+			 */
+			private function pdf_money($amount, $markup = true) {
+				$price = wp_strip_all_tags(WBTM_Global_Function::format_price($amount));
+				// format_price() returns an HTML entity for many symbols (&#2547; for ৳);
+				// mPDF needs the real character, and this string is escaped from here on.
+				$price = html_entity_decode($price, ENT_QUOTES, get_bloginfo('charset') ?: 'UTF-8');
+				return $markup ? '<span style="font-weight:normal;">' . esc_html($price) . '</span>' : $price;
 			}
 
 			/**
@@ -815,8 +873,12 @@
 				$grand_total  = 0;
 				$grand_extras = 0;
 				$grand_tax    = 0;
+				$bus_seen     = array();
 				foreach ($ids as $id) {
 					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
+					if ($bus_id) {
+						$bus_seen[$bus_id] = true;
+					}
 					$order_id = get_post_meta($id, 'wbtm_order_id', true);
 					$pax    = $this->passenger_bits($id);
 					$name   = get_post_meta($id, 'wbtm_user_name', true) ?: $pax['name'];
@@ -840,37 +902,37 @@
 					$grand_tax    += $tax;
 
 					$route = trim($bp . ($dp ? ' → ' . $dp : ''));
-					$cust  = esc_html($name ?: '—') . ($phone ? '<br><span style="color:#777;">' . esc_html($phone) . '</span>' : '');
-					$seatt = esc_html($this->seat_label($id)) . ($ticket ? '<br><span style="color:#777;">' . esc_html($ticket) . '</span>' : '');
+					$cust  = '<strong>' . esc_html($name ?: '—') . '</strong>' . ($phone ? '<br><span class="sub">' . esc_html($phone) . '</span>' : '');
+					$seatt = '<strong>' . esc_html($this->seat_label($id)) . '</strong>' . ($ticket ? '<br><span class="sub">' . esc_html($ticket) . '</span>' : '');
 					$exlabel = $this->extra_services_label($id);
 					$excell  = $extras > 0
-						? wp_strip_all_tags(WBTM_Global_Function::format_price($extras)) . ($exlabel ? '<br><span style="color:#777;">' . esc_html($exlabel) . '</span>' : '')
-						: '—';
-					$taxcell = $tax > 0 ? wp_strip_all_tags(WBTM_Global_Function::format_price($tax)) : '—';
+						? $this->pdf_money($extras) . ($exlabel ? '<br><span class="sub">' . esc_html($exlabel) . '</span>' : '')
+						: '<span class="nil">—</span>';
+					$taxcell = $tax > 0 ? $this->pdf_money($tax) : '<span class="nil">—</span>';
 					// Deposit bookings show what was actually collected vs still owed,
 					// since the Total column is the full (tax-inclusive) ticket price.
 					$depnote = '';
 					if ($dep['is_deposit'] && $dep['remaining'] > 0) {
-						$depnote = '<br><span style="color:#c0392b;">' . esc_html(sprintf(
+						$depnote = '<br><span class="due">' . esc_html(sprintf(
 							/* translators: 1: amount paid so far, 2: outstanding balance. */
 							__('paid %1$s · due %2$s', 'bus-ticket-booking-with-seat-reservation'),
-							wp_strip_all_tags(WBTM_Global_Function::format_price($dep['paid'])),
-							wp_strip_all_tags(WBTM_Global_Function::format_price($dep['remaining']))
+							$this->pdf_money($dep['paid'], false),
+							$this->pdf_money($dep['remaining'], false)
 						)) . '</span>';
 					}
 
 					$rows .= '<tr>'
-						. '<td>#' . esc_html($order_id ?: $id) . '<br><span style="color:#999;">ID ' . esc_html($id) . '</span></td>'
-						. '<td>' . esc_html($source) . '</td>'
+						. '<td><strong>#' . esc_html($order_id ?: $id) . '</strong><br><span class="sub">ID ' . esc_html($id) . '</span></td>'
+						. '<td><span class="tag">' . esc_html($source) . '</span></td>'
 						. '<td>' . $cust . '</td>'
 						. '<td>' . esc_html($bus_id ? get_the_title($bus_id) : '—') . '</td>'
 						. '<td>' . esc_html($route ?: '—') . '</td>'
 						. '<td>' . esc_html($jdate ?: '—') . '</td>'
 						. '<td>' . $seatt . '</td>'
-						. '<td>' . wp_strip_all_tags(WBTM_Global_Function::format_price($fare)) . '</td>'
-						. '<td>' . $excell . '</td>'
-						. '<td>' . $taxcell . '</td>'
-						. '<td>' . wp_strip_all_tags(WBTM_Global_Function::format_price($total)) . $depnote . '</td>'
+						. '<td class="num">' . $this->pdf_money($fare) . '</td>'
+						. '<td class="num">' . $excell . '</td>'
+						. '<td class="num">' . $taxcell . '</td>'
+						. '<td class="num strong-num">' . $this->pdf_money($total) . $depnote . '</td>'
 						. '<td>' . esc_html(ucfirst(str_replace('wc-', '', (string) $status)) ?: '—') . '</td>'
 						. '<td>' . esc_html($leg) . '</td>'
 						. '</tr>';
@@ -885,47 +947,108 @@
 					}
 				}
 				if ($rows === '') {
-					$rows = '<tr><td colspan="13" style="text-align:center;color:#999;padding:18px;">' . esc_html__('No bookings found.', 'bus-ticket-booking-with-seat-reservation') . '</td></tr>';
+					$rows = '<tr><td colspan="13" class="empty">' . esc_html__('No bookings found.', 'bus-ticket-booking-with-seat-reservation') . '</td></tr>';
 				}
 
-				$generated = esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format')));
+				$generated = date_i18n(get_option('date_format') . ' ' . get_option('time_format'));
 				$count     = count($ids);
+				$net       = max(0, $grand_total - $grand_tax);
+
+				// Light, print-first palette: white paper, slate ink, hairline rules, and the
+				// plugin's rose used only for the accent rule, the summary figures and the
+				// totals row. Nothing here relies on a dark fill, so it stays legible on a
+				// mono office printer and doesn't drink toner.
 				$html  = '<style>'
-					. 'body{font-family:sans-serif;color:#333;font-size:9px;}'
-					. 'h1{font-size:15px;margin:0 0 2px;}'
-					. '.meta{color:#777;font-size:9px;margin:0 0 10px;}'
-					. 'table{width:100%;border-collapse:collapse;}'
-					. 'th{background:#f1f5f9;text-align:left;padding:6px 7px;font-size:8.5px;text-transform:uppercase;border-bottom:1px solid #cbd5e1;}'
-					. 'td{padding:6px 7px;border-bottom:1px solid #eef2f6;vertical-align:top;}'
-					. 'td.pax{background:#f8fafc;color:#334155;font-size:8.5px;padding:4px 7px 5px;}'
-					. 'tfoot td{font-weight:bold;border-top:1px solid #cbd5e1;}'
+					// freesans, not sans-serif: mPDF's default (DejaVu) has no glyph for
+					// several currency signs — the Bangladeshi Taka (৳) among them — and
+					// printed a tofu box. See pdf_money() for why amounts are never bold.
+					. 'body{font-family:freesans;color:#1f2937;font-size:8.6pt;}'
+					. '.doc-head{width:100%;border-collapse:collapse;margin:0 0 2mm;}'
+					. '.doc-head td{padding:0;border:0;vertical-align:bottom;}'
+					. '.doc-title{font-size:16pt;font-weight:bold;color:#0f172a;letter-spacing:-.2pt;}'
+					. '.doc-sub{font-size:8pt;color:#94a3b8;padding-top:1mm;}'
+					. '.doc-org{text-align:right;font-size:9.5pt;font-weight:bold;color:#475569;}'
+					. '.org-host{font-size:7.5pt;font-weight:normal;color:#a8b3c2;}'
+					. '.rule{height:2px;background:#e63946;font-size:0;line-height:0;margin:0 0 4mm;}'
+					// Summary strip: four light cards, figures in rose, labels in muted caps.
+					. '.sum{width:100%;border-collapse:separate;border-spacing:2.5mm 0;margin:0 0 4mm;}'
+					. '.sum td{background:#f8fafc;border:1px solid #eaeff5;padding:2.6mm 3mm;width:25%;}'
+					. '.sum .k{font-size:7pt;color:#94a3b8;text-transform:uppercase;letter-spacing:.3pt;}'
+					. '.sum .v{font-size:12pt;color:#e63946;padding-top:.6mm;}'
+					. 'table.list{width:100%;border-collapse:collapse;}'
+					. 'table.list th{background:#f7f9fc;text-align:left;padding:2.4mm 2mm;font-size:7pt;font-weight:bold;'
+						. 'text-transform:uppercase;letter-spacing:.3pt;color:#64748b;border-bottom:1px solid #dde5ee;}'
+					. 'table.list td{padding:2.4mm 2mm;border-bottom:1px solid #eef2f7;vertical-align:top;line-height:1.35;}'
+					. 'table.list td.num{text-align:right;white-space:nowrap;}'
+					. 'table.list td.strong-num{color:#0f172a;}'
+					. '.sub{color:#98a4b3;font-size:7.4pt;}'
+					. '.nil{color:#cbd5e1;}'
+					. '.due{color:#c0392b;font-size:7.4pt;}'
+					. '.tag{background:#eef2f7;color:#5b6878;font-size:7pt;padding:.6mm 1.4mm;}'
+					// Passenger-form answers: a tinted continuation strip under each booking.
+					. 'td.pax{background:#f9fbfd;color:#475569;font-size:7.4pt;padding:1.6mm 2mm 2mm;border-bottom:1px solid #eef2f7;}'
+					. 'td.pax .lbl{color:#9aa6b5;}'
+					. 'td.empty{text-align:center;color:#a8b3c2;padding:12mm 2mm;}'
+					. 'tfoot td{background:#fdf2f4;border-top:1.5px solid #e63946;border-bottom:0;color:#8f1d28;padding:2.8mm 2mm;}'
+					. 'tfoot .lbl{text-align:right;font-weight:bold;text-transform:uppercase;font-size:7.5pt;letter-spacing:.3pt;}'
 					. '</style>';
-				$html .= '<h1>' . esc_html__('Booking List', 'bus-ticket-booking-with-seat-reservation') . '</h1>';
-				$html .= '<p class="meta">' . sprintf(
-					/* translators: 1: number of bookings, 2: date/time generated. */
-					esc_html__('%1$s booking(s) — generated %2$s', 'bus-ticket-booking-with-seat-reservation'),
-					esc_html(number_format_i18n($count)),
-					$generated
-				) . '</p>';
-				$html .= '<table><thead><tr>'
-					. '<th>' . esc_html__('Booking', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Source', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Customer', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Bus', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Route', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Journey Date', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Seat / Ticket', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Fare', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Extra Services', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Tax (incl.)', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Total', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Status', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '<th>' . esc_html__('Leg', 'bus-ticket-booking-with-seat-reservation') . '</th>'
-					. '</tr></thead><tbody>' . $rows . '</tbody>'
-					. '<tfoot><tr><td colspan="8" style="text-align:right;">' . esc_html__('Grand Total', 'bus-ticket-booking-with-seat-reservation') . '</td>'
-					. '<td>' . wp_strip_all_tags(WBTM_Global_Function::format_price($grand_extras)) . '</td>'
-					. '<td>' . wp_strip_all_tags(WBTM_Global_Function::format_price($grand_tax)) . '</td>'
-					. '<td>' . wp_strip_all_tags(WBTM_Global_Function::format_price($grand_total)) . '</td><td colspan="2"></td></tr></tfoot>'
+
+				$html .= '<table class="doc-head"><tr>'
+					. '<td><div class="doc-title">' . esc_html__('Booking List', 'bus-ticket-booking-with-seat-reservation') . '</div>'
+					. '<div class="doc-sub">' . sprintf(
+						/* translators: 1: number of bookings, 2: date/time generated. */
+						esc_html__('%1$s booking(s) · generated %2$s', 'bus-ticket-booking-with-seat-reservation'),
+						esc_html(number_format_i18n($count)),
+						esc_html($generated)
+					) . '</div></td>'
+					// Explicit <br>: mPDF ignores display:block on an inline element, so a
+					// styled <small> alone left the host glued to the site name.
+					. '<td class="doc-org">' . esc_html(get_bloginfo('name'))
+					. '<br><span class="org-host">' . esc_html(wp_parse_url(home_url(), PHP_URL_HOST)) . '</span></td>'
+					. '</tr></table><div class="rule"></div>';
+
+				$summary = array(
+					array(esc_html__('Bookings', 'bus-ticket-booking-with-seat-reservation'), esc_html(number_format_i18n($count))),
+					array(esc_html__('Revenue (incl. tax)', 'bus-ticket-booking-with-seat-reservation'), $this->pdf_money($grand_total)),
+					array(esc_html__('Net (excl. tax)', 'bus-ticket-booking-with-seat-reservation'), $this->pdf_money($net)),
+					array(esc_html__('Buses', 'bus-ticket-booking-with-seat-reservation'), esc_html(number_format_i18n(count($bus_seen)))),
+				);
+				$html .= '<table class="sum"><tr>';
+				foreach ($summary as $card) {
+					$html .= '<td><div class="k">' . $card[0] . '</div><div class="v">' . $card[1] . '</div></td>';
+				}
+				$html .= '</tr></table>';
+
+				// Fixed column widths (percent of the table): with auto layout a long extra
+				// service name stole space from the money columns and pushed "Tax (incl.)"
+				// onto two lines. Widths total 100 and are ordered as the row cells above.
+				$columns = array(
+					array(__('Booking', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
+					array(__('Source', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
+					array(__('Customer', 'bus-ticket-booking-with-seat-reservation'), 12, 'left'),
+					array(__('Bus', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
+					array(__('Route', 'bus-ticket-booking-with-seat-reservation'), 9, 'left'),
+					array(__('Journey Date', 'bus-ticket-booking-with-seat-reservation'), 8.5, 'left'),
+					array(__('Seat / Ticket', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'left'),
+					array(__('Fare', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'right'),
+					array(__('Extra Services', 'bus-ticket-booking-with-seat-reservation'), 10, 'right'),
+					array(__('Tax (incl.)', 'bus-ticket-booking-with-seat-reservation'), 5.5, 'right'),
+					array(__('Total', 'bus-ticket-booking-with-seat-reservation'), 7, 'right'),
+					array(__('Status', 'bus-ticket-booking-with-seat-reservation'), 7.5, 'left'),
+					array(__('Leg', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'left'),
+				);
+				$html .= '<table class="list"><thead><tr>';
+				foreach ($columns as $column) {
+					$html .= '<th style="width:' . esc_attr($column[1]) . '%;text-align:' . esc_attr($column[2]) . ';">'
+						. esc_html($column[0]) . '</th>';
+				}
+				$html .= '</tr></thead><tbody>' . $rows . '</tbody>'
+					. '<tfoot><tr>'
+					. '<td colspan="8" class="lbl">' . esc_html__('Grand Total', 'bus-ticket-booking-with-seat-reservation') . '</td>'
+					. '<td class="num">' . $this->pdf_money($grand_extras) . '</td>'
+					. '<td class="num">' . $this->pdf_money($grand_tax) . '</td>'
+					. '<td class="num">' . $this->pdf_money($grand_total) . '</td>'
+					. '<td colspan="2"></td></tr></tfoot>'
 					. '</table>';
 
 				// Raise PCRE limits for large lists (mirrors the Pro generator's guard),
@@ -935,13 +1058,81 @@
 				if ((int) ini_get('pcre.recursion_limit') < 200000) { @ini_set('pcre.recursion_limit', '200000'); }
 
 				try {
-					$mpdf = new \Mpdf\Mpdf(array('mode' => 'utf-8', 'format' => 'A4-L', 'margin_top' => 12, 'margin_bottom' => 12, 'margin_left' => 10, 'margin_right' => 10));
+					$mpdf = new \Mpdf\Mpdf(array(
+						'mode'          => 'utf-8',
+						'format'        => 'A4-L',
+						'margin_top'    => 12,
+						'margin_bottom' => 14,
+						'margin_left'   => 10,
+						'margin_right'  => 10,
+						// Match the stylesheet so the page footer resolves the same glyphs.
+						'default_font'  => 'freesans',
+					));
+					// Repeat the column headers on every page and number the pages, so a
+					// multi-page manifest is still readable once it is off the screen.
+					$mpdf->SetHTMLFooter(
+						'<table width="100%" style="font-family:freesans;font-size:7pt;color:#a8b3c2;border-top:1px solid #eef2f7;padding-top:1.5mm;"><tr>'
+						. '<td>' . esc_html(get_bloginfo('name')) . '</td>'
+						. '<td style="text-align:right;">' . esc_html__('Page', 'bus-ticket-booking-with-seat-reservation') . ' {PAGENO} / {nbpg}</td>'
+						. '</tr></table>'
+					);
 					$mpdf->WriteHTML($html);
 					$mpdf->Output('bookings-' . gmdate('Y-m-d') . '.pdf', 'D');
 				} catch (\Throwable $e) {
 					error_log('WBTM Booking List PDF export failed — ' . $e->getMessage());
 					wp_die(esc_html__('Could not generate the PDF. Please try again.', 'bus-ticket-booking-with-seat-reservation'));
 				}
+				exit;
+			}
+
+			/**
+			 * Pro-only: print one thermal (POS) receipt ticket per matching booking as a
+			 * single roll. The receipt layout itself is the Pro add-on's, so this resolves
+			 * the booking set from the shared query builder and hands the id list to the
+			 * Pro generator (which already owns roll width, height estimation and the
+			 * per-ticket template) rather than duplicating any of that here.
+			 *
+			 * Capped at MAX_THERMAL_TICKETS: this is meant for a counter or a departure,
+			 * the ids travel in the redirect URL, and nobody prints thousands of receipts
+			 * by accident. Over the cap we stop and say so instead of silently truncating.
+			 */
+			const MAX_THERMAL_TICKETS = 200;
+
+			public function handle_export_thermal() {
+				if (!current_user_can('manage_options') || !$this->is_pro()) {
+					wp_die(esc_html__('You do not have permission to do that.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				check_admin_referer('wbtm_bkl_export_thermal');
+				if (!class_exists('WBTM_Pro_Pdf') || !WBTM_Pro_Pdf::is_mpdf_available()) {
+					wp_die(esc_html__('PDF generation is unavailable. Please install the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				if (!class_exists('WBTM_Global_Function') || WBTM_Global_Function::get_settings('wbtm_pdf_settings', 'thermal_ticket_enable', 'yes') !== 'yes') {
+					wp_die(esc_html__('Thermal (POS) tickets are turned off in PDF settings.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+
+				$args = $this->build_query_args(-1, 1);
+				$ids  = get_posts(array_merge($args, array('fields' => 'ids')));
+				if (empty($ids)) {
+					wp_die(esc_html__('No bookings matched, so there is nothing to print.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				if (count($ids) > self::MAX_THERMAL_TICKETS) {
+					wp_die(esc_html(sprintf(
+						/* translators: 1: number of matching bookings, 2: maximum allowed. */
+						__('That selection is %1$s bookings and thermal printing is capped at %2$s tickets per run. Narrow it down — by bus, departure date, or by ticking rows — and try again.', 'bus-ticket-booking-with-seat-reservation'),
+						number_format_i18n(count($ids)),
+						number_format_i18n(self::MAX_THERMAL_TICKETS)
+					)));
+				}
+
+				// get_pdf_url() ends in wp_nonce_url(), which esc_html()s the result for use
+				// in an href — so its separators arrive as "&amp;". Sent as a Location
+				// header that would become a parameter literally named "amp;attendee_ids"
+				// and the roll would come back blank, so decode back to a real URL first.
+				$pdf_url = wp_specialchars_decode(WBTM_Pro_Pdf::get_pdf_url(array(
+					'attendee_ids' => implode(',', array_map('absint', $ids)),
+					'thermal'      => 1,
+				)), ENT_QUOTES);
+				wp_safe_redirect($pdf_url);
 				exit;
 			}
 
@@ -1019,6 +1210,14 @@
 					return $args;
 				}
 				$f = $this->get_filter_values();
+
+				// Explicit booking ids (the export modal's "Selected bookings" scope).
+				// get_filter_values() collapses an unparseable list to array(0) rather
+				// than array(), because WP_Query ignores an EMPTY post__in and would
+				// silently widen a hand-picked export to every booking.
+				if (!empty($f['ids'])) {
+					$args['post__in'] = $f['ids'];
+				}
 
 				// Per-page override (Pro).
 				if ($per_page > 0 && $f['per_page'] > 0) {
@@ -1134,7 +1333,21 @@
 				if ($per_page < 1 || $per_page > 500) {
 					$per_page = self::PER_PAGE;
 				}
+				// Hand-picked booking ids, used by the export modal's "Selected bookings"
+				// scope. A present-but-unparseable list becomes array(0) — a deliberately
+				// unmatchable post__in — so a malformed request exports nothing rather
+				// than everything (WP_Query ignores an empty post__in).
+				$ids = array();
+				if (isset($_GET['wbtm_bl_ids'])) {
+					$raw_ids  = wp_unslash($_GET['wbtm_bl_ids']);
+					$requested = is_array($raw_ids) ? $raw_ids : array_filter(array_map('trim', explode(',', (string) $raw_ids)), 'strlen');
+					$ids       = array_values(array_filter(array_map('absint', $requested)));
+					if (empty($ids) && !empty($requested)) {
+						$ids = array(0);
+					}
+				}
 				return array(
+					'ids'          => $ids,
 					'search'       => isset($_GET['wbtm_bl_s']) ? sanitize_text_field(wp_unslash($_GET['wbtm_bl_s'])) : '',
 					'status'       => isset($_GET['wbtm_bl_status']) ? sanitize_text_field(wp_unslash($_GET['wbtm_bl_status'])) : '',
 					'bus_id'       => isset($_GET['wbtm_bl_bus']) ? absint($_GET['wbtm_bl_bus']) : 0,
@@ -1175,6 +1388,7 @@
 					'wbtm_bl_booked_from'  => $f['booked_from'],
 					'wbtm_bl_booked_to'    => $f['booked_to'],
 					'wbtm_bl_sort'         => $f['sort'],
+					'wbtm_bl_ids'          => $f['ids'] ? implode(',', $f['ids']) : '',
 				);
 				$args = array();
 				foreach ($map as $key => $value) {
@@ -1343,42 +1557,33 @@
 						</div>
 						<div class="wbtm-bkl-header-actions">
 							<?php if ($is_pro && $is_admin) : ?>
-								<?php
-									// Exports respect the active filters (bus, status, dates, search…) so a
-									// filtered view exports exactly those rows; with no filter set they
-									// export every booking. The filters travel to the handler as query
-									// args, which build_query_args() re-reads there.
-									$filter_args = $this->current_filter_query_args();
-									$export_url = wp_nonce_url(
-										add_query_arg(array_merge(array('action' => 'wbtm_bkl_export_csv'), $filter_args), admin_url('admin-post.php')),
-										'wbtm_bkl_export_csv'
-									);
-									// Full booking-list PDF export (Pro + mPDF). Renders EVERY
-									// booking via our own handler — so it works with or without a
-									// bus selected, exactly like Export CSV but as a PDF (the Pro
-									// per-bus manifest PDF stays available per-row for one ticket).
-									$pdf_available = class_exists('WBTM_Pro_Pdf') && WBTM_Pro_Pdf::is_mpdf_available();
-									$pdf_url = '';
-									if ($pdf_available) {
-										$pdf_url = wp_nonce_url(
-											add_query_arg(array_merge(array('action' => 'wbtm_bkl_export_pdf'), $filter_args), admin_url('admin-post.php')),
-											'wbtm_bkl_export_pdf'
-										);
-									}
-								?>
-								<?php if ($pdf_url) : ?>
-									<a href="<?php echo esc_url($pdf_url); ?>" target="_blank" rel="noopener noreferrer" class="wbtm-bkl-pro-cta wbtm-bkl-pro-cta-alt"><span class="dashicons dashicons-media-document"></span><?php esc_html_e('Export PDF', 'bus-ticket-booking-with-seat-reservation'); ?></a>
-								<?php endif; ?>
-								<a href="<?php echo esc_url($export_url); ?>" class="wbtm-bkl-pro-cta"><span class="dashicons dashicons-download"></span><?php esc_html_e('Export CSV', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+								<button type="button" id="wbtm-bkl-export-open" class="wbtm-bkl-pro-cta">
+									<span class="dashicons dashicons-download"></span><?php esc_html_e('Export', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</button>
 							<?php elseif (!$is_pro && $is_admin) : ?>
 								<a href="https://mage-people.com/product/addon-bus-ticket-booking-with-seat-reservation-pro/" target="_blank" rel="noopener noreferrer" class="wbtm-bkl-pro-cta"><span class="dashicons dashicons-star-filled"></span><?php esc_html_e('Upgrade to PRO', 'bus-ticket-booking-with-seat-reservation'); ?></a>
 							<?php endif; ?>
 						</div>
 					</div>
 
-					<?php $this->render_stats($is_pro); ?>
-
-					<?php $this->render_filters($is_pro); ?>
+					<?php
+						// Free installs blur the stats and the filter bar together behind ONE
+						// PRO badge. They used to carry a lock overlay each, which stacked two
+						// identical badges down the screen; the sections themselves still
+						// render (blurred, inert) so the shape of the feature is visible.
+						if (!$is_pro) : ?>
+						<div class="wbtm-bkl-locked wbtm-bkl-locked-group is-locked">
+							<?php $this->render_stats($is_pro, false); ?>
+							<?php $this->render_filters($is_pro, false); ?>
+							<div class="wbtm-bkl-lock-overlay">
+								<?php echo wp_kses_post($this->pro_badge_html()); ?>
+								<p><?php esc_html_e('Booking analytics, search, filtering and the CSV / PDF / thermal exports are all PRO features.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+							</div>
+						</div>
+					<?php else : ?>
+						<?php $this->render_stats($is_pro); ?>
+						<?php $this->render_filters($is_pro); ?>
+					<?php endif; ?>
 
 					<div class="wbtm-bkl-table-wrap">
 						<div class="wbtm-bkl-table-toolbar">
@@ -1482,11 +1687,198 @@
 
 					<?php $this->render_delete_modal(); ?>
 					<?php $this->render_status_modal(); ?>
+					<?php if ($is_pro && $is_admin) { $this->render_export_modal(); } ?>
 				</div>
 				<?php
 			}
 
-			private function render_stats($is_pro) {
+			/**
+			 * The single "Export" dialog behind the header button: pick a format, pick
+			 * what to export, optionally narrow it further. The JS turns those choices
+			 * into the same wbtm_bl_* query args the on-screen filter bar uses, so every
+			 * scope runs through build_query_args() — one query builder for the screen
+			 * and all three exports, rather than per-scope query code.
+			 */
+			private function render_export_modal() {
+				$pdf_available = class_exists('WBTM_Pro_Pdf') && WBTM_Pro_Pdf::is_mpdf_available();
+				$thermal_available = $pdf_available
+					&& class_exists('WBTM_Global_Function')
+					&& WBTM_Global_Function::get_settings('wbtm_pdf_settings', 'thermal_ticket_enable', 'yes') === 'yes';
+				$buses    = get_posts(array('post_type' => 'wbtm_bus', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC'));
+				$statuses = $this->get_status_options();
+				$today    = current_time('Y-m-d');
+				$formats  = array(
+					'csv' => array(
+						'icon'      => 'dashicons-media-spreadsheet',
+						'label'     => __('CSV', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'      => __('Spreadsheet — every column, including passenger form fields.', 'bus-ticket-booking-with-seat-reservation'),
+						'available' => true,
+						'why'       => '',
+					),
+					'pdf' => array(
+						'icon'      => 'dashicons-media-document',
+						'label'     => __('PDF', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'      => __('Printable landscape manifest with totals.', 'bus-ticket-booking-with-seat-reservation'),
+						'available' => $pdf_available,
+						'why'       => __('Needs the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'thermal' => array(
+						'icon'      => 'dashicons-printer',
+						'label'     => __('Thermal tickets', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'      => __('One POS receipt ticket per booking, on a 58/80mm roll.', 'bus-ticket-booking-with-seat-reservation'),
+						'available' => $thermal_available,
+						'why'       => $pdf_available
+							? __('Turn on Thermal (POS) Ticket in PDF settings.', 'bus-ticket-booking-with-seat-reservation')
+							: __('Needs the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+				);
+				// Scope rows. 'view' mirrors today's behaviour (export exactly what the
+				// filter bar selected) and stays the default so the button keeps doing
+				// the least surprising thing.
+				$scopes = array(
+					'view' => array(
+						'icon'  => 'dashicons-visibility',
+						'label' => __('Current view', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __('Everything the filter bar is showing right now.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'selected' => array(
+						'icon'  => 'dashicons-yes',
+						'label' => __('Selected bookings', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __('Only the rows you ticked in the list.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'today' => array(
+						'icon'  => 'dashicons-calendar-alt',
+						'label' => __("Today's bookings", 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __('Booked today — the day-end sales sheet.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'departing_today' => array(
+						// dashicons has no bus glyph — dashicons-car is the closest that exists.
+						'icon'  => 'dashicons-car',
+						'label' => __('Departing today', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __("Travelling today — the driver's manifest.", 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'range' => array(
+						'icon'  => 'dashicons-calendar',
+						'label' => __('Date range', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __('Pick the dates and whether they mean travel or booking.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'all' => array(
+						'icon'  => 'dashicons-database',
+						'label' => __('All bookings', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'  => __('The whole book, ignoring the filter bar.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+				);
+				?>
+				<div id="wbtm-bkl-export-modal" class="wbtm-bkl-modal wbtm-bkl-modal-export" style="display:none;" data-today="<?php echo esc_attr($today); ?>">
+					<div class="wbtm-bkl-modal-card">
+						<div class="wbtm-bkl-modal-head">
+							<h2><span class="dashicons dashicons-download"></span><?php esc_html_e('Export Bookings', 'bus-ticket-booking-with-seat-reservation'); ?></h2>
+							<span class="wbtm-bkl-modal-close dashicons dashicons-no-alt" role="button" aria-label="<?php esc_attr_e('Close', 'bus-ticket-booking-with-seat-reservation'); ?>"></span>
+						</div>
+						<div class="wbtm-bkl-modal-body">
+
+							<div class="wbtm-bkl-export-section">
+								<h3 class="wbtm-bkl-export-legend"><?php esc_html_e('Format', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+								<div class="wbtm-bkl-export-formats">
+									<?php $first = true; foreach ($formats as $key => $fmt) : ?>
+										<label class="wbtm-bkl-export-format<?php echo $fmt['available'] ? '' : ' is-disabled'; ?>"
+											title="<?php echo esc_attr($fmt['available'] ? $fmt['desc'] : $fmt['why']); ?>">
+											<input type="radio" name="wbtm_bkl_export_format" value="<?php echo esc_attr($key); ?>"
+												<?php checked($first && $fmt['available']); ?> <?php disabled(!$fmt['available']); ?>>
+											<span class="dashicons <?php echo esc_attr($fmt['icon']); ?>"></span>
+											<span class="wbtm-bkl-export-format-text">
+												<strong><?php echo esc_html($fmt['label']); ?></strong>
+												<small><?php echo esc_html($fmt['available'] ? $fmt['desc'] : $fmt['why']); ?></small>
+											</span>
+										</label>
+									<?php $first = false; endforeach; ?>
+								</div>
+							</div>
+
+							<div class="wbtm-bkl-export-section">
+								<h3 class="wbtm-bkl-export-legend"><?php esc_html_e('What to export', 'bus-ticket-booking-with-seat-reservation'); ?></h3>
+								<div class="wbtm-bkl-export-scopes">
+									<?php foreach ($scopes as $key => $scope) : ?>
+										<label class="wbtm-bkl-export-scope" data-scope="<?php echo esc_attr($key); ?>">
+											<input type="radio" name="wbtm_bkl_export_scope" value="<?php echo esc_attr($key); ?>" <?php checked($key, 'view'); ?>>
+											<span class="dashicons <?php echo esc_attr($scope['icon']); ?>"></span>
+											<span class="wbtm-bkl-export-scope-text">
+												<strong>
+													<?php echo esc_html($scope['label']); ?>
+													<?php if ($key === 'selected') : ?>
+														<span class="wbtm-bkl-export-count" id="wbtm-bkl-export-selected-count">(0)</span>
+													<?php endif; ?>
+												</strong>
+												<small><?php echo esc_html($scope['desc']); ?></small>
+											</span>
+										</label>
+									<?php endforeach; ?>
+								</div>
+
+								<div class="wbtm-bkl-export-range" id="wbtm-bkl-export-range" hidden>
+									<div class="wbtm-bkl-export-field">
+										<label for="wbtm-bkl-export-basis"><?php esc_html_e('Dates refer to', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+										<select id="wbtm-bkl-export-basis">
+											<option value="journey"><?php esc_html_e('Journey date (travel)', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+											<option value="booked"><?php esc_html_e('Booked date (sale)', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+										</select>
+									</div>
+									<div class="wbtm-bkl-export-field">
+										<label for="wbtm-bkl-export-from"><?php esc_html_e('From', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+										<input type="date" id="wbtm-bkl-export-from" value="<?php echo esc_attr($today); ?>">
+									</div>
+									<div class="wbtm-bkl-export-field">
+										<label for="wbtm-bkl-export-to"><?php esc_html_e('To', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+										<input type="date" id="wbtm-bkl-export-to" value="<?php echo esc_attr($today); ?>">
+									</div>
+								</div>
+							</div>
+
+							<div class="wbtm-bkl-export-section" id="wbtm-bkl-export-refine">
+								<h3 class="wbtm-bkl-export-legend"><?php esc_html_e('Narrow it down', 'bus-ticket-booking-with-seat-reservation'); ?> <small><?php esc_html_e('optional', 'bus-ticket-booking-with-seat-reservation'); ?></small></h3>
+								<div class="wbtm-bkl-export-refine-row">
+									<div class="wbtm-bkl-export-field">
+										<label for="wbtm-bkl-export-bus"><?php esc_html_e('Bus', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+										<select id="wbtm-bkl-export-bus">
+											<option value=""><?php esc_html_e('All buses', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+											<?php foreach ($buses as $bus) : ?>
+												<option value="<?php echo esc_attr($bus->ID); ?>"><?php echo esc_html(get_the_title($bus)); ?></option>
+											<?php endforeach; ?>
+										</select>
+									</div>
+									<div class="wbtm-bkl-export-field">
+										<label for="wbtm-bkl-export-status"><?php esc_html_e('Status', 'bus-ticket-booking-with-seat-reservation'); ?></label>
+										<select id="wbtm-bkl-export-status">
+											<option value=""><?php esc_html_e('All statuses', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+											<?php foreach ($statuses as $key => $label) : ?>
+												<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
+											<?php endforeach; ?>
+										</select>
+									</div>
+								</div>
+								<p class="wbtm-bkl-export-note" id="wbtm-bkl-export-refine-note" hidden>
+									<span class="dashicons dashicons-info-outline"></span>
+									<?php esc_html_e('The filter bar and your row selection already decide the rows, so these two are ignored for this scope.', 'bus-ticket-booking-with-seat-reservation'); ?>
+								</p>
+							</div>
+
+							<div class="wbtm-bkl-modal-actions">
+								<button type="button" class="wbtm-bkl-btn wbtm-bkl-btn-outline wbtm-bkl-modal-close"><?php esc_html_e('Cancel', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+								<button type="button" id="wbtm-bkl-export-run" class="wbtm-bkl-btn wbtm-bkl-btn-primary"><span class="dashicons dashicons-download"></span><?php esc_html_e('Export', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
+
+			/**
+			 * @param bool $is_pro   Whether Pro is active (unlocks the real figures).
+			 * @param bool $own_lock Render this section's own PRO overlay. False when the
+			 *                       caller has already wrapped several sections in one
+			 *                       shared lock, so only a single badge is shown.
+			 */
+			private function render_stats($is_pro, $own_lock = true) {
 				$stats = $this->get_stats();
 				$cards = array(
 					array('dashicons-cart', $is_pro ? number_format_i18n($stats['total_bookings']) : '&bull;&bull;&bull;', esc_html__('Total Bookings', 'bus-ticket-booking-with-seat-reservation')),
@@ -1504,7 +1896,7 @@
 					$cards[] = array('dashicons-clock', $is_pro ? WBTM_Global_Function::format_price($stats['total_outstanding']) : '&bull;&bull;&bull;', esc_html__('Outstanding Balance', 'bus-ticket-booking-with-seat-reservation'));
 				}
 				?>
-				<div class="wbtm-bkl-locked<?php echo $is_pro ? '' : ' is-locked'; ?>">
+				<div class="wbtm-bkl-locked<?php echo ($is_pro || !$own_lock) ? '' : ' is-locked'; ?>">
 					<?php
 						// The cards describe the filtered set, so say so when a filter is
 						// active — otherwise a bus-wise total reads like a site-wide one.
@@ -1531,7 +1923,7 @@
 							</div>
 						<?php endforeach; ?>
 					</div>
-					<?php if (!$is_pro) : ?>
+					<?php if (!$is_pro && $own_lock) : ?>
 						<div class="wbtm-bkl-lock-overlay">
 							<?php echo wp_kses_post($this->pro_badge_html()); ?>
 							<p><?php esc_html_e('Booking analytics & revenue insights are a PRO feature.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
@@ -1558,15 +1950,23 @@
 				));
 			}
 
-			private function render_filters($is_pro) {
+			/**
+			 * @param bool $is_pro   Whether Pro is active (unlocks search/filtering).
+			 * @param bool $own_lock Render this section's own PRO overlay — see render_stats().
+			 */
+			private function render_filters($is_pro, $own_lock = true) {
 				$f = $this->get_filter_values();
 				$statuses = $this->get_status_options();
 				$buses    = $is_pro ? get_posts(array('post_type' => 'wbtm_bus', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC')) : array();
 				$payments = $is_pro ? $this->get_distinct_meta_values('wbtm_billing_type') : array();
 				$tickets  = $is_pro ? $this->get_distinct_meta_values('wbtm_ticket') : array();
-				// Sort/per-page always have defaults, so they don't count as an "active filter".
+				// The panel starts collapsed and only auto-opens when a filter is actually
+				// narrowing the list, so the reason for a short list is never hidden.
+				// Excluded from that test: sort/per_page always have defaults, and 'ids' is
+				// export-only (the filter bar never sets it) — and being an array it would
+				// have passed the scalar test below even when empty, wedging the panel open.
 				$active_probe = $f;
-				unset($active_probe['sort'], $active_probe['per_page']);
+				unset($active_probe['sort'], $active_probe['per_page'], $active_probe['ids']);
 				$has_active_filter = $is_pro && count(array_filter($active_probe, function ($v) { return $v !== '' && $v !== 0; })) > 0;
 				$sort_options = array(
 					'newest'       => __('Newest first', 'bus-ticket-booking-with-seat-reservation'),
@@ -1584,7 +1984,7 @@
 						<span class="dashicons dashicons-arrow-down-alt2 wbtm-bkl-filters-arrow"></span>
 					</button>
 					<div class="wbtm-bkl-filters-body<?php echo $has_active_filter ? ' is-open' : ''; ?>">
-						<div class="wbtm-bkl-locked wbtm-bkl-locked-filters<?php echo $is_pro ? '' : ' is-locked'; ?>">
+						<div class="wbtm-bkl-locked wbtm-bkl-locked-filters<?php echo ($is_pro || !$own_lock) ? '' : ' is-locked'; ?>">
 							<form method="get" class="wbtm-bkl-filters" <?php echo $is_pro ? '' : 'aria-hidden="true"'; ?>>
 								<input type="hidden" name="post_type" value="wbtm_bus">
 								<input type="hidden" name="page" value="<?php echo esc_attr(self::PAGE_SLUG); ?>">
@@ -1689,10 +2089,10 @@
 									<?php endif; ?>
 								</div>
 							</form>
-							<?php if (!$is_pro) : ?>
+							<?php if (!$is_pro && $own_lock) : ?>
 								<div class="wbtm-bkl-lock-overlay">
 									<?php echo wp_kses_post($this->pro_badge_html()); ?>
-									<p><?php esc_html_e('Search, filtering & CSV export are available in PRO.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
+									<p><?php esc_html_e('Search, filtering & the exports are available in PRO.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 								</div>
 							<?php endif; ?>
 						</div>
