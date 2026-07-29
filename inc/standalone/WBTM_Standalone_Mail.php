@@ -175,7 +175,7 @@ if ( ! class_exists( 'WBTM_Standalone_Mail' ) ) {
 					<td colspan="2" style="padding:0 0 10px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#9096a2;"><?php esc_html_e( 'Trip', 'bus-ticket-booking-with-seat-reservation' ); ?></td>
 				</tr>
 				<tr>
-					<td style="padding:4px 0;color:#6b7280;"><?php esc_html_e( 'Bus', 'bus-ticket-booking-with-seat-reservation' ); ?></td>
+					<td style="padding:4px 0;color:#6b7280;"><?php echo esc_html( WBTM_Translations::text_bus() ); ?></td>
 					<td style="padding:4px 0;text-align:right;font-weight:600;"><?php echo esc_html( $summary['bus_name'] ); ?></td>
 				</tr>
 				<?php if ( $summary['boarding_point'] || $summary['dropping_point'] ) : ?>

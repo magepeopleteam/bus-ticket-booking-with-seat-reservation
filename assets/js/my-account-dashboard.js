@@ -43,6 +43,13 @@ jQuery(document).ready(function ($) {
             return (c.format || '%1$s%2$s').replace('%1$s', c.symbol || '$').replace('%2$s', formatted);
         },
 
+        string: function (key, fallback) {
+            const strings = (typeof wbtm_dashboard_ajax !== 'undefined' && wbtm_dashboard_ajax.strings)
+                ? wbtm_dashboard_ajax.strings
+                : {};
+            return strings[key] || fallback;
+        },
+
         bindEvents: function () {
             // Search functionality
             $('#wbtm-search-btn').on('click', this.handleSearch.bind(this));
@@ -383,7 +390,7 @@ jQuery(document).ready(function ($) {
                     <h4>Journey Information</h4>
                     <div class="wbtm-detail-grid">
                         <div class="wbtm-detail-item">
-                            <div class="wbtm-detail-label">Bus</div>
+                            <div class="wbtm-detail-label">${escape(WBTMDashboard.string('bus', 'Bus'))}</div>
                             <div class="wbtm-detail-value">${escape(data.bus.name)}</div>
                         </div>
                         <div class="wbtm-detail-item">

@@ -31,27 +31,23 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					&& is_plugin_active( 'addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' )
 					&& file_exists( WP_PLUGIN_DIR . '/addon-bus--ticket-booking-with-seat-pro/wbtm-pro.php' );
 			}
-			//*********** Booking mode (WooCommerce vs. future standalone Custom Payment) ***********//
+			//*********** Booking mode (WooCommerce vs. standalone Custom Payment) ***********//
 
 			/** Option + key the explicit Booking Mode choice is stored under. */
 			const MODE_OPTION = 'wbtm_payment_settings';
 			const MODE_KEY    = 'wbtm_booking_mode';
 
 			/**
-			 * Which booking systems can actually process a booking right now. When only
-			 * one side is available there is nothing to choose — the mode is simply
-			 * whichever one can run (see booking_mode()). Mirrors the same concept in
-			 * the sibling rental plugin's RBFW_Function::mode_availability().
+			 * Which booking engines are installed and can be configured. The standalone
+			 * engine is part of the free plugin because Offline Payment is free; gateway
+			 * enablement is checked separately by has_enabled_custom_payment(). PayPal
+			 * and Stripe remain Pro-only.
 			 *
 			 * @return string 'both' | 'woocommerce_only' | 'custom_only' | 'none'
 			 */
 			public static function mode_availability(): string {
-				$woo = self::is_wc_active();
-				// Offline is a FREE standalone gateway, so it makes the Custom Payment flow a
-				// genuine choice even without Pro — same treatment as the sibling rental plugin.
-				// This is what lets a free site that also has WooCommerce active switch the
-				// active flow to Offline / Custom Payment. (PayPal & Stripe remain Pro.)
-				$custom = self::is_pro_active() || self::offline_payment_enabled();
+				$woo    = self::is_wc_active();
+				$custom = true;
 				if ( $woo && $custom ) {
 					return 'both';
 				}
@@ -104,8 +100,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * Active booking mode: 'woocommerce' | 'standalone'.
 			 *
 			 * Auto-resolves when only one system can run, so the two payment systems can
-			 * never both think they own the same booking; falls back to the admin's
-			 * stored choice (default WooCommerce) only when both are available.
+			 * never both think they own the same booking. When WooCommerce is activated
+			 * after a free Offline/Custom Payment setup, older settings may not contain
+			 * an explicit mode because Standalone was previously the only available
+			 * engine. In that one ambiguous state, preserve the configured Custom flow;
+			 * otherwise WooCommerce remains the default.
 			 */
 			public static function booking_mode(): string {
 				switch ( self::mode_availability() ) {
@@ -116,7 +115,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						return 'standalone';
 					case 'both':
 					default:
-						return 'standalone' === self::stored_booking_mode() ? 'standalone' : 'woocommerce';
+						$stored_mode = self::stored_booking_mode();
+						if ( '' !== $stored_mode ) {
+							return $stored_mode;
+						}
+						return self::has_enabled_custom_payment() ? 'standalone' : 'woocommerce';
 				}
 			}
 
@@ -155,12 +158,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 
 			/**
-			 * Whether the Pro plugin has at least one custom payment method enabled.
+			 * Whether at least one custom payment method is enabled.
 			 *
-			 * The free plugin never references Pro classes directly: when Pro is active
-			 * it exposes its enabled gateways/offline method via the
-			 * `wbtm_pro_enabled_payment_methods` filter. Without Pro the filter is never
-			 * added, so this is false — there is no standalone checkout to take payment.
+			 * Offline Payment is provided by the free plugin. When Pro is active it
+			 * exposes its enabled PayPal, Stripe, and Offline gateways through the
+			 * `wbtm_pro_enabled_payment_methods` filter.
 			 */
 			public static function has_enabled_custom_payment(): bool {
 				// Offline is a FREE standalone gateway — it alone makes custom payment usable.
@@ -190,8 +192,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * A working checkout path must exist for the *current* mode, not merely a
 			 * plugin being active:
 			 *  - WooCommerce mode: WooCommerce owns checkout, so it is always available.
-			 *  - Standalone mode: at least one Pro custom payment method (PayPal / Stripe
-			 *    / Offline) must be enabled.
+			 *  - Standalone mode: free Offline Payment or a Pro PayPal/Stripe gateway
+			 *    must be enabled.
 			 */
 			public static function is_booking_available(): bool {
 				if ( self::use_wc() ) {
@@ -2459,11 +2461,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			}
 			public static function single_bus_details_tabs( $bus_id) {
 				$tabs = [
-					'wbtm_bus_details'           => __( 'Bus Details', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_details'           => WBTM_Translations::text_bus_details(),
 					'wbtm_bus_boarding_dropping' => __( 'Boarding/Dropping Points', 'bus-ticket-booking-with-seat-reservation' ),
-					'wbtm_bus_feature'           => __( 'Bus Features', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_feature'           => WBTM_Translations::text_bus_features(),
 					'wbtm_bus_term_condition'    => __( 'Term & Conditions', 'bus-ticket-booking-with-seat-reservation' ),
-					'wbtm_bus_image'             => __( 'Bus Photo', 'bus-ticket-booking-with-seat-reservation' ),
+					'wbtm_bus_image'             => WBTM_Translations::text_bus_photo(),
 				];
 				return apply_filters( 'wbtm_single_bus_details_tabs', $tabs, $bus_id );
 			}

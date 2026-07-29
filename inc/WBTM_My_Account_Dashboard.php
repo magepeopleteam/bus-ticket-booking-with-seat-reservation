@@ -848,7 +848,8 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
         {
             if (function_exists('is_account_page') && is_account_page()) {
                 wp_enqueue_style('wbtm-my-account-dashboard', WBTM_PLUGIN_URL . '/assets/css/my-account-dashboard.css', array(), '1.0.0');
-                wp_enqueue_script('wbtm-my-account-dashboard', WBTM_PLUGIN_URL . '/assets/js/my-account-dashboard.js', array('jquery'), '1.0.0', true);
+                $dashboard_script = WBTM_PLUGIN_DIR . '/assets/js/my-account-dashboard.js';
+                wp_enqueue_script('wbtm-my-account-dashboard', WBTM_PLUGIN_URL . '/assets/js/my-account-dashboard.js', array('jquery'), file_exists($dashboard_script) ? filemtime($dashboard_script) : WBTM_VERSION, true);
                 
                 wp_localize_script('wbtm-my-account-dashboard', 'wbtm_dashboard_ajax', array(
                     'ajax_url' => admin_url('admin-ajax.php'),
@@ -866,7 +867,8 @@ if (!class_exists('WBTM_My_Account_Dashboard')) {
                     'strings' => array(
                         'loading' => __('Loading...', 'bus-ticket-booking-with-seat-reservation'),
                         'error' => __('An error occurred. Please try again.', 'bus-ticket-booking-with-seat-reservation'),
-                        'confirm_update' => __('Are you sure you want to update this information?', 'bus-ticket-booking-with-seat-reservation')
+                        'confirm_update' => __('Are you sure you want to update this information?', 'bus-ticket-booking-with-seat-reservation'),
+                        'bus' => WBTM_Translations::text_bus(),
                     )
                 ));
             }

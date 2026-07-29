@@ -35,7 +35,10 @@ class WBTM_Translation_Settings {
         }
         $sanitized = array();
         foreach ($input as $key => $value) {
-            $sanitized[sanitize_key($key)] = sanitize_text_field($value);
+            $value = sanitize_text_field($value);
+            if ($value !== '') {
+                $sanitized[sanitize_key($key)] = $value;
+            }
         }
         return $sanitized;
     }
@@ -232,7 +235,6 @@ class WBTM_Translation_Settings {
                             if (method_exists('WBTM_Translations', $method)) :
                                 $default_value = call_user_func(array('WBTM_Translations', $method));
                                 $current_value = isset($translations[$method]) && !empty($translations[$method]) ? $translations[$method] : '';
-                                $display_value = !empty($current_value) ? $current_value : $default_value;
                                 $label = ucwords(str_replace('_', ' ', str_replace('text_', '', $method)));
                         ?>
                         <div class="wbtm-field-row">
@@ -243,12 +245,14 @@ class WBTM_Translation_Settings {
                             <div class="wbtm-field-input">
                                 <input type="text" 
                                     name="<?php echo esc_attr($this->option_name . '[' . $method . ']'); ?>"
-                                    value="<?php echo esc_attr($display_value); ?>"
+                                    value="<?php echo esc_attr($current_value); ?>"
                                     class="wbtm-input"
                                     placeholder="<?php echo esc_attr($default_value); ?>"
                                 />
                                 <div class="wbtm-description">
-                                    Default: <code><?php echo esc_html($default_value); ?></code>
+                                    <?php esc_html_e('Leave blank to use the site language / Loco Translate value.', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    <?php esc_html_e('Default:', 'bus-ticket-booking-with-seat-reservation'); ?>
+                                    <code><?php echo esc_html($default_value); ?></code>
                                 </div>
                             </div>
                         </div>

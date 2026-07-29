@@ -701,7 +701,9 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── Bus / boat photo (per-departure card thumbnail) ────────────── */
 .wbtm-card-photo {
-    flex:            0 0 150px;
+    flex:            1 1 210px;
+    min-width:       140px;
+    max-width:       260px;
     align-self:      stretch;
     display:         flex;
     align-items:     center;      /* vertical-center the image in the card */
@@ -724,7 +726,8 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── LEFT: times + duration track ───────────────────────────────── */
 .wbtm-card-times {
-    flex:                  0 0 350px;
+    flex:                  1.15 1 280px;
+    min-width:             190px;
     display:               grid;
     grid-template-columns: auto 1fr auto;
     grid-template-rows:    auto auto;
@@ -833,6 +836,7 @@ div#wbtm_date_start_route { height: 50px; }
 /* ── MIDDLE: bus info ────────────────────────────────────────────── */
 .wbtm-card-info {
     flex:           1;
+    min-width:      180px;
     padding:        22px 22px 20px;
     display:        flex;
     flex-direction: column;
@@ -852,6 +856,22 @@ div#wbtm_date_start_route { height: 50px; }
     color:       #0f172a;
     cursor:      pointer;
     letter-spacing: -0.02em;
+}
+.wbtm-coach-number {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           4px;
+    width:         fit-content;
+    color:         #475569;
+    background:    #f8fafc;
+    border:        1px solid #e2e8f0;
+    border-radius: 999px;
+    padding:       4px 9px;
+    font-size:     11px;
+    font-weight:   600;
+}
+.wbtm-coach-number strong {
+    color: #0f172a;
 }
 .wbtm-type-badge {
     font-size:     10px;
@@ -937,7 +957,9 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── RIGHT: price + book ─────────────────────────────────────────── */
 .wbtm-card-price {
-    flex:            0 0 280px;
+    flex:            .75 1 190px;
+    min-width:       145px;
+    max-width:       220px;
     padding:         22px 22px;
     display:         flex;
     flex-direction:  column;
@@ -1057,6 +1079,8 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-card-photo {
         flex:          none;
         width:         100%;
+        min-width:     0;
+        max-width:     none;
         height:        170px;
         border-right:  none;
         border-bottom: 1px solid #e5edf7;
@@ -1076,6 +1100,8 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-card-price {
         flex:            none;
         width:           100%;
+        min-width:       0;
+        max-width:       none;
         flex-direction:  row;
         align-items:     center;
         justify-content: space-between;
@@ -1142,9 +1168,9 @@ div#wbtm_date_start_route { height: 50px; }
 
     <?php if ($has_left_filter) : ?>
     <div class="wbtm_bus_left_filter_holder">
-        <!-- Mobile-only hamburger toggle: collapses the filter panel so the
-             bus list is visible immediately on small screens. Hidden ≥768px. -->
-        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="false">
+        <!-- Responsive filter toggle: collapsed by default on mobile and
+             available on desktop when more room is needed for result cards. -->
+        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
             <span class="wbtm-mobile-filter-toggle-label">
                 <i class="fas fa-sliders-h" aria-hidden="true"></i>
                 <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -1284,10 +1310,11 @@ div#wbtm_date_start_route { height: 50px; }
             </div>
             <?php if ($wbtm_fd_sort) : ?>
             <div class="wbtm-list-sort">
-                <label for="wbtm_sort_select" class="wbtm-sort-label-text">
+                <?php $wbtm_sort_id = 'wbtm_sort_' . sanitize_html_class($filter_by_box); ?>
+                <label for="<?php echo esc_attr($wbtm_sort_id); ?>" class="wbtm-sort-label-text">
                     <?php esc_html_e('Sort by', 'bus-ticket-booking-with-seat-reservation'); ?>:
                 </label>
-                <select id="wbtm_sort_select" class="formControl wbtm-sort-select">
+                <select id="<?php echo esc_attr($wbtm_sort_id); ?>" class="formControl wbtm-sort-select">
                     <option value="earliest" selected><?php esc_html_e('Earliest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                     <option value="latest"><?php esc_html_e('Latest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
                     <option value="price_asc"><?php esc_html_e('Price: Low to High', 'bus-ticket-booking-with-seat-reservation'); ?></option>
@@ -1346,7 +1373,8 @@ div#wbtm_date_start_route { height: 50px; }
                  data-bus-id="<?php echo esc_attr($bus_id); ?>"
                  data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled($bus_id) ? '1' : '0'; ?>"
                  data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>"
-                 data-price="<?php echo esc_attr((float) $price); ?>"
+                 data-departure="<?php echo esc_attr((int) $bp_ts); ?>"
+                 data-price="<?php echo $route_priced ? esc_attr((float) $price) : ''; ?>"
                  data-duration="<?php echo esc_attr((int) $dur_s); ?>">
 
                 <!-- Hidden fields required by JS/cart -->
@@ -1398,6 +1426,14 @@ div#wbtm_date_start_route { height: 50px; }
                                 <?php echo esc_html(get_the_title($bus_id)); ?>
                             </span>
                         </div>
+
+                        <?php $wbtm_bus_no = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no'); ?>
+                        <?php if ($wbtm_bus_no !== '') : ?>
+                        <div class="wbtm-coach-number">
+                            <span><?php echo esc_html(WBTM_Translations::text_bus_no()); ?>:</span>
+                            <strong><?php echo esc_html($wbtm_bus_no); ?></strong>
+                        </div>
+                        <?php endif; ?>
 
                         <div class="wbtm-seats-avail">
                             <?php echo esc_html($all_info['available_seat']); ?>

@@ -36,7 +36,25 @@ if ( ! class_exists( 'WBTM_Payment_Status_Checker' ) ) {
 				return array();
 			}
 
-			return WC()->payment_gateways()->get_available_payment_gateways();
+			/*
+			 * get_available_payment_gateways() is a checkout-context query: it runs
+			 * every gateway's is_available() checks against the current customer,
+			 * cart, shipping method and session. In wp-admin those objects are often
+			 * absent, so a gateway that is enabled in WooCommerce can disappear from
+			 * that list and trigger a false "no gateway" notice.
+			 *
+			 * This status check answers the admin/configuration question instead:
+			 * is at least one registered WooCommerce gateway switched on? Checkout
+			 * still performs its normal availability checks for each real customer.
+			 */
+			$enabled = array_filter(
+				WC()->payment_gateways()->payment_gateways(),
+				static function ( $gateway ) {
+					return $gateway instanceof WC_Payment_Gateway && 'yes' === $gateway->enabled;
+				}
+			);
+
+			return (array) apply_filters( 'wbtm_enabled_woocommerce_gateways', $enabled );
 		}
 
 		/**
