@@ -51,7 +51,7 @@
 				// Booking-record helpers (seat locks, availability checks, cart-style POST
 				// parsing, post insertion) with no real WooCommerce dependency — shared by
 				// the WooCommerce cart flow (via WBTM_Woocommerce's delegating wrappers below)
-				// and the WC-independent Standalone/Custom Payment flow (Pro plugin) alike.
+				// and the WC-independent Standalone/Custom Payment flow alike.
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Cart_Helper.php';
 				// Temporary seat holds (transient-based) + hold countdown — consulted by
 				// WBTM_Query availability reads and enforced at both booking entry points.
@@ -107,7 +107,8 @@
 				wp_enqueue_style('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.css', array(), WBTM_VERSION);
 				$wbtm_global_js = WBTM_PLUGIN_DIR . '/assets/global/wbtm_global.js';
 				wp_enqueue_script('wbtm_global', WBTM_PLUGIN_URL . '/assets/global/wbtm_global.js', array('jquery'), file_exists($wbtm_global_js) ? filemtime($wbtm_global_js) : WBTM_VERSION, true);
-				wp_enqueue_script('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.js', array('jquery'), WBTM_VERSION, true);
+				$filter_script = WBTM_PLUGIN_DIR . '/assets/global/wbtm_bus_left_filter.js';
+				wp_enqueue_script('wbtm_bus_left_filter', WBTM_PLUGIN_URL . '/assets/global/wbtm_bus_left_filter.js', array('jquery'), file_exists($filter_script) ? filemtime($filter_script) : WBTM_VERSION, true);
 				do_action('wbtm_add_common_script');
 			}
 			public function admin_enqueue() {
@@ -187,10 +188,12 @@
 			public function frontend_enqueue() {
 				$wbtm_css = WBTM_PLUGIN_DIR . '/assets/frontend/wbtm.css';
 				wp_enqueue_style('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.css', array(), file_exists($wbtm_css) ? filemtime($wbtm_css) : WBTM_VERSION);
-				wp_enqueue_style('wtbm_search', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_search.css', array(), WBTM_VERSION);
+				$search_style = WBTM_PLUGIN_DIR . '/assets/frontend/wtbm_search.css';
+				wp_enqueue_style('wtbm_search', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_search.css', array(), file_exists($search_style) ? filemtime($search_style) : WBTM_VERSION);
 				wp_enqueue_style('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.css', array(), WBTM_VERSION);
 				wp_enqueue_script('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.js', array('jquery'), WBTM_VERSION, true);
-				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), WBTM_VERSION, true);
+				$frontend_script = WBTM_PLUGIN_DIR . '/assets/frontend/wbtm.js';
+				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), file_exists($frontend_script) ? filemtime($frontend_script) : WBTM_VERSION, true);
 				wp_localize_script('jquery', 'wbtm_wc_vars', array(
 					'checkout_url'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
 					'booking_mode'   => class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce',

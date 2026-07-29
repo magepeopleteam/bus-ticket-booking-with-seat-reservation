@@ -88,6 +88,7 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 				'primary'     => $this->primary_action( $mode, $is_pro ),
 				'secondary'   => $this->secondary_action( $mode, $is_pro, $wc_active ),
 				'dismiss_url' => $this->payment_dismiss_url(),
+				'class'       => 'wbtm-payment-required-notice',
 			) );
 		}
 
@@ -101,15 +102,15 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 			if ( 'woocommerce' === $mode ) {
 				return sprintf(
 					'<a class="wbtm-pn-cta" href="%s"><span class="dashicons dashicons-admin-settings"></span>%s</a>',
-					esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ),
-					esc_html__( 'Configure WooCommerce Payments', 'bus-ticket-booking-with-seat-reservation' )
+					esc_url( $this->payment_settings_url() ),
+					esc_html__( 'Configure Payment Settings', 'bus-ticket-booking-with-seat-reservation' )
 				);
 			}
 
 			if ( $is_pro ) {
 				return sprintf(
 					'<a class="wbtm-pn-cta" href="%s"><span class="dashicons dashicons-admin-settings"></span>%s</a>',
-					esc_url( admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page#wbtm_payment_settings' ) ),
+					esc_url( $this->payment_settings_url() ),
 					esc_html__( 'Configure Pro Payment Methods', 'bus-ticket-booking-with-seat-reservation' )
 				);
 			}
@@ -117,9 +118,14 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 			// Standalone, free: enabling the free Offline gateway is all it takes.
 			return sprintf(
 				'<a class="wbtm-pn-cta" href="%s"><span class="dashicons dashicons-money-alt"></span>%s</a>',
-				esc_url( admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page#wbtm_payment_settings' ) ),
+				esc_url( $this->payment_settings_url() ),
 				esc_html__( 'Enable Offline Payment', 'bus-ticket-booking-with-seat-reservation' )
 			);
+		}
+
+		/** Bus Global Settings URL with the Payments tab selected explicitly. */
+		private function payment_settings_url() {
+			return admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page&tab=payments' );
 		}
 
 		/** Muted secondary link — a light PRO upsell shown only for the free Offline case. */
@@ -162,6 +168,7 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 		 *   @type string   primary     Optional primary CTA — PRE-BUILT escaped <a>.
 		 *   @type string   secondary   Optional secondary link — PRE-BUILT escaped <a>.
 		 *   @type string   dismiss_url Optional; when set renders the × close link.
+		 *   @type string   class       Optional additional scoped CSS class.
 		 * }
 		 */
 		private function render_card( array $args ) {
@@ -177,6 +184,7 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 					'primary'     => '',
 					'secondary'   => '',
 					'dismiss_url' => '',
+					'class'       => '',
 				),
 				$args
 			);
@@ -189,6 +197,9 @@ if ( ! class_exists( 'WBTM_Admin_Payment_Notice' ) ) {
 			}
 			if ( ! empty( $a['dismiss_url'] ) ) {
 				$classes .= ' has-dismiss';
+			}
+			if ( ! empty( $a['class'] ) ) {
+				$classes .= ' ' . sanitize_html_class( $a['class'] );
 			}
 			?>
 			<div class="<?php echo esc_attr( $classes ); ?>">

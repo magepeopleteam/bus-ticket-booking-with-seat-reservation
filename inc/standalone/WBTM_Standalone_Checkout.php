@@ -321,7 +321,7 @@ if ( ! class_exists( 'WBTM_Standalone_Checkout' ) ) {
 									<?php endforeach; ?>
 								<?php else : ?>
 									<div class="wbtm-ticket-row">
-										<span class="wbtm-ticket-row__label"><?php esc_html_e( 'Bus', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+										<span class="wbtm-ticket-row__label"><?php echo esc_html( WBTM_Translations::text_bus() ); ?></span>
 										<span class="wbtm-ticket-row__value"><?php echo esc_html( $bus_name ); ?></span>
 									</div>
 

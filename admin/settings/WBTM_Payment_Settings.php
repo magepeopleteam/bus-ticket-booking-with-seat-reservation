@@ -182,7 +182,7 @@
 			 * settings page to avoid nesting those inputs inside the #post form.
 			 */
 			public function render_edit_panel() {
-				$settings_url = admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page#wbtm_payment_settings' );
+				$settings_url = admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page&tab=payments' );
 				?>
 				<div class="wbtm-edit-payment-panel">
 					<?php $this->render_mode_selector(); ?>
@@ -307,12 +307,11 @@
 				// page reads as a guided setup rather than a wall of controls.
 				$this->render_mode_intro( $mode, ( 'both' === $availability ) );
 
-				// The two flow cards are ALWAYS shown as the modern switcher. A flow that
-				// isn't available right now — WooCommerce inactive, or Custom Payment with
-				// no gateway on a free/no-Pro site — renders DISABLED with a CTA to unlock
-				// it, instead of collapsing the whole switcher to a plain note.
-				$woo_available    = $this->has_woo();
-				$custom_available = ( class_exists( 'WBTM_Functions' ) && ( WBTM_Functions::is_pro_active() || WBTM_Functions::offline_payment_enabled() ) );
+				// The two flow cards are always shown. Standalone is available in Free
+				// because Offline Payment is included; PayPal and Stripe remain Pro-only.
+				// Gateway enablement controls booking readiness, not flow selectability.
+				$woo_available    = in_array( $availability, array( 'both', 'woocommerce_only' ), true );
+				$custom_available = in_array( $availability, array( 'both', 'custom_only' ), true );
 				$is_wc            = ( 'woocommerce' === $mode );
 				$is_custom        = ( 'standalone' === $mode );
 				$checker          = class_exists( 'WBTM_Payment_Status_Checker' ) ? new WBTM_Payment_Status_Checker() : null;
@@ -347,7 +346,7 @@
 									<strong><?php esc_html_e( 'Custom Payment (Standalone)', 'bus-ticket-booking-with-seat-reservation' ); ?></strong>
 									<span class="wbtm-bm-card-badge"><span class="wbtm-bm-dot wbtm-blink"></span><?php esc_html_e( 'Active', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								</span>
-								<span class="wbtm-bm-card-desc"><?php esc_html_e( 'Bookings are taken directly via PayPal, Stripe, or Offline payment — no WooCommerce.', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
+								<span class="wbtm-bm-card-desc"><?php esc_html_e( 'Offline Payment is included in Free. PayPal and Stripe require PRO — no WooCommerce.', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								<?php if ( ! $custom_available ) : ?>
 									<span class="wbtm-bm-card-cta wbtm-bm-card-cta--hint"><?php esc_html_e( 'Enable the free Offline gateway below (or upgrade to PRO for PayPal & Stripe).', 'bus-ticket-booking-with-seat-reservation' ); ?></span>
 								<?php endif; ?>
@@ -423,6 +422,9 @@
 										var msg = (mode === 'woocommerce') ? i18n.wcWarn : i18n.customWarn;
 										$slot.append('<div class="wbtm-bm-gateway-warning wbtm-blink-soft"><span class="dashicons dashicons-warning"></span><p>'+msg+'</p></div>');
 										notify(msg, 'warning');
+									}
+									if (typeof window.wbtmSyncPaymentWarnings === 'function') {
+										window.wbtmSyncPaymentWarnings();
 									}
 								} else {
 									rollback();
@@ -1385,7 +1387,7 @@
 				// The choice is only meaningful when both systems are available; otherwise the
 				// mode is auto-resolved and shouldn't be overridden.
 				if ( class_exists( 'WBTM_Functions' ) && 'both' !== WBTM_Functions::mode_availability() ) {
-					wp_send_json_error( __( 'Booking mode can only be changed when both WooCommerce and the Pro custom gateways are available.', 'bus-ticket-booking-with-seat-reservation' ) );
+					wp_send_json_error( __( 'Booking mode can only be changed when both WooCommerce and Custom Payment are available.', 'bus-ticket-booking-with-seat-reservation' ) );
 				}
 
 				WBTM_Functions::set_booking_mode( $mode );

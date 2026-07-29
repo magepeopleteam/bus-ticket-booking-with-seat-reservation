@@ -183,38 +183,217 @@ Yes, We like to hear from our customers If you want to add any customization or 
 
 == Changelog ==
 
-= 5.9.1 =
-*Release Date - 27 Jul 2026*
+= 1.0 =
+*Initial Release Date - 10 Sep 2018*
 
-**Book Without WooCommerce (New)**
-* Bookings can now be taken and paid for without WooCommerce, using a built-in Standalone checkout
-* Offline Payment is included free — bank transfer, cash or pay on boarding — so a site can start selling with no payment plugin at all
-* Payment gateways are pluggable: a gateway interface and manager sit behind the checkout, so PayPal, Stripe and other gateways slot in without touching the booking flow
-* Passengers can log in or register inline during checkout, without leaving the booking page
-* Booking confirmation and notification emails are sent by the plugin itself in this mode
-* New shortcodes: [wbtm-standalone-checkout] for the checkout page and [wbtm-booking-confirmation] for the confirmation page
+= 1.1.0 =
+*Some Minor Bug Fixed - 11 Sep 2018*
 
-**Payments Settings Redesigned**
-* A single, clear switch chooses the booking flow — WooCommerce checkout or Standalone Custom Payment — so the two can never both handle the same booking
-* Both flows stay visible: whichever one is not ready shows exactly what unlocks it, either activating WooCommerce or enabling the free Offline gateway
-* Each gateway now has its own card showing whether it is enabled, with its settings in place
-* The page warns clearly when the selected flow has no usable payment method yet
+= 1.1.2 =
+*Some Minor Bug Fixed - 11 Sep 2018*
 
-**E-Voucher**
-* E-Vouchers can now be resent for Standalone and Offline bookings, not just WooCommerce orders
+= 1.1.3 =
+*Bus Category Template fixed - 11 Sep 2018*
 
-**Seat Holds**
-* Seats held during booking now stay held all the way through cart and checkout, instead of being released part-way
-* Fixed the hold countdown timer so the time shown matches the time actually remaining
 
-**Fixes**
-* Fixed hand-picked operating dates being blocked by weekday off-days — a bus set to run on specific dates (such as a holiday service) no longer disappears from search
-* Ticket Sale Cut-off and Buffer Time are now evaluated in the site's WordPress timezone rather than the server's, so cut-offs close when you expect
-* Fixed runaway pagination on the booking list
-* Fixed the missing bus image in search results
-* Fixed passenger names appearing in the wrong order
-* Fixed the extra-service charging mode being applied incorrectly
-* Fixed mobile layout issues and the gap in the bus search box
+= 1.1.4 =
+*New Shortcode Added to show Bus Search Form and Search List & Huge Update - 17 Sep 2018*
+
+= 1.1.5 =
+*Price Exploit issue fixed - 19 Sep 2018*
+
+= 1.1.6 =
+*Bug and some sorting issue fixed - 10 Oct 2018*
+
+= 1.1.7 =
+*Seat booking of a canceled seat issue fixed - 16 Oct 2018*
+
+
+= 1.1.8 =
+*Some minor fixed - 23 Oct 2018*
+
+
+= 1.2.0 =
+*Return Ticket & Operational Date feature added Seat Panel UI changes modified and some bug fixed - 28 Oct 2018*
+
+
+= 1.2.6 =
+*Seat booking major issue fixed. - 28 Nov 2018*
+
+
+= 1.3.1 =
+*Translation Ready.
+ Bangla Language added
+ Offday issue fixed in Details Page*
+
+
+
+= 1.3.2 =
+*Search Table Heading issue fixed*
+
+= 1.3.3 =
+*Minor issue fixed*
+
+
+
+= 1.4.0 =
+*A Big Update With Seat Panel Template, Now 3 Free Seat Template added in this version*
+
+
+
+= 1.5.0 =
+* Update List: A Big Update With a Brand New Seat Panel System, Now You can create any type of seat plan.*
+
+
+= 1.5.8 =
+* Bus Search Page slug issue solved.*
+
+
+
+= 1.6.0 =
+* PHP Warning issue fixed,Operation On Day Feature*
+
+
+
+= 1.6.1 =
+* Added seat checking before order place, so if the seat is already booked it can't be booked, Fixed bug on return bus list, some minor design issue fixed.*
+
+
+= 1.6.2 =
+* Fixed Return Date Search Result issue, Fixed Buffer time issue*
+
+
+= 1.6.3 =
+*Fixed Search Result issue*
+
+
+= 1.6.4 =
+* Fixed Search calculation issue for same bus in round trip, Mobile seat selection feature now available in search page, Removed past date from the Operational on day list in the bus details page*
+
+= 2.0 =
+* This is a Big update, we suggest you back your date before update to this Version, New UI
+  Ajax search field load
+  Improved Performance
+  Double-decker seat plan added
+  Many bug fixed*
+
+= 2.1 =
+*Adult & Child Seat Feature Added
+ Translation Issue fixed for Translation setting page
+Improved Performance
+Code Optimize*
+
+= 2.2 =
+*Double Booking Issue fixed
+Ajax not working mobile issue fixed
+Date issue fixed
+Code Optimize
+Some minor bug fixed*
+
+= 2.3 =
+*Code Optimize
+ Some minor bug fixed*
+
+= 2.5 =
+*Code Optimize
+Some minor bug fixed
+Return Discount Price rule added
+Infant ticket type added
+Design issue fixed*
+
+= 2.6 =
+*Booked seat not showing issue fixed
+Code Optimize
+Some minor bug fixed
+Return Discount Price issue fixed
+Design issue fixed*
+
+= 2.8 =
+*New Backend UI
+Code Optimize
+Some minor bug fixed
+Design issue fixed*
+
+= 3.0 =
+*Code Optimize
+Some minor bug fixed
+Design issue fixed*
+
+= 3.6 =
+* Code Optimize
+Some minor bug fixed
+welcome page adding
+global offday settings*
+
+= 3.7 =
+*Code Optimize
+Some minor bug fixed*
+
+= 5.5.1 =
+Minor issues fixed
+Seat rotation added 
+
+= 5.5.2 =
+Made compatiable with some of the major caching plugin 
+
+= 5.5.3 =
+Translation Issue fixed
+
+
+= 5.5.6 =
+Cabin booking functionality added
+Bus default available seat selection added
+Seat number rotation stopped
+
+= 5.7.2 =
+*Release Date - 11 Jun 2026*
+
+**Return Bus on Single Bus Page**
+* Added return date picker on single bus details page when same-bus return is enabled
+* Added "Departure Bus" and "Return Bus" tabs in search results on single bus page
+* Return bus tab shows the same bus for the return trip with same-day time filtering
+* Previously return functionality was only available on the global search page
+
+**Admin - New Bus List Design**
+* Introduced modern responsive admin screen for bus fleet with grid/table views
+* New "New Bus List Design" setting (Enable/Disable) in General settings
+* Stat cards showing Total / Published / AC Coach / Non AC Coach counts
+* Card grid and table views with bus details, featured image, author and status
+* Edit, Trash, Restore and Delete actions with nonce protection
+* Trash management within the same styled layout
+* Live search by title and coach number with client-side pagination
+* Grid/list toggle persisted across sessions
+
+**Admin - Bus List UX Upgrades**
+* Table view now shows bus featured image thumbnail in Name column
+* Name column shows route details (start/end points with stop count)
+* Journey date info: schedule range for Repeated mode, first date + count for Particular mode
+* Return route displayed when same-bus return is enabled with "Return" tag
+* Action buttons converted to icon buttons (view/edit/trash) with accessible labels
+
+**Admin - Return Timetable Warning**
+* Added highlighted warning box in return route settings reminding to rearrange return timetable
+* Auto-generated reverse stops keep outbound clock times and need adjusting before saving
+
+**Frontend - Sold-Out Date Picker**
+* Journey and return date pickers now show sold-out dates as unselectable
+* Sold-out dates marked with red "Sold Out" style and legend
+* Works for both single bus and general search date pickers
+
+**Frontend - View Button**
+* Added "View on frontend" action in bus list to open bus permalink in new tab
+* Shown alongside Edit/Delete on card hover and in table view
+
+**Bug Fixes**
+* Fixed return-bus Details/Stops/Features popup not opening after outbound selection
+* Fixed duplicate ID issue causing popup to target wrong container
+* Fixed "Seal Plan" typo to "Seat Plan" in classic bus list column
+
+**Admin - Documents Tab**
+* Replaced video-only tutorials with searchable documentation system
+* New "Documents" tab with 24 sub-tabs organized by bus settings
+* 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
+* Shortcode reference table updated with PRO shortcodes
 
 = 5.9.0 =
 *Release Date - 22 Jul 2026*
@@ -274,194 +453,28 @@ Yes, We like to hear from our customers If you want to add any customization or 
 * Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
 * The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
 
-= 5.7.2 =
-*Release Date - 11 Jun 2026*
+**Passenger Form Fields in Booking List Exports (Fix)**
+* Custom fields you add to the Passenger Form — for example "Emergency Contact Name" and "Emergency Contact Phone" — are now included automatically in both the Booking List CSV and PDF exports, with no setup needed
+* Restores the custom-field export that was available in the Passenger List before it was merged into the Booking List, so passenger manifests are complete again
+* Fields use the exact labels and order you configured on the bus, and the built-in passenger fields (name, email, phone, address, gender) are exported alongside your own
+* Filtering the Booking List by a bus exports just that bus's form fields instead of every field used across the site
+* Answers collected before a field was renamed or removed from the form still appear in exports, so nothing already gathered is ever lost
+* In the PDF, passenger details print as a compact line beneath each booking, so the table stays readable no matter how many custom fields your form has
+* The booking detail screen now labels each passenger field with your form label instead of its internal field name
 
-**Return Bus on Single Bus Page**
-* Added return date picker on single bus details page when same-bus return is enabled
-* Added "Departure Bus" and "Return Bus" tabs in search results on single bus page
-* Return bus tab shows the same bus for the return trip with same-day time filtering
-* Previously return functionality was only available on the global search page
+**One Export Button, With Rules (New)**
+* The separate "Export CSV" and "Export PDF" buttons are now a single **Export** button that opens a dialog — pick the format and exactly what to export, in one place
+* Three formats: CSV spreadsheet, printable PDF manifest, and Thermal (POS) tickets — one receipt per booking on a 58/80mm roll, so a whole departure can be printed in one run
+* Six ways to choose the rows: the current filtered view, only the bookings you ticked, today's bookings (day-end sales sheet), today's departures (driver's manifest), a date range, or every booking
+* A date range can mean travel dates or booking dates — pick which, so "everything sold last week" and "everyone travelling next week" are both one click
+* Any scope can be narrowed further by bus and by status, giving bus-wise, route-wise and status-wise exports without touching the filter bar
+* Formats that are unavailable on your site (no PDF library, or Thermal tickets switched off) are shown greyed out with the reason, instead of failing after you click
+* Thermal printing is capped at 200 tickets per run and tells you when a selection is too large, so a mis-click can never spool thousands of receipts
 
-**Admin - New Bus List Design**
-* Introduced modern responsive admin screen for bus fleet with grid/table views
-* New "New Bus List Design" setting (Enable/Disable) in General settings
-* Stat cards showing Total / Published / AC Coach / Non AC Coach counts
-* Card grid and table views with bus details, featured image, author and status
-* Edit, Trash, Restore and Delete actions with nonce protection
-* Trash management within the same styled layout
-* Live search by title and coach number with client-side pagination
-* Grid/list toggle persisted across sessions
-
-**Admin - Bus List UX Upgrades**
-* Table view now shows bus featured image thumbnail in Name column
-* Name column shows route details (start/end points with stop count)
-* Journey date info: schedule range for Repeated mode, first date + count for Particular mode
-* Return route displayed when same-bus return is enabled with "Return" tag
-* Action buttons converted to icon buttons (view/edit/trash) with accessible labels
-
-**Admin - Return Timetable Warning**
-* Added highlighted warning box in return route settings reminding to rearrange return timetable
-* Auto-generated reverse stops keep outbound clock times and need adjusting before saving
-
-**Frontend - Sold-Out Date Picker**
-* Journey and return date pickers now show sold-out dates as unselectable
-* Sold-out dates marked with red "Sold Out" style and legend
-* Works for both single bus and general search date pickers
-
-**Frontend - View Button**
-* Added "View on frontend" action in bus list to open bus permalink in new tab
-* Shown alongside Edit/Delete on card hover and in table view
-
-**Bug Fixes**
-* Fixed return-bus Details/Stops/Features popup not opening after outbound selection
-* Fixed duplicate ID issue causing popup to target wrong container
-* Fixed "Seal Plan" typo to "Seat Plan" in classic bus list column
-
-**Admin - Documents Tab**
-* Replaced video-only tutorials with searchable documentation system
-* New "Documents" tab with 24 sub-tabs organized by bus settings
-* 10 Free Plugin docs and 12 PRO Addon docs with visual distinction
-* Shortcode reference table updated with PRO shortcodes
-
-= 5.5.6 =
-Cabin booking functionality added
-Bus default available seat selection added
-Seat number rotation stopped
-
-= 5.5.3 =
-Translation Issue fixed
-
-= 5.5.2 =
-Made compatiable with some of the major caching plugin 
-
-= 5.5.1 =
-Minor issues fixed
-Seat rotation added 
-
-= 3.7 =
-*Code Optimize
-Some minor bug fixed*
-
-= 3.6 =
-* Code Optimize
-Some minor bug fixed
-welcome page adding
-global offday settings*
-
-= 3.0 =
-*Code Optimize
-Some minor bug fixed
-Design issue fixed*
-
-= 2.8 =
-*New Backend UI
-Code Optimize
-Some minor bug fixed
-Design issue fixed*
-
-= 2.6 =
-*Booked seat not showing issue fixed
-Code Optimize
-Some minor bug fixed
-Return Discount Price issue fixed
-Design issue fixed*
-
-= 2.5 =
-*Code Optimize
-Some minor bug fixed
-Return Discount Price rule added
-Infant ticket type added
-Design issue fixed*
-
-= 2.3 =
-*Code Optimize
- Some minor bug fixed*
-
-= 2.2 =
-*Double Booking Issue fixed
-Ajax not working mobile issue fixed
-Date issue fixed
-Code Optimize
-Some minor bug fixed*
-
-= 2.1 =
-*Adult & Child Seat Feature Added
- Translation Issue fixed for Translation setting page
-Improved Performance
-Code Optimize*
-
-= 2.0 =
-* This is a Big update, we suggest you back your date before update to this Version, New UI
-  Ajax search field load
-  Improved Performance
-  Double-decker seat plan added
-  Many bug fixed*
-
-= 1.6.4 =
-* Fixed Search calculation issue for same bus in round trip, Mobile seat selection feature now available in search page, Removed past date from the Operational on day list in the bus details page*
-
-= 1.6.3 =
-*Fixed Search Result issue*
-
-= 1.6.2 =
-* Fixed Return Date Search Result issue, Fixed Buffer time issue*
-
-= 1.6.1 =
-* Added seat checking before order place, so if the seat is already booked it can't be booked, Fixed bug on return bus list, some minor design issue fixed.*
-
-= 1.6.0 =
-* PHP Warning issue fixed,Operation On Day Feature*
-
-= 1.5.8 =
-* Bus Search Page slug issue solved.*
-
-= 1.5.0 =
-* Update List: A Big Update With a Brand New Seat Panel System, Now You can create any type of seat plan.*
-
-= 1.4.0 =
-*A Big Update With Seat Panel Template, Now 3 Free Seat Template added in this version*
-
-= 1.3.3 =
-*Minor issue fixed*
-
-= 1.3.2 =
-*Search Table Heading issue fixed*
-
-= 1.3.1 =
-*Translation Ready.
- Bangla Language added
- Offday issue fixed in Details Page*
-
-= 1.2.6 =
-*Seat booking major issue fixed. - 28 Nov 2018*
-
-= 1.2.0 =
-*Return Ticket & Operational Date feature added Seat Panel UI changes modified and some bug fixed - 28 Oct 2018*
-
-= 1.1.8 =
-*Some minor fixed - 23 Oct 2018*
-
-= 1.1.7 =
-*Seat booking of a canceled seat issue fixed - 16 Oct 2018*
-
-= 1.1.6 =
-*Bug and some sorting issue fixed - 10 Oct 2018*
-
-= 1.1.5 =
-*Price Exploit issue fixed - 19 Sep 2018*
-
-= 1.1.4 =
-*New Shortcode Added to show Bus Search Form and Search List & Huge Update - 17 Sep 2018*
-
-= 1.1.3 =
-*Bus Category Template fixed - 11 Sep 2018*
-
-= 1.1.2 =
-*Some Minor Bug Fixed - 11 Sep 2018*
-
-= 1.1.0 =
-*Some Minor Bug Fixed - 11 Sep 2018*
-
-= 1.0 =
-*Initial Release Date - 10 Sep 2018*
+**PDF Export Redesign**
+* Export PDF now produces proper **Booking Confirmation tickets** — one printable card per booking, on its own page: company header with the bus image and a status badge, perforated tear lines, the full trip, customer and passenger details, an itemised price summary, your terms, and a thank-you footer
+* It is the very same card a passenger gets from "Download Ticket (PDF)", so what you hand over the counter and what you print in bulk are identical documents
+* Passenger form answers (including your custom fields) get their own "Passenger Information" section on the card, separate from the billing customer
+* Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in the PDF ticket and the Thermal (POS) ticket
+* Fixed Thermal (POS) tickets printing a long blank stretch of paper after each receipt; every ticket is now sized to its own content, and a multi-ticket run prints one receipt per page
+* Fixed a passenger field appearing twice in exports when the same question existed under two field ids (after a form field was renamed)

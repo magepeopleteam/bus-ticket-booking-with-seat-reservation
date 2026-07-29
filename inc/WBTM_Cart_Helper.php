@@ -47,7 +47,7 @@ add_action( 'plugins_loaded', function () {
  * tickets/cabin seats/extra services, and generic CPT insertion. Always loaded
  * (unlike WBTM_Woocommerce.php, which is only required when WooCommerce is
  * active) so both the WooCommerce cart flow and the WC-independent
- * Standalone/Custom Payment flow (Pro plugin) can use the same logic.
+ * Standalone/Custom Payment flow can use the same logic.
  *
  * WBTM_Woocommerce keeps its original public method names as thin delegating
  * wrappers around these, so every existing WC-flow caller keeps working

@@ -123,7 +123,44 @@
 		function applyEnabledState( $card, isOn ) {
 			$card.toggleClass( 'is-enabled', isOn ).toggleClass( 'is-disabled', ! isOn );
 			$card.find( '.wbtm-gw-badge' ).text( isOn ? ( i18n.enabled || 'Enabled' ) : ( i18n.disabled || 'Disabled' ) );
+			syncPaymentWarnings();
 		}
+
+		/**
+		 * Keep the server-rendered notices in step with AJAX gateway changes.
+		 * Enabling a gateway should clear the warning immediately; without this,
+		 * the notice remained visible until a full page reload and looked like a
+		 * failed configuration save.
+		 */
+		function syncPaymentWarnings() {
+			var $selectedMode = $( '.wbtm-bm-card.is-selected' ).first();
+			var activeMode = $selectedMode.length ? $selectedMode.data( 'mode' ) : cfg.activeMode;
+			if ( activeMode !== 'woocommerce' ) {
+				return;
+			}
+
+			var hasEnabledGateway = $manager.find( '.wbtm-gw-card.is-enabled' ).length > 0;
+			var $slot = $( '.wbtm-bm-gateway-warning-slot' ).first();
+			if ( hasEnabledGateway ) {
+				$( '.wbtm-payment-required-notice, #wbtm-bme-payment-notice' ).remove();
+				$slot.empty();
+				return;
+			}
+
+			if ( $slot.length && ! $slot.children().length ) {
+				var $warning = $( '<div>', {
+					'class': 'wbtm-bm-gateway-warning wbtm-blink-soft',
+				} );
+				$warning.append( $( '<span>', {
+					'class': 'dashicons dashicons-warning',
+				} ) );
+				$warning.append( $( '<p>' ).text( i18n.wcWarning || 'No WooCommerce payment gateway is enabled.' ) );
+				$slot.append( $warning );
+			}
+		}
+
+		window.wbtmSyncPaymentWarnings = syncPaymentWarnings;
+		syncPaymentWarnings();
 
 		// Initialise WC enhanced selects / tooltips inside the forms.
 		try {

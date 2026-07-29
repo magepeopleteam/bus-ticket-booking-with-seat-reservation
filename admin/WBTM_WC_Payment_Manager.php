@@ -82,7 +82,9 @@
 							'disabled'  => __( 'Disabled', 'bus-ticket-booking-with-seat-reservation' ),
 							'configure' => __( 'Configure', 'bus-ticket-booking-with-seat-reservation' ),
 							'close'     => __( 'Close', 'bus-ticket-booking-with-seat-reservation' ),
+							'wcWarning' => __( 'WooCommerce mode is selected, but no WooCommerce payment gateway is enabled yet. Customers won\'t be able to complete a booking until you enable one below.', 'bus-ticket-booking-with-seat-reservation' ),
 						),
+						'activeMode' => class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce',
 					)
 				);
 			}

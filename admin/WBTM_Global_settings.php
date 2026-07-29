@@ -43,11 +43,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					[],
 					file_exists( $wbtm_gs_css ) ? filemtime( $wbtm_gs_css ) : WBTM_VERSION
 				);
+				// Versioned by filemtime() like the stylesheet above, NOT by the static
+				// WBTM_VERSION: that constant only changes on release, so every edit to
+				// this file kept being served from the browser cache — a fix to the save
+				// handler simply never reached the admin until they cleared it by hand.
+				$wbtm_gs_js = WBTM_PLUGIN_DIR . '/assets/admin/js/wbtm-global-settings.js';
 				wp_enqueue_script(
 					'wbtm-global-settings-js',
 					WBTM_PLUGIN_URL . '/assets/admin/js/wbtm-global-settings.js',
 					['jquery'],
-					WBTM_VERSION,
+					file_exists( $wbtm_gs_js ) ? filemtime( $wbtm_gs_js ) : WBTM_VERSION,
 					true
 				);
 				wp_enqueue_style('wp-color-picker');

@@ -124,9 +124,9 @@ if (sizeof($bus_ids) > 0) {
             $width = 'calc( 100% - 180px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
-                <!-- Mobile-only hamburger toggle: collapses the filter panel so the
-                     bus list is visible immediately on small screens. Hidden ≥768px. -->
-                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="false">
+                <!-- Responsive filter toggle: collapsed by default on mobile and
+                     available on desktop when more room is needed for results. -->
+                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
                     <span class="wbtm-mobile-filter-toggle-label">
                         <i class="fas fa-sliders-h" aria-hidden="true"></i>
                         <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
@@ -134,7 +134,7 @@ if (sizeof($bus_ids) > 0) {
                     <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
                 </button>
                 <?php
-                echo wp_kses_post( WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show ) );
+                WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
                 ?>
             </div>
         <?php  }else{
@@ -158,6 +158,32 @@ if (sizeof($bus_ids) > 0) {
 		usort($bus_data, function ($a, $b) {
 			return strtotime($a['all_info']['bp_time']) - strtotime($b['all_info']['bp_time']);
 		});
+
+        $wbtm_fd_sort = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_sort_bar', 'show') !== 'hide';
+        ?>
+        <div class="wbtm-list-header">
+            <div class="wbtm-list-count">
+                <strong><?php echo esc_html(count($bus_data)); ?></strong>
+                <?php echo esc_html__('buses available for', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
+            </div>
+            <?php if ($wbtm_fd_sort) : ?>
+            <div class="wbtm-list-sort">
+                <?php $wbtm_flix_sort_id = 'wbtm_flix_sort_' . sanitize_html_class($filter_by_box); ?>
+                <label for="<?php echo esc_attr($wbtm_flix_sort_id); ?>" class="wbtm-sort-label-text">
+                    <?php esc_html_e('Sort by', 'bus-ticket-booking-with-seat-reservation'); ?>:
+                </label>
+                <select id="<?php echo esc_attr($wbtm_flix_sort_id); ?>" class="formControl wbtm-sort-select">
+                    <option value="earliest" selected><?php esc_html_e('Earliest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="latest"><?php esc_html_e('Latest First', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="price_asc"><?php esc_html_e('Price: Low to High', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="price_desc"><?php esc_html_e('Price: High to Low', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                    <option value="duration_asc"><?php esc_html_e('Shortest Duration', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+                </select>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php
 
 		// Now loop through the sorted data
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -187,15 +213,16 @@ if (sizeof($bus_ids) > 0) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $dp_time = $all_info['dp_time'];
 
-            // Adjust dp_time if next_day is '1'
-            if ($next_day == '1') {
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                $dp_timestamp += 24 * 60 * 60; // Add 24 hours in seconds
-            }
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$bp_timestamp = strtotime($bp_time);
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $dp_timestamp = strtotime($dp_time);
+            // Adjust arrival only after both timestamps are initialized. The old
+            // code added a day before assigning $dp_timestamp and immediately
+            // overwrote the adjustment, producing a negative overnight duration.
+            if ($next_day == '1') {
+                $dp_timestamp += 24 * 60 * 60;
+            }
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $duration_seconds = $dp_timestamp - $bp_timestamp;
 
@@ -213,7 +240,13 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>" data-bus-id="<?php echo esc_attr( $bus_id ); ?>" data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>" data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>">
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>"
+                 data-bus-id="<?php echo esc_attr( $bus_id ); ?>"
+                 data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>"
+                 data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>"
+                 data-departure="<?php echo esc_attr((int) $bp_timestamp); ?>"
+                 data-price="<?php echo $route_priced ? esc_attr((float) $price) : ''; ?>"
+                 data-duration="<?php echo esc_attr((int) $duration_seconds); ?>">
                 <input type="hidden" name="wbtm_bus_name" value="<?php echo esc_attr( get_the_title( $bus_id ) ); ?>" />
                 <?php 
                 // Get the bus type directly
@@ -237,7 +270,10 @@ if (sizeof($bus_ids) > 0) {
                     </div>
                     <div class="title">
                         <h5 data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>"><?php echo esc_attr( get_the_title($bus_id ) ) ; ?></h5>
-                        <p><span><?php echo esc_html(WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no')); ?></span></p>
+                        <?php $wbtm_flix_bus_no = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no'); ?>
+                        <?php if ($wbtm_flix_bus_no !== '') : ?>
+                            <p><span><?php echo esc_html(WBTM_Translations::text_bus_no()); ?>: <?php echo esc_html($wbtm_flix_bus_no); ?></span></p>
+                        <?php endif; ?>
                     </div>
                     <div class="route">
                         <div class="route-info">
