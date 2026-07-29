@@ -504,5 +504,127 @@
 			}
 			qrUpdate(ids, type);
 		});
+
+		/* ---------------------------------------------------------------------
+		   Export dialog. One button, three formats, several scopes. Every scope is
+		   expressed as the same wbtm_bl_* query args the filter bar submits, so the
+		   server runs all of them through one query builder — there is no
+		   scope-specific query code on either side.
+		--------------------------------------------------------------------- */
+		var $exportModal = $('#wbtm-bkl-export-modal');
+
+		function exportScope() {
+			return $exportModal.find('input[name="wbtm_bkl_export_scope"]:checked').val() || 'view';
+		}
+
+		/* Row selection and the filter bar each fully determine the rows, so the
+		   bus/status refiners would be misleading there — disable and explain. */
+		function syncExportUi() {
+			var scope = exportScope();
+			var selfContained = (scope === 'view' || scope === 'selected');
+			$('#wbtm-bkl-export-range').prop('hidden', scope !== 'range');
+			$('#wbtm-bkl-export-bus, #wbtm-bkl-export-status').prop('disabled', selfContained);
+			$('#wbtm-bkl-export-refine-note').prop('hidden', !selfContained);
+			$('#wbtm-bkl-export-selected-count').text('(' + getCheckedIds().length + ')');
+		}
+
+		$(document).on('click', '#wbtm-bkl-export-open', function (e) {
+			e.preventDefault();
+			// Default to the selection when the user has actually ticked rows — that is
+			// almost always what they meant by pressing Export at that point.
+			if (getCheckedIds().length) {
+				$exportModal.find('input[name="wbtm_bkl_export_scope"][value="selected"]').prop('checked', true);
+			}
+			syncExportUi();
+			$exportModal.show();
+		});
+
+		$exportModal.on('change', 'input[name="wbtm_bkl_export_scope"]', syncExportUi);
+		$exportModal.on('click', '.wbtm-bkl-modal-close', function () {
+			$exportModal.hide();
+		});
+		$exportModal.on('click', function (e) {
+			if (e.target === this) {
+				$exportModal.hide();
+			}
+		});
+		$(document).on('keydown', function (e) {
+			if (e.key === 'Escape') {
+				$exportModal.hide();
+			}
+		});
+
+		$exportModal.on('click', '#wbtm-bkl-export-run', function () {
+			var format = $exportModal.find('input[name="wbtm_bkl_export_format"]:checked').val();
+			if (!format) {
+				toast(i18n.exportNoFormat || 'Please choose an export format.');
+				return;
+			}
+
+			var scope = exportScope();
+			var args = {};
+
+			if (scope === 'view') {
+				args = $.extend({}, vars.currentFilters || {});
+			} else if (scope === 'selected') {
+				var ids = getCheckedIds();
+				if (!ids.length) {
+					toast(i18n.exportNoRows || 'Please select at least one booking.');
+					return;
+				}
+				if (format === 'thermal' && vars.maxThermal && ids.length > vars.maxThermal) {
+					toast((i18n.exportTooManyThermal || 'Thermal printing is capped at %d tickets per run.').replace('%d', vars.maxThermal), 'error');
+					return;
+				}
+				args.wbtm_bl_ids = ids.join(',');
+			} else if (scope === 'today') {
+				args.wbtm_bl_booked_from = args.wbtm_bl_booked_to = vars.today;
+			} else if (scope === 'departing_today') {
+				args.wbtm_bl_journey_from = args.wbtm_bl_journey_to = vars.today;
+			} else if (scope === 'range') {
+				var from = $('#wbtm-bkl-export-from').val();
+				var to   = $('#wbtm-bkl-export-to').val();
+				if (!from || !to) {
+					toast(i18n.exportBadRange || 'Please pick both a From and a To date.');
+					return;
+				}
+				if (from > to) { // ISO yyyy-mm-dd compares correctly as a string
+					toast(i18n.exportRangeOrder || 'The From date cannot be after the To date.');
+					return;
+				}
+				if ($('#wbtm-bkl-export-basis').val() === 'booked') {
+					args.wbtm_bl_booked_from = from;
+					args.wbtm_bl_booked_to   = to;
+				} else {
+					args.wbtm_bl_journey_from = from;
+					args.wbtm_bl_journey_to   = to;
+				}
+			}
+			// scope 'all' deliberately sends no row args at all.
+
+			if (scope !== 'view' && scope !== 'selected') {
+				var bus = $('#wbtm-bkl-export-bus').val();
+				var status = $('#wbtm-bkl-export-status').val();
+				if (bus) { args.wbtm_bl_bus = bus; }
+				if (status) { args.wbtm_bl_status = status; }
+			}
+
+			args.action   = 'wbtm_bkl_export_' + format;
+			args._wpnonce = (vars.exportNonces || {})[format] || '';
+
+			$exportModal.hide();
+			toast(i18n.exportStarted || 'Preparing your export…');
+			// A plain navigation, not AJAX: the response is a file download (or, for
+			// thermal, a redirect into the Pro PDF generator), and the browser has to
+			// own that. The page itself stays where it is.
+			window.location.href = vars.exportBase + '?' + $.param(args);
+		});
+
+		// Keep the "Selected bookings (N)" counter honest while the dialog is open.
+		$(document).on('change', '.wbtm-bkl-row-check, #wbtm-bkl-select-all', function () {
+			if ($exportModal.is(':visible')) {
+				syncExportUi();
+			}
+		});
 	});
 })(jQuery);
