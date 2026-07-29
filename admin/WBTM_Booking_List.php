@@ -796,49 +796,6 @@
 			}
 
 			/**
-			 * One booking's answered passenger-form fields as an escaped "Label: value"
-			 * strip for the PDF export, or '' when the passenger filled nothing in.
-			 * Column order follows $pax_cols so the strips stay consistent down the page.
-			 */
-			private function passenger_field_strip($id, array $pax_cols) {
-				if (empty($pax_cols)) {
-					return '';
-				}
-				$answers = $this->passenger_field_answers($id);
-				$bits    = array();
-				foreach ($pax_cols as $field_id => $label) {
-					$value = $this->passenger_field_answer($answers, $field_id, $label);
-					if ($value === '') {
-						continue;
-					}
-					$bits[] = '<span class="lbl">' . esc_html($label) . ':</span> ' . esc_html($value);
-				}
-				return $bits ? implode(' &nbsp;&bull;&nbsp; ', $bits) : '';
-			}
-
-			/**
-			 * A price formatted for the PDF.
-			 *
-			 * Amounts are deliberately NEVER bold. mPDF resolves each weight to a
-			 * separate font file, and the bold faces bundled with it are missing several
-			 * currency glyphs that the regular faces have — the Bangladeshi Taka (৳)
-			 * among them — so a bold price printed the amount with a tofu box where the
-			 * symbol should be. Emphasis in the totals row comes from its tint and rule
-			 * instead of weight, which costs nothing and always renders.
-			 *
-			 * @param float $amount Value to format.
-			 * @param bool  $markup Wrap in a span (false when the caller escapes the
-			 *                      result itself, e.g. inside a translated sentence).
-			 */
-			private function pdf_money($amount, $markup = true) {
-				$price = wp_strip_all_tags(WBTM_Global_Function::format_price($amount));
-				// format_price() returns an HTML entity for many symbols (&#2547; for ৳);
-				// mPDF needs the real character, and this string is escaped from here on.
-				$price = html_entity_decode($price, ENT_QUOTES, get_bloginfo('charset') ?: 'UTF-8');
-				return $markup ? '<span style="font-weight:normal;">' . esc_html($price) . '</span>' : $price;
-			}
-
-			/**
 			 * Readable header for a field that carries no configured label
 			 * (wbtm_emergency_contact => "Emergency Contact").
 			 */
@@ -846,13 +803,16 @@
 				$clean = preg_replace('/^wbtm[_-]/', '', (string) $field_id);
 				return ucwords(str_replace(array('_', '-'), ' ', $clean));
 			}
-
 			/**
-			 * Pro-only: a full booking-list PDF export. Unlike the Pro per-bus manifest
-			 * (which needs a bus selected), this renders EVERY matching booking —
-			 * respecting the current filters — as a landscape table, so admins can
-			 * export the whole list to PDF without picking a bus. Built with the same
-			 * mPDF the Pro add-on ships, but from our own query (the CSV's twin).
+			 * Pro-only: export every matching booking (respecting the current filters)
+			 * as PDF Booking Confirmation cards — one card per booking, page-broken
+			 * between them.
+			 *
+			 * The card is the Pro add-on's shared ticket design
+			 * (WBTM_Pro_Pdf::booking_card_html), the very same renderer behind the
+			 * per-booking "Download Ticket (PDF)". Rendering it here rather than
+			 * re-implementing the layout is the point: an operator's bulk export and a
+			 * passenger's own ticket are then guaranteed to be identical documents.
 			 */
 			public function handle_export_pdf() {
 				if (!current_user_can('manage_options') || !$this->is_pro()) {
@@ -862,197 +822,30 @@
 				if (!class_exists('WBTM_Pro_Pdf') || !WBTM_Pro_Pdf::is_mpdf_available()) {
 					wp_die(esc_html__('PDF generation is unavailable. Please install the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'));
 				}
+				if (!method_exists('WBTM_Pro_Pdf', 'booking_card_html')) {
+					wp_die(esc_html__('Please update the Bus Ticket Booking PRO add-on to export booking cards.', 'bus-ticket-booking-with-seat-reservation'));
+				}
 
 				$args = $this->build_query_args(-1, 1);
 				$ids  = get_posts(array_merge($args, array('fields' => 'ids')));
+				if (empty($ids)) {
+					wp_die(esc_html__('No bookings matched, so there is nothing to export.', 'bus-ticket-booking-with-seat-reservation'));
+				}
 
-				// Same passenger-form fields the CSV exports — see passenger_field_columns().
-				$pax_cols = $this->passenger_field_columns($ids);
-
-				$rows = '';
-				$grand_total  = 0;
-				$grand_extras = 0;
-				$grand_tax    = 0;
-				$bus_seen     = array();
-				foreach ($ids as $id) {
-					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
-					if ($bus_id) {
-						$bus_seen[$bus_id] = true;
-					}
-					$order_id = get_post_meta($id, 'wbtm_order_id', true);
-					$pax    = $this->passenger_bits($id);
-					$name   = get_post_meta($id, 'wbtm_user_name', true) ?: $pax['name'];
-					$phone  = get_post_meta($id, 'wbtm_user_phone', true) ?: $pax['phone'];
-					$bp     = get_post_meta($id, 'wbtm_boarding_point', true);
-					$dp     = get_post_meta($id, 'wbtm_dropping_point', true);
-					$jdate  = get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true);
-					$seat   = get_post_meta($id, 'wbtm_seat', true);
-					$ticket = get_post_meta($id, 'wbtm_ticket', true);
-					$fare   = (float) get_post_meta($id, 'wbtm_bus_fare', true);
-					$extras = $this->extra_services_total($id);
-					$total  = $fare + $extras;
-					// $total is tax-inclusive already; $tax is the slice of it that is tax.
-					$tax    = $this->booking_tax($id);
-					$dep    = $this->deposit_info($id);
-					$status = get_post_meta($id, 'wbtm_order_status', true);
-					$leg    = get_post_meta($id, 'wbtm_journey_type', true) === 'return' ? esc_html__('Return', 'bus-ticket-booking-with-seat-reservation') : esc_html__('Outbound', 'bus-ticket-booking-with-seat-reservation');
-					$source = $this->booking_source($id) === 'standalone' ? esc_html__('Custom', 'bus-ticket-booking-with-seat-reservation') : esc_html__('WooCommerce', 'bus-ticket-booking-with-seat-reservation');
-					$grand_total  += $total;
-					$grand_extras += $extras;
-					$grand_tax    += $tax;
-
-					$route = trim($bp . ($dp ? ' → ' . $dp : ''));
-					$cust  = '<strong>' . esc_html($name ?: '—') . '</strong>' . ($phone ? '<br><span class="sub">' . esc_html($phone) . '</span>' : '');
-					$seatt = '<strong>' . esc_html($this->seat_label($id)) . '</strong>' . ($ticket ? '<br><span class="sub">' . esc_html($ticket) . '</span>' : '');
-					$exlabel = $this->extra_services_label($id);
-					$excell  = $extras > 0
-						? $this->pdf_money($extras) . ($exlabel ? '<br><span class="sub">' . esc_html($exlabel) . '</span>' : '')
-						: '<span class="nil">—</span>';
-					$taxcell = $tax > 0 ? $this->pdf_money($tax) : '<span class="nil">—</span>';
-					// Deposit bookings show what was actually collected vs still owed,
-					// since the Total column is the full (tax-inclusive) ticket price.
-					$depnote = '';
-					if ($dep['is_deposit'] && $dep['remaining'] > 0) {
-						$depnote = '<br><span class="due">' . esc_html(sprintf(
-							/* translators: 1: amount paid so far, 2: outstanding balance. */
-							__('paid %1$s · due %2$s', 'bus-ticket-booking-with-seat-reservation'),
-							$this->pdf_money($dep['paid'], false),
-							$this->pdf_money($dep['remaining'], false)
-						)) . '</span>';
-					}
-
-					$rows .= '<tr>'
-						. '<td><strong>#' . esc_html($order_id ?: $id) . '</strong><br><span class="sub">ID ' . esc_html($id) . '</span></td>'
-						. '<td><span class="tag">' . esc_html($source) . '</span></td>'
-						. '<td>' . $cust . '</td>'
-						. '<td>' . esc_html($bus_id ? get_the_title($bus_id) : '—') . '</td>'
-						. '<td>' . esc_html($route ?: '—') . '</td>'
-						. '<td>' . esc_html($jdate ?: '—') . '</td>'
-						. '<td>' . $seatt . '</td>'
-						. '<td class="num">' . $this->pdf_money($fare) . '</td>'
-						. '<td class="num">' . $excell . '</td>'
-						. '<td class="num">' . $taxcell . '</td>'
-						. '<td class="num strong-num">' . $this->pdf_money($total) . $depnote . '</td>'
-						. '<td>' . esc_html(ucfirst(str_replace('wc-', '', (string) $status)) ?: '—') . '</td>'
-						. '<td>' . esc_html($leg) . '</td>'
-						. '</tr>';
-					// Passenger-form answers (built-in + custom fields such as "Emergency
-					// Contact Name") ride along as a full-width continuation strip under the
-					// booking rather than one column per field: a booking form can carry any
-					// number of fields, and extra columns would collapse this already
-					// 13-column landscape table. Bookings with nothing filled in get no strip.
-					$pax_strip = $this->passenger_field_strip($id, $pax_cols);
-					if ($pax_strip !== '') {
-						$rows .= '<tr><td class="pax" colspan="13">' . $pax_strip . '</td></tr>';
+				// One card per page. The stylesheet is emitted once for the whole
+				// document — repeating it per card would multiply the HTML that mPDF
+				// has to run through PCRE for no benefit.
+				$html = WBTM_Pro_Pdf::booking_card_css();
+				$last = count($ids) - 1;
+				foreach (array_values($ids) as $index => $id) {
+					$html .= WBTM_Pro_Pdf::booking_card_html($id);
+					if ($index < $last) {
+						$html .= '<pagebreak />';
 					}
 				}
-				if ($rows === '') {
-					$rows = '<tr><td colspan="13" class="empty">' . esc_html__('No bookings found.', 'bus-ticket-booking-with-seat-reservation') . '</td></tr>';
-				}
 
-				$generated = date_i18n(get_option('date_format') . ' ' . get_option('time_format'));
-				$count     = count($ids);
-				$net       = max(0, $grand_total - $grand_tax);
-
-				// Light, print-first palette: white paper, slate ink, hairline rules, and the
-				// plugin's rose used only for the accent rule, the summary figures and the
-				// totals row. Nothing here relies on a dark fill, so it stays legible on a
-				// mono office printer and doesn't drink toner.
-				$html  = '<style>'
-					// freesans, not sans-serif: mPDF's default (DejaVu) has no glyph for
-					// several currency signs — the Bangladeshi Taka (৳) among them — and
-					// printed a tofu box. See pdf_money() for why amounts are never bold.
-					. 'body{font-family:freesans;color:#1f2937;font-size:8.6pt;}'
-					. '.doc-head{width:100%;border-collapse:collapse;margin:0 0 2mm;}'
-					. '.doc-head td{padding:0;border:0;vertical-align:bottom;}'
-					. '.doc-title{font-size:16pt;font-weight:bold;color:#0f172a;letter-spacing:-.2pt;}'
-					. '.doc-sub{font-size:8pt;color:#94a3b8;padding-top:1mm;}'
-					. '.doc-org{text-align:right;font-size:9.5pt;font-weight:bold;color:#475569;}'
-					. '.org-host{font-size:7.5pt;font-weight:normal;color:#a8b3c2;}'
-					. '.rule{height:2px;background:#e63946;font-size:0;line-height:0;margin:0 0 4mm;}'
-					// Summary strip: four light cards, figures in rose, labels in muted caps.
-					. '.sum{width:100%;border-collapse:separate;border-spacing:2.5mm 0;margin:0 0 4mm;}'
-					. '.sum td{background:#f8fafc;border:1px solid #eaeff5;padding:2.6mm 3mm;width:25%;}'
-					. '.sum .k{font-size:7pt;color:#94a3b8;text-transform:uppercase;letter-spacing:.3pt;}'
-					. '.sum .v{font-size:12pt;color:#e63946;padding-top:.6mm;}'
-					. 'table.list{width:100%;border-collapse:collapse;}'
-					. 'table.list th{background:#f7f9fc;text-align:left;padding:2.4mm 2mm;font-size:7pt;font-weight:bold;'
-						. 'text-transform:uppercase;letter-spacing:.3pt;color:#64748b;border-bottom:1px solid #dde5ee;}'
-					. 'table.list td{padding:2.4mm 2mm;border-bottom:1px solid #eef2f7;vertical-align:top;line-height:1.35;}'
-					. 'table.list td.num{text-align:right;white-space:nowrap;}'
-					. 'table.list td.strong-num{color:#0f172a;}'
-					. '.sub{color:#98a4b3;font-size:7.4pt;}'
-					. '.nil{color:#cbd5e1;}'
-					. '.due{color:#c0392b;font-size:7.4pt;}'
-					. '.tag{background:#eef2f7;color:#5b6878;font-size:7pt;padding:.6mm 1.4mm;}'
-					// Passenger-form answers: a tinted continuation strip under each booking.
-					. 'td.pax{background:#f9fbfd;color:#475569;font-size:7.4pt;padding:1.6mm 2mm 2mm;border-bottom:1px solid #eef2f7;}'
-					. 'td.pax .lbl{color:#9aa6b5;}'
-					. 'td.empty{text-align:center;color:#a8b3c2;padding:12mm 2mm;}'
-					. 'tfoot td{background:#fdf2f4;border-top:1.5px solid #e63946;border-bottom:0;color:#8f1d28;padding:2.8mm 2mm;}'
-					. 'tfoot .lbl{text-align:right;font-weight:bold;text-transform:uppercase;font-size:7.5pt;letter-spacing:.3pt;}'
-					. '</style>';
-
-				$html .= '<table class="doc-head"><tr>'
-					. '<td><div class="doc-title">' . esc_html__('Booking List', 'bus-ticket-booking-with-seat-reservation') . '</div>'
-					. '<div class="doc-sub">' . sprintf(
-						/* translators: 1: number of bookings, 2: date/time generated. */
-						esc_html__('%1$s booking(s) · generated %2$s', 'bus-ticket-booking-with-seat-reservation'),
-						esc_html(number_format_i18n($count)),
-						esc_html($generated)
-					) . '</div></td>'
-					// Explicit <br>: mPDF ignores display:block on an inline element, so a
-					// styled <small> alone left the host glued to the site name.
-					. '<td class="doc-org">' . esc_html(get_bloginfo('name'))
-					. '<br><span class="org-host">' . esc_html(wp_parse_url(home_url(), PHP_URL_HOST)) . '</span></td>'
-					. '</tr></table><div class="rule"></div>';
-
-				$summary = array(
-					array(esc_html__('Bookings', 'bus-ticket-booking-with-seat-reservation'), esc_html(number_format_i18n($count))),
-					array(esc_html__('Revenue (incl. tax)', 'bus-ticket-booking-with-seat-reservation'), $this->pdf_money($grand_total)),
-					array(esc_html__('Net (excl. tax)', 'bus-ticket-booking-with-seat-reservation'), $this->pdf_money($net)),
-					array(esc_html__('Buses', 'bus-ticket-booking-with-seat-reservation'), esc_html(number_format_i18n(count($bus_seen)))),
-				);
-				$html .= '<table class="sum"><tr>';
-				foreach ($summary as $card) {
-					$html .= '<td><div class="k">' . $card[0] . '</div><div class="v">' . $card[1] . '</div></td>';
-				}
-				$html .= '</tr></table>';
-
-				// Fixed column widths (percent of the table): with auto layout a long extra
-				// service name stole space from the money columns and pushed "Tax (incl.)"
-				// onto two lines. Widths total 100 and are ordered as the row cells above.
-				$columns = array(
-					array(__('Booking', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
-					array(__('Source', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
-					array(__('Customer', 'bus-ticket-booking-with-seat-reservation'), 12, 'left'),
-					array(__('Bus', 'bus-ticket-booking-with-seat-reservation'), 7, 'left'),
-					array(__('Route', 'bus-ticket-booking-with-seat-reservation'), 9, 'left'),
-					array(__('Journey Date', 'bus-ticket-booking-with-seat-reservation'), 8.5, 'left'),
-					array(__('Seat / Ticket', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'left'),
-					array(__('Fare', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'right'),
-					array(__('Extra Services', 'bus-ticket-booking-with-seat-reservation'), 10, 'right'),
-					array(__('Tax (incl.)', 'bus-ticket-booking-with-seat-reservation'), 5.5, 'right'),
-					array(__('Total', 'bus-ticket-booking-with-seat-reservation'), 7, 'right'),
-					array(__('Status', 'bus-ticket-booking-with-seat-reservation'), 7.5, 'left'),
-					array(__('Leg', 'bus-ticket-booking-with-seat-reservation'), 6.5, 'left'),
-				);
-				$html .= '<table class="list"><thead><tr>';
-				foreach ($columns as $column) {
-					$html .= '<th style="width:' . esc_attr($column[1]) . '%;text-align:' . esc_attr($column[2]) . ';">'
-						. esc_html($column[0]) . '</th>';
-				}
-				$html .= '</tr></thead><tbody>' . $rows . '</tbody>'
-					. '<tfoot><tr>'
-					. '<td colspan="8" class="lbl">' . esc_html__('Grand Total', 'bus-ticket-booking-with-seat-reservation') . '</td>'
-					. '<td class="num">' . $this->pdf_money($grand_extras) . '</td>'
-					. '<td class="num">' . $this->pdf_money($grand_tax) . '</td>'
-					. '<td class="num">' . $this->pdf_money($grand_total) . '</td>'
-					. '<td colspan="2"></td></tr></tfoot>'
-					. '</table>';
-
-				// Raise PCRE limits for large lists (mirrors the Pro generator's guard),
-				// so mPDF's WriteHTML() never fatals on a long table.
+				// Raise PCRE limits for large exports (mirrors the Pro generator's guard),
+				// so mPDF's WriteHTML() never fatals on a long document.
 				$needed = max(1000000, strlen($html) * 3);
 				if ((int) ini_get('pcre.backtrack_limit') < $needed) { @ini_set('pcre.backtrack_limit', (string) $needed); }
 				if ((int) ini_get('pcre.recursion_limit') < 200000) { @ini_set('pcre.recursion_limit', '200000'); }
@@ -1060,18 +853,18 @@
 				try {
 					$mpdf = new \Mpdf\Mpdf(array(
 						'mode'          => 'utf-8',
-						'format'        => 'A4-L',
-						'margin_top'    => 12,
-						'margin_bottom' => 14,
+						'format'        => 'A4',
+						'margin_top'    => 10,
+						'margin_bottom' => 12,
 						'margin_left'   => 10,
 						'margin_right'  => 10,
-						// Match the stylesheet so the page footer resolves the same glyphs.
+						// Match the card stylesheet so the footer resolves the same glyphs.
 						'default_font'  => 'freesans',
 					));
-					// Repeat the column headers on every page and number the pages, so a
-					// multi-page manifest is still readable once it is off the screen.
+					// Page numbers only — the card carries its own identity, so the footer
+					// stays out of its way.
 					$mpdf->SetHTMLFooter(
-						'<table width="100%" style="font-family:freesans;font-size:7pt;color:#a8b3c2;border-top:1px solid #eef2f7;padding-top:1.5mm;"><tr>'
+						'<table width="100%" style="font-family:freesans;font-size:7pt;color:#a8b3c2;"><tr>'
 						. '<td>' . esc_html(get_bloginfo('name')) . '</td>'
 						. '<td style="text-align:right;">' . esc_html__('Page', 'bus-ticket-booking-with-seat-reservation') . ' {PAGENO} / {nbpg}</td>'
 						. '</tr></table>'
