@@ -452,3 +452,12 @@ Seat number rotation stopped
 * Fixed the Upper Deck and Lower Deck of the same cabin sharing a single seat price override — each deck now keeps its own per-seat prices, so an upper-deck seat can be priced independently of the lower-deck seat with the same number
 * Seat prices you have already saved are preserved and continue to apply to the Lower Deck exactly as before; only the Upper Deck needs its prices entered
 * The Booking Calendar no longer shows the internal seat reference (such as "cabin_0_dd_A1") — it now displays the seat number with the deck shown as a small "Upper Deck" tag, and the cabin name on its own line
+
+**Passenger Form Fields in Booking List Exports (Fix)**
+* Custom fields you add to the Passenger Form — for example "Emergency Contact Name" and "Emergency Contact Phone" — are now included automatically in both the Booking List CSV and PDF exports, with no setup needed
+* Restores the custom-field export that was available in the Passenger List before it was merged into the Booking List, so passenger manifests are complete again
+* Fields use the exact labels and order you configured on the bus, and the built-in passenger fields (name, email, phone, address, gender) are exported alongside your own
+* Filtering the Booking List by a bus exports just that bus's form fields instead of every field used across the site
+* Answers collected before a field was renamed or removed from the form still appear in exports, so nothing already gathered is ever lost
+* In the PDF, passenger details print as a compact line beneath each booking, so the table stays readable no matter how many custom fields your form has
+* The booking detail screen now labels each passenger field with your form label instead of its internal field name
