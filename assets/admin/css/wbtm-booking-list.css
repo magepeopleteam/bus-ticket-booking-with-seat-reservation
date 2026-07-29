@@ -11,10 +11,13 @@
 .wbtm-bkl-title { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700; margin: 0; color: #0f172a; }
 .wbtm-bkl-title .dashicons { font-size: 22px; width: 22px; height: 22px; color: #e63946; }
 .wbtm-bkl-subtitle { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+/* Used by both the "Upgrade to PRO" link and the Export <button>, hence the
+   explicit border/cursor reset — a bare <button> would otherwise draw a UA border. */
 .wbtm-bkl-pro-cta {
   display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
   background: linear-gradient(135deg, #e63946, #b3212f); color: #fff;
   padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px;
+  border: 0; cursor: pointer;
 }
 .wbtm-bkl-pro-cta:hover { color: #fff; filter: brightness(1.05); }
 .wbtm-bkl-pro-cta .dashicons { font-size: 16px; width: 16px; height: 16px; }
@@ -23,6 +26,11 @@
 .wbtm-bkl-locked { position: relative; margin-bottom: 16px; border-radius: 12px; overflow: hidden; }
 .wbtm-bkl-locked.is-locked > .wbtm-bkl-stats,
 .wbtm-bkl-locked.is-locked > .wbtm-bkl-filters { filter: blur(5px); opacity: .55; pointer-events: none; user-select: none; }
+/* Free tier: the stats and the filter bar share ONE lock, so there is a single
+   PRO badge for the whole region instead of one badge per section. The blur is
+   applied to the group's children here rather than by the sections themselves. */
+.wbtm-bkl-locked-group.is-locked > * { filter: blur(5px); opacity: .55; pointer-events: none; user-select: none; }
+.wbtm-bkl-locked-group.is-locked > .wbtm-bkl-lock-overlay { filter: none; opacity: 1; }
 .wbtm-bkl-lock-overlay {
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px; text-align: center;
@@ -420,6 +428,57 @@
   .wbtm-bkl-detail-grid { grid-template-columns: 1fr; }
 }
 
+/* Export dialog — one button, a format picker and a scope picker. Wider than the
+   confirm-style modals and scrollable, since it carries three groups of controls. */
+.wbtm-bkl-modal-export .wbtm-bkl-modal-card { max-width: 620px; max-height: calc(100vh - 40px); display: flex; flex-direction: column; }
+.wbtm-bkl-modal-export .wbtm-bkl-modal-head h2 .dashicons { color: #e63946; }
+.wbtm-bkl-modal-export .wbtm-bkl-modal-body { overflow-y: auto; }
+/* The JS shows/hides the date-range block and the refine note with the [hidden]
+   attribute. Their own display rules below would otherwise beat the UA
+   [hidden]{display:none} and leave both permanently visible, so restate it at
+   class+attribute specificity. */
+.wbtm-bkl-modal-export [hidden] { display: none; }
+.wbtm-bkl-export-section { margin-bottom: 18px; }
+.wbtm-bkl-export-section:last-of-type { margin-bottom: 0; }
+.wbtm-bkl-export-legend { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #64748b; margin: 0 0 8px; }
+.wbtm-bkl-export-legend small { text-transform: none; letter-spacing: 0; font-weight: 500; color: #94a3b8; }
+
+.wbtm-bkl-export-formats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+.wbtm-bkl-export-format { position: relative; display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; }
+.wbtm-bkl-export-format:hover { border-color: #cbd5e1; background: #f8fafc; }
+.wbtm-bkl-export-format input[type="radio"] { position: absolute; opacity: 0; }
+.wbtm-bkl-export-format > .dashicons { color: #94a3b8; flex: 0 0 auto; }
+.wbtm-bkl-export-format-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wbtm-bkl-export-format-text strong { font-size: 13px; color: #1e293b; }
+.wbtm-bkl-export-format-text small { font-size: 11px; line-height: 1.4; color: #94a3b8; }
+.wbtm-bkl-export-format:has(input:checked) { border-color: #e63946; background: #fdedef; }
+.wbtm-bkl-export-format:has(input:checked) > .dashicons { color: #e63946; }
+.wbtm-bkl-export-format.is-disabled { opacity: .55; cursor: not-allowed; background: #f8fafc; }
+
+.wbtm-bkl-export-scopes { display: flex; flex-direction: column; gap: 6px; }
+.wbtm-bkl-export-scope { position: relative; display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; }
+.wbtm-bkl-export-scope:hover { border-color: #cbd5e1; background: #f8fafc; }
+.wbtm-bkl-export-scope input[type="radio"] { position: absolute; opacity: 0; }
+.wbtm-bkl-export-scope > .dashicons { color: #94a3b8; flex: 0 0 auto; }
+.wbtm-bkl-export-scope:has(input:checked) { border-color: #e63946; background: #fdedef; }
+.wbtm-bkl-export-scope:has(input:checked) > .dashicons { color: #e63946; }
+.wbtm-bkl-export-scope-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.wbtm-bkl-export-scope-text strong { font-size: 13px; color: #1e293b; }
+.wbtm-bkl-export-scope-text small { font-size: 11px; line-height: 1.4; color: #94a3b8; }
+.wbtm-bkl-export-count { color: #e63946; font-weight: 700; }
+
+.wbtm-bkl-export-range,
+.wbtm-bkl-export-refine-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.wbtm-bkl-export-range { margin-top: 10px; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; }
+.wbtm-bkl-export-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.wbtm-bkl-export-field label { font-size: 11px; font-weight: 600; color: #64748b; }
+.wbtm-bkl-export-field select,
+.wbtm-bkl-export-field input[type="date"] { width: 100%; max-width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 13px; background: #fff; }
+.wbtm-bkl-export-field select:disabled,
+.wbtm-bkl-export-field input:disabled { background: #f1f5f9; color: #94a3b8; }
+.wbtm-bkl-export-note { display: flex; align-items: flex-start; gap: 6px; margin: 8px 0 0; font-size: 11px; line-height: 1.5; color: #64748b; }
+.wbtm-bkl-export-note .dashicons { font-size: 14px; width: 14px; height: 14px; flex: 0 0 auto; color: #94a3b8; }
+
 /* Small phones */
 @media (max-width: 600px) {
   .wbtm-bkl-title { font-size: 18px; }
@@ -428,4 +487,7 @@
   .wbtm-bkl-modal { padding: 12px; }
   .wbtm-bkl-modal-card { max-width: 100%; }
   .wbtm-bkl-columns-panel { width: calc(100vw - 24px); }
+  .wbtm-bkl-export-formats { grid-template-columns: 1fr; }
+  .wbtm-bkl-export-range,
+  .wbtm-bkl-export-refine-row { grid-template-columns: 1fr; }
 }

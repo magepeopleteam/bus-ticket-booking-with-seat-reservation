@@ -79,6 +79,11 @@
 	 * to run triggerSave(). The result looked like an uneditable field: content
 	 * could be typed, but the old textarea value was posted and reappeared after
 	 * reload.
+	 *
+	 * The merged-tab path needs it just as much: it builds a FormData from the
+	 * form, which reads the DOM as it stands and so has the same stale value.
+	 * Editing in the editor's Text tab happened to work, because that writes
+	 * straight to the textarea — which is what made the bug look intermittent.
 	 */
 	bmGs.syncEditors = function () {
 		if (window.tinyMCE && typeof window.tinyMCE.triggerSave === 'function') {
