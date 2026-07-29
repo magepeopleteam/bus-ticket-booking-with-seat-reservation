@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				//register settings sections
 				foreach ( $this->settings_sections as $section ) {
 					if ( false == get_option( $section['id'] ) ) {
-						add_option( $section['id'] );
+						add_option( $section['id'], array() );
 					}
 					if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
 						$section['desc'] = '<div class="inside">' . $section['desc'] . '</div>';
@@ -350,8 +350,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				echo wp_dropdown_pages( $dropdown_args ) ;
 			}
 			function sanitize_options( $options ) {
-				if ( ! $options ) {
-					return $options;
+				if ( ! is_array( $options ) ) {
+					return array();
 				}
 				foreach ( $options as $option_slug => $option_value ) {
 					$sanitize_callback = $this->get_sanitize_callback( $option_slug );
