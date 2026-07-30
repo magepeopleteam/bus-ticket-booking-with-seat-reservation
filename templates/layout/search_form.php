@@ -350,6 +350,28 @@
                 flex-shrink:     0 !important;
             }
 
+            /* ── Live search / autocomplete states ───────────────── */
+            /* The li rule above needs `display:flex !important` for the
+               checkbox + city + tick row, and an !important stylesheet
+               declaration outranks the inline `display:none` that jQuery's
+               filter sets — so non-matching cities could never be hidden.
+               Hiding is therefore driven by this class instead. */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_filtered_out {
+                display: none !important;
+            }
+            /* "No match" placeholder — plain text row, no checkbox, not clickable
+               (pointer-events:none keeps it out of the shared li click handler). */
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_no_result {
+                color:          #9ca3af !important;
+                font-style:     italic !important;
+                cursor:         default !important;
+                pointer-events: none !important;
+            }
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_no_result::before,
+            #wbtm_area .wbtm-bar-redesign ul.wbtm_input_select_list li.wbtm_city_no_result::after {
+                display: none !important;
+            }
+
             .wtbm_inputList.wbtm_input_select.wbtm_dropping_point {
                 border-right: 1px solid #e9e5e5 !important;
             }
@@ -439,17 +461,76 @@
             </style>
             <script>
             jQuery(document).ready(function($) {
-                // Mark the currently-selected li when the dropdown opens
-                $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select input.formControl', function() {
+                var wbtmNoResultText = <?php echo wp_json_encode( __( 'No matching location found', 'bus-ticket-booking-with-seat-reservation' ) ); ?>;
+                var wbtmFieldSelector = '#wbtm_area .wbtm-bar-redesign .wbtm_input_select input.formControl';
+
+                // Lower-cased and accent-stripped, so "brasov" still matches "Braşov".
+                function wbtmNormalize(value) {
+                    value = (value || '').toLowerCase().trim();
+                    return value.normalize ? value.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : value;
+                }
+
+                // Filter the city list to what the user typed. The shared handler in
+                // wbtm_plugin_global.js hides items with an inline display:none, which the
+                // pill-bar's `li{display:flex !important}` rule outranks, so filtering is
+                // re-applied here with a class the CSS above can act on.
+                function wbtmFilterRouteList($input) {
+                    var $wrap  = $input.closest('.wbtm_input_select');
+                    var $list  = $wrap.find('.wbtm_input_select_list');
+                    var $items = $list.find('li').not('.wbtm_city_no_result');
+                    var term   = wbtmNormalize($input.val());
+                    var shown  = 0;
+
+                    $items.each(function() {
+                        var value = wbtmNormalize($(this).attr('data-value'));
+                        var match = term === '' || value.indexOf(term) !== -1;
+                        $(this).toggleClass('wbtm_city_filtered_out', !match);
+                        if (match) {
+                            shown++;
+                        }
+                    });
+
+                    if (!$items.length) {
+                        return;
+                    }
+                    var $empty = $list.find('li.wbtm_city_no_result');
+                    if (shown === 0) {
+                        if (!$empty.length) {
+                            // data-value="" is required: the shared handlers in
+                            // wbtm_plugin_global.js call .toLowerCase() on every li's
+                            // data-value and would throw on a missing attribute.
+                            $empty = $('<li class="wbtm_city_no_result" data-value="" aria-live="polite"></li>').text(wbtmNoResultText).appendTo($list);
+                        }
+                        $empty.removeClass('wbtm_city_filtered_out');
+                    } else {
+                        $empty.addClass('wbtm_city_filtered_out');
+                    }
+                }
+
+                // Mark the currently-selected li when the dropdown opens, and start from
+                // the full list so a previously picked city can be changed.
+                $(document).on('click focus', wbtmFieldSelector, function() {
                     var currentVal = $(this).val().toLowerCase().trim();
-                    $(this).closest('.wbtm_input_select').find('.wbtm_input_select_list li').each(function() {
+                    var $list = $(this).closest('.wbtm_input_select').find('.wbtm_input_select_list');
+                    $list.find('li').removeClass('wbtm_city_filtered_out');
+                    $list.find('li.wbtm_city_no_result').addClass('wbtm_city_filtered_out');
+                    $list.find('li').not('.wbtm_city_no_result').each(function() {
                         var liVal = ($(this).attr('data-value') || '').toLowerCase().trim();
                         $(this).toggleClass('wbtm_city_selected', liVal === currentVal && currentVal !== '');
                     });
                 });
+
+                // Type to filter — `input` also covers paste, cut and clear-button clears.
+                $(document).on('input', wbtmFieldSelector, function() {
+                    wbtmFilterRouteList($(this));
+                    $(this).closest('.wbtm_input_select').find('.wbtm_input_select_list').stop(true, true).show();
+                });
+
                 // Update selected state when an li is clicked
                 $(document).on('click', '#wbtm_area .wbtm-bar-redesign .wbtm_input_select_list li', function() {
-                    $(this).closest('.wbtm_input_select_list').find('li').removeClass('wbtm_city_selected');
+                    var $list = $(this).closest('.wbtm_input_select_list');
+                    $list.find('li').removeClass('wbtm_city_selected wbtm_city_filtered_out');
+                    $list.find('li.wbtm_city_no_result').addClass('wbtm_city_filtered_out');
                     $(this).addClass('wbtm_city_selected');
                 });
             });

@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.0
+Stable tag: 5.9.1
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -478,3 +478,15 @@ Seat number rotation stopped
 * Fixed the currency symbol printing as an empty box for several currencies — most visibly the Bangladeshi Taka (৳) — in the PDF ticket and the Thermal (POS) ticket
 * Fixed Thermal (POS) tickets printing a long blank stretch of paper after each receipt; every ticket is now sized to its own content, and a multi-ticket run prints one receipt per page
 * Fixed a passenger field appearing twice in exports when the same question existed under two field ids (after a form field was renamed)
+
+= 5.9.1 =
+*Release Date - 30 Jul 2026*
+
+**Search Form Location Autocomplete (Fix)**
+* Fixed typing in the "From" and "To" fields of the search form no longer filtering the location list — the list stayed complete, so long route lists had to be scrolled through by hand
+* Typing now narrows the list instantly again: a few letters such as "man" bring up "Mangalia", and "las" brings up "Las Vegas"
+* Matching works anywhere in the name, not only at the start, so "vegas" also finds "Las Vegas"
+* Accents and letter case are ignored while searching — "brasov" matches "Brașov" — so nothing has to be typed exactly as it is spelled
+* A short "No matching location found" note is shown when nothing matches, instead of an empty panel
+* Clicking the field again clears the search and brings back the full list, with the currently selected stop still ticked
+* Applies to both the standard and Flix-style search forms, and to the search bar on the results page
