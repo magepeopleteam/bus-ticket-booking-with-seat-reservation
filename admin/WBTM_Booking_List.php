@@ -23,6 +23,10 @@
 		class WBTM_Booking_List {
 			const PAGE_SLUG = 'wbtm_booking_list';
 			const PER_PAGE  = 20;
+			// Bookings whose meta get_stats() pulls per batch. The stats cards cover
+			// every booking on the site, so this is what keeps that scan's memory flat
+			// on large installs instead of growing with the booking table.
+			const STATS_CHUNK = 500;
 
 			public function __construct() {
 				add_action('admin_menu', array($this, 'register_menu'));
@@ -617,55 +621,88 @@
 					$header[] = $pax_label;
 				}
 				fputcsv($out, $header);
-				foreach ($ids as $id) {
-					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
-					$pax    = $this->passenger_bits($id);
-					$phone  = get_post_meta($id, 'wbtm_user_phone', true) ?: $pax['phone'];
-					$addr   = get_post_meta($id, 'wbtm_user_address', true) ?: $pax['address'];
-					$leg    = get_post_meta($id, 'wbtm_journey_type', true) === 'return' ? 'Return' : 'Outbound';
-					$fare   = (float) get_post_meta($id, 'wbtm_bus_fare', true);
-					$extras = $this->extra_services_total($id);
-					$tax    = $this->booking_tax($id);
-					$dep    = $this->deposit_info($id);
-					$row    = array(
-						$id,
-						get_post_meta($id, 'wbtm_order_id', true),
-						$this->booking_source($id) === 'standalone' ? 'Custom' : 'WooCommerce',
-						get_post_meta($id, 'wbtm_user_name', true),
-						get_post_meta($id, 'wbtm_user_email', true),
-						$phone,
-						$addr,
-						$pax['name'],
-						$leg,
-						$bus_id ? get_the_title($bus_id) : '',
-						get_post_meta($id, 'wbtm_boarding_point', true),
-						get_post_meta($id, 'wbtm_dropping_point', true),
-						get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true),
-						$this->seat_label($id),
-						get_post_meta($id, 'wbtm_ticket', true),
-						$fare,
-						$extras,
-						$this->extra_services_label($id),
-						$fare + $extras,
-						$tax,
-						round(max(0, ($fare + $extras) - $tax), 2),
-						$dep['is_deposit'] ? ($dep['remaining'] > 0 ? 'Deposit' : 'Deposit (settled)') : 'Full',
-						$dep['paid'],
-						$dep['remaining'],
-						$dep['due_date'],
-						get_post_meta($id, 'wbtm_order_status', true),
-						get_post_meta($id, 'wbtm_booking_date', true) ?: get_the_date('Y-m-d H:i', $id),
+				// Rows stream straight to the browser, but the meta each one reads would
+				// otherwise pile up in the object cache for the entire export — enough to
+				// exhaust a 256 MB limit a few thousand seats in. Priming one batch at a
+				// time and dropping it again afterwards keeps the footprint flat no matter
+				// how large the export is, without changing a single value written below.
+				foreach (array_chunk($ids, self::STATS_CHUNK) as $chunk) {
+					update_meta_cache('post', $chunk);
+					// Per-seat tax for the whole batch in one query. booking_tax() would
+					// give the same figure, but via a wc_get_order() per booking — and
+					// WooCommerce keeps every order, line item and item-meta row it
+					// hydrates for the rest of the request, which is what pushed a
+					// full-site export past the memory limit. See stats_seat_tax_map().
+					$seat_tax = $this->stats_seat_tax_map(
+						$this->stats_meta_map($chunk, array('wbtm_order_id', 'wbtm_item_id'))
 					);
-					if (!empty($pax_cols)) {
-						$answers = $this->passenger_field_answers($id);
-						foreach ($pax_cols as $field_id => $pax_label) {
-							$row[] = $this->passenger_field_answer($answers, $field_id, $pax_label);
+					foreach ($chunk as $id) {
+						$bus_id  = (int) get_post_meta($id, 'wbtm_bus_id', true);
+						$item_id = (int) get_post_meta($id, 'wbtm_item_id', true);
+						$pax     = $this->passenger_bits($id);
+						$phone   = get_post_meta($id, 'wbtm_user_phone', true) ?: $pax['phone'];
+						$addr    = get_post_meta($id, 'wbtm_user_address', true) ?: $pax['address'];
+						$leg     = get_post_meta($id, 'wbtm_journey_type', true) === 'return' ? 'Return' : 'Outbound';
+						$fare    = (float) get_post_meta($id, 'wbtm_bus_fare', true);
+						$extras  = $this->extra_services_total($id);
+						$tax     = isset($seat_tax[$item_id]) ? round($seat_tax[$item_id], 2) : 0.0;
+						$dep     = $this->deposit_info($id);
+						$row    = array(
+							$id,
+							get_post_meta($id, 'wbtm_order_id', true),
+							$this->booking_source($id) === 'standalone' ? 'Custom' : 'WooCommerce',
+							get_post_meta($id, 'wbtm_user_name', true),
+							get_post_meta($id, 'wbtm_user_email', true),
+							$phone,
+							$addr,
+							$pax['name'],
+							$leg,
+							$bus_id ? get_the_title($bus_id) : '',
+							get_post_meta($id, 'wbtm_boarding_point', true),
+							get_post_meta($id, 'wbtm_dropping_point', true),
+							get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true),
+							$this->seat_label($id),
+							get_post_meta($id, 'wbtm_ticket', true),
+							$fare,
+							$extras,
+							$this->extra_services_label($id),
+							$fare + $extras,
+							$tax,
+							round(max(0, ($fare + $extras) - $tax), 2),
+							$dep['is_deposit'] ? ($dep['remaining'] > 0 ? 'Deposit' : 'Deposit (settled)') : 'Full',
+							$dep['paid'],
+							$dep['remaining'],
+							$dep['due_date'],
+							get_post_meta($id, 'wbtm_order_status', true),
+							get_post_meta($id, 'wbtm_booking_date', true) ?: get_the_date('Y-m-d H:i', $id),
+						);
+						if (!empty($pax_cols)) {
+							$answers = $this->passenger_field_answers($id);
+							foreach ($pax_cols as $field_id => $pax_label) {
+								$row[] = $this->passenger_field_answer($answers, $field_id, $pax_label);
+							}
 						}
+						fputcsv($out, $row);
 					}
-					fputcsv($out, $row);
+					$this->release_meta_cache($chunk);
 				}
 				fclose($out);
 				exit;
+			}
+
+			/**
+			 * Drop a batch's primed post meta once its rows have been written.
+			 *
+			 * update_meta_cache() is what makes a batch cheap (one query instead of one
+			 * per field), but nothing re-reads a booking after its line has left, so
+			 * holding it only grows the request. Installs on a persistent object cache
+			 * just re-prime these ids on demand — nothing else walks the whole booking
+			 * table, so there is no warm cache worth keeping here.
+			 */
+			private function release_meta_cache(array $ids) {
+				foreach ($ids as $id) {
+					wp_cache_delete((int) $id, 'post_meta');
+				}
 			}
 
 			/**
@@ -687,10 +724,16 @@
 			private function passenger_field_columns(array $ids) {
 				$cols    = array();
 				$bus_ids = array();
-				foreach ($ids as $id) {
-					$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
-					if ($bus_id > 0) {
-						$bus_ids[$bus_id] = true;
+				// Both passes below walk every exported booking, so their meta is read in
+				// bounded batches (see get_stats()) and only the small $bus_ids / $cols
+				// summaries are kept — an unfiltered export must not have to hold the
+				// whole booking meta table in memory just to work out its columns.
+				foreach (array_chunk($ids, self::STATS_CHUNK) as $chunk) {
+					foreach ($this->stats_meta_map($chunk, array('wbtm_bus_id')) as $meta_row) {
+						$bus_id = isset($meta_row['wbtm_bus_id']) ? (int) $meta_row['wbtm_bus_id'] : 0;
+						if ($bus_id > 0) {
+							$bus_ids[$bus_id] = true;
+						}
 					}
 				}
 				foreach (array_keys($bus_ids) as $bus_id) {
@@ -730,25 +773,27 @@
 				foreach ($cols as $existing_label) {
 					$claimed[strtolower(trim((string) $existing_label))] = true;
 				}
-				foreach ($ids as $id) {
-					$info = get_post_meta($id, 'wbtm_attendee_info', true);
-					if (!is_array($info)) {
-						continue;
-					}
-					foreach ($info as $field_id => $field) {
-						// Legacy bookings store a numerically-indexed list instead of a
-						// field_id map; those are matched by label in passenger_field_answer().
-						if (!is_string($field_id) || $field_id === '' || isset($cols[$field_id])) {
+				foreach (array_chunk($ids, self::STATS_CHUNK) as $chunk) {
+					foreach ($this->stats_meta_map($chunk, array('wbtm_attendee_info')) as $meta_row) {
+						$info = isset($meta_row['wbtm_attendee_info']) ? $meta_row['wbtm_attendee_info'] : '';
+						if (!is_array($info)) {
 							continue;
 						}
-						$label = (is_array($field) && !empty($field['name'])) ? $field['name'] : '';
-						$label = $label !== '' ? $label : $this->humanize_field_id($field_id);
-						$key   = strtolower(trim($label));
-						if (isset($claimed[$key])) {
-							continue;
+						foreach ($info as $field_id => $field) {
+							// Legacy bookings store a numerically-indexed list instead of a
+							// field_id map; those are matched by label in passenger_field_answer().
+							if (!is_string($field_id) || $field_id === '' || isset($cols[$field_id])) {
+								continue;
+							}
+							$label = (is_array($field) && !empty($field['name'])) ? $field['name'] : '';
+							$label = $label !== '' ? $label : $this->humanize_field_id($field_id);
+							$key   = strtolower(trim($label));
+							if (isset($claimed[$key])) {
+								continue;
+							}
+							$claimed[$key]   = true;
+							$cols[$field_id] = $label;
 						}
-						$claimed[$key]   = true;
-						$cols[$field_id] = $label;
 					}
 				}
 				return $cols;
@@ -941,11 +986,19 @@
 			 * the cards can never disagree with the rows on screen or with a bus-wise
 			 * export. With no filters set it naturally covers every booking.
 			 *
-			 * Everything is summed per booking (not in SQL) because the pieces simply
-			 * aren't SQL-summable: extra services live in a serialized blob, and tax
-			 * lives on the WooCommerce order, not on the booking post. One
-			 * update_meta_cache() primes the meta for the whole set so the per-booking
-			 * helpers below don't each fire their own query.
+			 * Everything is summed per booking (not in one SQL aggregate) because the
+			 * pieces aren't all SQL-summable: extra services live in a serialized blob.
+			 * The per-booking arithmetic below is therefore identical to the row/export
+			 * helpers (booking_total(), booking_tax_raw(), deposit_info()) — but the
+			 * meta it reads is fetched in bounded batches rather than one booking at a
+			 * time, because this is the only place that walks EVERY booking on the site.
+			 *
+			 * Priming the whole set at once (update_meta_cache() over every id, then
+			 * wc_get_order() per booking) held ~135 MB and ~23.5k queries on a 4.5k-seat
+			 * install and fatalled the screen on a 256 MB limit. Batching keeps the
+			 * footprint flat as the booking table grows: each pass holds one chunk of
+			 * meta, and the seat's WooCommerce tax comes from the order line-item tables
+			 * directly instead of hydrating thousands of WC_Order objects.
 			 */
 			private function get_stats() {
 				$ids = get_posts(array_merge($this->build_query_args(-1, 1), array('fields' => 'ids')));
@@ -959,25 +1012,57 @@
 				if (empty($ids)) {
 					return $empty;
 				}
-				update_meta_cache('post', $ids);
 
 				$revenue = 0.0;
 				$tax     = 0.0;
 				$due     = 0.0;
 				$buses   = array();
-				foreach ($ids as $id) {
-					// Revenue is the tax-inclusive amount customers actually paid
-					// (fare + extras); $tax is the slice of it that is tax, so the two
-					// must never be added together.
-					$revenue += $this->booking_total($id);
-					// Summed unrounded, then rounded once — rounding each seat first
-					// would drift on multi-seat lines.
-					$tax     += $this->booking_tax_raw($id);
-					$dep      = $this->deposit_info($id);
-					$due     += $dep['remaining'];
-					$bus_id   = (int) get_post_meta($id, 'wbtm_bus_id', true);
-					if ($bus_id > 0) {
-						$buses[$bus_id] = true;
+				foreach (array_chunk($ids, self::STATS_CHUNK) as $chunk) {
+					$meta     = $this->stats_meta_map($chunk, array(
+						'wbtm_bus_fare',
+						'wbtm_extra_services',
+						'wbtm_bus_id',
+						'wbtm_order_id',
+						'wbtm_item_id',
+						'wbtm_payment_plan',
+						'wbtm_deposit_paid',
+						'wbtm_remaining_due',
+					));
+					$seat_tax = $this->stats_seat_tax_map($meta);
+
+					foreach ($chunk as $id) {
+						$row = isset($meta[$id]) ? $meta[$id] : array();
+
+						// Revenue is the tax-inclusive amount customers actually paid
+						// (fare + extras); $tax is the slice of it that is tax, so the two
+						// must never be added together. Mirrors booking_total().
+						$revenue += isset($row['wbtm_bus_fare']) ? (float) $row['wbtm_bus_fare'] : 0.0;
+						$svcs     = isset($row['wbtm_extra_services']) ? $row['wbtm_extra_services'] : '';
+						if (is_array($svcs)) {
+							foreach ($svcs as $svc) {
+								$revenue += (float) ($svc['price'] ?? 0) * (int) ($svc['qty'] ?? 1);
+							}
+						}
+
+						// Summed unrounded, then rounded once — rounding each seat first
+						// would drift on multi-seat lines. Mirrors booking_tax_raw().
+						$item_id = isset($row['wbtm_item_id']) ? (int) $row['wbtm_item_id'] : 0;
+						if ($item_id > 0 && isset($seat_tax[$item_id])) {
+							$tax += $seat_tax[$item_id];
+						}
+
+						// Mirrors deposit_info(): only bookings actually on a payment plan
+						// carry a balance, and a balance never counts as negative.
+						$plan = isset($row['wbtm_payment_plan']) ? (string) $row['wbtm_payment_plan'] : '';
+						$paid = isset($row['wbtm_deposit_paid']) ? $row['wbtm_deposit_paid'] : '';
+						if ($plan === 'deposit' || $plan === 'fully_paid' || ($paid !== '' && $paid !== false)) {
+							$due += max(0.0, isset($row['wbtm_remaining_due']) ? (float) $row['wbtm_remaining_due'] : 0.0);
+						}
+
+						$bus_id = isset($row['wbtm_bus_id']) ? (int) $row['wbtm_bus_id'] : 0;
+						if ($bus_id > 0) {
+							$buses[$bus_id] = true;
+						}
 					}
 				}
 				return array(
@@ -987,6 +1072,106 @@
 					'total_tax'         => round($tax, 2),
 					'total_outstanding' => $due,
 				);
+			}
+
+			/**
+			 * post_id => [ meta_key => value ] for one chunk of bookings, in a single
+			 * query. Deliberately equivalent to get_post_meta($id, $key, true) for every
+			 * key asked for: values are unserialized the same way, a key stored more than
+			 * once resolves to its first row (hence ORDER BY meta_id), and a key that was
+			 * never stored is simply absent so callers fall back to their own default.
+			 *
+			 * Unlike update_meta_cache() this returns ONLY the keys requested and keeps
+			 * nothing in the object cache, so walking the whole booking table costs one
+			 * chunk of meta at a time instead of every meta row the site has ever written.
+			 */
+			private function stats_meta_map(array $ids, array $keys) {
+				global $wpdb;
+				if (empty($ids) || empty($keys)) {
+					return array();
+				}
+				$id_placeholders  = implode(',', array_fill(0, count($ids), '%d'));
+				$key_placeholders = implode(',', array_fill(0, count($keys), '%s'));
+				$rows = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT post_id, meta_key, meta_value
+						   FROM {$wpdb->postmeta}
+						  WHERE post_id IN ($id_placeholders)
+						    AND meta_key IN ($key_placeholders)
+						  ORDER BY meta_id ASC",
+						array_merge(array_map('intval', $ids), array_map('strval', $keys))
+					),
+					ARRAY_A
+				);
+				$map = array();
+				foreach ((array) $rows as $row) {
+					$post_id = (int) $row['post_id'];
+					$key     = $row['meta_key'];
+					if (isset($map[$post_id]) && array_key_exists($key, $map[$post_id])) {
+						continue; // first value wins, exactly like get_post_meta( …, true )
+					}
+					$map[$post_id][$key] = maybe_unserialize($row['meta_value']);
+				}
+				return $map;
+			}
+
+			/**
+			 * order_item_id => this seat's share of the line item's WooCommerce tax, for
+			 * the bookings in one stats_meta_map() chunk.
+			 *
+			 * Same result as booking_tax_raw()'s wc_get_order()->get_item() lookup, read
+			 * straight from the order line-item tables (which HPOS leaves in place) so a
+			 * whole-site total doesn't have to hydrate thousands of WC_Order objects:
+			 *   - _line_tax is the tax WooCommerce stored for the entire line item, so it
+			 *     is divided by _qty for this one seat's share, as before;
+			 *   - the join back to wbtm_order_id reproduces get_item() returning false for
+			 *     an item that isn't on the booking's own order;
+			 *   - a booking with no order/item, or whose order has been deleted, yields no
+			 *     entry at all — the caller then contributes 0.0, as before.
+			 */
+			private function stats_seat_tax_map(array $meta) {
+				if (!function_exists('wc_get_order')) {
+					return array(); // standalone (no-WooCommerce) mode: no tax exists
+				}
+				$order_of_item = array();
+				foreach ($meta as $row) {
+					$order_id = isset($row['wbtm_order_id']) ? (int) $row['wbtm_order_id'] : 0;
+					$item_id  = isset($row['wbtm_item_id']) ? (int) $row['wbtm_item_id'] : 0;
+					if ($order_id > 0 && $item_id > 0) {
+						$order_of_item[$item_id] = $order_id;
+					}
+				}
+				if (empty($order_of_item)) {
+					return array();
+				}
+				global $wpdb;
+				$item_ids     = array_keys($order_of_item);
+				$placeholders = implode(',', array_fill(0, count($item_ids), '%d'));
+				$rows = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT oi.order_item_id, oi.order_id,
+						        MAX(CASE WHEN im.meta_key = '_line_tax' THEN im.meta_value END) AS line_tax,
+						        MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) AS qty
+						   FROM {$wpdb->prefix}woocommerce_order_items oi
+						   LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
+						          ON im.order_item_id = oi.order_item_id
+						         AND im.meta_key IN ('_line_tax', '_qty')
+						  WHERE oi.order_item_id IN ($placeholders)
+						  GROUP BY oi.order_item_id, oi.order_id",
+						array_map('intval', $item_ids)
+					),
+					ARRAY_A
+				);
+				$seat_tax = array();
+				foreach ((array) $rows as $row) {
+					$item_id = (int) $row['order_item_id'];
+					if (!isset($order_of_item[$item_id]) || $order_of_item[$item_id] !== (int) $row['order_id']) {
+						continue;
+					}
+					$qty = max(1, (int) $row['qty']);
+					$seat_tax[$item_id] = (float) $row['line_tax'] / $qty;
+				}
+				return $seat_tax;
 			}
 
 			/**
