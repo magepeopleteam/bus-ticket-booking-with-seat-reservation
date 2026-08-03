@@ -23,6 +23,8 @@
 		class WBTM_Booking_List {
 			const PAGE_SLUG = 'wbtm_booking_list';
 			const PER_PAGE  = 20;
+			const STATS_BATCH_SIZE = 100;
+			const MAX_STATS_BOOKINGS = 500;
 
 			public function __construct() {
 				add_action('admin_menu', array($this, 'register_menu'));
@@ -948,45 +950,72 @@
 			 * helpers below don't each fire their own query.
 			 */
 			private function get_stats() {
-				$ids = get_posts(array_merge($this->build_query_args(-1, 1), array('fields' => 'ids')));
-				$empty = array(
+				$stats = array(
 					'total_bookings'    => 0,
 					'total_revenue'     => 0.0,
 					'total_buses'       => 0,
 					'total_tax'         => 0.0,
 					'total_outstanding' => 0.0,
+					'is_limited'        => false,
 				);
-				if (empty($ids)) {
-					return $empty;
-				}
-				update_meta_cache('post', $ids);
 
-				$revenue = 0.0;
-				$tax     = 0.0;
-				$due     = 0.0;
 				$buses   = array();
-				foreach ($ids as $id) {
-					// Revenue is the tax-inclusive amount customers actually paid
-					// (fare + extras); $tax is the slice of it that is tax, so the two
-					// must never be added together.
-					$revenue += $this->booking_total($id);
-					// Summed unrounded, then rounded once — rounding each seat first
-					// would drift on multi-seat lines.
-					$tax     += $this->booking_tax_raw($id);
-					$dep      = $this->deposit_info($id);
-					$due     += $dep['remaining'];
-					$bus_id   = (int) get_post_meta($id, 'wbtm_bus_id', true);
-					if ($bus_id > 0) {
-						$buses[$bus_id] = true;
+				$page      = 1;
+				$max_pages = 1;
+				do {
+					$args = $this->build_query_args(self::STATS_BATCH_SIZE, $page);
+					// Statistics must not inherit the list's per-page override. Loading every
+					// matching post plus its metadata exhausted memory on large booking sites.
+					$args['posts_per_page']          = self::STATS_BATCH_SIZE;
+					$args['fields']                  = 'ids';
+					$args['update_post_meta_cache']  = false;
+					$args['update_post_term_cache']  = false;
+
+					$query = new WP_Query($args);
+					$ids   = array_values(array_filter(array_map('absint', (array) $query->posts)));
+					if ($page === 1) {
+						$stats['total_bookings'] = (int) $query->found_posts;
+						if ($stats['total_bookings'] > self::MAX_STATS_BOOKINGS) {
+							$stats['total_revenue']     = null;
+							$stats['total_buses']       = null;
+							$stats['total_tax']         = null;
+							$stats['total_outstanding'] = null;
+							$stats['is_limited']        = true;
+							return $stats;
+						}
 					}
-				}
-				return array(
-					'total_bookings'    => count($ids),
-					'total_revenue'     => $revenue,
-					'total_buses'       => count($buses),
-					'total_tax'         => round($tax, 2),
-					'total_outstanding' => $due,
-				);
+					if (empty($ids)) {
+						break;
+					}
+
+					update_meta_cache('post', $ids);
+					foreach ($ids as $id) {
+						// Revenue is the tax-inclusive amount customers actually paid
+						// (fare + extras); $tax is the slice of it that is tax, so the two
+						// must never be added together.
+						$stats['total_revenue'] += $this->booking_total($id);
+						// Summed unrounded, then rounded once — rounding each seat first
+						// would drift on multi-seat lines.
+						$stats['total_tax'] += $this->booking_tax_raw($id);
+						$dep = $this->deposit_info($id);
+						$stats['total_outstanding'] += $dep['remaining'];
+						$bus_id = (int) get_post_meta($id, 'wbtm_bus_id', true);
+						if ($bus_id > 0) {
+							$buses[$bus_id] = true;
+						}
+					}
+
+					// Do not retain metadata for every historical booking in this request.
+					foreach ($ids as $id) {
+						wp_cache_delete($id, 'post_meta');
+					}
+					$max_pages = max(1, (int) $query->max_num_pages);
+					$page++;
+				} while ($page <= $max_pages);
+
+				$stats['total_buses']    = count($buses);
+				$stats['total_tax']   = round($stats['total_tax'], 2);
+				return $stats;
 			}
 
 			/**
@@ -1676,20 +1705,28 @@
 			 *                       shared lock, so only a single badge is shown.
 			 */
 			private function render_stats($is_pro, $own_lock = true) {
-				$stats = $this->get_stats();
+				$stats = $is_pro ? $this->get_stats() : array(
+					'total_bookings'    => 0,
+					'total_revenue'     => 0.0,
+					'total_buses'       => 0,
+					'total_tax'         => 0.0,
+					'total_outstanding' => 0.0,
+					'is_limited'        => false,
+				);
+				$stats_limited = !empty($stats['is_limited']);
 				$cards = array(
 					array('dashicons-cart', $is_pro ? number_format_i18n($stats['total_bookings']) : '&bull;&bull;&bull;', esc_html__('Total Bookings', 'bus-ticket-booking-with-seat-reservation')),
-					array('dashicons-money-alt', $is_pro ? WBTM_Global_Function::format_price($stats['total_revenue']) : '&bull;&bull;&bull;', esc_html__('Total Revenue', 'bus-ticket-booking-with-seat-reservation')),
-					array('dashicons-admin-multisite', $is_pro ? number_format_i18n($stats['total_buses']) : '&bull;&bull;&bull;', esc_html__('Buses Booked', 'bus-ticket-booking-with-seat-reservation')),
+					array('dashicons-money-alt', $is_pro && !$stats_limited ? WBTM_Global_Function::format_price($stats['total_revenue']) : '&mdash;', esc_html__('Total Revenue', 'bus-ticket-booking-with-seat-reservation')),
+					array('dashicons-admin-multisite', $is_pro && !$stats_limited ? number_format_i18n($stats['total_buses']) : '&mdash;', esc_html__('Buses Booked', 'bus-ticket-booking-with-seat-reservation')),
 				);
 				// Tax is WooCommerce-only and prices here are tax-inclusive, so this is
 				// the slice of Total Revenue that is tax — not an extra amount on top.
 				// Hidden entirely when no tax was ever collected (e.g. standalone mode).
-				if ($stats['total_tax'] > 0) {
+				if (!$stats_limited && $stats['total_tax'] > 0) {
 					$cards[] = array('dashicons-analytics', $is_pro ? WBTM_Global_Function::format_price($stats['total_tax']) : '&bull;&bull;&bull;', esc_html__('Tax (incl. in revenue)', 'bus-ticket-booking-with-seat-reservation'));
 				}
 				// Only meaningful once the Pro deposit add-on has taken a part-payment.
-				if ($stats['total_outstanding'] > 0) {
+				if (!$stats_limited && $stats['total_outstanding'] > 0) {
 					$cards[] = array('dashicons-clock', $is_pro ? WBTM_Global_Function::format_price($stats['total_outstanding']) : '&bull;&bull;&bull;', esc_html__('Outstanding Balance', 'bus-ticket-booking-with-seat-reservation'));
 				}
 				?>
@@ -1707,6 +1744,12 @@
 							<span class="dashicons dashicons-filter"></span>
 							<?php esc_html_e('Showing totals for the current filter only.', 'bus-ticket-booking-with-seat-reservation'); ?>
 							<a href="<?php echo esc_url(add_query_arg(array('post_type' => 'wbtm_bus', 'page' => self::PAGE_SLUG), admin_url('edit.php'))); ?>"><?php esc_html_e('Clear filters', 'bus-ticket-booking-with-seat-reservation'); ?></a>
+						</p>
+					<?php endif; ?>
+					<?php if ($stats_limited) : ?>
+						<p class="wbtm-bkl-stats-scope">
+							<span class="dashicons dashicons-info-outline"></span>
+							<?php esc_html_e('Revenue, tax, and balance totals are available after narrowing the booking filters.', 'bus-ticket-booking-with-seat-reservation'); ?>
 						</p>
 					<?php endif; ?>
 					<div class="wbtm-bkl-stats" <?php echo $is_pro ? '' : 'aria-hidden="true"'; ?>>
