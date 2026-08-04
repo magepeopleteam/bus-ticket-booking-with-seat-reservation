@@ -42,6 +42,7 @@
 				add_action('wp_ajax_wbtm_bkl_save_columns', array($this, 'ajax_save_columns'));
 				add_action('admin_post_wbtm_bkl_export_csv', array($this, 'handle_export_csv'));
 				add_action('admin_post_wbtm_bkl_export_pdf', array($this, 'handle_export_pdf'));
+				add_action('admin_post_wbtm_bkl_export_manifest', array($this, 'handle_export_manifest'));
 				add_action('admin_post_wbtm_bkl_export_thermal', array($this, 'handle_export_thermal'));
 			}
 
@@ -136,9 +137,10 @@
 					// so a day-boundary export follows the site's timezone, not the browser's.
 					'exportBase'     => admin_url('admin-post.php'),
 					'exportNonces'   => array(
-						'csv'     => wp_create_nonce('wbtm_bkl_export_csv'),
-						'pdf'     => wp_create_nonce('wbtm_bkl_export_pdf'),
-						'thermal' => wp_create_nonce('wbtm_bkl_export_thermal'),
+						'csv'      => wp_create_nonce('wbtm_bkl_export_csv'),
+						'pdf'      => wp_create_nonce('wbtm_bkl_export_pdf'),
+						'thermal'  => wp_create_nonce('wbtm_bkl_export_thermal'),
+						'manifest' => wp_create_nonce('wbtm_bkl_export_manifest'),
 					),
 					'currentFilters' => $this->current_filter_query_args(),
 					'today'          => current_time('Y-m-d'),
@@ -877,13 +879,27 @@
 					wp_die(esc_html__('No bookings matched, so there is nothing to export.', 'bus-ticket-booking-with-seat-reservation'));
 				}
 
+				// "Merge Pdf Ticket" (PDF settings) applies here too: with it on, the
+				// seats one order booked on one journey share a single card instead of
+				// getting a page each, so a bus-wise or whole-site export prints exactly
+				// the documents the passengers themselves download. The grouping lives in
+				// the Pro generator, so this export can't drift from the ticket download.
+				// Only the ids the current filters matched are grouped — a filtered
+				// export never pulls in seats the operator didn't ask for.
+				//
+				// Older Pro builds have no grouper; fall back to one card per booking
+				// rather than fataling on a missing method.
+				$card_groups = method_exists('WBTM_Pro_Pdf', 'group_bookings_for_merge')
+					? WBTM_Pro_Pdf::group_bookings_for_merge($ids)
+					: array_map(static function ($id) { return array($id); }, array_values($ids));
+
 				// One card per page. The stylesheet is emitted once for the whole
 				// document — repeating it per card would multiply the HTML that mPDF
 				// has to run through PCRE for no benefit.
 				$html = WBTM_Pro_Pdf::booking_card_css();
-				$last = count($ids) - 1;
-				foreach (array_values($ids) as $index => $id) {
-					$html .= WBTM_Pro_Pdf::booking_card_html($id);
+				$last = count($card_groups) - 1;
+				foreach ($card_groups as $index => $card_group) {
+					$html .= WBTM_Pro_Pdf::booking_card_html($card_group);
 					if ($index < $last) {
 						$html .= '<pagebreak />';
 					}
@@ -922,6 +938,75 @@
 					$mpdf->Output('bookings-' . gmdate('Y-m-d') . '.pdf', 'D');
 				} catch (\Throwable $e) {
 					error_log('WBTM Booking List PDF export failed — ' . $e->getMessage());
+					wp_die(esc_html__('Could not generate the PDF. Please try again.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				exit;
+			}
+
+			/**
+			 * Pro-only: export the matching bookings (respecting the current filters) as
+			 * the landscape PASSENGER MANIFEST — the same document the Sales Report's
+			 * per-bus PDF button produces, but scoped to whatever this screen selected.
+			 *
+			 * Renders via WBTM_Pro_Pdf::manifest_html() with an explicit booking-id list
+			 * rather than redirecting into the Pro PDF endpoint with filter args, for two
+			 * reasons: the manifest's own query hard-filters to completed / processing /
+			 * partially-paid (so an on-hold or pending selection would come back empty or
+			 * short), and a whole-site export is far more ids than a URL can carry.
+			 *
+			 * "Merge Pdf Ticket" applies inside the template, so a merged manifest puts
+			 * the seats of one order on one line.
+			 */
+			public function handle_export_manifest() {
+				if (!current_user_can('manage_options') || !$this->is_pro()) {
+					wp_die(esc_html__('You do not have permission to do that.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				check_admin_referer('wbtm_bkl_export_manifest');
+				if (!class_exists('WBTM_Pro_Pdf') || !WBTM_Pro_Pdf::is_mpdf_available()) {
+					wp_die(esc_html__('PDF generation is unavailable. Please install the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+				if (!method_exists('WBTM_Pro_Pdf', 'manifest_html')) {
+					wp_die(esc_html__('Please update the Bus Ticket Booking PRO add-on to export the passenger manifest.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+
+				$args = $this->build_query_args(-1, 1);
+				$ids  = get_posts(array_merge($args, array('fields' => 'ids')));
+				if (empty($ids)) {
+					wp_die(esc_html__('No bookings matched, so there is nothing to export.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+
+				$html = WBTM_Pro_Pdf::manifest_html($ids);
+				if (trim($html) === '') {
+					wp_die(esc_html__('Could not build the passenger manifest.', 'bus-ticket-booking-with-seat-reservation'));
+				}
+
+				// Raise PCRE limits for large exports (mirrors handle_export_pdf()).
+				$needed = max(1000000, strlen($html) * 3);
+				if ((int) ini_get('pcre.backtrack_limit') < $needed) { @ini_set('pcre.backtrack_limit', (string) $needed); }
+				if ((int) ini_get('pcre.recursion_limit') < 200000) { @ini_set('pcre.recursion_limit', '200000'); }
+
+				try {
+					// Landscape, for the same reason the Pro generator uses it: a dozen
+					// columns plus custom passenger fields do not fit portrait A4.
+					$mpdf = new \Mpdf\Mpdf(array(
+						'mode'          => 'utf-8',
+						'format'        => 'A4-L',
+						'margin_top'    => 8,
+						'margin_bottom' => 8,
+						'margin_left'   => 8,
+						'margin_right'  => 8,
+						'default_font'  => 'freesans',
+					));
+					$mpdf->SetHTMLFooter(
+						'<table width="100%" style="font-family:freesans;font-size:7pt;color:#a8b3c2;"><tr>'
+						. '<td>' . esc_html(get_bloginfo('name')) . '</td>'
+						. '<td style="text-align:right;">' . esc_html__('Page', 'bus-ticket-booking-with-seat-reservation') . ' {PAGENO} / {nbpg}</td>'
+						. '</tr></table>'
+					);
+					$mpdf->WriteHTML($html);
+					$mpdf->Output('passenger-list-' . gmdate('Y-m-d') . '.pdf', 'D');
+				} catch (\Throwable $e) {
+					error_log('WBTM Booking List manifest export failed — ' . $e->getMessage());
 					wp_die(esc_html__('Could not generate the PDF. Please try again.', 'bus-ticket-booking-with-seat-reservation'));
 				}
 				exit;
@@ -1686,6 +1771,13 @@
 				$thermal_available = $pdf_available
 					&& class_exists('WBTM_Global_Function')
 					&& WBTM_Global_Function::get_settings('wbtm_pdf_settings', 'thermal_ticket_enable', 'yes') === 'yes';
+				// Say which of the two documents the PDF export will actually produce —
+				// "Merge Pdf Ticket" (PDF settings) decides whether an order's seats share
+				// one ticket, and the operator should know that before exporting a
+				// departure rather than after counting the pages.
+				$pdf_merged = $pdf_available
+					&& method_exists('WBTM_Pro_Pdf', 'merge_tickets_enabled')
+					&& WBTM_Pro_Pdf::merge_tickets_enabled();
 				$buses    = get_posts(array('post_type' => 'wbtm_bus', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC'));
 				$statuses = $this->get_status_options();
 				$today    = current_time('Y-m-d');
@@ -1700,9 +1792,22 @@
 					'pdf' => array(
 						'icon'      => 'dashicons-media-document',
 						'label'     => __('PDF', 'bus-ticket-booking-with-seat-reservation'),
-						'desc'      => __('Printable landscape manifest with totals.', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'      => $pdf_merged
+							? __('Booking Confirmation tickets — seats of the same order share one ticket.', 'bus-ticket-booking-with-seat-reservation')
+							: __('Booking Confirmation tickets — one page per booking.', 'bus-ticket-booking-with-seat-reservation'),
 						'available' => $pdf_available,
 						'why'       => __('Needs the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'),
+					),
+					'manifest' => array(
+						'icon'      => 'dashicons-list-view',
+						'label'     => __('Passenger list', 'bus-ticket-booking-with-seat-reservation'),
+						'desc'      => $pdf_merged
+							? __('Landscape manifest — one line per order, seats booked together grouped.', 'bus-ticket-booking-with-seat-reservation')
+							: __('Landscape manifest — one line per passenger, with totals.', 'bus-ticket-booking-with-seat-reservation'),
+						'available' => $pdf_available && method_exists('WBTM_Pro_Pdf', 'manifest_html'),
+						'why'       => $pdf_available
+							? __('Update the Bus Ticket Booking PRO add-on to export the manifest.', 'bus-ticket-booking-with-seat-reservation')
+							: __('Needs the MagePeople PDF Support plugin.', 'bus-ticket-booking-with-seat-reservation'),
 					),
 					'thermal' => array(
 						'icon'      => 'dashicons-printer',
