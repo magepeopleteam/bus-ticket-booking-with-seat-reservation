@@ -894,7 +894,6 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					case 'select':
 					case 'pages':
 					case 'wbtm_select2':
-					case 'wbtm_select2_role':
 						$field_options = isset($field['options']) ? $field['options'] : [];
 						if ($type === 'pages') {
 							$field_options = [];
@@ -907,6 +906,23 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						foreach ($field_options as $opt_key => $opt_label) {
 							$selected = ((string) $opt_key === (string) $value) ? ' selected' : '';
 							echo '<option value="' . esc_attr($opt_key) . '"' . $selected . '>' . esc_html($opt_label) . '</option>';
+						}
+						echo '</select>';
+						break;
+
+					case 'wbtm_select2_role':
+						// Role pickers ignore $field['options'] and list every registered
+						// role (mirrors WBTM_Setting_API::callback_wbtm_select2_role). The
+						// saved value is an array of role slugs, so this must be a
+						// multi-select posting name[] — the previous single empty select
+						// (driven by the always-empty 'options') made it impossible to
+						// assign any role at all.
+						global $wp_roles;
+						$selected_roles = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)));
+						echo '<select class="bm-gs__select wbtm_select2 ' . esc_attr($class) . '" name="' . $id_attr . '[]" multiple>';
+						foreach ($wp_roles->roles as $role_key => $role) {
+							$selected = in_array($role_key, $selected_roles, true) ? ' selected' : '';
+							echo '<option value="' . esc_attr($role_key) . '"' . $selected . '>' . esc_html($role['name']) . '</option>';
 						}
 						echo '</select>';
 						break;
