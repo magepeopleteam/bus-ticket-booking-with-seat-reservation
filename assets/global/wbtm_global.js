@@ -392,7 +392,7 @@
 		if (total_qty > 0) {
 			parent.find('.wbtm_ex_service_area').slideDown('fast');
 			parent.find('.wbtm_form_submit_area').slideDown('fast');
-			total = total + wbtm_ex_service_price(parent);
+			total = total + wbtm_ex_service_price(parent, total_qty);
 			target_summary.html(wbtm_price_format(total));
 		} else {
 			parent.find('.wbtm_ex_service_area').slideUp('fast');
@@ -483,13 +483,22 @@
 		}
 		return total_qty;
 	}
-	function wbtm_ex_service_price(parent) {
+	// A "Per Passenger" extra service is charged price x qty x seats server-side
+	// (WBTM_Functions::ex_service_line_total). Previewing it at the bare unit price
+	// quoted a total lower than the one WooCommerce went on to charge, so the seat
+	// count is applied here too. "Per Booking" services (the default, and anything
+	// saved before the charging mode existed) stay price x qty.
+	function wbtm_ex_service_price(parent, total_qty) {
+		let seats = parseInt(total_qty);
+		seats = seats > 0 ? seats : 1;
 		let total = 0
 		parent.find('[name="extra_service_qty[]"]').each(function () {
 			let ex_qty = parseInt($(this).val());
 			let ex_price = $(this).attr('data-price');
 			ex_price = ex_price && ex_price >= 0 ? ex_price : 0;
-			total = total + parseFloat(ex_price) * ex_qty;
+			let charge_type = $(this).closest('tr').attr('data-charge-type');
+			let multiplier = charge_type === 'per_passenger' ? seats : 1;
+			total = total + parseFloat(ex_price) * ex_qty * multiplier;
 		});
 		return total;
 	}

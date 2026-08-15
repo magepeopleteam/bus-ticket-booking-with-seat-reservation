@@ -53,7 +53,11 @@
 							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							$charge_type = $ex_service['option_charge_type'] ?? 'per_booking';
 							?>
-							<tr>
+							<?php // The charging mode drives the running total in wbtm_global.js, which
+								  // has to multiply a per_passenger service by the seat count exactly as
+								  // the cart does — otherwise the form previews a cheaper price than the
+								  // one WooCommerce goes on to charge. ?>
+							<tr data-charge-type="<?php echo esc_attr($charge_type); ?>">
 								<td class="_textLeft"><?php echo esc_html($ex_name); ?><?php if ($charge_type === 'per_passenger') : ?> <small class="wbtm_ex_per_passenger">(<?php esc_html_e('per passenger', 'bus-ticket-booking-with-seat-reservation'); ?>)</small><?php endif; ?></td>
 								<td class="_textCenter">
 									<input type="hidden" name="extra_service_name[]" value="<?php echo esc_attr($ex_name); ?>">
