@@ -303,6 +303,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					$is_nonac  = $category && stripos( $category, 'non' ) !== false;
 					$is_ac     = $category && ! $is_nonac && stripos( $category, 'ac' ) !== false;
 
+					// A bus can carry several wbtm_bus_cat terms ("Ferry Boat",
+					// "Speedboat", …); wbtm_bus_category keeps only the first for
+					// backward compatibility, so the full list drives the Type filter.
+					$categories = WBTM_Global_Function::get_post_info( $pid, 'wbtm_bus_category_all', array() );
+					$categories = is_array( $categories ) ? $categories : array();
+					if ( $category && ! in_array( $category, $categories, true ) ) {
+						array_unshift( $categories, $category );
+					}
+					$categories = array_values( array_unique( array_filter( array_map( 'trim', array_map( 'strval', $categories ) ) ) ) );
+
 					// Route + schedule info for the Name column.
 					$route_dir  = WBTM_Global_Function::get_post_info( $pid, 'wbtm_route_direction', array() );
 					$route_dir  = is_array( $route_dir ) ? array_values( array_filter( array_map( 'trim', $route_dir ) ) ) : array();
@@ -313,6 +323,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'title'        => get_the_title( $pid ) ?: esc_html__( '(no title)', 'bus-ticket-booking-with-seat-reservation' ),
 						'coach_no'     => WBTM_Global_Function::get_post_info( $pid, 'wbtm_bus_no' ),
 						'category'     => $category,
+						'categories'   => $categories,
 						'is_ac'        => $is_ac,
 						'is_nonac'     => $is_nonac,
 						'type'         => $is_ac ? 'AC' : ( $is_nonac ? 'Non AC' : '' ),
@@ -525,6 +536,48 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				<?php
 			}
 
+			/**
+			 * Choices for the "All Types" filter above the fleet table.
+			 *
+			 * The filter used to offer only the hardcoded AC / Non AC pair, so an
+			 * operator whose fleet is classified by their own Bus Type terms (Ferry
+			 * Boat, Speedboat, …) had nothing useful to filter by. Every term on the
+			 * Bus Type screen is offered now — including ones not yet assigned to a bus,
+			 * so the filter mirrors that screen — plus any legacy category value still
+			 * stored on a bus whose term has since been renamed or deleted, so no bus
+			 * becomes unfindable. AC / Non AC remain the fallback for installs that
+			 * never created a single term.
+			 *
+			 * @param array $buses Rows from get_buses().
+			 * @return string[] Distinct type names, case-insensitively sorted.
+			 */
+			private function type_filter_options( array $buses ): array {
+				$options = array();
+				$terms   = get_terms( array(
+					'taxonomy'   => 'wbtm_bus_cat',
+					'hide_empty' => false,
+				) );
+				if ( ! is_wp_error( $terms ) ) {
+					foreach ( (array) $terms as $term ) {
+						if ( isset( $term->name ) ) {
+							$options[] = (string) $term->name;
+						}
+					}
+				}
+				foreach ( $buses as $bus ) {
+					foreach ( ( isset( $bus['categories'] ) ? (array) $bus['categories'] : array() ) as $category ) {
+						$options[] = (string) $category;
+					}
+				}
+				$options = array_values( array_unique( array_filter( array_map( 'trim', $options ), 'strlen' ) ) );
+				usort( $options, 'strcasecmp' );
+
+				return $options ?: array(
+					esc_html__( 'AC', 'bus-ticket-booking-with-seat-reservation' ),
+					esc_html__( 'Non AC', 'bus-ticket-booking-with-seat-reservation' ),
+				);
+			}
+
 			public function render_page() {
 				$name = WBTM_Functions::get_name();
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -554,6 +607,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 
 				$buses     = $is_trash ? $this->get_buses( array( 'trash' ) ) : $active;
 				$seo_provider = $this->seo_provider();
+				$type_options = $this->type_filter_options( $active );
 				$base_url  = admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 				$trash_url = add_query_arg( 'wbtm_status', 'trash', $base_url );
 				$add_url   = admin_url( 'post-new.php?post_type=wbtm_bus' );
@@ -629,8 +683,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							</div>
 							<select class="wbtm-filter-select" id="wbtmTypeFilter">
 								<option value=""><?php esc_html_e( 'All Types', 'bus-ticket-booking-with-seat-reservation' ); ?></option>
-								<option value="AC"><?php esc_html_e( 'AC', 'bus-ticket-booking-with-seat-reservation' ); ?></option>
-								<option value="Non AC"><?php esc_html_e( 'Non AC', 'bus-ticket-booking-with-seat-reservation' ); ?></option>
+								<?php foreach ( $type_options as $type_option ) : ?>
+									<option value="<?php echo esc_attr( $type_option ); ?>"><?php echo esc_html( $type_option ); ?></option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 
@@ -662,7 +717,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							</thead>
 							<tbody>
 								<?php foreach ( $buses as $b ) : ?>
-									<tr class="wbtm-row" data-name="<?php echo esc_attr( strtolower( $b['title'] . ' ' . $b['coach_no'] ) ); ?>" data-type="<?php echo esc_attr( $b['type'] ); ?>" data-status="<?php echo esc_attr( $b['status'] ); ?>">
+									<tr class="wbtm-row" data-name="<?php echo esc_attr( strtolower( $b['title'] . ' ' . $b['coach_no'] ) ); ?>" data-type="<?php echo esc_attr( $b['type'] ); ?>" data-cats="<?php echo esc_attr( $b['categories'] ? '|' . implode( '|', $b['categories'] ) . '|' : '' ); ?>" data-status="<?php echo esc_attr( $b['status'] ); ?>">
 										<td class="wbtm-name-cell" data-label="<?php esc_attr_e( 'Name', 'bus-ticket-booking-with-seat-reservation' ); ?>">
 											<div class="wbtm-name-wrap">
 												<div class="wbtm-name-thumb">
@@ -686,7 +741,29 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 										</td>
 										<td data-label="<?php esc_attr_e( 'Coach No', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php echo esc_html( $b['coach_no'] ?: '-' ); ?></td>
 										<td data-label="<?php esc_attr_e( 'Type', 'bus-ticket-booking-with-seat-reservation' ); ?>"><span class="wbtm-t-badge type"><?php echo esc_html( $b['bus_type'] ); ?></span></td>
-										<td data-label="<?php esc_attr_e( 'Coach', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php if ( $b['type'] ) : ?><span class="wbtm-t-badge <?php echo $b['is_ac'] ? 'ac' : 'nonac'; ?>"><?php echo esc_html( $b['type'] ); ?></span><?php else : ?>-<?php endif; ?></td>
+										<td data-label="<?php esc_attr_e( 'Coach', 'bus-ticket-booking-with-seat-reservation' ); ?>">
+											<?php
+												// Show the bus's own Bus Type terms (Ferry Boat, Speedboat, …) —
+												// the column was blank on every fleet not classified as AC / Non AC.
+												// AC / Non AC keep their existing badge colours.
+												if ( $b['categories'] ) {
+													foreach ( $b['categories'] as $category_name ) {
+														$is_nonac_badge = stripos( $category_name, 'non' ) !== false;
+														$is_ac_badge    = ! $is_nonac_badge && stripos( $category_name, 'ac' ) !== false;
+														$badge_class    = $is_ac_badge ? 'ac' : ( $is_nonac_badge ? 'nonac' : 'type' );
+														?>
+														<span class="wbtm-t-badge <?php echo esc_attr( $badge_class ); ?>"><?php echo esc_html( $category_name ); ?></span>
+														<?php
+													}
+												} elseif ( $b['type'] ) {
+													?>
+													<span class="wbtm-t-badge <?php echo $b['is_ac'] ? 'ac' : 'nonac'; ?>"><?php echo esc_html( $b['type'] ); ?></span>
+													<?php
+												} else {
+													echo '-';
+												}
+											?>
+										</td>
 										<td data-label="<?php esc_attr_e( 'Status', 'bus-ticket-booking-with-seat-reservation' ); ?>"><span class="wbtm-status-dot status-<?php echo esc_attr( $b['status'] ); ?>"><?php echo esc_html( $this->status_label( $b['status'] ) ); ?></span></td>
 										<?php if ( $seo_provider ) : ?>
 											<td class="wbtm-seo-cell" data-label="<?php esc_attr_e( 'SEO', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php if ( ! empty( $b['seo'] ) ) { $this->seo_cell( $b['seo'] ); } else { echo '-'; } ?></td>

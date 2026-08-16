@@ -1102,6 +1102,14 @@
 				$tax     = 0.0;
 				$due     = 0.0;
 				$buses   = array();
+				// A per-booking extra service is stored on every seat it covers, so it
+				// must be counted ONCE per charge group — the seats of one order line on
+				// one bus at one departure. Rows on screen show each seat's share of that
+				// same charge (see extra_services_total()), and the shares sum back to it,
+				// so the cards and the rows still reconcile. Keyed exactly like
+				// WBTM_Functions::extra_service_charge_group(), and tracked across chunks
+				// so a group split by batching is not counted twice.
+				$charged_groups = array();
 				foreach (array_chunk($ids, self::STATS_CHUNK) as $chunk) {
 					$meta     = $this->stats_meta_map($chunk, array(
 						'wbtm_bus_fare',
@@ -1109,6 +1117,7 @@
 						'wbtm_bus_id',
 						'wbtm_order_id',
 						'wbtm_item_id',
+						'wbtm_boarding_time',
 						'wbtm_payment_plan',
 						'wbtm_deposit_paid',
 						'wbtm_remaining_due',
@@ -1124,8 +1133,32 @@
 						$revenue += isset($row['wbtm_bus_fare']) ? (float) $row['wbtm_bus_fare'] : 0.0;
 						$svcs     = isset($row['wbtm_extra_services']) ? $row['wbtm_extra_services'] : '';
 						if (is_array($svcs)) {
-							foreach ($svcs as $svc) {
-								$revenue += (float) ($svc['price'] ?? 0) * (int) ($svc['qty'] ?? 1);
+							$order_id  = isset($row['wbtm_order_id']) ? $row['wbtm_order_id'] : '';
+							$group_key = $order_id
+								? 'o' . $order_id
+									. '|i' . (int) ($row['wbtm_item_id'] ?? 0)
+									. '|b' . (int) ($row['wbtm_bus_id'] ?? 0)
+									. '|t' . (string) ($row['wbtm_boarding_time'] ?? '')
+								: 'lone_' . (int) $id;
+							foreach ($svcs as $svc_index => $svc) {
+								if (!is_array($svc)) {
+									continue;
+								}
+								$line = WBTM_Functions::ex_service_line_total($svc, 1);
+								if (($svc['charge_type'] ?? 'per_booking') === 'per_passenger') {
+									$revenue += $line;
+									continue;
+								}
+								// The services array is copied verbatim onto every seat of
+								// the group, so the index identifies the same charge on each
+								// of them — safe even when a booking holds two lines with the
+								// same name and price.
+								$svc_key = $group_key . '|s' . $svc_index . '|' . strtolower((string) ($svc['name'] ?? ''));
+								if (isset($charged_groups[$svc_key])) {
+									continue;
+								}
+								$charged_groups[$svc_key] = true;
+								$revenue += $line;
 							}
 						}
 
@@ -2221,21 +2254,21 @@
 			}
 
 			/**
-			 * Sum of a booking's extra services (wbtm_extra_services is a per-seat
-			 * array of {name, price, qty}). These are billed on top of the seat fare
-			 * but were previously ignored by the list Total, stats, and CSV/PDF
-			 * exports — only the detail view counted them.
+			 * Extra-service money that belongs to ONE booking record.
+			 *
+			 * wbtm_extra_services is copied onto every seat of the line it was bought
+			 * with, so a per-booking service (one $1,800 private van for the whole
+			 * booking) appears identically on all of that booking's seats. Adding it up
+			 * once per seat overstated the row Total, the CSV and the revenue cards by
+			 * (seats − 1) × the charge, and made the list disagree with the E-Voucher
+			 * PDF, which has always printed each seat's share.
+			 *
+			 * WBTM_Functions::booking_extra_services_total() is that same allocation —
+			 * per-passenger services in full, per-booking services split across the
+			 * seats they cover — so list and voucher now reconcile by construction.
 			 */
 			private function extra_services_total($id) {
-				$svcs = get_post_meta($id, 'wbtm_extra_services', true);
-				if (!is_array($svcs)) {
-					return 0.0;
-				}
-				$sum = 0.0;
-				foreach ($svcs as $svc) {
-					$sum += (float) ($svc['price'] ?? 0) * (int) ($svc['qty'] ?? 1);
-				}
-				return $sum;
+				return WBTM_Functions::booking_extra_services_total($id);
 			}
 
 			/**
@@ -2695,9 +2728,14 @@
 				$reference  = '#' . ($order_id ? $order_id : $id);
 				$account    = $user_id ? get_userdata($user_id) : false;
 
+				// Extra services are allocated to this seat exactly as the E-Voucher PDF
+				// allocates them: per-passenger lines in full, per-booking lines split
+				// across the seats one charge covers. $extra_services stays untouched for
+				// any other reader; the breakdown below renders $extra_service_lines.
+				$extra_service_lines = WBTM_Functions::booking_extra_service_lines($id);
 				$services_total = 0;
-				foreach ($extra_services as $svc) {
-					$services_total += (float) ($svc['price'] ?? 0) * (int) ($svc['qty'] ?? 1);
+				foreach ($extra_service_lines as $svc_line) {
+					$services_total += $svc_line['amount'];
 				}
 				// For a full-bus booking, wbtm_bus_fare already holds the FINAL (discounted)
 				// price. The fare-breakdown below lists the pre-discount base fare plus a
@@ -2836,11 +2874,20 @@
 													<td>&minus;<?php echo wp_kses_post(WBTM_Global_Function::format_price($full_bus_discount)); ?></td>
 												</tr>
 											<?php endif; ?>
-											<?php foreach ($extra_services as $svc) : ?>
+											<?php foreach ($extra_service_lines as $svc_line) : ?>
 												<tr class="wbtm-bkl-addon-row">
-													<td><span class="dashicons dashicons-plus-alt2"></span> <?php echo esc_html($svc['name'] ?? ''); ?></td>
-													<td><?php echo esc_html($svc['qty'] ?? 1); ?></td>
-													<td><?php echo wp_kses_post(WBTM_Global_Function::format_price(($svc['price'] ?? 0) * ($svc['qty'] ?? 1))); ?></td>
+													<td>
+														<span class="dashicons dashicons-plus-alt2"></span> <?php echo esc_html($svc_line['name']); ?>
+														<?php if ($svc_line['is_share']) : ?>
+															<small class="wbtm-bkl-share-note" title="<?php echo esc_attr(sprintf(
+																/* translators: %s: formatted whole charge shared by the booking's seats. */
+																esc_html__('Charged once per booking (%s) and split across its seats.', 'bus-ticket-booking-with-seat-reservation'),
+																wp_strip_all_tags(WBTM_Global_Function::format_price($svc_line['line_total']))
+															)); ?>">(<?php esc_html_e('per-booking share', 'bus-ticket-booking-with-seat-reservation'); ?>)</small>
+														<?php endif; ?>
+													</td>
+													<td><?php echo esc_html($svc_line['qty']); ?></td>
+													<td><?php echo wp_kses_post(WBTM_Global_Function::format_price($svc_line['amount'])); ?></td>
 												</tr>
 											<?php endforeach; ?>
 											<tr class="wbtm-bkl-total-row">
