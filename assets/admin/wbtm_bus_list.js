@@ -41,9 +41,14 @@
 		function matches(el) {
 			var name   = (el.getAttribute('data-name') || '');
 			var type   = (el.getAttribute('data-type') || '');
+			/* Every Bus Type term on the row, pipe-delimited: "|Ferry Boat|Speedboat|".
+			   A bus can carry more than one, so the filter tests membership rather than
+			   equality, and still falls back to the AC / Non AC coach type for rows that
+			   have no term assigned. */
+			var cats   = (el.getAttribute('data-cats') || '');
 			var status = (el.getAttribute('data-status') || '');
 			if (state.search && name.indexOf(state.search) === -1) { return false; }
-			if (state.type && type !== state.type) { return false; }
+			if (state.type && cats.indexOf('|' + state.type + '|') === -1 && type !== state.type) { return false; }
 			if (state.status && status !== state.status) { return false; }
 			return true;
 		}

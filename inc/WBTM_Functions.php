@@ -1920,6 +1920,212 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$multiplier = ( $type === 'per_passenger' ) ? $seats : 1;
 				return max( 0, $price * $qty * $multiplier );
 			}
+			/**
+			 * The identity of the "booked and charged together" group a booking record
+			 * belongs to.
+			 *
+			 * A booking post is ONE seat. A per-booking extra service is copied onto
+			 * every seat of the line it was bought with, so seats belong to the same
+			 * charge only when one document can honestly describe all of them: same
+			 * order, same order line item, same bus, same departure. The order id alone
+			 * is not enough — a round trip is one order but two journeys — and the line
+			 * item alone is not enough either, because standalone (non-WooCommerce)
+			 * bookings all store wbtm_item_id as 0.
+			 *
+			 * Kept byte-for-byte in step with WBTM_Pro_Pdf::booking_group_key() so the
+			 * Booking List and the E-Voucher PDF can never disagree about who shares a
+			 * charge.
+			 *
+			 * @param  int $booking_id
+			 * @return string
+			 */
+			private static function booking_charge_group_key( $booking_id ) {
+				$order_id = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_order_id' );
+				if ( ! $order_id ) {
+					return 'lone_' . absint( $booking_id );
+				}
+				return 'o' . $order_id
+					. '|i' . (int) WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_item_id' )
+					. '|b' . (int) WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_bus_id' )
+					. '|t' . (string) WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_boarding_time' );
+			}
+			/**
+			 * Every booking record ONE per-booking charge covers — the seats of this
+			 * booking's order that share its line item, bus and departure.
+			 *
+			 * Result is cached per group key for the request: a Booking List page or a
+			 * CSV chunk touches the same few orders over and over.
+			 *
+			 * @param  int $booking_id
+			 * @return int[] Ascending booking ids, always including $booking_id.
+			 */
+			public static function extra_service_charge_group( $booking_id ) {
+				$booking_id = absint( $booking_id );
+				if ( $booking_id <= 0 ) {
+					return array();
+				}
+				static $cache = array();
+				$key = self::booking_charge_group_key( $booking_id );
+				if ( isset( $cache[ $key ] ) ) {
+					return $cache[ $key ];
+				}
+				$order_id = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_order_id' );
+				if ( ! $order_id ) {
+					$cache[ $key ] = array( $booking_id );
+					return $cache[ $key ];
+				}
+
+				/*
+				 * One prepared query for the whole order, read straight from postmeta.
+				 * WP_Query + update_meta_cache() would answer the same question, but it
+				 * would also park every sibling's meta in the object cache — and the
+				 * Booking List's CSV/PDF exports deliberately hold only one batch of meta
+				 * at a time so a site-wide export cannot exhaust the memory limit.
+				 */
+				global $wpdb;
+				$rows = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT pm.post_id, pm.meta_key, pm.meta_value
+						   FROM {$wpdb->postmeta} pm
+						   INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+						  WHERE p.post_type = 'wbtm_bus_booking'
+						    AND p.post_status NOT IN ( 'trash', 'auto-draft' )
+						    AND pm.meta_key IN ( 'wbtm_item_id', 'wbtm_bus_id', 'wbtm_boarding_time' )
+						    AND pm.post_id IN (
+						        SELECT post_id FROM {$wpdb->postmeta}
+						         WHERE meta_key = 'wbtm_order_id' AND meta_value = %s
+						    )
+						  ORDER BY pm.meta_id ASC",
+						(string) $order_id
+					),
+					ARRAY_A
+				);
+
+				$siblings = array();
+				foreach ( (array) $rows as $row ) {
+					$sibling_id = (int) $row['post_id'];
+					// First value wins, exactly like get_post_meta( …, true ).
+					if ( ! isset( $siblings[ $sibling_id ][ $row['meta_key'] ] ) ) {
+						$siblings[ $sibling_id ][ $row['meta_key'] ] = $row['meta_value'];
+					}
+				}
+
+				// The one query answered the whole order, so cache EVERY group it holds,
+				// not just the one asked for. A round trip's other leg, or the next seat
+				// of this one, then costs nothing — which is what keeps a full Booking
+				// List export at one query per order rather than one per seat.
+				$groups = array();
+				foreach ( $siblings as $sibling_id => $meta ) {
+					// Sanitized the same way get_post_info() sanitizes, so a sibling key
+					// and this booking's own key are built from identical values.
+					$sibling_time = (string) ( $meta['wbtm_boarding_time'] ?? '' );
+					$sibling_time = $sibling_time !== '' ? WBTM_Global_Function::data_sanitize( $sibling_time ) : '';
+					$sibling_key  = 'o' . $order_id
+						. '|i' . (int) ( $meta['wbtm_item_id'] ?? 0 )
+						. '|b' . (int) ( $meta['wbtm_bus_id'] ?? 0 )
+						. '|t' . $sibling_time;
+					$groups[ $sibling_key ][] = $sibling_id;
+				}
+				if ( ! isset( $groups[ $key ] ) || ! in_array( $booking_id, $groups[ $key ], true ) ) {
+					$groups[ $key ][] = $booking_id;
+				}
+				foreach ( $groups as $group_key => $group ) {
+					$group = array_values( array_unique( $group ) );
+					sort( $group, SORT_NUMERIC );
+					$cache[ $group_key ] = $group;
+				}
+				return $cache[ $key ];
+			}
+			/**
+			 * The slice of ONE per-booking extra-service charge that belongs to ONE
+			 * booking record, so the seats of a group still sum to exactly what
+			 * WooCommerce charged. Any currency-rounding remainder goes to the first
+			 * record of the group.
+			 *
+			 * @param  int        $booking_id
+			 * @param  float      $amount The whole charge (price × qty).
+			 * @param  int[]|null $group  The charge group; looked up when omitted.
+			 * @return float
+			 */
+			public static function extra_service_booking_share( $booking_id, $amount, $group = null ) {
+				$amount = (float) $amount;
+				$group  = is_array( $group )
+					? array_values( array_filter( array_map( 'absint', $group ) ) )
+					: self::extra_service_charge_group( $booking_id );
+				sort( $group, SORT_NUMERIC );
+				$count = max( 1, count( $group ) );
+				if ( $count === 1 ) {
+					return $amount;
+				}
+				$decimals = function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2;
+				$unit     = round( $amount / $count, $decimals );
+				$position = array_search( absint( $booking_id ), $group, true );
+				return $position === 0
+					? max( 0, $amount - ( $unit * ( $count - 1 ) ) )
+					: $unit;
+			}
+			/**
+			 * Every extra-service line of one booking record, already allocated to that
+			 * record: per-passenger services in full, per-booking services as this
+			 * seat's share of the one charge.
+			 *
+			 * @param  int $booking_id
+			 * @return array<int,array{name:string,qty:int,price:float,charge_type:string,line_total:float,amount:float,is_share:bool}>
+			 */
+			public static function booking_extra_service_lines( $booking_id ) {
+				$services = WBTM_Global_Function::get_post_info( $booking_id, 'wbtm_extra_services', array() );
+				if ( ! is_array( $services ) || ! $services ) {
+					return array();
+				}
+				$group = null;
+				$lines = array();
+				foreach ( $services as $service ) {
+					if ( ! is_array( $service ) ) {
+						continue;
+					}
+					$charge_type = ( ( $service['charge_type'] ?? 'per_booking' ) === 'per_passenger' )
+						? 'per_passenger'
+						: 'per_booking';
+					$line_total = self::ex_service_line_total( $service, 1 );
+					$amount     = $line_total;
+					$is_share   = false;
+					if ( $charge_type === 'per_booking' ) {
+						if ( $group === null ) {
+							$group = self::extra_service_charge_group( $booking_id );
+						}
+						if ( count( $group ) > 1 ) {
+							$amount   = self::extra_service_booking_share( $booking_id, $line_total, $group );
+							$is_share = true;
+						}
+					}
+					$lines[] = array(
+						'name'        => isset( $service['name'] ) ? (string) $service['name'] : '',
+						'qty'         => isset( $service['qty'] ) ? max( 0, (int) $service['qty'] ) : 0,
+						'price'       => isset( $service['price'] ) ? (float) $service['price'] : 0.0,
+						'charge_type' => $charge_type,
+						'line_total'  => $line_total,
+						'amount'      => $amount,
+						'is_share'    => $is_share,
+					);
+				}
+				return $lines;
+			}
+			/**
+			 * Extra-service money attributable to ONE booking record. This is the figure
+			 * the E-Voucher PDF prints, so the Booking List, its exports and its totals
+			 * must use it too — summing full per-booking charges on every seat of a
+			 * multi-seat order inflates the total by (seats − 1) × the charge.
+			 *
+			 * @param  int $booking_id
+			 * @return float
+			 */
+			public static function booking_extra_services_total( $booking_id ) {
+				$total = 0.0;
+				foreach ( self::booking_extra_service_lines( $booking_id ) as $line ) {
+					$total += $line['amount'];
+				}
+				return $total;
+			}
 			//==========================//
 			public static function check_seat_in_cart( $bus_id, $bp, $dp, $bp_date, $seat_name ) {
 				if ( ! self::is_wc_active() ) {
