@@ -445,6 +445,43 @@
 			preview.find('.wbtm_summary_preview_total').html(parent.find('.wbtm_total').html());
 			book_now_btn.prop('disabled', true);
 		}
+		wbtm_update_summary_services(parent, preview, total_qty);
+	}
+	// Extra services in the Booking Summary. Without them the card jumped
+	// straight from "Ticket Sub total" to a larger "Total Price" with nothing
+	// accounting for the difference. Built from wbtm_ex_service_lines(), the same
+	// list the running total is summed from.
+	function wbtm_update_summary_services(parent, preview, total_qty) {
+		let section = preview.find('.wbtm_summary_preview_services');
+		if (!section.length) {
+			return;
+		}
+		let rows = section.find('.wbtm_summary_preview_service_rows');
+		let lines = total_qty > 0 ? wbtm_ex_service_lines(parent, total_qty) : [];
+		if (!lines.length) {
+			section.hide();
+			rows.html('');
+			return;
+		}
+		let services_total = 0;
+		rows.html('');
+		lines.forEach(function (line) {
+			services_total = services_total + line.amount;
+			let name = $('<span></span>').text(line.name);
+			if (line.qty > 1) {
+				name.append($('<small></small>').text('\u00d7 ' + line.qty));
+			}
+			rows.append(
+				$('<div class="wbtm_summary_preview_service_row justifyBetween"></div>')
+					.append($('<span class="wbtm_summary_service_name"></span>').append(name))
+					.append($('<span class="wbtm_summary_service_price"></span>').html(wbtm_price_format(line.amount)))
+			);
+		});
+		// A subtotal beneath a single line would only repeat it, so it appears
+		// once there is more than one service to add up.
+		section.find('.wbtm_summary_preview_services_total').html(wbtm_price_format(services_total));
+		section.find('.wbtm_summary_services_subtotal').toggle(lines.length > 1);
+		section.show();
 	}
 	$(document).on('click', '.wbtm_registration_area .wbtm_summary_preview_book_now', function () {
 		let book_now_btn = $(this);
@@ -488,17 +525,38 @@
 	// quoted a total lower than the one WooCommerce went on to charge, so the seat
 	// count is applied here too. "Per Booking" services (the default, and anything
 	// saved before the charging mode existed) stay price x qty.
-	function wbtm_ex_service_price(parent, total_qty) {
+	// One line per extra service the customer actually took, carrying the amount
+	// that service contributes to the total. The Booking Summary breakdown and
+	// the running total are both built from this, so a printed line can never
+	// disagree with the figure it is part of.
+	function wbtm_ex_service_lines(parent, total_qty) {
 		let seats = parseInt(total_qty);
 		seats = seats > 0 ? seats : 1;
-		let total = 0
+		let lines = [];
 		parent.find('[name="extra_service_qty[]"]').each(function () {
-			let ex_qty = parseInt($(this).val());
-			let ex_price = $(this).attr('data-price');
+			let field = $(this);
+			let ex_qty = parseInt(field.val());
+			if (!(ex_qty > 0)) {
+				return;
+			}
+			let ex_price = field.attr('data-price');
 			ex_price = ex_price && ex_price >= 0 ? ex_price : 0;
-			let charge_type = $(this).closest('tr').attr('data-charge-type');
+			let row = field.closest('tr');
+			let charge_type = row.attr('data-charge-type');
 			let multiplier = charge_type === 'per_passenger' ? seats : 1;
-			total = total + parseFloat(ex_price) * ex_qty * multiplier;
+			lines.push({
+				name: row.find(':input[name="extra_service_name[]"]').val() || '',
+				qty: ex_qty,
+				per_passenger: charge_type === 'per_passenger',
+				amount: parseFloat(ex_price) * ex_qty * multiplier
+			});
+		});
+		return lines;
+	}
+	function wbtm_ex_service_price(parent, total_qty) {
+		let total = 0;
+		wbtm_ex_service_lines(parent, total_qty).forEach(function (line) {
+			total = total + line.amount;
 		});
 		return total;
 	}

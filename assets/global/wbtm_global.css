@@ -4,7 +4,15 @@
      Falls back to width:100% / margin:0 on classic themes that don't define these variables. */
   div.wbtm_container {
     width: 1340px;
-    max-width: 1340px;
+    /* Was max-width:1340px — the same fixed value as the width, so the
+       container could never be narrower than 1340px. Between the 768px mobile
+       rule below and a 1380px-wide screen it was therefore wider than the
+       viewport and the whole plugin page scrolled sideways: the search bar lost
+       its Return Date field and Search button off the right edge, and every
+       result card lost its price and Book column. Capping at the space actually
+       available keeps the 1340px breakout on wide screens and simply fits on
+       narrower ones. */
+    max-width: 100%;
     margin-top: var(--wbtm_dmp);
     margin-bottom: var(--wbtm_dmp);
     margin-left: auto;
