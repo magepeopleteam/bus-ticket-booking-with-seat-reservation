@@ -43,6 +43,22 @@
 		<span><?php esc_html_e('Ticket Sub total', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 		<span class="wbtm_summary_preview_subtotal"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0) ); ?></span>
 	</div>
+	<?php // Extra services, one line each, between the ticket subtotal and the
+	  // grand total — the card used to jump straight from one to the other with
+	  // nothing explaining the difference. Rows and the services subtotal are
+	  // filled by wbtm_update_summary_services() in wbtm_global.js from the same
+	  // wbtm_ex_service_lines() the running total is summed from. Hidden until a
+	  // service is actually taken. ?>
+	<div class="wbtm_summary_preview_services" style="display:none;">
+		<div class="wbtm_summary_preview_service_rows"></div>
+		<?php // Only worth printing when more than one service was taken — with a
+		  // single line it just repeats the amount immediately above it. Toggled
+		  // by wbtm_update_summary_services(). ?>
+		<div class="wbtm_summary_services_subtotal justifyBetween" style="display:none;">
+			<span><?php echo esc_html( WBTM_Translations::text_ex_service_sub_total() ); ?></span>
+			<span class="wbtm_summary_preview_services_total"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0) ); ?></span>
+		</div>
+	</div>
 	<?php // Grand total — ticket subtotal + extra services, mirrored from
 	  // .wbtm_total (the same value the real footer/#wbtm_add_to_cart uses),
 	  // not recomputed here. See wbtm_update_summary_preview() in

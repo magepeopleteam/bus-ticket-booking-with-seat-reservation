@@ -2986,6 +2986,61 @@ table.wbtm_totals .wbtm_sub_total {
   font-weight: 800;
   color: #1e3a8a;
 }
+/* Extra-service breakdown between the ticket subtotal and the grand total (see
+   booking_summary_preview.php / wbtm_update_summary_services()). Deliberately
+   plain: one line per service, no heading and no rule of its own. The service
+   names say what the lines are, and sitting between "Ticket Sub total" and
+   "Total Price" says where they belong — a heading plus a repeated subtotal
+   turned one $50 add-on into three rows of card. */
+.wbtm_summary_preview_services {
+  margin: -8px 0 12px;
+}
+.wbtm_summary_preview_service_row {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 5px;
+}
+.wbtm_summary_preview_service_row .wbtm_summary_service_name {
+  min-width: 0;
+  word-break: break-word;
+}
+.wbtm_summary_preview_service_row .wbtm_summary_service_name small {
+  margin-left: 5px;
+  color: #6b7280;
+  font-weight: 600;
+}
+.wbtm_summary_preview_service_row .wbtm_summary_service_price {
+  flex: none;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
+/* Shown only when more than one service was taken (see the JS) — under a single
+   line it would just repeat the amount above it. */
+.wbtm_summary_preview_services .wbtm_summary_services_subtotal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin: 7px 0 0;
+  padding-top: 7px;
+  border-top: 1px dashed #e5e7eb;
+}
+.wbtm_summary_preview_services .wbtm_summary_preview_services_total {
+  flex: none;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e3a8a;
+  white-space: nowrap;
+}
 .wbtm_booking_summary_total {
   display: flex !important;
   align-items: center;
