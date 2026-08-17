@@ -422,6 +422,27 @@
                 text-align:    center;
             }
 
+            /* ── Tablet / narrow desktop: tighten, do not overflow ──
+               The bar is flex-wrap:nowrap and each field carries 40px of
+               horizontal padding on top of its 110px min-width, so four
+               fields plus the swap and search buttons need roughly 1000px.
+               With no rules between 767px and full desktop width the bar
+               simply ran off the side of the page, taking the results list
+               below it with it. Trimming the padding is enough to fit: the
+               fields keep their order and the bar keeps its single-row shape. */
+            @media (min-width: 768px) and (max-width: 1199px) {
+                #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
+                    padding:   22px 16px;
+                    min-width: 88px;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
+                    min-height: 58px;
+                }
+                #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
+                    padding: 8px;
+                }
+            }
+
             /* ── Mobile: stack vertically ────────────────────────── */
             @media (max-width: 767px) {
                 #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
@@ -436,6 +457,11 @@
                 #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
                     border-right:  none;
                     border-bottom: 1.5px solid #dde1e7;
+                    /* The desktop 30px/40px padding was never overridden here, so
+                       each stacked field stood ~99px tall and the four of them
+                       pushed the results a whole screen down the page. */
+                    padding:       15px 16px;
+                    min-width:     0;
                 }
                 #wbtm_area .wbtm-bar-redesign .wtbm_inputList:last-child {
                     border-bottom: none;

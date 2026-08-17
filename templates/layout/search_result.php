@@ -678,13 +678,28 @@ div#wbtm_date_start_route { height: 50px; }
     pointer-events: none;
 }
 
-/* 3-column card row */
+/* Card layout: photo | (journey strip over bus info) | price
+   ---------------------------------------------------------------------------
+   These four panels used to sit side by side in one unwrappable flex row, which
+   left the info panel roughly 180px wide however large the screen was. Its
+   amenity chips and detail buttons then dropped to one per line, the panel grew
+   several hundred pixels tall, and the photo — stretched to match — turned the
+   whole card into a tall block. Below the desktop width the row could not fit at
+   all and simply ran off the side of the page.
+
+   A grid fixes the cause rather than the symptom: the journey strip and the bus
+   info share ONE column, stacked, so the info panel gets the full width of that
+   column for its chips and buttons and the card stays a compact strip. The photo
+   and price span both rows down either side. Markup is unchanged — only the
+   placement of the four panels the template already renders. */
 .wbtm-card-wrap {
-    display:         flex;
-    align-items:     stretch;
-    justify-content: space-between;
-    width:           100%;
-    min-height:      132px;
+    display:               grid;
+    grid-template-columns: minmax(140px, 232px) minmax(0, 1fr) minmax(150px, 200px);
+    /* heading line / journey strip / bus info — the middle column's three rows */
+    grid-template-rows:    auto auto 1fr;
+    align-items:           stretch;
+    width:                 100%;
+    min-height:            132px;
     background:      linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     border:          1px solid #e5edf7;
     border-radius:   24px;
@@ -701,10 +716,10 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── Bus / boat photo (per-departure card thumbnail) ────────────── */
 .wbtm-card-photo {
-    flex:            1 1 210px;
-    min-width:       140px;
-    max-width:       260px;
+    grid-column:     1;
+    grid-row:        1 / -1;   /* full height, beside all three stacked rows */
     align-self:      stretch;
+    position:        relative;  /* anchors the bus/boat type badge */
     display:         flex;
     align-items:     center;      /* vertical-center the image in the card */
     justify-content: center;      /* horizontal-center */
@@ -719,15 +734,32 @@ div#wbtm_date_start_route { height: 50px; }
     width:           100% !important;
     height:          100% !important;
     max-width:       100%;
+    /* The photo column stretches to the tallest column, and the info column
+       grows tall whenever its amenity chips and detail buttons wrap onto many
+       lines — an operator listing seven amenities and five buttons stretched
+       this image to several hundred pixels and made the card enormous. The
+       tablet breakpoint stops the info column wrapping like that in the first
+       place; this cap is the backstop for a fleet with more chips than any
+       breakpoint can keep inline. The column stays flex-centred, so a capped
+       image sits centred against the panel instead of being distorted. */
+    max-height:      260px;
     object-fit:      cover;
     object-position: center;
     display:         block;
 }
 
 /* ── LEFT: times + duration track ───────────────────────────────── */
+.wbtm-card-head {
+    grid-column: 2;
+    grid-row:    1;
+    padding:     16px 22px 4px;
+    background:  #ffffff;
+    min-width:   0;
+}
+
 .wbtm-card-times {
-    flex:                  1.15 1 280px;
-    min-width:             190px;
+    grid-column:           2;
+    grid-row:              2;
     display:               grid;
     grid-template-columns: auto 1fr auto;
     grid-template-rows:    auto auto;
@@ -735,9 +767,16 @@ div#wbtm_date_start_route { height: 50px; }
     align-content:         center;
     row-gap:               0;
     column-gap:            14px;
-    padding:               24px 24px;
+    /* The duration pill is absolutely positioned above the track, so the strip
+       needs enough head room to contain it — with the heading line now directly
+       above, too little padding let the pill ride up over the operator name. */
+    padding:               30px 22px 14px;
     background:            linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
-    border-right:          1px solid #e5edf7;
+    /* Banded between the heading line and the bus info now rather than sitting
+       beside them, so the divider that separated the columns becomes a rule
+       above and below the strip. */
+    border-top:            1px solid #e5edf7;
+    border-bottom:         1px solid #e5edf7;
     position:              relative;
 }
 .wbtm-time-depart,
@@ -780,21 +819,27 @@ div#wbtm_date_start_route { height: 50px; }
     gap:             4px;
     min-width:       96px;
 }
+/* The duration pill, dot, line and icon are the card's accent. They were
+   hardcoded indigo while the rest of the plugin (filter sidebar, buttons)
+   already followed the operator's configured Style → Theme Colour, so an
+   operator who set their brand colour still got an indigo track here. They
+   read --wbtm_color_theme now, with the old indigo kept as the fallback so a
+   site that never set the variable looks exactly as it did. */
 .wbtm-track-duration {
     position:      absolute;
     bottom:        100%;
     left:          50%;
     transform:     translateX(-50%);
-    margin-bottom: 10px;
+    margin-bottom: 7px;
     font-size:     10px;
     font-weight:   700;
-    color:         #4338ca;
+    color:         var(--wbtm_color_theme, #4338ca);
     white-space:   nowrap;
     line-height:   1;
-    background:    #eef2ff;
+    background:    #f4f6fb;
     padding:       5px 9px;
     border-radius: 20px;
-    border:        1px solid rgba(99, 102, 241, 0.14);
+    border:        1px solid var(--wbtm_color_theme_77, rgba(99, 102, 241, 0.14));
 }
 .wbtm-track-dot {
     width:         11px;
@@ -810,7 +855,7 @@ div#wbtm_date_start_route { height: 50px; }
     width:      100%;
     height:     0;
     min-width:  56px;
-    border-top: 2px dashed #c7d2fe;
+    border-top: 2px dashed var(--wbtm_color_theme_77, #c7d2fe);
 }
 .wbtm-track-line::after {
     content:         '\f207';
@@ -823,11 +868,11 @@ div#wbtm_date_start_route { height: 50px; }
     width:           30px;
     height:          30px;
     border-radius:   50%;
-    background:      linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+    background:      linear-gradient(135deg, var(--wbtm_color_theme_cc, #6366f1) 0%, var(--wbtm_color_theme, #4338ca) 100%);
     display:         flex;
     align-items:     center;
     justify-content: center;
-    color:           #fff;
+    color:           var(--wbtm_color_theme_alter, #fff);
     font-size:       11px;
     line-height:     30px;
     box-shadow:      0 10px 20px rgba(67,56,202,.22);
@@ -835,21 +880,24 @@ div#wbtm_date_start_route { height: 50px; }
 
 /* ── MIDDLE: bus info ────────────────────────────────────────────── */
 .wbtm-card-info {
-    flex:           1;
-    min-width:      180px;
-    padding:        22px 22px 20px;
+    grid-column:    2;
+    grid-row:       3;
+    min-width:      0;          /* let it shrink inside the grid track */
+    padding:        16px 22px 18px;
     display:        flex;
     flex-direction: column;
-    gap:            12px;
-    border-right:   1px solid #e5edf7;
+    gap:            10px;
     background:     #ffffff;
 }
+/* Operator name and vehicle number share the header line — name left, number
+   pushed to the far right — instead of stacking as two rows of their own. */
 .wbtm-operator-row {
     display:     flex;
     align-items: center;
     gap:         10px;
     flex-wrap:   wrap;
 }
+.wbtm-operator-row .wbtm-coach-number { margin-left: auto; }
 .wbtm-operator-name {
     font-size:   20px;
     font-weight: 800;
@@ -873,14 +921,27 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-coach-number strong {
     color: #0f172a;
 }
+/* Sits on the photo, bottom-left, like the type chip on a ferry listing. Takes
+   the operator's configured Style → Theme Colour so it matches the rest of the
+   card rather than introducing a colour of its own. */
 .wbtm-type-badge {
+    position:      absolute;
+    left:          10px;
+    bottom:        10px;
+    z-index:       2;
+    max-width:     calc(100% - 20px);
+    overflow:      hidden;
+    text-overflow: ellipsis;
     font-size:     10px;
     font-weight:   700;
-    padding:       3px 10px;
+    padding:       4px 11px;
     border-radius: 20px;
     white-space:   nowrap;
     letter-spacing: 0.3px;
     text-transform: uppercase;
+    color:         var(--wbtm_color_theme_alter, #ffffff);
+    background:    var(--wbtm_color_theme, #e8510f);
+    box-shadow:    0 4px 12px rgba(15, 23, 42, 0.22);
 }
 .wbtm-type-badge--top {
     background: #dcfce7;
@@ -895,20 +956,31 @@ div#wbtm_date_start_route { height: 50px; }
     flex-wrap: wrap;
     gap:      6px;
 }
+/* Amenity chips. These were meant to be pills but never rendered as any: the
+   rule said `border-radius: none`, which is not a valid value — the whole
+   declaration was dropped — and the background was plain white with no border,
+   so the amenities came out as a run of loose text. Tinted from the operator's
+   configured Style → Theme Colour so the row matches the rest of the card;
+   the flat fallbacks in front of each color-mix() keep older browsers on a
+   neutral tint rather than no chip at all. */
 .wbtm-amenity {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #475569;
-    background: #fff;
-    padding: 3px 9px;
-    border-radius: none;
-    border: none;
+    display:       inline-flex;
+    align-items:   center;
+    gap:           5px;
+    font-size:     11.5px;
+    font-weight:   600;
+    line-height:   1.5;
+    color:         #41525f;
+    background:    #f4f7fb;
+    background:    color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 7%, #ffffff);
+    padding:       4px 10px;
+    border-radius: 999px;
+    border:        1px solid #e6ecf4;
+    border:        1px solid color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 18%, #ffffff);
+    white-space:   nowrap;
 }
 .wbtm-amenity i {
-    color:     #64748b;
+    color:     var(--wbtm_color_theme, #64748b);
     font-size: 11px;
 }
 .wbtm-seats-avail {
@@ -949,23 +1021,24 @@ div#wbtm_date_start_route { height: 50px; }
     transition:    background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
 }
 .wbtm-card-info .wbtm_bus_popup_link:hover {
-    color:        #4338ca;
-    background:   #eef2ff;
-    border-color: #c7d2fe;
+    color:        var(--wbtm_color_theme, #4338ca);
+    background:   #f4f6fb;
+    border-color: var(--wbtm_color_theme_77, #c7d2fe);
     transform:    translateY(-1px);
 }
 
 /* ── RIGHT: price + book ─────────────────────────────────────────── */
 .wbtm-card-price {
-    flex:            .75 1 190px;
-    min-width:       145px;
-    max-width:       220px;
-    padding:         22px 22px;
+    grid-column:     3;
+    grid-row:        1 / -1;   /* full height, beside both stacked rows */
+    min-width:       0;
+    padding:         20px 18px;
     display:         flex;
     flex-direction:  column;
     align-items:     flex-start;
     justify-content: center;
     gap:             10px;
+    border-left:     1px solid #e5edf7;
     background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
 }
 .wbtm-starting-from {
@@ -1040,6 +1113,73 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm_bus_details { border-top: 1px solid #eaecf2; }
 
 
+/* ── Tablet / narrow desktop: stay compact, stay on ONE row ──────
+   Between 768px and the full desktop width the card had no rules of its own,
+   so it kept desktop paddings and type on a column that could not fit them:
+   every panel was squeezed to its min-width, the amenity chips and detail
+   buttons dropped to one per line, and the photo stretched to match. Same
+   four columns here, just sized for the space — which is what keeps the card
+   the compact strip it is on desktop rather than a tall block. */
+/* Below 1100px the 270px filter rail costs the results more than it is worth —
+   it left the card barely 200px of content to fit three tracks into, which is
+   what pushed the detail buttons back onto separate lines. The rail moves above
+   the list instead, so the cards keep the full page width and stay compact. */
+@media (min-width: 768px) and (max-width: 1099px) {
+    .wbtm_search_result_holder   { flex-direction: column; gap: 12px; }
+    .wbtm_bus_left_filter_holder { flex: none; width: 100%; }
+    .wbtm_bus_list_area          { width: 100% !important; padding: 0; }
+    .wbtm-filter-card            { position: static; }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    /* Narrower photo and price rails, and type a step down, so the three-track
+       shape — the thing that keeps the card a compact strip — survives the
+       smaller column instead of collapsing back into stacked rows. */
+    .wbtm-card-wrap {
+        grid-template-columns: minmax(96px, 132px) minmax(0, 1fr) minmax(124px, 158px);
+    }
+    .wbtm-card-photo img { max-height: 190px; }
+    .wbtm-card-head     { padding: 13px 12px 0; }
+
+    .wbtm-card-times {
+        padding:    26px 12px 12px;
+        column-gap: 6px;
+    }
+    .wbtm-time-depart,
+    .wbtm-time-arrive { font-size: 20px; }
+    .wbtm-city-depart,
+    .wbtm-city-arrive { font-size: 11px; margin-top: 4px; }
+    .wbtm-duration-track-wrap { min-width: 58px; }
+    .wbtm-track-line          { min-width: 30px; }
+    .wbtm-track-duration      { font-size: 9px; padding: 4px 7px; margin-bottom: 8px; }
+
+    .wbtm-card-info {
+        padding: 13px 12px 14px;
+        gap:     7px;
+    }
+    .wbtm-operator-name { font-size: 16px; }
+    .wbtm-coach-number  { font-size: 10px; padding: 3px 8px; }
+    .wbtm-amenity       { font-size: 11px; padding: 2px 6px; gap: 4px; }
+    .wbtm-seats-avail   { font-size: 11px; padding: 4px 9px; }
+    .wbtm-card-info .wbtm_bus_details_tabs_holder { padding-top: 9px; }
+    .wbtm-card-info .wbtm_bus_popup_links         { gap: 6px; }
+    .wbtm-card-info .wbtm_bus_popup_link          { font-size: 11px; padding: 5px 9px; }
+
+    .wbtm-card-price {
+        padding: 14px 12px;
+        gap:     7px;
+    }
+    .wbtm-price-value   { font-size: 23px; }
+    .wbtm-starting-from { font-size: 10px; letter-spacing: 0.08em; }
+    .wbtm-card-price .wbtm-seat-book._themeButton_xs,
+    .wbtm-card-price ._themeButton_xs,
+    .wbtm-card-price #get_wbtm_bus_details {
+        padding:       11px 12px !important;
+        font-size:     13px !important;
+        border-radius: 13px !important;
+    }
+}
+
 /* ── Mobile ─────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
     .wbtm_search_result_holder  { flex-direction: column; gap: 12px; max-width: 100%; }
@@ -1073,11 +1213,17 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-list-count  { font-size: 14px; }
     .wbtm-list-sort   { font-size: 13px; }
 
-    /* Bus card: 3 columns become 3 stacked rows */
-    .wbtm-card-wrap { flex-direction: column; min-height: 0; border-radius: 18px; }
+    /* Bus card: the three tracks collapse to one, so the four panels stack. */
+    .wbtm-card-wrap {
+        grid-template-columns: 1fr;
+        grid-template-rows:    auto;
+        min-height:            0;
+        border-radius:         18px;
+    }
     .wbtm-bus-list  { min-width: 0; }
     .wbtm-card-photo {
-        flex:          none;
+        grid-column:   1;
+        grid-row:      auto;   /* stop spanning: every panel is its own row now */
         width:         100%;
         min-width:     0;
         max-width:     none;
@@ -1085,23 +1231,37 @@ div#wbtm_date_start_route { height: 50px; }
         border-right:  none;
         border-bottom: 1px solid #e5edf7;
     }
+    .wbtm-card-photo img { max-height: none; }
+    .wbtm-card-head {
+        grid-column: 1;
+        grid-row:    auto;
+        padding:     16px 16px 0;
+    }
     .wbtm-card-times {
-        flex:          none;
+        grid-column:   1;
+        grid-row:      auto;
+        border-top:    none;
         width:         100%;
         border-right:  none;
         border-bottom: 1px solid #e5edf7;
-        padding:       18px 16px;
+        /* Head room for the duration pill, which floats above the track: the
+           heading line sits directly on top of the strip on a phone, and with
+           desktop padding the pill rode up over the operator name. */
+        padding:       34px 16px 18px;
         column-gap:    10px;
         background:    linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
     }
+    .wbtm-card-info { grid-column: 1; grid-row: auto; }
     .wbtm-time-depart, .wbtm-time-arrive { font-size: 20px; }
     .wbtm-duration-track-wrap { min-width: 40px; }
     .wbtm-card-info  { border-right: none; border-bottom: 1px solid #e5edf7; padding: 16px 16px; gap: 10px; }
     .wbtm-card-price {
-        flex:            none;
+        grid-column:     1;
+        grid-row:        auto;
         width:           100%;
         min-width:       0;
         max-width:       none;
+        border-left:     none;
         flex-direction:  row;
         align-items:     center;
         justify-content: space-between;
@@ -1116,7 +1276,9 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-card-price #get_wbtm_bus_details { width: auto !important; padding: 10px 20px !important; }
 }
 @media (max-width: 480px) {
-    .wbtm-card-times { padding: 12px; }
+    /* Keeps the head room the floating duration pill needs — a flat 12px here
+       put the pill back on top of the operator name on small phones. */
+    .wbtm-card-times { padding: 32px 12px 12px; }
     .wbtm-time-depart, .wbtm-time-arrive { font-size: 16px; }
     .wbtm-city-depart, .wbtm-city-arrive { font-size: 10px; }
     .wbtm-price-value { font-size: 20px; }
@@ -1391,6 +1553,35 @@ div#wbtm_date_start_route { height: 50px; }
                          card rewrite dropped the per-departure thumbnail) -->
                     <div class="wbtm-card-photo">
                         <?php WBTM_Functions::logo_thumbnail_display($bus_id); ?>
+                        <?php
+                            // Bus / boat type (the wbtm_bus_cat term stored on the post).
+                            // The badge styles existed but nothing ever rendered them, so
+                            // the type a customer filters by was invisible on the results.
+                            $wbtm_card_type = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_category');
+                        ?>
+                        <?php if ($wbtm_card_type !== '') : ?>
+                            <span class="wbtm-type-badge"><?php echo esc_html($wbtm_card_type); ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Operator name + vehicle number: the card's heading line, above
+                         the journey strip. Its own grid item rather than the first row
+                         of .wbtm-card-info, because the journey strip sits between it
+                         and the rest of the bus info. -->
+                    <?php $wbtm_bus_no = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no'); ?>
+                    <div class="wbtm-card-head">
+                        <div class="wbtm-operator-row">
+                            <span class="wbtm-operator-name _textTheme"
+                                  data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>">
+                                <?php echo esc_html(get_the_title($bus_id)); ?>
+                            </span>
+                            <?php if ($wbtm_bus_no !== '') : ?>
+                            <div class="wbtm-coach-number">
+                                <span><?php echo esc_html(WBTM_Translations::text_bus_no()); ?>:</span>
+                                <strong><?php echo esc_html($wbtm_bus_no); ?></strong>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- times + duration visual -->
@@ -1420,26 +1611,6 @@ div#wbtm_date_start_route { height: 50px; }
 
                     <!-- MIDDLE: bus name, badge, amenities, seats, popup links -->
                     <div class="wbtm-card-info">
-                        <div class="wbtm-operator-row">
-                            <span class="wbtm-operator-name _textTheme"
-                                  data-href="<?php echo esc_attr(get_the_permalink($bus_id)); ?>">
-                                <?php echo esc_html(get_the_title($bus_id)); ?>
-                            </span>
-                        </div>
-
-                        <?php $wbtm_bus_no = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_no'); ?>
-                        <?php if ($wbtm_bus_no !== '') : ?>
-                        <div class="wbtm-coach-number">
-                            <span><?php echo esc_html(WBTM_Translations::text_bus_no()); ?>:</span>
-                            <strong><?php echo esc_html($wbtm_bus_no); ?></strong>
-                        </div>
-                        <?php endif; ?>
-
-                        <div class="wbtm-seats-avail">
-                            <?php echo esc_html($all_info['available_seat']); ?>
-                            <?php esc_html_e('seats available', 'bus-ticket-booking-with-seat-reservation'); ?>
-                        </div>
-
                         <?php if (!empty($feature_list)) : ?>
                         <div class="wbtm-amenities">
                             <?php foreach ($feature_list as $feat) :
@@ -1488,6 +1659,12 @@ div#wbtm_date_start_route { height: 50px; }
                                 <?php echo wp_kses_post(WBTM_Global_Function::format_price($price)); ?>
                             </div>
                         <?php endif; ?>
+
+                        <?php // Seat availability reads with the price and the Book button, not among the amenities. ?>
+                        <div class="wbtm-seats-avail">
+                            <?php echo esc_html($all_info['available_seat']); ?>
+                            <?php esc_html_e('seats available', 'bus-ticket-booking-with-seat-reservation'); ?>
+                        </div>
                         <?php if ($route_priced) : ?>
                         <div class="wbtm-seat-book <?php echo esc_html($btn_show); ?>">
                             <?php echo WBTM_Functions::full_bus_booking_button($bus_id, $all_info, $date, $wbtm_price_leg); ?>
