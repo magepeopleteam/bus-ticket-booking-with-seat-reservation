@@ -934,6 +934,12 @@
 						. '<td style="text-align:right;">' . esc_html__('Page', 'bus-ticket-booking-with-seat-reservation') . ' {PAGENO} / {nbpg}</td>'
 						. '</tr></table>'
 					);
+					// Print the store's currency symbol whatever it is. Amounts come from
+					// wc_price(), so the symbol already follows WooCommerce — but the glyph
+					// must exist in the font, and freesans has no THB / RUB / BDT sign. No
+					// bundled font covers every currency, so let mPDF fall back per character
+					// to one that has the glyph. Mirrors WBTM_Pro_Pdf::generate_pdf().
+					$mpdf->useSubstitutions = true;
 					$mpdf->WriteHTML($html);
 					$mpdf->Output('bookings-' . gmdate('Y-m-d') . '.pdf', 'D');
 				} catch (\Throwable $e) {
@@ -1003,6 +1009,12 @@
 						. '<td style="text-align:right;">' . esc_html__('Page', 'bus-ticket-booking-with-seat-reservation') . ' {PAGENO} / {nbpg}</td>'
 						. '</tr></table>'
 					);
+					// Print the store's currency symbol whatever it is. Amounts come from
+					// wc_price(), so the symbol already follows WooCommerce — but the glyph
+					// must exist in the font, and freesans has no THB / RUB / BDT sign. No
+					// bundled font covers every currency, so let mPDF fall back per character
+					// to one that has the glyph. Mirrors WBTM_Pro_Pdf::generate_pdf().
+					$mpdf->useSubstitutions = true;
 					$mpdf->WriteHTML($html);
 					$mpdf->Output('passenger-list-' . gmdate('Y-m-d') . '.pdf', 'D');
 				} catch (\Throwable $e) {
