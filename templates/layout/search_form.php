@@ -98,6 +98,14 @@
             #wbtm_area .wbtm_search_area.wbtm-bar-redesign {
                 background: transparent;
                 padding: 0;
+                /* Also clear the classic (non-redesign) skin's own card look
+                   from assets/frontend/wbtm.css (.wbtm_style .wbtm_search_area
+                   { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); }),
+                   which this redesign skin didn't reset — it rendered behind
+                   the pill container's own shadow/radius below as a faint
+                   rectangular echo poking out at the corners. */
+                border-radius: 0;
+                box-shadow: none;
             }
             #wbtm_area .wbtm-bar-redesign h4 {
                 display: none;

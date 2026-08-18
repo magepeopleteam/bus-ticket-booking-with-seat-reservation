@@ -1330,23 +1330,10 @@ div#wbtm_date_start_route { height: 50px; }
 
     <?php if ($has_left_filter) : ?>
     <div class="wbtm_bus_left_filter_holder">
-        <!-- Responsive filter toggle: collapsed by default on mobile and
-             available on desktop when more room is needed for result cards. -->
-        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
-            <span class="wbtm-mobile-filter-toggle-label">
-                <i class="fas fa-sliders-h" aria-hidden="true"></i>
-                <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
-            </span>
-            <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
-        </button>
         <div class="wbtm-filter-card">
 
-            <!-- Header -->
             <div class="wbtm-filter-header">
                 <span class="wbtm-filter-header-title"><?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                <span class="wbtm-filter-reset-btn wbtm_reset_filter-checkbox">
-                    <?php esc_html_e('Reset', 'bus-ticket-booking-with-seat-reservation'); ?>
-                </span>
             </div>
 
             <!-- Departure Time -->
@@ -1404,6 +1391,13 @@ div#wbtm_date_start_route { height: 50px; }
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+
+            <!-- Reset — below every filter section, at the bottom of the list. -->
+            <div class="wbtm-filter-reset-row">
+                <span class="wbtm-filter-reset-btn wbtm_reset_filter-checkbox">
+                    <?php esc_html_e('Reset', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </span>
+            </div>
 
             <!-- Member Discount promo card — content configurable under
                  Settings → Promo Banner (WBTM_Global_settings.php). -->
