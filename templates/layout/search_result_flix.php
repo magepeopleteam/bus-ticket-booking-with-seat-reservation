@@ -123,7 +123,10 @@ if (sizeof($bus_ids) > 0) {
         $has_left_filter = $wbtm_fd_panel && !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0;
         if( $has_left_filter ){
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            $width = 'calc( 100% - 180px )'
+            // .wbtm_bus_left_filter_holder is 270px wide with a 10px margin-right
+            // (wbtm_bus_left_filter.css) -- this must reserve the same 280px, or
+            // the list area claims back space the sidebar is actually using.
+            $width = 'calc( 100% - 280px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
                 <?php

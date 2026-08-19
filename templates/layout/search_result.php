@@ -122,80 +122,14 @@ if (sizeof($bus_ids) > 0) {
 .wbtm_return_bus_lists_holder  { background: transparent; margin-bottom: 20px; border-radius: 12px; overflow: hidden; }
 
 /* Step indicator: "① Select Departure Bus ---- ② Select Return Bus".
-   Only shown for round-trip searches (when a return tab actually exists).
-   A <span class="wbtm-step-connector"> is inserted between the two tabs in PHP. */
-.wbtm_bus_tab_wrapper {
-    display: none !important;
-}
-.wbtm_bus_tab_wrapper:has(.wtbm_return_route) {
-    display:         flex !important;
-    align-items:     center;
-    justify-content: center;
-    gap:             0;
-    padding:         14px 24px;
-    background:      #fff;
-    border:          1px solid #e8ecf0;
-    border-radius:   12px;
-    margin-bottom:   16px;
-    box-shadow:      0 1px 4px rgba(0,0,0,.04);
-}
-.wbtm_bus_tab_wrapper .wtbm_start_route,
-.wbtm_bus_tab_wrapper .wtbm_return_route {
-    display:     flex;
-    align-items: center;
-    gap:         10px;
-    font-size:   14px;
-    font-weight: 600;
-    color:       #9ca3af;
-    cursor:      pointer;
-    background:  none;
-    border:      none;
-    padding:     6px 0;
-    white-space: nowrap;
-    flex:        1;
-    transition:  color 0.15s;
-}
-/* Numbered circle */
-.wbtm_bus_tab_wrapper .wtbm_start_route::before,
-.wbtm_bus_tab_wrapper .wtbm_return_route::before {
-    content:         '1';
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    width:           26px;
-    height:          26px;
-    border-radius:   50%;
-    background:      #e9eaf0;
-    color:           #9ca3af;
-    font-size:       12px;
-    font-weight:     700;
-    flex-shrink:     0;
-    transition:      background 0.15s, color 0.15s;
-}
-.wbtm_bus_tab_wrapper .wtbm_return_route::before { content: '2'; }
-.wbtm_bus_tab_wrapper .wtbm_start_route { justify-content: flex-end; }
+   WBTM_Layout::wbtm_bus_list() renders this wrapper for BOTH search styles
+   (default + flix), so its styling now lives once in the shared
+   assets/frontend/wtbm_search.css rather than duplicated in this
+   style-specific inline block -- the flix template never had its own copy,
+   which is why it fell back to that file's old (unstyled-for-this-purpose)
+   version: a permanently-"active" solid gradient pill, since a one-way
+   search only ever renders the single start tab. */
 div#wbtm_date_start_route { height: 50px; }
-
-/* Dotted connector — a real <span> inserted by PHP so it sits between the two tabs */
-.wbtm_bus_tab_wrapper .wbtm-step-connector {
-    flex:       0 0 100px;
-    height:     0;
-    border-top: 2px dashed #d1d5db;
-    margin:     0;
-    align-self: center;
-}
-
-/* Active step: dark navy circle + bold dark text */
-@media (min-width: 0px) {
-    .wbtm_bus_tab_wrapper .wbtm_tab_active {
-        color:      #111827;
-        box-shadow: none;
-    }
-}
-.wbtm_bus_tab_wrapper .wbtm_tab_active::before {
-    background: #16213e;
-    color:      #fff;
-}
 
 /* ── Selected bus summary card (FlixBus style) ──────────────────── */
 .wbtm_selected_bus_card {
@@ -353,111 +287,13 @@ div#wbtm_date_start_route { height: 50px; }
     margin:     0;
 }
 
-/* ── Route summary card — hidden ────────────────────────────────── */
-.wbtm_search_route_container { display: none !important; }
-.wbtm_search_route_container.__unused {
-    display:         flex !important;
-    align-items:     center !important;
-    gap:             24px !important;
-    background:      #fff !important;
-    border:          1px solid #e8ecf0 !important;
-    border-radius:   12px !important;
-    padding:         16px 22px !important;
-    margin-bottom:   16px !important;
-    box-shadow:      0 1px 6px rgba(0,0,0,.05) !important;
-}
-
-/* Left block: label + date + day stacked */
-.wbtm_search_route_return_date {
-    display:        flex;
-    flex-direction: column;
-    gap:            2px;
-    min-width:      110px;
-    border-right:   1px solid #e8ecf0;
-    padding-right:  22px;
-}
-.wbtm_search_route_label {
-    font-size:      10px;
-    font-weight:    700;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-    color:          var(--wbtm_color_theme, #e8510f);
-    margin-bottom:  2px;
-}
-.wbtm_search_route_date {
-    font-size:   14px;
-    font-weight: 700;
-    color:       #111;
-    line-height: 1.2;
-}
-.wbtm_search_route_day {
-    font-size: 12px;
-    color:     #888;
-}
-
-/* Centre block: city A ── bus ──▶ city B */
-.wbtm_search_route_cities_wrapper {
-    display:     flex;
-    align-items: center;
-    gap:         0;
-    flex:        1;
-}
-.wbtm_search_route_city_section {
-    display:        flex;
-    flex-direction: column;
-    align-items:    flex-start;
-    gap:            2px;
-}
-.wbtm_search_route_city_section_right { align-items: flex-end; }
-.wbtm_search_route_city {
-    font-size:   18px;
-    font-weight: 700;
-    color:       #111;
-    line-height: 1;
-}
-.wbtm_search_route_airport_code {
-    font-size:      11px;
-    font-weight:    600;
-    color:          #aaa;
-    letter-spacing: .5px;
-}
-
-/* Bus icon + connecting line between the two cities */
-.wbtm_search_route_icon_wrapper {
-    flex:            1;
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    position:        relative;
-    padding:         0 14px;
-}
-.wbtm_search_route_icon_wrapper::before,
-.wbtm_search_route_icon_wrapper::after {
-    content:    '';
-    position:   absolute;
-    top:        50%;
-    height:     1px;
-    width:      calc(50% - 20px);
-    background: repeating-linear-gradient(90deg, #ccc 0, #ccc 4px, transparent 4px, transparent 8px);
-}
-.wbtm_search_route_icon_wrapper::before { left: 0; }
-.wbtm_search_route_icon_wrapper::after  { right: 0; }
-.wbtm_search_route_bus_icon {
-    width:           36px;
-    height:          36px;
-    border-radius:   50%;
-    background:      var(--wbtm_color_theme, #e8510f);
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    color:           #fff;
-    font-size:       15px;
-    flex-shrink:     0;
-    z-index:         1;
-    position:        relative;
-}
-/* hide the dropdown arrow — not needed in this layout */
-.wbtm_search_route_dropdown_icon { display: none !important; }
+/* Route summary card (.wbtm_search_route_container, rendered by
+   WBTM_Layout::route_title() -- shared by both search styles) used to be
+   force-hidden here (`display:none !important`) with its real styling
+   trapped behind a `.__unused` class that was never applied, so it never
+   actually rendered on either style. It now lives, fused with the step
+   banner above it into one shared white card, in
+   assets/frontend/wtbm_search.css -- see [[project_busly_wbtm_flix_style]]. */
 
 /* ── Page-level layout: sidebar + results ──────────────────────── */
 .wbtm_search_result_holder {
@@ -1330,6 +1166,21 @@ div#wbtm_date_start_route { height: 50px; }
 
     <?php if ($has_left_filter) : ?>
     <div class="wbtm_bus_left_filter_holder">
+        <?php
+        // Collapsible "Filters" bar: assets/frontend/wtbm_search.css already ships
+        // the full styling for `.wbtm-mobile-filter-toggle` (desktop collapse-to-rail
+        // AND mobile results-first collapse) and assets/frontend/wbtm.js already
+        // wires its click handler -- but no template ever rendered the button
+        // itself, so both CSS rules that hide the panel by default (mobile, and
+        // desktop once collapsed) had no way to ever be reversed.
+        ?>
+        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
+            <span class="wbtm-mobile-filter-toggle-label">
+                <i class="fas fa-filter" aria-hidden="true"></i>
+                <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
+            </span>
+            <span class="wbtm-mobile-filter-caret"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
+        </button>
         <div class="wbtm-filter-card">
 
             <div class="wbtm-filter-header">

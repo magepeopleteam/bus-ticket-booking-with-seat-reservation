@@ -28,6 +28,7 @@
 			?>
 		</p>
 	<?php } ?>
+	<div class="wbtm_booking_summary_card">
 	<table class="_layoutFixed_textLeft wbtm_booking_summary_table">
 		<?php // Placeholder row shown before any seat is picked; wbtm_update_summary_preview()
 		  // in wbtm_global.js caches this exact markup the first time it runs and restores
@@ -66,6 +67,7 @@
 	<div class="wbtm_booking_summary_total justifyBetween">
 		<span><?php esc_html_e('Total Price', 'bus-ticket-booking-with-seat-reservation'); ?></span>
 		<span class="wbtm_summary_preview_total"><?php echo wp_kses_post( WBTM_Global_Function::format_price(0) ); ?></span>
+	</div>
 	</div>
 	<?php // Disabled by default — enabled only once a seat is selected, see
 	  // wbtm_update_summary_preview() in wbtm_global.js. A native disabled

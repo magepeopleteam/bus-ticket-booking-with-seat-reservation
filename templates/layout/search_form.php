@@ -134,13 +134,28 @@
                 flex:           1;
                 min-width:      0;
             }
+            /* Positioning context for the swap toggle below, which floats over
+               the From/To divider instead of taking up flex space itself. */
+            #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location {
+                position: relative;
+            }
 
             /* ── Each field segment ──────────────────────────────── */
+            /* wbtm.css's own base rule (`.wtbm_inputList{margin:0 5px 0 0}`,
+               unscoped, applies everywhere incl. here) was never overridden
+               by this redesign block, so the From field kept an extra 5px
+               margin-right the swap toggle's absolute centering above didn't
+               account for -- its true right edge sat 5px left of the
+               container's midpoint, reopening a small gap next to the
+               toggle. margin:0 here removes it without touching wbtm.css's
+               own rule, so any other (non-redesign) use of .wtbm_inputList
+               elsewhere in the plugin is unaffected. */
             #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
                 flex:         1;
                 min-width:    110px;
                 position:     relative;
                 padding:      30px 40px;
+                margin:       0;
                 border-right: 1.5px solid #dde1e7;
                 display:      flex;
                 align-items:  center;
@@ -171,6 +186,53 @@
                 cursor:         pointer;
                 margin:         0;
             }
+            /* "Return Date (Optional)" is longer than every other field's label
+               ("From", "Journey Date" …) at the same size/column width, so it
+               alone wrapped onto a second line. Keep it on one line -- the
+               main "Return Date" text stays the same size as every other
+               label; only the "(Optional)" suffix (its own span, split out in
+               WBTM_Layout::return_date_picker()) shrinks, same idea as a
+               form's "(optional)" hint text elsewhere. */
+            #wbtm_area .wbtm-bar-redesign .wbtm_return_date label.wtbm_fdColumn {
+                white-space: nowrap;
+            }
+            /* mp_global's generic form skin (wbtm_plugin_global.css:
+               `.wbtm_style .mpForm label span { width:100% }`) styles every
+               <span> inside a <label> under this form -- meant for other
+               label+span uses elsewhere, but it also matches the
+               "(Optional)" wrapper span from WBTM_Layout::return_date_picker()
+               (the only field label that's a span rather than plain text).
+               Its margin-bottom (which used to push Return Date's calendar
+               row lower than every other field's) was removed at the source
+               since nothing else in the plugin used it; width:100% is
+               harmless for other uses but still reset here since this span
+               is meant to size to its own text, not fill the column. */
+            #wbtm_area .wbtm-bar-redesign .wtbm_field_label_text {
+                width:       auto;
+                line-height: 1.2;
+            }
+            /* A nested inline element at a SMALLER font-size than its
+               surroundings still inflates the shared line box's height
+               beyond either font's own line-height on its own -- baseline
+               alignment needs extra room to fit both the larger font's
+               ascent and the smaller font's descent (vertical-align:middle
+               alone only softens this, doesn't remove it). That's what was
+               still making Return Date's label ~6-8px taller than the other
+               fields' single-size labels, which in turn pushed its calendar
+               row down whenever .wtbm_inputList vertically centers the whole
+               label column. Scaling the glyphs down with a `transform`
+               instead of a smaller `font-size` sidesteps the problem
+               entirely: transform is a paint-time effect that never
+               participates in line-box/layout height calculations, so this
+               span still measures as the same 11px text everything else on
+               the line does. */
+            #wbtm_area .wbtm-bar-redesign .wtbm_field_label_suffix {
+                display:          inline-block;
+                transform:        scale(.82);
+                transform-origin: left center;
+                font-weight:      600;
+                color:            #999;
+            }
 
             /* ── Icon + value row ────────────────────────────────── */
             /* wbtm.css sets .wbtm_search_area .marker i { position: absolute; left: 10px }
@@ -178,13 +240,85 @@
                We reset both here so the flex gap controls spacing instead. */
             #wbtm_area .wbtm-bar-redesign .marker,
             #wbtm_area .wbtm-bar-redesign .calendar {
-                position:    static !important;  /* override position:relative used as absolute-icon parent */
                 display:     flex !important;
                 align-items: center !important;
                 gap:         7px !important;
                 margin-top:  5px;
                 font-size:   15px;
                 color:       #1a1a1a;
+            }
+            /* .calendar never receives the loading spinner below, so it stays
+               static; .marker does (wbtm_plugin_global.js's wbtm_loader_xs()
+               appends it into "From"/"To"'s own .marker while the city list
+               loads via AJAX), so it needs to be ITS positioning context.
+               gap trimmed 7px->5px: a selected date's rendered text (e.g.
+               "Wed 26 Aug , 2026") can come out 1-2px wider than the field's
+               available width depending on which digits appear (proportional
+               fonts render "2"/"6"/"8" wider than "1"), clipping the last
+               character -- freeing 2px here from the icon gap (which has
+               plenty of slack) covers it without touching font-size/weight. */
+            #wbtm_area .wbtm-bar-redesign .calendar {
+                gap:      5px !important;
+                position: static !important;
+            }
+            /* Was `position:static !important` here too (to defeat wbtm.css's
+               absolute-icon layout, same as .calendar above) -- but the
+               loading spinner (div.wbtm_loader_xs, itself `position:absolute;
+               inset:0`) needs an actually-positioned ancestor to size/center
+               itself against. With none available, it escaped all the way up
+               to .wtbm_inputList (the next positioned ancestor, the whole
+               pill-shaped field) and rendered centred over the entire field
+               instead of just this icon+input row -- looking off-centre and
+               oversized relative to what's visibly its container. Icons
+               inside stay pinned by their own `position:static !important`
+               below regardless, so switching this to `relative` doesn't
+               reintroduce the old absolute-icon behaviour. */
+            #wbtm_area .wbtm-bar-redesign .marker {
+                position: relative !important;
+            }
+            /* Loading spinner (assets/global/wbtm_global.js's wbtm_loader_xs()):
+               fills .marker exactly and centres the icon within it now that
+               .marker is its real positioning context. Retinted to the site's
+               accent instead of the plugin's hard-coded default, and its dark
+               `#0003` overlay dropped in favour of a plain white one so it
+               reads as "this field is loading", not "this field is disabled". */
+            #wbtm_area .wbtm-bar-redesign div.wbtm_loader_xs {
+                display:         flex !important;
+                align-items:     center !important;
+                justify-content: center !important;
+                background:      rgba(255,255,255,.85) !important;
+                border-radius:   999px;
+            }
+            /* The plugin's own icon (Font Awesome's fa-spinner glyph + its
+               fa-pulse class) animates as a discrete 8-step "tick", not a
+               smooth rotation -- reads as choppy/dated. Hide the glyph
+               (::before is where FA actually draws it, per its own
+               `.fas:before{content:var(--fa)}`) and turn the element itself
+               into a plain CSS ring instead: a continuous linear rotation
+               reads as noticeably smoother, and it no longer depends on an
+               icon font's own glyph metrics at all (recurring source of
+               centering bugs elsewhere in this file). */
+            #wbtm_area .wbtm-bar-redesign div.wbtm_loader_xs .fa-spinner {
+                display:       inline-block !important;
+                width:         18px !important;
+                height:        18px !important;
+                min-width:     18px !important;
+                max-width:     18px !important;
+                box-sizing:    border-box !important;
+                flex-shrink:   0 !important;
+                border:        2px solid #f4e0d8 !important;
+                border:        2px solid color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 15%, #ffffff) !important;
+                border-top-color: var(--wbtm_color_theme, #e8510f) !important;
+                border-radius: 50% !important;
+                animation:     wbtm-field-spin .7s linear infinite !important;
+                font-size:     0 !important;
+                color:         transparent !important;
+            }
+            #wbtm_area .wbtm-bar-redesign div.wbtm_loader_xs .fa-spinner::before {
+                content: none !important;
+            }
+            @keyframes wbtm-field-spin {
+                to { transform: rotate(360deg); }
             }
             #wbtm_area .wbtm-bar-redesign .marker > i,
             #wbtm_area .wbtm-bar-redesign .calendar > i {
@@ -217,18 +351,47 @@
                 min-width:    0;
                 cursor:       pointer;
             }
+            /* Extra safety margin on top of the gap trim above: different
+               selected dates land on different digits/month abbreviations
+               with slightly different total widths, so shave a fraction off
+               letter-spacing here too rather than tune the gap to one exact
+               date string. Small enough (-0.2px per character) not to read
+               as tightened text, comfortably covers the 1-2px this was
+               overflowing by. */
+            #wbtm_area .wbtm-bar-redesign .calendar .formControl {
+                letter-spacing: -0.2px;
+            }
             #wbtm_area .wbtm-bar-redesign .formControl::placeholder {
                 color:       #aaa !important;
                 font-weight: 400 !important;
             }
 
-            /* ── Swap toggle ⇄ (sits inline between From and To) ─── */
+            /* ── Swap toggle ⇄ (floats over the From/To divider) ───
+               Used to be a normal flex item with its own left/right margin,
+               which reserved a strip of dead space between it and each field
+               that neither side's own background (incl. :hover) ever
+               painted -- visible as a gap around the divider line, worse
+               once either field's hover grey stopped right at that margin.
+               Absolutely-centering it over the shared border removes that
+               reserved space entirely: the two fields now sit directly
+               adjacent with nothing between them but their own 1.5px
+               border, and the button is just an overlay on top of it. */
+            /* wbtm.css's own base rule for this exact selector (line ~1184)
+               sets `margin: 9px -4px` -- for an absolutely positioned
+               element, margin still offsets it from the top/left position
+               it's otherwise placed at, so that -4px horizontal margin was
+               shifting this button 4px left of the true centre even after
+               overriding top/left/transform here (this rule never touched
+               margin, so the legacy value kept applying). margin:0 below
+               neutralizes it. */
             #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle {
-                flex:            0 0 auto;
-                align-self:      center;
+                position:        absolute;
+                top:             50%;
+                left:            50%;
+                transform:       translate(-50%, -50%);
+                margin:          0;
                 width:           34px;
                 height:          34px;
-                margin:          0 2px;
                 border-radius:   50%;
                 background:      #fff;
                 border:          1.5px solid #dde1e7;
@@ -474,15 +637,24 @@
                 #wbtm_area .wbtm-bar-redesign .wtbm_inputList:last-child {
                     border-bottom: none;
                 }
-                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location {
-                    position: relative;
-                }
+                /* position:relative on .wbtm_input_start_end_location now comes from
+                   the base (non-media) rule above; re-position the toggle for the
+                   stacked layout -- right-aligned instead of centered, since From/To
+                   now stack as full-width rows rather than sitting side by side.
+                   assets/frontend/wbtm.css has its own older mobile rule for this
+                   same selector (`position:static!important; transform:rotate(90deg)
+                   !important; margin:4px auto!important`), written for the classic
+                   (non-"redesign") skin -- !important beats this block's higher
+                   selector specificity regardless of source order, so it was
+                   centering the button and rotating its icon instead of the
+                   right-aligned placement below. !important here to actually win. */
                 #wbtm_area .wbtm-bar-redesign .wbtm_search_location_toggle {
-                    position:  absolute;
-                    right:     14px;
-                    top:       50%;
-                    transform: translateY(-50%);
-                    margin:    0;
+                    position:  absolute !important;
+                    top:       50% !important;
+                    left:      auto !important;
+                    right:     14px !important;
+                    transform: translateY(-50%) !important;
+                    margin:    0 !important;
                 }
                 #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
                     padding: 10px;
@@ -567,6 +739,42 @@
                     $list.find('li.wbtm_city_no_result').addClass('wbtm_city_filtered_out');
                     $(this).addClass('wbtm_city_selected');
                 });
+
+                // Defensive fix for a reported one-time layout jump right after the
+                // first city selection: Select2 (mp_global's own `.wbtm_select2`
+                // widgets, initialized once for every matching element present at
+                // page load -- see wbtm_plugin_global.js) measures its own width
+                // from the element it's attached to; anything conditionally hidden
+                // at that moment measures as 0-width, and only self-corrects --
+                // with a visible reflow -- the first time it's actually revealed.
+                // Every later reveal reuses the already-correct measurement, which
+                // matches "jumps once, never again" exactly. Rather than wait for
+                // the user's own first open to trigger that correction, re-measure
+                // proactively the moment anything inside this search widget
+                // becomes visible, so the correction (if any) never coincides with
+                // an actual user interaction. No-op if this install's routes never
+                // use a `.wbtm_select2` field at all.
+                if (window.MutationObserver && $('.wbtm_select2').length) {
+                    var wbtmArea = document.getElementById('wbtm_area');
+                    if (wbtmArea) {
+                        var wbtmReflowObserver = new MutationObserver(function (mutations) {
+                            mutations.forEach(function (m) {
+                                var el = m.target;
+                                if (!el || el.offsetParent === null) { return; } // still hidden
+                                $(el).find('.wbtm_select2').add($(el).filter('.wbtm_select2')).each(function () {
+                                    if ($(this).data('select2')) {
+                                        $(this).select2('destroy');
+                                        $(this).select2({});
+                                    }
+                                });
+                            });
+                        });
+                        wbtmReflowObserver.observe(wbtmArea, { attributes: true, attributeFilter: ['style', 'class'], subtree: true });
+                        // Only the first reveal needs catching; stop watching well
+                        // after the page has settled so this never runs indefinitely.
+                        setTimeout(function () { wbtmReflowObserver.disconnect(); }, 60000);
+                    }
+                }
             });
             </script>
 

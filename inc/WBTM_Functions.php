@@ -2516,6 +2516,21 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                 $fd_operator = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_bus_operator', 'show' ) !== 'hide';
                 $fd_boarding = WBTM_Global_Function::get_settings( 'wbtm_frontend_display_settings', 'show_filter_boarding_point', 'show' ) !== 'hide';
                 ?>
+                <?php
+                // Collapsible "Filters" bar: assets/frontend/wtbm_search.css already ships
+                // the full styling for `.wbtm-mobile-filter-toggle` (desktop collapse-to-rail
+                // AND mobile results-first collapse) and assets/frontend/wbtm.js already
+                // wires its click handler -- but no template ever rendered the button
+                // itself, so both CSS rules that hide the panel by default (mobile, and
+                // desktop once collapsed) had no way to ever be reversed.
+                ?>
+                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
+                    <span class="wbtm-mobile-filter-toggle-label">
+                        <i class="fas fa-filter" aria-hidden="true"></i>
+                        <?php echo esc_html(WBTM_Translations::text_filter()); ?>
+                    </span>
+                    <span class="wbtm-mobile-filter-caret"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
+                </button>
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_left_filter_title_holder">
                         <div class="wbtm_bus_filter_title">
@@ -2701,11 +2716,18 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 
 
             public static function single_bus_details_popup_tabs( $bus_id, $popup_tabs ) {
-                ob_start(); 
+                ob_start();
+                $popup_tab_icons = array(
+                    'wbtm_bus_details'          => 'fa-circle-info',
+                    'wbtm_bus_boarding_dropping' => 'fa-location-dot',
+                    'wbtm_bus_image'            => 'fa-images',
+                    'wbtm_bus_term_condition'   => 'fa-file-contract',
+                    'wbtm_bus_feature'          => 'fa-star',
+                );
 			?>
                 <div class="wbtm_bus_popup_links">
 					<?php foreach ( $popup_tabs as $key => $tab ):?>
-						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo esc_attr( $bus_id ); ?>"><?php echo esc_html( $tab );?></span>
+						<span class="wbtm_bus_popup_link" id="<?php echo esc_attr( $key );?>"  data-post-id="<?php echo esc_attr( $bus_id ); ?>"><?php if ( isset( $popup_tab_icons[ $key ] ) ) { ?><i class="fas <?php echo esc_attr( $popup_tab_icons[ $key ] ); ?>" aria-hidden="true"></i> <?php } ?><?php echo esc_html( $tab );?></span>
 					<?php endforeach ?>
                 </div>
             <?php

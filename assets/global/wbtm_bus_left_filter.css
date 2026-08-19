@@ -10,55 +10,44 @@
 }
 
 .wbtm_bus_left_filter_holder {
-    width: 180px;
-    background: #fffafa;
-    border: 1px solid #d1cacaee;
-    border-radius:5px;
+    width: 270px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
     margin-top: 10px;
     display: block;
     float: left;
     margin-right: 10px;
     position: relative;
     height: auto;
-    padding-left: 5px;
+    padding-left: 0;
 }
-.wbtm_bus_toggle-header{
-    text-align: left;
-    font-weight: normal;
-    font-size: 15px;
-    color: #e90c57;
-    font-weight: 500;
-    padding: 5px 1px;
+/* This selector used a leading "." for years even though the element it
+   targets (wbtm_left_filter_disppaly() in WBTM_Functions.php) only ever
+   carries id="wbtm_bus_filter-options" -- it never matched anything, so the
+   filter panel rendered with no card treatment at all: no background,
+   shadow, radius or padding, just the bare title row and checkboxes
+   floating on the page background. */
+#wbtm_bus_filter-options {
+    display: block;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    border: 1px solid var(--wbtm_color_border, #ddd);
+    border-radius: 20px;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+    padding: 20px 18px;
+    position: sticky;
+    top: 20px;
 }
-.wbtm_bus_left_filter_checkbox_holder{
-    padding: 3px;
-}
-.wbtm_search_result_holder{
-    display: flex;
-    width: 100%;
-}
-.wbtm_bus_filter_reset_text{
-    background-color: #f13f7c;
-    padding: 2px 7px;
-    color: #F6F6F6;
-    border-radius: 2px;
-}
-.wbtm_bus_filter_reset_text:hover{
-    background-color: #eb0452;
-    color: #e7e7e7;
-}
-.wbtm_bus_filter_title_text{
-    font-size: 17px;
-    font-weight: bold;
-}
-.wbtm_bus_filter-options{
-    display: flex;
-}
-
 .wbtm_left_filter_title_holder{
     display: flex;
-    padding-top: 8px;
-    flex-direction: row;
+    align-items: center;
+    padding: 0 0 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f0f2f5;
+}
+.wbtm_bus_filter_title_text{
+    font-size: 18px;
+    font-weight: 800;
 }
 .wbtm_bus_filter_title{
     flex: 1;
@@ -70,6 +59,59 @@
     text-align: right;
     padding-right: 5px;
     cursor: pointer;
+}
+.wbtm_bus_filter_reset_text{
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color .15s;
+}
+.wbtm_bus_filter_reset_text:hover{
+    background: transparent;
+    color: var(--wbtm_color_theme, #e8510f);
+}
+.wbtm_left_filter_element_holder {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.wbtm_bus_toggle-header{
+    display: block;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--wbtm_color_theme, #e8510f);
+    padding: 0 0 10px;
+}
+.wbtm_bus_left_filter_checkbox_holder{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 0;
+    font-size: 14px;
+    line-height: 1.3;
+    cursor: pointer;
+}
+.wbtm_bus_left_filter_checkbox_holder input[type="checkbox"]{
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+    accent-color: var(--wbtm_color_theme, #e8510f);
+    flex-shrink: 0;
+    margin: 0;
+    cursor: pointer;
+}
+.wbtm_search_result_holder{
+    display: flex;
+    width: 100%;
+    gap: 24px;
+    align-items: flex-start;
 }
 
 
@@ -197,18 +239,20 @@
     background: #ffe9e9;
 }
 
-@media screen and (max-width: 520px) {
+/* Below this, the list area alone is narrower than the bus-card row's own
+   minimum width (see wbtm.css's flix-style breakpoints), so the filter rail
+   needs to drop above the list well before the 767px mobile stack. */
+@media screen and (max-width: 1099px) {
     .wbtm_search_result_holder{
         flex-direction: column;
+        gap: 12px;
     }
-    .wbtm_left_filter_element_holder{
-        /*display: flex;
-        gap: 5px;*/
-    }
-
     .wbtm_bus_left_filter_holder{
-        flex: 1;
+        flex: none;
         width: 100%;
+    }
+    #wbtm_bus_filter-options{
+        position: static;
     }
     .wbtm_bus_list_area{
         flex: 1;
