@@ -2524,13 +2524,21 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                 // itself, so both CSS rules that hide the panel by default (mobile, and
                 // desktop once collapsed) had no way to ever be reversed.
                 ?>
-                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
+                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true" aria-label="<?php esc_attr_e('Toggle filters', 'bus-ticket-booking-with-seat-reservation'); ?>">
                     <span class="wbtm-mobile-filter-toggle-label">
                         <i class="fas fa-filter" aria-hidden="true"></i>
                         <?php echo esc_html(WBTM_Translations::text_filter()); ?>
                     </span>
-                    <span class="wbtm-mobile-filter-caret"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
+                    <span class="wbtm-mobile-filter-caret"><i class="fas fa-chevron-left" aria-hidden="true"></i></span>
                 </button>
+                <?php
+                // .wbtm-filter-slide clips this panel as the holder collapses,
+                // while the panel keeps a fixed width (wtbm_search.css) so it
+                // never reflows/squishes mid-animation. Kept separate from the
+                // button above so the button -- positioned on the holder --
+                // never gets clipped along with it.
+                ?>
+                <div class="wbtm-filter-slide">
                 <div id="wbtm_bus_filter-options">
                     <div class="wbtm_left_filter_title_holder">
                         <div class="wbtm_bus_filter_title">
@@ -2605,6 +2613,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                         <?php }?>
                     </div>
                 </div>
+                </div><!-- /.wbtm-filter-slide -->
                 <?php
             }
             

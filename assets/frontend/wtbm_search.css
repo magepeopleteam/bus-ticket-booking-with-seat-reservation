@@ -541,8 +541,19 @@
    The toggle button is rendered by both search_result.php and
    search_result_flix.php inside .wbtm_bus_left_filter_holder.
    It is available on desktop as well as mobile so customers can give the
-   result cards (especially their photos) the full content width. */
-.wbtm-mobile-filter-toggle {
+   result cards (especially their photos) the full content width.
+
+   Selectors below are qualified with the .wbtm_bus_left_filter_holder
+   ancestor (rather than just `.wbtm-mobile-filter-toggle`) because
+   mp_global/assets/mp_style/wbtm_plugin_global.css ships
+   `.wbtm_style button { position: relative; border: none; border-radius:
+   var(--wbtm_dbr); font-weight: var(--wbtm_fw-medium); text-transform:
+   capitalize; ... }` at 0,1,1 specificity -- one class + one element beats
+   this button's plain 0,1,0 class selector regardless of load order, so
+   without the extra ancestor class every one of those properties (position
+   included, which silently broke this button being position:absolute)
+   quietly lost to the theme-wide defaults. */
+.wbtm_bus_left_filter_holder .wbtm-mobile-filter-toggle {
     display: flex;
     /* Modern styling kept OUT of the mobile media query so the button looks good
        wherever it is shown (it also appears on the desktop results header). Only
@@ -551,26 +562,29 @@
     justify-content: space-between;
     gap: 10px;
     background: #fff;
-    border: 1px solid #e4e7ec;
+    /* #e4e7ec (previous) sits almost flush against this white background
+       and the page's own light-gray backdrop, so the button read as a
+       borderless blob -- darkened it and added a visible ring shadow
+       alongside the soft drop shadow so the edge stays legible over both
+       plain backgrounds and (for the collapsed-rail handle) bus photos. */
+    border: 1px solid #b7bec8;
     border-radius: 12px;
     padding: 11px 16px;
     font-size: 14px;
     font-weight: 700;
     color: #101828;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06), 0 0 0 1px rgba(16, 24, 40, .05);
     transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
     width: 100%;
     margin-bottom: 10px;
 }
-.wbtm-mobile-filter-toggle:hover {
-    border-color: var(--wbtm_color_theme, #e8510f);
-    box-shadow: 0 4px 12px rgba(16, 24, 40, .10);
-}
-/* The generic `.wbtm_style button:focus`/`:hover` rule (wbtm_plugin_global.css)
-   paints every plain <button> in the plugin solid theme-orange on focus -- this
-   toggle stays a <button> for a11y, so clicking it (which focuses it) flipped it
-   to a solid orange pill instead of keeping the white/outline look above. */
+/* The generic `.wbtm_style button:hover`/`:focus` rule (wbtm_plugin_global.css)
+   is `.wbtm_style button:hover` -- a class + element + pseudo-class selector
+   that out-specifies the plain `.wbtm-mobile-filter-toggle:hover` below, so it
+   always won regardless of stylesheet load order and painted the toggle solid
+   theme-orange on hover/focus/active instead of keeping the white/outline look. */
+.wbtm-mobile-filter-toggle:hover,
 .wbtm-mobile-filter-toggle:focus,
 .wbtm-mobile-filter-toggle:active {
     background: #fff !important;
@@ -579,12 +593,15 @@
     border-color: var(--wbtm_color_theme, #e8510f);
     box-shadow: 0 4px 12px rgba(16, 24, 40, .10);
 }
+.wbtm-mobile-filter-toggle:hover .wbtm-mobile-filter-toggle-label,
 .wbtm-mobile-filter-toggle:focus .wbtm-mobile-filter-toggle-label,
 .wbtm-mobile-filter-toggle:active .wbtm-mobile-filter-toggle-label,
+.wbtm-mobile-filter-toggle:hover span,
 .wbtm-mobile-filter-toggle:focus span,
 .wbtm-mobile-filter-toggle:active span {
     color: #101828 !important;
 }
+.wbtm-mobile-filter-toggle:hover .wbtm-mobile-filter-toggle-label i,
 .wbtm-mobile-filter-toggle:focus .wbtm-mobile-filter-toggle-label i,
 .wbtm-mobile-filter-toggle:active .wbtm-mobile-filter-toggle-label i {
     color: var(--wbtm_color_theme, #e8510f) !important;
@@ -598,25 +615,140 @@
 .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label svg {
     color: var(--wbtm_color_theme, #e8510f);
 }
+/* Direction is now conveyed by swapping the chevron glyph itself (wbtm.js
+   syncFilterToggleState), not by rotating it, so left/right and up/down both
+   read correctly instead of a down-arrow spinning to look like an up-arrow. */
 .wbtm-mobile-filter-caret {
     font-size: 12px;
     color: #98a2b3;
-    transition: transform .2s ease;
-}
-.wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
-    transform: rotate(180deg);
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 1100px) {
+    /* 1100px, not 768px: search_result.php's own layout stacks the sidebar
+       full-width above the list from 768-1099 (its "no room for a 270px
+       rail" tablet breakpoint -- see the max-width:1099px block below,
+       which covers that range with the same accordion-style toggle as true
+       mobile). Only true side-by-side desktop gets the sliding rail. */
+
+    /* The toggle becomes a small handle pinned to the vertical middle of
+       the sidebar's right edge (a common "collapse this panel" affordance)
+       instead of a full-width bar at the top. It sits directly on
+       .wbtm_bus_left_filter_holder (position:relative, see
+       wbtm_bus_left_filter.css), which is never given overflow:hidden, so
+       the handle stays visible/clickable through the whole collapse --
+       only .wbtm-filter-slide below (a separate element) gets clipped.
+
+       Centering uses top:0/bottom:0/margin:auto rather than top:50% +
+       translateY(-50%): the holder's height is "auto" (driven by its
+       content), and per the CSS2 spec a percentage top/bottom resolves
+       to 0 against an auto-height containing block -- so top:50% actually
+       pins the handle to the holder's *top* edge, not its middle. The
+       inset+auto-margin form doesn't hit that rule; it centers correctly
+       against whatever height the holder ends up with. */
+    .wbtm_bus_left_filter_holder .wbtm-mobile-filter-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -14px;
+        margin: auto 0;
+        z-index: 5;
+        width: 28px;
+        height: 56px;
+        padding: 0;
+        /* Sharp on the left (the edge it's attached to, flush against the
+           rail indicator below), rounded only on the right, so it reads as
+           a tab/handle rather than a free-floating pill. */
+        border-radius: 0 10px 10px 0;
+        justify-content: center;
+        /* This handle floats over whatever's beside it -- a bus photo when
+           collapsed, not just plain page background -- so it needs a more
+           visible edge than the base rule's shadow gives it. */
+        box-shadow: 0 2px 8px rgba(16, 24, 40, .18), 0 0 0 1px rgba(16, 24, 40, .06);
+    }
+    .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
+        display: none;
+    }
+    .wbtm-mobile-filter-caret {
+        font-size: 13px;
+    }
+
+    /* Collapsed state repositions the handle from `right:-14px` (straddling
+       the holder's edge, fine while expanded) to `left:14px` -- when
+       collapsed, the holder's own box is 0-width, and it sits inside two
+       ancestors (.wbtm_departure_bus_lists_holder, ._ovHidden.wbtm_search_result)
+       that are both `overflow:hidden` starting at that same x position. Any
+       part of the handle placed via a *negative* offset from the holder's
+       edge (i.e. to the left of it, which `right:-14px` does when width is
+       0) renders past those ancestors' clip boundary and is silently cut
+       off -- it was never actually fully visible, just visible ENOUGH
+       (its right half, holding the chevron) that a near-invisible border
+       didn't reveal the flat-cut left edge. `left:14px` keeps the whole
+       handle to the *right* of the boundary instead, inside the clip. */
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed .wbtm-mobile-filter-toggle {
+        right: auto;
+        left: 14px;
+    }
+
+    /* Collapsed-rail indicator: a slim accent bar spanning the holder's
+       full height, so the handle reads as a grip on a hidden panel of that
+       height rather than a lone floating button with no sense of what's
+       behind it. Always present (so its opacity transitions instead of
+       popping), just invisible until collapsed.
+       Positioned with `left`, not `right`, for the same clipping reason as
+       the handle above -- and left:13px (not 14px) so its right edge (at
+       1px wide) still lands exactly at left:14px, flush against the
+       handle's left edge. */
+    .wbtm_bus_left_filter_holder::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 13px;
+        width: 1px;
+        background: var(--wbtm_color_theme, #e8510f);
+        opacity: 0;
+        transition: opacity .3s ease;
+        pointer-events: none;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed::after {
+        opacity: 0.3;
+    }
+
+    /* The filter card/panel gets a fixed width -- instead of the auto width
+       (100% of its parent) it normally has -- so it never reflows/rewraps
+       as .wbtm-filter-slide's width is squeezed toward 0 below; it just
+       gets progressively clipped, keeping its own (and so the holder's)
+       height constant through the whole animation. */
+    .wbtm-filter-card,
+    #wbtm_bus_filter-options {
+        width: 270px;
+    }
+
+    /* Full collapse: the sidebar itself shrinks to 0 (not a partial rail),
+       so the bus list gets the entire freed width. */
     .wbtm_bus_left_filter_holder.wbtm-filter-collapsed {
-        flex: 0 0 150px !important;
-        width: 150px !important;
+        flex: 0 0 0 !important;
+        width: 0 !important;
+        margin-right: 0 !important;
     }
-    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed > *:not(.wbtm-mobile-filter-toggle) {
-        display: none !important;
+    /* .wbtm-filter-slide is what actually shrinks and clips (it tracks the
+       collapsing holder's width) -- scoped to the collapsed state so
+       .wbtm-filter-card's position:sticky (while expanded) isn't disabled
+       by an overflow:hidden ancestor at all times. */
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed .wbtm-filter-slide {
+        overflow: hidden;
     }
-    .wbtm_bus_left_filter_holder:not(.wbtm-filter-collapsed) .wbtm-mobile-filter-caret {
-        transform: rotate(180deg);
+    /* The flix template (search_result_flix.php) sets a fixed inline width on
+       .wbtm_bus_list_area (calc(100% - 280px), sized for the expanded 270px
+       rail) because its layout is float-based, not flex, so the list area
+       never reclaims the space the rail gives up on collapse. The default
+       template's .wbtm_bus_list_area is flex:1 and doesn't need this, but the
+       rule is harmless there since flex-basis, not width, drives its size.
+       The left padding keeps cards clear of the handle, which now overlaps
+       ~14px into the list area at right:-14px of a 0-width holder. */
+    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed ~ .wbtm_bus_list_area {
+        width: 100% !important;
+        padding-left: 24px;
     }
 }
 
@@ -631,6 +763,17 @@
 .wbtm-list-count {
     font-size: 14px;
     color: #475467;
+    line-height: 1; /* see the matching rule in search_result.php's inline
+                        <style> for why -- keeps this centered on its own
+                        glyph height instead of the browser's default
+                        line-height, which doesn't line up with the
+                        dropdown's box the same way. */
+}
+/* Only actually a line break on the mobile rule below -- on desktop, where
+   this text has plenty of room to stay on one line, forcing a break here
+   too would just make it wrap earlier than it needs to. */
+.wbtm-list-count-break {
+    display: none;
 }
 .wbtm-list-sort {
     display: flex;
@@ -638,12 +781,49 @@
     gap: 8px;
     white-space: nowrap;
 }
-.wbtm-sort-select {
+/* Same specificity fix as search_result.php's inline copy of this rule:
+   mp_global/assets/mp_style/wbtm_plugin_global.css's `div.wbtm_style
+   select.formControl` (0,2,2) otherwise beats a plain `.wbtm-sort-select`
+   (0,1,0) and silently strips the custom border/radius/background below
+   back to that generic input look. */
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select {
     min-width: 150px;
+    height: 38px;
+    padding: 0 34px 0 14px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #101828;
+    cursor: pointer;
+    line-height: 36px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e8510f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select:hover {
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .1);
+}
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select:focus {
+    outline: none;
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 0 0 3px rgba(232, 81, 15, .15);
 }
 
-@media only screen and (max-width: 767px) {
-    /* Stack the results page vertically, full width — the flix layout sets an
+@media only screen and (max-width: 1099px) {
+    /* 1099px, not 767px: this also covers the 768-1099 tablet range where
+       search_result.php's own layout already stacks the sidebar full-width
+       above the list (see wbtm.js's isMobile check) -- it needs the same
+       accordion-style toggle as true mobile, since there's no side-by-side
+       rail to collapse there.
+       Stack the results page vertically, full width — the flix layout sets an
        inline width (calc(100% - 180px)) on the list area, hence !important. */
     .wbtm_search_result_holder {
         flex-direction: column;
@@ -659,7 +839,7 @@
     }
 
     /* Hamburger "Filters" bar */
-    .wbtm-mobile-filter-toggle {
+    .wbtm_bus_left_filter_holder .wbtm-mobile-filter-toggle {
         align-items: center;
         justify-content: space-between;
         width: 100%;
@@ -685,10 +865,6 @@
     .wbtm-mobile-filter-caret {
         font-size: 12px;
         color: #666;
-        transition: transform .2s ease;
-    }
-    .wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-mobile-filter-caret {
-        transform: rotate(180deg);
     }
 
     /* Collapsed by default: only the toggle bar shows, so the first bus card
@@ -701,8 +877,28 @@
         margin-top: 10px;
     }
 
+    /* Same fix as search_result.php's inline copy of this rule: stay in one
+       row, shrinking the dropdown's own min-width (150px, desktop's) is
+       what actually makes room -- flex-wrap:wrap just let it fall onto a
+       second line instead of fitting it. */
     .wbtm-list-header {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+    }
+    /* Break at a sensible point ("4 buses available for" / "August 21")
+       instead of leaving it to wrap wherever the text happens to run out
+       of room next to the (now width-capped) sort dropdown, which could
+       land mid-date ("August" / "21"). line-height opened back up from the
+       base rule's 1 (tuned for a single line) so the two lines here don't
+       crowd each other. */
+    .wbtm-list-count {
+        line-height: 1.4;
+    }
+    .wbtm-list-count-break {
+        display: block;
+    }
+    .wbtm-list-header .wbtm-list-sort select.wbtm-sort-select {
+        min-width: 0;
+        width: 130px;
     }
 }
 

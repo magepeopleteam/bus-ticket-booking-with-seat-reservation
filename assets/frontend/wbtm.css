@@ -1667,7 +1667,11 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     margin-top: 0;
     margin-bottom: 15px;
     background-color: #fff;
-    border-radius: 12px;
+    /* Matches .wbtm-card-wrap's 24px (templates/layout/search_result.php) --
+       this element is that card's own wrapper, so a smaller radius here
+       left its squarer corner peeking out past the card's more rounded
+       one. */
+    border-radius: 24px;
     display: flex;
     justify-content: space-between;
     gap: 0;
@@ -1916,25 +1920,51 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 }
 
 /* Tablet: the filter rail has already dropped above the list (see
-   wtbm_search.css), but the list area alone can still be narrower than the
-   5-column row's desktop minimum (130px photo + 210px route column + route
-   content + feature + price + gaps) -- that pushed the whole card past the
-   viewport edge. Shrink the photo/route/type sizes back to fit the tighter
-   track; below 768px the row switches to the 2-column stack instead. */
+   wtbm_search.css), but that still only left the list area ~500-540px wide
+   at the narrow end of this range -- nowhere near the desktop row's real
+   minimum (96px photo + 110px title + route-info's own min-content of
+   ~266px once its 90px-min duration badge and nowrap times are accounted
+   for + two more auto-sized columns for the feature/price badges + 3-4
+   column-gaps), which came to ~600px+. Shrinking a couple of those sizes
+   (the previous approach here) still left it short, so the feature/price
+   pair rendered past the card's own right edge, clipped mid-badge by an
+   ancestor's overflow:hidden.
+   Simplest fix that's actually guaranteed to fit: reuse the same 2-column
+   stack the max-width:768px block below already uses (photo, then title,
+   then route, full width each; feature + price share the last row) rather
+   than continuing to squeeze a single-row layout into a track that has no
+   real room for it. This range has more width to spare than true mobile
+   once stacked, so none of the max-width:768px block's font/gap shrinks
+   are needed here -- desktop sizing already fits comfortably. */
 @media (min-width: 768px) and (max-width: 1099px) {
   .wbtm-bus-flix-style_bus {
-    grid-template-columns: 96px minmax(110px, 150px) 1fr auto auto;
-    column-gap: 14px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    row-gap: 12px;
   }
   .wbtm-bus-flix-style_bus .wbtm-flix-photo {
-    height: 70px;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 150px;
   }
-  .wbtm-bus-flix-style .route .route-info .from h4,
-  .wbtm-bus-flix-style .route .route-info .to h4 {
-    font-size: 18px;
+  .wbtm-bus-flix-style .title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
   }
-  .wbtm-bus-flix-style .price h4 {
-    font-size: 18px;
+  .wbtm-bus-flix-style .route {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+  }
+  .wbtm-bus-flix-style .feature {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .wbtm-bus-flix-style .price {
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: 6px;
   }
 }
 
@@ -2156,20 +2186,52 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm_bus_info_details_holder {
     width: 100% !important;
   }
-  /* Route info container stacks */
+  /* Route info: date block + cities stay in one row on mobile too (the
+     base rule already sets this to display:flex with no flex-direction
+     override, i.e. row -- flex-direction:column here is what forced it
+     onto two stacked lines). The bus-icon-and-dashed-line piece between
+     the cities is still dropped to leave room for it in a phone-width
+     row; the date block and both cities keep their own font/gap sizes
+     from the base rules, which is tight but fits down to ~340px wide. */
   .wbtm_search_route_container {
-    flex-direction: column !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+  .wbtm_search_route_return_date {
+    padding-right: 12px !important;
   }
   .wbtm_search_route_cities_wrapper {
-    width: 100% !important;
-    flex-wrap: wrap;
+    flex: 1 !important;
+    /* mp_global/assets/mp_style/wbtm_plugin_global.css ships a generic
+       `.wbtm_style [class*="_wrap"] { flex-wrap: wrap; }` utility-class
+       rule -- an attribute selector matching any class *containing*
+       "_wrap" -- which also matches this element's actual name, "...
+       _cities_wrapper", by accident. With no rule anywhere setting this
+       back to nowrap, that's what was actually stacking Paris/Berlin onto
+       two lines instead of the icon-gap sizing above being too tight. */
+    flex-wrap: nowrap !important;
   }
+  /* Keep a plain dashed connector between the two cities instead of
+     dropping it outright -- just without the 36px bus-icon circle (base
+     rule's ::before/::after leave a 40px gap in the middle sized for it),
+     which is too wide to also fit on a phone-width row. Both dashes
+     stretch to meet in the middle instead. */
   .wbtm_search_route_icon_wrapper {
+    display: flex !important;
+    flex: 0 1 20px !important;
+    padding: 0 !important;
+  }
+  .wbtm_search_route_icon_wrapper::before,
+  .wbtm_search_route_icon_wrapper::after {
+    width: 50% !important;
+  }
+  .wbtm_search_route_bus_icon {
     display: none !important;
   }
   .wbtm_search_route_city_section,
   .wbtm_search_route_city_section_right {
-    width: 48% !important;
+    width: 44% !important;
     padding: 6px !important;
   }
   /* Bus info row stacks vertically */
@@ -2193,30 +2255,67 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
   /* Route display in flix-style: the 5-column strip collapses to 2 columns
      -- photo and title/route span both, feature and price share the last
-     row side by side (seats on the left, price on the right). */
+     row side by side (seats on the left, price on the right).
+     Every child below also needs its OWN grid-row set explicitly: the
+     desktop rules above give .wbtm-flix-photo/.title/.route a `grid-row:
+     1 / span 2` and .feature/.price `grid-row: 1` / `grid-row: 2`
+     respectively, none of which this query used to override -- so on
+     mobile all five kept those desktop row assignments while only their
+     *columns* changed, and every one of them landed back in rows 1-2,
+     rendering stacked directly on top of each other (times and price
+     text smeared across the photo) instead of the five stacked rows this
+     comment describes. .price was also left at `grid-column: 1`, the same
+     column as .feature, instead of column 2 -- so even the "side by side"
+     pair overlapped each other too. */
   .wbtm-bus-flix-style_bus {
     grid-template-columns: 1fr 1fr !important;
-    grid-template-rows: auto auto auto !important;
+    grid-template-rows: auto auto auto auto !important;
     row-gap: 12px !important;
   }
   .wbtm-bus-flix-style_bus .wbtm-flix-photo {
     grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
     height: 150px !important;
   }
-  .wbtm-bus-flix-style .title,
+  .wbtm-bus-flix-style .title {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+  }
   .wbtm-bus-flix-style .route {
     grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
     width: 100% !important;
   }
   .wbtm-bus-flix-style .feature {
     grid-column: 1 !important;
+    grid-row: 4 !important;
   }
   .wbtm-bus-flix-style .price {
-    grid-column: 1 !important;
+    grid-column: 2 !important;
+    grid-row: 4 !important;
     margin-top: 6px;
   }
   .wbtm-bus-flix-style .wbtm_bus_details_tabs_holder {
     justify-content: space-between;
+  }
+  /* .route-info's desktop sizing (22px nowrap times, 18px gaps, a 90px-min
+     duration badge) is tuned for the 1fr third column of a 4-column desktop
+     grid, easily 300px+ wide. Mobile only ever shrunk the *card's* padding
+     and grid — never these — so at anything near 320-360px wide "10:30 pm"
+     had nowhere to go and ran off the edge of the viewport, clipped to
+     "10:3". Shrinking the font, gap and badge here brings the row's total
+     width back under what a narrow phone actually has. */
+  .wbtm-bus-flix-style .route .route-info {
+    gap: 8px;
+  }
+  .wbtm-bus-flix-style .route .route-info .from h4,
+  .wbtm-bus-flix-style .route .route-info .to h4 {
+    font-size: 17px !important;
+  }
+  .wbtm-bus-flix-style .route .route-info .duration {
+    min-width: 68px;
+    font-size: 11px;
   }
   /* Date-route header wraps */
   .wbtm_search_result .wbtm-date-route,
@@ -3393,6 +3492,17 @@ table.wbtm_totals .wbtm_sub_total {
 }
 .wbtm_summary_preview_book_now:disabled:hover {
   filter: none;
+}
+/* wbtm_set_loading_button_state() (assets/global/wbtm_global.js) disables
+   this button while its click is in flight, same attribute as "can't
+   submit yet" above -- but greying it out mid-submit reads as "this
+   stopped working", not "this is working on it". Keep the normal
+   theme-color look (with the spinner riding along next to the text)
+   specifically while .wbtm_is_loading is the reason it's disabled. */
+.wbtm_summary_preview_book_now.wbtm_is_loading:disabled {
+  background: var(--wbtm_color_theme);
+  color: #fff;
+  cursor: wait;
 }
 .wbtm_booking_summary_note {
   display: flex;

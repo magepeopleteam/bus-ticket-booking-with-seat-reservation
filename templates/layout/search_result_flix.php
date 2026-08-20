@@ -161,6 +161,7 @@ if (sizeof($bus_ids) > 0) {
             <div class="wbtm-list-count">
                 <strong><?php echo esc_html(count($bus_data)); ?></strong>
                 <?php echo esc_html__('buses available for', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <br class="wbtm-list-count-break">
                 <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
             </div>
             <?php if ($wbtm_fd_sort) : ?>

@@ -3,27 +3,32 @@
 	"use strict";
 
 	let wbtm_bus_start_end = '';
+	// Turns the magnifying-glass icon into a spinner in place -- the
+	// button's own "Search" text stays put instead of flipping to
+	// data-loading-text's "Searching...". This toggles a class on the SAME
+	// <span> (fas fa-search mR_xs) rather than swapping in a new element:
+	// mR_xs contributes a margin-right the button's layout counts on, and a
+	// replacement span that didn't carry it shrank the whole button by that
+	// margin every time the spinner showed. Keeping the original element
+	// means every class it already carries (spacing included) just stays.
+	// The spinner itself is the same CSS ring used for the "From"/"To"
+	// fields' own AJAX loading state (search_form.php's inline <style>,
+	// div.wbtm_loader_xs .fa-spinner rule), not Font Awesome's choppy
+	// fa-spin, kept visually consistent with the rest of the form.
 	function wbtm_set_search_button_state(parent, is_loading) {
 		parent.find('.wbtm_search_action_button:visible').each(function () {
 			let button = $(this);
-			let default_html = button.data('default-html');
-			let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.searching : 'Searching...');
-
-			if (!default_html) {
-				default_html = button.html();
-				button.data('default-html', default_html);
+			let icon = button.find('> .wbtm-search-btn-icon');
+			if (!icon.length) {
+				return;
 			}
 
 			if (is_loading) {
-				button
-					.addClass('wbtm_is_loading')
-					.prop('disabled', true)
-					.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_search_button_text">' + loading_text + '</span>');
+				button.addClass('wbtm_is_loading').prop('disabled', true);
+				icon.addClass('wbtm-search-btn-spinner');
 			} else {
-				button
-					.removeClass('wbtm_is_loading')
-					.prop('disabled', false)
-					.html(default_html);
+				button.removeClass('wbtm_is_loading').prop('disabled', false);
+				icon.removeClass('wbtm-search-btn-spinner');
 			}
 		});
 	}
@@ -359,25 +364,22 @@
 //====================================================================//
 (function ($) {
 	"use strict";
+	// Same treatment as the search button (assets/global/wbtm_global.js's
+	// wbtm_set_search_button_state): a plain CSS ring spinner prepended
+	// next to the button's own label, not Font Awesome's choppy fa-spin
+	// replacing the whole thing with "Loading...". The button keeps saying
+	// "Book Now" (or whatever its own text is) the entire time, and since
+	// nothing here touches that text, there's no default-html to snapshot
+	// and restore either -- just add/remove the spinner span.
 	function wbtm_set_loading_button_state(button, is_loading) {
-		let default_html = button.data('default-html');
-		let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.loading : 'Loading...');
-
-		if (!default_html) {
-			default_html = button.html();
-			button.data('default-html', default_html);
-		}
-
 		if (is_loading) {
-			button
-				.addClass('wbtm_is_loading')
-				.prop('disabled', true)
-				.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_loading_button_text">' + loading_text + '</span>');
+			button.addClass('wbtm_is_loading').prop('disabled', true);
+			if (!button.find('> .wbtm-loading-btn-spinner').length) {
+				button.prepend('<span class="wbtm-loading-btn-spinner" aria-hidden="true"></span>');
+			}
 		} else {
-			button
-				.removeClass('wbtm_is_loading')
-				.prop('disabled', false)
-				.html(default_html);
+			button.removeClass('wbtm_is_loading').prop('disabled', false);
+			button.find('> .wbtm-loading-btn-spinner').remove();
 		}
 	}
 

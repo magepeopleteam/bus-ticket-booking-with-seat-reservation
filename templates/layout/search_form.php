@@ -592,6 +592,35 @@
                 cursor:        pointer;
                 text-align:    center;
             }
+            /* Search-in-progress: assets/global/wbtm_global.js adds this
+               class onto the *same* fa-search <span> (rather than swapping
+               in a new element) while the button stays disabled -- the
+               button's own "Search" text is left alone rather than
+               flipping to data-loading-text's "Searching...". Staying on
+               the same element also means it keeps its own mR_xs margin,
+               so the button doesn't shrink by that margin every time this
+               shows (a replacement element without that class did). Same
+               ring technique as div.wbtm_loader_xs .fa-spinner below (a
+               plain CSS border-spin, not Font Awesome's choppy fa-spin),
+               just white-on-orange to sit on this button's solid
+               theme-color background instead of a white input field. */
+            #wbtm_area .wbtm-bar-redesign .wbtm-search-btn-icon.wbtm-search-btn-spinner {
+                display:       inline-block !important;
+                width:         15px !important;
+                height:        15px !important;
+                flex-shrink:   0 !important;
+                border:        2px solid rgba(255, 255, 255, .35) !important;
+                border-top-color: #fff !important;
+                border-radius: 50% !important;
+                animation:     wbtm-field-spin .7s linear infinite !important;
+                color:         transparent !important;
+            }
+            /* The fa-search glyph itself is drawn by this ::before (Font
+               Awesome's own `.fas:before{content:var(--fa)}`) -- hide it so
+               only the plain ring above shows. */
+            #wbtm_area .wbtm-bar-redesign .wbtm-search-btn-icon.wbtm-search-btn-spinner::before {
+                content: none !important;
+            }
 
             /* ── Tablet / narrow desktop: tighten, do not overflow ──
                The bar is flex-wrap:nowrap and each field carries 40px of
@@ -611,6 +640,42 @@
                 }
                 #wbtm_area .wbtm-bar-redesign .wtbm_bus_search_button_holder {
                     padding: 8px;
+                }
+                /* The 88px min-width above fits "Paris"/"Berlin" fine, but a
+                   rendered date like "Thu 27 Aug , 2026" needs real width
+                   regardless of font-size -- at 88px (56px of actual content
+                   room once this field's own 16px×2 padding comes off) it had
+                   nowhere to go and the input just clipped it to "Thu 27 Aug ,
+                   2", same as any text input showing more value than it's
+                   wide enough for. Journey/return date get their own larger
+                   floor instead of shrinking the text further; four fields at
+                   88+88+190+190 plus the search button still clears 768px.
+                   190, not the first-guess 150: this field's 32px padding and
+                   the .calendar icon+gap both come out of that width before
+                   the <input> itself sees any of it, and the rendered text
+                   (input.scrollWidth) needs ~124px on top of that -- 150px
+                   left the input just as clipped, only less so. */
+                #wbtm_area .wbtm-bar-redesign .wbtm_journey_date,
+                #wbtm_area .wbtm-bar-redesign .wbtm_return_date {
+                    min-width: 190px;
+                }
+                /* .wbtm_input_fields_holder's own two children --
+                   .wbtm_input_start_end_location (From+To) and
+                   .wbtm_input_start_end_date (Journey+Return) -- split its
+                   width 50/50 by default. That's fine when both pairs need
+                   similar room, but the date pair now has a 380px floor
+                   (2 × 190px above) against the location pair's ~176px, so
+                   an even split gave the date pair only ~295px -- 85px
+                   short -- and the return-date field spilled out of its
+                   half, over the search button beside it, instead of
+                   actually reflowing. Weighting the split toward the pair
+                   that needs more room fixes it without touching either
+                   field's own min-width again. */
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_date {
+                    flex: 1.6 1 0%;
+                }
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location {
+                    flex: 1 1 0%;
                 }
             }
 
@@ -849,11 +914,11 @@
                                     $ajax_btn_display = 'block';
                                 }?>
                                     <button type="submit" class="_themeButton_radius wbtm_bus_submit wbtm_search_action_button" data-loading-text="<?php echo esc_attr__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ); ?>" style="display: <?php echo esc_attr( $redirect_btn_display );?>">
-                                        <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
+                                        <span class="fas fa-search mR_xs wbtm-search-btn-icon"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
 <!--                                --><?php //} else { ?>
                                     <button type="button" class="_themeButton_radius get_wbtm_bus_list wbtm_search_action_button" data-loading-text="<?php echo esc_attr__( 'Searching...', 'bus-ticket-booking-with-seat-reservation' ); ?>" style=" display: <?php echo esc_attr( $ajax_btn_display ); ?>">
-                                        <span class="fas fa-search mR_xs"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
+                                        <span class="fas fa-search mR_xs wbtm-search-btn-icon"></span><?php echo esc_html( WBTM_Translations::text_search() ); ?>
                                     </button>
 <!--                                --><?php //} ?>
                             </div>

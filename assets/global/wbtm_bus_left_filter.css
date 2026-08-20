@@ -7,6 +7,10 @@
 
 .wbtm_bus_list_area{
     /*width: calc( 100% - 180px );*/
+    /* Matches .wbtm_bus_left_filter_holder's duration/easing below so both
+       sides of the collapse move as one continuous motion instead of the
+       list "catching up" after the rail finishes. */
+    transition: width .45s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .wbtm_bus_left_filter_holder {
@@ -21,6 +25,14 @@
     position: relative;
     height: auto;
     padding-left: 0;
+    /* Collapse/expand slides the rail's right edge left/right instead of
+       snapping, so it reads as a drawer closing sideways, not content
+       popping away. ease-in-out (slow start, fast middle, slow finish)
+       reads smoother than the plain "ease" this replaced, which sped away
+       instantly and only eased into the stop. */
+    transition: width .45s cubic-bezier(0.65, 0, 0.35, 1),
+                flex-basis .45s cubic-bezier(0.65, 0, 0.35, 1),
+                margin-right .45s cubic-bezier(0.65, 0, 0.35, 1);
 }
 /* This selector used a leading "." for years even though the element it
    targets (wbtm_left_filter_disppaly() in WBTM_Functions.php) only ever
