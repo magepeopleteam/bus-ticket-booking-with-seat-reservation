@@ -45,7 +45,14 @@
     background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     border: 1px solid var(--wbtm_color_border, #ddd);
     border-radius: 20px;
-    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+    /* No elevation shadow. `0 14px 38px` is offset almost entirely below the
+       card (14px down, 38px of blur), so on a panel this tall it did not read
+       as elevation at all -- just a broad grey haze smeared across the empty
+       column under the last filter, which is dead space the bus list has
+       already moved past. The 1px border plus the 20px radius define the card
+       on their own, and this now matches search_result.php's .wbtm-filter-card,
+       which never carried a shadow -- so the two search templates finally draw
+       the same panel instead of differing by a shadow. */
     padding: 20px 18px;
     position: sticky;
     top: 20px;

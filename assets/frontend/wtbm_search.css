@@ -630,40 +630,119 @@
        which covers that range with the same accordion-style toggle as true
        mobile). Only true side-by-side desktop gets the sliding rail. */
 
-    /* The toggle becomes a small handle pinned to the vertical middle of
-       the sidebar's right edge (a common "collapse this panel" affordance)
-       instead of a full-width bar at the top. It sits directly on
+    /* The filter panel's own border colour, as a single source of truth for
+       the two things that have to visually continue that border: the handle's
+       left edge and the collapsed-rail hairline. It has to be a variable
+       because the two templates genuinely draw different borders --
+       search_result.php's .wbtm-filter-card hardcodes #e8ecf0, while
+       wbtm_bus_left_filter.css's #wbtm_bus_filter-options (the flix template)
+       uses var(--wbtm_color_border), which resolves to #DDD here -- so a
+       single literal would be visibly wrong on one of them. Scoped with
+       :has() off the card that is actually rendered rather than duplicated per
+       template file; :has() is already used elsewhere in this plugin's search
+       templates, so it is not a new baseline requirement. */
+    .wbtm_bus_left_filter_holder {
+        --wbtm_filter_edge_color: #e8ecf0;
+    }
+    .wbtm_bus_left_filter_holder:has(#wbtm_bus_filter-options) {
+        --wbtm_filter_edge_color: var(--wbtm_color_border, #ddd);
+    }
+
+    /* The toggle is a small handle pinned to the sidebar's right edge, near
+       the top -- level with the "Filters" card's own header row -- rather
+       than a full-width bar or a vertically-centered handle further down
+       the panel. Top-right reads as "this corner controls the panel"
+       (matching where a close/collapse control usually sits on a card) and
+       keeps it clear of the filter checkboxes below regardless of how tall
+       the panel's content gets. It sits directly on
        .wbtm_bus_left_filter_holder (position:relative, see
        wbtm_bus_left_filter.css), which is never given overflow:hidden, so
        the handle stays visible/clickable through the whole collapse --
-       only .wbtm-filter-slide below (a separate element) gets clipped.
-
-       Centering uses top:0/bottom:0/margin:auto rather than top:50% +
-       translateY(-50%): the holder's height is "auto" (driven by its
-       content), and per the CSS2 spec a percentage top/bottom resolves
-       to 0 against an auto-height containing block -- so top:50% actually
-       pins the handle to the holder's *top* edge, not its middle. The
-       inset+auto-margin form doesn't hit that rule; it centers correctly
-       against whatever height the holder ends up with. */
+       only .wbtm-filter-slide below (a separate element) gets clipped. */
     .wbtm_bus_left_filter_holder .wbtm-mobile-filter-toggle {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        right: -14px;
-        margin: auto 0;
+        top: 20px;
+        bottom: auto;
+        /* `left`, not `right` -- and the SAME formula whether expanded or
+           collapsed, no separate collapsed-state rule at all. This is what
+           actually fixes the old jump/slide/collapse-in-three-separate-beats
+           motion: that old version used `right:-14px` (straddling the border)
+           while expanded and hard-swapped to `left:14px` (auto-computed
+           `right`) the instant `.wbtm-filter-collapsed` was added -- and a
+           CSS transition cannot interpolate a property to/from `auto`, so
+           the handle *teleported* left the moment the class changed, fully
+           1 frame before the width transition (which drives the panel's own
+           slide) had moved at all.
+
+           A first attempt replaced that with `max(14px, calc(100% - 8px))` --
+           centred on the holder's live right edge once it's wide enough,
+           clamped to a safe 14px below that. That removed the teleport, but
+           introduced a different asymmetry: for the width range [0, 22px]
+           (the first ~56% of the transition's *duration*, since the
+           cubic-bezier eases in slowly) the clamp held the handle dead
+           still while the panel was visibly growing/shrinking underneath
+           it, then it raced through its entire 248px of travel in the
+           remaining ~44% -- reads as "the handle waits, then lurches to
+           catch up", i.e. exactly backwards from what was wanted.
+
+           This is a straight line instead: solve for the two endpoints the
+           handle actually needs (14px at width:0, so it's never clipped by
+           the two ancestors' -- .wbtm_departure_bus_lists_holder,
+           ._ovHidden.wbtm_search_result -- shared overflow:hidden, which
+           starts at the holder's own constant left edge; and 270-1=269px at
+           width:270, so the handle's own 1px left border lands exactly on
+           the panel's 1px right border rather than the handle straddling
+           the edge) and connect them linearly in
+           terms of the holder's own live width (100%, re-resolved every
+           layout frame of the already-smooth width transition, so this
+           needs no transition of its own -- it's not a separately animated
+           property, it's a live function of the one that already is).
+           Being linear in width, it moves at a *constant fraction* of the
+           panel's own instantaneous rate of change for the entire
+           animation -- no held phase, no catch-up, both always reflect the
+           same progress. And because both endpoints are >= 14 and the
+           function is monotonic between them, it can never dip into
+           clipped territory at any point along the way either -- unlike a
+           plain "track the border" line (`width - 8`) would (negative,
+           i.e. clipped, for any width below 8px). */
+        left: calc(14px + 100% * 255 / 270);
+        right: auto;
+        margin: 0;
         z-index: 5;
-        width: 28px;
-        height: 56px;
+        /* Half its old 32px width -- a slender tab hung off the panel's
+           right border reads more like a grip on the border itself than a
+           corner button sitting beside it. Height unchanged. */
+        width: 16px;
+        height: 32px;
         padding: 0;
         /* Sharp on the left (the edge it's attached to, flush against the
-           rail indicator below), rounded only on the right, so it reads as
-           a tab/handle rather than a free-floating pill. */
-        border-radius: 0 10px 10px 0;
+           rail indicator below), rounded only on the right -- at this
+           width, an 8px corner radius on both right corners makes that end
+           a full semicircle, reading as a small rounded tab rather than a
+           free-floating pill. */
+        border-radius: 0 8px 8px 0;
         justify-content: center;
         /* This handle floats over whatever's beside it -- a bus photo when
            collapsed, not just plain page background -- so it needs a more
            visible edge than the base rule's shadow gives it. */
         box-shadow: 0 2px 8px rgba(16, 24, 40, .18), 0 0 0 1px rgba(16, 24, 40, .06);
+        /* ...but NOT on the left edge, which is the one seam that has to look
+           joined. Both shadows above are omnidirectional -- the 1px ring wraps
+           all four sides and the 8px blur spills ~4px past every edge -- and
+           the handle paints above the panel (z-index:5 vs the card's auto), so
+           that spill landed as a dark vertical band straight down the join,
+           reading as "separate chip sitting on top of the panel" and undoing
+           the flush border alignment and colour match above.
+           Clipped rather than re-tuned into a directional shadow: getting the
+           offset/blur/spread arithmetic to land exactly on 0 left spill is
+           approximate and browser-dependent, whereas inset() with a 0 left
+           inset is exact by definition -- nothing may paint left of the
+           handle's own left edge, whatever the shadow is later changed to. The
+           negative insets on the other three sides keep their shadow fully
+           intact (16px clears the 8px blur plus the 2px offset). Nothing of
+           the handle itself is clipped: its box starts exactly at that left
+           edge. */
+        clip-path: inset(-16px -16px -16px 0);
     }
     .wbtm-mobile-filter-toggle .wbtm-mobile-filter-toggle-label {
         display: none;
@@ -672,21 +751,24 @@
         font-size: 13px;
     }
 
-    /* Collapsed state repositions the handle from `right:-14px` (straddling
-       the holder's edge, fine while expanded) to `left:14px` -- when
-       collapsed, the holder's own box is 0-width, and it sits inside two
-       ancestors (.wbtm_departure_bus_lists_holder, ._ovHidden.wbtm_search_result)
-       that are both `overflow:hidden` starting at that same x position. Any
-       part of the handle placed via a *negative* offset from the holder's
-       edge (i.e. to the left of it, which `right:-14px` does when width is
-       0) renders past those ancestors' clip boundary and is silently cut
-       off -- it was never actually fully visible, just visible ENOUGH
-       (its right half, holding the chevron) that a near-invisible border
-       didn't reveal the flat-cut left edge. `left:14px` keeps the whole
-       handle to the *right* of the boundary instead, inside the clip. */
-    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed .wbtm-mobile-filter-toggle {
-        right: auto;
-        left: 14px;
+    /* While the panel is OPEN, the handle's left border is sitting directly on
+       top of the panel's own right border (see the `left` calc above), so it
+       has to be the same colour as that border or the handle stops reading as
+       part of the panel and turns back into a chip parked next to it. The base
+       hover/focus/active rule paints the whole border theme-orange, and
+       `:focus` sticks around after a click, so that orange line was left
+       drawn down the seam between handle and panel for as long as the button
+       kept focus. Only the LEFT edge is overridden -- the accent stays on the
+       three edges that actually face outwards, so hover still reads as
+       interactive.
+       Deliberately not applied while collapsed: there is no panel border left
+       to continue then, so the full orange accent is the right treatment, and
+       a near-white left edge would disappear against the bus photos the
+       handle floats over. */
+    .wbtm_bus_left_filter_holder:not(.wbtm-filter-collapsed) .wbtm-mobile-filter-toggle:hover,
+    .wbtm_bus_left_filter_holder:not(.wbtm-filter-collapsed) .wbtm-mobile-filter-toggle:focus,
+    .wbtm_bus_left_filter_holder:not(.wbtm-filter-collapsed) .wbtm-mobile-filter-toggle:active {
+        border-left-color: var(--wbtm_filter_edge_color, #e8ecf0);
     }
 
     /* Collapsed-rail indicator: a slim accent bar spanning the holder's
@@ -697,7 +779,25 @@
        Positioned with `left`, not `right`, for the same clipping reason as
        the handle above -- and left:13px (not 14px) so its right edge (at
        1px wide) still lands exactly at left:14px, flush against the
-       handle's left edge. */
+       handle's left edge.
+
+       The timing below matters as much as the position. This bar lives at
+       left:13px, which is *inside* the panel until the panel has actually
+       finished closing, and the holder is deliberately never overflow:hidden
+       (the handle has to stay visible), so nothing clips it. With a plain
+       symmetric `opacity .3s` it began fading in the instant
+       `.wbtm-filter-collapsed` landed and was already at full 0.3 by ~150ms,
+       while the panel was still ~240px wide -- painting an orange hairline
+       straight down the middle of the still-open filter card for most of the
+       collapse. It only makes sense once there is no panel left to draw over,
+       so the fade-in is delayed by .45s: exactly the holder's own width
+       transition (wbtm_bus_left_filter.css), i.e. it starts the moment the
+       panel is fully closed. Reopening takes the base rule instead, which is
+       instant rather than a fade, because a fade-out would have the same
+       problem in reverse -- the panel grows past 13px only ~85ms into the
+       expand (the cubic-bezier eases in slowly), so any fade long enough to
+       be perceptible would still be on screen underneath the reopening
+       panel. At 1px and 0.3 opacity, vanishing outright reads as clean. */
     .wbtm_bus_left_filter_holder::after {
         content: '';
         position: absolute;
@@ -705,13 +805,21 @@
         bottom: 8px;
         left: 13px;
         width: 1px;
-        background: var(--wbtm_color_theme, #e8510f);
+        /* The panel's own border colour, not the theme accent. This hairline
+           stands in for the panel's edge once the panel itself is gone, so an
+           orange line read as a decorative accent bar rather than "the filter
+           bar's border is still here"; it also clashed with the handle's left
+           border sitting directly above it in the same 1px column. Full
+           opacity for the same reason -- it is standing in for a border, and
+           the old 0.3 was there only to tone the orange down. */
+        background: var(--wbtm_filter_edge_color, #e8ecf0);
         opacity: 0;
-        transition: opacity .3s ease;
+        transition: opacity 0s;
         pointer-events: none;
     }
     .wbtm_bus_left_filter_holder.wbtm-filter-collapsed::after {
-        opacity: 0.3;
+        opacity: 1;
+        transition: opacity .25s ease .45s;
     }
 
     /* The filter card/panel gets a fixed width -- instead of the auto width
@@ -732,11 +840,127 @@
         margin-right: 0 !important;
     }
     /* .wbtm-filter-slide is what actually shrinks and clips (it tracks the
-       collapsing holder's width) -- scoped to the collapsed state so
-       .wbtm-filter-card's position:sticky (while expanded) isn't disabled
-       by an overflow:hidden ancestor at all times. */
-    .wbtm_bus_left_filter_holder.wbtm-filter-collapsed .wbtm-filter-slide {
+       collapsing holder's width). Clipped by DEFAULT now, not just while
+       `.wbtm-filter-collapsed` is present -- that scoping is exactly what
+       broke the reopen animation: the instant a click removes that class,
+       overflow (an all-or-nothing property -- CSS transitions genuinely
+       cannot delay or interpolate it; verified with transitionstart/end
+       listeners that NO transition ever runs for it no matter what
+       transition-delay is declared, it just applies the instant the
+       matching rule changes) snapped straight to `visible` at t=0 of the
+       width transition, while the holder was still ~0px wide. With nothing
+       left clipping it, the filter card's own fixed 270px width (below)
+       rendered in full immediately, overflowing out over the bus list
+       exactly like a plain `display:block` reveal, while the holder's width
+       silently grew in underneath/around it over the next .45s -- the
+       opposite of the sliding-open reveal collapsing itself already has,
+       and exactly what looked wrong here.
+       Since CSS alone can't delay a discrete property, `.wbtm-filter-settled`
+       (assets/frontend/wbtm.js) drives the timing instead: it's added only
+       once the width transition's own `transitionend` fires, so clipping
+       stays on for the entire open animation -- the fixed-width card is
+       progressively revealed by the holder's growing width the whole time,
+       same as the collapse direction already does correctly -- and is lifted
+       only once fully open and settled, which is when position:sticky
+       (needs an unclipped ancestor, hence lifting this at all) actually
+       needs to start working again. */
+    .wbtm-filter-slide {
         overflow: hidden;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-filter-settled .wbtm-filter-slide {
+        overflow: visible;
+    }
+
+    /* ...and THIS is what turns that clipping into an actual sliding drawer
+       rather than a wipe. Clipping alone still left the card anchored at the
+       clipper's LEFT edge, so the panel sat perfectly still while its right
+       side was progressively erased -- the content never moved, which is why
+       it kept reading as "popped in / cropped out" rather than "slid". Pinning
+       the card to the clipper's RIGHT edge instead makes its right edge track
+       the collapsing edge exactly, so the whole panel bodily travels left as
+       the rail closes (and back rightwards as it opens), disappearing past the
+       clipper's left edge like a real drawer.
+
+       Done with flex alignment, deliberately, after measuring the alternatives
+       in a browser frame by frame:
+
+       - A SECOND TRANSITION (transform: translateX(-100%) on the card, same
+         .45s cubic-bezier as the holder's width) desyncs badly. Expand held
+         lockstep, but on collapse the transform ran up to 0.29 *progress*
+         ahead of the width -- the card's right edge diverging from the clip
+         edge by as much as 55px mid-flight, leaving a blank strip inside the
+         panel. Two independently-scheduled transitions on two elements simply
+         do not stay glued together here (the holder's rendered width is driven
+         through both `width` and `flex-basis`, which is what skews its curve
+         on the collapse direction only).
+       - A LIVE PERCENTAGE MARGIN (margin-left: calc(100% - 270px), the same
+         trick the toggle handle above uses to track the edge for free) is
+         exact on the default template -- 0.000px error -- but feeds back into
+         layout: a negative margin lowers the holder's max-content
+         contribution, and the flix rail is a shrinkable flex item in an
+         over-constrained row, so it settled 7.45px narrower and left the card
+         permanently offset there.
+       - margin-left:auto does not work at all: Chrome clamps the solved value
+         at 0 rather than letting it go negative, so the card never moves.
+
+       justify-content:flex-end has none of those failure modes. The card's
+       right edge is glued to the clipper's right edge *by construction*, every
+       frame, with no animation of its own to fall out of step and no effect on
+       intrinsic width -- measured 0.000px divergence on both templates in both
+       directions. It is also direction-relative, so an RTL locale mirrors
+       correctly on its own (a `direction: rtl` hack on the clipper, which
+       achieves the same geometry, would double-flip there instead).
+       align-items:flex-start keeps the card at its natural height rather than
+       being stretched by the flex container, and flex-basis restates the fixed
+       270px so the card still never reflows/rewraps while being clipped. */
+    .wbtm_bus_left_filter_holder .wbtm-filter-slide {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+    }
+    .wbtm_bus_left_filter_holder .wbtm-filter-slide > #wbtm_bus_filter-options,
+    .wbtm_bus_left_filter_holder .wbtm-filter-slide > .wbtm-filter-card {
+        flex: 0 0 270px;
+    }
+    /* `overflow: hidden` above only clips a `position: static/relative`
+       descendant -- Chrome does not visually clip a `position: sticky` one
+       against it while the ancestor's width is still changing (confirmed by
+       forcing `position: relative` mid-transition and comparing renders: the
+       card was correctly cropped to the shrunken width, but with `sticky` in
+       place, the exact same width renders the card at full, uncropped size).
+       Both `#wbtm_bus_filter-options` (default template) and `.wbtm-filter-card`
+       (this template) ship `position: sticky` in their base rules -- that's
+       what made the reopen animation look like a `display:block` pop instead
+       of a slide even after the overflow gating above: the fixed-width card
+       was rendering at full size the entire time regardless of the holder's
+       (or .wbtm-filter-slide's) actual animated width. Demoted to `relative`
+       here and promoted back to `sticky` only once `.wbtm-filter-settled`
+       lands (same moment overflow above is lifted), so sticky positioning
+       still works once the panel is actually open and idle.
+
+       `top: auto` here is load-bearing, not tidying. Both card rules ship
+       `top: 20px` next to their `position: sticky` (wbtm_bus_left_filter.css
+       for #wbtm_bus_filter-options, search_result.php for .wbtm-filter-card).
+       On an unstuck sticky box that 20px is only a *threshold* -- it parks the
+       box at its static position and does nothing visually. Re-interpreted
+       under `position: relative` the very same declaration becomes a real
+       offset, so demoting the position without also neutralising `top` shoved
+       the card 20px DOWN for the whole collapse and yanked it back up when the
+       expand settled -- a vertical bounce on every toggle, at any scroll
+       offset, on both templates. The settled rule restates `top: 20px` because
+       it must out-specify the `top: auto` above (that first selector still
+       matches once `.wbtm-filter-settled` is present; only the added class
+       makes the second one win), otherwise sticky would come back with no
+       offset and the card would ride flush to the viewport edge. */
+    .wbtm_bus_left_filter_holder #wbtm_bus_filter-options,
+    .wbtm_bus_left_filter_holder .wbtm-filter-card {
+        position: relative;
+        top: auto;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-filter-settled #wbtm_bus_filter-options,
+    .wbtm_bus_left_filter_holder.wbtm-filter-settled .wbtm-filter-card {
+        position: sticky;
+        top: 20px;
     }
     /* The flix template (search_result_flix.php) sets a fixed inline width on
        .wbtm_bus_list_area (calc(100% - 280px), sized for the expanded 270px
@@ -868,13 +1092,96 @@
     }
 
     /* Collapsed by default: only the toggle bar shows, so the first bus card
-       appears right below it. Opening reveals the filter panel. */
+       appears right below it. Opening reveals the filter panel.
+
+       `display:none` <-> `block` is a hard pop -- display cannot be
+       transitioned, so there was no way to see the panel open or close, only
+       its before/after states. This animates it with the grid 0fr->1fr
+       technique instead of a `max-height` guess: a `max-height` transition
+       has to pick some fixed target taller than the tallest panel this can
+       ever render (varies with how many bus types/operators/boarding points
+       this route has), and a linear transition toward a target much taller
+       than the actual content covers most of the *visible* growth in the
+       first sliver of the transition's duration, then coasts through empty
+       space for the rest -- reads as "snaps open, then pauses" rather than a
+       smooth slide. A single-row grid's `fr` track has no such target to
+       guess: at 1fr it simply takes exactly the item's own content height,
+       whatever that is for this render, so the animation always covers
+       precisely the real distance.
+       `.wbtm-filter-slide` is this selector's only actual match (the sole
+       non-toggle child of the holder), named generically here only because
+       that's what the display:none/block rule it replaces already did.
+       The child selector's `overflow:hidden`/`min-height:0` is what lets the
+       row track actually reach 0 -- without it, a grid item's own automatic
+       minimum size (based on its content) floors the row above 0 regardless
+       of the 0fr flex factor. `overflow:hidden` on the row wrapper itself
+       clips the content while the row is shorter than it (grid doesn't clip
+       its own tracks on its own). Opacity is faded alongside the height so
+       the content doesn't visibly compress into a squeezed sliver as the row
+       shrinks -- it fades out before it would visually squash.
+       `visibility` is gated the same way `overflow`/`position` were gated
+       elsewhere in this file for the desktop rail (delayed on the direction
+       that needs to stay interactive-looking until the animation finishes,
+       instant on the direction that needs to stop blocking tab focus right
+       away): collapsed, the checkboxes only become genuinely unfocusable
+       once the slide-up has actually finished, matching how they were
+       simply absent from the tab order under the old display:none; open,
+       they become focusable the instant the slide starts rather than
+       waiting out the fade. */
     .wbtm_bus_left_filter_holder > *:not(.wbtm-mobile-filter-toggle) {
-        display: none !important;
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        margin-top: 0;
+        overflow: hidden;
+        visibility: hidden;
+        transition: grid-template-rows .3s ease, opacity .3s ease, margin-top .3s ease, visibility 0s .3s;
+    }
+    .wbtm_bus_left_filter_holder > *:not(.wbtm-mobile-filter-toggle) > * {
+        overflow: hidden;
+        min-height: 0;
     }
     .wbtm_bus_left_filter_holder.wbtm-mobile-open > *:not(.wbtm-mobile-filter-toggle) {
-        display: block !important;
+        grid-template-rows: 1fr;
+        opacity: 1;
         margin-top: 10px;
+        visibility: visible;
+        transition: grid-template-rows .3s ease, opacity .3s ease, margin-top .3s ease, visibility 0s;
+    }
+    /* The grid item's own vertical padding is a floor the 0fr trick above
+       cannot get past: a box's rendered height is never less than its own
+       padding no matter how small its content or `min-height` is asked to
+       go, so the closed row was settling at ~38px (.wbtm-filter-card,
+       18px top+bottom padding) / ~42px (#wbtm_bus_filter-options, 20px)
+       instead of 0 -- an invisible gap (opacity is already 0 by then) but a
+       real one, pushing the first bus card that same distance below the
+       toggle bar. Collapsing the padding to 0 alongside the row height
+       closes that gap too; the literal 18px/20px restored on open are this
+       codebase's two actual card paddings (search_result.php's
+       .wbtm-filter-card and wbtm_bus_left_filter.css's
+       #wbtm_bus_filter-options), not independent numbers -- if either
+       source padding value ever changes, its counterpart here has to
+       change with it. Horizontal padding is untouched: it doesn't
+       contribute to the height floor, and keeping it means the checkboxes
+       still sit at their normal inset rather than flush against the edges
+       while the row is still short. */
+    .wbtm_bus_left_filter_holder .wbtm-filter-card {
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: padding-top .3s ease, padding-bottom .3s ease;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open .wbtm-filter-card {
+        padding-top: 18px;
+        padding-bottom: 18px;
+    }
+    .wbtm_bus_left_filter_holder #wbtm_bus_filter-options {
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: padding-top .3s ease, padding-bottom .3s ease;
+    }
+    .wbtm_bus_left_filter_holder.wbtm-mobile-open #wbtm_bus_filter-options {
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     /* Same fix as search_result.php's inline copy of this rule: stay in one

@@ -247,47 +247,76 @@
                 font-size:   15px;
                 color:       #1a1a1a;
             }
-            /* .calendar never receives the loading spinner below, so it stays
-               static; .marker does (wbtm_plugin_global.js's wbtm_loader_xs()
-               appends it into "From"/"To"'s own .marker while the city list
-               loads via AJAX), so it needs to be ITS positioning context.
-               gap trimmed 7px->5px: a selected date's rendered text (e.g.
+            /* gap trimmed 7px->5px: a selected date's rendered text (e.g.
                "Wed 26 Aug , 2026") can come out 1-2px wider than the field's
                available width depending on which digits appear (proportional
                fonts render "2"/"6"/"8" wider than "1"), clipping the last
                character -- freeing 2px here from the icon gap (which has
                plenty of slack) covers it without touching font-size/weight. */
             #wbtm_area .wbtm-bar-redesign .calendar {
-                gap:      5px !important;
-                position: static !important;
+                gap: 5px !important;
             }
-            /* Was `position:static !important` here too (to defeat wbtm.css's
-               absolute-icon layout, same as .calendar above) -- but the
-               loading spinner (div.wbtm_loader_xs, itself `position:absolute;
-               inset:0`) needs an actually-positioned ancestor to size/center
-               itself against. With none available, it escaped all the way up
-               to .wtbm_inputList (the next positioned ancestor, the whole
-               pill-shaped field) and rendered centred over the entire field
-               instead of just this icon+input row -- looking off-centre and
-               oversized relative to what's visibly its container. Icons
-               inside stay pinned by their own `position:static !important`
-               below regardless, so switching this to `relative` doesn't
-               reintroduce the old absolute-icon behaviour. */
-            #wbtm_area .wbtm-bar-redesign .marker {
+            /* Both .marker (From/To) AND .calendar (Journey/Return Date) need
+               to be a real positioning context for their own loading spinner
+               (div.wbtm_loader_xs, itself `position:absolute; inset:0`) --
+               wbtm_global.js's get_wbtm_journey_date/get_wbtm_return_date
+               AJAX handlers call wbtm_loader_xs(target.find('.calendar')) the
+               same way the From/To autocomplete calls it on '.marker'. This
+               used to say ".calendar never receives the loading spinner, so
+               it stays static" -- true when it was written, no longer true
+               once the date-field reload started using the same spinner, and
+               nobody circled back to give .calendar the same fix already
+               applied to .marker below. Left at `position:static` (the
+               default), the spinner had no positioned ancestor to size/center
+               against, so it escaped all the way up to .wtbm_inputList (the
+               next positioned ancestor, the whole pill-shaped field) and
+               rendered as an oversized white pill sitting behind the text
+               instead of a small icon-sized spinner over the calendar icon
+               (visible on the "JOURNEY DATE" field, and identically on
+               "RETURN DATE" since selecting a journey date re-triggers its
+               own reload the same way). Icons inside stay pinned by their own
+               `position:static !important` below regardless, so switching
+               this to `relative` doesn't reintroduce wbtm.css's old
+               absolute-icon layout. */
+            #wbtm_area .wbtm-bar-redesign .marker,
+            #wbtm_area .wbtm-bar-redesign .calendar {
                 position: relative !important;
             }
-            /* Loading spinner (assets/global/wbtm_global.js's wbtm_loader_xs()):
-               fills .marker exactly and centres the icon within it now that
-               .marker is its real positioning context. Retinted to the site's
-               accent instead of the plugin's hard-coded default, and its dark
-               `#0003` overlay dropped in favour of a plain white one so it
-               reads as "this field is loading", not "this field is disabled". */
+            /* Loading spinner (assets/global/wbtm_global.js's wbtm_loader_xs()).
+               mp_global/assets/mp_style/wbtm_plugin_global.css's generic
+               `div[class*="wbtm_loader"]` rule sizes this to `left:0;right:0;
+               top:0;bottom:0;width:100%;height:100%` -- i.e. it fills
+               .marker/.calendar completely, whatever their width. That's a
+               short row for .marker (icon + "Please Select"/a city name), so
+               a translucent white fill over the whole thing read as a small,
+               deliberate dimming effect -- but .calendar is the SAME icon
+               next to a full date string ("Fri 21 Aug, 2026"), and filling
+               that whole ~150px-wide row turned the same white background
+               into an oversized capsule visibly whiting out the date text
+               underneath, not just dimming an icon. Overriding to a small
+               fixed circle -- sized and positioned over just the icon,
+               regardless of how wide .marker/.calendar itself is -- keeps
+               the "field is loading" cue without ever covering readable
+               text. Retinted to the site's accent instead of the plugin's
+               hard-coded default, and its dark `#0003` overlay (also from
+               that generic rule) dropped in favour of a plain white one so
+               it still reads as "loading", not "disabled". Centred in the
+               middle of the field (like the original full-width pill was),
+               not pinned over the icon on the left -- just shrunk to a small
+               circle there instead of stretching edge to edge. */
             #wbtm_area .wbtm-bar-redesign div.wbtm_loader_xs {
+                left:            50% !important;
+                right:           auto !important;
+                top:             50% !important;
+                bottom:          auto !important;
+                width:           24px !important;
+                height:          24px !important;
+                transform:       translate(-50%, -50%) !important;
                 display:         flex !important;
                 align-items:     center !important;
                 justify-content: center !important;
-                background:      rgba(255,255,255,.85) !important;
-                border-radius:   999px;
+                background:      rgba(255,255,255,.9) !important;
+                border-radius:   50%;
             }
             /* The plugin's own icon (Font Awesome's fa-spinner glyph + its
                fa-pulse class) animates as a discrete 8-step "tick", not a
@@ -689,6 +718,45 @@
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location,
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_date {
                     flex-direction: column;
+                    /* assets/frontend/wbtm.css (the classic, non-"redesign" skin,
+                       still loaded alongside this one) carries TWO separate
+                       `@media (max-width:600px)` blocks for this exact pair of
+                       selectors -- an earlier one at `gap:10px !important` and a
+                       later one at `gap:8px !important` that, being later at
+                       equal specificity, is the one that actually wins. Neither
+                       rule ever got neutralized for the redesign skin, so at
+                       <600px this leaked an 8px band in between From's
+                       border-bottom and To's top edge once flex-direction
+                       switched to column above -- invisible on the classic
+                       skin's side-by-side desktop row (an 8px row-gap there
+                       just widens the horizontal space the swap toggle already
+                       sits on top of), but a visible empty strip once stacked
+                       vertically here. It also skewed the swap toggle below,
+                       whose `top:50%` is measured against this exact
+                       container's full height: with the gap counted in, the
+                       container's true vertical centre no longer coincided
+                       with the border between the two stacked fields, so the
+                       toggle sat a few pixels off it rather than centred on
+                       it. `!important` to actually beat wbtm.css's own,
+                       exactly as the toggle repositioning rule below already
+                       has to. */
+                    gap: 0 !important;
+                }
+                /* .wbtm_input_start_end_location (From/To) and
+                   .wbtm_input_start_end_date (Journey/Return) are two separate
+                   flex containers, siblings under .wbtm_input_fields_holder --
+                   each draws its OWN internal divider between its two fields
+                   (the border-bottom below, removed on each group's own last
+                   child so the group doesn't end in a stray line), but nothing
+                   ever drew a border BETWEEN the two groups themselves. Side by
+                   side on desktop that seam needs no line -- the row's own
+                   outer edge already reads as the boundary -- but once both
+                   groups stack into one column here, To's bottom ran straight
+                   into Journey Date's top with no separator at all, unlike
+                   every other seam in this stacked list. Same colour/weight as
+                   every other divider in this form. */
+                #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_date {
+                    border-top: 1.5px solid #dde1e7;
                 }
                 #wbtm_area .wbtm-bar-redesign .wtbm_inputList {
                     border-right:  none;

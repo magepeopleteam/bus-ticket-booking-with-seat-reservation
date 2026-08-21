@@ -1,3 +1,30 @@
+// Only animate the WooCommerce notice wrapper when it actually holds a notice.
+//
+// WooCommerce prints an EMPTY <div class="woocommerce-notices-wrapper"></div> on
+// every page (wc-template-functions.php), and on hello-elementor it lands as the
+// first child of main#content > .page-content, immediately before this plugin's
+// own .wbtm_style.wbtm_container. Sliding that empty div up shows nothing -- but
+// jQuery implements slideUp by stamping inline `overflow:hidden` on the element
+// for the animation's whole 200ms ('fast'). An empty div with overflow:hidden
+// establishes a block formatting context, so it stops being a self-collapsing
+// pass-through: .wbtm_container's own `margin-top: var(--wbtm_dmp)` (20px) can no
+// longer collapse up and out through .page-content and is trapped inside it
+// instead, while the gap above .page-content falls back to the <h1>'s 16px
+// margin-bottom. Net effect: the entire search bar, and everything below it,
+// jumped down exactly 16px for ~200ms -- the "bounce".
+//
+// It only ever happened on the FIRST interaction because jQuery ends slideUp by
+// setting inline `display:none`, nothing in the plugin ever slideDown/shows it
+// again, and slideUp on an already-hidden element is an immediate no-op.
+//
+// Filtering to non-empty wrappers keeps the intent (dismiss a real WooCommerce
+// notice before showing new results) and skips the empty one entirely, so no
+// `overflow` is ever written and no margin-collapse boundary is ever created.
+function wbtm_hide_wc_notices($) {
+	$('body').find('.woocommerce-notices-wrapper').filter(function () {
+		return $.trim($(this).html()) !== '';
+	}).slideUp('fast');
+}
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
@@ -62,7 +89,7 @@
 			left_filter_boarding: wbtm_left_filter_boarding.val(),
 		}
 
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		if (!wbtm_check_required(start)) {
 			wbtm_set_search_button_state(parent, false);
 			start.trigger('click');
@@ -125,7 +152,7 @@
 		wbtm_bus_start_end = $(this).closest('.wbtm-bus-lists').attr('id');
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
@@ -141,7 +168,7 @@
 		let start_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
 		let target = parent.find('.wbtm_dropping_point');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
 		wbtm_loader_xs(target.find('.marker'));
@@ -190,7 +217,7 @@
 		let current = $(this);
 		let end_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		let exit_route = 0;
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
@@ -242,7 +269,7 @@
 		let date = $(this).val();
 		let parent = $(this).closest('#wbtm_area');
 		let target = parent.find('.wbtm_return_date');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		if (target.length > 0 && date) {
 			let start_route = parent.find('[name="bus_start_route"]').val();
 			let end_route = parent.find('input[name="bus_end_route"]').val();
@@ -275,7 +302,7 @@
 	});
 	$(document).on("click", "#wbtm_area #wbtm_journey_date", function () {
 		let parent = $(this).closest('#wbtm_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		let start = parent.find('input[name="bus_start_route"]').val();
 		if (!start) {
 			wbtm_alert($(this));
@@ -290,7 +317,7 @@
 		let currentButton = $(this);
 		let post_id = $(this).attr("data-bus_id");
 		let target = parent.find("[data-row_id=" + post_id + "]");
-		$("body").find(".woocommerce-notices-wrapper").slideUp("fast");
+		wbtm_hide_wc_notices($);
 		if ($(this).hasClass("mActive")) {
 			target.find(">div").slideUp("fast");
 			wbtm_all_content_change($(this));
