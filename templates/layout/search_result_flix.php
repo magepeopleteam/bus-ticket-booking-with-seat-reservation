@@ -119,20 +119,16 @@ if (sizeof($bus_ids) > 0) {
         <?php
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $wbtm_fd_panel = WBTM_Global_Function::get_settings('wbtm_frontend_display_settings', 'show_filter_panel', 'show') !== 'hide';
-        if( $wbtm_fd_panel && !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0 ){
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+        $has_left_filter = $wbtm_fd_panel && !empty($left_filter_show['left_filter_input']) && $left_filter_show['left_filter_input'] === 'on' && count( $bus_titles ) > 0;
+        if( $has_left_filter ){
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            $width = 'calc( 100% - 180px )'
+            // .wbtm_bus_left_filter_holder is 270px wide with a 10px margin-right
+            // (wbtm_bus_left_filter.css) -- this must reserve the same 280px, or
+            // the list area claims back space the sidebar is actually using.
+            $width = 'calc( 100% - 280px )'
             ?>
             <div class="wbtm_bus_left_filter_holder">
-                <!-- Responsive filter toggle: collapsed by default on mobile and
-                     available on desktop when more room is needed for results. -->
-                <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
-                    <span class="wbtm-mobile-filter-toggle-label">
-                        <i class="fas fa-sliders-h" aria-hidden="true"></i>
-                        <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
-                    </span>
-                    <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
-                </button>
                 <?php
                 WBTM_Functions::wbtm_left_filter_disppaly( $bus_types, $bus_titles, $all_boarding_routes, $filter_by_box, $left_filter_show );
                 ?>
@@ -165,6 +161,7 @@ if (sizeof($bus_ids) > 0) {
             <div class="wbtm-list-count">
                 <strong><?php echo esc_html(count($bus_data)); ?></strong>
                 <?php echo esc_html__('buses available for', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <br class="wbtm-list-count-break">
                 <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
             </div>
             <?php if ($wbtm_fd_sort) : ?>

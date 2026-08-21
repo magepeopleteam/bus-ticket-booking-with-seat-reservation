@@ -334,27 +334,65 @@
     background: #fff;
 }
 .wbtm-popup-close{
-    top: 14px;
-    right: 14px;
+    position: absolute;
+    /* .wbtm-bus-popup-inner has its own 20px padding, and .wbtm-popup-content
+       (the tab bar, etc.) starts right at that padding edge -- positioning
+       this at the same 20px inset put it exactly where the tab row begins,
+       overlapping it. Sitting closer to the true corner (in the gap between
+       the border and where content actually starts) clears the tabs while
+       staying well inside the popup's own 16px border-radius curve. */
+    top: 10px;
+    right: 10px;
     width: 32px;
     height: 32px;
     border-radius: 50%;
     background: #f1f5f9;
-    color: #475569;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    line-height: 1;
-    font-weight: 600;
-    transition: background .15s, color .15s, transform .15s;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+    transition: background .15s, color .15s, transform .15s, border-color .15s;
+    /* The literal "×" text glyph sits at a different vertical offset from
+       its own line box depending on the font actually in use, so flex
+       centering the box never quite centers the visible glyph itself.
+       Drawing the X from two rotated bars instead makes it centered by
+       construction, independent of any font's metrics. */
+    font-size: 0;
+    color: transparent;
+}
+.wbtm-popup-close::before,
+.wbtm-popup-close::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    background: #475569;
+    border-radius: 1px;
+    transition: background .15s;
+}
+.wbtm-popup-close::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+.wbtm-popup-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
 }
 .wbtm-popup-close:hover{
     background: #fee2e2;
-    color: #dc2626;
+    border-color: #fca5a5;
     transform: scale(1.06);
 }
+.wbtm-popup-close:hover::before,
+.wbtm-popup-close:hover::after{
+    background: #dc2626;
+}
 .wbtm-popup-content ._dLayout_dShadow_1{
+    /* This element also matches the generic `[class*="_dLayout"]` utility
+       (wbtm_plugin_global.css), which puts a 1px border AND a -1px
+       margin-top on any class containing "_dLayout" -- only
+       box-shadow/border-radius were ever nulled here, so the border and
+       this stray margin both kept slipping through. */
+    border: 0 !important;
+    margin: 0 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
 }
@@ -362,9 +400,17 @@
 /* Tab bar */
 .wbtm-popup-content .wbtm_bus_detail_popup_tabs{
     background: #f8fafc;
-    border: 1px solid #eef1f5;
+    border: 0;
     border-radius: 12px;
     padding: 6px;
+    /* Reserve room on the right for .wbtm-popup-close (sits close to the
+       popup's corner, see its own comment) WITHOUT shrinking the bar's own
+       background -- a margin-right here narrowed the whole grey background
+       so it stopped short of the cards below, which stayed full-width and
+       so looked wider/misaligned with the tab bar above them. Padding
+       reserves the same clearance for the tab buttons while the background
+       itself still spans edge to edge. */
+    padding-right: 50px;
     gap: 6px;
 }
 .wbtm-popup-content .wbtm_bus_detail_popup_tab{
@@ -392,9 +438,10 @@
    rows become a clean summary card, no markup changes needed. */
 .wbtm-popup-content #wbtm_bus_details_content{
     background: #fff;
-    border: 1px solid #eef1f5;
-    border-radius: 14px;
-    padding: 18px 20px;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, .06);
+    padding: 20px 22px;
 }
 .wbtm-popup-content #wbtm_bus_details_content > p:first-child{
     margin: 0 0 12px;
@@ -439,9 +486,10 @@
 }
 .wbtm-popup-content #wbtm_bus_boarding_dropping_content .dLayout_xs{
     background: #fff;
-    border: 1px solid #eef1f5;
-    border-radius: 14px;
-    padding: 16px 18px;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, .06);
+    padding: 18px 20px;
 }
 .wbtm-popup-content #wbtm_bus_boarding_dropping_content strong{
     font-size: 12px;

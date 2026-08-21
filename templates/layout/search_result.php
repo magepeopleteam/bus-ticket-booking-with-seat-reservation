@@ -122,80 +122,14 @@ if (sizeof($bus_ids) > 0) {
 .wbtm_return_bus_lists_holder  { background: transparent; margin-bottom: 20px; border-radius: 12px; overflow: hidden; }
 
 /* Step indicator: "① Select Departure Bus ---- ② Select Return Bus".
-   Only shown for round-trip searches (when a return tab actually exists).
-   A <span class="wbtm-step-connector"> is inserted between the two tabs in PHP. */
-.wbtm_bus_tab_wrapper {
-    display: none !important;
-}
-.wbtm_bus_tab_wrapper:has(.wtbm_return_route) {
-    display:         flex !important;
-    align-items:     center;
-    justify-content: center;
-    gap:             0;
-    padding:         14px 24px;
-    background:      #fff;
-    border:          1px solid #e8ecf0;
-    border-radius:   12px;
-    margin-bottom:   16px;
-    box-shadow:      0 1px 4px rgba(0,0,0,.04);
-}
-.wbtm_bus_tab_wrapper .wtbm_start_route,
-.wbtm_bus_tab_wrapper .wtbm_return_route {
-    display:     flex;
-    align-items: center;
-    gap:         10px;
-    font-size:   14px;
-    font-weight: 600;
-    color:       #9ca3af;
-    cursor:      pointer;
-    background:  none;
-    border:      none;
-    padding:     6px 0;
-    white-space: nowrap;
-    flex:        1;
-    transition:  color 0.15s;
-}
-/* Numbered circle */
-.wbtm_bus_tab_wrapper .wtbm_start_route::before,
-.wbtm_bus_tab_wrapper .wtbm_return_route::before {
-    content:         '1';
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    width:           26px;
-    height:          26px;
-    border-radius:   50%;
-    background:      #e9eaf0;
-    color:           #9ca3af;
-    font-size:       12px;
-    font-weight:     700;
-    flex-shrink:     0;
-    transition:      background 0.15s, color 0.15s;
-}
-.wbtm_bus_tab_wrapper .wtbm_return_route::before { content: '2'; }
-.wbtm_bus_tab_wrapper .wtbm_start_route { justify-content: flex-end; }
+   WBTM_Layout::wbtm_bus_list() renders this wrapper for BOTH search styles
+   (default + flix), so its styling now lives once in the shared
+   assets/frontend/wtbm_search.css rather than duplicated in this
+   style-specific inline block -- the flix template never had its own copy,
+   which is why it fell back to that file's old (unstyled-for-this-purpose)
+   version: a permanently-"active" solid gradient pill, since a one-way
+   search only ever renders the single start tab. */
 div#wbtm_date_start_route { height: 50px; }
-
-/* Dotted connector — a real <span> inserted by PHP so it sits between the two tabs */
-.wbtm_bus_tab_wrapper .wbtm-step-connector {
-    flex:       0 0 100px;
-    height:     0;
-    border-top: 2px dashed #d1d5db;
-    margin:     0;
-    align-self: center;
-}
-
-/* Active step: dark navy circle + bold dark text */
-@media (min-width: 0px) {
-    .wbtm_bus_tab_wrapper .wbtm_tab_active {
-        color:      #111827;
-        box-shadow: none;
-    }
-}
-.wbtm_bus_tab_wrapper .wbtm_tab_active::before {
-    background: #16213e;
-    color:      #fff;
-}
 
 /* ── Selected bus summary card (FlixBus style) ──────────────────── */
 .wbtm_selected_bus_card {
@@ -329,10 +263,23 @@ div#wbtm_date_start_route { height: 50px; }
     width:         100%;
     text-align:    center;
 }
+/* Ghost button: outlined, no fill, so it reads as "View Cart" is a real
+   second action alongside the solid Checkout button rather than a plain
+   text link that happens to sit next to one. */
 .wbtm_selbus_cart_link {
+    display:         inline-block;
+    border:          1.5px solid var(--wbtm_color_theme, #e8510f);
+    border-radius:   6px;
+    padding:         8px 14px;
     font-size:       12px;
-    color:           #555;
-    text-decoration: underline;
+    font-weight:     600;
+    color:           var(--wbtm_color_theme, #e8510f);
+    text-decoration: none;
+    text-align:      center;
+    transition:      background-color .15s ease;
+}
+.wbtm_selbus_cart_link:hover {
+    background-color: rgba(232, 81, 15, .08);
 }
 
 /* ── Return journey header banner ───────────────────────────────── */
@@ -353,111 +300,13 @@ div#wbtm_date_start_route { height: 50px; }
     margin:     0;
 }
 
-/* ── Route summary card — hidden ────────────────────────────────── */
-.wbtm_search_route_container { display: none !important; }
-.wbtm_search_route_container.__unused {
-    display:         flex !important;
-    align-items:     center !important;
-    gap:             24px !important;
-    background:      #fff !important;
-    border:          1px solid #e8ecf0 !important;
-    border-radius:   12px !important;
-    padding:         16px 22px !important;
-    margin-bottom:   16px !important;
-    box-shadow:      0 1px 6px rgba(0,0,0,.05) !important;
-}
-
-/* Left block: label + date + day stacked */
-.wbtm_search_route_return_date {
-    display:        flex;
-    flex-direction: column;
-    gap:            2px;
-    min-width:      110px;
-    border-right:   1px solid #e8ecf0;
-    padding-right:  22px;
-}
-.wbtm_search_route_label {
-    font-size:      10px;
-    font-weight:    700;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-    color:          var(--wbtm_color_theme, #e8510f);
-    margin-bottom:  2px;
-}
-.wbtm_search_route_date {
-    font-size:   14px;
-    font-weight: 700;
-    color:       #111;
-    line-height: 1.2;
-}
-.wbtm_search_route_day {
-    font-size: 12px;
-    color:     #888;
-}
-
-/* Centre block: city A ── bus ──▶ city B */
-.wbtm_search_route_cities_wrapper {
-    display:     flex;
-    align-items: center;
-    gap:         0;
-    flex:        1;
-}
-.wbtm_search_route_city_section {
-    display:        flex;
-    flex-direction: column;
-    align-items:    flex-start;
-    gap:            2px;
-}
-.wbtm_search_route_city_section_right { align-items: flex-end; }
-.wbtm_search_route_city {
-    font-size:   18px;
-    font-weight: 700;
-    color:       #111;
-    line-height: 1;
-}
-.wbtm_search_route_airport_code {
-    font-size:      11px;
-    font-weight:    600;
-    color:          #aaa;
-    letter-spacing: .5px;
-}
-
-/* Bus icon + connecting line between the two cities */
-.wbtm_search_route_icon_wrapper {
-    flex:            1;
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    position:        relative;
-    padding:         0 14px;
-}
-.wbtm_search_route_icon_wrapper::before,
-.wbtm_search_route_icon_wrapper::after {
-    content:    '';
-    position:   absolute;
-    top:        50%;
-    height:     1px;
-    width:      calc(50% - 20px);
-    background: repeating-linear-gradient(90deg, #ccc 0, #ccc 4px, transparent 4px, transparent 8px);
-}
-.wbtm_search_route_icon_wrapper::before { left: 0; }
-.wbtm_search_route_icon_wrapper::after  { right: 0; }
-.wbtm_search_route_bus_icon {
-    width:           36px;
-    height:          36px;
-    border-radius:   50%;
-    background:      var(--wbtm_color_theme, #e8510f);
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    color:           #fff;
-    font-size:       15px;
-    flex-shrink:     0;
-    z-index:         1;
-    position:        relative;
-}
-/* hide the dropdown arrow — not needed in this layout */
-.wbtm_search_route_dropdown_icon { display: none !important; }
+/* Route summary card (.wbtm_search_route_container, rendered by
+   WBTM_Layout::route_title() -- shared by both search styles) used to be
+   force-hidden here (`display:none !important`) with its real styling
+   trapped behind a `.__unused` class that was never applied, so it never
+   actually rendered on either style. It now lives, fused with the step
+   banner above it into one shared white card, in
+   assets/frontend/wtbm_search.css -- see [[project_busly_wbtm_flix_style]]. */
 
 /* ── Page-level layout: sidebar + results ──────────────────────── */
 .wbtm_search_result_holder {
@@ -597,6 +446,19 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-list-count {
     font-size:   16px;
     color:       #444;
+    /* Matches the row's own align-items:center, but the row centers each
+       *box*, not the text baseline inside it -- line-height:1 collapses
+       this div's box down to the glyphs' own height so its visual center
+       lines up with the sort dropdown's, instead of sitting a couple
+       px high/low under the extra leading a browser's default line-height
+       (~1.15-1.2) adds above and below the text. */
+    line-height: 1;
+}
+/* Only actually a line break on the mobile rule below -- on desktop, where
+   this text has plenty of room to stay on one line, forcing a break here
+   too would just make it wrap earlier than it needs to. */
+.wbtm-list-count-break {
+    display: none;
 }
 .wbtm-list-count strong {
     color:       #111;
@@ -611,24 +473,44 @@ div#wbtm_date_start_route { height: 50px; }
     flex-shrink: 0;
     white-space: nowrap;
 }
-.wbtm-sort-label-text { font-weight: 600; color: #222; white-space: nowrap; }
-.wbtm-sort-select {
-    padding: 6px 28px 6px 10px;
-    border: 1px solid #d8dcea;
-    border-radius: 8px;
-    background: #fff;
+.wbtm-sort-label-text { font-weight: 600; color: #222; white-space: nowrap; line-height: 1; }
+/* Qualified with these two ancestor classes (rather than plain
+   `.wbtm-sort-select`) plus the `select` element itself so this reliably
+   outranks mp_global/assets/mp_style/wbtm_plugin_global.css's
+   `div.wbtm_style select.formControl` -- that generic rule was winning on
+   specificity alone (0,2,1 vs. this rule's previous 0,1,0) regardless of
+   which stylesheet loaded last, and silently overrode the border, padding,
+   radius and background this dropdown was supposed to have, leaving the
+   browser's own plain select chrome instead of the custom look below. */
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select {
+    height: 38px;
+    padding: 0 34px 0 14px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background-color: #fff;
     font-size: 13px;
-    color: #222;
+    font-weight: 600;
+    color: #101828;
     cursor: pointer;
-    line-height: 1.4;
+    line-height: 36px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e8510f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 8px center;
+    background-position: right 12px center;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+    transition: border-color .15s ease, box-shadow .15s ease;
 }
-.wbtm-sort-select:focus { outline: 2px solid #2563eb; outline-offset: 1px; }
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select:hover {
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .1);
+}
+.wbtm-list-header .wbtm-list-sort select.wbtm-sort-select:focus {
+    outline: none;
+    border-color: var(--wbtm_color_theme, #e8510f);
+    box-shadow: 0 0 0 3px rgba(232, 81, 15, .15);
+}
 
 /* ── Bus card ───────────────────────────────────────────────────── */
 /* Must NOT use !important on display — jQuery fadeOut() sets display:none inline
@@ -726,6 +608,15 @@ div#wbtm_date_start_route { height: 50px; }
     overflow:        hidden;
     background:      #eef3fb;
     border-right:    1px solid #e5edf7;
+    /* .wbtm-card-wrap's own overflow:hidden + border-radius:24px should be
+       enough to clip this grid item to the card's rounded corner, but a
+       grid container clipping a child's opaque background to a rounded
+       corner is exactly the case Chromium sometimes leaves a 1px unclipped
+       sliver on -- this cell's own near-white #eef3fb background showed
+       through it as an extra square-cornered patch outside the curve.
+       Matching the radius here directly (not relying on the parent's clip
+       alone) removes that seam regardless of the rendering quirk. */
+    border-radius:   24px 0 0 24px;
 }
 /* height:100% !important beats themes that force `img { height:auto }`, so the
    photo fills the column instead of sitting top-aligned; the flex centering
@@ -1040,6 +931,9 @@ div#wbtm_date_start_route { height: 50px; }
     gap:             10px;
     border-left:     1px solid #e5edf7;
     background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
+    /* Same corner-seam fix as .wbtm-card-photo, mirrored for this card's
+       other end (right side instead of left). */
+    border-radius:   0 24px 24px 0;
 }
 .wbtm-starting-from {
     font-size:     11px;
@@ -1195,9 +1089,37 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm_bus_tab_wrapper .wtbm_return_route::before { width: 22px; height: 22px; font-size: 11px; }
     .wbtm_bus_tab_wrapper .wbtm-step-connector { flex: 1 1 20px; min-width: 16px; margin: 0 6px; }
 
-    /* Selected-bus summary card stacks */
-    .wbtm_selected_bus_card { flex-wrap: wrap; }
+    /* Selected-bus summary card stacks. flex-direction:row is needed here,
+       not just flex-wrap -- assets/global/wbtm_bus_left_filter.css has an
+       older, unrelated component that also happens to be named
+       .wbtm_selected_bus_card (different children: .wbtm_selected_bus_image
+       etc, not the .wbtm_selbus_* ones this card actually uses) with its
+       OWN `@media (max-width:768px) { flex-direction: column }`. Nothing
+       here ever overrode that, so this card was silently forced into a
+       column too: the date badge stretched to full width (align-items
+       default stretch, cross-axis = width in a column), and
+       .wbtm_selbus_body's `flex: 1 1 200px` -- meant as a min *width* on the
+       row layout -- became a forced 200px min *height* instead (basis
+       applies to the main axis, now vertical), leaving a tall empty gap
+       below its actual (much shorter) content before the actions row. */
+    .wbtm_selected_bus_card { flex-wrap: wrap; flex-direction: row !important; }
     .wbtm_selbus_body { flex: 1 1 200px; padding: 12px 14px; }
+    /* Change Departure used to just be the toprow's 3rd item with
+       margin-left:auto -- fine on desktop where the row is wide enough for
+       all three, but at this width the trip-label + bus name already fill
+       it, so Change Departure wrapped onto its own line, still right-
+       aligned by that same auto margin, reading as an orange link floating
+       alone with nothing next to it. Reordering puts it on line 1 next to
+       the trip label (where there's always room) and pushes the bus name
+       -- the one that's actually variable-length -- onto its own full-width
+       line 2 instead. */
+    .wbtm_selbus_trip_label { order: 1; }
+    .wbtm_selbus_change_btn { order: 2; }
+    .wbtm_selbus_busname {
+        order:      3;
+        flex:       1 1 100%;
+        margin-top: 2px;
+    }
     .wbtm_selbus_route { font-size: 16px; }
     .wbtm_selbus_actions {
         flex-direction: row;
@@ -1207,11 +1129,41 @@ div#wbtm_date_start_route { height: 50px; }
         border-top:     1px solid #eee;
         padding:        10px 14px;
     }
+    /* Checkout + View Cart share the row 50/50 instead of the button's own
+       desktop width:100% (fine in the desktop column of its own) squeezing
+       "View Cart" down to a 2-line sliver next to it. A fixed flex-basis
+       (not flex:1 1 0, which still lets each item's own min-content --
+       the button's extra padding vs the link's bare text -- skew the
+       split) is what actually keeps both the *same* width, as asked,
+       rather than just "close enough". 3px = half the 6px gap between
+       them, so the pair still totals 100%. */
+    .wbtm_selbus_actions .wbtm_selected_bus_btn,
+    .wbtm_selbus_actions .wbtm_selbus_cart_link {
+        box-sizing: border-box;
+        flex:       0 0 calc(50% - 3px);
+        text-align: center;
+    }
+    .wbtm_selbus_actions .wbtm_selected_bus_btn {
+        width: auto;
+    }
 
-    /* Count + sort header wraps instead of overflowing */
-    .wbtm-list-header { flex-wrap: wrap; gap: 6px; }
-    .wbtm-list-count  { font-size: 14px; }
+    /* Count + sort stay on one row on mobile too -- shrinking the dropdown's
+       own min-width (150px is desktop's) is what actually makes room; the
+       wrap this replaced was a band-aid for that never being sized down. */
+    .wbtm-list-header { flex-wrap: nowrap; gap: 6px; }
+    /* Break at a sensible point ("4 buses available for" / "August 21")
+       instead of leaving it to wrap wherever the text happens to run out
+       of room next to the (now width-capped) sort dropdown, which could
+       land mid-date ("August" / "21"). line-height opened back up from the
+       base rule's 1 (tuned for a single line) so the two lines here don't
+       crowd each other. */
+    .wbtm-list-count  { font-size: 14px; line-height: 1.4; }
+    .wbtm-list-count-break { display: block; }
     .wbtm-list-sort   { font-size: 13px; }
+    .wbtm-list-header .wbtm-list-sort select.wbtm-sort-select {
+        min-width: 0;
+        width: 130px;
+    }
 
     /* Bus card: the three tracks collapse to one, so the four panels stack. */
     .wbtm-card-wrap {
@@ -1330,23 +1282,34 @@ div#wbtm_date_start_route { height: 50px; }
 
     <?php if ($has_left_filter) : ?>
     <div class="wbtm_bus_left_filter_holder">
-        <!-- Responsive filter toggle: collapsed by default on mobile and
-             available on desktop when more room is needed for result cards. -->
-        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true">
+        <?php
+        // Collapsible "Filters" bar: assets/frontend/wtbm_search.css already ships
+        // the full styling for `.wbtm-mobile-filter-toggle` (desktop collapse-to-rail
+        // AND mobile results-first collapse) and assets/frontend/wbtm.js already
+        // wires its click handler -- but no template ever rendered the button
+        // itself, so both CSS rules that hide the panel by default (mobile, and
+        // desktop once collapsed) had no way to ever be reversed.
+        ?>
+        <button type="button" class="wbtm-mobile-filter-toggle" aria-expanded="true" aria-label="<?php esc_attr_e('Toggle filters', 'bus-ticket-booking-with-seat-reservation'); ?>">
             <span class="wbtm-mobile-filter-toggle-label">
-                <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                <i class="fas fa-filter" aria-hidden="true"></i>
                 <?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?>
             </span>
-            <i class="fas fa-chevron-down wbtm-mobile-filter-caret" aria-hidden="true"></i>
+            <span class="wbtm-mobile-filter-caret"><i class="fas fa-chevron-left" aria-hidden="true"></i></span>
         </button>
+        <?php
+        // .wbtm-filter-slide clips the card as the holder collapses, while the
+        // card itself keeps a fixed width (wtbm_search.css) so it never
+        // reflows/squishes mid-animation -- only .wbtm-filter-slide's own box
+        // shrinks. It's a separate element from the button above (rather than
+        // overflow:hidden straight on .wbtm_bus_left_filter_holder) so the
+        // button -- positioned on that holder -- never gets clipped with it.
+        ?>
+        <div class="wbtm-filter-slide">
         <div class="wbtm-filter-card">
 
-            <!-- Header -->
             <div class="wbtm-filter-header">
                 <span class="wbtm-filter-header-title"><?php esc_html_e('Filters', 'bus-ticket-booking-with-seat-reservation'); ?></span>
-                <span class="wbtm-filter-reset-btn wbtm_reset_filter-checkbox">
-                    <?php esc_html_e('Reset', 'bus-ticket-booking-with-seat-reservation'); ?>
-                </span>
             </div>
 
             <!-- Departure Time -->
@@ -1405,6 +1368,13 @@ div#wbtm_date_start_route { height: 50px; }
             </div>
             <?php endif; ?>
 
+            <!-- Reset — below every filter section, at the bottom of the list. -->
+            <div class="wbtm-filter-reset-row">
+                <span class="wbtm-filter-reset-btn wbtm_reset_filter-checkbox">
+                    <?php esc_html_e('Reset', 'bus-ticket-booking-with-seat-reservation'); ?>
+                </span>
+            </div>
+
             <!-- Member Discount promo card — content configurable under
                  Settings → Promo Banner (WBTM_Global_settings.php). -->
             <?php
@@ -1434,6 +1404,7 @@ div#wbtm_date_start_route { height: 50px; }
             <?php endif; ?>
 
         </div><!-- /.wbtm-filter-card -->
+        </div><!-- /.wbtm-filter-slide -->
     </div><!-- /.wbtm_bus_left_filter_holder -->
     <?php endif; ?>
 
@@ -1468,6 +1439,7 @@ div#wbtm_date_start_route { height: 50px; }
             <div class="wbtm-list-count">
                 <strong><?php echo esc_html($total_buses); ?></strong>
                 <?php echo esc_html__('buses available for', 'bus-ticket-booking-with-seat-reservation'); ?>
+                <br class="wbtm-list-count-break">
                 <?php echo esc_html(date_i18n('F j', strtotime($date))); ?>
             </div>
             <?php if ($wbtm_fd_sort) : ?>

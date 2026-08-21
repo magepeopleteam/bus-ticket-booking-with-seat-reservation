@@ -1,29 +1,61 @@
+// Only animate the WooCommerce notice wrapper when it actually holds a notice.
+//
+// WooCommerce prints an EMPTY <div class="woocommerce-notices-wrapper"></div> on
+// every page (wc-template-functions.php), and on hello-elementor it lands as the
+// first child of main#content > .page-content, immediately before this plugin's
+// own .wbtm_style.wbtm_container. Sliding that empty div up shows nothing -- but
+// jQuery implements slideUp by stamping inline `overflow:hidden` on the element
+// for the animation's whole 200ms ('fast'). An empty div with overflow:hidden
+// establishes a block formatting context, so it stops being a self-collapsing
+// pass-through: .wbtm_container's own `margin-top: var(--wbtm_dmp)` (20px) can no
+// longer collapse up and out through .page-content and is trapped inside it
+// instead, while the gap above .page-content falls back to the <h1>'s 16px
+// margin-bottom. Net effect: the entire search bar, and everything below it,
+// jumped down exactly 16px for ~200ms -- the "bounce".
+//
+// It only ever happened on the FIRST interaction because jQuery ends slideUp by
+// setting inline `display:none`, nothing in the plugin ever slideDown/shows it
+// again, and slideUp on an already-hidden element is an immediate no-op.
+//
+// Filtering to non-empty wrappers keeps the intent (dismiss a real WooCommerce
+// notice before showing new results) and skips the empty one entirely, so no
+// `overflow` is ever written and no margin-collapse boundary is ever created.
+function wbtm_hide_wc_notices($) {
+	$('body').find('.woocommerce-notices-wrapper').filter(function () {
+		return $.trim($(this).html()) !== '';
+	}).slideUp('fast');
+}
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
 
 	let wbtm_bus_start_end = '';
+	// Turns the magnifying-glass icon into a spinner in place -- the
+	// button's own "Search" text stays put instead of flipping to
+	// data-loading-text's "Searching...". This toggles a class on the SAME
+	// <span> (fas fa-search mR_xs) rather than swapping in a new element:
+	// mR_xs contributes a margin-right the button's layout counts on, and a
+	// replacement span that didn't carry it shrank the whole button by that
+	// margin every time the spinner showed. Keeping the original element
+	// means every class it already carries (spacing included) just stays.
+	// The spinner itself is the same CSS ring used for the "From"/"To"
+	// fields' own AJAX loading state (search_form.php's inline <style>,
+	// div.wbtm_loader_xs .fa-spinner rule), not Font Awesome's choppy
+	// fa-spin, kept visually consistent with the rest of the form.
 	function wbtm_set_search_button_state(parent, is_loading) {
 		parent.find('.wbtm_search_action_button:visible').each(function () {
 			let button = $(this);
-			let default_html = button.data('default-html');
-			let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.searching : 'Searching...');
-
-			if (!default_html) {
-				default_html = button.html();
-				button.data('default-html', default_html);
+			let icon = button.find('> .wbtm-search-btn-icon');
+			if (!icon.length) {
+				return;
 			}
 
 			if (is_loading) {
-				button
-					.addClass('wbtm_is_loading')
-					.prop('disabled', true)
-					.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_search_button_text">' + loading_text + '</span>');
+				button.addClass('wbtm_is_loading').prop('disabled', true);
+				icon.addClass('wbtm-search-btn-spinner');
 			} else {
-				button
-					.removeClass('wbtm_is_loading')
-					.prop('disabled', false)
-					.html(default_html);
+				button.removeClass('wbtm_is_loading').prop('disabled', false);
+				icon.removeClass('wbtm-search-btn-spinner');
 			}
 		});
 	}
@@ -57,7 +89,7 @@
 			left_filter_boarding: wbtm_left_filter_boarding.val(),
 		}
 
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		if (!wbtm_check_required(start)) {
 			wbtm_set_search_button_state(parent, false);
 			start.trigger('click');
@@ -120,7 +152,7 @@
 		wbtm_bus_start_end = $(this).closest('.wbtm-bus-lists').attr('id');
 		let date = $(this).data('date');
 		let parent = $(this).closest('#wbtm_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
@@ -136,7 +168,7 @@
 		let start_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
 		let target = parent.find('.wbtm_dropping_point');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
 		wbtm_loader_xs(target.find('.marker'));
@@ -185,7 +217,7 @@
 		let current = $(this);
 		let end_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		let exit_route = 0;
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list li').each(function () {
 			let current_route = $(this).data('value');
@@ -237,7 +269,7 @@
 		let date = $(this).val();
 		let parent = $(this).closest('#wbtm_area');
 		let target = parent.find('.wbtm_return_date');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		if (target.length > 0 && date) {
 			let start_route = parent.find('[name="bus_start_route"]').val();
 			let end_route = parent.find('input[name="bus_end_route"]').val();
@@ -270,7 +302,7 @@
 	});
 	$(document).on("click", "#wbtm_area #wbtm_journey_date", function () {
 		let parent = $(this).closest('#wbtm_area');
-		$('body').find('.woocommerce-notices-wrapper').slideUp('fast');
+		wbtm_hide_wc_notices($);
 		let start = parent.find('input[name="bus_start_route"]').val();
 		if (!start) {
 			wbtm_alert($(this));
@@ -285,7 +317,7 @@
 		let currentButton = $(this);
 		let post_id = $(this).attr("data-bus_id");
 		let target = parent.find("[data-row_id=" + post_id + "]");
-		$("body").find(".woocommerce-notices-wrapper").slideUp("fast");
+		wbtm_hide_wc_notices($);
 		if ($(this).hasClass("mActive")) {
 			target.find(">div").slideUp("fast");
 			wbtm_all_content_change($(this));
@@ -359,25 +391,22 @@
 //====================================================================//
 (function ($) {
 	"use strict";
+	// Same treatment as the search button (assets/global/wbtm_global.js's
+	// wbtm_set_search_button_state): a plain CSS ring spinner prepended
+	// next to the button's own label, not Font Awesome's choppy fa-spin
+	// replacing the whole thing with "Loading...". The button keeps saying
+	// "Book Now" (or whatever its own text is) the entire time, and since
+	// nothing here touches that text, there's no default-html to snapshot
+	// and restore either -- just add/remove the spinner span.
 	function wbtm_set_loading_button_state(button, is_loading) {
-		let default_html = button.data('default-html');
-		let loading_text = button.data('loading-text') || (typeof wbtm_strings !== 'undefined' ? wbtm_strings.loading : 'Loading...');
-
-		if (!default_html) {
-			default_html = button.html();
-			button.data('default-html', default_html);
-		}
-
 		if (is_loading) {
-			button
-				.addClass('wbtm_is_loading')
-				.prop('disabled', true)
-				.html('<span class="fas fa-spinner fa-spin" aria-hidden="true"></span><span class="wbtm_loading_button_text">' + loading_text + '</span>');
+			button.addClass('wbtm_is_loading').prop('disabled', true);
+			if (!button.find('> .wbtm-loading-btn-spinner').length) {
+				button.prepend('<span class="wbtm-loading-btn-spinner" aria-hidden="true"></span>');
+			}
 		} else {
-			button
-				.removeClass('wbtm_is_loading')
-				.prop('disabled', false)
-				.html(default_html);
+			button.removeClass('wbtm_is_loading').prop('disabled', false);
+			button.find('> .wbtm-loading-btn-spinner').remove();
 		}
 	}
 

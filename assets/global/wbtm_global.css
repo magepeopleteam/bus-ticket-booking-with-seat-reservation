@@ -387,6 +387,17 @@ body.single-wbtm_bus div.wbtm_container {
   #ui-datepicker-div .ui-datepicker-header .ui-icon { display: none !important; }
 
   /* Month / Year title & selects */
+  /* jQuery UI's own base rule (jquery-ui.min.css) reserves
+     `margin: 0 2.3em` on .ui-datepicker-title specifically to clear the
+     absolutely-positioned prev/next buttons (28px wide, 10px from each
+     edge) either side of it -- this block's `margin:0 !important` wiped
+     that clearance with nothing put back, so the title (and the year
+     select's own dropdown caret) crowded right up against the next
+     button. Restoring a margin sized to the actual button footprint
+     (28px + 10px offset) fixes the overlap; flex + justify-content:center
+     recentres the month/year selects (with a real gap between them, since
+     the plugin never set one) now that the title has room to actually be
+     centered in rather than just clipped by the buttons on either side. */
   #ui-datepicker-div .ui-datepicker-title {
     background: transparent !important;
     color: #fff !important;
@@ -394,7 +405,11 @@ body.single-wbtm_bus div.wbtm_container {
     font-weight: 600 !important;
     letter-spacing: 0.2px;
     line-height: 1 !important;
-    margin: 0 !important;
+    margin: 0 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
   }
   #ui-datepicker-div .ui-datepicker-title select {
     background: transparent !important;
@@ -407,6 +422,7 @@ body.single-wbtm_bus div.wbtm_container {
     cursor: pointer;
     outline: none !important;
     min-width: auto !important;
+    flex: 0 1 auto;
   }
   #ui-datepicker-div .ui-datepicker-header .ui-state-hover {
     background: transparent !important;
@@ -542,3 +558,30 @@ body.single-wbtm_bus div.wbtm_container {
     margin: 0;
   }
 } */
+
+/* ── Generic button-loading spinner ──────────────────────────────
+   Used by assets/global/wbtm_global.js's wbtm_set_loading_button_state()
+   (Book Now / Add to Cart / registration submit) -- a plain CSS ring
+   prepended next to the button's own text instead of Font Awesome's
+   choppy fa-spin replacing the whole label with "Loading...". Same
+   ring technique as the search bar's own spinners (search_form.php's
+   div.wbtm_loader_xs .fa-spinner, and the search button's own
+   .wbtm-search-btn-spinner), just generalized here since this one shows
+   up on buttons across the booking flow, not just the search bar. White
+   ring on an orange fill: every button this attaches to
+   (.wbtm_summary_preview_book_now, #wbtm_add_to_cart) already has a solid
+   theme-color background. */
+.wbtm-loading-btn-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  border: 2px solid rgba(255, 255, 255, .35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: wbtm-loading-btn-spin .7s linear infinite;
+}
+@keyframes wbtm-loading-btn-spin {
+  to { transform: rotate(360deg); }
+}

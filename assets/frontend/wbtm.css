@@ -541,7 +541,7 @@ div.wbtm_selected_seat_details table tbody tr td {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 40px;
+  min-height: 32px;
 }
 
 .wbtm_seat_plan_area .mp_seat_item .mp_seat {
@@ -624,6 +624,7 @@ div.wbtm_selected_seat_details table tbody tr td {
 .seat_number {
   position: relative;
   z-index: 2;
+  font-size: 12px;
   font-weight: bold;
   color: inherit;
   text-align: center;
@@ -637,13 +638,13 @@ div.wbtm_selected_seat_details table tbody tr td {
 /* Ensure consistent seat styling for both lower and upper deck */
 .wbtm_seat_plan_area table th,
 .wbtm_seat_plan_area table td {
-  min-height: 60px !important;
+  min-height: 46px !important;
   text-align: center !important;
-  height: 60px !important;
-  width: 60px !important;
+  height: 46px !important;
+  width: 46px !important;
   background-color: var(--wbtm_color_theme_alter) !important;
-  padding: 5px !important;
-  min-width: 60px !important;
+  padding: 4px !important;
+  min-width: 46px !important;
 }
 
 /* Make upper deck exactly the same as lower deck */
@@ -661,13 +662,13 @@ div.wbtm_selected_seat_details table tbody tr td {
 
 .wbtm_seat_plan_upper table th,
 .wbtm_seat_plan_upper table td {
-  min-height: 60px !important;
+  min-height: 46px !important;
   text-align: center !important;
-  height: 60px !important;
-  width: 60px !important;
+  height: 46px !important;
+  width: 46px !important;
   background-color: var(--wbtm_color_theme_alter) !important;
-  padding: 5px !important;
-  min-width: 60px !important;
+  padding: 4px !important;
+  min-width: 46px !important;
 }
 
 .wbtm_seat_plan_upper table thead th {
@@ -679,13 +680,13 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_area table th,
 div.wbtm_bus_list_area div.wbtm_seat_plan_area table td,
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
-  min-height: 60px !important;
+  min-height: 46px !important;
   text-align: center !important;
-  height: 60px !important;
-  width: 60px !important;
+  height: 46px !important;
+  width: 46px !important;
   background-color: var(--wbtm_color_theme_alter) !important;
-  padding: 5px !important;
-  min-width: 60px !important;
+  padding: 4px !important;
+  min-width: 46px !important;
 }
 
 /* Ensure seat items have consistent styling */
@@ -758,13 +759,13 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper table tr {
 
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper table th,
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper table td {
-  min-height: 60px !important;
+  min-height: 46px !important;
   text-align: center !important;
-  height: 60px !important;
-  width: 60px !important;
+  height: 46px !important;
+  width: 46px !important;
   background-color: var(--wbtm_color_theme_alter) !important;
-  padding: 5px !important;
-  min-width: 60px !important;
+  padding: 4px !important;
+  min-width: 46px !important;
 }
 
 div.wbtm_bus_list_area div.wbtm_seat_plan_upper table thead th {
@@ -1260,30 +1261,46 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm-bus-flix-style {
     display: flex;
     flex-direction: column;
-    background-color: var(--wbtm_color_light);
-    border: 1px solid var(--wbtm_color_border);
-    margin: 10px auto;
-    border-radius: 5px;
-    padding: 10px;
-    font-family: sans-serif;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    border: 1px solid var(--wbtm_color_border, #ddd);
+    margin: 0 0 14px;
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+    font-family: inherit;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .wbtm-bus-flix-style:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 48px rgba(15, 23, 42, .1);
   }
 
+  /* 5-column strip: photo | title | route | feature | price. The old
+     `display:flex` row gave none of its 5 children a flex-basis/flex-shrink,
+     so once their combined intrinsic width passed the row's, every child
+     shrank by the same factor and whatever text had nowhere left to go
+     wrapped mid-word -- a price's currency symbol dropping onto its own line
+     from the amount, a seat count breaking after "Seats". A grid gives every
+     column a fixed or content-sized track instead, so nothing is ever
+     squeezed below its own content width. */
   .wbtm-bus-flix-style_bus {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 130px minmax(150px, 210px) 1fr auto;
     align-items: center;
-    flex-wrap: wrap;
-    font-family: sans-serif;
+    column-gap: 22px;
+    font-family: inherit;
   }
 
   /* Per-departure bus/boat photo (restored: the modern card rewrite
      dropped the thumbnail; helper + fallback logic still intact). */
   .wbtm-bus-flix-style_bus .wbtm-flix-photo {
-    flex: 0 0 110px;
-    height: 80px;
-    border-radius: 8px;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 100%;
+    height: 84px;
+    border-radius: 14px;
     overflow: hidden;
-    margin-right: 14px;
+    margin-right: 0;
     background: #eef3fb;
     display: flex;
     align-items: center;
@@ -1300,20 +1317,39 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
 
   .wbtm-bus-flix-style .title {
-    width: 100%;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: auto;
   }
 
+  .wbtm-bus-flix-style .title h5 {
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    cursor: pointer;
+  }
+
+  .wbtm-bus-flix-style .title p { margin: 0; }
+
+  /* Bus-number badge: no white-space control and no width cap meant a long
+     "Bus No: <name>" wrapped onto a second line inside a 50px border-radius,
+     which reads as a misshapen capsule rather than a rounded badge. */
   .wbtm-bus-flix-style .title span {
-    padding: 0 8px;
-    border-radius: 50px;
-    color: #fff;
-    background-color: var(--wbtm_color_theme_cc);
+    display: inline-flex;
+    white-space: nowrap;
+    padding: 0;
+    border-radius: 0;
+    color: var(--wbtm_color_light_3, #878787);
+    background-color: transparent;
     font-size: 11px;
-    line-height: 2;
+    font-weight: 600;
+    line-height: 1.6;
   }
 
   .wbtm-bus-flix-style .route {
-    width: 100%;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    width: auto;
     display: flex;
     flex-direction: column;
     justify-content: stretch;
@@ -1325,24 +1361,62 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: space-between;
     align-items: center;
-    margin: 14px 0;
+    gap: 18px;
+    margin: 0;
   }
 
   .wbtm-bus-flix-style .route .route-info .from,
   .wbtm-bus-flix-style .route .route-info .to {
-    width: 45%;
+    width: auto;
+  }
+
+  .wbtm-bus-flix-style .route .route-info .from h4,
+  .wbtm-bus-flix-style .route .route-info .to h4 {
+    font-size: 22px;
+    font-weight: 800;
+    white-space: nowrap;
+    margin: 0 0 4px;
+    color: #1a1a1a;
+  }
+
+  .wbtm-bus-flix-style .route .route-info .from p,
+  .wbtm-bus-flix-style .route .route-info .to p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--wbtm_color_light_3, #878787);
+    white-space: nowrap;
   }
 
   .wbtm-bus-flix-style .route .route-info .to {
     padding-left: 0;
   }
 
+  /* The icon + duration text sit directly on this div's own border-bottom --
+     there is no separate floating badge in this markup, unlike the `.time`
+     rule below (dead: no template emits a `.time` element here). A flat 3px
+     solid line left no breathing room under the text, reading as an overlap
+     between the line and the label above it. */
   .wbtm-bus-flix-style .route .route-info .duration {
-    border-bottom: 3px solid var(--wbtm_d_color);
-    width: 33%;
+    border-bottom: 2px dashed var(--wbtm_color_border, #ddd);
+    width: auto;
+    min-width: 90px;
     position: relative;
+    padding-bottom: 10px;
+    font-size: 12px;
+    color: var(--wbtm_color_light_3, #878787);
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .wbtm-bus-flix-style .route .route-info .duration i {
+    color: var(--wbtm_color_theme, #e8510f);
+    margin-right: 4px;
+  }
+
+  .wbtm-bus-flix-style .route .route-info .duration strong {
+    font-weight: 700;
   }
 
   .wbtm-bus-flix-style .route .route-info .duration .time {
@@ -1354,15 +1428,105 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     padding: 0 5px;
   }
 
+  /* Seat-count badge: two stacked <p> lines wrapped in a 50px-radius pill
+     with no background to actually show it -- the invisible pill is what
+     produced the overlapping-text look reported on some cards. */
   .wbtm-bus-flix-style .feature {
+    grid-column: 4;
+    grid-row: 1;
     display: flex;
-    justify-content: start;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 2px;
+    white-space: nowrap;
   }
 
   .wbtm-bus-flix-style .feature .items {
-    padding: 2px 8px;
-    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+
+  .wbtm-bus-flix-style .feature .items p {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .wbtm-bus-flix-style .feature .items p:first-child {
+    color: #166534;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .wbtm-bus-flix-style .feature .items p:last-child {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--wbtm_color_light_3, #878787);
+  }
+
+  .wbtm-bus-flix-style .price {
+    grid-column: 4;
+    grid-row: 2;
+    text-align: center;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  .wbtm-bus-flix-style .price h4 {
+    white-space: nowrap;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .wbtm-bus-flix-style .price h4 .woocommerce-Price-amount {
+    white-space: nowrap;
+    font-size: inherit;
+  }
+
+  .wbtm-bus-flix-style .wbtm_bus_details_tabs_holder {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--wbtm_color_border, #ddd);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* The base .wbtm_bus_popup_links rule (wtbm_search.css) hides these pills
+     until the card is hovered -- fine for the old list layout, but on this
+     card redesign the row reads as empty most of the time. Shown by default
+     here, matching the other search style. */
+  .wbtm-bus-flix-style .wbtm_bus_popup_links {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .wbtm-bus-flix-style .wbtm_bus_popup_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .wbtm-bus-flix-style .wbtm_bus_popup_link i {
+    font-size: 11px;
+  }
+
+  .wbtm-bus-flix-style .wbtm-seat-book {
+    margin: 0;
   }
 
   .wbtm_style {
@@ -1374,12 +1538,18 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     color: #333;
   }
 
+  /* No margin-bottom: this selector only ever matches .wbtm_search_area
+     nested inside .wbtm_style (see the selector itself), and .wbtm_style's
+     own base rule already gives it padding:20px on all four sides -- the
+     extra bottom margin here just doubled that on the one side, leaving
+     visibly more empty space below the pill bar than above/beside it
+     inside the grey wrapper. Scoped to this same nested selector, so it
+     can't affect any other (non-.wbtm_style-wrapped) use of
+     .wbtm_search_area elsewhere in the plugin. */
   .wbtm_style .wbtm_search_area {
     border: 0;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-
   }
 
   .wbtm_search_area .inputList {
@@ -1497,7 +1667,11 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     margin-top: 0;
     margin-bottom: 15px;
     background-color: #fff;
-    border-radius: 12px;
+    /* Matches .wbtm-card-wrap's 24px (templates/layout/search_result.php) --
+       this element is that card's own wrapper, so a smaller radius here
+       left its squarer corner peeking out past the card's more rounded
+       one. */
+    border-radius: 24px;
     display: flex;
     justify-content: space-between;
     gap: 0;
@@ -1702,11 +1876,6 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     height: 100%;
   }
 
-  .wbtm-bus-flix-style_bus {
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-
   .wbtm_search_result .wbtm-bus-list .wbtm-bus-name {
     border-right: 1px solid #eee;
     width: 50%;
@@ -1729,14 +1898,6 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 
 }
 
-@media (min-width: 540px) {
-
-  .wbtm-bus-flix-style .route .route-info .from,
-  .wbtm-bus-flix-style .route .route-info .to {
-    width: 33%;
-  }
-}
-
 @media (min-width: 768px) {
   .wbtm_search_result .wbtm-bus-list {
     flex-direction: row;
@@ -1756,17 +1917,54 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm_search_result .wbtm-bus-list .wbtm-bus-image img {
     height: auto;
   }
+}
 
+/* Tablet: the filter rail has already dropped above the list (see
+   wtbm_search.css), but that still only left the list area ~500-540px wide
+   at the narrow end of this range -- nowhere near the desktop row's real
+   minimum (96px photo + 110px title + route-info's own min-content of
+   ~266px once its 90px-min duration badge and nowrap times are accounted
+   for + two more auto-sized columns for the feature/price badges + 3-4
+   column-gaps), which came to ~600px+. Shrinking a couple of those sizes
+   (the previous approach here) still left it short, so the feature/price
+   pair rendered past the card's own right edge, clipped mid-badge by an
+   ancestor's overflow:hidden.
+   Simplest fix that's actually guaranteed to fit: reuse the same 2-column
+   stack the max-width:768px block below already uses (photo, then title,
+   then route, full width each; feature + price share the last row) rather
+   than continuing to squeeze a single-row layout into a track that has no
+   real room for it. This range has more width to spare than true mobile
+   once stacked, so none of the max-width:768px block's font/gap shrinks
+   are needed here -- desktop sizing already fits comfortably. */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .wbtm-bus-flix-style_bus {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    row-gap: 12px;
+  }
+  .wbtm-bus-flix-style_bus .wbtm-flix-photo {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 150px;
+  }
   .wbtm-bus-flix-style .title {
-    width: 16%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
   }
-
   .wbtm-bus-flix-style .route {
-    width: 40%;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
   }
-
-  .wbtm-bus-flix-style .route .route-info .to {
-    padding-left: 20px;
+  .wbtm-bus-flix-style .feature {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .wbtm-bus-flix-style .price {
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: 6px;
   }
 }
 
@@ -1988,20 +2186,52 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   .wbtm_bus_info_details_holder {
     width: 100% !important;
   }
-  /* Route info container stacks */
+  /* Route info: date block + cities stay in one row on mobile too (the
+     base rule already sets this to display:flex with no flex-direction
+     override, i.e. row -- flex-direction:column here is what forced it
+     onto two stacked lines). The bus-icon-and-dashed-line piece between
+     the cities is still dropped to leave room for it in a phone-width
+     row; the date block and both cities keep their own font/gap sizes
+     from the base rules, which is tight but fits down to ~340px wide. */
   .wbtm_search_route_container {
-    flex-direction: column !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+  .wbtm_search_route_return_date {
+    padding-right: 12px !important;
   }
   .wbtm_search_route_cities_wrapper {
-    width: 100% !important;
-    flex-wrap: wrap;
+    flex: 1 !important;
+    /* mp_global/assets/mp_style/wbtm_plugin_global.css ships a generic
+       `.wbtm_style [class*="_wrap"] { flex-wrap: wrap; }` utility-class
+       rule -- an attribute selector matching any class *containing*
+       "_wrap" -- which also matches this element's actual name, "...
+       _cities_wrapper", by accident. With no rule anywhere setting this
+       back to nowrap, that's what was actually stacking Paris/Berlin onto
+       two lines instead of the icon-gap sizing above being too tight. */
+    flex-wrap: nowrap !important;
   }
+  /* Keep a plain dashed connector between the two cities instead of
+     dropping it outright -- just without the 36px bus-icon circle (base
+     rule's ::before/::after leave a 40px gap in the middle sized for it),
+     which is too wide to also fit on a phone-width row. Both dashes
+     stretch to meet in the middle instead. */
   .wbtm_search_route_icon_wrapper {
+    display: flex !important;
+    flex: 0 1 20px !important;
+    padding: 0 !important;
+  }
+  .wbtm_search_route_icon_wrapper::before,
+  .wbtm_search_route_icon_wrapper::after {
+    width: 50% !important;
+  }
+  .wbtm_search_route_bus_icon {
     display: none !important;
   }
   .wbtm_search_route_city_section,
   .wbtm_search_route_city_section_right {
-    width: 48% !important;
+    width: 44% !important;
     padding: 6px !important;
   }
   /* Bus info row stacks vertically */
@@ -2023,15 +2253,69 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     display: inline-flex !important;
     vertical-align: top;
   }
-  /* Route display in flix-style */
-  .wbtm-bus-flix-style {
-    flex-direction: column !important;
+  /* Route display in flix-style: the 5-column strip collapses to 2 columns
+     -- photo and title/route span both, feature and price share the last
+     row side by side (seats on the left, price on the right).
+     Every child below also needs its OWN grid-row set explicitly: the
+     desktop rules above give .wbtm-flix-photo/.title/.route a `grid-row:
+     1 / span 2` and .feature/.price `grid-row: 1` / `grid-row: 2`
+     respectively, none of which this query used to override -- so on
+     mobile all five kept those desktop row assignments while only their
+     *columns* changed, and every one of them landed back in rows 1-2,
+     rendering stacked directly on top of each other (times and price
+     text smeared across the photo) instead of the five stacked rows this
+     comment describes. .price was also left at `grid-column: 1`, the same
+     column as .feature, instead of column 2 -- so even the "side by side"
+     pair overlapped each other too. */
+  .wbtm-bus-flix-style_bus {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto auto auto auto !important;
+    row-gap: 12px !important;
   }
-  .wbtm-bus-flix-style .title,
-  .wbtm-bus-flix-style .route,
-  .wbtm-bus-flix-style .feature,
-  .wbtm-bus-flix-style .price {
+  .wbtm-bus-flix-style_bus .wbtm-flix-photo {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    height: 150px !important;
+  }
+  .wbtm-bus-flix-style .title {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
     width: 100% !important;
+  }
+  .wbtm-bus-flix-style .route {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+  }
+  .wbtm-bus-flix-style .feature {
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+  }
+  .wbtm-bus-flix-style .price {
+    grid-column: 2 !important;
+    grid-row: 4 !important;
+    margin-top: 6px;
+  }
+  .wbtm-bus-flix-style .wbtm_bus_details_tabs_holder {
+    justify-content: space-between;
+  }
+  /* .route-info's desktop sizing (22px nowrap times, 18px gaps, a 90px-min
+     duration badge) is tuned for the 1fr third column of a 4-column desktop
+     grid, easily 300px+ wide. Mobile only ever shrunk the *card's* padding
+     and grid — never these — so at anything near 320-360px wide "10:30 pm"
+     had nowhere to go and ran off the edge of the viewport, clipped to
+     "10:3". Shrinking the font, gap and badge here brings the row's total
+     width back under what a narrow phone actually has. */
+  .wbtm-bus-flix-style .route .route-info {
+    gap: 8px;
+  }
+  .wbtm-bus-flix-style .route .route-info .from h4,
+  .wbtm-bus-flix-style .route .route-info .to h4 {
+    font-size: 17px !important;
+  }
+  .wbtm-bus-flix-style .route .route-info .duration {
+    min-width: 68px;
+    font-size: 11px;
   }
   /* Date-route header wraps */
   .wbtm_search_result .wbtm-date-route,
@@ -2491,16 +2775,36 @@ table.wbtm_totals .wbtm_sub_total {
   text-transform: uppercase;
   letter-spacing: .03em;
 }
+/* The open dropdown list itself is native/OS-rendered for a plain <select>
+   and can't be restyled cross-browser from CSS alone (no rounded corners,
+   shadow, or custom row highlight there) -- only the closed control can be
+   modernized this way. */
 .wbtm_pickup_point select.formControl {
-  border: 1px solid #e2e8f0 !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1.5px solid #e2e8f0 !important;
   border-radius: 10px !important;
-  padding: 10px 12px !important;
+  padding: 11px 40px 11px 14px !important;
   font-size: 13.5px !important;
-  background-color: #f8fafc !important;
+  font-weight: 600;
+  color: #1e293b;
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%2364748b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.wbtm_pickup_point select.formControl:hover {
+  border-color: #cbd5e1 !important;
 }
 .wbtm_pickup_point select.formControl:focus {
   border-color: var(--wbtm_color_theme) !important;
   background-color: #fff !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 15%, transparent);
+  outline: none;
 }
 
 /* ---- Extra services — line items with a pill quantity stepper ----
@@ -2510,16 +2814,14 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_ex_service_area {
   padding: 0 !important;
   border: 1px solid #e7eaf0 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 12px 28px -20px rgba(2, 6, 23, .28);
+  /* Matches .wbtm_booking_summary_preview's own radius/shadow (or lack of
+     one) right below it -- this card used to float noticeably harder
+     (heavier radius, a real drop shadow) while that one sat flat, making
+     the two summary-column cards look like they belonged to different
+     designs. */
+  border-radius: 14px !important;
+  box-shadow: none;
   overflow: hidden;
-}
-/* Thin brand accent bar along the top edge of the card. */
-.wbtm_ex_service_area::before {
-  content: "";
-  display: block;
-  height: 4px;
-  background: linear-gradient(90deg, var(--wbtm_color_theme, #2563eb), var(--wbtm_color_theme_alter, #93c5fd));
 }
 .wbtm_ex_service_area h3 {
   text-transform: uppercase;
@@ -2565,26 +2867,53 @@ table.wbtm_totals .wbtm_sub_total {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f8fafc !important;
+  background: #fff !important;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 11px 14px;
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
-  transition: border-color .15s ease;
+  padding: 13px 16px;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
 }
 .wbtm_ex_service_area tbody tr:hover {
   border-color: #cbd5e1;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, .08);
+  transform: translateY(-1px);
 }
 .wbtm_ex_service_area tbody td {
   border: 0 !important;
   padding: 0 !important;
+  background: transparent !important;
 }
 .wbtm_ex_service_area td._textLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex: 1 1 auto;
   font-weight: 700;
   color: #0f172a;
   font-size: 14px;
   text-align: left !important;
+  min-width: 0;
+}
+/* Generic add-on icon badge -- the plugin doesn't store a per-service icon,
+   so every row gets the same tag glyph in a small tinted circle rather than
+   the name sitting bare, matching the icon treatment used on the bus-details
+   popup tabs. */
+.wbtm_ex_service_area .wbtm_ex_service_icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 12%, #ffffff);
+  color: var(--wbtm_color_theme, #e8510f);
+  font-size: 12px;
+}
+.wbtm_ex_service_area .wbtm_ex_service_name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .wbtm_ex_service_area td._textCenter {
   flex: 0 0 auto;
@@ -2598,45 +2927,56 @@ table.wbtm_totals .wbtm_sub_total {
    change the input's value, they don't add/remove/re-tag DOM nodes). */
 .wbtm_ex_service_area tbody td:nth-child(2) { order: 3; }
 .wbtm_ex_service_area tbody td:nth-child(3) { order: 2; }
-/* Unit price rendered as a small white pill badge, like the seat badge on
-   the passenger card header. */
 .wbtm_ex_service_area td._textCenter .woocommerce-Price-amount {
   display: inline-flex;
   align-items: center;
   font-weight: 700;
-  font-size: 12.5px;
-  color: var(--wbtm_color_theme);
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  padding: 3px 10px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+  font-size: 13.5px;
+  color: #1e293b;
 }
+/* Back to one grouped pill (not three separate floating controls) -- the
+   dividers between the two buttons and the number are what actually reads
+   as "adjustable spacing" here, not physical gaps between the pieces. */
 .wbtm_ex_service_area .qtyIncDec {
-  background: #fff;
+  display: flex;
+  align-items: center;
+  /* `.groupContent` (mp_global's generic grouped-input skin) paints its own
+     background-color: var(--wbtm_color_theme) at equal specificity to this
+     selector -- only source order kept it from winning here, which isn't
+     safe to rely on, so it's pinned with !important. */
+  background: #fff !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 999px !important;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
 }
 .wbtm_ex_service_area .qtyIncDec .addonGroupContent {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #64748b;
   cursor: pointer;
+  background: transparent;
   border: 0 !important;
   transition: background-color .15s ease, color .15s ease;
+}
+.wbtm_ex_service_area .qtyIncDec .decQty {
+  border-right: 1px solid #e2e8f0 !important;
+}
+.wbtm_ex_service_area .qtyIncDec .incQty {
+  border-left: 1px solid #e2e8f0 !important;
 }
 .wbtm_ex_service_area .qtyIncDec .addonGroupContent:hover {
   background: var(--wbtm_color_theme, #2563eb);
   color: #fff;
 }
 .wbtm_ex_service_area .qtyIncDec input.formControl {
-  width: 40px !important;
-  height: 28px;
+  width: 34px !important;
+  height: 30px;
+  flex: 0 0 auto;
   border: 0 !important;
   text-align: center;
   font-weight: 700;
@@ -2909,67 +3249,137 @@ table.wbtm_totals .wbtm_sub_total {
  *  #wbtm_add_to_cart button below, so nothing here duplicates cart logic.
  * ==================================================================== */
 .wbtm_booking_summary_preview {
-  background: #eef2ff;
+  /* Lighter than the header band's #f8fafc, not darker/more saturated than
+     it -- the card body should read as the receding surface and the header
+     as the (slightly) more present one, not the other way round. */
+  background: #fff;
   border: 1px solid #e0e7ff;
   border-radius: 14px;
-  padding: 18px;
+  padding: 0 18px 18px;
   margin: 0 0 16px;
   box-sizing: border-box;
+  overflow: hidden;
 }
+/* Same banner treatment as the Extra Services header (.wbtm_ex_service_area
+   h3): uppercase, bolder weight, a tinted band bled edge-to-edge via
+   negative margins (this card, unlike that one, has its own 18px padding
+   rather than padding:0) with a border to separate it from the rest of the
+   card, instead of just a plain bold line sitting in the same flat card
+   background as everything below it. */
 .wbtm_booking_summary_title {
-  margin: 0 0 4px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e3a8a;
+  /* The generic `div.wbtm_style h4` rule (wbtm_plugin_global.css) is more
+     specific than this single class (it also matches the element type), so
+     it was winning on every shared property -- margin/padding included,
+     which is why the banner's edge-to-edge bleed and rounded top corners
+     weren't landing cleanly either, not just the uppercase transform. */
+  margin: 0 -18px 0 !important;
+  padding: 14px 18px 2px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .01em;
+  /* Same header treatment as .wbtm_ex_service_area h3 right above this card
+     (identical grey + text color) so the two summary-column headers read
+     as one consistent style instead of two different ones. Flat, not that
+     h3's gradient -- title and route are two separate boxes here (h3 is
+     one), so the same gradient applied to each independently would restart
+     at the top color at the seam between them instead of flowing through. */
+  color: #0f172a;
+  background: #f8fafc;
 }
 .wbtm_booking_summary_route {
-  margin: 0 0 15px !important;
+  /* Route now sits inside the same header band as the title (no border
+     between them) -- just the closing edge of that shared band. */
+  margin: 0 -18px 15px !important;
+  padding: 0 18px 14px;
   font-size: 12.5px;
-  color: #4f5ea3;
+  font-weight: 500;
+  color: rgba(15, 23, 42, .6);
+  background: #f8fafc;
+  border-bottom: 1px solid #e7eaf0;
+}
+/* Table + subtotal + total now sit together inside .wbtm_booking_summary_card
+   (one shared white, rounded section), so the table itself no longer needs
+   its own background or corner radius -- that would just double up with the
+   card's. */
+.wbtm_booking_summary_card {
+  background: #fff;
+  border: 1px solid #e0e7ff;
+  border-radius: 12px;
+  padding: 4px 14px;
+  margin-bottom: 14px;
 }
 .wbtm_booking_summary_table {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
 }
 .wbtm_booking_summary_table thead th {
   text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #6b7280;
+  padding: 0 0 8px;
+  border-bottom: 1px solid #dbe2fb;
+}
+.wbtm_booking_summary_table tbody tr {
+  background: #fff !important;
+}
+.wbtm_booking_summary_table tbody td {
+  padding: 11px 0;
+  font-size: 13.5px;
+  color: #374151;
+  background: #fff !important;
+  border-bottom: 1px dotted #b9c3e6;
+  vertical-align: middle;
+}
+.wbtm_booking_summary_table tbody tr:last-child td {
+  border-bottom: none;
+}
+.wbtm_booking_summary_table tbody td:first-child {
+  color: #ea580c;
+  padding-left: 6px;
+  padding-right: 8px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .03em;
-  color: #6b7280;
-  padding: 0 0 8px;
-  border-bottom: 1px solid #e0e7ff;
-}
-.wbtm_booking_summary_table tbody td {
-  padding: 8px 0;
-  font-size: 13px;
-  border-bottom: 1px solid #e5e9ff;
-}
-.wbtm_booking_summary_table tbody td:first-child {
-  color: #f97316;
-  padding: 10px;
-  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
 }
 .wbtm_booking_summary_table tbody td:nth-child(2) {
+  padding: 11px 8px;
+  font-size: 14px;
   font-weight: 700;
-  color: #1f2937;
+  color: #1e293b;
+  white-space: nowrap;
 }
 .wbtm_booking_summary_table tbody td:last-child {
   text-align: right;
-  padding: 10px;
+  padding-right: 6px;
+  font-size: 14px;
   font-weight: 700;
-  color: #1f2937;
+  color: #1e293b;
+  white-space: nowrap;
 }
 /* "No seat selected yet" placeholder row (see booking_summary_preview.php /
    wbtm_update_summary_preview()) — its lone <td> would otherwise inherit the
    seat-type column's orange first-child styling above. */
 .wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row td {
   text-align: center !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
   font-weight: 400 !important;
+  font-size: 12.5px !important;
   color: #9ca3af !important;
   font-style: italic;
+  background: transparent !important;
+  padding: 16px 0 !important;
+  border-bottom: none !important;
+  border: 1px dashed #c7d2fe !important;
+  border-radius: 8px;
 }
 .wbtm_booking_summary_subtotal {
   display: flex !important;
@@ -2978,8 +3388,9 @@ table.wbtm_totals .wbtm_sub_total {
   font-size: 13.5px;
   font-weight: 600;
   color: #374151;
-  margin-top: 15px;
-  margin-bottom: 14px;
+  margin: 0 0 12px;
+  padding-top: 14px;
+  border-top: 1px dotted #b9c3e6;
 }
 .wbtm_booking_summary_subtotal .wbtm_summary_preview_subtotal {
   font-size: 17px;
@@ -3048,9 +3459,9 @@ table.wbtm_totals .wbtm_sub_total {
   font-size: 14px;
   font-weight: 700;
   color: #1f2937;
-  margin: 0 0 14px;
-  padding-top: 12px;
-  border-top: 1px dashed #e0e7ff;
+  margin: 0;
+  padding: 12px 0 14px;
+  border-top: 1px dashed #cbd5f5;
 }
 .wbtm_booking_summary_total .wbtm_summary_preview_total {
   font-size: 19px;
@@ -3082,23 +3493,52 @@ table.wbtm_totals .wbtm_sub_total {
 .wbtm_summary_preview_book_now:disabled:hover {
   filter: none;
 }
+/* wbtm_set_loading_button_state() (assets/global/wbtm_global.js) disables
+   this button while its click is in flight, same attribute as "can't
+   submit yet" above -- but greying it out mid-submit reads as "this
+   stopped working", not "this is working on it". Keep the normal
+   theme-color look (with the spinner riding along next to the text)
+   specifically while .wbtm_is_loading is the reason it's disabled. */
+.wbtm_summary_preview_book_now.wbtm_is_loading:disabled {
+  background: var(--wbtm_color_theme);
+  color: #fff;
+  cursor: wait;
+}
 .wbtm_booking_summary_note {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  /* flex-start, not center: the "✓" and the message are two flex items in
+     this same <p> (the message is an anonymous flex item, "✓" comes from
+     ::before) -- on narrow cards the message text wraps to 2 lines, and
+     align-items:center centered the ✓ against the wrapped block's full
+     height, leaving it floating between the two lines instead of sitting
+     next to the first one. */
+  align-items: flex-start;
+  gap: 10px;
   margin: 12px 0 0;
   margin-top: 15px !important;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: #ecfdf5;
-  border: 1px solid #71d1a0;
+  border: 1px solid #a7f0c7;
   border-radius: 10px;
   font-size: 12px;
-  color: #047857;
+  line-height: 1.5;
+  color: #065f46;
 }
 .wbtm_booking_summary_note::before {
-  content: "✓";
-  flex: 0 0 auto;
+  content: "\2713";
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1;
 }
 .wbtm_registration_area ._dLayout_xs {
   border-radius: 10px;
@@ -3114,7 +3554,25 @@ table.wbtm_totals .wbtm_sub_total {
    col_5_1000 / col_6_900 / col_12_800 breakpoints work again. */
 @media only screen and (min-width: 1001px) {
   .wbtm_style .wbtm_registration_area .col_4 {
-    width: 38%;
+    width: 40%;
+  }
+  /* col_4/col_7 stay complementary (kept ~4% for the row's own gap): the
+     seat buttons are a fixed 46px each now (see .mp_seat_item), so the
+     seat-plan column no longer needs half the row -- give the extra room
+     to the booking-summary card instead, which reads better wider. */
+  .wbtm_style .wbtm_registration_area .col_7 {
+    width: 56%;
+  }
+  /* `.mpRow` is `display:flex`, and a flex item's default min-width is
+     `auto` (its content's own min-content size), not 0 -- so col_4/col_7
+     only ever grew to fit whatever the seat table / booking-summary card
+     wanted, ignoring the percentages above once that content was wider than
+     its column. The booking-summary card (no overflow-hidden of its own)
+     then visibly ran past its rounded border into the seat-plan column /
+     off the edge of the row instead of actually being 54% wide. */
+  .wbtm_style .wbtm_registration_area .col_4,
+  .wbtm_style .wbtm_registration_area .col_7 {
+    min-width: 0;
   }
 }
 
@@ -3164,21 +3622,46 @@ div.wbtm_loader_xs {
 }
 
 /* Seat-hold countdown badge (WBTM_Seat_Hold): shown in the selected-seat
-   summary while the customer's seats are temporarily held. */
+   summary while the customer's seats are temporarily held. Styled to match
+   the "Free cancellation" note card right above it (same shape, same
+   icon-badge-plus-text layout) instead of a plain bordered rectangle with
+   centered text, which read as a disconnected warning strip rather than
+   part of the same summary card. */
 .wbtm_style .wbtm_registration_area .wbtm_hold_badge {
-  margin-top: 8px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  background: #e8f4e8;
-  border: 1px solid #2e7d32;
-  color: #2e7d32;
-  font-weight: 600;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: left;
+}
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge::before {
+  content: "\23F1";
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 400;
 }
 .wbtm_style .wbtm_registration_area .wbtm_hold_badge--urgent {
-  background: #fdecea;
-  border-color: #c62828;
-  color: #c62828;
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+.wbtm_style .wbtm_registration_area .wbtm_hold_badge--urgent::before {
+  background: #dc2626;
 }
 
 /* Lower/Upper deck switch inside a double-decker cabin/coach */

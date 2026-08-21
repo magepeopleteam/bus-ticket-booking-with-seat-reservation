@@ -455,8 +455,13 @@ button.wbtm-bme__btn.wbtm-bme__btn--primary.wbtm-bme__split-caret{
 	border:0 !important;border-radius:0 !important;background:none !important;
 }
 .wbtm-bme__logo-slot .wbtm_single_image_item img{
+	/* contain, not cover: unlike the Featured Image card's bus photo (fine to
+	   crop to fill the box), a logo is a brand mark -- cropping it with cover
+	   cuts off wordmark text or edges on any logo whose aspect ratio doesn't
+	   match this box's fixed 220x180. contain shows the whole logo, letterboxed
+	   against the box's own #ebebeb background instead. */
 	position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;
-	object-fit:cover !important;display:block !important;padding:0 !important;border:0 !important;border-radius:0 !important;
+	object-fit:contain !important;display:block !important;padding:0 !important;border:0 !important;border-radius:0 !important;
 }
 .wbtm-bme__logo-slot .wbtm_remove_single_image{display:none !important;}
 /* "Change image"/"Remove" text links, injected by JS below the preview box. */

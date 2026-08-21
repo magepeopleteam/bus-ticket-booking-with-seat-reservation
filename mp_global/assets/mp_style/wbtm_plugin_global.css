@@ -1648,7 +1648,13 @@
 	}
 	.wbtm_style .mpForm label span {
 		width: 100%;
-		margin: 0 0 var(--wbtm_dmp_xs) 0;
+		/* `.mpForm` is only ever used by templates/layout/search_form.php's
+		   search bar, and the only <span> inside a <label> there
+		   (WBTM_Layout::return_date_picker()'s "(Optional)" wrapper) already
+		   overrides this at the point of use -- this margin-bottom never has
+		   anywhere else to apply. Removed at the source instead of leaving it
+		   as dead CSS a future label>span elsewhere in this form would
+		   silently inherit. */
 	}
 	.wbtm_style .mpForm label span::before {
 		padding: 0 var(--wbtm_dmp_xs);

@@ -687,8 +687,32 @@
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				?>
                 <label class="wtbm_fdColumn">
-					<?php echo esc_html(WBTM_Translations::text_return_date()); ?>
-                    <div class="calendar">
+					<?php
+					// "Return Date (Optional)" is one translated sentence -- split off a
+					// trailing "(...)" so the parenthetical alone can render smaller
+					// (matches the other field labels' size otherwise) without hard-coding
+					// two separate translation strings. Falls back to the plain string
+					// untouched if a translation doesn't end in "(...)".
+					// Both parts stay inside ONE wrapping span: the label itself is a
+					// column flex container (`.wtbm_fdColumn { flex-direction:column }`),
+					// which would otherwise turn the bare text node and the suffix span
+					// into two separate flex items -- each getting its own row -- even
+					// with white-space:nowrap on the label.
+					$wbtm_return_label = WBTM_Translations::text_return_date();
+					if (preg_match('/^(.*?)\s*(\([^)]*\))\s*$/', $wbtm_return_label, $wbtm_label_parts)) {
+						echo '<span class="wtbm_field_label_text">' . esc_html($wbtm_label_parts[1]) . ' <span class="wtbm_field_label_suffix">' . esc_html($wbtm_label_parts[2]) . '</span></span>';
+					} else {
+						echo esc_html($wbtm_return_label);
+					}
+					// The PHP closing tag right below butts directly against the next
+					// element (no template whitespace in between) on purpose: with a
+					// closing </span> immediately before it, that whitespace can't merge
+					// into the label text run (an element boundary blocks it, unlike
+					// journey_date_picker()'s plain-text label) and ends up as its own
+					// whitespace-only text node -- a separate flex item next to .calendar
+					// in this column-flex label that visibly shifted .calendar out of
+					// alignment with the label text above it.
+					?><div class="calendar">
                         <i class="fas fa-calendar-alt"></i>
                         <input type="hidden" name="r_date" value="<?php echo esc_attr($hidden_date); ?>"/>
                         <input id="wbtm_return_date" type="text" value="<?php echo esc_attr($visible_date); ?>" class="formControl" placeholder="<?php echo esc_attr($now); ?>" readonly/>
