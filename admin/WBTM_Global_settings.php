@@ -320,21 +320,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 											<div class="bm-gs__info-note">
 												<p><?php esc_html_e('Some plugins are free and require no license. Additional addons require a valid license key entered below to unlock their features.', 'bus-ticket-booking-with-seat-reservation'); ?></p>
 											</div>
-											<div class="bm-gs__table-wrap">
-												<table class="bm-gs__lic-table">
-													<thead><tr>
-														<th colspan="4"><?php esc_html_e('Plugin', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th><?php esc_html_e('Type', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th><?php esc_html_e('Order No', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th colspan="2"><?php esc_html_e('Expires', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th colspan="3"><?php esc_html_e('License Key', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th><?php esc_html_e('Status', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-														<th colspan="2"><?php esc_html_e('Action', 'bus-ticket-booking-with-seat-reservation'); ?></th>
-													</tr></thead>
-													<tbody>
-														<?php do_action('wbtm_license_page_plugin_list'); ?>
-													</tbody>
-												</table>
+											<?php
+												// The .mp_basic_license_area class is part of the contract with every
+												// addon's license JS: it does closest('.mp_basic_license_area') to find
+												// its key input and to know what to replace with the AJAX response.
+												// Without it closest() returns nothing, the key reads as undefined and
+												// activation aborts with "Please enter your valid licence key."
+											?>
+											<div class="bm-gs__table-wrap mp_basic_license_area">
+												<?php $this->licence_area(); ?>
 											</div>
 										</div>
 									<?php elseif (isset($sections[$section_id]) && isset($fields[$section_id])): ?>
@@ -1797,15 +1791,19 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				<?php
 			}
 
+			// Single source of truth for the licence table. Rendered on page load inside
+			// .mp_basic_license_area, and again as the AJAX response body when an addon
+			// activates/deactivates a key (the addon JS replaces that container with this
+			// output), so both paths must produce identical markup.
 			public function licence_area() {
 				?>
-                <table>
+                <table class="bm-gs__lic-table">
                     <thead>
                     <tr>
-                        <th colspan="4"><?php esc_html_e( 'Plugin Name', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
+                        <th colspan="4"><?php esc_html_e( 'Plugin', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
                         <th><?php esc_html_e( 'Type', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
                         <th><?php esc_html_e( 'Order No', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
-                        <th colspan="2"><?php esc_html_e( 'Expire on', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
+                        <th colspan="2"><?php esc_html_e( 'Expires', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
                         <th colspan="3"><?php esc_html_e( 'License Key', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
                         <th><?php esc_html_e( 'Status', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
                         <th colspan="2"><?php esc_html_e( 'Action', 'bus-ticket-booking-with-seat-reservation' ); ?></th>
