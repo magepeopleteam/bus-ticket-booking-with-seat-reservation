@@ -1459,16 +1459,34 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						$sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
 						$active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
 						$start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
-						if ( strtotime( $now ) >= strtotime( $start_date ) ) {
+						$repeat        = max( 1, (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 ) );
+						// The start date is the recurrence ANCHOR - date_separate_period() steps
+						// 'every N days' from it - so it also fixes which weekday the series lands on.
+						// Snapping a past start date to today therefore re-phased the whole series onto
+						// today's weekday: a bus set to run every Wednesday began generating Thursdays,
+						// the off-day filter rejected every one of them, and the datepicker went blank
+						// until the operator manually pushed the start date forward again. Rolling
+						// forward in whole repeat-cycles keeps the original phase and does automatically
+						// what that manual edit was doing by hand.
+						//
+						// Both timestamps are pinned to UTC midnight so the day arithmetic below stays
+						// exact: the surrounding code renders with gmdate(), and parsing a bare Y-m-d in
+						// a non-UTC default timezone would land the result a day early.
+						$start_timestamp = $start_date ? strtotime( $start_date . ' UTC' ) : false;
+						$now_timestamp   = strtotime( $now . ' UTC' );
+						if ( ! $start_timestamp ) {
 							$start_date = $now;
+						} elseif ( $now_timestamp > $start_timestamp ) {
+							$elapsed_days = (int) floor( ( $now_timestamp - $start_timestamp ) / DAY_IN_SECONDS );
+							$cycles       = (int) ceil( $elapsed_days / $repeat );
+							$start_date   = gmdate( 'Y-m-d', $start_timestamp + ( $cycles * $repeat * DAY_IN_SECONDS ) );
 						}
 						$end_date = gmdate( 'Y-m-d', strtotime( $start_date . ' +' . $active_days . ' day' ) );
 						if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
 							$end_date = $sale_end_date;
 						}
 						if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
-							$repeat = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 );
-							$dates  = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
+							$dates = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
 							foreach ( $dates as $date ) {
 								$date = $date->format( 'Y-m-d' );
 								if ( strtotime( $date ) >= strtotime( $now ) ) {
