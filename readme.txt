@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.1
+Stable tag: 5.9.4
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -490,3 +490,39 @@ Seat number rotation stopped
 * A short "No matching location found" note is shown when nothing matches, instead of an empty panel
 * Clicking the field again clears the search and brings back the full list, with the currently selected stop still ticked
 * Applies to both the standard and Flix-style search forms, and to the search bar on the results page
+
+= 5.9.4 =
+*Release Date - 1 Sep 2026*
+
+**Security (Fix)**
+* Fixed a booking-status flaw in the Custom Payment (standalone) checkout, reported by Supakiad S. (m3ez) via Patchstack: the page a payment gateway returns to acted on the booking number alone, so anyone who could guess a number could cancel someone else's booking from a plain web request — and, with a gateway that confirms payment locally, mark an unpaid booking as paid
+* The return and cancellation links a gateway sends the customer back to are now signed for that one booking and that one action, and are only acted on while the booking is still waiting for its payment, so an old link does nothing and a made-up one does nothing
+* A booking that has already been paid for is never re-opened by a late cancellation
+* Which gateway a booking was sent to is now taken from our own record of it rather than from the address bar
+* Closed a related gap where a booking could be reached through the id of one of its other seats, side-stepping the check that stops a paid booking's billing details being rewritten
+
+**Booking List & Reports (Fix)**
+* Fixed the Booking List crashing on sites with a large booking history — its totals were built by scanning the whole booking meta table with no limit
+* Bounded the aggregate statistics so the same screen stays fast as bookings accumulate
+* Reconciled the Booking List totals with the figures on the E-Voucher, so the two no longer disagree
+
+**Exports (New)**
+* Added a Passenger list export
+* "Merge Pdf Ticket" is now honoured by the PDF export, so a merged run produces one document instead of many
+
+**Booking Form (Fix)**
+* Per-passenger extra services are now scaled correctly in the booking form's price preview instead of being charged once
+* The Booking Summary now itemises extra services rather than folding them into the total
+
+**Search & Filters (Improvement)**
+* Compacted the search-result card, and stopped the plugin's pages scrolling sideways on narrow screens
+* Redesigned the sidebar filter toggle and reworked the filter panel's styling and animations
+* Fixed a batch of mobile layout bugs in the filter area, and moved the filter reset to a more predictable place
+* Added a Bus Type filter to the fleet list
+
+**Settings & Licence (Fix)**
+* Role dropdowns in settings are populated again instead of showing an empty list
+* Fixed licence activation always reporting "enter your valid licence key" even when the key was correct
+
+**Dates (Fix)**
+* Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
