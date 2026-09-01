@@ -25,6 +25,11 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		// the unauthenticated checkout-pay call to whoever actually created the
 		// booking — see can_checkout_group() / issue_group_token().
 		const TOKEN_META = 'wbtm_sa_access_token';
+		// Signature carried by the gateway return/cancel URLs minted in
+		// ajax_checkout_pay(). handle_payment_return() runs unauthenticated on every
+		// front-end request, so a bare numeric booking id must never be enough to
+		// drive a status transition on it - see can_handle_return().
+		const SIGNATURE_ARG = 'wbtm_sig';
 
 		public function __construct() {
 			add_action( 'wbtm_standalone_add_booking', array( $this, 'create_booking' ) );
@@ -495,12 +500,18 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 			}
 			update_post_meta( $booking_id, 'wbtm_awaiting_gateway', 1 );
 
+			// The gateway hands the customer back to these two URLs, and that return is
+			// the only thing that settles or cancels the booking. Sign them with the
+			// group's own secret so the reconciliation handler can tell a genuine return
+			// from a hand-crafted request carrying somebody else's booking id.
+			$this->ensure_group_token( $booking_id );
 			$checkout_url = self::get_checkout_page_url();
 			$return_url   = add_query_arg(
 				array(
 					'booking_id'     => $booking_id,
 					'gateway'        => $gateway_id,
 					self::RETURN_FLAG => 1,
+					self::SIGNATURE_ARG => self::return_signature( $booking_id, self::RETURN_FLAG ),
 				),
 				$checkout_url
 			);
@@ -509,6 +520,7 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 					'booking_id'     => $booking_id,
 					'gateway'        => $gateway_id,
 					self::CANCEL_FLAG => 1,
+					self::SIGNATURE_ARG => self::return_signature( $booking_id, self::CANCEL_FLAG ),
 				),
 				$checkout_url
 			);
@@ -577,7 +589,9 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 			if ( is_admin() || ! isset( $_GET['booking_id'] ) ) {
 				return;
 			}
-			if ( ! isset( $_GET[ self::RETURN_FLAG ] ) && ! isset( $_GET[ self::CANCEL_FLAG ] ) ) {
+			$is_cancel = isset( $_GET[ self::CANCEL_FLAG ] );
+			$is_return = isset( $_GET[ self::RETURN_FLAG ] );
+			if ( ! $is_return && ! $is_cancel ) {
 				return;
 			}
 
@@ -586,19 +600,54 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 				return;
 			}
 
-			if ( isset( $_GET[ self::CANCEL_FLAG ] ) ) {
-				$this->mark_group_status( $booking_id, 'cancelled' );
-				$this->redirect_to_result( $booking_id, 'cancelled' );
+			/*
+			 * SECURITY (IDOR): this handler is unauthenticated and runs on `init` for
+			 * every front-end request, so "the post id exists and is a booking" is not a
+			 * permission to move it. Without the two gates below, any visitor could
+			 * cancel a stranger's booking - or, with a gateway whose verify_payment() is
+			 * unconditional, mark one paid - just by guessing a numeric id.
+			 *
+			 *  1. Proof that the caller is the party we sent to the gateway: the HMAC
+			 *     appended to the return/cancel URL, or - for a group already in flight
+			 *     when this version was installed, whose URL carries no signature - the
+			 *     creator's login or token cookie.
+			 *  2. The booking must still be awaiting a gateway result, so a return URL
+			 *     only ever settles the attempt it was minted for and a replay of it is
+			 *     inert.
+			 */
+			if ( ! self::can_handle_return( $booking_id, $is_cancel ? self::CANCEL_FLAG : self::RETURN_FLAG ) ) {
+				return;
 			}
 
 			$current_status = get_post_meta( $booking_id, 'wbtm_order_status', true );
 			if ( in_array( $current_status, self::PAID_STATUSES, true ) ) {
-				// Idempotent: gateway may hit the return URL more than once.
+				// Idempotent: gateway may hit the return URL more than once. A settled
+				// booking is never re-opened here either - not even by a late cancel
+				// redirect arriving after the payment already went through.
 				$this->redirect_to_result( $booking_id, 'success' );
 			}
 
-			$gateway_id = isset( $_GET['gateway'] ) ? sanitize_key( wp_unslash( $_GET['gateway'] ) ) : get_post_meta( $booking_id, 'wbtm_billing_type', true );
-			$gateway    = WBTM_Payment_Gateway_Manager::instance()->get_gateway( $gateway_id );
+			// The marker is written onto whichever id checkout was driven with, so accept
+			// it on either that record or the group head rather than assuming one of them.
+			$awaiting = get_post_meta( $booking_id, 'wbtm_awaiting_gateway', true )
+				|| get_post_meta( self::get_group_head_id( $booking_id ), 'wbtm_awaiting_gateway', true );
+			if ( ! $awaiting ) {
+				return;
+			}
+
+			if ( $is_cancel ) {
+				$this->mark_group_status( $booking_id, 'cancelled' );
+				$this->redirect_to_result( $booking_id, 'cancelled' );
+			}
+
+			// Which gateway this booking was actually handed to is our own record, not
+			// the visitor's to choose: honouring a swapped ?gateway= would let a real
+			// PayPal/Stripe attempt be verified as an always-true offline one.
+			$gateway_id = (string) get_post_meta( $booking_id, 'wbtm_billing_type', true );
+			if ( '' === $gateway_id && isset( $_GET['gateway'] ) ) {
+				$gateway_id = sanitize_key( wp_unslash( $_GET['gateway'] ) );
+			}
+			$gateway = WBTM_Payment_Gateway_Manager::instance()->get_gateway( $gateway_id );
 
 			if ( ! $gateway || ! $gateway->verify_payment( $booking_id ) ) {
 				$this->mark_group_status( $booking_id, 'failed' );
@@ -649,6 +698,89 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		}
 
 		/**
+		 * The head record of a booking group - the one post that carries the group
+		 * secret, the awaiting-gateway marker and the canonical status. Every member
+		 * of a group resolves to the same head, so all access decisions are taken
+		 * there rather than on whichever member id happened to arrive in the request.
+		 */
+		private static function get_group_head_id( $booking_id ) {
+			$head = (int) get_post_meta( $booking_id, 'wbtm_order_id', true );
+			return $head > 0 ? $head : (int) $booking_id;
+		}
+
+		/**
+		 * Guarantee the group head holds a secret before anything is signed with it.
+		 * A group created before tokens existed gets one (and its cookie) on its way
+		 * to the gateway, so it keeps working through the rest of checkout.
+		 */
+		private function ensure_group_token( $booking_id ) {
+			$head = self::get_group_head_id( $booking_id );
+			if ( '' === (string) get_post_meta( $head, self::TOKEN_META, true ) ) {
+				$this->issue_group_token( $head );
+			}
+		}
+
+		/**
+		 * HMAC binding one booking group to one return action, derived from that
+		 * group's own secret. It cannot be computed for a booking the caller does not
+		 * hold the secret for, and a cancel URL can never be replayed as a success
+		 * one because the action is part of the signed message.
+		 *
+		 * @param  int    $booking_id Any post id in the booking group.
+		 * @param  string $action     self::RETURN_FLAG or self::CANCEL_FLAG.
+		 * @return string Empty string when the group has no secret to sign with.
+		 */
+		private static function return_signature( $booking_id, $action ) {
+			$head  = self::get_group_head_id( $booking_id );
+			$token = (string) get_post_meta( $head, self::TOKEN_META, true );
+			if ( '' === $token ) {
+				return '';
+			}
+			return hash_hmac( 'sha256', $action . '|' . $head, $token . wp_salt( 'auth' ) );
+		}
+
+		/**
+		 * Whether the current request may drive the gateway-return handler for this
+		 * booking: it carries the signature minted for exactly this booking and this
+		 * action, or it demonstrably comes from the booking's creator (the fallback
+		 * that keeps a booking already at the gateway during the upgrade working).
+		 */
+		private static function can_handle_return( $booking_id, $action ) {
+			$expected  = self::return_signature( $booking_id, $action );
+			$presented = isset( $_GET[ self::SIGNATURE_ARG ] )
+				? sanitize_text_field( wp_unslash( $_GET[ self::SIGNATURE_ARG ] ) )
+				: '';
+			if ( '' !== $expected && '' !== $presented && hash_equals( $expected, $presented ) ) {
+				return true;
+			}
+			return self::group_ownership_proven( $booking_id );
+		}
+
+		/**
+		 * Is the visitor demonstrably the creator of this booking group - the
+		 * logged-in user it was booked by, or a guest still holding the token cookie
+		 * issued at creation? Nothing is taken on trust: a group with no secret on
+		 * record can prove nothing and returns false.
+		 */
+		private static function group_ownership_proven( $booking_id ) {
+			$head  = self::get_group_head_id( $booking_id );
+			$owner = (int) get_post_meta( $head, 'wbtm_user_id', true );
+			if ( $owner > 0 && is_user_logged_in() && $owner === get_current_user_id() ) {
+				return true;
+			}
+
+			$token = (string) get_post_meta( $head, self::TOKEN_META, true );
+			if ( '' === $token ) {
+				return false;
+			}
+			$cookie_name = self::token_cookie_name( $head );
+			$presented   = isset( $_COOKIE[ $cookie_name ] )
+				? sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) )
+				: '';
+			return '' !== $presented && hash_equals( $token, $presented );
+		}
+
+		/**
 		 * Whether the current request is allowed to drive checkout for a booking
 		 * group. Two independent conditions must both hold:
 		 *
@@ -664,28 +796,26 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		 * protects every paid booking.
 		 */
 		public static function can_checkout_group( $booking_id ) {
-			$status = (string) get_post_meta( $booking_id, 'wbtm_order_status', true );
-			if ( in_array( $status, self::PAID_STATUSES, true ) ) {
-				return false;
+			// Decide on the group head: status, owner and secret all live there, and a
+			// member id reaches the whole group through get_group_post_ids() anyway, so
+			// checking the id exactly as supplied would let a member id that carries no
+			// secret of its own fall through to the legacy allowance below.
+			$head = self::get_group_head_id( $booking_id );
+
+			foreach ( array_unique( array( (int) $booking_id, $head ) ) as $id ) {
+				$status = (string) get_post_meta( $id, 'wbtm_order_status', true );
+				if ( in_array( $status, self::PAID_STATUSES, true ) ) {
+					return false;
+				}
 			}
 
-			$owner = (int) get_post_meta( $booking_id, 'wbtm_user_id', true );
-			if ( $owner > 0 && is_user_logged_in() && $owner === get_current_user_id() ) {
+			if ( self::group_ownership_proven( $head ) ) {
 				return true;
-			}
-
-			$token = (string) get_post_meta( $booking_id, self::TOKEN_META, true );
-			if ( $token !== '' ) {
-				$cookie_name = self::token_cookie_name( $booking_id );
-				$presented   = isset( $_COOKIE[ $cookie_name ] )
-					? sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) )
-					: '';
-				return $presented !== '' && hash_equals( $token, $presented );
 			}
 
 			// No token on record (pre-upgrade booking): status guard above still
 			// applies, so only an unpaid legacy group can reach here.
-			return true;
+			return '' === (string) get_post_meta( $head, self::TOKEN_META, true );
 		}
 
 		private static function get_group_post_ids( $booking_id ) {
