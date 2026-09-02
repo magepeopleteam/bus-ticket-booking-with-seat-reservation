@@ -193,6 +193,45 @@
 				return isset($map[$stored_seat]) ? 'sleeper' : 'seater';
 			}
 			/**
+			 * Berth type to display for one booking row, or '' when nothing should
+			 * be shown (the bus offers no sleepers, the row is a full-bus booking,
+			 * or the bus is gone).
+			 *
+			 * Prefers wbtm_seat_layout as recorded at booking time, so a ticket
+			 * reprinted after the operator edits the bus still shows what was
+			 * actually sold. Falls back to the live layout for rows written before
+			 * that meta existed, and for the Pro standalone-payment path, which
+			 * builds its own booking rows.
+			 *
+			 * @param int $booking_id wbtm_bus_booking post ID.
+			 * @return string 'seater'|'sleeper'|''
+			 */
+			public static function get_booking_seat_layout($booking_id) {
+				$stored = WBTM_Global_Function::get_post_info($booking_id, 'wbtm_seat_layout', '');
+				if ($stored !== '') {
+					return self::normalize_seat_layout_type($stored);
+				}
+				if (WBTM_Global_Function::get_post_info($booking_id, 'wbtm_booking_mode') === 'full_bus') {
+					return '';
+				}
+				$bus_id = (int) WBTM_Global_Function::get_post_info($booking_id, 'wbtm_bus_id', 0);
+				if ($bus_id <= 0 || !self::has_sleeper_seats($bus_id)) {
+					return '';
+				}
+				return self::get_seat_layout_type($bus_id, WBTM_Global_Function::get_post_info($booking_id, 'wbtm_seat', ''));
+			}
+			/**
+			 * Translated berth label for one booking row, or '' when the row should
+			 * show none. The single call site for tickets, PDFs and exports.
+			 *
+			 * @param int $booking_id
+			 * @return string
+			 */
+			public static function get_booking_seat_layout_label($booking_id) {
+				$layout = self::get_booking_seat_layout($booking_id);
+				return $layout === '' ? '' : self::seat_layout_label($layout);
+			}
+			/**
 			 * Display label for a layout type, through the Translation Settings
 			 * screen like every other customer-facing string.
 			 *
