@@ -13,6 +13,7 @@
 	*   $wbtm_grid_cabin_index      int    cabin position (0-based)
 	*   $wbtm_grid_cols             int    columns for THIS deck
 	*   $wbtm_grid_seat_infos       array  saved seat rows for THIS deck
+	*   $wbtm_grid_seat_layouts     array  per-seat seater/sleeper visual types
 	*   $wbtm_grid_price_multiplier float  cabin price multiplier
 	*   $wbtm_grid_deck             string 'lower' | 'upper'
 	*/
@@ -67,7 +68,8 @@
 							if ($enable_rotation == 'yes' && isset($seat_info[$seat_key . '_rotation'])) {
 								$rotation = intval($seat_info[$seat_key . '_rotation']);
 							}
-							$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+						$rotation_class = $rotation > 0 ? 'wbtm_seat_rotated_' . $rotation : '';
+						$seat_layout_class = (($wbtm_grid_seat_layouts[$row_index][$seat_key] ?? 'seater') === 'sleeper') ? 'wbtm_seat_layout_sleeper' : 'wbtm_seat_layout_seater';
 
 							$cabin_seat_identifier = $wbtm_grid_id_prefix . $seat_name;
 							// Lower deck keeps the legacy bare-name fallback (older
@@ -89,7 +91,7 @@
 							$cabin_price = floatval($cell_base_cabin) * floatval($wbtm_grid_price_multiplier);
 							?>
 							<th>
-								<div class="mp_seat_item <?php echo esc_attr($rotation_class); ?>">
+								<div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class)); ?>">
 									<?php if ($is_booked): ?>
 										<div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
 											<div class="seat_visual"></div>

@@ -1,3 +1,14 @@
+/**
+ * Localized admin string, with the original English as a fallback.
+ *
+ * wbtm_admin_var is localized onto the 'wbtm_admin' handle. This file ships in
+ * mp_global and is shared with the Pro addon, so whichever copy of mp_global
+ * loads first wins and the object can legitimately be absent — every call here
+ * passes the English text it replaced, so nothing depends on it existing.
+ */
+function wbtm_admin_text(key, fallback) {
+    return (typeof wbtm_admin_var !== 'undefined' && wbtm_admin_var[key]) ? wbtm_admin_var[key] : fallback;
+}
 function wbtm_load_sortable_datepicker(parent, item) {
     if (parent.find(".wbtm_item_insert_before").length > 0) {
         jQuery(item)
@@ -148,7 +159,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
         e.preventDefault();
         if (
             confirm(
-                "Are You Sure , Remove this row ? \n\n 1. Ok : To Remove . \n 2. Cancel : To Cancel ."
+                wbtm_admin_text('row_remove_confirm', "Are You Sure , Remove this row ? \n\n 1. Ok : To Remove . \n 2. Cancel : To Cancel .")
             )
         ) {
             $(this).closest(".wbtm_remove_area").slideUp(250).remove();
@@ -376,7 +387,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let cabin_count = parseInt(cabin_count_input.val()) || 1;
 
         if (cabin_count < 1 || cabin_count > 20) {
-            alert('Please enter a valid number of cabins (1-20)');
+            alert(wbtm_admin_text('cabin_count_error', 'Please enter a valid number of cabins (1-20)'));
             return;
         }
 
@@ -407,7 +418,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
                 numberingOptions += '<option value="' + nkey + '">' + numberingSchemes[nkey] + '</option>';
             }
         }
-        let aisleTitle = 'Choose aisle position after column (Left to Right). 0 = no automatic aisle.';
+        let aisleTitle = wbtm_admin_text('aisle_title', 'Choose aisle position after column (Left to Right). 0 = no automatic aisle.');
 
         if (current_cabin_count < cabin_count) {
             // Add more cabins
@@ -416,21 +427,21 @@ function wbtm_load_sortable_datepicker(parent, item) {
                     <div class="mpPanel wbtm_cabin_item" data-cabin-index="${i}">
                         <div class="_padding_dFlex_justifyBetween_alignCenter_bgLight">
                             <div class="_dFlex_fdColumn">
-                                <label>Cabin ${i + 1} Configuration</label>
-                                <span>Configure seat layout for this cabin.</span>
+                                <label>${wbtm_admin_text('cabin_config_title', 'Cabin %d Configuration').replace('%d', i + 1)}</label>
+                                <span>${wbtm_admin_text('cabin_config_desc', 'Configure seat layout for this cabin.')}</span>
                             </div>
                         </div>
                         <div class="mpPanelBody">
                             <div class="_dFlex">
                                 <div class="col_6 _bR">
                                     <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Cabin Name</label>
-                                        <input type="text" class="formControl max_200" name="wbtm_cabin_name[]" placeholder="Ex: First Class" value="Cabin ${i + 1}"/>
+                                        <label>${wbtm_admin_text('cabin_name_label', 'Cabin Name')}</label>
+                                        <input type="text" class="formControl max_200" name="wbtm_cabin_name[]" placeholder="${wbtm_admin_text('cabin_name_placeholder', 'Ex: First Class')}" value="${wbtm_admin_text('cabin_default_name', 'Cabin %d').replace('%d', i + 1)}"/>
                                     </div>
                                     <div class="divider"></div>
 
                                     <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Enable Cabin</label>
+                                        <label>${wbtm_admin_text('cabin_enable_label', 'Enable Cabin')}</label>
                                         <label class="roundSwitchLabel">
                                             <input type="checkbox" name="wbtm_cabin_enabled[${i}]" checked>
                                             <span class="roundSwitch" data-collapse-target="#wbtm_cabin_enabled[${i}]"></span>
@@ -440,55 +451,55 @@ function wbtm_load_sortable_datepicker(parent, item) {
 
                                     <div class="wbtm_cabin_fields">
                                         <div class="_dFlex_justifyBetween_alignCenter">
-                                            <label>Price Multiplier (Lower Deck)</label>
-                                            <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="Ex: 1.2" value="1.0"/>
-                                            <span class="help-text">Decimals allowed. 1.0 = same as base price, 1.2 = 20% higher, 0.8 = 20% lower.</span>
+                                            <label>${wbtm_admin_text('cabin_price_multiplier_label', 'Price Multiplier (Lower Deck)')}</label>
+                                            <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_price_multiplier[]" placeholder="${wbtm_admin_text('cabin_multiplier_placeholder', 'Ex: 1.2')}" value="1.0"/>
+                                            <span class="help-text">${wbtm_admin_text('cabin_price_multiplier_help', 'Decimals allowed. 1.0 = same as base price, 1.2 = 20% higher, 0.8 = 20% lower.')}</span>
                                         </div>
                                         <div class="divider"></div>
 
                                         <div class="wbtm_seat_template_picker wbtm_cabin_seat_template_picker" data-cabin-index="${i}">
                                             <div class="_dFlex_fdColumn">
-                                                <label>Seat Template</label>
-                                                <span>Generate a complete seat layout in one click, then edit freely as usual.</span>
+                                                <label>${wbtm_admin_text('seat_template_label', 'Seat Template')}</label>
+                                                <span>${wbtm_admin_text('seat_template_desc', 'Generate a complete seat layout in one click, then edit freely as usual.')}</span>
                                                 <select class="formControl wbtm_cabin_seat_template_select">${templateOptions}</select>
                                             </div>
                                             <div class="divider"></div>
                                             <div class="_dFlex_fdColumn">
-                                                <label>Seat Numbering</label>
-                                                <span>How seat labels are generated when the template is applied.</span>
+                                                <label>${wbtm_admin_text('seat_numbering_label', 'Seat Numbering')}</label>
+                                                <span>${wbtm_admin_text('seat_numbering_desc', 'How seat labels are generated when the template is applied.')}</span>
                                                 <select class="formControl wbtm_cabin_seat_numbering_select">${numberingOptions}</select>
                                             </div>
                                             <div class="divider"></div>
                                             <div class="_dFlex_justifyBetween_alignCenter">
-                                                <label class="mp_zero">Seat Rows</label>
-                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="Ex: 10" value="0"/>
+                                                <label class="mp_zero">${wbtm_admin_text('seat_rows_label', 'Seat Rows')}</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows[]" placeholder="${wbtm_admin_text('cabin_rows_placeholder', 'Ex: 10')}" value="0"/>
                                             </div>
                                             <div class="divider"></div>
                                             <div class="_dFlex_justifyBetween_alignCenter">
-                                                <label class="mp_zero">Seat Columns</label>
-                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="Ex: 4" value="0"/>
+                                                <label class="mp_zero">${wbtm_admin_text('seat_cols_label', 'Seat Columns')}</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols[]" placeholder="${wbtm_admin_text('cabin_cols_placeholder', 'Ex: 4')}" value="0"/>
                                             </div>
                                             <div class="divider"></div>
                                             <div class="_dFlex_justifyBetween_alignCenter">
-                                                <label class="mp_zero" title="${aisleTitle}">Aisle Position</label>
-                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col" placeholder="Ex: 2 (0=none)" value="0" title="${aisleTitle}"/>
+                                                <label class="mp_zero" title="${aisleTitle}">${wbtm_admin_text('aisle_label', 'Aisle Position')}</label>
+                                                <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col" placeholder="${wbtm_admin_text('aisle_placeholder', 'Ex: 2 (0=none)')}" value="0" title="${aisleTitle}"/>
                                             </div>
                                             <div class="divider"></div>
                                             <button type="button" class="_themeButton_xs_mT_xs wbtm_apply_cabin_seat_template">
                                                 <span class="fas fa-magic"></span>
-                                                <span class="mL_xs">Apply Template</span>
+                                                <span class="mL_xs">${wbtm_admin_text('apply_template_label', 'Apply Template')}</span>
                                             </button>
                                             <div class="divider"></div>
                                         </div>
                                         <button type="button" class="_themeButton_xs_mT_xs wbtm_generate_cabin_seats" data-cabin-index="${i}">
                                             <span class="fas fa-plus-square"></span>
-                                            <span class="mL_xs">Generate Seat Plan</span>
+                                            <span class="mL_xs">${wbtm_admin_text('generate_seat_plan_label', 'Generate Seat Plan')}</span>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="col_6">
                                     <div class="wbtm_cabin_seat_preview" data-cabin-index="${i}">
-                                        <label>Cabin ${i + 1} Lower Deck Preview</label>
+                                        <label>${wbtm_admin_text('cabin_lower_preview_label', 'Cabin %d Lower Deck Preview').replace('%d', i + 1)}</label>
                                         <div class="wbtm_cabin_seat_plan">
                                             <!-- Seat plan will be generated here -->
                                         </div>
@@ -499,8 +510,8 @@ function wbtm_load_sortable_datepicker(parent, item) {
                                 <div class="divider"></div>
                                 <div class="_dFlex_justifyBetween_alignCenter">
                                     <div class="_dFlex_fdColumn">
-                                        <label>Enable Upper Deck</label>
-                                        <span>Turn on to add an upper deck to this cabin/coach (double-decker).</span>
+                                        <label>${wbtm_admin_text('cabin_upper_enable_label', 'Enable Upper Deck')}</label>
+                                        <span>${wbtm_admin_text('cabin_upper_enable_desc', 'Turn on to add an upper deck to this cabin/coach (double-decker).')}</span>
                                     </div>
                                     <label class="roundSwitchLabel">
                                         <input type="checkbox" name="wbtm_cabin_upper_enabled[${i}]">
@@ -510,55 +521,55 @@ function wbtm_load_sortable_datepicker(parent, item) {
                                 <div class="wbtm_cabin_upper_fields" style="display: none;">
                                     <div class="divider"></div>
                                     <div class="_dFlex_justifyBetween_alignCenter">
-                                        <label>Price Multiplier (Upper Deck)</label>
-                                        <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_upper_price_multiplier[]" placeholder="Ex: 1.5" value="1.0"/>
-                                        <span class="help-text">Set the upper deck price independently. Decimals allowed. 1.0 = same as base, 1.5 = 50% higher, 0.8 = 20% lower.</span>
+                                        <label>${wbtm_admin_text('cabin_upper_multiplier_label', 'Price Multiplier (Upper Deck)')}</label>
+                                        <input type="number" min="0" step="0.01" inputmode="decimal" class="formControl max_200" name="wbtm_cabin_upper_price_multiplier[]" placeholder="${wbtm_admin_text('cabin_upper_multiplier_placeholder', 'Ex: 1.5')}" value="1.0"/>
+                                        <span class="help-text">${wbtm_admin_text('cabin_upper_multiplier_help', 'Set the upper deck price independently. Decimals allowed. 1.0 = same as base, 1.5 = 50% higher, 0.8 = 20% lower.')}</span>
                                     </div>
                                     <div class="divider"></div>
                                     <div class="_dFlex">
                                         <div class="col_6 _bR">
                                             <div class="wbtm_seat_template_picker wbtm_cabin_seat_template_picker_dd" data-cabin-index="${i}" data-deck="upper">
                                                 <div class="_dFlex_fdColumn">
-                                                    <label>Seat Template</label>
-                                                    <span>Generate a complete seat layout in one click, then edit freely as usual.</span>
+                                                    <label>${wbtm_admin_text('seat_template_label', 'Seat Template')}</label>
+                                                    <span>${wbtm_admin_text('seat_template_desc', 'Generate a complete seat layout in one click, then edit freely as usual.')}</span>
                                                     <select class="formControl wbtm_cabin_seat_template_select_dd">${templateOptions}</select>
                                                 </div>
                                                 <div class="divider"></div>
                                                 <div class="_dFlex_fdColumn">
-                                                    <label>Seat Numbering</label>
-                                                    <span>How seat labels are generated when the template is applied.</span>
+                                                    <label>${wbtm_admin_text('seat_numbering_label', 'Seat Numbering')}</label>
+                                                    <span>${wbtm_admin_text('seat_numbering_desc', 'How seat labels are generated when the template is applied.')}</span>
                                                     <select class="formControl wbtm_cabin_seat_numbering_select_dd">${numberingOptions}</select>
                                                 </div>
                                                 <div class="divider"></div>
                                                 <div class="_dFlex_justifyBetween_alignCenter">
-                                                    <label class="mp_zero">Seat Rows</label>
-                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows_dd[]" placeholder="Ex: 10" value="0"/>
+                                                    <label class="mp_zero">${wbtm_admin_text('seat_rows_label', 'Seat Rows')}</label>
+                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_rows_dd[]" placeholder="${wbtm_admin_text('cabin_rows_placeholder', 'Ex: 10')}" value="0"/>
                                                 </div>
                                                 <div class="divider"></div>
                                                 <div class="_dFlex_justifyBetween_alignCenter">
-                                                    <label class="mp_zero">Seat Columns</label>
-                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols_dd[]" placeholder="Ex: 4" value="0"/>
+                                                    <label class="mp_zero">${wbtm_admin_text('seat_cols_label', 'Seat Columns')}</label>
+                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation" name="wbtm_cabin_cols_dd[]" placeholder="${wbtm_admin_text('cabin_cols_placeholder', 'Ex: 4')}" value="0"/>
                                                 </div>
                                                 <div class="divider"></div>
                                                 <div class="_dFlex_justifyBetween_alignCenter">
-                                                    <label class="mp_zero" title="${aisleTitle}">Aisle Position</label>
-                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col_dd" placeholder="Ex: 2 (0=none)" value="0" title="${aisleTitle}"/>
+                                                    <label class="mp_zero" title="${aisleTitle}">${wbtm_admin_text('aisle_label', 'Aisle Position')}</label>
+                                                    <input type="number" min="0" pattern="[0-9]*" step="1" class="formControl max_300 wbtm_number_validation wbtm_cabin_aisle_after_col_dd" placeholder="${wbtm_admin_text('aisle_placeholder', 'Ex: 2 (0=none)')}" value="0" title="${aisleTitle}"/>
                                                 </div>
                                                 <div class="divider"></div>
                                                 <button type="button" class="_themeButton_xs_mT_xs wbtm_apply_cabin_seat_template_dd">
                                                     <span class="fas fa-magic"></span>
-                                                    <span class="mL_xs">Apply Template</span>
+                                                    <span class="mL_xs">${wbtm_admin_text('apply_template_label', 'Apply Template')}</span>
                                                 </button>
                                                 <div class="divider"></div>
                                             </div>
                                             <button type="button" class="_themeButton_xs_mT_xs wbtm_generate_cabin_seats_dd" data-cabin-index="${i}">
                                                 <span class="fas fa-plus-square"></span>
-                                                <span class="mL_xs">Generate Upper Deck Seat Plan</span>
+                                                <span class="mL_xs">${wbtm_admin_text('generate_upper_seat_plan_label', 'Generate Upper Deck Seat Plan')}</span>
                                             </button>
                                         </div>
                                         <div class="col_6">
                                             <div class="wbtm_cabin_seat_preview" data-cabin-index="${i}">
-                                                <label>Cabin ${i + 1} Upper Deck Preview</label>
+                                                <label>${wbtm_admin_text('cabin_upper_preview_label', 'Cabin %d Upper Deck Preview').replace('%d', i + 1)}</label>
                                                 <div class="wbtm_cabin_seat_plan_dd">
                                                     <!-- Upper deck seat plan will be generated here -->
                                                 </div>
@@ -809,7 +820,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
         let cols = parseInt(cols_input.val()) || 0;
 
         if (cols <= 0) {
-            alert('Please set the number of columns first');
+            alert(wbtm_admin_text('cabin_cols_first_error', 'Please set the number of columns first'));
             return;
         }
 
@@ -823,15 +834,23 @@ function wbtm_load_sortable_datepicker(parent, item) {
                         <label>
                             <input type="text" class="formControl wbtm_id_validation"
                                 name="wbtm_${sk}[]"
-                                placeholder="Blank"
+                                placeholder="${wbtm_admin_text('seat_blank_placeholder', 'Blank')}"
                                 value=""
                             />
                         </label>
+                        <div class="wbtm_seat_layout_control" style="display:none;">
+                            <input type="hidden" name="wbtm_${sk}_layout[]"
+                                   value="seater" class="wbtm_seat_layout_value" />
+                            <label>
+                                <input type="checkbox" class="wbtm_sleeper_checkbox" />
+                                <span>${wbtm_admin_text('sleeper_label', 'Sleeper')}</span>
+                            </label>
+                        </div>
                         <div class="wbtm_seat_rotation_controls">
                             <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
                                     data-seat="${sk}"
                                     data-rotation="0"
-                                    title="Rotate Seat">
+                                    title="${wbtm_admin_text('rotate_seat_title', 'Rotate Seat')}">
                                 <span class="fas fa-redo"></span>
                             </button>
                             <input type="hidden" name="wbtm_${sk}_rotation[]"
@@ -1045,7 +1064,7 @@ function wbtm_load_sortable_datepicker(parent, item) {
             $(this).val('wbtm_seat_plan');
             seat_type = 'wbtm_seat_plan';
             // Show alert to inform user
-            alert('Cabin/Coach Configuration requires Seat Plan mode. Seat type has been automatically set to "Seat Plan".');
+            alert(wbtm_admin_text('cabin_mode_seat_plan_notice', 'Cabin/Coach Configuration requires Seat Plan mode. Seat type has been automatically set to "Seat Plan".'));
         }
         
         // If seat type is 'wbtm_seat_plan' and cabin mode is enabled, hide traditional seat plan

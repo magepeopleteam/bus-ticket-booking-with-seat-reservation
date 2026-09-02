@@ -496,6 +496,7 @@
 							$rows = $cabin['rows'] ?? 0;
 							$cols = $cabin['cols'] ?? 0;
 							$cabin_seat_info = [];
+							$cabin_seat_layouts = [];
 							if ($rows > 0 && $cols > 0) {
 								for ($j = 1; $j <= $cols; $j++) {
 									$col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j])
@@ -504,6 +505,9 @@
 									$col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation'])
 										? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_rotation']))
 										: null;
+									$col_layout_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_layout'])
+										? array_map([WBTM_Seat_Configuration::class, 'normalize_seat_layout_type'], wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_seat' . $j . '_layout']))
+										: [];
 									if ($col_infos === null) {
 										$col_infos = [];
 									} elseif (is_array($col_infos)) {
@@ -518,6 +522,7 @@
 									} else {
 										$col_rotation_infos = [$col_rotation_infos];
 									}
+									$col_layout_infos = array_values((array) $col_layout_infos);
 									for ($i = 0; $i < $rows; $i++) {
 										if (isset($col_infos[$i])) {
 											$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i]);
@@ -528,12 +533,16 @@
 											}
 											if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 												$total_seat++;
+												if (($col_layout_infos[$i] ?? 'seater') === 'sleeper') {
+													$cabin_seat_layouts[$i]['cabin_' . $cabin_index . '_seat' . $j] = 'sleeper';
+												}
 											}
 										}
 									}
 								}
 							}
 							update_post_meta($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, $cabin_seat_info);
+							update_post_meta($post_id, 'wbtm_cabin_seat_layouts_' . $cabin_index, $cabin_seat_layouts);
 							// ---- Upper deck of this cabin (double-decker coach) ----
 							// Mirrors the lower-deck grid save above, but reads the
 							// "_dd_" seat inputs and stores under wbtm_cabin_seats_info_dd_{index}.
@@ -543,6 +552,7 @@
 								$up_rows = $cabin['upper_rows'] ?? 0;
 								$up_cols = $cabin['upper_cols'] ?? 0;
 								$cabin_up_seat_info = [];
+								$cabin_up_seat_layouts = [];
 								if ($up_rows > 0 && $up_cols > 0) {
 									for ($j = 1; $j <= $up_cols; $j++) {
 										$up_col_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j])
@@ -551,6 +561,9 @@
 										$up_col_rotation_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_rotation'])
 											? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_rotation']))
 											: null;
+										$up_col_layout_infos = isset($_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_layout'])
+											? array_map([WBTM_Seat_Configuration::class, 'normalize_seat_layout_type'], wp_unslash((array) $_POST['wbtm_cabin_' . $cabin_index . '_dd_seat' . $j . '_layout']))
+											: [];
 										if ($up_col_infos === null) {
 											$up_col_infos = [];
 										} elseif (is_array($up_col_infos)) {
@@ -565,6 +578,7 @@
 										} else {
 											$up_col_rotation_infos = [$up_col_rotation_infos];
 										}
+										$up_col_layout_infos = array_values((array) $up_col_layout_infos);
 										for ($i = 0; $i < $up_rows; $i++) {
 											if (isset($up_col_infos[$i])) {
 												$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($up_col_infos[$i]);
@@ -575,12 +589,16 @@
 												}
 												if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 													$total_seat++;
+													if (($up_col_layout_infos[$i] ?? 'seater') === 'sleeper') {
+														$cabin_up_seat_layouts[$i]['cabin_' . $cabin_index . '_dd_seat' . $j] = 'sleeper';
+													}
 												}
 											}
 										}
 									}
 								}
 								update_post_meta($post_id, 'wbtm_cabin_seats_info_dd_' . $cabin_index, $cabin_up_seat_info);
+								update_post_meta($post_id, 'wbtm_cabin_seat_layouts_dd_' . $cabin_index, $cabin_up_seat_layouts);
 							}
 						}
 						if ($has_enabled_cabin) {
@@ -601,6 +619,7 @@
 					update_post_meta($post_id, 'wbtm_enable_seat_rotation', $wbtm_enable_seat_rotation);
 					update_post_meta($post_id, 'wbtm_enable_seat_price_override', $wbtm_enable_seat_price_override);
 					$lower_deck_info = [];
+					$lower_deck_layouts = [];
 					$total_seat = 0;
 					if ($rows > 0 && $columns > 0) {
 						for ($j = 1; $j <= $columns; $j++) {
@@ -609,6 +628,9 @@
 								: [];
 							$col_rotation_infos = isset($_POST['wbtm_seat' . $j . '_rotation'])
 								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_seat' . $j . '_rotation']))
+								: [];
+							$col_layout_infos = isset($_POST['wbtm_seat' . $j . '_layout'])
+								? array_map([WBTM_Seat_Configuration::class, 'normalize_seat_layout_type'], wp_unslash((array) $_POST['wbtm_seat' . $j . '_layout']))
 								: [];
 
 							if ($col_infos === null) {
@@ -625,6 +647,7 @@
 							} else {
 								$col_rotation_infos = [$col_rotation_infos];
 							}
+							$col_layout_infos = array_values((array) $col_layout_infos);
 							for ($i = 0; $i < $rows; $i++) {
 								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
@@ -634,11 +657,15 @@
 								}
 								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
 									$total_seat++;
+									if (($col_layout_infos[$i] ?? 'seater') === 'sleeper') {
+										$lower_deck_layouts[$i]['seat' . $j] = 'sleeper';
+									}
 								}
 							}
 						}
 					}
 					update_post_meta($post_id, 'wbtm_bus_seats_info', $lower_deck_info);
+					update_post_meta($post_id, 'wbtm_bus_seat_layouts', $lower_deck_layouts);
 					/***********************/
 					$wbtm_show_upper_desk = isset($_POST['wbtm_show_upper_desk']) && sanitize_text_field(wp_unslash($_POST['wbtm_show_upper_desk'])) ? 'yes' : 'no';
 					$rows_dd = isset($_POST['wbtm_seat_rows_dd_hidden']) ? sanitize_text_field(wp_unslash($_POST['wbtm_seat_rows_dd_hidden'])) : 0;
@@ -649,6 +676,7 @@
 					update_post_meta($post_id, 'wbtm_seat_cols_dd', $cols_dd);
 					update_post_meta($post_id, 'wbtm_seat_dd_price_parcent', $wbtm_seat_dd_price_parcent);
 					$upper_deck_info = [];
+					$upper_deck_layouts = [];
 					if ($rows_dd > 0 && $cols_dd > 0) {
 						for ($j = 1; $j <= $cols_dd; $j++) {
 							$col_infos = isset($_POST['wbtm_dd_seat' . $j])
@@ -657,6 +685,9 @@
 							$col_rotation_infos = isset($_POST['wbtm_dd_seat' . $j . '_rotation'])
 								? array_map('sanitize_text_field', wp_unslash((array) $_POST['wbtm_dd_seat' . $j . '_rotation']))
 								: null;
+							$col_layout_infos = isset($_POST['wbtm_dd_seat' . $j . '_layout'])
+								? array_map([WBTM_Seat_Configuration::class, 'normalize_seat_layout_type'], wp_unslash((array) $_POST['wbtm_dd_seat' . $j . '_layout']))
+								: [];
 							if ($col_infos === null) {
 								$col_infos = [];
 							} elseif (is_array($col_infos)) {
@@ -671,6 +702,7 @@
 							} else {
 								$col_rotation_infos = [$col_rotation_infos];
 							}
+							$col_layout_infos = array_values((array) $col_layout_infos);
 							for ($i = 0; $i < $rows_dd; $i++) {
 								$seat_value = WBTM_Seat_Configuration::normalize_saved_seat_value($col_infos[$i] ?? '');
 								$rotation_value = $col_rotation_infos[$i] ?? '0';
@@ -678,13 +710,19 @@
 								if ($wbtm_enable_seat_rotation == 'yes') {
 									$upper_deck_info[$i]['dd_seat' . $j . '_rotation'] = $rotation_value;
 								}
-								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value) && $wbtm_show_upper_desk == 'yes') {
-									$total_seat++;
+								if ($seat_value && !WBTM_Seat_Configuration::is_non_seat_item($seat_value)) {
+									if (($col_layout_infos[$i] ?? 'seater') === 'sleeper') {
+										$upper_deck_layouts[$i]['dd_seat' . $j] = 'sleeper';
+									}
+									if ($wbtm_show_upper_desk == 'yes') {
+										$total_seat++;
+									}
 								}
 							}
 						}
 					}
 					update_post_meta($post_id, 'wbtm_bus_seats_info_dd', $upper_deck_info);
+					update_post_meta($post_id, 'wbtm_bus_seat_layouts_dd', $upper_deck_layouts);
 					/***********************/
 					$has_cabin_config = $cabin_mode_enabled === 'yes' && !empty($cabin_config) && count(array_filter($cabin_config, function ($c) { return ($c['enabled'] ?? 'yes') === 'yes'; })) > 0;
 					if (!$has_cabin_config) {

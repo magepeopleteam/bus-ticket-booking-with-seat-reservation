@@ -980,6 +980,21 @@ function wbtm_hide_wc_notices($) {
 		plan.find('.wbtm_deck_pane[data-deck="' + deck + '"]').show();
 	});
 
+	// Traditional single-bus layouts use the same deck-tab appearance as cabin
+	// layouts, but their deck panes are direct children of the main plan area.
+	$(document).on('click', '.wbtm_bus_deck_tab', function () {
+		let tab = $(this);
+		let deck = tab.attr('data-deck');
+		let plan = tab.closest('.wbtm_seat_plan_area');
+
+		plan.find('.wbtm_bus_deck_tab')
+			.removeClass('wbtm_cabin_deck_tab_active')
+			.attr('aria-selected', 'false');
+		tab.addClass('wbtm_cabin_deck_tab_active').attr('aria-selected', 'true');
+		plan.find('.wbtm_bus_deck_pane').hide();
+		plan.find('.wbtm_bus_deck_pane[data-deck="' + deck + '"]').show();
+	});
+
 	// Initialize cabin arrows and classes on page load
 	$(document).ready(function () {
 		$('.wbtm_cabin_section').each(function () {

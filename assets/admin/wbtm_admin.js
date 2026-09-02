@@ -469,6 +469,45 @@
         });
     });
 })(jQuery);
+//==========Per-seat Seater / Sleeper Layout=================//
+(function ($) {
+    "use strict";
+
+    $(document).on('change', '.wbtm_sleeper_checkbox', function () {
+        let $checkbox = $(this);
+        let $control = $checkbox.closest('.wbtm_seat_layout_control');
+        let isSleeper = $checkbox.is(':checked');
+
+        $control.toggleClass('is-sleeper', isSleeper);
+        $control.find('.wbtm_seat_layout_value').val(isSleeper ? 'sleeper' : 'seater');
+    });
+
+    function activateAdminDeck($fields, deck) {
+        $fields.find('.wbtm_admin_deck_tab')
+            .removeClass('is-active')
+            .attr('aria-selected', 'false');
+        $fields.find('.wbtm_admin_deck_tab[data-deck="' + deck + '"]')
+            .addClass('is-active')
+            .attr('aria-selected', 'true');
+        $fields.find('.wbtm_admin_deck_pane').hide();
+        $fields.find('.wbtm_admin_deck_pane[data-deck="' + deck + '"]').show();
+    }
+
+    $(document).on('click', '.wbtm_admin_deck_tab', function () {
+        let $tab = $(this);
+        activateAdminDeck($tab.closest('.wbtm_traditional_seat_plan_fields'), $tab.attr('data-deck'));
+    });
+
+    $(document).on('change', 'input[name="wbtm_show_upper_desk"]', function () {
+        let $fields = $(this).closest('.wbtm_traditional_seat_plan_fields');
+        let $upperTab = $fields.find('.wbtm_admin_deck_tab[data-deck="upper"]');
+
+        $upperTab.toggle($(this).is(':checked'));
+        if (!$(this).is(':checked')) {
+            activateAdminDeck($fields, 'lower');
+        }
+    });
+})(jQuery);
 //==========Seat Plan Drag & Drop Non-Seat Items=================//
 (function ($) {
     "use strict";
@@ -487,6 +526,17 @@
     function getNonSeatIcon(val) {
         let key = val.toLowerCase().trim();
         return nonSeatItems[key] || '';
+    }
+
+    function syncSeatLayoutAvailability($container) {
+        let value = $.trim($container.find('input.formControl').first().val() || '');
+        let $control = $container.find('.wbtm_seat_layout_control');
+        let isSellableSeat = !!value && !isNonSeatItem(value);
+
+        $control.toggle(isSellableSeat);
+        if (!isSellableSeat && $control.find('.wbtm_sleeper_checkbox').is(':checked')) {
+            $control.find('.wbtm_sleeper_checkbox').prop('checked', false).trigger('change');
+        }
     }
 
     function applyBadge($container, itemType) {
@@ -530,6 +580,7 @@
                 $c.find('.wbtm_nonseat_badge').remove();
                 $c.removeClass('wbtm_has_nonseat');
             }
+            syncSeatLayoutAvailability($c);
         });
     }
 
@@ -780,6 +831,7 @@
         if ($(this).closest('.wbtm_settings_seat').length) {
             wbtmSyncSeatPriceBadges($(this).closest('.wbtm_settings_seat'));
         }
+        syncSeatLayoutAvailability($c);
     });
 
     $(document).on('dblclick', '.wbtm_nonseat_badge', function () {

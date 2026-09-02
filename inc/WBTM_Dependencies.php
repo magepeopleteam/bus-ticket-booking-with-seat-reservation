@@ -113,9 +113,11 @@
 			}
 			public function admin_enqueue() {
 				// custom
-				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), WBTM_VERSION, true);
+				$wbtm_admin_js = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_admin.js';
+				$wbtm_admin_css = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_admin.css';
+				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), file_exists($wbtm_admin_js) ? filemtime($wbtm_admin_js) : WBTM_VERSION, true);
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), WBTM_VERSION, true);
-				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), WBTM_VERSION);
+				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), file_exists($wbtm_admin_css) ? filemtime($wbtm_admin_css) : WBTM_VERSION);
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), WBTM_VERSION);
 				$non_seat_icon_map = [];
 				if (class_exists('WBTM_Seat_Configuration')) {
@@ -182,6 +184,59 @@
 					'ticket_types'      => $ticket_types_payload,
 					'seat_price_need_name' => esc_html__( 'Enter a seat label first (e.g. A1).', 'bus-ticket-booking-with-seat-reservation' ),
 					'seat_price_no_types' => esc_html__( 'Add a route fare for at least one passenger type under Routing & Pricing, or save a per-seat price first.', 'bus-ticket-booking-with-seat-reservation' ),
+					/**
+					 * Strings for the markup wbtm_admin_settings.js builds at runtime
+					 * (cabin rows, seat rows, their alerts). That file lives in
+					 * mp_global and is shared with the Pro addon, so it reads each of
+					 * these through wbtm_admin_text() with the original English as a
+					 * fallback — nothing there breaks if this payload is absent.
+					 *
+					 * Escaping follows the destination, not one blanket helper:
+					 * __() for alert()/confirm() text (plain strings in a JS dialog,
+					 * where an entity-escaped quote would show up literally),
+					 * esc_attr__() for HTML attributes, esc_html__() for text nodes.
+					 */
+					'row_remove_confirm' => __( "Are You Sure , Remove this row ? \n\n 1. Ok : To Remove . \n 2. Cancel : To Cancel .", 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_count_error' => __( 'Please enter a valid number of cabins (1-20)', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_cols_first_error' => __( 'Please set the number of columns first', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_mode_seat_plan_notice' => __( 'Cabin/Coach Configuration requires Seat Plan mode. Seat type has been automatically set to "Seat Plan".', 'bus-ticket-booking-with-seat-reservation' ),
+					/* translators: %d is the cabin's position in the list, e.g. "Cabin 2". */
+					'cabin_default_name' => esc_attr__( 'Cabin %d', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_name_placeholder' => esc_attr__( 'Ex: First Class', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_multiplier_placeholder' => esc_attr__( 'Ex: 1.2', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_upper_multiplier_placeholder' => esc_attr__( 'Ex: 1.5', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_rows_placeholder' => esc_attr__( 'Ex: 10', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_cols_placeholder' => esc_attr__( 'Ex: 4', 'bus-ticket-booking-with-seat-reservation' ),
+					'aisle_title' => esc_attr__( 'Choose aisle position after column (Left to Right). 0 = no automatic aisle.', 'bus-ticket-booking-with-seat-reservation' ),
+					'aisle_placeholder' => esc_attr__( 'Ex: 2 (0=none)', 'bus-ticket-booking-with-seat-reservation' ),
+					'aisle_label' => esc_html__( 'Aisle Position', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_blank_placeholder' => esc_attr__( 'Blank', 'bus-ticket-booking-with-seat-reservation' ),
+					'rotate_seat_title' => esc_attr__( 'Rotate Seat', 'bus-ticket-booking-with-seat-reservation' ),
+					'sleeper_label' => esc_html__( 'Sleeper', 'bus-ticket-booking-with-seat-reservation' ),
+					/* translators: %d is the cabin's position in the list, e.g. "Cabin 2 Configuration". */
+					'cabin_config_title' => esc_html__( 'Cabin %d Configuration', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_config_desc' => esc_html__( 'Configure seat layout for this cabin.', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_name_label' => esc_html__( 'Cabin Name', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_enable_label' => esc_html__( 'Enable Cabin', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_price_multiplier_label' => esc_html__( 'Price Multiplier (Lower Deck)', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_price_multiplier_help' => esc_html__( 'Decimals allowed. 1.0 = same as base price, 1.2 = 20% higher, 0.8 = 20% lower.', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_template_label' => esc_html__( 'Seat Template', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_template_desc' => esc_html__( 'Generate a complete seat layout in one click, then edit freely as usual.', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_numbering_label' => esc_html__( 'Seat Numbering', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_numbering_desc' => esc_html__( 'How seat labels are generated when the template is applied.', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_rows_label' => esc_html__( 'Seat Rows', 'bus-ticket-booking-with-seat-reservation' ),
+					'seat_cols_label' => esc_html__( 'Seat Columns', 'bus-ticket-booking-with-seat-reservation' ),
+					'apply_template_label' => esc_html__( 'Apply Template', 'bus-ticket-booking-with-seat-reservation' ),
+					'generate_seat_plan_label' => esc_html__( 'Generate Seat Plan', 'bus-ticket-booking-with-seat-reservation' ),
+					/* translators: %d is the cabin's position in the list, e.g. "Cabin 2 Lower Deck Preview". */
+					'cabin_lower_preview_label' => esc_html__( 'Cabin %d Lower Deck Preview', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_upper_enable_label' => esc_html__( 'Enable Upper Deck', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_upper_enable_desc' => esc_html__( 'Turn on to add an upper deck to this cabin/coach (double-decker).', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_upper_multiplier_label' => esc_html__( 'Price Multiplier (Upper Deck)', 'bus-ticket-booking-with-seat-reservation' ),
+					'cabin_upper_multiplier_help' => esc_html__( 'Set the upper deck price independently. Decimals allowed. 1.0 = same as base, 1.5 = 50% higher, 0.8 = 20% lower.', 'bus-ticket-booking-with-seat-reservation' ),
+					'generate_upper_seat_plan_label' => esc_html__( 'Generate Upper Deck Seat Plan', 'bus-ticket-booking-with-seat-reservation' ),
+					/* translators: %d is the cabin's position in the list, e.g. "Cabin 2 Upper Deck Preview". */
+					'cabin_upper_preview_label' => esc_html__( 'Cabin %d Upper Deck Preview', 'bus-ticket-booking-with-seat-reservation' ),
 				) );
 				do_action('wbtm_add_admin_script');
 			}

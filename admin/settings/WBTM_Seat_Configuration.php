@@ -43,6 +43,225 @@
 				}
 				return $value;
 			}
+			public static function normalize_seat_layout_type($value) {
+				return sanitize_key((string) $value) === 'sleeper' ? 'sleeper' : 'seater';
+			}
+			public static function has_sleeper_seats($post_id) {
+				$layout_meta_keys = [];
+				$cabin_mode = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				if ($cabin_mode === 'yes' && is_array($cabin_config) && !empty($cabin_config)) {
+					foreach ($cabin_config as $cabin_index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') {
+							continue;
+						}
+						$layout_meta_keys[] = 'wbtm_cabin_seat_layouts_' . $cabin_index;
+						if (($cabin['upper_enabled'] ?? 'no') === 'yes') {
+							$layout_meta_keys[] = 'wbtm_cabin_seat_layouts_dd_' . $cabin_index;
+						}
+					}
+				} else {
+					$layout_meta_keys[] = 'wbtm_bus_seat_layouts';
+					if (WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk') === 'yes') {
+						$layout_meta_keys[] = 'wbtm_bus_seat_layouts_dd';
+					}
+				}
+				foreach ($layout_meta_keys as $layout_meta_key) {
+					$rows = WBTM_Global_Function::get_post_info($post_id, $layout_meta_key, []);
+					if (!is_array($rows)) {
+						continue;
+					}
+					foreach ($rows as $row) {
+						if (is_array($row) && in_array('sleeper', $row, true)) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+			/**
+			 * Collect the sleeper seats of one grid into $map.
+			 *
+			 * Seat rows carry both the seat value and its "<key>_rotation" sibling,
+			 * so rotation keys are skipped; blanks and non-seat items (door, stair,
+			 * driver) are skipped too because nothing can be booked into them.
+			 *
+			 * @param int         $post_id
+			 * @param string      $info_key    Meta key holding the seat rows.
+			 * @param string      $layout_key  Meta key holding this grid's layouts.
+			 * @param array       $map         Collected identifiers, by reference.
+			 * @param int|null    $cabin_index Cabin position, or null for a plain deck.
+			 * @param bool        $is_upper    Upper deck of that cabin.
+			 */
+			private static function collect_sleeper_seats($post_id, $info_key, $layout_key, &$map, $cabin_index = null, $is_upper = false) {
+				$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
+				$layouts    = WBTM_Global_Function::get_post_info($post_id, $layout_key, []);
+				if (!is_array($seat_infos) || !is_array($layouts) || empty($layouts)) {
+					return;
+				}
+				foreach ($seat_infos as $row_index => $row) {
+					if (!is_array($row) || !isset($layouts[$row_index]) || !is_array($layouts[$row_index])) {
+						continue;
+					}
+					foreach ($row as $seat_key => $seat_value) {
+						if (strpos($seat_key, '_rotation') !== false) {
+							continue;
+						}
+						if (($layouts[$row_index][$seat_key] ?? 'seater') !== 'sleeper') {
+							continue;
+						}
+						$seat_name = self::normalize_saved_seat_value($seat_value);
+						if ($seat_name === '' || self::is_non_seat_item($seat_name)) {
+							continue;
+						}
+						if ($cabin_index === null) {
+							$map[$seat_name] = 'sleeper';
+							continue;
+						}
+						// Cabins book under a deck-scoped identifier. Register the bare
+						// label too, for rows stored before identifiers existed — but
+						// never overwrite, so one cabin cannot claim another cabin's
+						// seat of the same name.
+						$map[WBTM_Functions::cabin_seat_identifier($cabin_index, $seat_name, $is_upper)] = 'sleeper';
+						if (!isset($map[$seat_name])) {
+							$map[$seat_name] = 'sleeper';
+						}
+					}
+				}
+			}
+			/**
+			 * Map this bus's sleeper seats to the identifiers bookings store in
+			 * wbtm_seat, so a booked seat can be told apart from a seater one.
+			 *
+			 * Only sleeper seats are listed: a seat missing from the map is a
+			 * seater. That keeps the map empty — and every caller a no-op — for
+			 * the buses that never use the feature.
+			 *
+			 * @param int $post_id
+			 * @return array identifier => 'sleeper'
+			 */
+			public static function get_seat_layout_map($post_id) {
+				static $cache = [];
+				$post_id = (int) $post_id;
+				if (isset($cache[$post_id])) {
+					return $cache[$post_id];
+				}
+				$map = [];
+				$cabin_mode   = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				if ($cabin_mode === 'yes' && is_array($cabin_config) && !empty($cabin_config)) {
+					foreach ($cabin_config as $cabin_index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') {
+							continue;
+						}
+						self::collect_sleeper_seats($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, 'wbtm_cabin_seat_layouts_' . $cabin_index, $map, $cabin_index, false);
+						if (($cabin['upper_enabled'] ?? 'no') === 'yes') {
+							self::collect_sleeper_seats($post_id, 'wbtm_cabin_seats_info_dd_' . $cabin_index, 'wbtm_cabin_seat_layouts_dd_' . $cabin_index, $map, $cabin_index, true);
+						}
+					}
+				} else {
+					self::collect_sleeper_seats($post_id, 'wbtm_bus_seats_info', 'wbtm_bus_seat_layouts', $map);
+					if (WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk') === 'yes') {
+						self::collect_sleeper_seats($post_id, 'wbtm_bus_seats_info_dd', 'wbtm_bus_seat_layouts_dd', $map);
+					}
+				}
+				$cache[$post_id] = $map;
+				return $map;
+			}
+			/**
+			 * Layout type of one booked seat, from the value stored in wbtm_seat.
+			 *
+			 * @param int    $post_id
+			 * @param string $stored_seat
+			 * @return string 'seater'|'sleeper'
+			 */
+			public static function get_seat_layout_type($post_id, $stored_seat) {
+				$stored_seat = (string) $stored_seat;
+				if ($stored_seat === '') {
+					return 'seater';
+				}
+				$map = self::get_seat_layout_map($post_id);
+				if (empty($map)) {
+					return 'seater';
+				}
+				// Exact match only. A cabin seat is registered under BOTH its
+				// identifier and its bare label, so a legacy booking that stored
+				// "A1" already resolves here — while a miss on a fully-qualified
+				// "cabin_1_A1" genuinely means seater. Re-parsing that identifier
+				// down to "A1" and retrying would let one cabin's sleeper mark a
+				// same-named seat in a different cabin.
+				return isset($map[$stored_seat]) ? 'sleeper' : 'seater';
+			}
+			/**
+			 * Berth type to display for one booking row, or '' when nothing should
+			 * be shown (the bus offers no sleepers, the row is a full-bus booking,
+			 * or the bus is gone).
+			 *
+			 * Prefers wbtm_seat_layout as recorded at booking time, so a ticket
+			 * reprinted after the operator edits the bus still shows what was
+			 * actually sold. Falls back to the live layout for rows written before
+			 * that meta existed, and for the Pro standalone-payment path, which
+			 * builds its own booking rows.
+			 *
+			 * @param int $booking_id wbtm_bus_booking post ID.
+			 * @return string 'seater'|'sleeper'|''
+			 */
+			public static function get_booking_seat_layout($booking_id) {
+				$stored = WBTM_Global_Function::get_post_info($booking_id, 'wbtm_seat_layout', '');
+				if ($stored !== '') {
+					return self::normalize_seat_layout_type($stored);
+				}
+				if (WBTM_Global_Function::get_post_info($booking_id, 'wbtm_booking_mode') === 'full_bus') {
+					return '';
+				}
+				$bus_id = (int) WBTM_Global_Function::get_post_info($booking_id, 'wbtm_bus_id', 0);
+				if ($bus_id <= 0 || !self::has_sleeper_seats($bus_id)) {
+					return '';
+				}
+				return self::get_seat_layout_type($bus_id, WBTM_Global_Function::get_post_info($booking_id, 'wbtm_seat', ''));
+			}
+			/**
+			 * Translated berth label for one booking row, or '' when the row should
+			 * show none. The single call site for tickets, PDFs and exports.
+			 *
+			 * @param int $booking_id
+			 * @return string
+			 */
+			public static function get_booking_seat_layout_label($booking_id) {
+				$layout = self::get_booking_seat_layout($booking_id);
+				return $layout === '' ? '' : self::seat_layout_label($layout);
+			}
+			/**
+			 * Display label for a layout type, through the Translation Settings
+			 * screen like every other customer-facing string.
+			 *
+			 * @param string $layout_type
+			 * @return string
+			 */
+			public static function seat_layout_label($layout_type) {
+				return self::normalize_seat_layout_type($layout_type) === 'sleeper'
+					? WBTM_Translations::text_sleeper()
+					: WBTM_Translations::text_seater();
+			}
+			private static function render_seat_layout_control($input_name, $layout_type = 'seater', $disabled = false, $visible = true) {
+				$layout_type = self::normalize_seat_layout_type($layout_type);
+				?>
+				<div class="wbtm_seat_layout_control<?php echo $layout_type === 'sleeper' ? ' is-sleeper' : ''; ?>"<?php echo $visible ? '' : ' style="display:none;"'; ?>>
+					<input type="hidden"
+						   name="<?php echo esc_attr($input_name); ?>"
+						   value="<?php echo esc_attr($layout_type); ?>"
+						   class="wbtm_seat_layout_value"
+						   <?php echo $disabled ? 'disabled' : ''; ?>/>
+					<label>
+						<input type="checkbox"
+							   class="wbtm_sleeper_checkbox"
+							   <?php checked($layout_type, 'sleeper'); ?>
+							   <?php echo $disabled ? 'disabled' : ''; ?>/>
+						<span><?php esc_html_e('Sleeper', 'bus-ticket-booking-with-seat-reservation'); ?></span>
+					</label>
+				</div>
+				<?php
+			}
 			public static function is_seat_price_override_enabled($post_id) {
 				/**
 				 * FIX: Add a backward-compatible seat-wise price override feature toggle.
@@ -467,8 +686,16 @@
 							<?php WBTM_Custom_Layout::switch_button('wbtm_show_upper_desk', $checked_upper_desk); ?>
                         </div>
                         <div class="divider"></div>
-						<?php $this->lower_seat_plan_settings($post_id); ?>
-						<?php $this->dd_seat_plan_settings($post_id); ?>
+						<div class="wbtm_admin_deck_tabs" role="tablist" aria-label="<?php esc_attr_e('Seat plan deck', 'bus-ticket-booking-with-seat-reservation'); ?>">
+							<button type="button" class="wbtm_admin_deck_tab is-active" data-deck="lower" role="tab" aria-selected="true"><?php esc_html_e('Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+							<button type="button" class="wbtm_admin_deck_tab" data-deck="upper" role="tab" aria-selected="false" style="<?php echo esc_attr($show_upper_desk === 'yes' ? '' : 'display:none;'); ?>"><?php esc_html_e('Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+						</div>
+						<div class="wbtm_admin_deck_pane" data-deck="lower" role="tabpanel">
+							<?php $this->lower_seat_plan_settings($post_id); ?>
+						</div>
+						<div class="wbtm_admin_deck_pane" data-deck="upper" role="tabpanel" style="display:none;">
+							<?php $this->dd_seat_plan_settings($post_id); ?>
+						</div>
                         </div>
                     </div>
                 </div>
@@ -600,6 +827,8 @@
 				if ($seat_row > 0 && $seat_column > 0) {
 					$info_key = $dd ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
+					$layout_key = $dd ? 'wbtm_bus_seat_layouts_dd' : 'wbtm_bus_seat_layouts';
+					$seat_layouts = WBTM_Global_Function::get_post_info($post_id, $layout_key, []);
 					// Rotation is enabled independently per deck (lower vs upper),
 					// so its toggle can live inline with each deck's own "Add New
 					// Row" button instead of one setting shared by both decks.
@@ -616,7 +845,8 @@
                                 <tbody class="wbtm_item_insert wbtm_sortable_area">
 								<?php for ($i = 0; $i < $seat_row; $i++) { ?>
 									<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
-									<?php $this->seat_plan_row($seat_column, $dd, $row_info, $enable_seat_price_override); ?>
+									<?php $row_layout = array_key_exists($i, $seat_layouts) ? $seat_layouts[$i] : []; ?>
+									<?php $this->seat_plan_row($seat_column, $dd, $row_info, $enable_seat_price_override, $row_layout); ?>
 								<?php } ?>
                                 </tbody>
                             </table>
@@ -644,7 +874,7 @@
                     </div>
 				<?php }
 			}
-			public function seat_plan_row($seat_column, $dd, $row_info = [], $enable_seat_price_override = true) {
+			public function seat_plan_row($seat_column, $dd, $row_info = [], $enable_seat_price_override = true, $row_layout = []) {
 				$seat_key = $dd ? 'dd_seat' : 'seat';
 				$post_id = get_the_ID();
 				$rotation_key = $dd ? 'wbtm_enable_seat_rotation_dd' : 'wbtm_enable_seat_rotation';
@@ -655,6 +885,7 @@
 						<?php $key = $seat_key . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? self::normalize_saved_seat_value($row_info[$key]) : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+						<?php $seat_layout = array_key_exists($key, $row_layout) ? self::normalize_seat_layout_type($row_layout[$key]) : 'seater'; ?>
                         <th>
                             <div class="wbtm_seat_container">
                                 <label>
@@ -665,6 +896,7 @@
                                     />
                                 </label>
 								<?php self::render_seat_price_button($dd ? 'u' : 'l', $seat_name, null, false, $enable_seat_price_override); ?>
+								<?php self::render_seat_layout_control('wbtm_' . $key . '_layout[]', $seat_layout, false, $seat_name !== '' && !self::is_non_seat_item($seat_name)); ?>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -694,6 +926,7 @@
 					$deck_infix = $dd ? '_dd' : '';
 					$seat_key_prefix = 'cabin_' . $cabin_index . $deck_infix . '_seat';
 					$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seats_info' . $deck_infix . '_' . $cabin_index, []);
+					$seat_layouts = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_seat_layouts' . $deck_infix . '_' . $cabin_index, []);
 					// Independent per cabin AND per deck — mirrors the lower/upper deck
 					// pattern (wbtm_enable_seat_rotation / wbtm_enable_seat_rotation_dd);
 					// never shared across cabins or with the deck's own setting.
@@ -710,7 +943,8 @@
                                 <tbody class="wbtm_cabin_item_insert wbtm_sortable_area">
 								<?php for ($i = 0; $i < $rows; $i++) { ?>
 									<?php $row_info = array_key_exists($i, $seat_infos) ? $seat_infos[$i] : []; ?>
-									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info, $enable_seat_price_override, $dd); ?>
+									<?php $row_layout = array_key_exists($i, $seat_layouts) ? $seat_layouts[$i] : []; ?>
+									<?php $this->cabin_seat_plan_row($cols, $cabin_index, $row_info, $enable_seat_price_override, $dd, $row_layout); ?>
 								<?php } ?>
                                 </tbody>
                             </table>
@@ -748,7 +982,8 @@
                                                            disabled
                                                    />
                                                 </label>
-												<?php self::render_seat_price_button('c', '', $cabin_index, true, $enable_seat_price_override); ?>
+											<?php self::render_seat_price_button('c', '', $cabin_index, true, $enable_seat_price_override); ?>
+											<?php self::render_seat_layout_control('wbtm_template_' . $key . '_layout[]', 'seater', true, false); ?>
 												<?php if ($enable_rotation == 'yes') { ?>
                                                     <div class="wbtm_seat_rotation_controls">
                                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
@@ -775,7 +1010,7 @@
 					<?php
 				}
 			}
-			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = [], $enable_seat_price_override = true, $dd = false) {
+			public function cabin_seat_plan_row($cols, $cabin_index, $row_info = [], $enable_seat_price_override = true, $dd = false, $row_layout = []) {
 				$deck_infix = $dd ? '_dd' : '';
 				$seat_key_prefix = 'cabin_' . $cabin_index . $deck_infix . '_seat';
 				$post_id = get_the_ID();
@@ -786,6 +1021,7 @@
 						<?php $key = $seat_key_prefix . $j; ?>
 						<?php $seat_name = array_key_exists($key, $row_info) ? self::normalize_saved_seat_value($row_info[$key]) : ''; ?>
 						<?php $seat_rotation = array_key_exists($key . '_rotation', $row_info) ? $row_info[$key . '_rotation'] : '0'; ?>
+						<?php $seat_layout = array_key_exists($key, $row_layout) ? self::normalize_seat_layout_type($row_layout[$key]) : 'seater'; ?>
                         <th>
                             <div class="wbtm_seat_container">
                                 <label>
@@ -796,7 +1032,8 @@
                                     />
                                 </label>
 								<?php // $dd carries the deck for this row — pass it so the upper deck keys its own prices. ?>
-								<?php self::render_seat_price_button('c', $seat_name, $cabin_index, false, $enable_seat_price_override, $dd); ?>
+									<?php self::render_seat_price_button('c', $seat_name, $cabin_index, false, $enable_seat_price_override, $dd); ?>
+									<?php self::render_seat_layout_control('wbtm_' . $key . '_layout[]', $seat_layout, false, $seat_name !== '' && !self::is_non_seat_item($seat_name)); ?>
 								<?php if ($enable_rotation == 'yes') { ?>
                                     <div class="wbtm_seat_rotation_controls">
                                         <button type="button" class="wbtm_rotate_seat _whiteButton_xs"

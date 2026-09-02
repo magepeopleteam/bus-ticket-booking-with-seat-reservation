@@ -10688,3 +10688,83 @@ msgstr ""
 #: woocommerce-bus.php:104
 msgid "Upgrade to PRO Version"
 msgstr ""
+
+#: admin/settings/WBTM_Seat_Configuration.php:96
+#: inc/WBTM_Dependencies.php:215
+#: templates/layout/seat_plan.php:129
+msgid "Sleeper"
+msgstr ""
+
+#: admin/settings/WBTM_Seat_Configuration.php:525
+msgid "Seat plan deck"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:199
+msgid ""
+"Are You Sure , Remove this row ? \n"
+"\n"
+" 1. Ok : To Remove . \n"
+" 2. Cancel : To Cancel ."
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:200
+msgid "Please enter a valid number of cabins (1-20)"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:201
+msgid "Please set the number of columns first"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:202
+msgid "Cabin/Coach Configuration requires Seat Plan mode. Seat type has been automatically set to \"Seat Plan\"."
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:205
+msgid "Ex: First Class"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:206
+msgid "Ex: 1.2"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:207
+msgid "Ex: 1.5"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:208
+msgid "Ex: 10"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:209
+msgid "Ex: 4"
+msgstr ""
+
+#: inc/WBTM_Dependencies.php:211
+msgid "Ex: 2 (0=none)"
+msgstr ""
+
+#: templates/layout/seat_plan.php:125
+msgid "Seater"
+msgstr ""
+
+#: templates/layout/seat_plan.php:425
+msgid "Bus deck"
+msgstr ""
+
+#. translators: %d is the cabin's position in the list, e.g. "Cabin 2 Configuration".
+#: inc/WBTM_Dependencies.php:217
+#, php-format
+msgid "Cabin %d Configuration"
+msgstr ""
+
+#. translators: %d is the cabin's position in the list, e.g. "Cabin 2 Lower Deck Preview".
+#: inc/WBTM_Dependencies.php:232
+#, php-format
+msgid "Cabin %d Lower Deck Preview"
+msgstr ""
+
+#. translators: %d is the cabin's position in the list, e.g. "Cabin 2 Upper Deck Preview".
+#: inc/WBTM_Dependencies.php:239
+#, php-format
+msgid "Cabin %d Upper Deck Preview"
+msgstr ""
