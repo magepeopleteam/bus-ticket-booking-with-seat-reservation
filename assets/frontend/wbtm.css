@@ -3722,10 +3722,21 @@ div.wbtm_loader_xs {
 }
 
 /* Sleeper berths are visual-only seat shapes. Their fare, ticket type,
-   availability state and selection behavior remain the existing seat logic. */
-.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_seater,
-.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_seater,
-.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_seater {
+   availability state and selection behavior remain the existing seat logic.
+
+   IMPORTANT: every one of these rules is scoped to
+   .wbtm_seat_plan_area.wbtm_has_sleeper_layout, a class emitted only when the
+   bus actually has at least one sleeper seat. A bus with no sleeper seats gets
+   NO rule from this block, so its seats keep the fluid width/height:100%
+   sizing the rest of this stylesheet gives them. Do not unscope these — the
+   seater class is on every seat of every bus by default, so an unscoped fixed
+   size here silently repaints every existing seat plan.
+
+   Fixed pixel sizing is required once sleepers are present: a table row sizes
+   itself to its tallest cell, so fluid seats in a row containing a 78px berth
+   would stretch to match it and the two types would stop being tellable
+   apart. */
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_seater {
   width: 38px !important;
   min-width: 38px !important;
   max-width: 38px !important;
@@ -3734,9 +3745,7 @@ div.wbtm_loader_xs {
   max-height: 46px !important;
   margin: 0 auto !important;
 }
-.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_seater .mp_seat,
-.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_seater .mp_seat,
-.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_seater .mp_seat {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_seater .mp_seat {
   width: 38px !important;
   min-width: 38px !important;
   max-width: 38px !important;
@@ -3744,9 +3753,7 @@ div.wbtm_loader_xs {
   min-height: 46px !important;
   max-height: 46px !important;
 }
-.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_sleeper,
-.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_sleeper,
-.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_sleeper {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_sleeper {
   width: 38px !important;
   min-width: 38px !important;
   max-width: 38px !important;
@@ -3755,9 +3762,7 @@ div.wbtm_loader_xs {
   max-height: 78px !important;
   margin: 0 auto !important;
 }
-.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat,
-.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat,
-.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat {
   width: 38px !important;
   min-width: 38px !important;
   max-width: 38px !important;
@@ -3765,11 +3770,11 @@ div.wbtm_loader_xs {
   min-height: 78px !important;
   max-height: 78px !important;
 }
-.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual {
   border-radius: 8px !important;
   border-bottom-width: 5px !important;
 }
-.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual::after {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual::after {
   content: "";
   position: absolute;
   left: 20%;
@@ -3779,6 +3784,6 @@ div.wbtm_loader_xs {
   border-radius: 3px;
   background: var(--wbtm_color_light);
 }
-.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_selected .seat_visual::after {
+.wbtm_style .wbtm_seat_plan_area.wbtm_has_sleeper_layout .mp_seat_item.wbtm_seat_layout_sleeper .seat_selected .seat_visual::after {
   background: rgba(255, 255, 255, .72);
 }

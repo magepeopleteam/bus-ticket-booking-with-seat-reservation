@@ -524,7 +524,7 @@
                         <div class="divider"></div>
 						<div class="wbtm_admin_deck_tabs" role="tablist" aria-label="<?php esc_attr_e('Seat plan deck', 'bus-ticket-booking-with-seat-reservation'); ?>">
 							<button type="button" class="wbtm_admin_deck_tab is-active" data-deck="lower" role="tab" aria-selected="true"><?php esc_html_e('Lower Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
-							<button type="button" class="wbtm_admin_deck_tab" data-deck="upper" role="tab" aria-selected="false" style="<?php echo $show_upper_desk === 'yes' ? '' : 'display:none;'; ?>"><?php esc_html_e('Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
+							<button type="button" class="wbtm_admin_deck_tab" data-deck="upper" role="tab" aria-selected="false" style="<?php echo esc_attr($show_upper_desk === 'yes' ? '' : 'display:none;'); ?>"><?php esc_html_e('Upper Deck', 'bus-ticket-booking-with-seat-reservation'); ?></button>
 						</div>
 						<div class="wbtm_admin_deck_pane" data-deck="lower" role="tabpanel">
 							<?php $this->lower_seat_plan_settings($post_id); ?>
