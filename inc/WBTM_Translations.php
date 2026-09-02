@@ -301,6 +301,24 @@
 				); 
 			}
 			
+			public static function text_seat_type() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Seat Type', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
+			public static function text_seater() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Seater', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
+			public static function text_sleeper() { 
+				return self::get_translation(__FUNCTION__,
+					esc_html__('Sleeper', 'bus-ticket-booking-with-seat-reservation')
+				); 
+			}
+			
 			public static function text_name() { 
 				return self::get_translation(__FUNCTION__,
 					esc_html__('Name', 'bus-ticket-booking-with-seat-reservation')

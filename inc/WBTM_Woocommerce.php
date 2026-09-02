@@ -787,6 +787,9 @@
 					}
 					$ticket_qty = array_key_exists('wbtm_seats_qty', $values) ? $values['wbtm_seats_qty'] : 0;
 					$base_price = array_key_exists('wbtm_base_price', $values) ? $values['wbtm_base_price'] : 0;
+					// Seat type is only worth recording when this bus actually offers
+					// both kinds; resolved once per item rather than per seat.
+					$has_sleeper_layout = class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::has_sleeper_seats($post_id);
 					if (sizeof($ticket_infos) > 0) {
 						foreach ($ticket_infos as $ticket_info) {
 							$ticket_info = is_array($ticket_info) ? $ticket_info : [];
@@ -794,10 +797,28 @@
 							$item->add_meta_data(WBTM_Translations::text_ticket_type(), $ticket_name_label);
 							if (array_key_exists('seat_name', $ticket_info)) {
 								$seat_name = $ticket_info['seat_name'];
+								// Resolve the layout from the RAW label, before the deck
+								// suffix below turns it into something no lookup matches.
+								$seat_layout_type = '';
+								if ($has_sleeper_layout && class_exists('WBTM_Seat_Configuration')) {
+									$layout_lookup_seat = $seat_name;
+									if (array_key_exists('cabin_index', $ticket_info)) {
+										$layout_lookup_seat = !empty($ticket_info['seat_identifier'])
+											? $ticket_info['seat_identifier']
+											: WBTM_Functions::cabin_seat_identifier($ticket_info['cabin_index'], $seat_name, !empty($ticket_info['is_upper']));
+									}
+									$seat_layout_type = WBTM_Seat_Configuration::get_seat_layout_type($post_id, $layout_lookup_seat);
+								}
 								if (array_key_exists('dd', $ticket_info) && $ticket_info['dd']) {
 									$seat_name = $seat_name . '(' . WBTM_Translations::text_upper_deck() . ')';
 								}
 								$item->add_meta_data(WBTM_Translations::text_seat_name(), $seat_name);
+								// Only annotated on buses that actually mix in sleeper
+								// berths — labelling every seat "Seater" everywhere else
+								// would be noise on orders that have no such choice.
+								if ($seat_layout_type !== '') {
+									$item->add_meta_data(WBTM_Translations::text_seat_type(), WBTM_Seat_Configuration::seat_layout_label($seat_layout_type));
+								}
 							}
 							$t_qty   = isset($ticket_info['ticket_qty']) ? $ticket_info['ticket_qty'] : 1;
 							$t_price = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
@@ -1026,6 +1047,16 @@
 									// Fixed by Shahnur — full bus booking rows without seat_name warning 2026-05-07 12:55 PM
 									// Legacy seat storage for non-cabin bookings
 									$data['wbtm_seat'] = $t_seat;
+								}
+								// Record the berth type on the booking itself so the ticket
+								// PDF, passenger list and exports can show it without having
+								// to re-derive it from the bus layout — and so it survives a
+								// later edit to that layout. Written only for buses that
+								// actually offer sleepers, and never for a full-bus booking,
+								// which covers every seat rather than one berth.
+								unset($data['wbtm_seat_layout']);
+								if ($has_sleeper_layout && !$is_full_bus_booking && class_exists('WBTM_Seat_Configuration')) {
+									$data['wbtm_seat_layout'] = WBTM_Seat_Configuration::get_seat_layout_type($post_id, $data['wbtm_seat']);
 								}
 								$data['wbtm_bus_fare'] = isset($ticket_info['ticket_price']) ? $ticket_info['ticket_price'] : 0;
 								if ($is_full_bus_booking) {

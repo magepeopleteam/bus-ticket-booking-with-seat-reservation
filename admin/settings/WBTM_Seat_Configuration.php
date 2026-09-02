@@ -79,6 +79,131 @@
 				}
 				return false;
 			}
+			/**
+			 * Collect the sleeper seats of one grid into $map.
+			 *
+			 * Seat rows carry both the seat value and its "<key>_rotation" sibling,
+			 * so rotation keys are skipped; blanks and non-seat items (door, stair,
+			 * driver) are skipped too because nothing can be booked into them.
+			 *
+			 * @param int         $post_id
+			 * @param string      $info_key    Meta key holding the seat rows.
+			 * @param string      $layout_key  Meta key holding this grid's layouts.
+			 * @param array       $map         Collected identifiers, by reference.
+			 * @param int|null    $cabin_index Cabin position, or null for a plain deck.
+			 * @param bool        $is_upper    Upper deck of that cabin.
+			 */
+			private static function collect_sleeper_seats($post_id, $info_key, $layout_key, &$map, $cabin_index = null, $is_upper = false) {
+				$seat_infos = WBTM_Global_Function::get_post_info($post_id, $info_key, []);
+				$layouts    = WBTM_Global_Function::get_post_info($post_id, $layout_key, []);
+				if (!is_array($seat_infos) || !is_array($layouts) || empty($layouts)) {
+					return;
+				}
+				foreach ($seat_infos as $row_index => $row) {
+					if (!is_array($row) || !isset($layouts[$row_index]) || !is_array($layouts[$row_index])) {
+						continue;
+					}
+					foreach ($row as $seat_key => $seat_value) {
+						if (strpos($seat_key, '_rotation') !== false) {
+							continue;
+						}
+						if (($layouts[$row_index][$seat_key] ?? 'seater') !== 'sleeper') {
+							continue;
+						}
+						$seat_name = self::normalize_saved_seat_value($seat_value);
+						if ($seat_name === '' || self::is_non_seat_item($seat_name)) {
+							continue;
+						}
+						if ($cabin_index === null) {
+							$map[$seat_name] = 'sleeper';
+							continue;
+						}
+						// Cabins book under a deck-scoped identifier. Register the bare
+						// label too, for rows stored before identifiers existed — but
+						// never overwrite, so one cabin cannot claim another cabin's
+						// seat of the same name.
+						$map[WBTM_Functions::cabin_seat_identifier($cabin_index, $seat_name, $is_upper)] = 'sleeper';
+						if (!isset($map[$seat_name])) {
+							$map[$seat_name] = 'sleeper';
+						}
+					}
+				}
+			}
+			/**
+			 * Map this bus's sleeper seats to the identifiers bookings store in
+			 * wbtm_seat, so a booked seat can be told apart from a seater one.
+			 *
+			 * Only sleeper seats are listed: a seat missing from the map is a
+			 * seater. That keeps the map empty — and every caller a no-op — for
+			 * the buses that never use the feature.
+			 *
+			 * @param int $post_id
+			 * @return array identifier => 'sleeper'
+			 */
+			public static function get_seat_layout_map($post_id) {
+				static $cache = [];
+				$post_id = (int) $post_id;
+				if (isset($cache[$post_id])) {
+					return $cache[$post_id];
+				}
+				$map = [];
+				$cabin_mode   = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
+				$cabin_config = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_config', []);
+				if ($cabin_mode === 'yes' && is_array($cabin_config) && !empty($cabin_config)) {
+					foreach ($cabin_config as $cabin_index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') {
+							continue;
+						}
+						self::collect_sleeper_seats($post_id, 'wbtm_cabin_seats_info_' . $cabin_index, 'wbtm_cabin_seat_layouts_' . $cabin_index, $map, $cabin_index, false);
+						if (($cabin['upper_enabled'] ?? 'no') === 'yes') {
+							self::collect_sleeper_seats($post_id, 'wbtm_cabin_seats_info_dd_' . $cabin_index, 'wbtm_cabin_seat_layouts_dd_' . $cabin_index, $map, $cabin_index, true);
+						}
+					}
+				} else {
+					self::collect_sleeper_seats($post_id, 'wbtm_bus_seats_info', 'wbtm_bus_seat_layouts', $map);
+					if (WBTM_Global_Function::get_post_info($post_id, 'show_upper_desk') === 'yes') {
+						self::collect_sleeper_seats($post_id, 'wbtm_bus_seats_info_dd', 'wbtm_bus_seat_layouts_dd', $map);
+					}
+				}
+				$cache[$post_id] = $map;
+				return $map;
+			}
+			/**
+			 * Layout type of one booked seat, from the value stored in wbtm_seat.
+			 *
+			 * @param int    $post_id
+			 * @param string $stored_seat
+			 * @return string 'seater'|'sleeper'
+			 */
+			public static function get_seat_layout_type($post_id, $stored_seat) {
+				$stored_seat = (string) $stored_seat;
+				if ($stored_seat === '') {
+					return 'seater';
+				}
+				$map = self::get_seat_layout_map($post_id);
+				if (empty($map)) {
+					return 'seater';
+				}
+				// Exact match only. A cabin seat is registered under BOTH its
+				// identifier and its bare label, so a legacy booking that stored
+				// "A1" already resolves here — while a miss on a fully-qualified
+				// "cabin_1_A1" genuinely means seater. Re-parsing that identifier
+				// down to "A1" and retrying would let one cabin's sleeper mark a
+				// same-named seat in a different cabin.
+				return isset($map[$stored_seat]) ? 'sleeper' : 'seater';
+			}
+			/**
+			 * Display label for a layout type, through the Translation Settings
+			 * screen like every other customer-facing string.
+			 *
+			 * @param string $layout_type
+			 * @return string
+			 */
+			public static function seat_layout_label($layout_type) {
+				return self::normalize_seat_layout_type($layout_type) === 'sleeper'
+					? WBTM_Translations::text_sleeper()
+					: WBTM_Translations::text_seater();
+			}
 			private static function render_seat_layout_control($input_name, $layout_type = 'seater', $disabled = false, $visible = true) {
 				$layout_type = self::normalize_seat_layout_type($layout_type);
 				?>
