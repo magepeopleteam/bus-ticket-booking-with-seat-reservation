@@ -766,6 +766,10 @@ button.wbtm-bme__btn.wbtm-bme__btn--primary.wbtm-bme__split-caret{
 .wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank{border-style:dashed;background:transparent;box-shadow:none;justify-content:center;min-height:30px;}
 .wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank:hover{border-color:var(--line);box-shadow:none;}
 .wbtm-bme.wbtm_style .wbtm_seat_container.wbtm-bme-blank input[type=text]{color:var(--muted);font-weight:500;}
+.wbtm-bme.wbtm_style .wbtm_seat_layout_control{display:flex;align-items:center;justify-content:center;width:100%;margin:1px 0 0;}
+.wbtm-bme.wbtm_style .wbtm_seat_layout_control label{display:inline-flex;align-items:center;justify-content:center;gap:3px;width:auto;margin:0;padding:0!important;font-size:9.5px;font-weight:650;color:var(--muted);cursor:pointer;}
+.wbtm-bme.wbtm_style .wbtm_seat_layout_control input[type=checkbox]{width:12px!important;height:12px!important;min-width:12px!important;margin:0!important;}
+.wbtm-bme.wbtm_style .wbtm_seat_layout_control.is-sleeper label{color:var(--brand);}
 
 /* ---- Cabin / coach builder ----
    The cabin split is `.mpPanelBody > ._dFlex` (a CHILD _dFlex), not

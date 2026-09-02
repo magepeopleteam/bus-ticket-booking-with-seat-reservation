@@ -827,6 +827,14 @@ function wbtm_load_sortable_datepicker(parent, item) {
                                 value=""
                             />
                         </label>
+                        <div class="wbtm_seat_layout_control" style="display:none;">
+                            <input type="hidden" name="wbtm_${sk}_layout[]"
+                                   value="seater" class="wbtm_seat_layout_value" />
+                            <label>
+                                <input type="checkbox" class="wbtm_sleeper_checkbox" />
+                                <span>Sleeper</span>
+                            </label>
+                        </div>
                         <div class="wbtm_seat_rotation_controls">
                             <button type="button" class="wbtm_rotate_seat _whiteButton_xs"
                                     data-seat="${sk}"

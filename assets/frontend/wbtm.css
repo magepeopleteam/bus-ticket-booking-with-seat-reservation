@@ -2553,6 +2553,24 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   background: #cbd5e1;
   border: 1.5px solid #cbd5e1;
 }
+.wbtm_seat_type_legend_item {
+  padding-left: 8px;
+  border-left: 1px solid #e2e8f0;
+}
+.wbtm_seat_type_swatch {
+  display: inline-block;
+  width: 17px;
+  height: 18px;
+  border: 1.5px solid var(--wbtm_color_border);
+  border-bottom: 4px solid var(--wbtm_color_light);
+  border-radius: 7px 7px 3px 3px;
+  box-sizing: border-box;
+}
+.wbtm_seat_type_swatch.is_sleeper {
+  width: 13px;
+  height: 27px;
+  border-radius: 5px;
+}
 
 /* ==================================================================== *
  *  Booking summary column redesign — selected seats, totals, pickup /
@@ -3694,4 +3712,73 @@ div.wbtm_loader_xs {
 }
 .wbtm_style .wbtm_deck_pane {
   border-top: 1px solid #e4e9ef;
+}
+
+/* Traditional double-decker buses reuse the cabin deck tabs. Lower Deck is
+   rendered first and remains the default pane until the customer switches. */
+.wbtm_style .wbtm_bus_deck_pane {
+  border-top: 1px solid #e4e9ef;
+  padding-top: 12px;
+}
+
+/* Sleeper berths are visual-only seat shapes. Their fare, ticket type,
+   availability state and selection behavior remain the existing seat logic. */
+.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_seater,
+.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_seater,
+.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_seater {
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  margin: 0 auto !important;
+}
+.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_seater .mp_seat,
+.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_seater .mp_seat,
+.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_seater .mp_seat {
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+}
+.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_sleeper,
+.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_sleeper,
+.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_sleeper {
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 78px !important;
+  min-height: 78px !important;
+  max-height: 78px !important;
+  margin: 0 auto !important;
+}
+.wbtm_style .wbtm_seat_plan_area .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat,
+.wbtm_style .wbtm_seat_plan_upper .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat,
+.wbtm_style .wbtm_cabin_seat_plan .mp_seat_item.wbtm_seat_layout_sleeper .mp_seat {
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 78px !important;
+  min-height: 78px !important;
+  max-height: 78px !important;
+}
+.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual {
+  border-radius: 8px !important;
+  border-bottom-width: 5px !important;
+}
+.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_visual::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  bottom: 7px;
+  width: 60%;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--wbtm_color_light);
+}
+.wbtm_style .mp_seat_item.wbtm_seat_layout_sleeper .seat_selected .seat_visual::after {
+  background: rgba(255, 255, 255, .72);
 }

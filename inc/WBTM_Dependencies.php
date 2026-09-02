@@ -113,9 +113,11 @@
 			}
 			public function admin_enqueue() {
 				// custom
-				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), WBTM_VERSION, true);
+				$wbtm_admin_js = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_admin.js';
+				$wbtm_admin_css = WBTM_PLUGIN_DIR . '/assets/admin/wbtm_admin.css';
+				wp_enqueue_script('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.js', array('jquery'), file_exists($wbtm_admin_js) ? filemtime($wbtm_admin_js) : WBTM_VERSION, true);
 				wp_enqueue_script('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.js', array('jquery'), WBTM_VERSION, true);
-				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), WBTM_VERSION);
+				wp_enqueue_style('wbtm_admin', WBTM_PLUGIN_URL . '/assets/admin/wbtm_admin.css', array(), file_exists($wbtm_admin_css) ? filemtime($wbtm_admin_css) : WBTM_VERSION);
 				wp_enqueue_style('wtbm_bus_taxonomy', WBTM_PLUGIN_URL . '/assets/admin/wtbm_bus_taxonomy.css', array(), WBTM_VERSION);
 				$non_seat_icon_map = [];
 				if (class_exists('WBTM_Seat_Configuration')) {
