@@ -1458,6 +1458,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						$sale_end_date = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_end_date' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_close_date' );
 						$sale_end_date = $sale_end_date ? gmdate( 'Y-m-d', strtotime( $sale_end_date ) ) : '';
 						$active_days   = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_active_days' ) ?: WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_max_date', 30 );
+						// How far ahead the calendar opens, in days. Both the per-bus "Advanced day
+						// for booking" and the global "Maximum advanced day Sale" it falls back to are
+						// free-text/number fields an operator can legitimately leave blank -- the
+						// global field's own help text even says to. get_settings() deliberately
+						// returns a saved empty string as-is, so a blank global made $active_days ''
+						// and 'Y-m-d + day' is not a date strtotime() understands: it returned false,
+						// $end_date collapsed to 1970-01-01, and the window below produced nothing --
+						// every repeated-date bus on the site lost every date and every datepicker
+						// rendered empty with no way for the operator to see why. Fall back to the
+						// field's own registered default instead of building an invalid date.
+						$active_days   = is_numeric( $active_days ) ? max( 0, (int) $active_days ) : 30;
 						$start_date    = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_start_date', $now );
 						$repeat        = max( 1, (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_repeated_after', 1 ) );
 						// The start date is the recurrence ANCHOR - date_separate_period() steps
@@ -1485,7 +1496,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						if ( $sale_end_date && strtotime( $sale_end_date ) < strtotime( $end_date ) ) {
 							$end_date = $sale_end_date;
 						}
-						if ( strtotime( $start_date ) < strtotime( $end_date ) ) {
+						// Inclusive on both ends: date_separate_period() already adds a day to
+						// $end_date internally, so a one-day window is a real window, not an empty
+						// one. With a strict '<' the whole series was discarded whenever the window
+						// closed on its own start day -- an advance window of 0, a bus whose repeated
+						// end date equals its start date, or a "Ticket sale off after date" of today
+						// -- so a bus that should still have been selling for that one day showed an
+						// empty calendar instead. A sale end date that has genuinely passed is still
+						// earlier than the start and still yields nothing, as it should.
+						if ( strtotime( $start_date ) <= strtotime( $end_date ) ) {
 							$dates = WBTM_Global_Function::date_separate_period( $start_date, $end_date, $repeat );
 							foreach ( $dates as $date ) {
 								$date = $date->format( 'Y-m-d' );
