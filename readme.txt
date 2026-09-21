@@ -526,3 +526,29 @@ Seat number rotation stopped
 
 **Dates (Fix)**
 * Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
+
+= 5.9.5 =
+
+**Seater and Sleeper Seats (New)**
+* Any seat in the seat plan builder can now be marked as a sleeper berth with the new "Sleeper" checkbox, on the lower and upper deck and inside cabins; every other seat stays a seater
+* Sleeper berths are drawn as a taller berth on the booking page, and a Seater / Sleeper legend is added to buses that have at least one sleeper
+* The berth type follows the booking: a "Seat Type" line (Seater or Sleeper) appears next to the seat on the WooCommerce order screen and in order emails, and is saved on the booking record, so it stays correct even if the bus layout is edited later
+* The "Seat Type", "Seater" and "Sleeper" labels can be changed under Translation Settings
+* Fully backward compatible — buses without sleeper seats look exactly as before, and their orders get no extra Seat Type line. Whole-bus bookings are not given a seat type
+
+**Deck Tabs (Improvement)**
+* The seat plan builder now shows the Lower Deck and Upper Deck on separate tabs instead of one above the other; the Upper Deck tab appears when "Show Upper Deck" is turned on
+* On the booking page, double-decker buses now switch between Lower Deck and Upper Deck with tabs, the same way cabin decks already do, instead of showing both decks in one long column
+* Single-deck buses are unchanged and show no tabs
+
+**Seat Editor (Fix)**
+* Labels, placeholders, help text and confirmation messages that the cabin and seat builder creates in the browser are now translatable, so they no longer stay in English on translated sites
+* The main admin script and stylesheet are now versioned by file change time, so seat builder changes show up immediately after an update instead of being served from a stale browser cache
+
+**Journey Date Picker (Fix)**
+* Fixed every repeated-date bus losing all of its travel dates when "Maximum advanced day Sale" in Global Settings, or "Advanced day for booking" on the bus, was left blank; the journey date calendar showed every day greyed out with no error. A blank value now falls back to the default of 30 days
+* Fixed a bus losing its only bookable date when its sale window opens and closes on the same day — for example an advance-sale window of 0 days, a repeat end date equal to its start date, or a "Ticket sale off after date" of today
+* A sale end date that has already passed still closes sales as before
+
+**Search Form (Fix)**
+* Fixed the search bar turning into an oval on phones when the theme rounds it into a "pill" shape on desktop; the curved edges cut across the stacked fields and the Search button. On mobile the search card now always keeps its 10px rounded corners and never grows wider than the screen
