@@ -710,9 +710,28 @@
 
             /* ── Mobile: stack vertically ────────────────────────── */
             @media (max-width: 767px) {
+                /* Themes that skin this bar as a desktop "pill" (transport
+                   themes such as Busly do) put a very large or percentage
+                   border-radius on this same container. On desktop that is
+                   harmless: the bar is roughly 1000x64, so the browser clamps
+                   the radius to half the height and it reads as a neat pill.
+                   Once the bar stacks into a column here it becomes ~360 wide
+                   by 350+ tall, the height stops clamping anything, and the
+                   very same radius rounds the white card into an oval whose
+                   curved sides cut across the stacked fields and across the
+                   full-width Search button -- the card stops looking like it
+                   fits the phone at all. The 10px below was already the right
+                   value but carried no !important, so a theme rule using an
+                   id or !important still won it. Pin it, and pin the box model
+                   with it so the card can never compute wider than the screen
+                   it is on either. No overflow:hidden here on purpose: the
+                   boarding/dropping city dropdown is absolutely positioned out
+                   of this container and clipping it would hide the list. */
                 #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
                     flex-direction: column;
-                    border-radius:  10px;
+                    border-radius:  10px !important;
+                    max-width:      100% !important;
+                    box-sizing:     border-box !important;
                 }
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_fields_holder,
                 #wbtm_area .wbtm-bar-redesign .wbtm_input_start_end_location,
