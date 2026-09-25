@@ -14,6 +14,7 @@
 				add_shortcode('wbtm-bus-search', array($this, 'wbtm_bus_search'));
 			}
 			public function wbtm_bus_list($attribute, $content = null){
+				WBTM_Global_File_Load::ensure_frontend_assets();
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				$cat = $params['cat'];
@@ -84,6 +85,7 @@
 				return ob_get_clean();
 			}
 			public function wbtm_bus_search($attr, $content = null) {
+				WBTM_Global_File_Load::ensure_frontend_assets();
 				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'off','left_filter_input' => 'off', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on');
 				$params = shortcode_atts($defaults, $attr);
 

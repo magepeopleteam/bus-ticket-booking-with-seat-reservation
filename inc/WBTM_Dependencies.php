@@ -249,7 +249,10 @@
 				wp_enqueue_script('wtbm_single_bus_details', WBTM_PLUGIN_URL . '/assets/frontend/wtbm_single_bus_details.js', array('jquery'), WBTM_VERSION, true);
 				$frontend_script = WBTM_PLUGIN_DIR . '/assets/frontend/wbtm.js';
 				wp_enqueue_script('wbtm', WBTM_PLUGIN_URL . '/assets/frontend/wbtm.js', array('jquery'), file_exists($frontend_script) ? filemtime($frontend_script) : WBTM_VERSION, true);
-				wp_localize_script('jquery', 'wbtm_wc_vars', array(
+				// Normally attached to jQuery (printed in <head>). When the bundle is enqueued
+				// late from a shortcode (WBTM_Global_File_Load::ensure_frontend_assets) jQuery
+				// has already printed, so attach it to wbtm_global — its only consumer.
+				wp_localize_script(wp_script_is('jquery', 'done') ? 'wbtm_global' : 'jquery', 'wbtm_wc_vars', array(
 					'checkout_url'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
 					'booking_mode'   => class_exists( 'WBTM_Functions' ) ? WBTM_Functions::booking_mode() : 'woocommerce',
 					// Standalone/Custom Payment mode only — lets the booking submit handler
