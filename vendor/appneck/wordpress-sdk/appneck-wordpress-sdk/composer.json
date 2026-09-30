@@ -1,0 +1,30 @@
+{
+    "name": "appneck/wordpress-sdk",
+    "description": "Official Appneck SDK for WordPress plugins — signed telemetry, consent, uninstall surveys, announcements and licensing.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": ">=7.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Appneck\\Sdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Appneck\\Sdk\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test:integration": "phpunit -c phpunit-integration.xml"
+    },
+    "minimum-stability": "stable"
+}

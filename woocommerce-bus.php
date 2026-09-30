@@ -2,11 +2,21 @@
 
 if ( ! defined( 'ABSPATH' ) ) { die; }
 
+	require_once __DIR__ . '/vendor/appneck/wordpress-sdk/appneck-wordpress-sdk/appneck-sdk.php';
+	appneck_sdk_load_latest();
+
+	$GLOBALS['my_plugin_sdk'] = \Appneck\Sdk\Sdk::bootstrap(
+		'pk_LJCy1QGqGUuqBvvR6vpRyhHwMuAoNr5y',  // your API key
+		'sk_sE2I1kvOriyLU1t2HbDmGvtSud4JTjIhK9GxbXKEKhrrpCqp', // your product secret
+		'https://appneck.com',                  // the Appneck server URL
+		__FILE__                                // so the SDK can hook activation/deactivation
+	);
+
 	/**
 	 * Plugin Name: Bus Ticket Booking with Seat Reservation
 	 * Plugin URI: http://mage-people.com
 	 * Description: A Complete Bus Ticketing System for WordPress & WooCommerce
-	 * Version: 5.9.4
+	 * Version: 5.9.5
 	 * Requires PHP: 8.0
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
@@ -30,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	}
 	// Stable asset version for cache-busting (replaces time()-based versioning).
 	if (!defined('WBTM_VERSION')) {
-		define('WBTM_VERSION', '5.9.4');
+		define('WBTM_VERSION', '5.9.5');
 	}
 
 	require_once WBTM_PLUGIN_DIR . '/mp_global/WBTM_Global_File_Load.php';
