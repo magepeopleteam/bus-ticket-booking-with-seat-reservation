@@ -721,13 +721,24 @@
                    curved sides cut across the stacked fields and across the
                    full-width Search button -- the card stops looking like it
                    fits the phone at all. The 10px below was already the right
-                   value but carried no !important, so a theme rule using an
-                   id or !important still won it. Pin it, and pin the box model
-                   with it so the card can never compute wider than the screen
-                   it is on either. No overflow:hidden here on purpose: the
-                   boarding/dropping city dropdown is absolutely positioned out
-                   of this container and clipping it would hide the list. */
-                #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
+                   value and already had !important, but Busly's own
+                   booking.css retints this exact selector with a `body`
+                   element prefix (`body #wbtm_area .wbtm-bar-redesign
+                   .wbtm_search_input_fields_holder { border-radius: 100px
+                   !important }`, unconditional, no media query) -- when both
+                   sides are !important, specificity decides the winner, not
+                   load order, and that one extra type-selector gives
+                   booking.css higher specificity than this block had, so its
+                   100px always won regardless. Matching its `body` prefix
+                   here equalizes specificity; this block still wins the tie
+                   because its <style> tag is printed into the page body,
+                   later in the DOM than booking.css's <head>-enqueued link.
+                   Pin the box model with it too so the card can never compute
+                   wider than the screen it is on either. No overflow:hidden
+                   here on purpose: the boarding/dropping city dropdown is
+                   absolutely positioned out of this container and clipping
+                   it would hide the list. */
+                body #wbtm_area .wbtm-bar-redesign .wbtm_search_input_fields_holder {
                     flex-direction: column;
                     border-radius:  10px !important;
                     max-width:      100% !important;

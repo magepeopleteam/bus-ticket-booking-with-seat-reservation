@@ -829,7 +829,10 @@
        height constant through the whole animation. */
     .wbtm-filter-card,
     #wbtm_bus_filter-options {
-        width: 270px;
+        /* Kept in sync with search_result.php's .wbtm_bus_left_filter_holder
+           (flex: 0 0 220px) -- any mismatch here resizes the card visibly
+           partway through the collapse/expand animation. */
+        width: 220px;
     }
 
     /* Full collapse: the sidebar itself shrinks to 0 (not a partial rail),
@@ -920,7 +923,10 @@
     }
     .wbtm_bus_left_filter_holder .wbtm-filter-slide > #wbtm_bus_filter-options,
     .wbtm_bus_left_filter_holder .wbtm-filter-slide > .wbtm-filter-card {
-        flex: 0 0 270px;
+        /* Same 220px as the two rules above -- restated here (not inherited)
+           per this block's own comment: flex-basis is what keeps the card
+           from reflowing while being clipped during the slide. */
+        flex: 0 0 220px;
     }
     /* `overflow: hidden` above only clips a `position: static/relative`
        descendant -- Chrome does not visually clip a `position: sticky` one

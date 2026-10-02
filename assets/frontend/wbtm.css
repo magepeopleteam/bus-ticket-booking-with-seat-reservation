@@ -2216,10 +2216,23 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
      dropping it outright -- just without the 36px bus-icon circle (base
      rule's ::before/::after leave a 40px gap in the middle sized for it),
      which is too wide to also fit on a phone-width row. Both dashes
-     stretch to meet in the middle instead. */
+     stretch to meet in the middle instead.
+
+     The city sections used to be a fixed `width: 44%` each (88% total),
+     with this wrapper at a fixed `flex: 0 1 20px` and nothing set to grow
+     -- in a flex row that doesn't add up to 100%, leftover space just
+     parks at the row's end rather than distributing, so ~12% of the row
+     (~40px on a 767px phone) sat empty past "Hamburg" instead of being
+     given to the connector, and the connector itself shrank to a bare
+     20px total (10px per dash) -- visible only as a near-invisible fleck
+     between the two cities, reading as a blank gap at a glance. Switching
+     both cities to `flex: 1 1 0` (grow equally, no fixed %) and this
+     wrapper to a fixed-but-wider `flex: 0 0 36px` fixes both: no dead
+     space at the row's end, and a connector wide enough to actually read
+     as a line rather than a fleck. */
   .wbtm_search_route_icon_wrapper {
     display: flex !important;
-    flex: 0 1 20px !important;
+    flex: 0 0 36px !important;
     padding: 0 !important;
   }
   .wbtm_search_route_icon_wrapper::before,
@@ -2231,7 +2244,9 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
   .wbtm_search_route_city_section,
   .wbtm_search_route_city_section_right {
-    width: 44% !important;
+    width: auto !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
     padding: 6px !important;
   }
   /* Bus info row stacks vertically */
