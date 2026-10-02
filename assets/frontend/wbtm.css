@@ -3399,20 +3399,58 @@ table.wbtm_totals .wbtm_sub_total {
 }
 /* "No seat selected yet" placeholder row (see booking_summary_preview.php /
    wbtm_update_summary_preview()) — its lone <td> would otherwise inherit the
-   seat-type column's orange first-child styling above. */
+   seat-type column's orange first-child styling above. A small seat icon in
+   a soft circle (matching this card's own existing #e0e7ff/#4f46e5 border
+   accent, not a foreign colour) reads as a designed empty state rather than
+   a dashed debug-looking placeholder box. */
+/* .wbtm_booking_summary_table itself is actually `display:block` (some
+   global reset un-tables it), while its <tbody> is left at the UA default
+   `table-row-group` -- an orphaned table-row-group with a non-table parent
+   gets wrapped in an anonymous CSS table box, and THAT anonymous table is
+   what's actually shrink-to-fit sizing this single-cell row to its content
+   (160px) instead of the real table's own 381px, since table-layout:fixed
+   on the real (but display:block, therefore irrelevant) table no longer
+   applies to it. Only scoped to the empty state (:has) so the populated
+   seat-row layout, whatever is currently making that work, is untouched.
+   Taking the tbody/row/cell chain out of table layout entirely with
+   display:block (matching the already-block table) is what actually makes
+   the tinted box span the card's full width. */
+.wbtm_booking_summary_table tbody:has(> tr.wbtm_summary_preview_empty_row) {
+  display: block !important;
+  width: 100% !important;
+}
+.wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row {
+  display: block !important;
+}
 .wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row td {
+  display: block !important;
+  width: auto !important;
   text-align: center !important;
   text-transform: none !important;
   letter-spacing: normal !important;
-  font-weight: 400 !important;
-  font-size: 12.5px !important;
-  color: #9ca3af !important;
-  font-style: italic;
-  background: transparent !important;
-  padding: 16px 0 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #64748b !important;
+  font-style: normal;
+  background: #f8faff !important;
+  padding: 30px 16px !important;
   border-bottom: none !important;
-  border: 1px dashed #c7d2fe !important;
-  border-radius: 8px;
+  border: none !important;
+  border-radius: 10px;
+}
+.wbtm_booking_summary_table tbody tr.wbtm_summary_preview_empty_row td::before {
+  content: '\f6c0';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  display: block;
+  width: 38px;
+  height: 38px;
+  line-height: 38px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 15px;
 }
 .wbtm_booking_summary_subtotal {
   display: flex !important;
@@ -3546,30 +3584,33 @@ table.wbtm_totals .wbtm_sub_total {
      height, leaving it floating between the two lines instead of sitting
      next to the first one. */
   align-items: flex-start;
-  gap: 10px;
+  gap: 11px;
   margin: 12px 0 0;
   margin-top: 15px !important;
-  padding: 12px 14px;
+  padding: 14px 16px;
   background: #ecfdf5;
-  border: 1px solid #a7f0c7;
-  border-radius: 10px;
-  font-size: 12px;
-  line-height: 1.5;
+  border: 1px solid #bbf0d3;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(6, 95, 70, .05);
+  font-size: 11px !important;
+  font-weight: 500;
+  line-height: 1.55;
   color: #065f46;
 }
 .wbtm_booking_summary_note::before {
   content: "\2713";
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
   margin-top: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, .12);
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
 }
