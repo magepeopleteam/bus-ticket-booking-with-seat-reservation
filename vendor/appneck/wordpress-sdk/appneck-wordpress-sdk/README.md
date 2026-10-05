@@ -20,7 +20,7 @@ follows the order you'll actually touch these pieces in as a plugin author.)*
 - [Installing it in a plugin](#installing-it-in-a-plugin) — bundled vs. Composer, in full
 - [Version safety](#version-safety-why-the-loader-exists)
 - [It will not take down the host site](#it-will-not-take-down-the-host-site) — error handling
-- [Lifecycle](#lifecycle) — activation, deactivation, uninstall.php
+- [Lifecycle](#lifecycle) — activation, deactivation, updates, uninstall.php
 - [Telemetry](#telemetry) — `track()`, custom events, the heartbeat
 - [Consent](#consent) — what's automatic, what you configure, what not to do
 - [Deactivation survey](#deactivation-survey) — configured in the Org Panel, not code
@@ -380,6 +380,26 @@ reactivates that record instead of creating a duplicate, and correctly
 declines to re-issue its secret, which the SDK expects and keeps the
 stored one.
 
+### Updates (journal §51)
+
+WordPress never runs the activation hook on an update — dashboard,
+auto-update, WP-CLI, FTP or Composer alike — so the SDK does not rely on it.
+On every load it compares the plugin version and SDK version it last saw
+running (one autoloaded option) with what is running now. On a change it
+does exactly what activation does, still with **no** network call on the page
+load: it schedules a registration refresh, upgrades the events table, and puts
+the flush timer back. The server then records the new version and fires its
+version-changed event. A plugin that gains the SDK in an update registers the
+same way, on its first load.
+
+`upgrader_process_complete` is deliberately not used: it runs inside the *old*
+code while the update is still in progress, and never fires for FTP or
+Composer deploys.
+
+If the flush timer ever goes missing (a cron-cleanup plugin, a migration, a
+restored database), `init` puts it back — unless the site owner refused
+consent, the one case it is meant to be absent.
+
 ### Multisite: lazily, once per site
 
 Each site in a network registers **itself**, the first time the cron or
@@ -470,6 +490,13 @@ A heartbeat is an ordinary event of type `heartbeat` on the same queue,
 sent in the same batch — not a private code path. That way the retry and
 partial-success behaviour is exercised constantly by the most common
 event there is, rather than being a rarely-tested branch.
+
+Every flush also carries a small top-level `versions` object — plugin, PHP,
+WordPress and WooCommerce versions — read **at send time**, never from a
+queued heartbeat, so a backlog written before an update cannot report the old
+version afterwards. This keeps WordPress and PHP upgrades current between
+plugin updates. The server orders these by its own receipt time and ignores a
+malformed object rather than rejecting the batch.
 
 ### What happens to each response
 
@@ -604,6 +631,29 @@ because `track()` reads it on page loads where the credentials are never
 touched. `Sdk::uninstall()` deletes it; the server keeps the permanent
 `consent_events` history regardless.
 
+### Asking again, on purpose
+
+To re-show the consent prompt to a site owner who already answered —
+accepted or rejected — call:
+
+```php
+$sdk->consent()->reset();
+```
+
+This clears the local decision only, so `needs_decision()` is true again
+and the (un-dismissible) notice reappears on the next admin page load, as
+if consent had never been asked. It is not wired to anything in the SDK
+itself — no button, no schedule — the host plugin decides when and how to
+offer it (a settings-page action, a WP-CLI command, whatever fits).
+
+It does **not** contact the server: `installations.consent_status` and
+the permanent `consent_events` history are left exactly as they were,
+same as `forget()`. The next real answer re-syncs and appends a fresh
+consent event, which is the durable record that matters — clearing the
+local prompt is not itself a decision. It also does not affect telemetry:
+a reset status reads back as `pending`, and pending "changes nothing" for
+`track()` — the same as a site that has simply never answered yet.
+
 ### What this consent is *not*
 
 `is_accepted()` answers exactly one question: **may Appneck collect
@@ -627,6 +677,58 @@ reasons this matters, not just style:
   purposes, build that as its own flag — it is a few lines of
   `wp_options`, not a reason to overload this one.
 
+### Marketing opt-in
+
+**Requires SDK 0.2.0+.** A site running an older SDK build simply never
+sends these fields, and the server keeps recording telemetry consent
+exactly as it always has — see "What an older SDK build does" below.
+
+A second checkbox on the *same* notice — "Also email me product updates,
+tips and renewal reminders at `admin_email`" — asking a genuinely
+independent question: whether Appneck may email the site owner about
+*this specific product*, separately from whether Appneck may collect
+usage data from their site. Checking it and clicking **No thanks** on
+usage data is a valid, honoured combination, and so is the reverse.
+
+Nothing extra to wire — `Sdk::bootstrap()` builds and wires
+`MarketingConsent` the same way it wires `Consent`, and the checkbox
+rides on the existing notice with no separate call. Read it with:
+
+```php
+$sdk->marketing_consent()->is_opted_in();
+$sdk->marketing_consent()->email();    // only ever set when opted in
+$sdk->marketing_consent()->wording();  // the exact text the checkbox showed
+```
+
+**The email collected is `get_option( 'admin_email' )`** — the site's own
+WordPress admin email, already set, nothing new to configure. That may be
+a shared team inbox rather than one specific person; if the checkbox
+would be shown with no `admin_email` set at all, it is skipped entirely
+rather than rendered with a blank address.
+
+**Only shown on a first-ever decision**, never on a privacy-policy
+re-confirmation. A re-confirmation re-asks the telemetry question only —
+showing an unchecked box again and processing it would silently downgrade
+an existing marketing opt-in to a decline the moment someone re-confirms
+telemetry consent for an unrelated reason. A site owner who missed the
+question the first time, or whose site upgraded to 0.2.0 after already
+answering telemetry, has no way to opt in later yet through
+`render_settings_section()` — that form's one button toggles telemetry
+consent to its opposite state, and adding an unrelated checkbox to it
+would let changing your marketing answer accidentally flip your telemetry
+answer too. A genuinely independent settings toggle for this is a known,
+tracked gap, not an oversight.
+
+**What an older SDK build does:** nothing different at all. The checkbox
+and its fields are additive — an SDK built before 0.2.0 never renders the
+checkbox and never sends a `marketing_*` field, and the consent endpoint
+treats every one of those fields as optional. Nothing about upgrading
+your plugin's SDK copy to 0.2.0 changes behaviour for a site that was
+already running an older copy until that site's owner is shown the
+checkbox for the first time (which, per the rule above, only happens on
+their next first-ever telemetry decision — already-decided sites see
+nothing new until this SDK gains the settings-page path noted above).
+
 ---
 
 ## Deactivation survey
@@ -644,6 +746,12 @@ When someone clicks **Deactivate** on the plugins screen, the click is
 intercepted and a modal asks your configured questions — radio, checkbox,
 rating, dropdown and free text, rendered from whatever the organization set
 up. Then the plugin deactivates.
+
+Each submission also carries the logged-in WordPress user who answered —
+display name and email — so your team can follow up from the Org Panel's
+Responses tab. It is read with `wp_get_current_user()` and sent with the
+answers; there is nothing to configure. If no user can be resolved, the
+answers are still sent without it.
 
 If the SDK could not read your plugin's name from its file header, set it so
 the prompt can say who is asking:
@@ -672,9 +780,10 @@ be worse than asking again.
 ### One attempt, no retry
 
 Unlike telemetry there is no queue and no retry. The moment has passed —
-the plugin is being deactivated as the request goes out — and the server
-records one response per installation anyway, so a resurrected submission
-days later would be a duplicate at best.
+the plugin is being deactivated as the request goes out, and a resurrected
+submission days later would be counted as a new, stale response. (The server
+keeps every survey an installation sends, treating only an identical
+resubmission within a few minutes as a duplicate.)
 
 **A failed submission is never shown to the site owner**, and that is
 forced rather than chosen: the only place to show it would be the admin
@@ -1377,6 +1486,24 @@ real, current edges, not hedging:
   development and testing happens on current PHP — if you're deploying to a
   genuinely old PHP 7.2 host, treat that combination as less exercised than
   the rest.
+- **The marketing opt-in (0.2.0+) has no path to change the decision later
+  outside a fresh first-ever telemetry decision.** See
+  ["Marketing opt-in"](#marketing-opt-in) above for why
+  `render_settings_section()` doesn't offer it — its one button already
+  toggles telemetry consent, and bolting an unrelated checkbox onto that
+  form would let changing your marketing answer accidentally flip your
+  telemetry answer too. A site that already answered telemetry consent
+  before upgrading to 0.2.0 has genuinely no way to opt in until a
+  dedicated, independent settings control exists for this — tracked, not
+  forgotten.
+- **The marketing opt-in has no coverage against a real backend.**
+  `tests/integration/ConsentCheckTest.php` proves telemetry consent
+  end-to-end against a live Appneck API; the equivalent pass for the
+  marketing fields on `/sdk/v1/consent` has not been run — the unit and
+  Feature-test coverage (this package's `ConsentTest`/`ConsentNoticeTest`/
+  `MarketingConsentTest`, and the API's own
+  `MarketingConsentEndpointTest`) is real, but a live end-to-end click is
+  still owed before this ships to a real customer's plugin.
 
 None of these block using the SDK — they're the honest state of what's
 solid versus what has an open edge, so you can decide what matters for your

@@ -4,6 +4,7 @@ namespace Appneck\Sdk\Tests;
 
 use Appneck\Sdk\Client;
 use Appneck\Sdk\Config;
+use Appneck\Sdk\Consent;
 use Appneck\Sdk\Http\Response;
 use Appneck\Sdk\Queue\ArrayEventQueue;
 use Appneck\Sdk\Storage\ArrayCredentialStore;
@@ -621,5 +622,53 @@ class TelemetryTest extends TestCase {
 		$this->assertSame( 60, $this->telemetry()->interval() );
 
 		appneck_test_clear_filters();
+	}
+
+	// -----------------------------------------------------------------
+	// Journal §51.2 / §51.3
+	// -----------------------------------------------------------------
+
+	/** The running versions ride the envelope, read at send time. */
+	public function test_a_flush_carries_the_running_versions(): void {
+		$this->transport->queue( $this->accept_all( 1 ) );
+
+		$telemetry = $this->telemetry();
+		$telemetry->track( 'feature_used' );
+		$telemetry->flush();
+
+		$sent = json_decode( $this->transport->last_request()['body'], true );
+
+		$this->assertSame( PHP_VERSION, $sent['versions']['php_version'] );
+		// Unknown values are left out, never sent as null.
+		$this->assertArrayNotHasKey( 'plugin_version', $sent['versions'] );
+		$this->assertNotContains( null, $sent['versions'] );
+	}
+
+	public function test_a_missing_flush_timer_is_put_back(): void {
+		$telemetry = $this->telemetry();
+		$this->assertFalse( appneck_test_is_scheduled( Telemetry::CRON_HOOK ) );
+
+		$telemetry->ensure_scheduled();
+
+		$this->assertTrue( appneck_test_is_scheduled( Telemetry::CRON_HOOK ) );
+	}
+
+	public function test_a_refused_site_gets_no_flush_timer_back(): void {
+		$telemetry = $this->telemetry( false );
+		$consent   = new Consent(
+			new Client(
+				new Config( self::API_KEY, self::PRODUCT_SECRET, self::BASE_URL ),
+				new ArrayCredentialStore(),
+				$this->transport
+			),
+			$telemetry
+		);
+		$telemetry->set_consent( $consent );
+		$consent->reject();
+		$this->assertFalse( appneck_test_is_scheduled( Telemetry::CRON_HOOK ) );
+
+		$telemetry->ensure_scheduled();
+
+		$this->assertFalse( appneck_test_is_scheduled( Telemetry::CRON_HOOK ) );
 	}
 }

@@ -328,6 +328,7 @@ final class Telemetry {
 
 		add_action( self::CRON_HOOK, array( $this, 'run_scheduled_flush' ) );
 		add_filter( 'cron_schedules', array( $this, 'add_cron_schedule' ) );
+		add_action( 'init', array( $this, 'ensure_scheduled' ) );
 	}
 
 	/**
@@ -355,6 +356,24 @@ final class Telemetry {
 		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
 			wp_schedule_event( time() + $this->interval(), 'appneck_sdk_interval', self::CRON_HOOK );
 		}
+	}
+
+	/**
+	 * Journal §51.2: puts the flush timer back if something removed it —
+	 * a cron-cleanup plugin, a site migration, a restored database — so a
+	 * site cannot fall silent for good with nothing to notice. The same
+	 * pattern WordPress core uses for its own update checks on `init`.
+	 *
+	 * An owner who refused consent is the one case the timer is meant to
+	 * be absent, so that is left alone. Deactivation needs no check: the
+	 * plugin's code, and so this hook, no longer runs.
+	 */
+	public function ensure_scheduled() {
+		if ( null !== $this->consent && $this->consent->is_rejected() ) {
+			return;
+		}
+
+		$this->schedule();
 	}
 
 	public function unschedule() {
@@ -424,11 +443,48 @@ final class Telemetry {
 			return null;
 		}
 
-		$response = $this->client->post( '/sdk/v1/telemetry', array( 'events' => $this->to_payload( $events ) ) );
+		$body = array( 'events' => $this->to_payload( $events ) );
+
+		$versions = $this->running_versions();
+
+		if ( ! empty( $versions ) ) {
+			$body['versions'] = $versions;
+		}
+
+		$response = $this->client->post( '/sdk/v1/telemetry', $body );
 
 		$this->handle_response( $response, $events );
 
 		return $response;
+	}
+
+	/**
+	 * Journal §51.3: what is running AT SEND TIME — deliberately never
+	 * read from a queued heartbeat's payload, which may have been written
+	 * by the code that ran before an update. Nulls are dropped: the server
+	 * treats a missing field as "unknown", never as "clear".
+	 *
+	 * Never throws. A version that cannot be read is not a reason to hold
+	 * back a batch of telemetry.
+	 *
+	 * @return array<string, string>
+	 */
+	private function running_versions() {
+		try {
+			return array_filter(
+				array(
+					'plugin_version'      => $this->environment->plugin_version(),
+					'php_version'         => $this->environment->php_version(),
+					'wordpress_version'   => $this->environment->wordpress_version(),
+					'woocommerce_version' => $this->environment->woocommerce_version(),
+				),
+				function ( $value ) {
+					return is_string( $value ) && '' !== $value;
+				}
+			);
+		} catch ( \Throwable $e ) {
+			return array();
+		}
 	}
 
 	/**

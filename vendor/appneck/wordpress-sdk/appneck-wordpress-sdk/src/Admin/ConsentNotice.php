@@ -3,6 +3,7 @@
 namespace Appneck\Sdk\Admin;
 
 use Appneck\Sdk\Consent;
+use Appneck\Sdk\MarketingConsent;
 
 /**
  * The site-owner-facing consent prompt: an admin notice asking the
@@ -51,8 +52,19 @@ final class ConsentNotice {
 
 	const FIELD = 'appneck_sdk_consent_decision';
 
+	/**
+	 * Checked-or-not checkbox field. Rendered with a hidden "0" fallback
+	 * of the same name immediately before it, since an unchecked HTML
+	 * checkbox submits nothing at all — without the fallback, "declined"
+	 * and "never touched" would be indistinguishable in $_POST.
+	 */
+	const MARKETING_FIELD = 'appneck_sdk_marketing_opt_in';
+
 	/** @var Consent */
 	private $consent;
+
+	/** @var MarketingConsent|null */
+	private $marketing_consent;
 
 	/** @var string|null */
 	private $product_name = null;
@@ -73,10 +85,15 @@ final class ConsentNotice {
 	public $denied = null;
 
 	/**
-	 * @param array<string, string> $options product_name, privacy_policy_url.
+	 * @param array<string, string> $options           product_name, privacy_policy_url.
+	 * @param MarketingConsent|null $marketing_consent Optional so an existing caller that only
+	 *                                                  constructs `Consent` keeps working — omitting it
+	 *                                                  simply means no marketing checkbox is ever
+	 *                                                  rendered or processed on this notice.
 	 */
-	public function __construct( Consent $consent, array $options = array() ) {
-		$this->consent = $consent;
+	public function __construct( Consent $consent, array $options = array(), ?MarketingConsent $marketing_consent = null ) {
+		$this->consent           = $consent;
+		$this->marketing_consent = $marketing_consent;
 
 		if ( isset( $options['product_name'] ) ) {
 			$this->product_name = (string) $options['product_name'];
@@ -155,7 +172,16 @@ final class ConsentNotice {
 			array(
 				Consent::STATUS_ACCEPTED => 'Allow usage data',
 				Consent::STATUS_REJECTED => 'No thanks',
-			)
+			),
+			// Only on a FIRST-EVER decision, never on a re-confirmation.
+			// A re-confirmation exists solely because the privacy policy
+			// version changed (needs_decision()) — it is not the moment to
+			// re-ask a question the owner already answered. Showing the
+			// checkbox unchecked here and processing it in handle() would
+			// silently downgrade an existing marketing opt-in to declined
+			// the instant someone re-confirms telemetry without re-ticking
+			// a box they were never told to look at again.
+			! $reconfirming
 		);
 
 		echo '</div>';
@@ -166,6 +192,15 @@ final class ConsentNotice {
 	 * page. Prints the current decision and the one button that changes
 	 * it — a single opposing action rather than two, because the state is
 	 * already stated in the sentence above it.
+	 *
+	 * Deliberately does NOT offer the marketing checkbox: this form's one
+	 * button toggles telemetry consent to its opposite state, and a site
+	 * owner who only wanted to change their marketing answer here would
+	 * accidentally flip telemetry consent too. A site owner who missed the
+	 * marketing question on their first-ever decision (or was never asked,
+	 * on a site that upgraded to this SDK version after already answering
+	 * telemetry) has no way to opt in later yet — a real, known gap;
+	 * see docs/architecture/14-email-marketing-module.md §6 for the note.
 	 */
 	public function render_settings_section() {
 		if ( ! $this->can_render() ) {
@@ -195,15 +230,21 @@ final class ConsentNotice {
 	}
 
 	/**
-	 * @param array<string, string> $buttons status => label. The first is
-	 *                                       rendered as the primary.
+	 * @param array<string, string> $buttons                  status => label. The first is
+	 *                                                         rendered as the primary.
+	 * @param bool                  $with_marketing_checkbox   Only ever true from render()'s
+	 *                                                         first-decision branch — see its call site.
 	 */
-	private function render_form( array $buttons ) {
+	private function render_form( array $buttons, $with_marketing_checkbox = false ) {
 		echo '<form method="post" action="' . esc_url( $this->post_url() ) . '">';
 		echo '<input type="hidden" name="action" value="' . esc_attr( $this->action() ) . '" />';
 
 		if ( function_exists( 'wp_nonce_field' ) ) {
 			wp_nonce_field( $this->action() );
+		}
+
+		if ( $with_marketing_checkbox && null !== $this->marketing_consent ) {
+			$this->render_marketing_checkbox();
 		}
 
 		$primary = true;
@@ -218,6 +259,61 @@ final class ConsentNotice {
 		}
 
 		echo '</form>';
+	}
+
+	/**
+	 * The checkbox is a genuinely separate question from the two buttons
+	 * below it — checking it and clicking "No thanks" is a valid, honored
+	 * combination (accept marketing emails, decline usage-data sharing).
+	 * A hidden "0" field of the same name precedes the checkbox because an
+	 * UNCHECKED checkbox submits nothing at all in HTML forms; without the
+	 * fallback, "declined" and "this owner never saw the question" would
+	 * be indistinguishable in $_POST, and handle() needs to tell them apart
+	 * to record an explicit decline rather than silently doing nothing.
+	 */
+	private function render_marketing_checkbox() {
+		$email = $this->admin_email();
+
+		if ( null === $email ) {
+			// No admin_email to reference — skip rather than show wording
+			// with a blank address in it (see admin_email()'s own comment).
+			return;
+		}
+
+		echo '<p>';
+		echo '<label>';
+		echo '<input type="hidden" name="' . esc_attr( self::MARKETING_FIELD ) . '" value="0" />';
+		echo '<input type="checkbox" name="' . esc_attr( self::MARKETING_FIELD ) . '" value="1" /> ';
+		echo esc_html( $this->marketing_wording( $email ) );
+		echo '</label>';
+		echo '</p>';
+	}
+
+	/**
+	 * The exact text is what gets stored as the consent record server-side
+	 * (doc 16 §5: "consent is recorded, not assumed") — this method is the
+	 * single source of that text for both rendering and handle(), so the
+	 * two can never drift apart.
+	 *
+	 * @param string $email
+	 */
+	private function marketing_wording( $email ) {
+		return sprintf(
+			'Also email me product updates, tips and renewal reminders at %s. '
+			. 'You can unsubscribe at any time. This is separate from the usage-data choice above.',
+			$email
+		);
+	}
+
+	/** @return string|null */
+	private function admin_email() {
+		if ( ! function_exists( 'get_option' ) ) {
+			return null;
+		}
+
+		$email = get_option( 'admin_email' );
+
+		return is_string( $email ) && '' !== $email ? $email : null;
 	}
 
 	// -----------------------------------------------------------------
@@ -254,15 +350,51 @@ final class ConsentNotice {
 			return null;
 		}
 
+		// Captured BEFORE decide() below changes it. The checkbox is only
+		// ever rendered on a first-ever decision (see render()'s call to
+		// render_form()), so it is only ever processed here under the same
+		// condition — a re-confirmation submit carries no marketing field
+		// at all, and this guard is what stops that submit being misread
+		// as an explicit decline.
+		$first_decision = $this->consent->is_pending();
+
+		if ( $first_decision && null !== $this->marketing_consent ) {
+			$this->record_marketing_opt_in();
+		}
+
 		// Returns a Response (or null) and never throws, so a consent call
 		// that fails while the API is down still lands the site owner back
 		// on their own page with the decision saved locally. The retry is
-		// Consent's problem, not theirs.
+		// Consent's problem, not theirs. Writing the marketing decision
+		// above BEFORE this call is what lets its own sync() (triggered
+		// inside decide()) fold both decisions into the one HTTP request.
 		$this->consent->decide( $status );
 
 		$this->redirect_back();
 
 		return $status;
+	}
+
+	/**
+	 * Writes the marketing decision LOCALLY ONLY — no network call here.
+	 * $this->consent->decide() (called right after this returns) is what
+	 * actually reaches the server, and it does so on behalf of both
+	 * decisions in one request (see Consent::sync()).
+	 */
+	private function record_marketing_opt_in() {
+		$email = $this->admin_email();
+
+		if ( null === $email ) {
+			// Nothing sane to record without an address to reference —
+			// same guard as render_marketing_checkbox(), so a site with no
+			// admin_email set never ends up with a consent record whose
+			// stored wording names a blank email.
+			return;
+		}
+
+		$opted_in = isset( $_POST[ self::MARKETING_FIELD ] ) && '1' === (string) $_POST[ self::MARKETING_FIELD ];
+
+		$this->marketing_consent->decide( $opted_in, $this->marketing_wording( $email ), $opted_in ? $email : null );
 	}
 
 	private function redirect_back() {

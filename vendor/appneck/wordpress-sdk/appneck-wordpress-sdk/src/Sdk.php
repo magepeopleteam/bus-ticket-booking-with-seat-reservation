@@ -37,7 +37,13 @@ final class Sdk {
 	 * because a version bump applied to only one of them would make the
 	 * registry rank this copy wrongly against its siblings.
 	 */
-	const VERSION = '0.1.0';
+	// Bumped for Task S (docs/architecture/14-email-marketing-module.md §6):
+	// the marketing opt-in is the first change to this package since 0.1.0
+	// that a caller genuinely needs to detect — a host plugin gating a
+	// "get product update emails" toggle on the SDK actually having
+	// MarketingConsent needs a real version to check against, unlike the
+	// bug fixes (§28, §30-32) that left this constant alone on purpose.
+	const VERSION = '0.3.0';
 
 	/**
 	 * @param string      $api_key          Product API key (pk_...).
@@ -140,14 +146,21 @@ final class Sdk {
 
 		// Telemetry reads the site's plugin/theme inventory off this same
 		// instance for the heartbeat — see Telemetry::environment_payload.
-		$telemetry = new Telemetry( $client, $queue, $logger, null, $environment );
-		$consent   = new Consent( $client, $telemetry, $logger );
-		$lifecycle = new Lifecycle( $client, $plugin_file, $environment, $telemetry, $realtimeConfig );
+		$telemetry         = new Telemetry( $client, $queue, $logger, null, $environment );
+		$consent           = new Consent( $client, $telemetry, $logger );
+		$marketing_consent = new MarketingConsent( $client );
+		$lifecycle         = new Lifecycle( $client, $plugin_file, $environment, $telemetry, $realtimeConfig );
 
 		// Mutual: Telemetry asks Consent whether the owner refused, Consent
 		// acts on Telemetry the moment they answer. Wired here rather than
 		// in either constructor so both stay independently constructible.
 		$telemetry->set_consent( $consent );
+
+		// Lets Consent::sync() fold a pending marketing decision into the
+		// same /sdk/v1/consent request as whatever telemetry decision
+		// triggered it — see Consent::set_marketing_consent()'s own
+		// comment for why this is a setter rather than a constructor arg.
+		$consent->set_marketing_consent( $marketing_consent );
 
 		// Every response Telemetry already receives carries config_version
 		// for free (13-realtime-config-delivery.md §4) — wired the same
@@ -158,7 +171,8 @@ final class Sdk {
 		$plugin_name = $environment->plugin_name();
 		$notice      = new ConsentNotice(
 			$consent,
-			null !== $plugin_name ? array( 'product_name' => $plugin_name ) : array()
+			null !== $plugin_name ? array( 'product_name' => $plugin_name ) : array(),
+			$marketing_consent
 		);
 
 		// S4.5: the deactivation survey. Uses the FAST client — Part 7's
@@ -233,7 +247,8 @@ final class Sdk {
 			// developer who never passes one still gets the plugin's own
 			// name rather than the generic "This plugin" both LicenseForm
 			// and LicenseNotice fall back to when nothing at all is known.
-			$plugin_name
+			$plugin_name,
+			$marketing_consent
 		);
 	}
 
@@ -304,6 +319,10 @@ final class Sdk {
 		// auditable is lost. Cleared after on_uninstall(), which needs the
 		// credentials that call is signed with.
 		( new Consent( $client, null, $logger ) )->forget();
+
+		// Same reasoning as Consent::forget() above, for the second,
+		// independent decision this package now asks for.
+		( new MarketingConsent( $client ) )->forget();
 
 		// The cached survey questions are the plugin's data too, and a
 		// stale copy would otherwise outlive the plugin that fetched it.

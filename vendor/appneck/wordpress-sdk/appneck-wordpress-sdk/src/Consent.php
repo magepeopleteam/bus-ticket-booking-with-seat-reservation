@@ -89,6 +89,9 @@ final class Consent {
 	/** @var Telemetry|null */
 	private $telemetry;
 
+	/** @var MarketingConsent|null */
+	private $marketing_consent;
+
 	/** @var Logger */
 	private $logger;
 
@@ -113,6 +116,17 @@ final class Consent {
 	 */
 	public function set_telemetry( ?Telemetry $telemetry ) {
 		$this->telemetry = $telemetry;
+	}
+
+	/**
+	 * Wired the same way as Telemetry above, and for the same reason: it
+	 * lets sync() ride the marketing decision along on the SAME
+	 * `/sdk/v1/consent` request as whatever telemetry decision triggered
+	 * it, without either class needing to know about the other at
+	 * construction time.
+	 */
+	public function set_marketing_consent( ?MarketingConsent $marketing_consent ) {
+		$this->marketing_consent = $marketing_consent;
 	}
 
 	/** The per-product option/action suffix, shared with the admin notice. */
@@ -377,6 +391,34 @@ final class Consent {
 	 * (consent_events) regardless.
 	 */
 	public function forget() {
+		$this->reset();
+	}
+
+	/**
+	 * Clears the local decision so needs_decision() is true again and the
+	 * (un-dismissible) notice reappears on the next admin page load — as
+	 * if consent had never been asked. Unlike forget(), this is meant to
+	 * be called while the plugin stays active: a plugin author's own
+	 * "ask again" action (a settings-page button, a WP-CLI command),
+	 * wired to whatever UI they choose — the SDK itself exposes no such
+	 * button. `$sdk->consent()->reset()` is the whole call.
+	 *
+	 * Deliberately does not contact the server. The server's
+	 * `installations.consent_status` and the permanent consent_events
+	 * history are left exactly as they were — same as forget() — because
+	 * clearing a local prompt is not itself a decision. The next real
+	 * answer (accept()/reject()) syncs as normal and appends a fresh
+	 * consent_events row, which is the durable record that matters.
+	 *
+	 * Deliberately does not touch Telemetry either. is_refused() (see
+	 * Telemetry's class doc) only ever checks is_rejected(), and a reset
+	 * status reads back as `pending`, not `rejected` — pending "changes
+	 * nothing" for track(), by the same rule a site that has simply never
+	 * answered yet behaves normally. So telemetry keeps doing exactly what
+	 * it did the moment before this call, right up until a new decision
+	 * is made.
+	 */
+	public function reset() {
 		$this->unschedule();
 		$this->delete_option( 'consent' );
 	}
@@ -394,7 +436,17 @@ final class Consent {
 	public function sync() {
 		$stored = $this->read();
 
-		if ( empty( $stored['status'] ) || ! empty( $stored['synced'] ) ) {
+		if ( empty( $stored['status'] ) ) {
+			// No telemetry decision has ever been made, which per
+			// ConsentNotice::handle() is the only way a marketing decision
+			// could exist either — so there is genuinely nothing to send.
+			return null;
+		}
+
+		$telemetry_pending = empty( $stored['synced'] );
+		$marketing_pending = null !== $this->marketing_consent && $this->marketing_consent->is_sync_pending();
+
+		if ( ! $telemetry_pending && ! $marketing_pending ) {
 			return null;
 		}
 
@@ -418,18 +470,36 @@ final class Consent {
 
 		$this->record_attempt( $attempts + 1 );
 
-		$response = $this->client->post(
-			'/sdk/v1/consent',
-			array(
-				'status'                 => (string) $stored['status'],
-				'privacy_policy_version' => isset( $stored['privacy_policy_version'] )
-					? (string) $stored['privacy_policy_version']
-					: $this->privacy_policy_version(),
-			)
+		$payload = array(
+			'status'                 => (string) $stored['status'],
+			'privacy_policy_version' => isset( $stored['privacy_policy_version'] )
+				? (string) $stored['privacy_policy_version']
+				: $this->privacy_policy_version(),
 		);
+
+		// All three marketing_* fields are OPTIONAL server-side (see
+		// ConsentController) — an older SDK build sends none of them, and
+		// the server records telemetry consent exactly as it always has.
+		// marketing_email is included only when opting in; sending it on
+		// a decline would transmit an address the server has no use for
+		// and this class never even stores locally in that case.
+		if ( $marketing_pending ) {
+			$payload['marketing_opt_in']  = $this->marketing_consent->is_opted_in();
+			$payload['marketing_wording'] = (string) $this->marketing_consent->wording();
+
+			if ( $this->marketing_consent->is_opted_in() ) {
+				$payload['marketing_email'] = (string) $this->marketing_consent->email();
+			}
+		}
+
+		$response = $this->client->post( '/sdk/v1/consent', $payload );
 
 		if ( $response->ok() ) {
 			$this->mark_synced();
+
+			if ( $marketing_pending ) {
+				$this->marketing_consent->mark_synced();
+			}
 
 			return $response;
 		}
@@ -499,8 +569,13 @@ final class Consent {
 	// -----------------------------------------------------------------
 
 	private function mark_synced() {
-		$stored           = $this->read();
-		$stored['synced'] = true;
+		$stored                  = $this->read();
+		$stored['synced']        = true;
+		// Reset rather than leave stale: a marketing-only sync (telemetry
+		// already synced long ago) reuses this same attempt counter, and a
+		// budget left over from an earlier, unrelated telemetry retry
+		// sequence should not count against a decision made months later.
+		$stored['sync_attempts'] = 0;
 		$this->write( $stored );
 		$this->unschedule();
 	}

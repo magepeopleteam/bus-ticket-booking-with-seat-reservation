@@ -43,6 +43,25 @@ if ( ! function_exists( 'current_user_can' ) ) {
 	}
 }
 
+/*
+ * A test sets $GLOBALS['appneck_test_admin']['user'] to an object (or null)
+ * to control who is logged in; absent means a real administrator, which is
+ * who current_user_can() above already says is asking.
+ */
+if ( ! function_exists( 'wp_get_current_user' ) ) {
+	function wp_get_current_user() {
+		if ( array_key_exists( 'user', $GLOBALS['appneck_test_admin'] ) ) {
+			return $GLOBALS['appneck_test_admin']['user'];
+		}
+
+		return (object) array(
+			'ID'           => 1,
+			'display_name' => 'Ada Owner',
+			'user_email'   => 'ada@example.test',
+		);
+	}
+}
+
 if ( ! function_exists( 'admin_url' ) ) {
 	function admin_url( $path = '' ) {
 		return 'https://example.test/wp-admin/' . ltrim( (string) $path, '/' );

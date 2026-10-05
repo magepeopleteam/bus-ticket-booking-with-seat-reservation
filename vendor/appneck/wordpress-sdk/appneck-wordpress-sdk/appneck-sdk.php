@@ -48,7 +48,7 @@
 // it with no WordPress present). Nothing here touches the filesystem,
 // the network, or WordPress state, so there is nothing to protect.
 
-$appneck_sdk_this_version = '0.1.0';
+$appneck_sdk_this_version = '0.3.0';
 $appneck_sdk_this_bootstrap = __DIR__ . '/bootstrap.php';
 
 if ( ! isset( $GLOBALS['appneck_sdk_versions'] ) || ! is_array( $GLOBALS['appneck_sdk_versions'] ) ) {

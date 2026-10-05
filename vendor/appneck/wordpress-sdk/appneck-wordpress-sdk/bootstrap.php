@@ -55,6 +55,7 @@ $appneck_sdk_classes = array(
 	'Appneck\\Sdk\\RealtimeConfig'                    => $appneck_sdk_src . '/RealtimeConfig.php',
 	'Appneck\\Sdk\\Telemetry'                         => $appneck_sdk_src . '/Telemetry.php',
 	'Appneck\\Sdk\\Consent'                           => $appneck_sdk_src . '/Consent.php',
+	'Appneck\\Sdk\\MarketingConsent'                  => $appneck_sdk_src . '/MarketingConsent.php',
 	'Appneck\\Sdk\\Admin\\ConsentNotice'              => $appneck_sdk_src . '/Admin/ConsentNotice.php',
 	'Appneck\\Sdk\\Survey'                            => $appneck_sdk_src . '/Survey.php',
 	'Appneck\\Sdk\\Admin\\DeactivationSurvey'         => $appneck_sdk_src . '/Admin/DeactivationSurvey.php',

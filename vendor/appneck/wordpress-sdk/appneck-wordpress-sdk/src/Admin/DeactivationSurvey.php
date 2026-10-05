@@ -346,9 +346,13 @@ function renderQuestions() {
 				var choice = choices[cc];
 				var choiceText = (choice && typeof choice === "object") ? choice.text : choice;
 				var needsText = !!(choice && typeof choice === "object" && choice.requires_text);
+				// The org panel admin sets this per choice, falling back to a
+				// generic prompt when left unset — never a required field,
+				// so an empty placeholder is a normal state, not a bug.
+				var followupPlaceholder = (choice && typeof choice === "object" && choice.placeholder) ? choice.placeholder : "Optional - tell us more";
 				body += \'<label><input type="radio" name="\' + name + \'" value="\' + esc(choiceText) + \'" data-appneck-choice-index="\' + cc + \'" data-appneck-needs-text="\' + (needsText ? "1" : "0") + \'"> \' + esc(choiceText) + "</label>";
 				if (needsText) {
-					body += \'<div class="appneck-sdk-survey__followup" data-appneck-followup-index="\' + cc + \'" hidden><textarea maxlength="\' + cfg.maxLength + \'" placeholder="Optional - tell us more"></textarea></div>\';
+					body += \'<div class="appneck-sdk-survey__followup" data-appneck-followup-index="\' + cc + \'" hidden><textarea maxlength="\' + cfg.maxLength + \'" placeholder="\' + esc(followupPlaceholder) + \'"></textarea></div>\';
 				}
 			}
 			body += "</fieldset>";
@@ -556,7 +560,7 @@ submitButton.addEventListener("click", function () {
 			return $this->fail_with( array( 'errors' => $errors ) );
 		}
 
-		$response = $this->survey->submit( $values, $questions );
+		$response = $this->survey->submit( $values, $questions, $this->current_respondent() );
 
 		// Deliberately reports success even when the submission failed.
 		// The modal's only remaining job is to let the deactivation
@@ -659,6 +663,32 @@ submitButton.addEventListener("click", function () {
 		}
 
 		return (bool) current_user_can( 'activate_plugins' );
+	}
+
+	/**
+	 * The logged-in user answering the survey — the person the plugin's
+	 * team would follow up with. Always a real account here: handle_ajax()
+	 * has already required `activate_plugins`, so there is no anonymous
+	 * visitor this could describe. Null outside WordPress or if the user
+	 * somehow cannot be resolved; the answers are still sent without it.
+	 *
+	 * @return array{name: string, email: string}|null
+	 */
+	private function current_respondent() {
+		if ( ! function_exists( 'wp_get_current_user' ) ) {
+			return null;
+		}
+
+		$user = wp_get_current_user();
+
+		if ( ! is_object( $user ) || empty( $user->ID ) ) {
+			return null;
+		}
+
+		return array(
+			'name'  => isset( $user->display_name ) ? (string) $user->display_name : '',
+			'email' => isset( $user->user_email ) ? (string) $user->user_email : '',
+		);
 	}
 
 	private function can_render() {

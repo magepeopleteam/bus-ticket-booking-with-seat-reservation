@@ -58,6 +58,9 @@ final class Lifecycle {
 
 	const MAX_ATTEMPTS = 12;
 
+	/** How long one request may hold the update-sync lock (journal §51.1). */
+	const SYNC_LOCK_SECONDS = 60;
+
 	/** Backoff in seconds; the last value repeats until MAX_ATTEMPTS. */
 	const BACKOFF = array( 60, 300, 900, 3600, 21600, 86400 );
 
@@ -125,6 +128,80 @@ final class Lifecycle {
 		// Fallback for sites where WP-Cron cannot run. Cheap: it exits on
 		// an option read when there is nothing to do.
 		add_action( 'admin_init', array( $this, 'maybe_retry_on_admin_init' ) );
+
+		// Journal §51.1: updates never run the activation hook, so this is
+		// how an update reaches the server at all.
+		$this->sync_versions();
+	}
+
+	// -----------------------------------------------------------------
+	// Updates (journal §51.1)
+	// -----------------------------------------------------------------
+
+	/**
+	 * Notices that the code running now is not the code that last ran —
+	 * a plugin update of any kind (dashboard, auto-update, WP-CLI, FTP,
+	 * Composer), an SDK update carried in by another plugin's bundle, or
+	 * the first boot of an SDK that arrived in an update of a plugin that
+	 * was already active — and prepares a re-registration, exactly as
+	 * activation does.
+	 *
+	 * `upgrader_process_complete` was rejected: it runs inside the OLD
+	 * code mid-update and never fires for FTP or Composer deploys.
+	 *
+	 * NO network I/O, same rule as on_activate(). Cheap when nothing
+	 * changed: one autoloaded option read and the plugin header read
+	 * Environment already does for plugin_name().
+	 *
+	 * @return bool True when a change was found and handled.
+	 */
+	public function sync_versions() {
+		if ( ! function_exists( 'get_option' ) || ! function_exists( 'wp_schedule_single_event' ) ) {
+			return false;
+		}
+
+		$running = $this->running_versions();
+
+		if ( $running === $this->get_option( 'seen_versions', null ) ) {
+			return false;
+		}
+
+		// A busy site sees the change on many requests at once. Without a
+		// lock each would run dbDelta and rewrite WordPress's shared `cron`
+		// option concurrently — the classic race that can drop OTHER
+		// plugins' cron events. Best-effort (read-then-write, no atomic
+		// primitive in the options API), which narrows the stampede to a
+		// few requests; the work itself is idempotent either way. A lock
+		// older than a minute belongs to a request that died, so it is
+		// taken over rather than blocking the update forever.
+		$locked_at = (int) $this->get_option( 'sync_lock', 0 );
+
+		if ( $locked_at > 0 && ( time() - $locked_at ) < self::SYNC_LOCK_SECONDS ) {
+			return false;
+		}
+
+		$this->update_option( 'sync_lock', time() );
+
+		$this->prepare_registration();
+
+		// Stored LAST: if anything above dies mid-request, the next load
+		// after the lock expires sees the mismatch again and retries.
+		// Autoloaded, unlike every other option here: this one is read on
+		// every request.
+		if ( function_exists( 'update_option' ) ) {
+			update_option( $this->option_name( 'seen_versions' ), $running, true );
+		}
+
+		$this->delete_option( 'sync_lock' );
+
+		return true;
+	}
+
+	/** @return string "<plugin version>|<sdk version>" */
+	private function running_versions() {
+		$plugin_version = $this->environment->plugin_version();
+
+		return ( null === $plugin_version ? '' : $plugin_version ) . '|' . Sdk::VERSION;
 	}
 
 	// -----------------------------------------------------------------
@@ -143,6 +220,14 @@ final class Lifecycle {
 		// guaranteed timeout, and precisely the kind of thing that gets
 		// an SDK blamed for taking a network down. Each site registers
 		// itself lazily instead; see ensure_registered().
+		$this->prepare_registration();
+	}
+
+	/**
+	 * Everything activation does, shared with sync_versions() so an update
+	 * and an activation can never drift apart. No network I/O.
+	 */
+	private function prepare_registration() {
 		$this->mark_pending();
 
 		// Forces the next attempt to call the server even though
@@ -163,7 +248,9 @@ final class Lifecycle {
 		TableEventQueue::install();
 
 		if ( null !== $this->telemetry ) {
-			$this->telemetry->schedule();
+			// Not schedule(): an owner who refused consent keeps no flush
+			// timer, even across a reactivation or an update.
+			$this->telemetry->ensure_scheduled();
 		}
 	}
 
@@ -374,6 +461,10 @@ final class Lifecycle {
 		$this->delete_option( 'attempts' );
 		$this->delete_option( 'last_attempt' );
 		$this->delete_option( 'installation_id' );
+		// A reinstall must look like a change, and nothing may outlive the
+		// plugin.
+		$this->delete_option( 'seen_versions' );
+		$this->delete_option( 'sync_lock' );
 
 		return $response;
 	}

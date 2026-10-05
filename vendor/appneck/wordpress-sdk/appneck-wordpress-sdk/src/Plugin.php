@@ -38,6 +38,9 @@ final class Plugin {
 	/** @var Consent|null */
 	private $consent;
 
+	/** @var MarketingConsent|null */
+	private $marketing_consent;
+
 	/** @var ConsentNotice|null */
 	private $consent_notice;
 
@@ -77,7 +80,8 @@ final class Plugin {
 		?AnnouncementNotices $announcement_notices = null,
 		?License $license = null,
 		?LicenseForm $license_form = null,
-		$product_name = null
+		$product_name = null,
+		?MarketingConsent $marketing_consent = null
 	) {
 		$this->client               = $client;
 		$this->lifecycle            = $lifecycle;
@@ -91,6 +95,7 @@ final class Plugin {
 		$this->license              = $license;
 		$this->license_form         = $license_form;
 		$this->product_name         = null !== $product_name ? (string) $product_name : null;
+		$this->marketing_consent    = $marketing_consent;
 	}
 
 	/**
@@ -160,6 +165,24 @@ final class Plugin {
 	 */
 	public function consent_notice() {
 		return $this->consent_notice;
+	}
+
+	/**
+	 * The site owner's marketing-email opt-in — a SECOND, independent
+	 * decision from consent() above, asked (when an admin_email is set)
+	 * as a checkbox on the same consent notice:
+	 *
+	 *     if ( $sdk->marketing_consent()->is_opted_in() ) { … }
+	 *
+	 * Rendering and submission are entirely handled by consent_notice();
+	 * there is nothing to wire by hand. See "Marketing opt-in" below for
+	 * the full contract, including why this exists as its own object
+	 * rather than a second flag bolted onto Consent.
+	 *
+	 * @return MarketingConsent|null
+	 */
+	public function marketing_consent() {
+		return $this->marketing_consent;
 	}
 
 	/**

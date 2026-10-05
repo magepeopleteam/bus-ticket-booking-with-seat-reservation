@@ -357,13 +357,16 @@ final class Survey {
 	/**
 	 * One attempt. No retry, no queue.
 	 *
-	 * @param array<string, mixed>                  $values    question id => value.
-	 * @param array<int, array<string, mixed>>|null $questions Defaults to questions().
+	 * @param array<string, mixed>                  $values     question id => value.
+	 * @param array<int, array<string, mixed>>|null $questions  Defaults to questions().
+	 * @param array{name?: string, email?: string}|null $respondent Who answered,
+	 *        sent alongside the answers so the plugin's team can follow up.
+	 *        Omitted from the request when null or when both fields are blank.
 	 * @return Response|null Null when there was nothing to submit (every
 	 *                       answer blank, no questions, not registered) or
 	 *                       when the answers did not pass validate().
 	 */
-	public function submit( array $values, ?array $questions = null ) {
+	public function submit( array $values, ?array $questions = null, ?array $respondent = null ) {
 		$questions = null !== $questions ? $questions : $this->questions();
 
 		if ( array() === $questions ) {
@@ -388,13 +391,18 @@ final class Survey {
 			return null;
 		}
 
-		$response = $this->client->post(
-			'/sdk/v1/surveys',
-			array(
-				'answers'      => $answers,
-				'submitted_at' => gmdate( 'c' ),
-			)
+		$payload = array(
+			'answers'      => $answers,
+			'submitted_at' => gmdate( 'c' ),
 		);
+
+		$respondent = $this->respondent_for( $respondent );
+
+		if ( null !== $respondent ) {
+			$payload['respondent'] = $respondent;
+		}
+
+		$response = $this->client->post( '/sdk/v1/surveys', $payload );
 
 		if ( ! $response->ok() ) {
 			// Logged and dropped. Deactivation is already in flight by the
@@ -410,6 +418,33 @@ final class Survey {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * The respondent's wire shape, or null when there is no one to name.
+	 *
+	 * Only strings survive, trimmed; a blank field becomes null rather than
+	 * an empty string so the server stores "unknown", not "".
+	 *
+	 * @param array<string, mixed>|null $respondent
+	 * @return array{name: string|null, email: string|null}|null
+	 */
+	private function respondent_for( $respondent ) {
+		if ( ! is_array( $respondent ) ) {
+			return null;
+		}
+
+		$name  = isset( $respondent['name'] ) && is_scalar( $respondent['name'] ) ? trim( (string) $respondent['name'] ) : '';
+		$email = isset( $respondent['email'] ) && is_scalar( $respondent['email'] ) ? trim( (string) $respondent['email'] ) : '';
+
+		if ( '' === $name && '' === $email ) {
+			return null;
+		}
+
+		return array(
+			'name'  => '' === $name ? null : $name,
+			'email' => '' === $email ? null : $email,
+		);
 	}
 
 	/**

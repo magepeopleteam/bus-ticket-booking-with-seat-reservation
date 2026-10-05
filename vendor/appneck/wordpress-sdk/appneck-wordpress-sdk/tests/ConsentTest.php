@@ -574,11 +574,174 @@ class ConsentTest extends TestCase {
 		$this->assertFalse( $consent->is_sync_pending() );
 	}
 
+	/**
+	 * The plugin author's "ask again" action — a previously accepted (or
+	 * rejected) decision is cleared, and the notice reappears because the
+	 * status reads back as pending, exactly as if never asked.
+	 */
+	public function test_reset_makes_an_accepted_decision_pending_again(): void {
+		list( $consent ) = $this->wired();
+
+		$this->transport->queue( $this->ok() );
+		$consent->accept();
+		$this->assertFalse( $consent->needs_decision(), 'a fresh acceptance needs no re-prompt' );
+
+		$consent->reset();
+
+		$this->assertTrue( $consent->is_pending() );
+		$this->assertTrue( $consent->needs_decision(), 'the notice must reappear after a reset' );
+		$this->assertNull( $consent->decided_at() );
+	}
+
+	public function test_reset_makes_a_rejected_decision_pending_again(): void {
+		list( $consent ) = $this->wired();
+
+		$this->transport->queue( $this->ok() );
+		$consent->reject();
+		$this->assertTrue( $consent->is_rejected() );
+
+		$consent->reset();
+
+		$this->assertTrue( $consent->is_pending() );
+		$this->assertTrue( $consent->needs_decision() );
+	}
+
+	/**
+	 * Reset touches only the local prompt, never the server: it must not
+	 * itself be treated as a decision worth syncing.
+	 */
+	public function test_reset_does_not_contact_the_server(): void {
+		list( $consent ) = $this->wired();
+
+		$this->transport->queue( $this->ok() );
+		$consent->accept();
+		$before = $this->transport->count();
+
+		$consent->reset();
+
+		$this->assertSame( $before, $this->transport->count() );
+		$this->assertFalse( $consent->is_sync_pending(), 'nothing outstanding to sync after a reset' );
+	}
+
+	/**
+	 * Telemetry must not start behaving as though refused: it only ever
+	 * blocks on an explicit rejection (Telemetry's own class doc — pending
+	 * "changes nothing"), and reset leaves the status `pending`, not
+	 * `rejected` — the same as a site that has simply never answered yet.
+	 */
+	public function test_reset_does_not_block_telemetry(): void {
+		list( $consent, $telemetry ) = $this->wired();
+
+		$this->transport->queue( $this->ok() );
+		$consent->accept();
+
+		$consent->reset();
+
+		$this->assertNotFalse( $telemetry->track( 'after_reset' ), 'a reset must not behave like a rejection' );
+	}
+
 	public function test_an_invalid_status_is_refused(): void {
 		list( $consent ) = $this->wired();
 
 		$this->assertNull( $consent->decide( 'maybe' ) );
 		$this->assertTrue( $consent->is_pending() );
 		$this->assertSame( 0, $this->transport->count() );
+	}
+
+	// -----------------------------------------------------------------
+	// Marketing consent riding along (Task S)
+	// -----------------------------------------------------------------
+
+	public function test_a_pending_marketing_decision_rides_the_same_request_as_telemetry(): void {
+		list( $consent ) = $this->wired();
+		$marketing = new \Appneck\Sdk\MarketingConsent( $this->client() );
+		$consent->set_marketing_consent( $marketing );
+
+		$marketing->decide( true, 'Also email me updates at admin@example.test.', 'admin@example.test' );
+
+		$this->transport->queue( $this->ok() );
+		$consent->decide( 'accepted' );
+
+		$this->assertSame( 1, $this->transport->count(), 'one HTTP call answers both questions' );
+
+		$body = json_decode( (string) $this->transport->last_request()['body'], true );
+
+		$this->assertSame( 'accepted', $body['status'] );
+		$this->assertTrue( $body['marketing_opt_in'] );
+		$this->assertSame( 'Also email me updates at admin@example.test.', $body['marketing_wording'] );
+		$this->assertSame( 'admin@example.test', $body['marketing_email'] );
+		$this->assertFalse( $marketing->is_sync_pending(), 'marked synced on the same successful response' );
+	}
+
+	public function test_declining_marketing_never_sends_an_email_field(): void {
+		list( $consent ) = $this->wired();
+		$marketing = new \Appneck\Sdk\MarketingConsent( $this->client() );
+		$consent->set_marketing_consent( $marketing );
+
+		$marketing->decide( false, 'Also email me updates...' );
+
+		$this->transport->queue( $this->ok() );
+		$consent->decide( 'accepted' );
+
+		$body = json_decode( (string) $this->transport->last_request()['body'], true );
+
+		$this->assertFalse( $body['marketing_opt_in'] );
+		$this->assertArrayNotHasKey( 'marketing_email', $body );
+	}
+
+	public function test_an_old_style_caller_with_no_marketing_consent_wired_sends_the_same_payload_as_before(): void {
+		list( $consent ) = $this->wired();
+		// set_marketing_consent() never called — exactly how every
+		// existing caller of Consent (and every other test in this file)
+		// already constructs it.
+
+		$this->transport->queue( $this->ok() );
+		$consent->decide( 'accepted' );
+
+		$body = json_decode( (string) $this->transport->last_request()['body'], true );
+
+		$this->assertArrayNotHasKey( 'marketing_opt_in', $body );
+		$this->assertArrayNotHasKey( 'marketing_wording', $body );
+		$this->assertArrayNotHasKey( 'marketing_email', $body );
+	}
+
+	public function test_sync_still_reaches_the_server_for_a_marketing_only_decision_made_later(): void {
+		list( $consent ) = $this->wired();
+		$marketing = new \Appneck\Sdk\MarketingConsent( $this->client() );
+		$consent->set_marketing_consent( $marketing );
+
+		// Telemetry consent already fully settled and synced...
+		$this->transport->queue( $this->ok() );
+		$consent->decide( 'accepted' );
+		$this->assertFalse( $consent->is_sync_pending() );
+
+		// ...then, independently and later, a marketing decision is made
+		// (e.g. the checkbox is answered on a later page load). sync()
+		// alone must still notice there is something new to send, even
+		// though telemetry itself has nothing left pending.
+		$marketing->decide( true, 'Also email me updates at admin@example.test.', 'admin@example.test' );
+
+		$this->transport->queue( $this->ok() );
+		$consent->sync();
+
+		$this->assertSame( 2, $this->transport->count() );
+		$this->assertFalse( $marketing->is_sync_pending() );
+
+		$body = json_decode( (string) $this->transport->last_request()['body'], true );
+		$this->assertTrue( $body['marketing_opt_in'] );
+	}
+
+	public function test_sync_does_nothing_when_neither_telemetry_nor_marketing_has_anything_pending(): void {
+		list( $consent ) = $this->wired();
+		$marketing = new \Appneck\Sdk\MarketingConsent( $this->client() );
+		$consent->set_marketing_consent( $marketing );
+
+		$this->transport->queue( $this->ok() );
+		$consent->decide( 'accepted' );
+		$this->assertSame( 1, $this->transport->count() );
+
+		$consent->sync();
+
+		$this->assertSame( 1, $this->transport->count(), 'a second, redundant sync() must not make a network call' );
 	}
 }

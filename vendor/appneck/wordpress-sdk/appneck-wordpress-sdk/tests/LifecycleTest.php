@@ -7,6 +7,7 @@ use Appneck\Sdk\Config;
 use Appneck\Sdk\Environment;
 use Appneck\Sdk\Http\Response;
 use Appneck\Sdk\Lifecycle;
+use Appneck\Sdk\Sdk;
 use Appneck\Sdk\Storage\WpOptionsCredentialStore;
 use PHPUnit\Framework\TestCase;
 
@@ -620,5 +621,155 @@ class LifecycleTest extends TestCase {
 		$this->assertNotSame( $id_one, $id_two );
 		$this->assertSame( 'sk_site_one', $site_one[ ( new WpOptionsCredentialStore( self::API_KEY ) )->option_name() ]['installation_secret'] );
 		$this->assertSame( 'sk_site_two', $site_two[ ( new WpOptionsCredentialStore( self::API_KEY ) )->option_name() ]['installation_secret'] );
+	}
+
+	// -----------------------------------------------------------------
+	// Updates (journal §51.1)
+	// -----------------------------------------------------------------
+
+	/** @var string|null */
+	private $plugin_file = null;
+
+	protected function tearDown(): void {
+		if ( null !== $this->plugin_file && is_file( $this->plugin_file ) ) {
+			unlink( $this->plugin_file );
+		}
+	}
+
+	private function plugin_at_version( $version ): string {
+		require_once __DIR__ . '/wp-file-data-polyfill.php';
+
+		if ( null === $this->plugin_file ) {
+			$this->plugin_file = sys_get_temp_dir() . '/appneck-sdk-update-' . getmypid() . '.php';
+		}
+
+		file_put_contents( $this->plugin_file, "<?php\n/**\n * Plugin Name: Update Test\n * Version: {$version}\n */\n" );
+
+		return $this->plugin_file;
+	}
+
+	private function lifecycle_for( $plugin_file ): Lifecycle {
+		$client = new Client(
+			new Config( self::API_KEY, self::PRODUCT_SECRET, self::BASE_URL ),
+			new WpOptionsCredentialStore( self::API_KEY ),
+			$this->transport
+		);
+
+		return new Lifecycle( $client, $plugin_file, new Environment( $plugin_file ) );
+	}
+
+	private function register_once( Lifecycle $lifecycle ): void {
+		$lifecycle->on_activate();
+		$this->transport->queue( $this->registration_success() );
+		$lifecycle->ensure_registered();
+		$this->assertTrue( ( new WpOptionsCredentialStore( self::API_KEY ) )->has_credentials() );
+	}
+
+	public function test_first_boot_prepares_a_registration_without_any_http(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+
+		$this->assertTrue( $lifecycle->sync_versions() );
+
+		$this->assertSame( 0, $this->transport->count() );
+		$this->assertTrue( $lifecycle->is_pending() );
+		$this->assertTrue( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+	}
+
+	public function test_an_unchanged_version_does_nothing(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$this->register_once( $lifecycle );
+		$lifecycle->sync_versions();
+		$this->transport->queue( $this->registration_success() );
+		$lifecycle->ensure_registered(); // the post-sync refresh
+		$GLOBALS['appneck_test_cron'] = array();
+		$requests                      = $this->transport->count();
+
+		$this->assertFalse( $lifecycle->sync_versions() );
+		$this->assertFalse( $lifecycle->is_pending() );
+		$this->assertFalse( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+		$this->assertSame( $requests, $this->transport->count() );
+	}
+
+	/**
+	 * The bug this section exists for: a registered site updated in place
+	 * must report its new version, with no activation hook involved.
+	 */
+	public function test_a_plugin_update_re_registers_with_the_new_version(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$this->register_once( $lifecycle );
+		$lifecycle->sync_versions();
+		$this->transport->queue( $this->registration_success() );
+		$lifecycle->ensure_registered();
+
+		$this->plugin_at_version( '1.1.0' );
+		$updated = $this->lifecycle_for( $this->plugin_file );
+
+		$this->assertTrue( $updated->sync_versions() );
+		$this->assertSame( 2, $this->transport->count(), 'sync_versions() itself must not call the API' );
+
+		$this->transport->queue( Response::from_http( 200, array(), json_encode( array( 'status' => 'active' ) ) ) );
+		$updated->ensure_registered();
+
+		$sent = json_decode( $this->transport->last_request()['body'], true );
+		$this->assertSame( '1.1.0', $sent['plugin_version'] );
+		$this->assertFalse( $updated->is_pending() );
+		// The stored pair survives a reactivation-style response.
+		$this->assertTrue( ( new WpOptionsCredentialStore( self::API_KEY ) )->has_credentials() );
+	}
+
+	public function test_an_sdk_update_alone_is_also_a_change(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$lifecycle->sync_versions();
+
+		$option = 'appneck_sdk_seen_versions_' . substr( hash( 'sha256', self::API_KEY ), 0, 32 );
+		$this->assertSame( '1.0.0|' . Sdk::VERSION, $GLOBALS['appneck_test_options'][ $option ] );
+
+		$GLOBALS['appneck_test_options'][ $option ] = '1.0.0|0.0.1';
+		$GLOBALS['appneck_test_cron']               = array();
+
+		$this->assertTrue( $lifecycle->sync_versions() );
+		$this->assertTrue( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+	}
+
+	public function test_an_update_retries_a_site_that_had_given_up(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$lifecycle->sync_versions();
+		$this->transport->queue( Response::from_http( 403, array(), json_encode( array( 'message' => 'archived' ) ) ) );
+		$lifecycle->ensure_registered();
+		$this->assertSame( Lifecycle::MAX_ATTEMPTS, $lifecycle->attempts() );
+
+		$this->plugin_at_version( '1.1.0' );
+		$this->lifecycle_for( $this->plugin_file )->sync_versions();
+
+		$this->assertSame( 0, $lifecycle->attempts() );
+		$this->assertTrue( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+	}
+
+	public function test_uninstall_forgets_the_seen_versions(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$this->register_once( $lifecycle );
+		$lifecycle->sync_versions();
+
+		$this->transport->queue( Response::from_http( 200, array(), '{}' ) );
+		$lifecycle->on_uninstall();
+
+		$option = 'appneck_sdk_seen_versions_' . substr( hash( 'sha256', self::API_KEY ), 0, 32 );
+		$this->assertArrayNotHasKey( $option, $GLOBALS['appneck_test_options'] );
+	}
+
+	public function test_a_concurrent_request_holding_the_lock_is_left_to_finish(): void {
+		$lifecycle = $this->lifecycle_for( $this->plugin_at_version( '1.0.0' ) );
+		$lock      = 'appneck_sdk_sync_lock_' . substr( hash( 'sha256', self::API_KEY ), 0, 32 );
+		$GLOBALS['appneck_test_options'][ $lock ] = time();
+
+		$this->assertFalse( $lifecycle->sync_versions() );
+		$this->assertFalse( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+
+		// A lock from a request that died is taken over, not obeyed forever.
+		$GLOBALS['appneck_test_options'][ $lock ] = time() - Lifecycle::SYNC_LOCK_SECONDS - 1;
+
+		$this->assertTrue( $lifecycle->sync_versions() );
+		$this->assertTrue( appneck_test_is_scheduled( Lifecycle::CRON_HOOK ) );
+		$this->assertArrayNotHasKey( $lock, $GLOBALS['appneck_test_options'] );
 	}
 }

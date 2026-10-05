@@ -467,6 +467,32 @@ class DeactivationSurveyTest extends TestCase {
 	// Guards
 	// -----------------------------------------------------------------
 
+	public function test_the_submission_names_the_logged_in_user_as_respondent(): void {
+		$this->queue_questions();
+		$this->transport->queue( Response::from_http( 201, array(), json_encode( array( 'id' => 'r1' ) ) ) );
+
+		$this->ajax( 'submit', array( self::RADIO_ID => 'Found a better plugin' ) );
+
+		$body = json_decode( $this->transport->last_request()['body'], true );
+		$this->assertSame(
+			array( 'name' => 'Ada Owner', 'email' => 'ada@example.test' ),
+			$body['respondent']
+		);
+	}
+
+	public function test_an_unresolvable_user_still_submits_the_answers_without_a_respondent(): void {
+		$GLOBALS['appneck_test_admin']['user'] = (object) array( 'ID' => 0 );
+		$this->queue_questions();
+		$this->transport->queue( Response::from_http( 201, array(), json_encode( array( 'id' => 'r1' ) ) ) );
+
+		$result = $this->ajax( 'submit', array( self::RADIO_ID => 'Found a better plugin' ) );
+
+		$this->assertTrue( $result['submitted'] );
+		$body = json_decode( $this->transport->last_request()['body'], true );
+		$this->assertArrayNotHasKey( 'respondent', $body );
+		$this->assertCount( 1, $body['answers'] );
+	}
+
 	public function test_a_user_without_activate_plugins_is_refused(): void {
 		$GLOBALS['appneck_test_admin']['can'] = false;
 

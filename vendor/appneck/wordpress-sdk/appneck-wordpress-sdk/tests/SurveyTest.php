@@ -502,6 +502,38 @@ class SurveyTest extends TestCase {
 	// Submission
 	// -----------------------------------------------------------------
 
+	public function test_a_respondent_is_sent_trimmed_with_blank_fields_as_null(): void {
+		$survey = $this->survey();
+		$this->queue_questions();
+		$questions = $survey->questions();
+		$this->queue_created();
+
+		$survey->submit(
+			array( self::RADIO_ID => 'Found a better plugin' ),
+			$questions,
+			array( 'name' => '  Ada Owner ', 'email' => '' )
+		);
+
+		$body = json_decode( $this->transport->last_request()['body'], true );
+		$this->assertSame( array( 'name' => 'Ada Owner', 'email' => null ), $body['respondent'] );
+	}
+
+	public function test_no_respondent_key_is_sent_when_there_is_no_one_to_name(): void {
+		$survey = $this->survey();
+		$this->queue_questions();
+		$questions = $survey->questions();
+		$this->queue_created();
+
+		$survey->submit(
+			array( self::RADIO_ID => 'Found a better plugin' ),
+			$questions,
+			array( 'name' => ' ', 'email' => '' )
+		);
+
+		$body = json_decode( $this->transport->last_request()['body'], true );
+		$this->assertArrayNotHasKey( 'respondent', $body );
+	}
+
 	public function test_it_submits_the_answers_in_the_servers_shape(): void {
 		$survey = $this->survey();
 		$this->queue_questions();

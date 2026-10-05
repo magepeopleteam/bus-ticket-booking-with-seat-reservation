@@ -17,6 +17,14 @@ if ( ! function_exists( 'wp_schedule_single_event' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_schedule_event' ) ) {
+	function wp_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
+		$GLOBALS['appneck_test_cron'][ $hook ][] = (int) $timestamp;
+
+		return true;
+	}
+}
+
 if ( ! function_exists( 'wp_clear_scheduled_hook' ) ) {
 	function wp_clear_scheduled_hook( $hook, $args = array() ) {
 		unset( $GLOBALS['appneck_test_cron'][ $hook ] );
