@@ -8,7 +8,10 @@
 	} // Cannot access pages directly.
 	if (!class_exists( 'WBTM_Global_File_Load' )) {
 		class WBTM_Global_File_Load {
+			private static $instance = null;
+			private static $frontend_assets_loaded = false;
 			public function __construct() {
+				self::$instance = $this;
 				$this->define_constants();
 				$this->load_global_file();
 				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
@@ -145,22 +148,72 @@
 				if ( ! $load && is_singular() ) {
 					$current = get_post();
 					if ( $current instanceof WP_Post && ! empty( $current->post_content ) ) {
-						foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
-							if ( has_shortcode( $current->post_content, $shortcode ) ) {
-								$load = true;
-								break;
-							}
-						}
+						$load = self::content_has_plugin_shortcode( $current->post_content );
 					}
 				}
 				return (bool) apply_filters( 'wbtm_load_frontend_assets', $load );
+			}
+			/**
+			 * Whether the given content embeds one of the plugin shortcodes.
+			 *
+			 * Besides plain post content this also sees through Avada / Fusion Builder, which
+			 * hides shortcodes from has_shortcode(): a Code Block stores its body base64-encoded
+			 * ([fusion_code]W3didG0t...[/fusion_code]) and a Library element is only referenced
+			 * by id ([fusion_global id="712"]) — the shortcode lives in another post.
+			 */
+			private static function content_has_plugin_shortcode( string $content, int $depth = 0, array $seen = array() ): bool {
+				foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
+					if ( has_shortcode( $content, $shortcode ) ) {
+						return true;
+					}
+				}
+				if ( $depth >= 3 ) {
+					return false;
+				}
+				if ( false !== strpos( $content, '[fusion_code' ) && preg_match_all( '/\[fusion_code[^\]]*\]([A-Za-z0-9+\/=\s]+)\[\/fusion_code\]/', $content, $matches ) ) {
+					foreach ( $matches[1] as $encoded ) {
+						$decoded = base64_decode( $encoded, true );
+						if ( is_string( $decoded ) && $decoded !== '' && self::content_has_plugin_shortcode( $decoded, $depth + 1, $seen ) ) {
+							return true;
+						}
+					}
+				}
+				if ( false !== strpos( $content, '[fusion_global' ) && preg_match_all( '/\[fusion_global[^\]]*\bid=["\']?(\d+)/', $content, $matches ) ) {
+					foreach ( array_unique( array_map( 'absint', $matches[1] ) ) as $global_id ) {
+						if ( ! $global_id || isset( $seen[ $global_id ] ) ) {
+							continue;
+						}
+						$seen[ $global_id ] = true;
+						$global_content     = (string) get_post_field( 'post_content', $global_id, 'raw' );
+						if ( $global_content !== '' && self::content_has_plugin_shortcode( $global_content, $depth + 1, $seen ) ) {
+							return true;
+						}
+					}
+				}
+				return false;
 			}
 			public function frontend_enqueue() {
 				if ( ! $this->should_load_frontend_assets() ) {
 					return;
 				}
+				$this->load_frontend_assets();
+			}
+			private function load_frontend_assets() {
+				self::$frontend_assets_loaded = true;
 				$this->global_enqueue();
 				do_action('wbtm_add_frontend_enqueue');
+			}
+			/**
+			 * Fallback for layouts the head-time gate cannot see (theme-builder headers/footers,
+			 * widgets, page-builder templates): called from the plugin shortcodes while they
+			 * render, it enqueues the frontend bundle late so WordPress prints it in the footer.
+			 * No-op when the assets are already queued or outside a normal frontend page render.
+			 */
+			public static function ensure_frontend_assets() {
+				if ( self::$frontend_assets_loaded || ! self::$instance || is_admin() || ! did_action( 'wp_enqueue_scripts' ) || did_action( 'wp_print_footer_scripts' ) ) {
+					return;
+				}
+				self::$instance->load_frontend_assets();
 			}
 			public function add_admin_head() {
 				$this->js_constant();
