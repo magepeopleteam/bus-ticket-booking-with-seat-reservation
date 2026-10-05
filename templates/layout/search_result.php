@@ -315,7 +315,12 @@ div#wbtm_date_start_route { height: 50px; }
     align-items: flex-start;
 }
 .wbtm_bus_left_filter_holder {
-    flex:         0 0 270px;
+    /* Narrower rail, more room for the results column -- kept in sync with
+       the matching 220px in assets/frontend/wtbm_search.css's collapse/
+       slide animation (width: 220px / flex: 0 0 220px), which must match
+       this value exactly or the filter card visibly resizes mid-animation
+       when the panel collapses or reopens. */
+    flex:         0 0 220px;
     min-width:    0;
     border:       none !important;
     background:   transparent !important;
@@ -575,25 +580,37 @@ div#wbtm_date_start_route { height: 50px; }
    and price span both rows down either side. Markup is unchanged — only the
    placement of the four panels the template already renders. */
 .wbtm-card-wrap {
+    /* Design reference: "Bus Search Results Card Redesign" (Modern SaaS skin —
+       indigo accent, Plus Jakarta Sans headings / Manrope body, flat white
+       surfaces, soft diffuse shadow instead of the previous pale-blue gradient
+       card). --card-accent is scoped here so every descendant rule below can
+       share one swap point instead of repeating the hex. */
+    --card-accent:      #4F46E5;
+    --card-accent-soft: #EEF2FF;
+    --card-ink:         #111827;
+    --card-muted:       #6B7280;
+    --card-subtle:      #9CA3AF;
+    --card-border:      #E5E7EB;
+    font-family:            'Manrope', sans-serif;
     display:               grid;
-    grid-template-columns: minmax(140px, 232px) minmax(0, 1fr) minmax(150px, 200px);
+    grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) minmax(150px, 200px);
     /* heading line / journey strip / bus info — the middle column's three rows */
     grid-template-rows:    auto auto 1fr;
     align-items:           stretch;
     width:                 100%;
-    min-height:            132px;
-    background:      linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-    border:          1px solid #e5edf7;
-    border-radius:   24px;
+    min-height:            108px;
+    background:      #ffffff;
+    border:          1px solid var(--card-border);
+    border-radius:   20px;
     overflow:        hidden;
-    box-shadow:      0 14px 38px rgba(15, 23, 42, 0.06);
+    box-shadow:      0 20px 48px -18px rgba(17, 24, 39, .14), 0 4px 12px rgba(17, 24, 39, .04);
     transition:      transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .wbtm-card-wrap:hover {
     transform:    translateY(-2px);
-    border-color: #d5e3f5;
-    box-shadow:   0 22px 48px rgba(15, 23, 42, 0.1);
+    border-color: #C7D2FE;
+    box-shadow:   0 26px 56px -18px rgba(17, 24, 39, .18), 0 4px 12px rgba(17, 24, 39, .04);
 }
 
 /* ── Bus / boat photo (per-departure card thumbnail) ────────────── */
@@ -606,17 +623,17 @@ div#wbtm_date_start_route { height: 50px; }
     align-items:     center;      /* vertical-center the image in the card */
     justify-content: center;      /* horizontal-center */
     overflow:        hidden;
-    background:      #eef3fb;
-    border-right:    1px solid #e5edf7;
-    /* .wbtm-card-wrap's own overflow:hidden + border-radius:24px should be
+    background:      #EEF0F3;
+    border-right:    1px solid var(--card-border);
+    /* .wbtm-card-wrap's own overflow:hidden + border-radius:20px should be
        enough to clip this grid item to the card's rounded corner, but a
        grid container clipping a child's opaque background to a rounded
        corner is exactly the case Chromium sometimes leaves a 1px unclipped
-       sliver on -- this cell's own near-white #eef3fb background showed
-       through it as an extra square-cornered patch outside the curve.
-       Matching the radius here directly (not relying on the parent's clip
-       alone) removes that seam regardless of the rendering quirk. */
-    border-radius:   24px 0 0 24px;
+       sliver on -- this cell's own near-white background showed through it
+       as an extra square-cornered patch outside the curve. Matching the
+       radius here directly (not relying on the parent's clip alone) removes
+       that seam regardless of the rendering quirk. */
+    border-radius:   20px 0 0 20px;
 }
 /* height:100% !important beats themes that force `img { height:auto }`, so the
    photo fills the column instead of sitting top-aligned; the flex centering
@@ -633,7 +650,7 @@ div#wbtm_date_start_route { height: 50px; }
        place; this cap is the backstop for a fleet with more chips than any
        breakpoint can keep inline. The column stays flex-centred, so a capped
        image sits centred against the panel instead of being distorted. */
-    max-height:      260px;
+    max-height:      110px;
     object-fit:      cover;
     object-position: center;
     display:         block;
@@ -643,7 +660,7 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-card-head {
     grid-column: 2;
     grid-row:    1;
-    padding:     16px 22px 4px;
+    padding:     12px 22px 0;
     background:  #ffffff;
     min-width:   0;
 }
@@ -658,43 +675,44 @@ div#wbtm_date_start_route { height: 50px; }
     align-content:         center;
     row-gap:               0;
     column-gap:            14px;
-    /* The duration pill is absolutely positioned above the track, so the strip
-       needs enough head room to contain it — with the heading line now directly
-       above, too little padding let the pill ride up over the operator name. */
-    padding:               30px 22px 14px;
-    background:            linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
+    /* The duration label now sits centred on the track itself (not floating
+       above it, which used to need ~30px of head room to clear the operator
+       name) -- plain symmetric padding is enough. */
+    padding:               12px 22px;
+    background:            #ffffff;
     /* Banded between the heading line and the bus info now rather than sitting
        beside them, so the divider that separated the columns becomes a rule
        above and below the strip. */
-    border-top:            1px solid #e5edf7;
-    border-bottom:         1px solid #e5edf7;
+    border-top:            1px solid #F1F2F4;
+    border-bottom:         1px solid #F1F2F4;
     position:              relative;
 }
 .wbtm-time-depart,
 .wbtm-time-arrive {
-    font-size:   26px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size:   19px;
     font-weight: 800;
-    color:       #0f172a;
+    color:       var(--card-ink, #111827);
     line-height: 1;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
 }
 .wbtm-time-depart { grid-column: 1; grid-row: 1; }
 .wbtm-time-arrive { grid-column: 3; grid-row: 1; text-align: right; }
 .wbtm-city-depart {
     grid-column: 1;
     grid-row:    2;
-    font-size:   12px;
+    font-size:   12.5px;
     font-weight: 600;
-    color:       #64748b;
+    color:       var(--card-subtle, #9CA3AF);
     margin-top:  6px;
     letter-spacing: 0.01em;
 }
 .wbtm-city-arrive {
     grid-column: 3;
     grid-row:    2;
-    font-size:   12px;
+    font-size:   12.5px;
     font-weight: 600;
-    color:       #64748b;
+    color:       var(--card-subtle, #9CA3AF);
     margin-top:  6px;
     text-align:  right;
     letter-spacing: 0.01em;
@@ -710,63 +728,37 @@ div#wbtm_date_start_route { height: 50px; }
     gap:             4px;
     min-width:       96px;
 }
-/* The duration pill, dot, line and icon are the card's accent. They were
-   hardcoded indigo while the rest of the plugin (filter sidebar, buttons)
-   already followed the operator's configured Style → Theme Colour, so an
-   operator who set their brand colour still got an indigo track here. They
-   read --wbtm_color_theme now, with the old indigo kept as the fallback so a
-   site that never set the variable looks exactly as it did. */
+/* Duration label sits centred ON the line (a white patch breaking a plain
+   grey rule) rather than floating in a pill above it, and only the two dots
+   carry the card's accent colour -- the line itself stays neutral grey. This
+   matches the design reference exactly; --card-accent (set on .wbtm-card-wrap
+   above) is the single swap point if the accent ever needs to change. */
 .wbtm-track-duration {
     position:      absolute;
-    bottom:        100%;
+    top:           50%;
     left:          50%;
-    transform:     translateX(-50%);
-    margin-bottom: 7px;
-    font-size:     10px;
+    transform:     translate(-50%, -50%);
+    font-family:   'Plus Jakarta Sans', sans-serif;
+    font-size:     11.5px;
     font-weight:   700;
-    color:         var(--wbtm_color_theme, #4338ca);
+    color:         var(--card-subtle, #9CA3AF);
     white-space:   nowrap;
     line-height:   1;
-    background:    #f4f6fb;
-    padding:       5px 9px;
-    border-radius: 20px;
-    border:        1px solid var(--wbtm_color_theme_77, rgba(99, 102, 241, 0.14));
-}
-.wbtm-track-dot {
-    width:         11px;
-    height:        11px;
-    border-radius: 50%;
-    background:    #fff;
-    border:        2px solid #94a3b8;
-    flex-shrink:   0;
-    box-shadow:    0 0 0 4px rgba(148, 163, 184, 0.08);
+    background:    #ffffff;
+    padding:       0 6px;
 }
 .wbtm-track-line {
     position:   relative;
     width:      100%;
     height:     0;
     min-width:  56px;
-    border-top: 2px dashed var(--wbtm_color_theme_77, #c7d2fe);
+    border-top: 1px solid var(--card-border, #E5E7EB);
 }
+/* The old centre icon bubble (a Font Awesome glyph on a gradient disc) is
+   dropped in this design -- the line stays a plain rule with only the
+   duration label breaking it, no extra ornament at its midpoint. */
 .wbtm-track-line::after {
-    content:         '\f207';
-    font-family:     'Font Awesome 5 Free';
-    font-weight:     900;
-    position:        absolute;
-    top:             50%;
-    left:            50%;
-    transform:       translate(-50%, -50%);
-    width:           30px;
-    height:          30px;
-    border-radius:   50%;
-    background:      linear-gradient(135deg, var(--wbtm_color_theme_cc, #6366f1) 0%, var(--wbtm_color_theme, #4338ca) 100%);
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    color:           var(--wbtm_color_theme_alter, #fff);
-    font-size:       11px;
-    line-height:     30px;
-    box-shadow:      0 10px 20px rgba(67,56,202,.22);
+    content: none;
 }
 
 /* ── MIDDLE: bus info ────────────────────────────────────────────── */
@@ -774,10 +766,10 @@ div#wbtm_date_start_route { height: 50px; }
     grid-column:    2;
     grid-row:       3;
     min-width:      0;          /* let it shrink inside the grid track */
-    padding:        16px 22px 18px;
+    padding:        8px 22px 10px;
     display:        flex;
     flex-direction: column;
-    gap:            10px;
+    gap:            6px;
     background:     #ffffff;
 }
 /* Operator name and vehicle number share the header line — name left, number
@@ -789,12 +781,22 @@ div#wbtm_date_start_route { height: 50px; }
     flex-wrap:   wrap;
 }
 .wbtm-operator-row .wbtm-coach-number { margin-left: auto; }
+/* !important: the markup also carries `_textTheme` (wbtm.css's
+   `div.wbtm_style [class*=_textTheme] { color: var(--wbtm_color_theme) }`,
+   the plugin's generic "tint this orange/brand colour" utility) which would
+   otherwise paint the name in the operator's Theme Colour instead of this
+   design's plain ink -- that rule has no !important of its own, so this
+   needs only !important, not extra specificity, to win. */
 .wbtm-operator-name {
-    font-size:   20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size:   17px;
     font-weight: 800;
-    color:       #0f172a;
+    color:       var(--card-ink, #111827) !important;
     cursor:      pointer;
     letter-spacing: -0.02em;
+}
+.wbtm-operator-name:hover {
+    color: var(--card-accent, #4F46E5) !important;
 }
 .wbtm-coach-number {
     display:       inline-flex;
@@ -812,27 +814,30 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-coach-number strong {
     color: #0f172a;
 }
-/* Sits on the photo, bottom-left, like the type chip on a ferry listing. Takes
-   the operator's configured Style → Theme Colour so it matches the rest of the
-   card rather than introducing a colour of its own. */
+/* Sits on the photo, top-left, as a plain white chip with dark text (design
+   reference) rather than a colour chip of the operator's Theme Colour --
+   kept neutral so it doesn't compete with the accent used everywhere else
+   on the card (price, dots, primary button). */
 .wbtm-type-badge {
     position:      absolute;
     left:          10px;
-    bottom:        10px;
+    top:           10px;
+    bottom:        auto;
     z-index:       2;
     max-width:     calc(100% - 20px);
     overflow:      hidden;
     text-overflow: ellipsis;
-    font-size:     10px;
-    font-weight:   700;
-    padding:       4px 11px;
-    border-radius: 20px;
+    font-family:   'Plus Jakarta Sans', sans-serif;
+    font-size:     11px;
+    font-weight:   800;
+    padding:       4px 10px;
+    border-radius: 999px;
     white-space:   nowrap;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    color:         var(--wbtm_color_theme_alter, #ffffff);
-    background:    var(--wbtm_color_theme, #e8510f);
-    box-shadow:    0 4px 12px rgba(15, 23, 42, 0.22);
+    color:         var(--card-ink, #111827);
+    background:    rgba(255, 255, 255, .95);
+    box-shadow:    0 2px 6px rgba(17, 24, 39, .1);
 }
 .wbtm-type-badge--top {
     background: #dcfce7;
@@ -842,80 +847,113 @@ div#wbtm_date_start_route { height: 50px; }
     background: #f1f5f9;
     color:      #64748b;
 }
-.wbtm-amenities {
-    display:  flex;
-    flex-wrap: wrap;
-    gap:      6px;
-}
-/* Amenity chips. These were meant to be pills but never rendered as any: the
-   rule said `border-radius: none`, which is not a valid value — the whole
-   declaration was dropped — and the background was plain white with no border,
-   so the amenities came out as a run of loose text. Tinted from the operator's
-   configured Style → Theme Colour so the row matches the rest of the card;
-   the flat fallbacks in front of each color-mix() keep older browsers on a
-   neutral tint rather than no chip at all. */
-.wbtm-amenity {
-    display:       inline-flex;
-    align-items:   center;
-    gap:           5px;
-    font-size:     11.5px;
-    font-weight:   600;
-    line-height:   1.5;
-    color:         #41525f;
-    background:    #f4f7fb;
-    background:    color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 7%, #ffffff);
-    padding:       4px 10px;
-    border-radius: 999px;
-    border:        1px solid #e6ecf4;
-    border:        1px solid color-mix(in srgb, var(--wbtm_color_theme, #e8510f) 18%, #ffffff);
-    white-space:   nowrap;
-}
-.wbtm-amenity i {
-    color:     var(--wbtm_color_theme, #64748b);
-    font-size: 11px;
-}
 .wbtm-seats-avail {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
     font-weight: 600;
-    color: #166534;
-    padding: 6px 10px;
+    color: var(--card-muted, #6B7280);
+    padding: 0;
     align-self: flex-start;
-    border: 1px solid #bbf7d0;
-    background: #f0fdf4;
-    border-radius: 999px;
+    border: none;
+    background: none;
+    border-radius: 0;
 }
 .wbtm-card-info .wbtm_bus_details_tabs_holder {
+    position:    relative;
     margin-top:  auto;
-    padding-top: 12px;
-    border-top:  1px dashed #dbe5f0;
+    padding-top: 8px;
+    padding-right: 22px; /* clears the "more" hint icon below */
+    border-top:  1px dashed #E5E7EB;
 }
+/* Single line, never wraps to a second row -- scrolls horizontally instead
+   when all four links don't fit (most cards only show ~3 before the edge).
+   Scrollbar hidden across browsers since the hint icon + edge fade below
+   are what signal "more", not a visible scrollbar. Extra bottom padding is
+   room for each chip's own shadow/lift on hover, which would otherwise clip
+   against the scroll container's edge. */
 .wbtm-card-info .wbtm_bus_popup_links {
-    display:    flex !important;
-    flex-wrap:  wrap;
-    gap:        8px;
-    visibility: visible !important;
-    opacity:    1 !important;
-    transform:  none !important;
+    display:        flex !important;
+    flex-wrap:      nowrap;
+    overflow-x:     auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap:            7px;
+    padding-bottom: 2px;
+    visibility:     visible !important;
+    opacity:        1 !important;
+    transform:      none !important;
 }
+.wbtm-card-info .wbtm_bus_popup_links::-webkit-scrollbar {
+    display: none;
+}
+/* Small "more to scroll" hint -- a circled chevron pinned top-right of the
+   row, decorative only (the row itself is what scrolls, via touch/wheel/
+   trackpad), not a button of its own. */
+.wbtm-card-info .wbtm_bus_details_tabs_holder::after {
+    content:         '\f054';
+    font-family:     'Font Awesome 5 Free';
+    font-weight:     900;
+    position:        absolute;
+    top:             4px;
+    right:           0;
+    width:           16px;
+    height:          16px;
+    border-radius:   50%;
+    background:      #F3F4F6;
+    color:           var(--card-subtle, #9CA3AF);
+    font-size:       8px;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    pointer-events:  none;
+}
+/* Chip buttons, not plain text links: each one's icon sits in its own small
+   accent-tinted circle (same device the amenity chips used to use), which
+   reads as "actionable" since -- unlike those, now removed -- these really
+   do open something. Hover inverts the icon circle to a solid accent fill
+   and lifts the chip slightly, for a clear press target on what's otherwise
+   a dense, compact row. */
 .wbtm-card-info .wbtm_bus_popup_link {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           6px;
+    flex-shrink:   0;
+    white-space:   nowrap;
     font-size:     12px;
-    font-weight:   600;
-    color:         #334155;
-    background:    #f8fafc;
-    border:        1px solid #dbe4f0;
+    font-weight:   700;
+    color:         var(--card-muted, #6B7280);
+    background:    #F9FAFB;
+    border:        1px solid #EFF1F4;
     border-radius: 999px;
-    padding:       7px 12px;
+    padding:       4px 10px 4px 4px;
     cursor:        pointer;
-    transition:    background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+    transition:    background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.wbtm-card-info .wbtm_bus_popup_link i {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    width:           18px;
+    height:          18px;
+    border-radius:   50%;
+    background:      var(--card-accent-soft, #EEF2FF);
+    color:           var(--card-accent, #4F46E5);
+    font-size:       9px;
+    flex-shrink:     0;
+    transition:      background 0.15s ease, color 0.15s ease;
 }
 .wbtm-card-info .wbtm_bus_popup_link:hover {
-    color:        var(--wbtm_color_theme, #4338ca);
-    background:   #f4f6fb;
-    border-color: var(--wbtm_color_theme_77, #c7d2fe);
+    color:        var(--card-ink, #111827);
+    background:   #ffffff;
+    border-color: var(--card-accent, #4F46E5);
     transform:    translateY(-1px);
+    box-shadow:   0 4px 10px rgba(17, 24, 39, .08);
+}
+.wbtm-card-info .wbtm_bus_popup_link:hover i {
+    background: var(--card-accent, #4F46E5);
+    color:      #ffffff;
 }
 
 /* ── RIGHT: price + book ─────────────────────────────────────────── */
@@ -923,33 +961,37 @@ div#wbtm_date_start_route { height: 50px; }
     grid-column:     3;
     grid-row:        1 / -1;   /* full height, beside both stacked rows */
     min-width:       0;
-    padding:         20px 18px;
+    padding:         14px 18px;
     display:         flex;
     flex-direction:  column;
     align-items:     flex-start;
     justify-content: center;
-    gap:             10px;
-    border-left:     1px solid #e5edf7;
-    background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
+    gap:             7px;
+    border-left:     1px solid var(--card-border, #E5E7EB);
+    background:      #ffffff;
     /* Same corner-seam fix as .wbtm-card-photo, mirrored for this card's
        other end (right side instead of left). */
-    border-radius:   0 24px 24px 0;
+    border-radius:   0 20px 20px 0;
 }
 .wbtm-starting-from {
     font-size:     11px;
     font-weight:   600;
-    color:         #94a3b8;
+    color:         var(--card-subtle, #9CA3AF);
     text-align:    left;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
 }
-.wbtm-price-value {
-    font-size:   34px;
+/* body prefix + !important: busly's booking.css retints this same class
+   `body .wbtm-price-value { color: var(--busly-primary) !important }` --
+   same mechanism as the button/operator-name overrides above. */
+body .wbtm-price-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size:   24px;
     font-weight: 800;
-    color:       #111827;
+    color:       var(--card-accent, #4F46E5) !important;
     text-align:  left;
     line-height: 1;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
 }
 .wbtm-price-value .woocommerce-Price-amount {
     font-size: inherit !important;
@@ -977,13 +1019,39 @@ div#wbtm_date_start_route { height: 50px; }
 .wbtm-card-price .wbtm-seat-book {
     width:      100%;
     margin-top: 4px;
+    display:    flex;
+    flex-direction: column;
+    gap:        8px;
 }
-.wbtm-card-price .wbtm-seat-book._themeButton_xs,
-.wbtm-card-price ._themeButton_xs,
-.wbtm-card-price #get_wbtm_bus_details {
+/* "Book seat" before "Book full bus" visually, without touching the markup
+   order (PHP/JS elsewhere may depend on .wbtm-full-bus-booking being the
+   first child, e.g. the sold-out/hide toggling) -- flex `order` reorders the
+   two rows on display only. */
+.wbtm-card-price .wbtm-seat-book #get_wbtm_bus_details {
+    order: 1;
+}
+.wbtm-card-price .wbtm-seat-book .wbtm-full-bus-booking {
+    order: 2;
+}
+/* Primary action -- "Book seat". Excludes .wbtm_full_bus_book_now (matched by
+   the old bare `._themeButton_xs` descendant selector this replaced) so the
+   secondary "Book full bus" button below can have its own, narrower, outline
+   style instead of being forced to this button's full-width accent fill.
+   `body` prefix on the #id branch: busly's own booking.css retints this same
+   button with `body .wbtm-card-price #get_wbtm_bus_details { background:
+   var(--busly-accent) !important }` -- an ID selector beats a bare class
+   selector regardless of how many classes pile onto the class side, so
+   without the matching `body` prefix here (same specificity, this rule wins
+   the tie since it's later in the DOM than booking.css's <head> stylesheet)
+   that orange rule always won over this file's own button colour. */
+.wbtm-card-price ._themeButton_xs:not(.wbtm_full_bus_book_now),
+body .wbtm-card-price #get_wbtm_bus_details {
     width:           100% !important;
-    border-radius:   16px !important;
-    padding:         13px 18px !important;
+    background:      var(--card-accent, #4F46E5) !important;
+    color:           #ffffff !important;
+    border-radius:   12px !important;
+    padding:         12px 18px !important;
+    font-family:     'Plus Jakarta Sans', sans-serif !important;
     font-size:       14px !important;
     font-weight:     700 !important;
     text-align:      center !important;
@@ -994,13 +1062,85 @@ div#wbtm_date_start_route { height: 50px; }
     cursor:          pointer;
     white-space:     nowrap;
     border:          none !important;
-    box-shadow:      0 14px 26px rgba(232,81,15,.24) !important;
-    transition:      transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s !important;
+    box-shadow:      none !important;
+    transition:      filter 0.15s ease, transform 0.1s ease !important;
 }
 
 .wbtm-card-price #get_wbtm_bus_details:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 18px 32px rgba(232,81,15,.28) !important;
+    filter: brightness(0.93);
+}
+.wbtm-card-price #get_wbtm_bus_details:active {
+    transform: translateY(1px);
+}
+
+/* Secondary action -- "Book full bus" + its "?" price-breakdown toggle, styled
+   as one outline pill (design reference) instead of the primary button's
+   solid accent fill. The two still share the markup's flush layout
+   (assets/frontend/wbtm.css's `.wbtm-full-bus-booking { display:flex }`); only
+   colour/shape change here. */
+.wbtm-full-bus-booking {
+    width: 100%;
+}
+/* `body` prefix: this button also carries the bare `_themeButton_xs` class,
+   which booking.css's `body .wbtm-card-price ._themeButton_xs { background:
+   var(--busly-accent) !important }` retints orange at (0 id, 2 class, 1
+   element) specificity -- matching that element count here is what lets
+   this outline style actually win (see the #get_wbtm_bus_details comment
+   above for the full mechanism). */
+body .wbtm-full-bus-booking > .wbtm_full_bus_book_now {
+    flex:            1 1 0%;
+    background:      #ffffff !important;
+    color:           #374151 !important;
+    border:          1px solid var(--card-border, #E5E7EB) !important;
+    border-radius:   12px 0 0 12px !important;
+    padding:         11px 14px !important;
+    font-family:     'Plus Jakarta Sans', sans-serif !important;
+    font-size:       13px !important;
+    font-weight:     700 !important;
+    box-shadow:      none !important;
+    transition:      background 0.15s ease, border-color 0.15s ease;
+}
+body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
+    background:   #F5F6FE !important;
+    border-color: var(--card-accent, #4F46E5) !important;
+}
+/* The toggle's own CSS (assets/frontend/wbtm.css) reads `var(--wbtm_theme_color)`,
+   a custom property nothing in the plugin ever defines (the real one is
+   `--wbtm_color_theme`) -- it's always fallen back to no background at all.
+   Scoped indigo override here both matches the design and fixes that. */
+.wbtm-full-bus-tooltip-toggle {
+    background:    var(--card-accent, #4F46E5) !important;
+    border-left:   1px solid rgba(255, 255, 255, .28) !important;
+    border-radius: 0 12px 12px 0 !important;
+}
+.wbtm-full-bus-tooltip-panel {
+    background:    #111827 !important;
+    border:        none !important;
+    border-radius: 12px !important;
+    padding:       12px 14px !important;
+    box-shadow:    0 12px 28px rgba(17, 24, 39, .25) !important;
+}
+.wbtm-full-bus-tooltip-panel span {
+    font-family:    'Plus Jakarta Sans', sans-serif;
+    font-size:      11px !important;
+    font-weight:    700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color:          #9CA3AF !important;
+}
+.wbtm-full-bus-tooltip-panel del {
+    color: #9CA3AF !important;
+}
+.wbtm-full-bus-tooltip-panel strong {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size:   15px !important;
+    color:       #ffffff !important;
+}
+.wbtm-full-bus-tooltip-panel small {
+    display:     block;
+    margin-top:  2px;
+    color:       #86EFAC !important;
+    font-weight: 700;
 }
 
 /* Seat-expansion area */
@@ -1030,13 +1170,13 @@ div#wbtm_date_start_route { height: 50px; }
        shape — the thing that keeps the card a compact strip — survives the
        smaller column instead of collapsing back into stacked rows. */
     .wbtm-card-wrap {
-        grid-template-columns: minmax(96px, 132px) minmax(0, 1fr) minmax(124px, 158px);
+        grid-template-columns: minmax(72px, 104px) minmax(0, 1fr) minmax(124px, 158px);
     }
-    .wbtm-card-photo img { max-height: 190px; }
+    .wbtm-card-photo img { max-height: 100px; }
     .wbtm-card-head     { padding: 13px 12px 0; }
 
     .wbtm-card-times {
-        padding:    26px 12px 12px;
+        padding:    10px 12px;
         column-gap: 6px;
     }
     .wbtm-time-depart,
@@ -1045,7 +1185,7 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-city-arrive { font-size: 11px; margin-top: 4px; }
     .wbtm-duration-track-wrap { min-width: 58px; }
     .wbtm-track-line          { min-width: 30px; }
-    .wbtm-track-duration      { font-size: 9px; padding: 4px 7px; margin-bottom: 8px; }
+    .wbtm-track-duration      { font-size: 9px; padding: 0 5px; }
 
     .wbtm-card-info {
         padding: 13px 12px 14px;
@@ -1053,11 +1193,11 @@ div#wbtm_date_start_route { height: 50px; }
     }
     .wbtm-operator-name { font-size: 16px; }
     .wbtm-coach-number  { font-size: 10px; padding: 3px 8px; }
-    .wbtm-amenity       { font-size: 11px; padding: 2px 6px; gap: 4px; }
     .wbtm-seats-avail   { font-size: 11px; padding: 4px 9px; }
     .wbtm-card-info .wbtm_bus_details_tabs_holder { padding-top: 9px; }
-    .wbtm-card-info .wbtm_bus_popup_links         { gap: 6px; }
-    .wbtm-card-info .wbtm_bus_popup_link          { font-size: 11px; padding: 5px 9px; }
+    .wbtm-card-info .wbtm_bus_popup_links         { gap: 5px; }
+    .wbtm-card-info .wbtm_bus_popup_link          { font-size: 11px; padding: 3px 8px 3px 3px; }
+    .wbtm-card-info .wbtm_bus_popup_link i        { width: 16px; height: 16px; font-size: 8px; }
 
     .wbtm-card-price {
         padding: 14px 12px;
@@ -1179,15 +1319,15 @@ div#wbtm_date_start_route { height: 50px; }
         width:         100%;
         min-width:     0;
         max-width:     none;
-        height:        170px;
+        height:        110px;
         border-right:  none;
-        border-bottom: 1px solid #e5edf7;
+        border-bottom: 1px solid var(--card-border, #E5E7EB);
     }
     .wbtm-card-photo img { max-height: none; }
     .wbtm-card-head {
         grid-column: 1;
         grid-row:    auto;
-        padding:     16px 16px 0;
+        padding:     12px 16px 0;
     }
     .wbtm-card-times {
         grid-column:   1;
@@ -1195,18 +1335,17 @@ div#wbtm_date_start_route { height: 50px; }
         border-top:    none;
         width:         100%;
         border-right:  none;
-        border-bottom: 1px solid #e5edf7;
-        /* Head room for the duration pill, which floats above the track: the
-           heading line sits directly on top of the strip on a phone, and with
-           desktop padding the pill rode up over the operator name. */
-        padding:       34px 16px 18px;
+        border-bottom: 1px solid var(--card-border, #E5E7EB);
+        /* The duration label is centred on the track, not floating above it,
+           so this no longer needs the old design's extra head room. */
+        padding:       14px 16px;
         column-gap:    10px;
-        background:    linear-gradient(135deg, #f8fbff 0%, #f2f6ff 100%);
+        background:    #ffffff;
     }
     .wbtm-card-info { grid-column: 1; grid-row: auto; }
     .wbtm-time-depart, .wbtm-time-arrive { font-size: 20px; }
     .wbtm-duration-track-wrap { min-width: 40px; }
-    .wbtm-card-info  { border-right: none; border-bottom: 1px solid #e5edf7; padding: 16px 16px; gap: 10px; }
+    .wbtm-card-info  { border-right: none; border-bottom: 1px solid var(--card-border, #E5E7EB); padding: 16px 16px; gap: 10px; }
     .wbtm-card-price {
         grid-column:     1;
         grid-row:        auto;
@@ -1220,7 +1359,7 @@ div#wbtm_date_start_route { height: 50px; }
         flex-wrap:       wrap;
         gap:             12px;
         padding:         16px 16px;
-        background:      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 100%);
+        background:      #ffffff;
     }
     .wbtm-starting-from { width: 100%; text-align: left; margin-bottom: -6px; }
     .wbtm-price-value   { font-size: 22px; text-align: left; }
@@ -1228,9 +1367,7 @@ div#wbtm_date_start_route { height: 50px; }
     .wbtm-card-price #get_wbtm_bus_details { width: auto !important; padding: 10px 20px !important; }
 }
 @media (max-width: 480px) {
-    /* Keeps the head room the floating duration pill needs — a flat 12px here
-       put the pill back on top of the operator name on small phones. */
-    .wbtm-card-times { padding: 32px 12px 12px; }
+    .wbtm-card-times { padding: 10px 12px; }
     .wbtm-time-depart, .wbtm-time-arrive { font-size: 16px; }
     .wbtm-city-depart, .wbtm-city-arrive { font-size: 10px; }
     .wbtm-price-value { font-size: 20px; }
@@ -1489,14 +1626,6 @@ div#wbtm_date_start_route { height: 50px; }
             $show_details_tabs  = WBTM_Global_Function::get_settings('wbtm_general_settings', 'show_hide_bus_details_tabs', 'show');
             $details_tabs_class = $show_details_tabs === 'hide' ? ' wbtm_no_tabs' : '';
 
-            // Bus amenity/feature list (graceful no-op when class unavailable)
-            $feature_list = [];
-            if (class_exists('WTBM_Features_Seating')) {
-                $all_features     = WTBM_Features_Seating::get_all_bus_features();
-                $selected_ids     = get_post_meta($bus_id, 'wbbm_bus_features_term_id', true);
-                $feature_list     = WBTM_Functions::getSelectedFeatures($all_features, (array)$selected_ids);
-            }
-
             // Sold-out detection: a bus with no seats left still appears in the
             // list but is flagged so the card can be greyed + its Book button disabled.
             $is_sold_out = (int) ($all_info['available_seat'] ?? 0) <= 0;
@@ -1565,10 +1694,8 @@ div#wbtm_date_start_route { height: 50px; }
                             <?php echo esc_html($all_info['bp']); ?>
                         </div>
                         <div class="wbtm-duration-track-wrap">
-                            <div class="wbtm-track-dot"></div>
                             <div class="wbtm-track-line"></div>
                             <div class="wbtm-track-duration"><?php echo esc_html($duration_formatted); ?></div>
-                            <div class="wbtm-track-dot"></div>
                         </div>
                         <div class="wbtm-time-arrive">
                             <?php echo esc_html(date_i18n('H:i', $dp_ts)); ?>
@@ -1581,23 +1708,11 @@ div#wbtm_date_start_route { height: 50px; }
                         </div>
                     </div>
 
-                    <!-- MIDDLE: bus name, badge, amenities, seats, popup links -->
+                    <!-- MIDDLE: bus name, badge, seats, popup links. Amenities
+                         used to render here as a chip row -- dropped in favour
+                         of the "Bus Features" popup link below, which shows
+                         the same data on demand and keeps the card compact. -->
                     <div class="wbtm-card-info">
-                        <?php if (!empty($feature_list)) : ?>
-                        <div class="wbtm-amenities">
-                            <?php foreach ($feature_list as $feat) :
-                                $feat_name = $feat['name'] ?? ($feat['label'] ?? '');
-                                $feat_icon = $feat['icon'] ?? '';
-                            ?>
-                            <span class="wbtm-amenity">
-                                <?php if ($feat_icon) : ?>
-                                    <i class="<?php echo esc_attr($feat_icon); ?>"></i>
-                                <?php endif; ?>
-                                <?php echo esc_html($feat_name); ?>
-                            </span>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
 
                         <!-- Popup links + extra details tabs -->
                         <div class="wbtm_bus_details_tabs_holder<?php echo esc_attr($details_tabs_class); ?>">
