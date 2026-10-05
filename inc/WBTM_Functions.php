@@ -1073,10 +1073,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							$prev_date      = $date;
 							$prev_full_date = $date;
 							$count          = 0;
+							$start_day      = gmdate( 'Y-m-d', strtotime( $date ) );
 							foreach ( $route_infos as $info ) {
 								$current_date = gmdate( 'Y-m-d H:i', strtotime( $prev_date . ' ' . $info['time'] ) );
-								if (isset($info['next_day']) && $info['next_day'] == '1') {
-									$current_date = gmdate('Y-m-d H:i', strtotime($current_date . ' +1 day'));
+								// "Next Day Dropping" means "after midnight of the departure day", so apply
+								// it only while the route is still on that day. $prev_date already carries
+								// every earlier day shift; adding another day for each flagged stop pushed
+								// the 2nd post-midnight stop to day +2 (04:00 -> 05:05 showed as 25h 5m).
+								if ( isset( $info['next_day'] ) && $info['next_day'] == '1' && gmdate( 'Y-m-d', strtotime( $current_date ) ) === $start_day ) {
+									$current_date = gmdate( 'Y-m-d H:i', strtotime( $current_date . ' +1 day' ) );
 								}
 								if ($count > 0) {
 									if ( strtotime( $prev_full_date ) > strtotime( $current_date ) ) {
