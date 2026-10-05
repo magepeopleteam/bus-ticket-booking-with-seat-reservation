@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Appneck WordPress SDK">
+    <description>
+        WordPress Coding Standards, NOT this monorepo's Laravel Pint (PSR-12) setup.
+
+        Deliberate divergence, and the one place in this repo where it applies.
+        This package's code is read, debugged and often vendored by WordPress
+        plugin developers, whose entire ecosystem — core, WP-CLI, every major
+        plugin — uses tabs, array() long syntax and spaces inside parentheses.
+        Reformatting to PSR-12 would make the SDK look foreign in exactly the
+        codebases it gets pasted into, for no benefit to anyone.
+
+        Verified concretely rather than assumed: running the monorepo's Pint
+        against src/ and tests/ flags every file, entirely on indentation_type,
+        array_syntax and spaces_inside_parentheses. Those are not defects; they
+        are the target standard.
+
+        apps/api stays on Pint. Nothing in this repo runs both over one file.
+    </description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <arg name="extensions" value="php"/>
+    <arg value="ps"/>
+
+    <rule ref="WordPress-Core"/>
+
+    <!-- The SDK ships as a bundled directory with no build step, so it
+         cannot rely on a text-domain-aware i18n toolchain; it also emits
+         no user-facing strings of its own. -->
+    <rule ref="WordPress.WP.I18n">
+        <severity>0</severity>
+    </rule>
+
+    <config name="minimum_supported_wp_version" value="5.9"/>
+    <config name="testVersion" value="7.2-"/>
+</ruleset>

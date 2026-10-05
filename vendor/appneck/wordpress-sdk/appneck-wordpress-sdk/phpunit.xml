@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="Appneck WordPress SDK">
+            <directory>tests</directory>
+            <!-- Real-backend integration tests live here, are always
+                 discoverable by suffix, but must never run as part of the
+                 default (dependency-free, no-Docker-required) suite — see
+                 phpunit-integration.xml and `composer test:integration`. -->
+            <exclude>tests/integration</exclude>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

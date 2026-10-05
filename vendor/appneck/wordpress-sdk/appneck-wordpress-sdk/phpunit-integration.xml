@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    The real-backend suite — `composer test:integration`, not `composer test`.
+
+    Needs a live Appneck backend (APPNECK_SDK_TEST_* env vars; see
+    "Integration tests" in README.md) and skips cleanly, per test, when one
+    isn't configured or reachable — see Support/IntegrationTestCase.php.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/integration/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache-integration">
+    <testsuites>
+        <testsuite name="Appneck WordPress SDK — integration">
+            <directory>tests/integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

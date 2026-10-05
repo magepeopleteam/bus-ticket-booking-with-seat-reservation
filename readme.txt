@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.4
+Stable tag: 5.9.6
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -179,7 +179,13 @@ Attendee information form, passenger booking from the dashboard, customized emai
 = Do you offer customization =
 Yes, We like to hear from our customers If you want to add any customization or if you need any new features. you can send us email: support@mage-people.com. our team will check and get back to you.
 
+== External Services ==
 
+= Appneck =
+
+This Plugin uses [Appneck](https://appneck.com) SDK to collect some telemetry data upon the user's confirmation to troubleshoot problems faster & make product improvements.
+Appneck SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. Integrating Appneck SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
+Learn more about how [Appneck collects and uses this data](https://appneck.com/privacy-policy/).
 
 == Changelog ==
 
@@ -527,7 +533,15 @@ Seat number rotation stopped
 **Dates (Fix)**
 * Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
 
+= 5.9.6 =
+
+**Telemetry (New)**
+* Updated the bundled Appneck SDK to the latest version.
+
 = 5.9.5 =
+
+**Telemetry (New)**
+* Added the Appneck SDK for opt-in telemetry and update tracking. It does not collect any data by default; it only starts after you confirm via the admin notice. See External Services in this readme
 
 **Seater and Sleeper Seats (New)**
 * Any seat in the seat plan builder can now be marked as a sleeper berth with the new "Sleeper" checkbox, on the lower and upper deck and inside cabins; every other seat stays a seater
