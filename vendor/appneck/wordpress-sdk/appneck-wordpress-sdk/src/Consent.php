@@ -10,25 +10,21 @@ use Appneck\Sdk\Logging\NullLogger;
  * The site owner's telemetry decision: where it is stored, what it means
  * for track(), and how it reaches the server.
  *
- * The server is the enforcement authority (journal §5.4: /sdk/v1/telemetry
- * fails closed with a 403 on `pending` or `rejected`). Nothing here is a
- * security control — the point of this class is that the SDK behaves
- * decently on the site owner's own machine, and that their answer
- * actually gets recorded.
+ * Journal §70: for a FREE plugin this decision is the gate for every
+ * call to Appneck (ContactGate). Nothing is registered, collected or sent
+ * until it is `accepted`. The server's fail-closed 403 on /sdk/v1/telemetry
+ * (journal §5.4) is now only a backstop.
  *
- * ## Three states, and only one of them is a decision the owner made
+ * ## Three states, and only `accepted` lets anything out (journal §70 D1)
  *
- * `pending`  — never asked, or asked and not yet answered. The prompt is
- *              on screen. Nothing has been decided, so track() keeps
- *              buffering locally: transmission is imminently possible and
- *              the server refuses the batch anyway (which S4.3 already
- *              proves the queue survives). This is the state where "keep
- *              the backlog" is right, because a grant a minute later
- *              should ship what happened in that minute.
+ * `pending`  — never asked, or asked and not yet answered. Treated exactly
+ *              like `rejected`: nothing is collected, queued or sent.
+ *              (Before §70 the SDK kept buffering here and let the
+ *              server's 403 hold the line; WordPress.org guideline 7 does
+ *              not allow even that first request.)
  * `accepted` — normal operation.
  * `rejected` — track() becomes a NO-OP and the existing local queue is
- *              PURGED. See below; this is the one genuinely debatable
- *              decision in this class.
+ *              PURGED.
  *
  * ## Why an explicit reject stops local collection, not just sending
  *
@@ -50,10 +46,18 @@ use Appneck\Sdk\Logging\NullLogger;
  *     purges rather than parks: the queue must not become a way to
  *     collect through a refusal and send it later.
  *
- * `pending` is deliberately NOT treated the same way. "Never asked" and
- * "said no" are different facts, and collapsing them would either throw
- * away legitimate startup telemetry (if pending behaved like rejected) or
- * ignore a refusal (if rejected behaved like pending).
+ * `pending` used to be treated differently ("never asked" is not "said
+ * no"). Journal §70 collapsed the two for free plugins: the startup
+ * telemetry that rule protected is exactly the data a free plugin may not
+ * collect before an opt-in.
+ *
+ * ## What reaches the server while the gate is closed
+ *
+ * Only a withdrawal: an owner who had accepted (and whose acceptance the
+ * server recorded) turning usage data off. Withdrawing must be as easy as
+ * giving consent, and leaving the server at `accepted` would be worse than
+ * the one request. A refusal the server never heard an acceptance for —
+ * Skip on the prompt — sends nothing at all.
  *
  * ## Privacy policy version
  *
@@ -335,6 +339,11 @@ final class Consent {
 			return null;
 		}
 
+		// Carried across the overwrite below: whether the server has an
+		// acceptance on record decides whether a later refusal has to be
+		// sent at all (journal §70 D1 — see sync()).
+		$server_accepted = $this->server_accepted();
+
 		// Stored FIRST, before any network call. The owner clicked a
 		// button; their answer must survive an unreachable API, and the
 		// prompt must not come back on the next page load as though the
@@ -347,6 +356,7 @@ final class Consent {
 				'synced'                 => false,
 				'sync_attempts'          => 0,
 				'last_sync_attempt'      => 0,
+				'server_accepted'        => $server_accepted,
 			)
 		);
 
@@ -450,6 +460,37 @@ final class Consent {
 			return null;
 		}
 
+		// Journal §70 D1: with the gate closed, only a withdrawal may reach
+		// the server — and only one the server needs, i.e. of something it
+		// has on record. Everything else is settled locally and never sent:
+		// Skip on the prompt, or a refusal before the acceptance was synced.
+		$exempt = false;
+
+		if ( ! $this->client->may_send() ) {
+			$tell_telemetry = $telemetry_pending
+				&& self::STATUS_REJECTED === (string) $stored['status']
+				&& $this->server_accepted();
+			$tell_marketing = $marketing_pending
+				&& ! $this->marketing_consent->is_opted_in()
+				&& $this->marketing_consent->server_opted_in();
+
+			if ( $telemetry_pending && ! $tell_telemetry ) {
+				$this->mark_synced( false );
+				$telemetry_pending = false;
+			}
+
+			if ( $marketing_pending && ! $tell_marketing ) {
+				$this->marketing_consent->mark_synced( false );
+				$marketing_pending = false;
+			}
+
+			if ( ! $telemetry_pending && ! $marketing_pending ) {
+				return null;
+			}
+
+			$exempt = true;
+		}
+
 		if ( ! $this->client->credentials()->has_credentials() ) {
 			// Registration is asynchronous (S4.2: activation performs no
 			// network I/O), so a decision made in the first seconds after
@@ -470,12 +511,17 @@ final class Consent {
 
 		$this->record_attempt( $attempts + 1 );
 
-		$payload = array(
-			'status'                 => (string) $stored['status'],
-			'privacy_policy_version' => isset( $stored['privacy_policy_version'] )
+		$payload = array();
+
+		// Journal §70 D2: a marketing-only change (the settings page's
+		// "Receive update emails" switch) sends no telemetry status — the
+		// server would otherwise record a telemetry decision nobody made.
+		if ( $telemetry_pending ) {
+			$payload['status']                 = (string) $stored['status'];
+			$payload['privacy_policy_version'] = isset( $stored['privacy_policy_version'] )
 				? (string) $stored['privacy_policy_version']
-				: $this->privacy_policy_version(),
-		);
+				: $this->privacy_policy_version();
+		}
 
 		// All three marketing_* fields are OPTIONAL server-side (see
 		// ConsentController) — an older SDK build sends none of them, and
@@ -489,13 +535,19 @@ final class Consent {
 
 			if ( $this->marketing_consent->is_opted_in() ) {
 				$payload['marketing_email'] = (string) $this->marketing_consent->email();
+
+				if ( null !== $this->marketing_consent->name() ) {
+					$payload['marketing_name'] = $this->marketing_consent->name();
+				}
 			}
 		}
 
-		$response = $this->client->post( '/sdk/v1/consent', $payload );
+		$response = $exempt
+			? $this->client->post_exempt( '/sdk/v1/consent', $payload )
+			: $this->client->post( '/sdk/v1/consent', $payload );
 
 		if ( $response->ok() ) {
-			$this->mark_synced();
+			$this->mark_synced( $telemetry_pending );
 
 			if ( $marketing_pending ) {
 				$this->marketing_consent->mark_synced();
@@ -568,9 +620,38 @@ final class Consent {
 	// Storage
 	// -----------------------------------------------------------------
 
-	private function mark_synced() {
+	/**
+	 * Whether the server has this site's acceptance on record — the only
+	 * case in which a refusal must reach it (journal §70 D1). Decisions
+	 * stored before 0.4.0 carry no flag; for those, a synced acceptance is
+	 * exactly that.
+	 *
+	 * @return bool
+	 */
+	public function server_accepted() {
+		$stored = $this->read();
+
+		if ( isset( $stored['server_accepted'] ) ) {
+			return (bool) $stored['server_accepted'];
+		}
+
+		return isset( $stored['status'] ) && self::STATUS_ACCEPTED === $stored['status'] && ! empty( $stored['synced'] );
+	}
+
+	/**
+	 * @param bool $sent Whether the telemetry status itself went to the
+	 *                   server in the request that just succeeded, and so
+	 *                   is now the server's view. False when it was settled
+	 *                   locally (journal §70 D1) or only marketing was sent.
+	 */
+	private function mark_synced( $sent = true ) {
 		$stored                  = $this->read();
 		$stored['synced']        = true;
+
+		if ( $sent && isset( $stored['status'] ) ) {
+			$stored['server_accepted'] = self::STATUS_ACCEPTED === $stored['status'];
+		}
+
 		// Reset rather than leave stale: a marketing-only sync (telemetry
 		// already synced long ago) reuses this same attempt counter, and a
 		// budget left over from an earlier, unrelated telemetry retry

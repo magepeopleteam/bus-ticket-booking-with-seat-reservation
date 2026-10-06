@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.6
+Stable tag: 5.9.7
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -532,6 +532,11 @@ Seat number rotation stopped
 
 **Dates (Fix)**
 * Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
+
+= 5.9.7 =
+
+**Telemetry (Fix)**
+* Updated the bundled Appneck SDK to the latest version.
 
 = 5.9.6 =
 

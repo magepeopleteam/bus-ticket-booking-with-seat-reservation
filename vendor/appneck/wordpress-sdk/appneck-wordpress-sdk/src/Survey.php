@@ -40,6 +40,17 @@ use Appneck\Sdk\Logging\NullLogger;
  * API call on every visit to the plugins screen that never opens the
  * modal at all.
  *
+ * ## Works without consent (journal §70 D4)
+ *
+ * The survey is the one feature a free plugin may use when its owner has
+ * not accepted: it is only ever reached by a person's own click
+ * (Deactivate, then Submit). With a consented installation it uses the
+ * installation-signed endpoints, so the response is linked to that site.
+ * Otherwise it uses the product-key endpoints (`/sdk/v1/product/...`),
+ * signed with the product secret and the nil installation id: the request
+ * names no site and no installation is ever created. Those calls go
+ * through Client::*_exempt(), the only way past a closed ContactGate.
+ *
  * ## Local validation, but the server is still the authority
  *
  * validate() mirrors POST /sdk/v1/surveys' rules so a mistake surfaces
@@ -68,6 +79,12 @@ final class Survey {
 	/** @var RealtimeConfig|null */
 	private $realtime_config;
 
+	/** @var string|null The host plugin's version, sent with an unlinked response. */
+	private $plugin_version = null;
+
+	/** Journal §70 D4 — must match VerifySdkSignature::NIL_INSTALLATION_ID. */
+	const NIL_INSTALLATION_ID = '00000000-0000-0000-0000-000000000000';
+
 	/**
 	 * @param RealtimeConfig|null $realtime_config The shared circuit
 	 *        breaker (13-realtime-config-delivery.md). Optional and
@@ -91,13 +108,34 @@ final class Survey {
 	 *
 	 * @param bool $force Ignore the cache and re-fetch.
 	 * @return array<int, array<string, mixed>> Empty when there is no
-	 *                                          survey, when the site is
-	 *                                          not registered, or when
-	 *                                          the fetch failed — all
-	 *                                          three mean the same thing
-	 *                                          to a caller: no survey to
-	 *                                          show, carry on.
+	 *                                          survey, or when the fetch
+	 *                                          failed with nothing cached —
+	 *                                          both mean the same thing to
+	 *                                          a caller: no survey to show,
+	 *                                          carry on. A site that is not
+	 *                                          registered asks the
+	 *                                          product-key endpoint.
 	 */
+	/**
+	 * Sent with every submission (journal §70 D4) — an unlinked response
+	 * has no installation to read the version from.
+	 *
+	 * @param string|null $version
+	 */
+	public function set_plugin_version( $version ) {
+		$this->plugin_version = null === $version || '' === (string) $version ? null : (string) $version;
+	}
+
+	/**
+	 * Whether this site has a consented installation to link a response
+	 * to — otherwise the product-key endpoints are used (journal §70 D4).
+	 *
+	 * @return bool
+	 */
+	private function is_linked() {
+		return $this->client->credentials()->has_credentials() && $this->client->may_send();
+	}
+
 	public function questions( $force = false ) {
 		if ( ! $force ) {
 			$cached = $this->cached_questions();
@@ -105,14 +143,6 @@ final class Survey {
 			if ( null !== $cached ) {
 				return $cached;
 			}
-		}
-
-		if ( ! $this->client->credentials()->has_credentials() ) {
-			// Nothing to sign with. Not cached as an empty survey: the
-			// site may register moments later, and caching "no survey" for
-			// twelve hours because registration had not finished yet would
-			// silently skip the survey on a site that has one.
-			return array();
 		}
 
 		// The circuit breaker (13-realtime-config-delivery.md, shared
@@ -125,7 +155,9 @@ final class Survey {
 			return $this->stale_cached_questions();
 		}
 
-		$response = $this->client->get( '/sdk/v1/survey-questions' );
+		$response = $this->is_linked()
+			? $this->client->get( '/sdk/v1/survey-questions' )
+			: $this->client->get_exempt( '/sdk/v1/product/survey-questions', array(), array(), Client::MODE_BOOTSTRAP, self::NIL_INSTALLATION_ID );
 
 		if ( ! $response->ok() ) {
 			$this->logger->error(
@@ -363,17 +395,13 @@ final class Survey {
 	 *        sent alongside the answers so the plugin's team can follow up.
 	 *        Omitted from the request when null or when both fields are blank.
 	 * @return Response|null Null when there was nothing to submit (every
-	 *                       answer blank, no questions, not registered) or
+	 *                       answer blank, no questions) or
 	 *                       when the answers did not pass validate().
 	 */
 	public function submit( array $values, ?array $questions = null, ?array $respondent = null ) {
 		$questions = null !== $questions ? $questions : $this->questions();
 
 		if ( array() === $questions ) {
-			return null;
-		}
-
-		if ( ! $this->client->credentials()->has_credentials() ) {
 			return null;
 		}
 
@@ -402,7 +430,13 @@ final class Survey {
 			$payload['respondent'] = $respondent;
 		}
 
-		$response = $this->client->post( '/sdk/v1/surveys', $payload );
+		if ( null !== $this->plugin_version ) {
+			$payload['plugin_version'] = $this->plugin_version;
+		}
+
+		$response = $this->is_linked()
+			? $this->client->post( '/sdk/v1/surveys', $payload )
+			: $this->client->post_exempt( '/sdk/v1/product/surveys', $payload, Client::MODE_BOOTSTRAP, self::NIL_INSTALLATION_ID );
 
 		if ( ! $response->ok() ) {
 			// Logged and dropped. Deactivation is already in flight by the

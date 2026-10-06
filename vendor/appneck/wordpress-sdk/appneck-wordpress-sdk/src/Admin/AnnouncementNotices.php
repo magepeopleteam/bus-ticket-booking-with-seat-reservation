@@ -550,6 +550,12 @@ final class AnnouncementNotices {
 			return;
 		}
 
+		// Journal §70 D1: with the gate closed nothing would be fetched, so
+		// there is no reason to poll admin-ajax every minute either.
+		if ( null !== $this->fast_client && ! $this->fast_client->may_send() ) {
+			return;
+		}
+
 		$cfg = array(
 			'ajaxUrl'         => function_exists( 'admin_url' ) ? admin_url( 'admin-ajax.php' ) : '/wp-admin/admin-ajax.php',
 			'refreshAction'   => $this->refresh_action(),
