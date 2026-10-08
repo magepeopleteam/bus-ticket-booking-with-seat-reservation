@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.7
+Stable tag: 5.9.8
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -533,10 +533,26 @@ Seat number rotation stopped
 **Dates (Fix)**
 * Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
 
+= 5.9.8 =
+
+**Booking Security (Fix)**
+* Fixed a pricing bypass in seat-plan bookings: a booking request carrying a passenger type that is not configured on the route was priced at 0, so paid seats could be checked out for free. Such requests are now refused instead of being priced at 0
+* The checkout total no longer prices an unknown passenger type at 0 either: a cart line holding one is removed with a notice
+* Selected seats are now checked against the bus's seat plan. Seats that do not exist, door, driver, aisle and other non-seat cells, seats on a hidden deck or a disabled cabin, and the same seat selected twice are all refused
+* Cart lines whose seat is no longer on the seat plan (for example after the seat was renamed) are removed at checkout with a notice instead of being sold
+* An empty seat or ticket selection can no longer be added to the cart as a 0-priced line
+* Applies to the lower deck, upper deck and cabin seat plans, in both the WooCommerce and the Standalone checkout
+
 = 5.9.7 =
 
 **Telemetry (Fix)**
 * Updated the bundled Appneck SDK to the latest version.
+
+**Search (Fix)**
+* Fixed "Next Day Dropping" adding one more day for every flagged stop, which showed routes with several after-midnight stops as a day too long
+
+**Page Builders (Fix)**
+* The booking page's scripts and styles now load when the shortcode sits inside a page builder block (such as an Avada Code Block or global element), not only when it is in the post content
 
 = 5.9.6 =
 

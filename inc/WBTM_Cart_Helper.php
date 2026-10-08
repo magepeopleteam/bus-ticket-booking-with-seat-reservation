@@ -196,6 +196,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 
 		public static function get_cart_cabin_seat_info( $post_id, $cabin_config ) {
 			$cabin_seats = [];
+			$seen_seats  = [];
 			if ( isset( $_POST['wbtm_form_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wbtm_form_nonce'] ) ), 'wbtm_form_nonce' ) ) {
 				// Get ticket information for price calculation
 				$bp = isset( $_POST['wbtm_bp_place'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_bp_place'] ) ) : '';
@@ -226,10 +227,23 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 						$selected_seat_types = isset( $_POST[ $deck_source['type_key'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ $deck_source['type_key'] ] ) ) : '';
 						$seat_names = explode( ',', $selected_seats );
 						$seat_types = $selected_seat_types ? explode( ',', $selected_seat_types ) : [];
+						$plan_seats = WBTM_Functions::get_plan_seat_names( $post_id, $is_upper, $cabin_index );
 						foreach ( $seat_names as $seat_index => $seat_name ) {
+							$seat_identifier = WBTM_Functions::cabin_seat_identifier( $cabin_index, $seat_name, $is_upper );
+							// Only seats that exist on this cabin deck's plan, each once.
+							// Refuse the whole selection otherwise (phantom or repeated seat).
+							if ( ! isset( $plan_seats[ $seat_name ] ) || isset( $seen_seats[ $seat_identifier ] ) ) {
+								return [];
+							}
+							$seen_seats[ $seat_identifier ] = true;
 							$seat_type = isset( $seat_types[ $seat_index ] ) ? $seat_types[ $seat_index ] : 0;
 							$base_price = WBTM_Functions::get_seat_price( $post_id, $bp, $dp, $seat_type, false, $price_leg_cart, $seat_name, $cabin_index, $journey_date );
-							if ( $base_price === false || $base_price < 0 ) {
+							// false = the posted ticket type has no fare on this route (unknown
+							// or forged type id). Refuse the whole selection — never price it at 0.
+							if ( $base_price === false ) {
+								return [];
+							}
+							if ( $base_price < 0 ) {
 								$base_price = 0;
 							}
 							$ticket_price = floatval( $base_price ) * floatval( $deck_multiplier );
@@ -239,7 +253,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 								'deck' => $is_upper ? 'upper' : 'lower',
 								'is_upper' => $is_upper,
 								'seat_name' => $seat_name,
-								'seat_identifier' => WBTM_Functions::cabin_seat_identifier( $cabin_index, $seat_name, $is_upper ),
+								'seat_identifier' => $seat_identifier,
 								'seat_type' => $seat_type,
 								'ticket_name' => WBTM_Functions::get_ticket_name( $seat_type, $post_id ),
 								'ticket_price' => $ticket_price,
@@ -273,12 +287,24 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 					$selected_ticket_type = isset( $_POST['wbtm_selected_seat_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_selected_seat_type'] ) ) : '';
 					$selected_ticket_type = $selected_ticket_type ? explode( ',', $selected_ticket_type ) : [ $default_ticket_type ];
 					if ( sizeof( $selected_seat ) > 0 && sizeof( $selected_ticket_type ) > 0 ) {
+						$plan_seats = WBTM_Functions::get_plan_seat_names( $post_id );
+						$seen_seats = [];
 						foreach ( $selected_seat as $key => $seat_name ) {
 							$type = isset( $selected_ticket_type[ $key ] ) ? $selected_ticket_type[ $key ] : $default_ticket_type;
 							if ( $seat_name ) {
+								// Only seats that exist on the lower-deck plan, each once.
+								// Refuse the whole selection otherwise (phantom or repeated seat).
+								if ( ! isset( $plan_seats[ $seat_name ] ) || isset( $seen_seats[ $seat_name ] ) ) {
+									return [];
+								}
+								$seen_seats[ $seat_name ] = true;
 								$seat_price = WBTM_Functions::get_seat_price( $post_id, $start_place, $end_place, $type, false, $price_leg, $seat_name, null, $start_date );
-								// Handle false return value from get_seat_price
-								if ( $seat_price === false || $seat_price < 0 ) {
+								// false = the posted ticket type has no fare on this route (unknown
+								// or forged type id). Refuse the whole selection — never price it at 0.
+								if ( $seat_price === false ) {
+									return [];
+								}
+								if ( $seat_price < 0 ) {
 									$seat_price = 0;
 								}
 								$ticket_info[ $count ]['ticket_name'] = WBTM_Functions::get_ticket_name( $type, $post_id );
@@ -297,12 +323,22 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 					$selected_ticket_type_dd = isset( $_POST['wbtm_selected_seat_dd_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_selected_seat_dd_type'] ) ) : '';
 					$selected_ticket_type_dd = $selected_ticket_type_dd ? explode( ',', $selected_ticket_type_dd ) : [ $default_ticket_type ];
 					if ( sizeof( $selected_seat_dd ) > 0 && sizeof( $selected_ticket_type_dd ) > 0 ) {
+						$plan_seats_dd = WBTM_Functions::get_plan_seat_names( $post_id, true );
+						$seen_seats_dd = [];
 						foreach ( $selected_seat_dd as $key => $seat_name ) {
 							$type = isset( $selected_ticket_type_dd[ $key ] ) ? $selected_ticket_type_dd[ $key ] : $default_ticket_type;
 							if ( $seat_name ) {
+								// Upper deck: same plan check as the lower deck.
+								if ( ! isset( $plan_seats_dd[ $seat_name ] ) || isset( $seen_seats_dd[ $seat_name ] ) ) {
+									return [];
+								}
+								$seen_seats_dd[ $seat_name ] = true;
 								$seat_price = WBTM_Functions::get_seat_price( $post_id, $start_place, $end_place, $type, true, $price_leg, $seat_name, null, $start_date );
-								// Handle false return value from get_seat_price
-								if ( $seat_price === false || $seat_price < 0 ) {
+								// Unknown/forged ticket type: refuse the whole selection (see lower deck).
+								if ( $seat_price === false ) {
+									return [];
+								}
+								if ( $seat_price < 0 ) {
 									$seat_price = 0;
 								}
 								$ticket_info[ $count ]['ticket_name'] = WBTM_Functions::get_ticket_name( $type, $post_id );

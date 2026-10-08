@@ -1893,6 +1893,62 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				return false;
 			}
 			/**
+			 * Bookable seat labels of one seat-plan deck, keyed by label in the form
+			 * the booking form posts them back (trimmed, sanitize_text_field()).
+			 *
+			 * Mirrors the cells templates/layout/seat_plan.php renders as selectable
+			 * seats: rotation keys, empty cells and toolbar items (door, driver,
+			 * aisle, ...) are not seats, and a deck the template does not render
+			 * (upper deck switched off, cabin disabled or without rows/columns)
+			 * has no seats at all.
+			 *
+			 * @param int      $post_id     Bus post ID.
+			 * @param bool     $is_upper    Upper deck.
+			 * @param int|null $cabin_index Cabin index, or null for the single (non-cabin) plan.
+			 * @return array<string,true>
+			 */
+			public static function get_plan_seat_names( $post_id, $is_upper = false, $cabin_index = null ) {
+				if ( $cabin_index === null ) {
+					if ( $is_upper && WBTM_Global_Function::get_post_info( $post_id, 'show_upper_desk' ) !== 'yes' ) {
+						return [];
+					}
+					$meta_key = $is_upper ? 'wbtm_bus_seats_info_dd' : 'wbtm_bus_seats_info';
+				} else {
+					$cabin_config = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_cabin_config', [] );
+					$cabin        = is_array( $cabin_config ) && isset( $cabin_config[ $cabin_index ] ) && is_array( $cabin_config[ $cabin_index ] ) ? $cabin_config[ $cabin_index ] : null;
+					if ( ! $cabin || ( $cabin['enabled'] ?? 'yes' ) !== 'yes' || intval( $cabin['rows'] ?? 0 ) <= 0 || intval( $cabin['cols'] ?? 0 ) <= 0 ) {
+						return [];
+					}
+					if ( $is_upper && ( ( $cabin['upper_enabled'] ?? 'no' ) !== 'yes' || intval( $cabin['upper_cols'] ?? 0 ) <= 0 ) ) {
+						return [];
+					}
+					$meta_key = ( $is_upper ? 'wbtm_cabin_seats_info_dd_' : 'wbtm_cabin_seats_info_' ) . $cabin_index;
+				}
+				$non_seat_keywords = class_exists( 'WBTM_Seat_Configuration' )
+					? WBTM_Seat_Configuration::get_non_seat_keywords()
+					: [ 'door', 'toilet', 'wc', 'driver', 'window', 'food_stall', 'luggage', 'stairs', 'aisle', 'emergency_exit' ];
+				$rows  = WBTM_Global_Function::get_post_info( $post_id, $meta_key, [] );
+				$seats = [];
+				if ( is_array( $rows ) ) {
+					foreach ( $rows as $row ) {
+						if ( ! is_array( $row ) ) {
+							continue;
+						}
+						foreach ( $row as $seat_key => $seat_value ) {
+							if ( strpos( (string) $seat_key, '_rotation' ) !== false || ! is_scalar( $seat_value ) ) {
+								continue;
+							}
+							$label = trim( (string) $seat_value );
+							if ( empty( $label ) || in_array( strtolower( $label ), $non_seat_keywords, true ) ) {
+								continue;
+							}
+							$seats[ sanitize_text_field( $label ) ] = true;
+						}
+					}
+				}
+				return $seats;
+			}
+			/**
 			 * Whether an origin -> destination segment has a fare configured.
 			 *
 			 * get_seat_price() returns boolean false when no price row exists for the
