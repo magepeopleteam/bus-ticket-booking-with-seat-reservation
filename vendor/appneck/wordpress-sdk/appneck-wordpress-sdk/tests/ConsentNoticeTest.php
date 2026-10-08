@@ -6,6 +6,7 @@ use Appneck\Sdk\Admin\ConsentNotice;
 use Appneck\Sdk\Client;
 use Appneck\Sdk\Config;
 use Appneck\Sdk\Consent;
+use Appneck\Sdk\ContactGate;
 use Appneck\Sdk\Http\Response;
 use Appneck\Sdk\MarketingConsent;
 use Appneck\Sdk\Queue\ArrayEventQueue;
@@ -120,7 +121,7 @@ class ConsentNoticeTest extends TestCase {
 		$html = $this->render();
 
 		$this->assertStringContainsString( 'Acme Bookings', $html );
-		$this->assertStringContainsString( 'notice notice-info', $html );
+		$this->assertStringContainsString( 'notice appneck-sdk-optin', $html );
 		$this->assertStringContainsString( 'value="accepted"', $html );
 		$this->assertStringContainsString( 'value="rejected"', $html );
 	}
@@ -134,7 +135,7 @@ class ConsentNoticeTest extends TestCase {
 	public function test_the_prompt_posts_rather_than_linking(): void {
 		$html = $this->render();
 
-		$this->assertStringContainsString( '<form method="post"', $html );
+		$this->assertStringContainsString( 'method="post"', $html );
 		$this->assertStringContainsString( 'admin-post.php', $html );
 		$this->assertStringContainsString( 'name="_wpnonce"', $html );
 	}
@@ -283,34 +284,259 @@ class ConsentNoticeTest extends TestCase {
 	}
 
 	// -----------------------------------------------------------------
-	// Changing the decision later
+	// The prompt's copy and design (journal §70 D2)
 	// -----------------------------------------------------------------
 
-	public function test_the_settings_section_offers_the_opposite_of_the_current_decision(): void {
-		$this->transport->queue( $this->ok() );
-		$this->click( 'accepted' );
+	private function notice_with_marketing( array $options = array() ): ConsentNotice {
+		$marketing = new MarketingConsent( $this->client() );
+		$this->consent->set_marketing_consent( $marketing );
 
-		$html = $this->render_settings();
+		$notice = new ConsentNotice( $this->consent, array( 'product_name' => 'Acme Bookings' ) + $options, $marketing );
+		$notice->set_redirect_handler(
+			function ( $url ) {
+				$this->redirects[] = $url;
+			}
+		);
 
-		$this->assertStringContainsString( 'You are sharing anonymous usage data', $html );
-		$this->assertStringContainsString( 'value="rejected"', $html );
-		$this->assertStringNotContainsString( 'value="accepted"', $html );
-
-		$this->transport->queue( $this->ok() );
-		$this->click( 'rejected' );
-
-		$html = $this->render_settings();
-
-		$this->assertStringContainsString( 'not sharing usage data', $html );
-		$this->assertStringContainsString( 'value="accepted"', $html );
-		$this->assertStringNotContainsString( 'value="rejected"', $html );
+		return $notice;
 	}
 
-	public function test_the_settings_section_works_before_any_decision(): void {
-		$html = $this->render_settings();
+	private function client(): Client {
+		return new Client(
+			new Config( self::API_KEY, self::PRODUCT_SECRET, self::BASE_URL ),
+			new ArrayCredentialStore( self::INSTALL_ID, self::INSTALL_SECRET ),
+			$this->transport
+		);
+	}
 
+	private function as_admin( $email = 'ada@example.test', $name = 'Ada Lovelace' ): void {
+		$GLOBALS['appneck_test_admin']['user'] = (object) array(
+			'ID'           => 7,
+			'user_email'   => $email,
+			'display_name' => $name,
+		);
+	}
+
+	private function render_notice( ConsentNotice $notice ): string {
+		ob_start();
+		$notice->render();
+
+		return (string) ob_get_clean();
+	}
+
+	private function render_notice_settings( ConsentNotice $notice ): string {
+		ob_start();
+		$notice->render_settings_section();
+
+		return (string) ob_get_clean();
+	}
+
+	private function click_on( ConsentNotice $notice, $field, $value ) {
+		$_POST = array(
+			'action'   => $notice->action(),
+			$field     => $value,
+			'_wpnonce' => 'nonce-for-' . $notice->action(),
+		);
+
+		return $notice->handle();
+	}
+
+	private function last_body(): array {
+		return (array) json_decode( (string) $this->transport->last_request()['body'], true );
+	}
+
+	public function test_the_prompt_carries_the_agreed_title_body_and_buttons(): void {
+		$html = $this->render_notice( $this->notice_with_marketing() );
+
+		$this->assertStringContainsString( 'Never miss an important update', $html );
+		$this->assertStringContainsString( 'This helps us make Acme Bookings more compatible with your site', $html );
+		$this->assertStringContainsString( 'Allow &amp; Continue', $html );
+		$this->assertStringContainsString( '>Skip<', $html );
+		$this->assertStringNotContainsString( 'No personal data', $html, 'the old, untrue promise is gone' );
+		$this->assertStringNotContainsString( 'type="checkbox"', $html, 'the separate marketing checkbox is gone' );
+	}
+
+	public function test_whats_shared_is_hidden_for_now(): void {
+		// Commented out in render() at the product owner's request
+		// (2026-10-05). When it is restored, bring back the check that every
+		// shared_items() line and the footnote are rendered.
+		$html = $this->render_notice( $this->notice_with_marketing() );
+
+		$this->assertStringNotContainsString( '<details', $html );
+		$this->assertStringNotContainsString( 'What&#039;s shared?', $html );
+	}
+
+	public function test_the_product_icon_is_used_when_configured(): void {
+		$html = $this->render_notice( $this->notice_with_marketing( array( 'icon_url' => 'https://cdn.example.test/icon.png' ) ) );
+
+		$this->assertStringContainsString( '<img src="https://cdn.example.test/icon.png"', $html );
+	}
+
+	public function test_a_neutral_icon_is_used_without_one(): void {
+		$html = $this->render_notice( $this->notice_with_marketing() );
+
+		$this->assertStringContainsString( 'appneck-sdk-optin__icon', $html );
+		$this->assertStringContainsString( '<svg', $html );
+		$this->assertStringNotContainsString( '<img', $html );
+	}
+
+	public function test_a_premium_build_never_renders_the_prompt_or_the_settings(): void {
+		$notice = new ConsentNotice( $this->consent, array( 'product_name' => 'Acme Pro' ), null, new ContactGate( true, $this->consent ) );
+
+		$this->assertSame( '', $this->render_notice( $notice ) );
+		$this->assertSame( '', $this->render_notice_settings( $notice ) );
+	}
+
+	// -----------------------------------------------------------------
+	// Allow & Continue, and Skip
+	// -----------------------------------------------------------------
+
+	public function test_allow_and_continue_opts_in_with_the_clicking_admins_own_email_and_name(): void {
+		$this->as_admin();
+		$GLOBALS['appneck_test_options']['admin_email'] = 'shared-inbox@example.test';
+		$notice = $this->notice_with_marketing();
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$body = $this->last_body();
+		$this->assertSame( 'accepted', $body['status'] );
+		$this->assertTrue( $body['marketing_opt_in'] );
+		$this->assertSame( 'ada@example.test', $body['marketing_email'], 'the admin who clicked, not admin_email' );
+		$this->assertSame( 'Ada Lovelace', $body['marketing_name'] );
+		$this->assertStringContainsString( 'Never miss an important update', $body['marketing_wording'] );
+		$this->assertStringContainsString( 'This helps us make Acme Bookings', $body['marketing_wording'] );
+		$this->assertSame( 1, $this->transport->count(), 'both decisions in one request' );
+	}
+
+	public function test_skip_declines_both_and_keeps_no_name_or_email(): void {
+		$this->as_admin();
+		$notice = $this->notice_with_marketing();
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'rejected' );
+
+		$this->assertTrue( $this->consent->is_rejected() );
+		$this->assertFalse( $this->consent_marketing_state( $notice ) );
+	}
+
+	public function test_an_admin_without_an_email_is_not_opted_in_to_anything(): void {
+		$this->as_admin( '' );
+		$notice = $this->notice_with_marketing();
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$this->assertTrue( $this->consent->is_accepted() );
+		$this->assertArrayNotHasKey( 'marketing_opt_in', $this->last_body() );
+	}
+
+	public function test_a_reconfirmation_keeps_the_earlier_email_opt_in(): void {
+		$this->as_admin();
+		$this->consent->set_privacy_policy_version( '1.0' );
+		$notice = $this->notice_with_marketing();
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+		$this->assertTrue( $this->consent_marketing_state( $notice ) );
+
+		$this->consent->set_privacy_policy_version( '2.0' );
+		$html = $this->render_notice( $notice );
+
+		$this->assertStringContainsString( 'privacy policy has been updated', $html );
+		$this->assertStringContainsString( 'Keep sharing', $html );
+		$this->assertStringNotContainsString( "What&#039;s shared?", $html );
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$this->assertTrue( $this->consent_marketing_state( $notice ), 'an unrelated re-confirmation does not touch the email opt-in' );
+		$this->assertArrayNotHasKey( 'marketing_opt_in', $this->last_body() );
+	}
+
+	// -----------------------------------------------------------------
+	// The settings section: two independent switches
+	// -----------------------------------------------------------------
+
+	public function test_the_settings_section_shows_both_switches_in_their_current_state(): void {
+		$this->as_admin();
+		$notice = $this->notice_with_marketing();
+
+		$html = $this->render_notice_settings( $notice );
+		$this->assertStringContainsString( 'Share usage data', $html );
+		$this->assertStringContainsString( 'Receive update emails', $html );
+		$this->assertStringContainsString( 'value="usage_on"', $html );
 		$this->assertStringContainsString( 'have not decided', $html );
-		$this->assertStringContainsString( 'value="accepted"', $html );
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$html = $this->render_notice_settings( $notice );
+		$this->assertStringContainsString( 'value="usage_off"', $html );
+		$this->assertStringContainsString( 'value="emails_off"', $html );
+		$this->assertSame( 2, substr_count( $html, 'aria-checked="true"' ) );
+	}
+
+	public function test_the_usage_switch_records_only_a_telemetry_decision(): void {
+		$this->as_admin();
+		$notice = $this->notice_with_marketing();
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$this->transport->queue( $this->ok() );
+		$this->assertSame( 'usage_off', $this->click_on( $notice, ConsentNotice::SETTING_FIELD, 'usage_off' ) );
+
+		$this->assertTrue( $this->consent->is_rejected() );
+		$this->assertTrue( $this->consent_marketing_state( $notice ), 'the email opt-in is a separate decision' );
+		$this->assertSame( 'rejected', $this->last_body()['status'] );
+		$this->assertArrayNotHasKey( 'marketing_opt_in', $this->last_body() );
+	}
+
+	public function test_the_email_switch_records_only_a_marketing_decision(): void {
+		$this->as_admin();
+		$notice = $this->notice_with_marketing();
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'accepted' );
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::SETTING_FIELD, 'emails_off' );
+
+		$body = $this->last_body();
+		$this->assertFalse( $body['marketing_opt_in'] );
+		$this->assertArrayNotHasKey( 'status', $body, 'no telemetry decision is re-sent' );
+		$this->assertTrue( $this->consent->is_accepted() );
+
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::SETTING_FIELD, 'emails_on' );
+
+		$body = $this->last_body();
+		$this->assertTrue( $body['marketing_opt_in'] );
+		$this->assertSame( 'ada@example.test', $body['marketing_email'] );
+		$this->assertStringContainsString( 'Receive update emails', $body['marketing_wording'] );
+	}
+
+	public function test_emails_cannot_be_turned_on_while_usage_data_is_off(): void {
+		$this->as_admin();
+		$notice = $this->notice_with_marketing();
+		$this->transport->queue( $this->ok() );
+		$this->click_on( $notice, ConsentNotice::FIELD, 'rejected' );
+
+		$html = $this->render_notice_settings( $notice );
+		$this->assertStringContainsString( 'Turn on usage data sharing first', $html );
+		$this->assertMatchesRegularExpression( '/value="emails_on"[^>]*disabled/', $html );
+
+		$before = $this->transport->count();
+		$this->assertNull( $this->click_on( $notice, ConsentNotice::SETTING_FIELD, 'emails_on' ) );
+		$this->assertNotNull( $notice->denied );
+		$this->assertFalse( $this->consent_marketing_state( $notice ) );
+		$this->assertSame( $before, $this->transport->count() );
+	}
+
+	public function test_an_unknown_setting_changes_nothing(): void {
+		$notice = $this->notice_with_marketing();
+
+		$this->assertNull( $this->click_on( $notice, ConsentNotice::SETTING_FIELD, 'everything_on' ) );
+		$this->assertTrue( $this->consent->is_pending() );
 	}
 
 	public function test_the_settings_section_says_so_when_the_server_has_not_been_told_yet(): void {
@@ -333,165 +559,9 @@ class ConsentNoticeTest extends TestCase {
 		$this->assertSame( 1, $this->queue->count() );
 	}
 
-	// -----------------------------------------------------------------
-	// The marketing checkbox (Task S) — a second, independent question
-	// -----------------------------------------------------------------
-
-	private function notice_with_marketing(): ConsentNotice {
-		$marketing = new MarketingConsent( $this->client_for_marketing() );
-		$this->consent->set_marketing_consent( $marketing );
-
-		$notice = new ConsentNotice( $this->consent, array( 'product_name' => 'Acme Bookings' ), $marketing );
-		$notice->set_redirect_handler(
-			function ( $url ) {
-				$this->redirects[] = $url;
-			}
-		);
-
-		return $notice;
-	}
-
-	private function client_for_marketing(): Client {
-		return new Client(
-			new Config( self::API_KEY, self::PRODUCT_SECRET, self::BASE_URL ),
-			new ArrayCredentialStore( self::INSTALL_ID, self::INSTALL_SECRET ),
-			$this->transport
-		);
-	}
-
-	/** @param string $status accepted|rejected */
-	private function click_with_marketing( ConsentNotice $notice, $status, $marketing_checked ) {
-		$_POST = array(
-			'action'                          => $notice->action(),
-			ConsentNotice::FIELD               => $status,
-			'_wpnonce'                        => 'nonce-for-' . $notice->action(),
-			ConsentNotice::MARKETING_FIELD     => $marketing_checked ? '1' : '0',
-		);
-
-		return $notice->handle();
-	}
-
-	public function test_the_checkbox_is_rendered_on_a_first_decision_when_admin_email_is_set(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-		$notice = $this->notice_with_marketing();
-
-		ob_start();
-		$notice->render();
-		$html = (string) ob_get_clean();
-
-		$this->assertStringContainsString( 'admin@example.test', $html );
-		$this->assertStringContainsString( ConsentNotice::MARKETING_FIELD, $html );
-		$this->assertStringContainsString( 'type="checkbox"', $html );
-		// The hidden fallback, so an unchecked box still submits "0".
-		$this->assertStringContainsString( 'type="hidden" name="' . ConsentNotice::MARKETING_FIELD . '" value="0"', $html );
-	}
-
-	public function test_the_checkbox_is_not_rendered_without_an_admin_email(): void {
-		// admin_email deliberately left unset.
-		$notice = $this->notice_with_marketing();
-
-		ob_start();
-		$notice->render();
-		$html = (string) ob_get_clean();
-
-		$this->assertStringNotContainsString( ConsentNotice::MARKETING_FIELD, $html );
-	}
-
-	public function test_the_checkbox_is_not_rendered_when_no_marketing_consent_is_wired(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-
-		// $this->notice, built in setUp(), has no MarketingConsent at all —
-		// every existing test in this file already exercises this path.
-		$html = $this->render();
-
-		$this->assertStringNotContainsString( ConsentNotice::MARKETING_FIELD, $html );
-	}
-
-	public function test_checking_the_box_records_opt_in_with_the_admin_email_and_exact_wording(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-		$notice = $this->notice_with_marketing();
-
-		$this->transport->queue( $this->ok() );
-		$this->click_with_marketing( $notice, 'accepted', true );
-
-		$body = json_decode( (string) $this->transport->last_request()['body'], true );
-
-		$this->assertTrue( $body['marketing_opt_in'] );
-		$this->assertSame( 'admin@example.test', $body['marketing_email'] );
-		$this->assertStringContainsString( 'admin@example.test', $body['marketing_wording'] );
-	}
-
-	public function test_leaving_the_box_unchecked_records_an_explicit_decline_not_silence(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-		$notice = $this->notice_with_marketing();
-
-		$this->transport->queue( $this->ok() );
-		$this->click_with_marketing( $notice, 'accepted', false );
-
-		$body = json_decode( (string) $this->transport->last_request()['body'], true );
-
-		$this->assertFalse( $body['marketing_opt_in'] );
-		$this->assertArrayNotHasKey( 'marketing_email', $body );
-	}
-
-	public function test_checking_the_box_and_declining_telemetry_is_a_valid_independent_combination(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-		$notice = $this->notice_with_marketing();
-
-		$this->transport->queue( $this->ok() );
-		$this->click_with_marketing( $notice, 'rejected', true );
-
-		$this->assertTrue( $this->consent->is_rejected() );
-
-		$body = json_decode( (string) $this->transport->last_request()['body'], true );
-		$this->assertSame( 'rejected', $body['status'] );
-		$this->assertTrue( $body['marketing_opt_in'] );
-	}
-
-	public function test_a_reconfirmation_does_not_show_or_process_the_checkbox_again(): void {
-		$GLOBALS['appneck_test_options']['admin_email'] = 'admin@example.test';
-		$this->consent->set_privacy_policy_version( '1.0' );
-		$notice = $this->notice_with_marketing();
-
-		// First-ever decision: opt in.
-		$this->transport->queue( $this->ok() );
-		$this->click_with_marketing( $notice, 'accepted', true );
-
-		$marketing = $this->consent_marketing_state( $notice );
-		$this->assertTrue( $marketing );
-
-		// Privacy policy changes — telemetry consent must be re-confirmed.
-		$this->consent->set_privacy_policy_version( '2.0' );
-
-		ob_start();
-		$notice->render();
-		$html = (string) ob_get_clean();
-
-		// The re-confirmation prompt shows (telemetry question only)...
-		$this->assertStringContainsString( 'privacy policy has been updated', $html );
-		// ...but the marketing checkbox does not reappear.
-		$this->assertStringNotContainsString( ConsentNotice::MARKETING_FIELD, $html );
-
-		// Re-confirming (submitting the form with the box necessarily
-		// unchecked, since it was never shown) must not downgrade the
-		// earlier opt-in to a decline.
-		$this->transport->queue( $this->ok() );
-		$_POST = array(
-			'action'             => $notice->action(),
-			ConsentNotice::FIELD => 'accepted',
-			'_wpnonce'           => 'nonce-for-' . $notice->action(),
-		);
-		$notice->handle();
-
-		$this->assertTrue( $this->consent_marketing_state( $notice ), 'the original opt-in survives an unrelated re-confirmation' );
-	}
-
 	/**
-	 * Reads the MarketingConsent instance wired onto $notice via
-	 * reflection — there is no public getter on ConsentNotice by design
-	 * (it is write-only from the outside, same as $this->consent), so
-	 * this is the test's own window into the state a real host plugin
-	 * would never need to inspect directly.
+	 * Reads the MarketingConsent wired onto $notice via reflection — there
+	 * is no public getter on ConsentNotice by design.
 	 */
 	private function consent_marketing_state( ConsentNotice $notice ): bool {
 		$property = new \ReflectionProperty( ConsentNotice::class, 'marketing_consent' );

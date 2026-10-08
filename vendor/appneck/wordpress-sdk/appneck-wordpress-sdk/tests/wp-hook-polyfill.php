@@ -18,7 +18,17 @@ if ( ! function_exists( 'add_action' ) ) {
 		// WordPress keys callbacks by a unique id, so an identical
 		// function name at the same priority replaces rather than
 		// appends. A plain string callback is its own unique id.
-		$id = is_string( $callback ) ? $callback : spl_object_hash( (object) array( $callback ) );
+		// Keyed on the real object (and method), never on a temporary
+		// wrapper: PHP reuses a freed object's hash, so hashing a fresh
+		// `(object) array( $callback )` gave unrelated callbacks the same
+		// id and each silently replaced the last.
+		if ( is_string( $callback ) ) {
+			$id = $callback;
+		} elseif ( is_array( $callback ) ) {
+			$id = ( is_object( $callback[0] ) ? spl_object_hash( $callback[0] ) : (string) $callback[0] ) . '::' . $callback[1];
+		} else {
+			$id = spl_object_hash( $callback );
+		}
 
 		$GLOBALS['appneck_test_hooks'][ $hook ][ $priority ][ $id ] = $callback;
 

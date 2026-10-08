@@ -446,7 +446,12 @@
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
 								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index, $journey_date);
-								if ($base === false || $base < 0) {
+								if ($base === false) {
+									// Unknown ticket type: get_cart_cabin_seat_info() refuses the
+									// selection, so this seat is never in the cart item — don't price it.
+									continue;
+								}
+								if ($base < 0) {
 									$base = 0;
 								}
 								$total_price += floatval($base) * floatval($deck_multiplier);
@@ -493,17 +498,35 @@
 							}
 						}
 						$has_cabin_seats = isset($value['wbtm_cabin_seats']) && is_array($value['wbtm_cabin_seats']) && !empty($value['wbtm_cabin_seats']);
+						// Set when a seat's ticket type has no fare on this route (forged
+						// type id, or the type was removed after the seat was added), or the
+						// seat is not on the bus's seat plan (phantom seat, or plan edited since).
+						$has_invalid_seat = false;
 						if (isset($value['wbtm_booking_mode']) && $value['wbtm_booking_mode'] === 'full_bus') {
 							// Full-bus price is already re-derived from the route price row above.
 						} elseif ($has_cabin_seats) {
+							$plan_seats = [];
 							$cabin_config  = isset($value['wbtm_cabin_config']) && is_array($value['wbtm_cabin_config']) ? $value['wbtm_cabin_config'] : [];
 							foreach ($value['wbtm_cabin_seats'] as $idx => $cabin_seat) {
 								$seat_type = isset($cabin_seat['seat_type']) ? $cabin_seat['seat_type'] : 0;
 								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
 								$seat_label = isset($cabin_seat['seat_name']) ? $cabin_seat['seat_name'] : '';
 								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
+								$cabin_is_upper = !empty($cabin_seat['is_upper']) || (isset($cabin_seat['deck']) && $cabin_seat['deck'] === 'upper');
+								$plan_key = $cabin_index . ($cabin_is_upper ? '_dd' : '');
+								if (!isset($plan_seats[$plan_key])) {
+									$plan_seats[$plan_key] = WBTM_Functions::get_plan_seat_names($post_id, $cabin_is_upper, $cabin_index);
+								}
+								if (!isset($plan_seats[$plan_key][$seat_label])) {
+									$has_invalid_seat = true;
+									break;
+								}
 								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index, $journey_date);
-								if ($unit === false || $unit < 0) {
+								if ($unit === false) {
+									$has_invalid_seat = true;
+									break;
+								}
+								if ($unit < 0) {
 									$unit = 0;
 								}
 								$canonical_price = floatval($unit) * floatval($price_multiplier);
@@ -513,13 +536,29 @@
 						} else {
 							$legacy_seats = isset($value['wbtm_seats']) && is_array($value['wbtm_seats']) ? $value['wbtm_seats'] : [];
 							if (!empty($legacy_seats)) {
+								// Seat-plan buses: every named seat must exist on its deck's plan (same
+								// condition as WBTM_Cart_Helper::get_cart_ticket_info()'s seat-plan branch;
+								// quantity-based rows carry no seat label and are not checked).
+								$check_plan = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf') === 'wbtm_seat_plan'
+									&& !empty(WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []))
+									&& WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0) > 0
+									&& WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_cols', 0) > 0;
+								$plan_seats = $check_plan ? [ WBTM_Functions::get_plan_seat_names($post_id), WBTM_Functions::get_plan_seat_names($post_id, true) ] : [];
 								foreach ($legacy_seats as $idx => $seat_info) {
 									$seat_type = isset($seat_info['ticket_type']) ? $seat_info['ticket_type'] : 0;
 									$seat_label = isset($seat_info['seat_name']) ? $seat_info['seat_name'] : '';
 									$is_dd = !empty($seat_info['dd']);
 									$qty = isset($seat_info['ticket_qty']) ? max(1, intval($seat_info['ticket_qty'])) : 1;
+									if ($check_plan && $seat_label !== '' && !isset($plan_seats[$is_dd ? 1 : 0][$seat_label])) {
+										$has_invalid_seat = true;
+										break;
+									}
 									$canonical_unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $is_dd, $price_leg, $seat_label, null, $journey_date);
-									if ($canonical_unit === false || $canonical_unit < 0) {
+									if ($canonical_unit === false) {
+										$has_invalid_seat = true;
+										break;
+									}
+									if ($canonical_unit < 0) {
 										$canonical_unit = 0;
 									}
 									$canonical_unit = floatval($canonical_unit);
@@ -527,6 +566,16 @@
 									$cart_object->cart_contents[$key]['wbtm_seats'][$idx]['ticket_price'] = $canonical_unit;
 								}
 							}
+						}
+						if ($has_invalid_seat) {
+							// Fail closed: drop the line instead of selling the seat at 0 or
+							// selling a seat that does not exist.
+							$cart_object->remove_cart_item($key);
+							$unpriced_notice = esc_html__('A ticket in your cart is no longer available for this trip and was removed. Please select your seats again.', 'bus-ticket-booking-with-seat-reservation');
+							if (function_exists('wc_add_notice') && !wc_has_notice($unpriced_notice, 'error')) {
+								wc_add_notice($unpriced_notice, 'error');
+							}
+							continue;
 						}
 						// Passenger/seat count for per_passenger extra-service pricing.
 						// Prefer the cached qty; recount defensively if it is missing.

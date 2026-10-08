@@ -42,6 +42,9 @@ final class Client {
 	const MODE_BOOTSTRAP    = 'bootstrap';
 	const MODE_INSTALLATION = 'installation';
 
+	/** The error a request refused by the ContactGate carries (journal §70 D1). */
+	const BLOCKED_MESSAGE = 'Not sent: this site has not agreed to share data with Appneck.';
+
 	/** @var Config */
 	private $config;
 
@@ -56,6 +59,9 @@ final class Client {
 
 	/** @var Response|null The most recent response, for rate-limit inspection. */
 	private $last_response = null;
+
+	/** @var ContactGate|null Journal §70 D1; null means ungated (a hand-built Client). */
+	private $gate = null;
 
 	public function __construct(
 		Config $config,
@@ -84,6 +90,31 @@ final class Client {
 	 *
 	 * @return Response|null
 	 */
+	/**
+	 * Journal §70 D1: every Client the SDK builds shares one ContactGate.
+	 * While it is closed, nothing reaches the transport — see send().
+	 */
+	public function set_gate( ?ContactGate $gate ) {
+		$this->gate = $gate;
+	}
+
+	/** @return ContactGate|null */
+	public function gate() {
+		return $this->gate;
+	}
+
+	/**
+	 * Whether an ordinary (non-exempt) request would be sent right now.
+	 * Callers check this first so a closed gate never looks like a failure
+	 * (no backoff, no circuit breaker, no error log). A Client with no gate
+	 * — one constructed by hand, outside Sdk::bootstrap() — always may.
+	 *
+	 * @return bool
+	 */
+	public function may_send() {
+		return null === $this->gate || $this->gate->may_contact();
+	}
+
 	public function last_response() {
 		return $this->last_response;
 	}
@@ -123,11 +154,45 @@ final class Client {
 	}
 
 	/**
+	 * A POST that goes out even while the gate is closed. Journal §70 D1
+	 * allows exactly two callers, both started by a person's own click:
+	 * the uninstall survey (Survey), and a withdrawal reaching the server
+	 * (Consent::sync()). Anything else must use post().
+	 *
+	 * @param array<mixed> $payload
+	 * @return Response
+	 */
+	public function post_exempt( $path, array $payload = array(), $mode = self::MODE_INSTALLATION, $installation_id = null ) {
+		return $this->request( 'POST', $path, $payload, $mode, $installation_id, array(), array(), true );
+	}
+
+	/**
+	 * The GET counterpart of post_exempt(), for the uninstall survey's
+	 * questions — fetched when Deactivate is clicked.
+	 *
+	 * @param array<string, scalar> $query
+	 * @param array<string, string> $headers
+	 * @return Response
+	 */
+	public function get_exempt( $path, array $query = array(), array $headers = array(), $mode = self::MODE_INSTALLATION, $installation_id = null ) {
+		return $this->request( 'GET', $path, null, $mode, $installation_id, $query, $headers, true );
+	}
+
+	/**
 	 * @param array<mixed>|null    $payload
 	 * @param array<mixed>         $query
 	 * @param array<string,string> $extra_headers
 	 */
-	private function request( $method, $path, $payload, $mode, $installation_id = null, array $query = array(), array $extra_headers = array() ) {
+	private function request( $method, $path, $payload, $mode, $installation_id = null, array $query = array(), array $extra_headers = array(), $exempt = false ) {
+		// Journal §70 D1: the gate. Not logged — a closed gate is the site
+		// owner's choice, not a failure, and an error log entry per refused
+		// call would read as one.
+		if ( ! $exempt && ! $this->may_send() ) {
+			$this->last_response = Response::from_transport_error( self::BLOCKED_MESSAGE );
+
+			return $this->last_response;
+		}
+
 		// One try/catch around everything. Not defensive clutter: this
 		// is the boundary between "an SDK problem" and "a fatal error on
 		// a stranger's website", and it has to hold even for bugs in

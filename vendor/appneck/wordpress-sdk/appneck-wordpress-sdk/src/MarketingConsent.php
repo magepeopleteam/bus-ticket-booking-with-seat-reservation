@@ -60,6 +60,35 @@ final class MarketingConsent {
 	}
 
 	/** @return string|null Only ever set when is_opted_in() is true. */
+	/**
+	 * Display name of the admin who opted in (journal §70 D2). Null for a
+	 * decline, and for decisions stored before 0.4.0.
+	 *
+	 * @return string|null
+	 */
+	public function name() {
+		$stored = $this->read();
+
+		return isset( $stored['name'] ) && '' !== $stored['name'] ? (string) $stored['name'] : null;
+	}
+
+	/**
+	 * Whether the server has an opt-in on record — so turning update emails
+	 * off must reach it even while the gate is closed (journal §70 D1).
+	 * Pre-0.4.0 rows carry no flag: a synced opt-in is exactly that.
+	 *
+	 * @return bool
+	 */
+	public function server_opted_in() {
+		$stored = $this->read();
+
+		if ( isset( $stored['server_opted_in'] ) ) {
+			return (bool) $stored['server_opted_in'];
+		}
+
+		return $this->is_opted_in() && ! empty( $stored['synced'] );
+	}
+
 	public function email() {
 		$stored = $this->read();
 
@@ -85,19 +114,25 @@ final class MarketingConsent {
 	 * @param string      $wording  The exact text shown alongside the checkbox.
 	 * @param string|null $email    Only meaningful when opting in; always stored as null when declining.
 	 */
-	public function decide( $opted_in, $wording, $email = null ) {
+	public function decide( $opted_in, $wording, $email = null, $name = null ) {
+		$server_opted_in = $this->server_opted_in();
+
 		$this->write(
 			array(
-				'status'  => $opted_in ? self::STATUS_OPTED_IN : self::STATUS_DECLINED,
-				'wording' => (string) $wording,
-				'email'   => $opted_in && null !== $email ? (string) $email : null,
-				'synced'  => false,
+				'status'          => $opted_in ? self::STATUS_OPTED_IN : self::STATUS_DECLINED,
+				'wording'         => (string) $wording,
+				'email'           => $opted_in && null !== $email ? (string) $email : null,
+				// Journal §70 D2: the clicking admin's name, kept only for an
+				// opt-in — same data minimisation as the email.
+				'name'            => $opted_in && null !== $name && '' !== (string) $name ? (string) $name : null,
+				'synced'          => false,
+				'server_opted_in' => $server_opted_in,
 			)
 		);
 	}
 
 	/** Called by Consent::sync() once the server has accepted this decision. */
-	public function mark_synced() {
+	public function mark_synced( $sent = true ) {
 		$stored = $this->read();
 
 		if ( empty( $stored ) ) {
@@ -105,6 +140,13 @@ final class MarketingConsent {
 		}
 
 		$stored['synced'] = true;
+
+		// Settled locally without a request (journal §70 D1: a decline the
+		// server never heard an opt-in for) leaves the server's view as it was.
+		if ( $sent ) {
+			$stored['server_opted_in'] = isset( $stored['status'] ) && self::STATUS_OPTED_IN === $stored['status'];
+		}
+
 		$this->write( $stored );
 	}
 

@@ -208,7 +208,9 @@ final class RealtimeConfig {
 	 * @return array{config_version: int|null, has_urgent: bool}
 	 */
 	public function poll( Client $client ) {
-		if ( $this->is_open() ) {
+		// Journal §70 D1: a closed gate is not a failure — answer from the
+		// cache without touching the breaker or the network.
+		if ( $this->is_open() || ! $client->may_send() ) {
 			return $this->cached_poll();
 		}
 

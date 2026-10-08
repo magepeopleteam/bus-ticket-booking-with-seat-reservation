@@ -230,6 +230,13 @@ if ( ! class_exists( 'WBTM_Booking_Controller' ) ) {
 					if ( is_wp_error( $valid ) ) {
 						wp_send_json_error( $valid->get_error_message(), 400 );
 					}
+					// The builders return nothing when no seat/ticket was selected or a
+					// posted ticket type has no fare on this route (forged type id). Never
+					// let such a request reach the cart as a $0 line.
+					$priced_selection = ! empty( $cabin_seat_infos ) ? $cabin_seat_infos : ( isset( $ticket_infos ) && is_array( $ticket_infos ) ? $ticket_infos : [] );
+					if ( empty( $priced_selection ) ) {
+						wp_send_json_error( __( 'Your seat or ticket selection is not available for this trip. Please reload the page and select again.', 'bus-ticket-booking-with-seat-reservation' ), 400 );
+					}
 					// Seat-hold enforcement: seats held by another visitor are rejected
 					// here under the trip lock; the caller's own holds pass through.
 					if ( class_exists( 'WBTM_Seat_Hold' ) && WBTM_Seat_Hold::is_enabled() ) {

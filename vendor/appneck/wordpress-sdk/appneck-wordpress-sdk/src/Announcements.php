@@ -186,7 +186,9 @@ final class Announcements {
 	 *                                               was made or it failed.
 	 */
 	public function refresh() {
-		if ( ! $this->client->credentials()->has_credentials() ) {
+		// Journal §70 D1 (superseding §9.3b's "no consent gate" for free
+		// plugins): fetching announcements is a contact like any other.
+		if ( ! $this->client->credentials()->has_credentials() || ! $this->client->may_send() ) {
 			return null;
 		}
 

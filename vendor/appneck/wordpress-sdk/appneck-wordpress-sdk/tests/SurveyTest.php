@@ -197,18 +197,42 @@ class SurveyTest extends TestCase {
 	}
 
 	/**
-	 * Registration is asynchronous, so the plugins screen can be reached
-	 * before it finishes. That must not be remembered as "no survey".
+	 * Journal §70 D4: a site with no installation — a free plugin whose
+	 * owner never consented — still gets its survey, from the product-key
+	 * endpoint, signed with the product secret and the nil installation id,
+	 * naming no site. (Before §70 it asked for nothing.)
 	 */
-	public function test_an_unregistered_site_asks_for_nothing_and_caches_nothing(): void {
+	public function test_an_unregistered_site_asks_the_product_key_endpoint(): void {
 		$survey = $this->survey( false );
-
-		$this->assertSame( array(), $survey->questions() );
-		$this->assertSame( 0, $this->transport->count() );
-
-		$registered = $this->survey();
 		$this->queue_questions();
-		$this->assertCount( 6, $registered->questions() );
+
+		$this->assertCount( 6, $survey->questions() );
+
+		$request = $this->transport->last_request();
+		$this->assertStringEndsWith( '/sdk/v1/product/survey-questions', $request['url'] );
+		$this->assertSame( Survey::NIL_INSTALLATION_ID, $request['headers']['X-Installation-Id'] );
+		$this->assertSame(
+			\Appneck\Sdk\Signer::sign( 'GET', '/sdk/v1/product/survey-questions', Survey::NIL_INSTALLATION_ID, $request['headers']['X-Timestamp'], '', self::PRODUCT_SECRET ),
+			$request['headers']['X-Signature']
+		);
+		$this->assertNull( $request['body'], 'no domain, no environment — nothing but the signed product key' );
+	}
+
+	public function test_an_unregistered_site_submits_an_unlinked_response_with_its_plugin_version(): void {
+		$survey = $this->survey( false );
+		$survey->set_plugin_version( '1.4.2' );
+		$this->queue_questions();
+		$questions = $survey->questions();
+
+		$this->transport->queue( Response::from_http( 201, array(), json_encode( array( 'installation_id' => null ) ) ) );
+		$survey->submit( array( self::RADIO_ID => 'Too complicated' ), $questions, array( 'name' => 'Ada', 'email' => 'ada@example.test' ) );
+
+		$request = $this->transport->last_request();
+		$body    = json_decode( (string) $request['body'], true );
+		$this->assertStringEndsWith( '/sdk/v1/product/surveys', $request['url'] );
+		$this->assertSame( Survey::NIL_INSTALLATION_ID, $request['headers']['X-Installation-Id'] );
+		$this->assertSame( '1.4.2', $body['plugin_version'] );
+		$this->assertSame( 'ada@example.test', $body['respondent']['email'] );
 	}
 
 	public function test_a_malformed_question_is_dropped_rather_than_rendered_blank(): void {

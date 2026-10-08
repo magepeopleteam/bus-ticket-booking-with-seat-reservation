@@ -144,6 +144,31 @@ final class Plugin {
 	}
 
 	/**
+	 * Journal §70 D1: whether this plugin may contact Appneck right now —
+	 * always for a premium build, and for a free build only once the site
+	 * owner has accepted. Every SDK request already obeys this; read it if
+	 * your own code wants to know.
+	 *
+	 * @return bool
+	 */
+	public function may_contact_appneck() {
+		$gate = $this->client->gate();
+
+		return null === $gate || $gate->may_contact();
+	}
+
+	/**
+	 * Whether this build was bootstrapped with `'is_premium' => true`.
+	 *
+	 * @return bool
+	 */
+	public function is_premium() {
+		$gate = $this->client->gate();
+
+		return null !== $gate && $gate->is_premium();
+	}
+
+	/**
 	 * The site owner's telemetry decision. Read it to gate your own
 	 * optional features, or set the policy version:
 	 *

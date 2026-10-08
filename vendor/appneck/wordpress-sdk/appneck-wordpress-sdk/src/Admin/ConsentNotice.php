@@ -3,62 +3,90 @@
 namespace Appneck\Sdk\Admin;
 
 use Appneck\Sdk\Consent;
+use Appneck\Sdk\ContactGate;
 use Appneck\Sdk\MarketingConsent;
 
 /**
- * The site-owner-facing consent prompt: an admin notice asking the
- * question, and a reusable settings section for changing the answer later.
+ * The site-owner-facing opt-in (journal §70 D2): an admin notice asking
+ * the question, and a settings section for changing either answer later.
+ *
+ * ## One question, two consents
+ *
+ * "Allow & Continue" is telemetry consent (`accepted`) AND the update-email
+ * opt-in, recorded together in one /sdk/v1/consent call. "Skip" refuses
+ * both and sends nothing at all. The settings section then splits them into
+ * two independent switches — "Share usage data" and "Receive update emails"
+ * — each of which records its own consent event, so the bundled opt-in can
+ * be withdrawn one half at a time.
+ *
+ * The "What's shared?" list is the contract with the site owner, and
+ * SHARED_FIELDS maps every line of it to the payload keys that line
+ * covers. A test compares that map against what registration, telemetry
+ * and consent actually send, so the list cannot drift from the code.
+ *
+ * ## Free plugins only
+ *
+ * A premium build (ContactGate::is_premium()) renders neither the notice
+ * nor the settings section: it shows no prompt (journal §70 D5).
  *
  * ## Why an admin notice, and not a settings page of our own
  *
- * This SDK has no admin surface at all, so there was a real choice here.
- * A dedicated page was rejected: an embedded library must not add a
- * top-level menu item to somebody else's plugin — the site owner would
- * see an "Appneck" menu they never installed, and two plugins bundling
- * this SDK would either fight over the menu or add two of them. An admin
- * notice is the WordPress-idiomatic way for a plugin to ask its owner a
- * question, it appears wherever they already are, and it costs the host
- * plugin nothing.
+ * An embedded library must not add a top-level menu item to somebody
+ * else's plugin — the site owner would see an "Appneck" menu they never
+ * installed, and two plugins bundling this SDK would add two. An admin
+ * notice is the WordPress-idiomatic way to ask the owner a question.
  *
  * The notice is NOT dismissible, and shows until the question is answered.
- * A dismiss button on a consent prompt is a third answer that means
- * neither yes nor no, and the state it leaves behind (`pending`) is one
- * where the SDK keeps buffering — so "dismiss" would read as a way to
- * make the question go away while collection quietly continued. Accept
- * and Reject are the only exits; either one hides the notice forever.
+ * A dismiss button is a third answer meaning neither yes nor no. Allow and
+ * Skip are the only exits; either one hides the notice for good.
  *
  * ## Changing the decision later
  *
  * render_settings_section() is a fragment the host plugin echoes inside
- * its OWN settings page, which is where a site owner looks for a setting.
- * That keeps the "change your mind at any time" requirement satisfied
- * without this SDK inventing a page to put it on:
+ * its OWN settings page, which is where a site owner looks for a setting:
  *
  *     $sdk->consent_notice()->render_settings_section();
  *
- * ## Both surfaces post, and both are per-product
+ * ## Everything posts, and everything is per-product
  *
- * The buttons are form submits to admin-post.php, not links: a GET link
+ * Every control is a form submit to admin-post.php, never a link: a GET
  * that changes a stored decision is triggerable by a prefetching browser
- * or an <img> tag on another site, and nonces are not meant to be the
- * only thing standing between the two. The action name carries the
- * product key hash because several plugins on one site may each bundle
- * this SDK, and a shared `admin_post_appneck_sdk_consent` action would
- * mean one plugin's Accept click also answered for every other.
+ * or an <img> on another site. The action name carries the product key
+ * hash because several plugins on one site may each bundle this SDK, and a
+ * shared action would mean one plugin's click answered for every other.
  */
 final class ConsentNotice {
 
 	const ACTION_PREFIX = 'appneck_sdk_consent_';
 
+	/** The prompt's buttons: `accepted` (Allow & Continue) or `rejected` (Skip). */
 	const FIELD = 'appneck_sdk_consent_decision';
 
+	/** The settings switches: usage_on, usage_off, emails_on, emails_off. */
+	const SETTING_FIELD = 'appneck_sdk_consent_setting';
+
+	const TITLE = 'Never miss an important update';
+
 	/**
-	 * Checked-or-not checkbox field. Rendered with a hidden "0" fallback
-	 * of the same name immediately before it, since an unchecked HTML
-	 * checkbox submits nothing at all — without the fallback, "declined"
-	 * and "never touched" would be indistinguishable in $_POST.
+	 * Every line of the "What's shared?" list, and the request payload keys
+	 * it discloses (journal §70 D2). `%s` is the plugin's name. Keys are
+	 * dotted for nested fields (`environment.plugins` is the heartbeat's
+	 * plugin inventory). Pinned against the real payloads by
+	 * DisclosureTest — add a line here before sending anything new.
+	 *
+	 * @var array<string, array<int, string>>
 	 */
-	const MARKETING_FIELD = 'appneck_sdk_marketing_opt_in';
+	const SHARED_FIELDS = array(
+		'Your name and email (for update emails only)'       => array( 'marketing_name', 'marketing_email' ),
+		'Site URL'                                           => array( 'site_domain' ),
+		'WordPress, PHP, WooCommerce and plugin versions'    => array( 'plugin_version', 'php_version', 'wordpress_version', 'woocommerce_version', 'sdk_version', 'versions' ),
+		'Installed plugins and active theme'                 => array( 'environment.plugins', 'environment.theme' ),
+		'Locale, timezone and country'                       => array( 'locale', 'timezone', 'country' ),
+		'Server software and whether the site is a multisite' => array( 'server_type', 'is_multisite' ),
+		'Which features of %s you use, and errors it hits'   => array( 'custom_event', 'error_report' ),
+	);
+
+	const SHARED_FOOTNOTE = 'Nothing is sent if you skip. You can change this anytime in Settings.';
 
 	/** @var Consent */
 	private $consent;
@@ -66,14 +94,23 @@ final class ConsentNotice {
 	/** @var MarketingConsent|null */
 	private $marketing_consent;
 
+	/** @var ContactGate|null */
+	private $gate;
+
 	/** @var string|null */
 	private $product_name = null;
 
 	/** @var string|null */
 	private $privacy_policy_url = null;
 
+	/** @var string|null */
+	private $icon_url = null;
+
 	/** @var callable|null */
 	private $redirect_handler = null;
+
+	/** @var bool Styles are printed once per page, however many surfaces render. */
+	private static $styles_printed = false;
 
 	/**
 	 * The last refusal reason, recorded only when WordPress's wp_die() is
@@ -85,15 +122,16 @@ final class ConsentNotice {
 	public $denied = null;
 
 	/**
-	 * @param array<string, string> $options           product_name, privacy_policy_url.
-	 * @param MarketingConsent|null $marketing_consent Optional so an existing caller that only
-	 *                                                  constructs `Consent` keeps working — omitting it
-	 *                                                  simply means no marketing checkbox is ever
-	 *                                                  rendered or processed on this notice.
+	 * @param array<string, string> $options           product_name, privacy_policy_url, icon_url.
+	 * @param MarketingConsent|null $marketing_consent The update-email opt-in. Without it, Allow
+	 *                                                  records telemetry consent only and the
+	 *                                                  settings section shows one switch.
+	 * @param ContactGate|null      $gate              Premium builds render nothing.
 	 */
-	public function __construct( Consent $consent, array $options = array(), ?MarketingConsent $marketing_consent = null ) {
+	public function __construct( Consent $consent, array $options = array(), ?MarketingConsent $marketing_consent = null, ?ContactGate $gate = null ) {
 		$this->consent           = $consent;
 		$this->marketing_consent = $marketing_consent;
+		$this->gate              = $gate;
 
 		if ( isset( $options['product_name'] ) ) {
 			$this->product_name = (string) $options['product_name'];
@@ -101,6 +139,10 @@ final class ConsentNotice {
 
 		if ( isset( $options['privacy_policy_url'] ) ) {
 			$this->privacy_policy_url = (string) $options['privacy_policy_url'];
+		}
+
+		if ( isset( $options['icon_url'] ) ) {
+			$this->icon_url = (string) $options['icon_url'];
 		}
 	}
 
@@ -114,6 +156,13 @@ final class ConsentNotice {
 	/** @param string $url Linked from the prompt when set. */
 	public function set_privacy_policy_url( $url ) {
 		$this->privacy_policy_url = (string) $url;
+
+		return $this;
+	}
+
+	/** @param string $url The product icon shown in the prompt's circle. */
+	public function set_icon_url( $url ) {
+		$this->icon_url = (string) $url;
 
 		return $this;
 	}
@@ -138,18 +187,67 @@ final class ConsentNotice {
 		add_action( 'admin_post_' . $this->action(), array( $this, 'handle' ) );
 	}
 
-	/** The per-product admin-post action this instance answers on. */
+	/** The admin-post.php action name, unique to this product. */
 	public function action() {
 		return self::ACTION_PREFIX . $this->consent->key();
 	}
 
 	// -----------------------------------------------------------------
-	// Rendering
+	// Wording
+	// -----------------------------------------------------------------
+
+	/** The prompt's body text, with the plugin's name in it. */
+	public function body_text() {
+		return 'Opt in to get email notifications for security & feature updates, educational content, '
+			. 'and occasional offers, and to share some basic WordPress environment info. This helps us make '
+			. $this->product_name() . ' more compatible with your site and better at doing what you need it to.';
+	}
+
+	/**
+	 * The "What's shared?" lines, in display order.
+	 *
+	 * @return array<int, string>
+	 */
+	public function shared_items() {
+		$items = array();
+
+		foreach ( array_keys( self::SHARED_FIELDS ) as $line ) {
+			$items[] = sprintf( $line, $this->product_name() );
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Stored as the marketing consent's exact wording: the full title and
+	 * body the owner saw when they clicked Allow & Continue.
+	 */
+	public function prompt_wording() {
+		return self::TITLE . "\n\n" . $this->body_text();
+	}
+
+	/** The settings switch's wording, stored when the owner turns it on there. */
+	private function settings_email_wording( $email ) {
+		return sprintf(
+			'Receive update emails: email notifications for security & feature updates, educational content, '
+			. 'and occasional offers about %s, sent to %s. You can turn this off at any time.',
+			$this->product_name(),
+			$email
+		);
+	}
+
+	private function reconfirm_text() {
+		return 'Our privacy policy has been updated since you agreed to share usage data. '
+			. 'Please confirm whether you are still happy to share it.';
+	}
+
+	// -----------------------------------------------------------------
+	// The prompt
 	// -----------------------------------------------------------------
 
 	/** The `admin_notices` callback. Prints nothing when already answered. */
 	public function render() {
-		if ( ! $this->can_render() ) {
+		if ( ! $this->can_render() || $this->is_premium() ) {
 			return;
 		}
 
@@ -159,171 +257,201 @@ final class ConsentNotice {
 
 		$reconfirming = ! $this->consent->is_pending();
 
-		echo '<div class="notice notice-info">';
-		echo '<p><strong>' . esc_html( $this->product_name() ) . '</strong></p>';
-		echo '<p>' . esc_html( $this->prompt_text( $reconfirming ) ) . '</p>';
+		$this->print_styles();
+
+		// `notice` so WordPress places it with the other admin notices; the
+		// card inside carries all of the visual design.
+		echo '<div class="notice appneck-sdk-optin">';
+		echo '<div class="appneck-sdk-optin__card" role="region" aria-label="' . esc_attr( $this->product_name() ) . '">';
+		echo '<div class="appneck-sdk-optin__band" aria-hidden="true"></div>';
+		echo '<div class="appneck-sdk-optin__icon" aria-hidden="true">' . $this->icon_html() . '</div>';
+		echo '<div class="appneck-sdk-optin__content">';
+
+		if ( $reconfirming ) {
+			echo '<h2 class="appneck-sdk-optin__title">' . esc_html( $this->product_name() ) . '</h2>';
+			echo '<p class="appneck-sdk-optin__body">' . esc_html( $this->reconfirm_text() ) . '</p>';
+		} else {
+			echo '<h2 class="appneck-sdk-optin__title">' . esc_html( self::TITLE ) . '</h2>';
+			echo '<p class="appneck-sdk-optin__body">' . esc_html( $this->body_text() ) . '</p>';
+			// Hidden for now at the product owner's request (2026-10-05). Restore
+			// by uncommenting; SHARED_FIELDS and shared_items() are still pinned
+			// to the real payloads by ContactGateTest, so the list stays accurate.
+			// $this->render_shared_details();
+		}
 
 		if ( null !== $this->privacy_policy_url && '' !== $this->privacy_policy_url ) {
-			echo '<p><a href="' . esc_url( $this->privacy_policy_url ) . '" target="_blank" rel="noopener noreferrer">'
+			echo '<p class="appneck-sdk-optin__policy"><a href="' . esc_url( $this->privacy_policy_url ) . '" target="_blank" rel="noopener noreferrer">'
 				. esc_html( 'Read the privacy policy' ) . '</a></p>';
 		}
 
-		$this->render_form(
-			array(
-				Consent::STATUS_ACCEPTED => 'Allow usage data',
-				Consent::STATUS_REJECTED => 'No thanks',
-			),
-			// Only on a FIRST-EVER decision, never on a re-confirmation.
-			// A re-confirmation exists solely because the privacy policy
-			// version changed (needs_decision()) — it is not the moment to
-			// re-ask a question the owner already answered. Showing the
-			// checkbox unchecked here and processing it in handle() would
-			// silently downgrade an existing marketing opt-in to declined
-			// the instant someone re-confirms telemetry without re-ticking
-			// a box they were never told to look at again.
-			! $reconfirming
-		);
+		echo '</div>';
 
+		echo '<form class="appneck-sdk-optin__actions" method="post" action="' . esc_url( $this->post_url() ) . '">';
+		$this->render_form_fields();
+
+		if ( $reconfirming ) {
+			$this->render_button( self::FIELD, Consent::STATUS_ACCEPTED, 'Keep sharing', 'primary' );
+			$this->render_button( self::FIELD, Consent::STATUS_REJECTED, 'Stop sharing', 'secondary' );
+		} else {
+			$this->render_button( self::FIELD, Consent::STATUS_ACCEPTED, 'Allow & Continue', 'primary', '&rarr;' );
+			$this->render_button( self::FIELD, Consent::STATUS_REJECTED, 'Skip', 'secondary' );
+		}
+
+		echo '</form>';
+		echo '</div>';
 		echo '</div>';
 	}
 
 	/**
-	 * The change-decision control, for the host plugin's own settings
-	 * page. Prints the current decision and the one button that changes
-	 * it — a single opposing action rather than two, because the state is
-	 * already stated in the sentence above it.
+	 * <details>, not a script: the list must be readable with JavaScript
+	 * off, and the browser's own disclosure widget is keyboard- and
+	 * screen-reader-accessible for free.
+	 */
+	private function render_shared_details() {
+		echo '<details class="appneck-sdk-optin__details">';
+		echo '<summary>' . esc_html( "What's shared?" ) . '</summary>';
+		echo '<ul>';
+
+		foreach ( $this->shared_items() as $item ) {
+			echo '<li>' . esc_html( $item ) . '</li>';
+		}
+
+		echo '</ul>';
+		echo '<p>' . esc_html( self::SHARED_FOOTNOTE ) . '</p>';
+		echo '</details>';
+	}
+
+	/** The product icon, or a neutral plug glyph when none was configured. */
+	private function icon_html() {
+		if ( null !== $this->icon_url && '' !== $this->icon_url ) {
+			return '<img src="' . esc_url( $this->icon_url ) . '" alt="" width="64" height="64" />';
+		}
+
+		return '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+			. '<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0V7z"/><path d="M12 17v5"/></svg>';
+	}
+
+	// -----------------------------------------------------------------
+	// The settings section
+	// -----------------------------------------------------------------
+
+	/**
+	 * Two independent switches for the host plugin's own settings page
+	 * (journal §70 D2). Each is a one-button form: pressing it flips that
+	 * one decision and records it as its own consent event.
 	 *
-	 * Deliberately does NOT offer the marketing checkbox: this form's one
-	 * button toggles telemetry consent to its opposite state, and a site
-	 * owner who only wanted to change their marketing answer here would
-	 * accidentally flip telemetry consent too. A site owner who missed the
-	 * marketing question on their first-ever decision (or was never asked,
-	 * on a site that upgraded to this SDK version after already answering
-	 * telemetry) has no way to opt in later yet — a real, known gap;
-	 * see docs/architecture/14-email-marketing-module.md §6 for the note.
+	 * "Receive update emails" can only be turned ON while usage data is on:
+	 * an email opt-in needs a registered installation, and registering is
+	 * itself the contact the owner has refused. Turning it OFF always works.
 	 */
 	public function render_settings_section() {
-		if ( ! $this->can_render() ) {
+		if ( ! $this->can_render() || $this->is_premium() ) {
 			return;
 		}
 
-		echo '<div class="appneck-sdk-consent">';
-		echo '<h3>' . esc_html( 'Usage data' ) . '</h3>';
-		echo '<p>' . esc_html( $this->status_text() ) . '</p>';
+		$this->print_styles();
 
-		if ( $this->consent->is_sync_pending() ) {
-			// Honest about the one state a site owner could otherwise
-			// misread as "my click did nothing".
-			echo '<p><em>' . esc_html(
+		$sharing = $this->consent->is_accepted();
+
+		echo '<div class="appneck-sdk-consent appneck-sdk-settings">';
+		echo '<h3 class="appneck-sdk-settings__heading">' . esc_html( 'Data sharing' ) . '</h3>';
+
+		$this->render_switch(
+			'Share usage data',
+			$this->usage_status_text(),
+			$sharing,
+			$sharing ? 'usage_off' : 'usage_on',
+			false
+		);
+
+		if ( null !== $this->marketing_consent ) {
+			$emails = $this->marketing_consent->is_opted_in();
+
+			$this->render_switch(
+				'Receive update emails',
+				$emails
+					? 'Security & feature updates, tips and occasional offers'
+						. ( null !== $this->marketing_consent->email() ? ' are sent to ' . $this->marketing_consent->email() : '' ) . '.'
+					: ( $sharing
+						? 'Get security & feature updates, tips and occasional offers by email.'
+						: 'Turn on usage data sharing first to receive update emails.' ),
+				$emails,
+				$emails ? 'emails_off' : 'emails_on',
+				! $emails && ! $sharing
+			);
+		}
+
+		if ( $this->consent->is_sync_pending() || ( null !== $this->marketing_consent && $this->marketing_consent->is_sync_pending() ) ) {
+			echo '<p class="appneck-sdk-settings__pending"><em>' . esc_html(
 				'Your choice is saved on this site and will be sent to '
 				. $this->product_name() . ' automatically.'
 			) . '</em></p>';
 		}
 
-		$this->render_form(
-			$this->consent->is_accepted()
-				? array( Consent::STATUS_REJECTED => 'Stop sharing usage data' )
-				: array( Consent::STATUS_ACCEPTED => 'Start sharing usage data' )
-		);
-
 		echo '</div>';
 	}
 
-	/**
-	 * @param array<string, string> $buttons                  status => label. The first is
-	 *                                                         rendered as the primary.
-	 * @param bool                  $with_marketing_checkbox   Only ever true from render()'s
-	 *                                                         first-decision branch — see its call site.
-	 */
-	private function render_form( array $buttons, $with_marketing_checkbox = false ) {
-		echo '<form method="post" action="' . esc_url( $this->post_url() ) . '">';
+	private function render_switch( $label, $description, $on, $value, $disabled ) {
+		echo '<form class="appneck-sdk-settings__row" method="post" action="' . esc_url( $this->post_url() ) . '">';
+		$this->render_form_fields();
+		echo '<div class="appneck-sdk-settings__text">';
+		echo '<span class="appneck-sdk-settings__label">' . esc_html( $label ) . '</span>';
+		echo '<span class="appneck-sdk-settings__description">' . esc_html( $description ) . '</span>';
+		echo '</div>';
+		echo '<button type="submit" class="appneck-sdk-switch" role="switch"'
+			. ' name="' . esc_attr( self::SETTING_FIELD ) . '" value="' . esc_attr( $value ) . '"'
+			. ' aria-checked="' . ( $on ? 'true' : 'false' ) . '"'
+			. ' aria-label="' . esc_attr( $label ) . '"'
+			. ( $disabled ? ' disabled' : '' ) . '>'
+			. '<span class="appneck-sdk-switch__thumb" aria-hidden="true"></span>'
+			. '</button>';
+		echo '</form>';
+	}
+
+	private function usage_status_text() {
+		if ( $this->consent->is_accepted() ) {
+			$decided = $this->consent->decided_at();
+
+			return 'Basic WordPress environment info is shared'
+				. ( null !== $decided ? ' (since ' . substr( $decided, 0, 10 ) . ')' : '' ) . '.';
+		}
+
+		if ( $this->consent->is_rejected() ) {
+			return 'Nothing is shared or collected on this site.';
+		}
+
+		return 'You have not decided yet. Nothing is shared until you turn this on.';
+	}
+
+	// -----------------------------------------------------------------
+	// Shared form plumbing
+	// -----------------------------------------------------------------
+
+	private function render_form_fields() {
 		echo '<input type="hidden" name="action" value="' . esc_attr( $this->action() ) . '" />';
 
 		if ( function_exists( 'wp_nonce_field' ) ) {
 			wp_nonce_field( $this->action() );
 		}
-
-		if ( $with_marketing_checkbox && null !== $this->marketing_consent ) {
-			$this->render_marketing_checkbox();
-		}
-
-		$primary = true;
-
-		foreach ( $buttons as $status => $label ) {
-			echo '<button type="submit" name="' . esc_attr( self::FIELD ) . '"'
-				. ' value="' . esc_attr( $status ) . '"'
-				. ' class="button ' . ( $primary ? 'button-primary' : 'button-secondary' ) . '"'
-				. ' style="margin-right:6px">' . esc_html( $label ) . '</button>';
-
-			$primary = false;
-		}
-
-		echo '</form>';
 	}
 
-	/**
-	 * The checkbox is a genuinely separate question from the two buttons
-	 * below it — checking it and clicking "No thanks" is a valid, honored
-	 * combination (accept marketing emails, decline usage-data sharing).
-	 * A hidden "0" field of the same name precedes the checkbox because an
-	 * UNCHECKED checkbox submits nothing at all in HTML forms; without the
-	 * fallback, "declined" and "this owner never saw the question" would
-	 * be indistinguishable in $_POST, and handle() needs to tell them apart
-	 * to record an explicit decline rather than silently doing nothing.
-	 */
-	private function render_marketing_checkbox() {
-		$email = $this->admin_email();
-
-		if ( null === $email ) {
-			// No admin_email to reference — skip rather than show wording
-			// with a blank address in it (see admin_email()'s own comment).
-			return;
-		}
-
-		echo '<p>';
-		echo '<label>';
-		echo '<input type="hidden" name="' . esc_attr( self::MARKETING_FIELD ) . '" value="0" />';
-		echo '<input type="checkbox" name="' . esc_attr( self::MARKETING_FIELD ) . '" value="1" /> ';
-		echo esc_html( $this->marketing_wording( $email ) );
-		echo '</label>';
-		echo '</p>';
-	}
-
-	/**
-	 * The exact text is what gets stored as the consent record server-side
-	 * (doc 16 §5: "consent is recorded, not assumed") — this method is the
-	 * single source of that text for both rendering and handle(), so the
-	 * two can never drift apart.
-	 *
-	 * @param string $email
-	 */
-	private function marketing_wording( $email ) {
-		return sprintf(
-			'Also email me product updates, tips and renewal reminders at %s. '
-			. 'You can unsubscribe at any time. This is separate from the usage-data choice above.',
-			$email
-		);
-	}
-
-	/** @return string|null */
-	private function admin_email() {
-		if ( ! function_exists( 'get_option' ) ) {
-			return null;
-		}
-
-		$email = get_option( 'admin_email' );
-
-		return is_string( $email ) && '' !== $email ? $email : null;
+	private function render_button( $name, $value, $label, $variant, $trailing_html = '' ) {
+		echo '<button type="submit" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"'
+			. ' class="appneck-sdk-optin__btn appneck-sdk-optin__btn--' . esc_attr( $variant ) . '">'
+			. esc_html( $label ) . ( '' !== $trailing_html ? ' <span aria-hidden="true">' . $trailing_html . '</span>' : '' )
+			. '</button>';
 	}
 
 	// -----------------------------------------------------------------
-	// Handling the click
+	// Handling a click
 	// -----------------------------------------------------------------
 
 	/**
-	 * The `admin_post_<action>` callback.
+	 * The `admin_post_{action}` callback.
 	 *
-	 * @return string|null The status applied, or null when refused.
+	 * @return string|null The decision or setting applied, or null when
+	 *                     the request was refused. (Returned for tests;
+	 *                     in WordPress the redirect ends the request.)
 	 */
 	public function handle() {
 		if ( ! $this->current_user_can_decide() ) {
@@ -333,13 +461,13 @@ final class ConsentNotice {
 		}
 
 		if ( function_exists( 'check_admin_referer' ) && false === check_admin_referer( $this->action() ) ) {
-			// WordPress's own implementation dies before returning on a bad
-			// nonce, which is the intended behaviour for a state change.
-			// Honouring a false return as well costs one comparison and
-			// means the refusal is real rather than assumed.
 			$this->deny( 'That link has expired. Please try again.' );
 
 			return null;
+		}
+
+		if ( isset( $_POST[ self::SETTING_FIELD ] ) ) {
+			return $this->handle_setting( $this->sanitize( $_POST[ self::SETTING_FIELD ] ) );
 		}
 
 		$status = isset( $_POST[ self::FIELD ] ) ? $this->sanitize( $_POST[ self::FIELD ] ) : '';
@@ -350,24 +478,16 @@ final class ConsentNotice {
 			return null;
 		}
 
-		// Captured BEFORE decide() below changes it. The checkbox is only
-		// ever rendered on a first-ever decision (see render()'s call to
-		// render_form()), so it is only ever processed here under the same
-		// condition — a re-confirmation submit carries no marketing field
-		// at all, and this guard is what stops that submit being misread
-		// as an explicit decline.
-		$first_decision = $this->consent->is_pending();
-
-		if ( $first_decision && null !== $this->marketing_consent ) {
-			$this->record_marketing_opt_in();
+		// Only a FIRST-EVER answer carries the email opt-in. A
+		// re-confirmation exists because the privacy policy changed; it
+		// re-asks the usage-data question alone and must not touch an
+		// existing email decision.
+		if ( $this->consent->is_pending() && null !== $this->marketing_consent ) {
+			$this->record_prompt_marketing( Consent::STATUS_ACCEPTED === $status );
 		}
 
-		// Returns a Response (or null) and never throws, so a consent call
-		// that fails while the API is down still lands the site owner back
-		// on their own page with the decision saved locally. The retry is
-		// Consent's problem, not theirs. Writing the marketing decision
-		// above BEFORE this call is what lets its own sync() (triggered
-		// inside decide()) fold both decisions into the one HTTP request.
+		// Marketing first: Consent::decide() syncs, and folds a pending
+		// marketing decision into the same /sdk/v1/consent request.
 		$this->consent->decide( $status );
 
 		$this->redirect_back();
@@ -376,25 +496,96 @@ final class ConsentNotice {
 	}
 
 	/**
-	 * Writes the marketing decision LOCALLY ONLY — no network call here.
-	 * $this->consent->decide() (called right after this returns) is what
-	 * actually reaches the server, and it does so on behalf of both
-	 * decisions in one request (see Consent::sync()).
+	 * Allow & Continue = opted in, with the clicking admin's own email and
+	 * name. Skip = an explicit decline. An admin with no email on their
+	 * account is not opted in to anything — there is nowhere to send to.
 	 */
-	private function record_marketing_opt_in() {
-		$email = $this->admin_email();
+	private function record_prompt_marketing( $allowed ) {
+		$user = $this->current_user();
 
-		if ( null === $email ) {
-			// Nothing sane to record without an address to reference —
-			// same guard as render_marketing_checkbox(), so a site with no
-			// admin_email set never ends up with a consent record whose
-			// stored wording names a blank email.
+		if ( $allowed && null === $user ) {
 			return;
 		}
 
-		$opted_in = isset( $_POST[ self::MARKETING_FIELD ] ) && '1' === (string) $_POST[ self::MARKETING_FIELD ];
+		$this->marketing_consent->decide(
+			$allowed,
+			$this->prompt_wording(),
+			$allowed ? $user['email'] : null,
+			$allowed ? $user['name'] : null
+		);
+	}
 
-		$this->marketing_consent->decide( $opted_in, $this->marketing_wording( $email ), $opted_in ? $email : null );
+	/** @return string|null */
+	private function handle_setting( $setting ) {
+		switch ( $setting ) {
+			case 'usage_on':
+				$this->consent->decide( Consent::STATUS_ACCEPTED );
+				break;
+
+			case 'usage_off':
+				$this->consent->decide( Consent::STATUS_REJECTED );
+				break;
+
+			case 'emails_on':
+				$user = $this->current_user();
+
+				if ( null === $this->marketing_consent || ! $this->consent->is_accepted() || null === $user ) {
+					$this->deny( 'Turn on usage data sharing first to receive update emails.' );
+
+					return null;
+				}
+
+				$this->marketing_consent->decide( true, $this->settings_email_wording( $user['email'] ), $user['email'], $user['name'] );
+				$this->consent->sync();
+				break;
+
+			case 'emails_off':
+				if ( null === $this->marketing_consent ) {
+					$this->deny( 'That is not a valid choice.' );
+
+					return null;
+				}
+
+				$this->marketing_consent->decide( false, 'Receive update emails: turned off in ' . $this->product_name() . ' settings.' );
+				$this->consent->sync();
+				break;
+
+			default:
+				$this->deny( 'That is not a valid choice.' );
+
+				return null;
+		}
+
+		$this->redirect_back();
+
+		return $setting;
+	}
+
+	/**
+	 * The admin who clicked — their own account's email and display name,
+	 * not the site's `admin_email` (journal §70 D2).
+	 *
+	 * @return array{email: string, name: string|null}|null
+	 */
+	private function current_user() {
+		if ( ! function_exists( 'wp_get_current_user' ) ) {
+			return null;
+		}
+
+		$user = wp_get_current_user();
+
+		if ( ! is_object( $user ) || empty( $user->user_email ) || ! is_string( $user->user_email ) ) {
+			return null;
+		}
+
+		$name = isset( $user->display_name ) && is_string( $user->display_name ) && '' !== trim( $user->display_name )
+			? trim( $user->display_name )
+			: null;
+
+		return array(
+			'email' => $user->user_email,
+			'name'  => $name,
+		);
 	}
 
 	private function redirect_back() {
@@ -422,7 +613,6 @@ final class ConsentNotice {
 		exit;
 	}
 
-	/** @param string $message */
 	private function deny( $message ) {
 		if ( function_exists( 'wp_die' ) ) {
 			wp_die( esc_html( $message ), '', array( 'response' => 403 ) );
@@ -430,20 +620,16 @@ final class ConsentNotice {
 			return;
 		}
 
-		// No WordPress (this package's own tests). Recorded rather than
-		// exiting, so the refusal is assertable.
 		$this->denied = (string) $message;
 	}
 
 	// -----------------------------------------------------------------
-	// Environment
+	// Helpers
 	// -----------------------------------------------------------------
 
 	/**
-	 * Consent is the site owner's decision, so only a user who
-	 * administers the site may make it — `manage_options`, the same
-	 * capability WordPress gates its own privacy tools behind. An editor
-	 * publishing a post has no business answering for the site.
+	 * `manage_options`: this is a site-wide decision about the site's own
+	 * data, which is an administrator's call, not an editor's.
 	 */
 	private function current_user_can_decide() {
 		if ( ! function_exists( 'current_user_can' ) ) {
@@ -453,19 +639,16 @@ final class ConsentNotice {
 		return (bool) current_user_can( 'manage_options' );
 	}
 
-	/**
-	 * The escaping functions are WordPress's; nothing may be printed
-	 * without them. In production these always exist, because the only
-	 * callers are admin hooks — this guard is for the package's non-WordPress
-	 * test environment and for a host plugin calling the settings section
-	 * from somewhere unexpected.
-	 */
 	private function can_render() {
 		if ( ! function_exists( 'esc_html' ) || ! function_exists( 'esc_attr' ) || ! function_exists( 'esc_url' ) ) {
 			return false;
 		}
 
 		return $this->current_user_can_decide();
+	}
+
+	private function is_premium() {
+		return null !== $this->gate && $this->gate->is_premium();
 	}
 
 	private function post_url() {
@@ -475,37 +658,9 @@ final class ConsentNotice {
 	private function product_name() {
 		return null !== $this->product_name && '' !== $this->product_name
 			? $this->product_name
-			: 'This plugin';
+			: 'this plugin';
 	}
 
-	/** @param bool $reconfirming */
-	private function prompt_text( $reconfirming ) {
-		if ( $reconfirming ) {
-			return 'Our privacy policy has been updated since you agreed to share usage data. '
-				. 'Please confirm whether you are still happy to share it.';
-		}
-
-		return 'Help improve this plugin by sharing anonymous usage data — which features are used, '
-			. 'and errors when they happen. No personal data and no content from your site is collected, '
-			. 'and you can change this at any time.';
-	}
-
-	private function status_text() {
-		if ( $this->consent->is_accepted() ) {
-			$decided = $this->consent->decided_at();
-
-			return 'You are sharing anonymous usage data'
-				. ( null !== $decided ? ' (since ' . substr( $decided, 0, 10 ) . ')' : '' ) . '.';
-		}
-
-		if ( $this->consent->is_rejected() ) {
-			return 'You are not sharing usage data. Nothing is collected on this site.';
-		}
-
-		return 'You have not decided whether to share anonymous usage data yet.';
-	}
-
-	/** @param mixed $value */
 	private function sanitize( $value ) {
 		if ( ! is_string( $value ) ) {
 			return '';
@@ -516,5 +671,62 @@ final class ConsentNotice {
 		}
 
 		return preg_replace( '/[^a-z_]/', '', strtolower( $value ) );
+	}
+
+	/**
+	 * Scoped under `.appneck-sdk-optin` / `.appneck-sdk-settings` so
+	 * nothing leaks into wp-admin or the host plugin. Printed once per page
+	 * even when several products bundle this SDK and the class is loaded
+	 * once (the registry loads one copy).
+	 */
+	private function print_styles() {
+		if ( self::$styles_printed ) {
+			return;
+		}
+
+		self::$styles_printed = true;
+
+		echo '<style>
+.appneck-sdk-optin.notice{border:0;background:transparent;box-shadow:none;padding:0;margin:20px 0 16px}
+.appneck-sdk-optin__card{position:relative;max-width:520px;margin:0 auto;background:#fff;border:1px solid #dcdcde;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06);overflow:hidden;font-size:14px;color:#1d2327}
+.appneck-sdk-optin__band{height:56px;background:#f0f0f1;border-bottom:1px solid #e6e6e8}
+.appneck-sdk-optin__icon{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:72px;height:72px;border-radius:50%;background:#fff;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;overflow:hidden;color:#3858e9;background-image:linear-gradient(135deg,#eef2ff,#e0e7ff)}
+.appneck-sdk-optin__icon img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.appneck-sdk-optin__content{padding:44px 28px 18px;text-align:center}
+.appneck-sdk-optin__title{margin:0 0 10px;padding:0;font-size:16px;font-weight:600;line-height:1.4;color:#1d2327}
+.appneck-sdk-optin__body{margin:0;text-align:left;line-height:1.6;color:#3c434a}
+.appneck-sdk-optin__details{margin:12px 0 0;text-align:left}
+.appneck-sdk-optin__details summary{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:#3858e9;font-weight:500;list-style:none}
+.appneck-sdk-optin__details summary::-webkit-details-marker{display:none}
+.appneck-sdk-optin__details summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin:-3px 0 0 4px;transition:transform .15s ease}
+.appneck-sdk-optin__details[open] summary::after{transform:rotate(-135deg);margin-top:3px}
+.appneck-sdk-optin__details summary:focus-visible{outline:2px solid #3858e9;outline-offset:2px;border-radius:2px}
+.appneck-sdk-optin__details ul{margin:10px 0 0;padding:12px 14px 12px 30px;background:#f6f7f7;border-radius:8px;list-style:disc;color:#3c434a}
+.appneck-sdk-optin__details li{margin:3px 0}
+.appneck-sdk-optin__details p{margin:8px 0 0;font-size:12.5px;color:#646970}
+.appneck-sdk-optin__policy{margin:10px 0 0;font-size:12.5px}
+.appneck-sdk-optin__actions{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-top:1px solid #f0f0f1;background:#fff;margin:0}
+.appneck-sdk-optin__btn{appearance:none;cursor:pointer;font:inherit;font-size:13.5px;font-weight:500;line-height:1.4;border-radius:4px;padding:8px 16px;transition:background .15s ease,box-shadow .15s ease,border-color .15s ease}
+.appneck-sdk-optin__btn--primary{background:#3858e9;border:1px solid #3858e9;color:#fff}
+.appneck-sdk-optin__btn--primary:hover{background:#2145e6;border-color:#2145e6;box-shadow:0 4px 12px rgba(56,88,233,.3)}
+.appneck-sdk-optin__btn--secondary{background:#fff;border:1px solid #3858e9;color:#3858e9}
+.appneck-sdk-optin__btn--secondary:hover{background:#f0f3ff}
+.appneck-sdk-optin__btn:focus-visible{outline:2px solid #3858e9;outline-offset:2px}
+.appneck-sdk-settings{max-width:640px}
+.appneck-sdk-settings__heading{margin:0 0 4px}
+.appneck-sdk-settings__row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #f0f0f1;margin:0}
+.appneck-sdk-settings__text{display:flex;flex-direction:column;gap:2px}
+.appneck-sdk-settings__label{font-weight:600;color:#1d2327}
+.appneck-sdk-settings__description{color:#646970;font-size:13px}
+.appneck-sdk-settings__pending{color:#646970}
+.appneck-sdk-switch{position:relative;flex:0 0 auto;width:40px;height:22px;padding:0;border-radius:11px;border:0;background:#c3c4c7;cursor:pointer;transition:background .15s ease}
+.appneck-sdk-switch[aria-checked="true"]{background:#3858e9}
+.appneck-sdk-switch__thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s ease}
+.appneck-sdk-switch[aria-checked="true"] .appneck-sdk-switch__thumb{transform:translateX(18px)}
+.appneck-sdk-switch:disabled{opacity:.5;cursor:not-allowed}
+.appneck-sdk-switch:focus-visible{outline:2px solid #3858e9;outline-offset:2px}
+@media (max-width:600px){.appneck-sdk-optin__content{padding:44px 18px 16px}.appneck-sdk-optin__actions{padding:12px 16px}}
+@media (prefers-reduced-motion:reduce){.appneck-sdk-optin__btn,.appneck-sdk-switch,.appneck-sdk-switch__thumb,.appneck-sdk-optin__details summary::after{transition:none}}
+</style>';
 	}
 }

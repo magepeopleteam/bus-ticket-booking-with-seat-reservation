@@ -32,11 +32,11 @@ use Appneck\Sdk\Queue\EventQueue;
  *
  * ## Consent
  *
- * When a Consent is wired in, an explicit refusal makes track(),
- * track_error() and heartbeat() no-ops and drops anything already queued
- * — see is_refused() and Consent's class doc. `pending` changes nothing
- * here: the server's fail-closed 403 remains the enforcement, and the
- * back-off path below handles it while keeping the backlog.
+ * Under Sdk::bootstrap(), a closed ContactGate (journal §70 D1: a free
+ * plugin whose owner has not accepted, `pending` included) makes track(),
+ * track_error() and heartbeat() no-ops and drops anything already queued —
+ * see collection_refused(). A premium plugin is never refused. The
+ * server's fail-closed 403 is only a backstop.
  *
  * ## Interval
  *
@@ -121,24 +121,30 @@ final class Telemetry {
 	}
 
 	/**
-	 * Whether the site owner has explicitly refused. The one consent state
-	 * this class acts on locally.
+	 * Journal §70 D1: under Sdk::bootstrap() the Client carries the
+	 * ContactGate, and a closed gate — a free plugin whose owner has not
+	 * accepted, `pending` included — refuses collection exactly as
+	 * `rejected` always did. A Telemetry built by hand with an ungated
+	 * Client keeps the pre-§70 rule below (only an explicit `rejected`).
 	 *
-	 * `pending` deliberately does NOT stop anything here: it means the
-	 * question is unanswered, the server is the authority (journal §5.4's
-	 * fail-closed 403), and the existing back-off path already handles
-	 * that refusal correctly while keeping the backlog — which is exactly
-	 * what should be sent the moment consent is granted. Blocking on
-	 * pending would also make a client that has never stored a decision
-	 * silently stop reporting for an installation the server considers
-	 * accepted.
-	 *
-	 * `rejected` is a decision, and it is honoured without asking the
-	 * server: nothing is collected, and anything collected while the
-	 * question was open is dropped. See Consent's class doc.
+	 * @return bool
+	 */
+	private function collection_refused() {
+		if ( null !== $this->client->gate() ) {
+			return ! $this->client->may_send();
+		}
+
+		return null !== $this->consent && $this->consent->is_rejected();
+	}
+
+	/**
+	 * Whether collection is refused right now (collection_refused()), and
+	 * if so, drops anything already queued. Honoured without asking the
+	 * server: nothing is collected, and nothing collected earlier survives.
+	 * See Consent's class doc.
 	 */
 	private function is_refused() {
-		if ( null === $this->consent || ! $this->consent->is_rejected() ) {
+		if ( ! $this->collection_refused() ) {
 			return false;
 		}
 
@@ -369,7 +375,7 @@ final class Telemetry {
 	 * plugin's code, and so this hook, no longer runs.
 	 */
 	public function ensure_scheduled() {
-		if ( null !== $this->consent && $this->consent->is_rejected() ) {
+		if ( $this->collection_refused() ) {
 			return;
 		}
 
