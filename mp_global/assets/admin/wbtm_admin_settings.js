@@ -154,6 +154,11 @@ function wbtm_load_sortable_datepicker(parent, item) {
         wbtmReindexNextDayField($(".wbtm_stop_item"), "wbtm_route_next_day");
         wbtmReindexNextDayField($(".wbtm_return_stop_item"), "wbtm_return_route_next_day");
     }
+    // Dragging a stop changes its position too, and the hidden template row
+    // starts at [0] (shadowing row 0 until the first add/remove), so renumber
+    // on load and after every reorder as well.
+    $(document).ready(wbtmReindexRouteNextDay);
+    $(document).on("sortupdate", ".wbtm_sortable_area", wbtmReindexRouteNextDay);
     //=========Remove Setting Item ==============//
     $(document).on("click", ".wbtm_item_remove", function (e) {
         e.preventDefault();
