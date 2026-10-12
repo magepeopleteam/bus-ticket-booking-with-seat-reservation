@@ -1080,7 +1080,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 								// it only while the route is still on that day. $prev_date already carries
 								// every earlier day shift; adding another day for each flagged stop pushed
 								// the 2nd post-midnight stop to day +2 (04:00 -> 05:05 showed as 25h 5m).
-								if ( isset( $info['next_day'] ) && $info['next_day'] == '1' && gmdate( 'Y-m-d', strtotime( $current_date ) ) === $start_day ) {
+								// It is a dropping-stop option: the editor hides the checkbox on boarding
+								// stops, so a flag left on one is stale (5.4.x saved every ticked box onto
+								// stop #2) and would silently push the rest of the route a day later.
+								if ( isset( $info['next_day'] ) && $info['next_day'] == '1' && ( $info['type'] ?? '' ) !== 'bp' && gmdate( 'Y-m-d', strtotime( $current_date ) ) === $start_day ) {
 									$current_date = gmdate( 'Y-m-d H:i', strtotime( $current_date . ' +1 day' ) );
 								}
 								if ($count > 0) {

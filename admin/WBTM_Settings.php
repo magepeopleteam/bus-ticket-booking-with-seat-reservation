@@ -223,6 +223,13 @@
 						//$route_infos[0]['interval'] = 0;
 						$route_infos[$count - 1]['type'] = 'dp';
 						//$route_infos[$count - 1]['interval'] = 0;
+						// "Next Day Dropping" only exists for dropping stops; its checkbox is hidden
+						// (but still posted) on boarding stops, so drop any stale flag there.
+						foreach ($route_infos as $route_key => $route_info) {
+							if ($route_info['type'] == 'bp') {
+								$route_infos[$route_key]['next_day'] = false;
+							}
+						}
 						foreach ($route_infos as $route_info) {
 							if ($route_info['type'] == 'bp') {
 								$bp[] = $route_info['place'];
@@ -288,6 +295,11 @@
 					if ($r_count > 0) {
 						$return_route_infos[0]['type'] = 'bp';
 						$return_route_infos[ $r_count - 1 ]['type'] = 'dp';
+						foreach ($return_route_infos as $r_key => $return_route_info) {
+							if ($return_route_info['type'] == 'bp') {
+								$return_route_infos[ $r_key ]['next_day'] = false;
+							}
+						}
 						update_post_meta($post_id, 'wbtm_return_route_info', $return_route_infos);
 					} else {
 						delete_post_meta($post_id, 'wbtm_return_route_info');
