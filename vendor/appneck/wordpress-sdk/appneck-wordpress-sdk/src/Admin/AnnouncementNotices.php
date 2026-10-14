@@ -111,6 +111,32 @@ final class AnnouncementNotices {
 	const MAX_VISIBLE = 3;
 
 	/**
+	 * What a formatted message may contain (journal §95), for wp_kses().
+	 * Formatting only — no images, embeds, styles, classes or event
+	 * attributes, and on a link nothing but href. Matches the server's
+	 * App\Support\AnnouncementHtml allowlist; h1/h2 are left out because
+	 * inside a notice they outshout the screen's own title.
+	 */
+	const BODY_ALLOWED_HTML = array(
+		'p'          => array(),
+		'br'         => array(),
+		'strong'     => array(),
+		'b'          => array(),
+		'em'         => array(),
+		'i'          => array(),
+		'u'          => array(),
+		'h3'         => array(),
+		'h4'         => array(),
+		'h5'         => array(),
+		'h6'         => array(),
+		'ul'         => array(),
+		'ol'         => array(),
+		'li'         => array(),
+		'blockquote' => array(),
+		'a'          => array( 'href' => true ),
+	);
+
+	/**
 	 * type => WordPress's own notice class. Core's four levels already
 	 * carry the right connotations, so there is no custom palette here —
 	 * `security` reads as an error because that is the one a site owner
@@ -298,13 +324,7 @@ final class AnnouncementNotices {
 		echo '<span class="appneck-sdk-announcement__badge">' . esc_html( $this->notice_label( $announcement['type'] ) ) . '</span>';
 		echo '<p class="appneck-sdk-announcement__title">' . esc_html( $announcement['title'] ) . '</p>';
 
-		if ( '' !== $announcement['body'] ) {
-			// esc_html FIRST, then nl2br on the escaped string, so line
-			// breaks survive without any tag from the server surviving with
-			// them. journal §12.2 makes this content display-only; letting
-			// remote HTML into wp-admin would quietly undo that.
-			echo '<p class="appneck-sdk-announcement__body">' . nl2br( esc_html( $announcement['body'] ) ) . '</p>';
-		}
+		$this->render_body( $announcement );
 
 		echo '<form method="post" action="' . esc_url( $this->post_url() ) . '">';
 		echo '<input type="hidden" name="action" value="' . esc_attr( $this->action() ) . '" />';
@@ -430,13 +450,79 @@ final class AnnouncementNotices {
 		echo '<span class="appneck-sdk-announcement__badge">' . esc_html( $this->notice_label( $announcement['type'] ) ) . '</span>';
 		echo '<p class="appneck-sdk-announcement__title">' . esc_html( $announcement['title'] ) . '</p>';
 
-		if ( '' !== $announcement['body'] ) {
-			echo '<p class="appneck-sdk-announcement__body">' . nl2br( esc_html( $announcement['body'] ) ) . '</p>';
-		}
+		$this->render_body( $announcement );
 
 		echo '<button type="button" class="appneck-sdk-announcement__dismiss" data-appneck-dismiss="' . esc_attr( $announcement['id'] ) . '">' . esc_html( 'Dismiss' ) . '</button>';
 		echo '</div>';
 		echo '</div>';
+	}
+
+	/**
+	 * The message, formatted when the server sent `body_html` (journal
+	 * §95) and plain otherwise. Both render paths print through here.
+	 *
+	 * @param array<string, mixed> $announcement
+	 */
+	private function render_body( array $announcement ) {
+		$formatted = $this->formatted_body( isset( $announcement['body_html'] ) ? $announcement['body_html'] : '' );
+
+		if ( '' !== $formatted ) {
+			echo '<div class="appneck-sdk-announcement__body appneck-sdk-announcement__body--rich">' . $formatted . '</div>'; // phpcs:ignore -- wp_kses() output, see formatted_body().
+			return;
+		}
+
+		if ( '' !== $announcement['body'] ) {
+			// esc_html FIRST, then nl2br on the escaped string, so line
+			// breaks survive without any tag from the server surviving with
+			// them. journal §12.2 makes this content display-only; letting
+			// remote HTML into wp-admin would quietly undo that.
+			echo '<p class="appneck-sdk-announcement__body">' . nl2br( esc_html( $announcement['body'] ) ) . '</p>';
+		}
+	}
+
+	/**
+	 * `body_html` through wp_kses() with BODY_ALLOWED_HTML — the server
+	 * sanitized it too, but this runs on a site Appneck does not control,
+	 * so the SDK never trusts that (journal §95). Links keep only an
+	 * http(s) href and always open in a new tab without an opener.
+	 *
+	 * Returns '' — so the escaped plain `body` prints instead — when
+	 * there is nothing to show, or when wp_kses() is somehow missing:
+	 * without it no remote HTML is printed at all.
+	 *
+	 * @param mixed $html
+	 * @return string
+	 */
+	private function formatted_body( $html ) {
+		if ( ! is_string( $html ) || '' === trim( $html ) || ! function_exists( 'wp_kses' ) ) {
+			return '';
+		}
+
+		// wp_kses() removes a script/style tag but keeps its content as
+		// text; that content is never meant to be read, so it goes first.
+		$html  = (string) preg_replace( '#<(script|style)\b[^>]*>.*?</\1\s*>#is', '', $html );
+		$clean = wp_kses( $html, self::BODY_ALLOWED_HTML, array( 'http', 'https' ) );
+
+		// An unclosed <strong> or <a> must not run on into the notice's
+		// own Dismiss control.
+		if ( function_exists( 'force_balance_tags' ) ) {
+			$clean = force_balance_tags( $clean );
+		}
+
+		// wp_kses() strips a refused protocol but leaves the rest as a
+		// relative href ("javascript:x" becomes "x"), which would point
+		// into wp-admin. Only an absolute http(s) link stays a link.
+		$clean = (string) preg_replace( '#<a\b(?![^>]*\shref="https?://)[^>]*>(.*?)</a>#is', '$1', $clean );
+
+		if ( '' === trim( html_entity_decode( strip_tags( $clean ), ENT_QUOTES, 'UTF-8' ) ) ) {
+			return '';
+		}
+
+		// wp_kses() kept only href on <a>, so this is the one place target
+		// and rel come from — a server cannot choose them.
+		$clean = preg_replace( '/<a\s/i', '<a target="_blank" rel="noopener noreferrer" ', $clean );
+
+		return trim( (string) $clean );
 	}
 
 	/** @param string $type */
@@ -510,6 +596,19 @@ final class AnnouncementNotices {
 .appneck-sdk-announcement__badge{display:inline-block;margin:0 0 6px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;color:#fff;line-height:1.6}
 .appneck-sdk-announcement__title{margin:0 0 3px!important;font-size:14.5px;font-weight:700;color:#1d2327}
 .appneck-sdk-announcement__body{margin:0 0 8px!important;font-size:13px;color:#3c434a;line-height:1.55}
+.appneck-sdk-announcement__body--rich p{margin:0 0 6px!important;font-size:13px;line-height:1.55}
+.appneck-sdk-announcement__body--rich h3,.appneck-sdk-announcement__body--rich h4,.appneck-sdk-announcement__body--rich h5,.appneck-sdk-announcement__body--rich h6{margin:10px 0 4px!important;padding:0!important;color:#1d2327;line-height:1.35;font-weight:700}
+.appneck-sdk-announcement__body--rich h3{font-size:15px}
+.appneck-sdk-announcement__body--rich h4{font-size:14px}
+.appneck-sdk-announcement__body--rich h5{font-size:13px}
+.appneck-sdk-announcement__body--rich h6{font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+.appneck-sdk-announcement__body--rich ul,.appneck-sdk-announcement__body--rich ol{margin:0 0 6px 20px!important;padding:0!important}
+.appneck-sdk-announcement__body--rich ul{list-style:disc}
+.appneck-sdk-announcement__body--rich ol{list-style:decimal}
+.appneck-sdk-announcement__body--rich li{margin:0 0 2px!important}
+.appneck-sdk-announcement__body--rich blockquote{margin:0 0 6px!important;padding:0 0 0 10px;border-left:3px solid #dcdcde;color:#50575e}
+.appneck-sdk-announcement__body--rich a{text-decoration:underline}
+.appneck-sdk-announcement__body--rich>:last-child{margin-bottom:0!important}
 .appneck-sdk-announcement__dismiss{background:none!important;border:0!important;padding:0!important;margin:0!important;font-size:12.5px;font-weight:600;color:#5f6773;cursor:pointer;text-decoration:underline}
 .appneck-sdk-announcement__dismiss:hover{color:#1d2327}
 

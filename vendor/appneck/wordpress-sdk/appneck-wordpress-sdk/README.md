@@ -18,6 +18,10 @@ Requires PHP 7.2+. No runtime dependencies.
 > does not change plugins already in the field. See
 > [Free and pro plugins](#free-and-pro-plugins).
 
+**Current version: 0.5.0** (git tag `v0.5.0`). Ship a tagged release, never
+`main`. [Versions](#versions) lists what changed in each release and how to
+update.
+
 *(If you're working inside the Appneck monorepo rather than consuming this as
 a distributed package: this was built in stages, tracked in
 `docs/sdk-roadmap.md` §S4. This guide doesn't follow that phase order; it
@@ -28,6 +32,7 @@ follows the order you'll actually touch these pieces in as a plugin author.)*
 - [Free and pro plugins](#free-and-pro-plugins) — `is_premium`, the opt-in, what is shared (read this first)
 - [Quickstart](#quickstart) — under 10 minutes, from nothing to a real event on your dashboard
 - [Installing it in a plugin](#installing-it-in-a-plugin) — bundled vs. Composer, in full
+- [Versions](#versions) — what changed in each release, pinning and updating
 - [Version safety](#version-safety-why-the-loader-exists)
 - [It will not take down the host site](#it-will-not-take-down-the-host-site) — error handling
 - [Lifecycle](#lifecycle) — activation, deactivation, updates, uninstall.php
@@ -128,22 +133,29 @@ Org Panel (Product → API Keys) before you start.
 
 ### 1. Install the SDK
 
-**Composer** (if your plugin can assume it):
+**Composer** (if your plugin can assume it). The SDK is not on Packagist, so
+add its repository to your plugin's `composer.json` first:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/magepeopleteam/appneck-wordpress-sdk" }
+]
+```
 
 ```bash
-composer require appneck/wordpress-sdk
+composer require appneck/wordpress-sdk:^0.5
 ```
 
 **Bundled** (no Composer — download the SDK and copy its directory into your
-plugin, conventionally at `vendor/appneck-sdk/`):
+plugin, conventionally at `vendor/appneck-sdk/`). Take the tag, not `main`:
 
 ```bash
-git clone https://github.com/magepeopleteam/appneck-wordpress-sdk.git vendor/appneck-sdk
+git clone --branch v0.5.0 --depth 1 https://github.com/magepeopleteam/appneck-wordpress-sdk.git vendor/appneck-sdk
+rm -rf vendor/appneck-sdk/.git
 ```
 
-Or download a zip of a specific tag/release from
-[github.com/magepeopleteam/appneck-wordpress-sdk](https://github.com/magepeopleteam/appneck-wordpress-sdk)
-if you'd rather not vendor a `.git` directory into your plugin.
+Or download the `v0.5.0` zip from the repository's
+[Tags page](https://github.com/magepeopleteam/appneck-wordpress-sdk/tags).
 
 Either way, see [Installing it in a plugin](#installing-it-in-a-plugin) below
 before you ship — there's one detail (the version-safe loader) that matters
@@ -285,8 +297,9 @@ work identically without it.
 
 Get the SDK from its standalone repository —
 [github.com/magepeopleteam/appneck-wordpress-sdk](https://github.com/magepeopleteam/appneck-wordpress-sdk)
-(`git clone` it, or download a release zip) — copy its directory into your
-plugin, and require the loader — **not** any file in `src/`:
+(clone or download a tagged release, e.g. `v0.5.0`; see [Versions](#versions)) —
+copy its directory into your plugin, and require the loader — **not** any file
+in `src/`:
 
 ```php
 require_once __DIR__ . '/vendor/appneck-sdk/appneck-sdk.php';
@@ -327,15 +340,55 @@ the call moved to the top level.
 
 ### 2. Composer
 
-```bash
-composer require appneck/wordpress-sdk
+The package is not on Packagist. Point Composer at the GitHub repository in
+your plugin's `composer.json`, then require a version:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/magepeopleteam/appneck-wordpress-sdk" }
+]
 ```
+
+```bash
+composer require appneck/wordpress-sdk:^0.5
+```
+
+Composer reads the versions from the repository's `v<version>` tags. In 0.x,
+`^0.5` means "0.5.0 or a later 0.5.x, never 0.6": a new minor version is a
+change you opt into.
 
 Composer's PSR-4 autoloader resolves `Appneck\Sdk\*` from `src/`, so the classes
 are available with no `require` of ours at all. If your plugin also ships to
 users who install it without Composer, require the loader as well — it is safe
 under both, since the loader's own bootstrap is guarded against classes that
 already exist.
+
+---
+
+## Versions
+
+Each release is a git tag `v<version>` on
+[github.com/magepeopleteam/appneck-wordpress-sdk](https://github.com/magepeopleteam/appneck-wordpress-sdk/tags).
+A tag never moves; `main` can hold work that is not released yet, so ship a
+tag. A copy's version is `\Appneck\Sdk\Sdk::VERSION`; when several plugins on
+one site bundle the SDK, the highest version loads (see
+[Version safety](#version-safety-why-the-loader-exists)).
+
+| Version | Tag | What changed |
+|---|---|---|
+| **0.5.0** | `v0.5.0` | Announcements show formatted messages: bold, italic, underline, headings, lists, quotes and links, printed through `wp_kses()`. See [Formatted messages](#formatted-messages-since-050). |
+| 0.4.0 | `v0.4.0` | **Required for WordPress.org.** A free plugin contacts Appneck only after the site owner opts in; a pro build passes `'is_premium' => true` and shows no prompt. See [Free and pro plugins](#free-and-pro-plugins). |
+| 0.3.0 | — | Plugin and SDK updates are noticed without a reactivation. See [Updates](#updates-journal-51). |
+| 0.2.0 | — | A marketing-email opt-in, separate from telemetry consent. See [Update emails](#update-emails-marketing-opt-in). |
+| 0.1.0 | — | The first versions, built in stages. |
+
+Versions before 0.4.0 are not tagged; don't ship them.
+
+**Updating.** Bundled: delete your `vendor/appneck-sdk/` folder and put the new
+tag's files in its place, so files the new version removed go too. Composer:
+`composer update appneck/wordpress-sdk`, or raise the constraint (e.g. `^0.6`)
+for a new minor version. Either way, ship a plugin release: a site gets the new
+SDK only when it updates your plugin.
 
 ---
 
@@ -955,9 +1008,26 @@ Want to render them yourself instead?
 
 ```php
 foreach ( $sdk->announcements()->visible() as $announcement ) {
-    // id, type, title, body, starts_at, expires_at
+    // id, type, title, body, body_html, starts_at, expires_at
 }
 ```
+
+### Formatted messages (since 0.5.0)
+
+An announcement's message can carry **bold, italic, underline, h3–h6
+headings, bulleted and numbered lists, quotes and links** (journal §95). The
+built-in renderer prints `body_html` through `wp_kses()` with a strict
+allowlist (only `http`/`https` links; no attributes except a link's `href`),
+balances unclosed tags, unwraps any link that is not an absolute http(s)
+address, and opens every link in a new tab with `rel="noopener noreferrer"`.
+The server sanitizes too, but the SDK never relies on that. If `body_html` is
+empty, or `wp_kses()` is missing, it prints the escaped plain `body` as before.
+
+If you render announcements yourself, **never echo `body_html` raw**. Escape
+`body` as before, or pass `body_html` through `wp_kses()` with an allowlist at
+least as strict as `AnnouncementNotices::BODY_ALLOWED_HTML`. SDKs older than
+0.5.0 ignore `body_html` and show `body`, which the server keeps as the
+message's plain-text copy.
 
 ### Consent-gated on free plugins (since 0.4.0)
 
@@ -1568,7 +1638,7 @@ real, current edges, not hedging:
   the rest.
 - **The marketing opt-in (0.2.0+) has no path to change the decision later
   outside a fresh first-ever telemetry decision.** See
-  ["Marketing opt-in"](#marketing-opt-in) above for why
+  ["Update emails"](#update-emails-marketing-opt-in) above for why
   `render_settings_section()` doesn't offer it — its one button already
   toggles telemetry consent, and bolting an unrelated checkbox onto that
   form would let changing your marketing answer accidentally flip your
