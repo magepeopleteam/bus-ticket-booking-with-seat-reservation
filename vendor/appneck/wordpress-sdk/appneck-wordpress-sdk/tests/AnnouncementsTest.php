@@ -249,6 +249,30 @@ class AnnouncementsTest extends TestCase {
 	}
 
 	/**
+	 * journal §95: `body_html` is kept as a string for the renderer to
+	 * sanitize; a missing or non-string one reads as plain.
+	 */
+	public function test_the_formatted_body_is_kept_and_anything_else_reads_as_plain(): void {
+		$announcements = $this->announcements();
+		$this->queue(
+			array(
+				array( 'id' => self::SECURITY_ID, 'type' => 'security', 'title' => 'Rich', 'body' => 'Hi', 'body_html' => '<p>Hi</p>' ),
+				array( 'id' => self::FEATURE_ID, 'type' => 'feature', 'title' => 'Plain', 'body' => 'Hi' ),
+				array( 'id' => self::UPDATE_ID, 'type' => 'update', 'title' => 'Odd', 'body' => 'Hi', 'body_html' => array( 'x' ) ),
+			)
+		);
+
+		$by_title = array();
+		foreach ( $announcements->refresh() as $announcement ) {
+			$by_title[ $announcement['title'] ] = $announcement;
+		}
+
+		$this->assertSame( '<p>Hi</p>', $by_title['Rich']['body_html'] );
+		$this->assertSame( '', $by_title['Plain']['body_html'] );
+		$this->assertSame( '', $by_title['Odd']['body_html'] );
+	}
+
+	/**
 	 * The client must not re-apply the validity window: the server already
 	 * evaluated it at request time (journal 9.3b), and a site clock a few
 	 * minutes off would otherwise hide something the server chose to send.

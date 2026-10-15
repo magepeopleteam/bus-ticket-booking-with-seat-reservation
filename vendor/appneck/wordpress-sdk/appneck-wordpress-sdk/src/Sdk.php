@@ -46,7 +46,7 @@ final class Sdk {
 	// 0.4.0 — journal §70: the free/pro consent model. Required for
 	// WordPress.org compliance: a free plugin no longer contacts Appneck at
 	// all until its owner opts in.
-	const VERSION = '0.4.0';
+	const VERSION = '0.5.0';
 
 	/** Prefix of the autoloaded option recording a premium build (journal §70 D5). */
 	const EDITION_OPTION_PREFIX = 'appneck_sdk_edition_';

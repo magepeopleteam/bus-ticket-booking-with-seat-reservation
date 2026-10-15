@@ -243,6 +243,150 @@ class AnnouncementNoticesTest extends TestCase {
 		$this->assertStringContainsString( '<br', $html );
 	}
 
+	// -----------------------------------------------------------------
+	// The formatted message (journal §95)
+	// -----------------------------------------------------------------
+
+	/** @param string $body_html */
+	private function seed_formatted( $body_html, $body = 'Plain copy' ): void {
+		$this->seed(
+			array(
+				array(
+					'id'        => self::FEATURE_ID,
+					'type'      => 'feature',
+					'title'     => 'Version 3',
+					'body'      => $body,
+					'body_html' => $body_html,
+				),
+			)
+		);
+	}
+
+	public function test_a_formatted_message_renders_its_html_instead_of_the_plain_body(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted( '<h3>New</h3><p><strong>Faster</strong> and <em>lighter</em></p><ul><li>One</li></ul>' );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'class="appneck-sdk-announcement__body appneck-sdk-announcement__body--rich"', $html );
+		$this->assertStringContainsString( '<h3>New</h3><p><strong>Faster</strong> and <em>lighter</em></p><ul><li>One</li></ul>', $html );
+		$this->assertStringNotContainsString( 'Plain copy', $html );
+	}
+
+	/**
+	 * The server already sanitized it; the SDK must not rely on that.
+	 * Pins the exact allowlist and protocols handed to wp_kses().
+	 */
+	public function test_the_formatted_message_goes_through_wp_kses_with_the_strict_allowlist(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$GLOBALS['appneck_test_kses_calls'] = array();
+		$this->seed_formatted( '<p>Hi</p>' );
+
+		$this->render();
+
+		$this->assertCount( 1, $GLOBALS['appneck_test_kses_calls'] );
+		$call = $GLOBALS['appneck_test_kses_calls'][0];
+		$this->assertSame( array( 'http', 'https' ), $call['protocols'] );
+		$this->assertSame(
+			array( 'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'a' ),
+			array_keys( $call['allowed'] )
+		);
+		$this->assertSame( array( 'href' => true ), $call['allowed']['a'] );
+
+		foreach ( $call['allowed'] as $tag => $attributes ) {
+			if ( 'a' !== $tag ) {
+				$this->assertSame( array(), $attributes, $tag . ' must allow no attributes' );
+			}
+		}
+	}
+
+	public function test_a_hostile_formatted_message_prints_nothing_executable(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted(
+			'<p onclick="alert(1)" style="x">Safe</p><script>alert(1)</script><img src=x onerror=alert(1)>'
+			. '<iframe src="https://evil.test"></iframe><h1>Big</h1><a href="javascript:alert(1)">bad</a>'
+		);
+
+		$html = $this->render();
+
+		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringNotContainsString( '<img', $html );
+		$this->assertStringNotContainsString( '<iframe', $html );
+		$this->assertStringNotContainsString( '<h1', $html );
+		$this->assertStringNotContainsString( 'onclick', $html );
+		$this->assertStringNotContainsString( 'javascript:', $html );
+		$this->assertStringContainsString( '<p>Safe</p>', $html );
+		// Not even as text: script content is dropped before wp_kses().
+		$this->assertStringNotContainsString( 'alert(1)', $html );
+	}
+
+	/**
+	 * Real wp_kses() turns "javascript:x" into a relative href "x", which
+	 * would point into wp-admin; the SDK unwraps any non-http(s) link.
+	 */
+	public function test_a_link_left_without_an_absolute_http_address_becomes_plain_text(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted( '<p><a href="plugins.php?action=delete">Delete</a> and <a href="https://ok.test">ok</a></p>' );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( '<p>Delete and <a target="_blank" rel="noopener noreferrer" href="https://ok.test">ok</a></p>', $html );
+		$this->assertStringNotContainsString( 'plugins.php', $html );
+	}
+
+	public function test_links_open_in_a_new_tab_with_no_opener_whatever_the_server_sent(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted( '<p><a href="https://example.com/changelog" target="_self" rel="opener">Changelog</a></p>' );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString(
+			'<a target="_blank" rel="noopener noreferrer" href="https://example.com/changelog">Changelog</a>',
+			$html
+		);
+		$this->assertStringNotContainsString( '_self', $html );
+	}
+
+	public function test_a_formatted_message_with_no_text_falls_back_to_the_plain_body(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted( '<p><script></script></p>', 'Plain fallback' );
+
+		$html = $this->render();
+
+		$this->assertStringNotContainsString( 'class="appneck-sdk-announcement__body appneck-sdk-announcement__body--rich"', $html );
+		$this->assertStringContainsString( 'Plain fallback', $html );
+	}
+
+	public function test_the_ajax_render_path_formats_too(): void {
+		require_once __DIR__ . '/wp-kses-polyfill.php';
+		$this->seed_formatted( '<p><strong>Bold</strong></p>' );
+
+		ob_start();
+		$this->notices->render_from_cache_only();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<p><strong>Bold</strong></p>', $html );
+	}
+
+	/**
+	 * Without wp_kses() there is no trustworthy filter, so no remote
+	 * HTML is printed at all — the escaped plain body is.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	#[\PHPUnit\Framework\Attributes\PreserveGlobalState( false )]
+	public function test_without_wp_kses_the_html_is_never_printed(): void {
+		$this->assertFalse( function_exists( 'wp_kses' ), 'this test needs a process without the kses polyfill' );
+		$this->seed_formatted( '<p><strong>Bold</strong></p>', 'Plain <b>copy</b>' );
+
+		$html = $this->render();
+
+		$this->assertStringNotContainsString( '<strong>', $html );
+		$this->assertStringContainsString( 'Plain &lt;b&gt;copy&lt;/b&gt;', $html );
+	}
+
 	public function test_the_title_is_escaped(): void {
 		$this->seed(
 			array( array( 'id' => self::SECURITY_ID, 'type' => 'security', 'title' => '<img src=x onerror=1>', 'body' => '' ) )
