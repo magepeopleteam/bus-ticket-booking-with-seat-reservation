@@ -155,6 +155,9 @@ function wbtm_hide_wc_notices($) {
 		wbtm_hide_wc_notices($);
 		// $('body').find('#wbtm_selected_bus_notification').slideUp('fast');
 		let name = $(this).closest('#wbtm_return_container').length > 0 ? 'r_date' : 'j_date';
+		// Only the hidden field used to change, so the search form kept showing
+		// the old date next to results for the new one.
+		wbtm_sync_visible_date(parent.find(name === 'r_date' ? '#wbtm_return_date' : '#wbtm_journey_date'), date);
 		parent.find('input[name=' + name + ']').val(date).promise().done(function () {
 			parent.find('.get_wbtm_bus_list').trigger('click');
 		});
@@ -163,6 +166,27 @@ function wbtm_hide_wc_notices($) {
 		$("#wbtm_date_return_route_return").fadeIn();
 
 	});
+	// Show a Y-m-d date in the search form's visible date picker field, in the
+	// picker's own display format. setDate() does not fire onSelect, so this
+	// does not trigger the return-date reload that a manual pick would.
+	function wbtm_sync_visible_date(input, ymd) {
+		let parts = String(ymd || '').split('-');
+		if (!input.length || parts.length !== 3 || !$.datepicker) {
+			return;
+		}
+		let dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+		if (isNaN(dateObj.getTime())) {
+			return;
+		}
+		let format = typeof wbtm_date_format !== 'undefined' ? wbtm_date_format : 'yy-mm-dd';
+		if (input.hasClass('hasDatepicker')) {
+			input.datepicker('setDate', dateObj);
+			format = input.datepicker('option', 'dateFormat') || format;
+		}
+		// Set the text explicitly too: setDate() clamps to the picker's
+		// min/max range, and the field must show the date being searched.
+		input.val($.datepicker.formatDate(format, dateObj));
+	}
 	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
 		let current = $(this);
 		let start_route = current.val();

@@ -1632,9 +1632,9 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
   }
 
   .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date.active {
-    background-color: #f0f6ff;
-    color: #4285f4;
-    border: 1px solid #4285f4;
+    background-color: var(--wbtm_card_accent_soft, #f0f6ff);
+    color: var(--wbtm_card_accent, #4285f4);
+    border: 1px solid var(--wbtm_card_accent, #4285f4);
   }
 
   .wbtm_search_result .wbtm-date-route {
@@ -2171,6 +2171,43 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
 .wbtm-date-suggetion .wbtm_next_date {
   flex-shrink: 0 !important;
   white-space: nowrap;
+}
+/* The flex rule above (added for horizontal scroll) made the inner
+   ._xs_equalChild row a shrink-to-fit flex item, so the buttons' equal-width
+   flex:1 had no spare room to share and they bunched up on the left. Letting
+   the row grow restores the even split; it still never shrinks below its
+   content, so narrow screens keep scrolling sideways. */
+.wbtm-date-suggetion > ._xs_equalChild {
+  flex: 1 0 auto;
+}
+/* Weekday above the date. Plugin buttons are row flexboxes (.wbtm_style
+   button), and `.wbtm_style button:hover span` paints spans white, which on
+   this white button would hide the text on hover -- hence the inherit. */
+.wbtm-date-suggetion .wbtm_next_date {
+  flex-direction: column;
+}
+.wbtm_search_result .wbtm-date-suggetion .wbtm_next_date span {
+  color: inherit;
+}
+.wbtm-date-suggetion .wbtm_next_date_day,
+.wbtm-date-suggetion .wbtm_next_date_label {
+  display: block;
+}
+.wbtm-date-suggetion .wbtm_next_date_day {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+@media only screen and (max-width: 767px) {
+  /* Bigger touch targets on phones; the row scrolls instead of squeezing. */
+  .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date {
+    min-width: 92px;
+    min-height: 48px;
+    padding: 8px 12px;
+  }
 }
 
 /* ---- Search results: bus list cards ---- */

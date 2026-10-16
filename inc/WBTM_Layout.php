@@ -550,7 +550,8 @@
 							<?php foreach ($all_dates as $date) { ?>
 								<?php $btn_class = strtotime($date) == strtotime($active_date) ? 'active' : ''; ?>
                                 <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
-									<?php echo esc_html(WBTM_Global_Function::date_format($date)); ?>
+                                    <span class="wbtm_next_date_day"><?php echo esc_html(date_i18n('D', strtotime($date))); ?></span>
+                                    <span class="wbtm_next_date_label"><?php echo esc_html(WBTM_Global_Function::date_format($date)); ?></span>
                                 </button>
 							<?php } ?>
                         </div>

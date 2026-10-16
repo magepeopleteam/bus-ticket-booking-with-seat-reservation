@@ -32,6 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$button_color    = WBTM_Global_Function::get_style_settings( 'button_color', $alternate_color );
 				$button_bg       = WBTM_Global_Function::get_style_settings( 'button_bg', '#ea8125' );
 				$section_bg      = WBTM_Global_Function::get_style_settings( 'section_bg', '#FAFCFE' );
+				// Search-result card accent (Book Seat button, price, detail-link icons,
+				// selected date). Emitted only once an admin has saved a Theme Color, so
+				// sites that never set one keep the card's built-in indigo design.
+				$card_accent     = self::saved_theme_color();
 				?>
 				<style>
 					:root {
@@ -88,6 +92,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						--wbtm_color_theme_88: <?php echo esc_attr($theme_color).'88'; ?>;
 						--wbtm_color_theme_77: <?php echo esc_attr($theme_color).'77'; ?>;
 						--wbtm_color_theme_alter: <?php echo esc_attr($alternate_color); ?>;
+						<?php if ( $card_accent ) : ?>
+						--wbtm_card_accent: <?php echo esc_attr( $card_accent ); ?>;
+						--wbtm_card_accent_soft: <?php echo esc_attr( self::tint( $card_accent, 0.9 ) ); ?>;
+						--wbtm_card_accent_border: <?php echo esc_attr( self::tint( $card_accent, 0.7 ) ); ?>;
+						<?php endif; ?>
 						--wbtm_color_warning: <?php echo esc_attr($warning_color); ?>;
 						--wbtm_color_black: #000;
 						--wbtm_color_success: #00A656;
@@ -144,6 +153,34 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					}
 				</style>
 				<?php
+			}
+			/**
+			 * The Theme Color an admin actually saved, or '' when none was saved.
+			 *
+			 * get_style_settings() falls back to the #ff4500 default, which can't tell
+			 * "never configured" apart from "chose this colour".
+			 */
+			private static function saved_theme_color() {
+				$options = get_option( 'wbtm_style_settings' );
+				if ( ! is_array( $options ) || empty( $options['theme_color'] ) || ! is_string( $options['theme_color'] ) ) {
+					return '';
+				}
+				$color = sanitize_hex_color( trim( $options['theme_color'] ) );
+				return $color ? $color : '';
+			}
+			/**
+			 * Mix a hex colour with white; $white = 0.9 keeps 10% of the colour.
+			 */
+			private static function tint( $hex, $white ) {
+				$hex = ltrim( $hex, '#' );
+				if ( strlen( $hex ) === 3 ) {
+					$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+				}
+				$out = '#';
+				foreach ( str_split( $hex, 2 ) as $channel ) {
+					$out .= sprintf( '%02x', (int) round( hexdec( $channel ) * ( 1 - $white ) + 255 * $white ) );
+				}
+				return $out;
 			}
 		}
 		new WBTM_Global_Style();

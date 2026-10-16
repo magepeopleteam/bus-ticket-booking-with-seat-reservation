@@ -584,9 +584,11 @@ div#wbtm_date_start_route { height: 50px; }
        indigo accent, Plus Jakarta Sans headings / Manrope body, flat white
        surfaces, soft diffuse shadow instead of the previous pale-blue gradient
        card). --card-accent is scoped here so every descendant rule below can
-       share one swap point instead of repeating the hex. */
-    --card-accent:      #4F46E5;
-    --card-accent-soft: #EEF2FF;
+       share one swap point instead of repeating the hex. The --wbtm_card_accent*
+       variables come from the saved Theme Color (WBTM_Global_Style) and are
+       absent until an admin sets one, so the indigo values are the defaults. */
+    --card-accent:      var(--wbtm_card_accent, #4F46E5);
+    --card-accent-soft: var(--wbtm_card_accent_soft, #EEF2FF);
     --card-ink:         #111827;
     --card-muted:       #6B7280;
     --card-subtle:      #9CA3AF;
@@ -609,7 +611,7 @@ div#wbtm_date_start_route { height: 50px; }
 
 .wbtm-card-wrap:hover {
     transform:    translateY(-2px);
-    border-color: #C7D2FE;
+    border-color: var(--wbtm_card_accent_border, #C7D2FE);
     box-shadow:   0 26px 56px -18px rgba(17, 24, 39, .18), 0 4px 12px rgba(17, 24, 39, .04);
 }
 
@@ -635,22 +637,23 @@ div#wbtm_date_start_route { height: 50px; }
        that seam regardless of the rendering quirk. */
     border-radius:   20px 0 0 20px;
 }
-/* height:100% !important beats themes that force `img { height:auto }`, so the
-   photo fills the column instead of sitting top-aligned; the flex centering
-   above keeps it centred if a theme still wins the height rule. */
+/* The photo covers the whole column, however tall the card is. It used to be
+   capped at max-height:110px so a large image could not stretch the card, but
+   that left an empty band above and below it on every card taller than the
+   cap. Positioning it absolutely solves both: an absolute image adds nothing
+   to the row height (the journey/info/price panels alone size the card), and
+   inset 0 + object-fit:cover fills the column without distortion.
+   width/height !important beat themes that force `img { height:auto }`. */
 .wbtm-card-photo img {
+    position:        absolute;
+    top:             0;
+    right:           0;
+    bottom:          0;
+    left:            0;
     width:           100% !important;
     height:          100% !important;
-    max-width:       100%;
-    /* The photo column stretches to the tallest column, and the info column
-       grows tall whenever its amenity chips and detail buttons wrap onto many
-       lines — an operator listing seven amenities and five buttons stretched
-       this image to several hundred pixels and made the card enormous. The
-       tablet breakpoint stops the info column wrapping like that in the first
-       place; this cap is the backstop for a fleet with more chips than any
-       breakpoint can keep inline. The column stays flex-centred, so a capped
-       image sits centred against the panel instead of being distorted. */
-    max-height:      110px;
+    max-width:       none;
+    max-height:      none;
     object-fit:      cover;
     object-position: center;
     display:         block;
@@ -817,7 +820,9 @@ div#wbtm_date_start_route { height: 50px; }
 /* Sits on the photo, top-left, as a plain white chip with dark text (design
    reference) rather than a colour chip of the operator's Theme Colour --
    kept neutral so it doesn't compete with the accent used everywhere else
-   on the card (price, dots, primary button). */
+   on the card (price, dots, primary button). Long type names wrap onto a
+   second line instead of being cut off with an ellipsis ("FERRY (STANDA...").
+   To move it, override top/left/bottom on .wbtm-type-badge. */
 .wbtm-type-badge {
     position:      absolute;
     left:          10px;
@@ -825,14 +830,14 @@ div#wbtm_date_start_route { height: 50px; }
     bottom:        auto;
     z-index:       2;
     max-width:     calc(100% - 20px);
-    overflow:      hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: break-word;
     font-family:   'Plus Jakarta Sans', sans-serif;
     font-size:     11px;
     font-weight:   800;
+    line-height:   1.3;
     padding:       4px 10px;
-    border-radius: 999px;
-    white-space:   nowrap;
+    border-radius: 12px;
+    white-space:   normal;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     color:         var(--card-ink, #111827);
@@ -1101,7 +1106,7 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now {
     transition:      background 0.15s ease, border-color 0.15s ease;
 }
 body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
-    background:   #F5F6FE !important;
+    background:   var(--wbtm_card_accent_soft, #F5F6FE) !important;
     border-color: var(--card-accent, #4F46E5) !important;
 }
 /* The toggle's own CSS (assets/frontend/wbtm.css) reads `var(--wbtm_theme_color)`,
@@ -1172,7 +1177,6 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
     .wbtm-card-wrap {
         grid-template-columns: minmax(72px, 104px) minmax(0, 1fr) minmax(124px, 158px);
     }
-    .wbtm-card-photo img { max-height: 100px; }
     .wbtm-card-head     { padding: 13px 12px 0; }
 
     .wbtm-card-times {
@@ -1323,7 +1327,6 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
         border-right:  none;
         border-bottom: 1px solid var(--card-border, #E5E7EB);
     }
-    .wbtm-card-photo img { max-height: none; }
     .wbtm-card-head {
         grid-column: 1;
         grid-row:    auto;
