@@ -218,14 +218,25 @@ function wbtm_content_text_change(currentTarget) {
     let openText = currentTarget.data('open-text');
     openText = openText ? openText.toString() : '';
     let closeText = currentTarget.data('close-text');
-    closeText = closeText ? closeText : '';
+    closeText = closeText ? closeText.toString() : '';
     if (openText || closeText) {
-        let text = currentTarget.find('[data-text]').html();
-        text = text ? text.toString() : ''
-        if (text !== openText) {
-            currentTarget.find('[data-text]').html(openText);
+        let target = currentTarget.find('[data-text]');
+        // Compare the visible text, not the HTML: a label that carries an icon
+        // ("Book Seat <i class=...>") never equals the plain data-open-text, so
+        // the label ran one click behind the toggle and lost its icon. The open
+        // label's original HTML is kept so the icon comes back on close.
+        if (target.text().trim() === openText.trim()) {
+            if (target.data('wbtm-open-html') === undefined) {
+                target.data('wbtm-open-html', target.html());
+            }
+            target.text(closeText);
         } else {
-            currentTarget.find('[data-text]').html(closeText);
+            let openHtml = target.data('wbtm-open-html');
+            if (openHtml !== undefined) {
+                target.html(openHtml);
+            } else {
+                target.text(openText);
+            }
         }
     }
 }
