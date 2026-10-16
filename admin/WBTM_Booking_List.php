@@ -1093,7 +1093,16 @@
 					'total_buses'       => 0,
 					'total_tax'         => 0.0,
 					'total_outstanding' => 0.0,
+					'paid_only'         => false,
 				);
+				// With no status filter ("All Statuses") the list still shows every row,
+				// but the money cards only count paid orders. Otherwise failed, pending,
+				// cancelled and refunded seats were summed as revenue. Choosing a status
+				// in the filter shows that status's totals, as before.
+				$status_filter = $this->is_pro() ? $this->get_filter_values()['status'] : '';
+				$paid_only     = ($status_filter === '');
+				$paid_statuses = WBTM_Functions::revenue_order_statuses();
+				$empty['paid_only'] = $paid_only;
 				if (empty($ids)) {
 					return $empty;
 				}
@@ -1121,11 +1130,19 @@
 						'wbtm_payment_plan',
 						'wbtm_deposit_paid',
 						'wbtm_remaining_due',
+						'wbtm_order_status',
 					));
 					$seat_tax = $this->stats_seat_tax_map($meta);
 
 					foreach ($chunk as $id) {
 						$row = isset($meta[$id]) ? $meta[$id] : array();
+
+						// A booking with no stored status predates status syncing; it is
+						// still counted, as it always was.
+						$status = isset($row['wbtm_order_status']) ? (string) $row['wbtm_order_status'] : '';
+						if ($paid_only && $status !== '' && !in_array($status, $paid_statuses, true)) {
+							continue;
+						}
 
 						// Revenue is the tax-inclusive amount customers actually paid
 						// (fare + extras); $tax is the slice of it that is tax, so the two
@@ -1189,6 +1206,7 @@
 					'total_buses'       => count($buses),
 					'total_tax'         => round($tax, 2),
 					'total_outstanding' => $due,
+					'paid_only'         => $paid_only,
 				);
 			}
 
@@ -1361,7 +1379,9 @@
 						array('key' => 'wbtm_order_id', 'value' => $f['search'], 'compare' => 'LIKE'),
 					);
 				}
-				if ($f['status'] !== '') {
+				if ($f['status'] === 'paid') {
+					$meta_query[] = array('key' => 'wbtm_order_status', 'value' => WBTM_Functions::revenue_order_statuses(), 'compare' => 'IN');
+				} elseif ($f['status'] !== '') {
 					$meta_query[] = array('key' => 'wbtm_order_status', 'value' => $f['status'], 'compare' => '=');
 				}
 				if ($f['bus_id']) {
@@ -2043,6 +2063,18 @@
 							</div>
 						<?php endforeach; ?>
 					</div>
+					<?php if ($is_pro) : ?>
+						<p class="wbtm-bkl-stats-scope wbtm-bkl-stats-note">
+							<span class="dashicons dashicons-info-outline"></span>
+							<?php
+							echo esc_html(
+								$stats['paid_only']
+									? __('Revenue, tax and balance count paid orders only (processing, completed, partially paid). They are seat fares plus extra services, so order fees (such as a booking fee) and refunds are not included.', 'bus-ticket-booking-with-seat-reservation')
+									: __('Revenue, tax and balance are seat fares plus extra services for the selected status, so order fees (such as a booking fee) and refunds are not included.', 'bus-ticket-booking-with-seat-reservation')
+							);
+							?>
+						</p>
+					<?php endif; ?>
 					<?php if (!$is_pro && $own_lock) : ?>
 						<div class="wbtm-bkl-lock-overlay">
 							<?php echo wp_kses_post($this->pro_badge_html()); ?>
@@ -2128,6 +2160,7 @@
 									<label><?php esc_html_e('Status', 'bus-ticket-booking-with-seat-reservation'); ?></label>
 									<select name="wbtm_bl_status" <?php disabled(!$is_pro); ?>>
 										<option value=""><?php esc_html_e('All Statuses', 'bus-ticket-booking-with-seat-reservation'); ?></option>
+										<option value="paid" <?php selected($f['status'], 'paid'); ?>><?php esc_html_e('Paid (processing, completed, partially paid)', 'bus-ticket-booking-with-seat-reservation'); ?></option>
 										<?php foreach ($statuses as $key => $label) : ?>
 											<option value="<?php echo esc_attr($key); ?>" <?php selected($f['status'], $key); ?>><?php echo esc_html($label); ?></option>
 										<?php endforeach; ?>

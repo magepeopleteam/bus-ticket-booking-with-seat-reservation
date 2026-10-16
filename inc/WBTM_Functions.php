@@ -2227,6 +2227,28 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				return $total;
 			}
+			/**
+			 * Order statuses whose bookings count as money taken in the admin revenue
+			 * totals (Bus > Analytics and the Booking List cards).
+			 *
+			 * Deliberately not the set_book_status setting: that decides when a seat
+			 * stops being sellable, and may include unpaid statuses such as on-hold
+			 * (offline payment) or pending. partially-paid is the deposit status.
+			 *
+			 * @return string[] Status slugs without the "wc-" prefix.
+			 */
+			public static function revenue_order_statuses() {
+				$default  = array( 'processing', 'completed', 'partially-paid' );
+				$statuses = apply_filters( 'wbtm_revenue_order_statuses', $default );
+				$statuses = array_map(
+					function ( $status ) {
+						return preg_replace( '/^wc-/', '', sanitize_key( (string) $status ) );
+					},
+					(array) $statuses
+				);
+				$statuses = array_values( array_unique( array_filter( $statuses ) ) );
+				return $statuses ? $statuses : $default;
+			}
 			//==========================//
 			public static function check_seat_in_cart( $bus_id, $bp, $dp, $bp_date, $seat_name ) {
 				if ( ! self::is_wc_active() ) {

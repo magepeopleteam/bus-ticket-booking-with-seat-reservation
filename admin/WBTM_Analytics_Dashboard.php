@@ -89,20 +89,30 @@
 						$month = gmdate('M Y', strtotime("-$i months"));
 						$stats['monthly_revenue'][$month] = 0;
 					}
+					// There is one booking post per SEAT, so order-level figures must count
+					// each order once: adding the order total per seat multiplied a 2-seat
+					// order by 2 and a 4-seat order by 4. Same for bookings per bus type.
+					$paid_statuses     = WBTM_Functions::revenue_order_statuses();
+					$counted_orders    = array();
+					$bus_type_orders   = array();
 					foreach ($bookings as $booking) {
 						$order_id = get_post_meta($booking->ID, 'wbtm_order_id', true);
 						if ($order_id) {
 							$order = isset( $order_map[ (int) $order_id ] ) ? $order_map[ (int) $order_id ] : ( function_exists( 'wc_get_order' ) ? wc_get_order($order_id) : false );
 							if ($order) {
 								$order_status = $order->get_status();
-								$total = $order->get_total();
-								// Include both processing and completed orders
-								if (in_array($order_status, array('processing', 'completed', 'wc-processing', 'wc-completed'))) {
-									$stats['total_bookings']++;
-									$stats['total_revenue'] += $total;
-									$month = gmdate('M Y', strtotime($order->get_date_created()));
-									if (isset($stats['monthly_revenue'][$month])) {
-										$stats['monthly_revenue'][$month] += $total;
+								if (in_array($order_status, $paid_statuses, true)) {
+									if (!isset($counted_orders[(int) $order_id])) {
+										$counted_orders[(int) $order_id] = true;
+										// Whole order (fees included) less refunds, so it
+										// matches the money WooCommerce actually kept.
+										$total = (float) $order->get_total() - (float) $order->get_total_refunded();
+										$stats['total_bookings']++;
+										$stats['total_revenue'] += $total;
+										$month = gmdate('M Y', strtotime($order->get_date_created()));
+										if (isset($stats['monthly_revenue'][$month])) {
+											$stats['monthly_revenue'][$month] += $total;
+										}
 									}
 									// Add route data only for valid orders
 									$bp = get_post_meta($booking->ID, 'wbtm_boarding_point', true);
@@ -156,8 +166,17 @@
 											'seats' => 0
 										);
 									}
-									$stats['bus_types'][$bus_type]['bookings']++;
-									$stats['bus_types'][$bus_type]['revenue'] += $total;
+									// This seat's own fare plus its share of extra services
+									// (the Booking List's per-seat total), so a return order's
+									// money is split between the buses that ran each leg.
+									$seat_revenue = (float) get_post_meta($booking->ID, 'wbtm_bus_fare', true)
+										+ WBTM_Functions::booking_extra_services_total($booking->ID);
+									if (!isset($bus_type_orders[$bus_type][(int) $order_id])) {
+										$bus_type_orders[$bus_type][(int) $order_id] = true;
+										$stats['bus_types'][$bus_type]['bookings']++;
+									}
+									$stats['bus_types'][$bus_type]['seats']++;
+									$stats['bus_types'][$bus_type]['revenue'] += $seat_revenue;
 									// Calculate occupancy rates
 									$total_seats = get_post_meta($bus_id, 'wbtm_total_seat', true);
 									if ($total_seats) {
