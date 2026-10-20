@@ -31,7 +31,10 @@ if ( ! class_exists( 'WBTM_Standalone_Confirmation' ) ) {
 			$booking_id = isset( $_GET['booking_id'] ) ? absint( $_GET['booking_id'] ) : 0;
 			$result     = isset( $_GET['wbtm_booking_result'] ) ? sanitize_key( wp_unslash( $_GET['wbtm_booking_result'] ) ) : '';
 
-			if ( ! $booking_id || get_post_type( $booking_id ) !== 'wbtm_bus_booking' || ! in_array( $result, array( 'success', 'failed', 'cancelled' ), true ) ) {
+			// Someone else's booking gets the same answer as a missing one: this card
+			// lists the passengers and mints a ticket download link.
+			if ( ! $booking_id || ! in_array( $result, array( 'success', 'failed', 'cancelled' ), true )
+				|| ! WBTM_Standalone_Payment::can_view_group( $booking_id ) ) {
 				return $this->render_empty_state();
 			}
 
