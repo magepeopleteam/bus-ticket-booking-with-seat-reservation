@@ -30,6 +30,10 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		// front-end request, so a bare numeric booking id must never be enough to
 		// drive a status transition on it - see can_handle_return().
 		const SIGNATURE_ARG = 'wbtm_sig';
+		// Action signed into the result-page URL (see get_result_page_url()). It lets
+		// whoever we sent to that page see the booking, without the bare numeric id
+		// being enough for anyone else - see can_view_group().
+		const VIEW_ACTION = 'wbtm_view';
 
 		public function __construct() {
 			add_action( 'wbtm_standalone_add_booking', array( $this, 'create_booking' ) );
@@ -196,36 +200,26 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 				$return_group_id = isset( $_POST['wbtm_return_group_id'] ) ? absint( wp_unslash( $_POST['wbtm_return_group_id'] ) ) : 0;
 
 				// Validate the staged outbound group the return leg claims to belong to:
-				// it must be a real pending booking, and (when logged in) owned by this user.
+				// it must be a real pending booking group this caller provably created.
+				// The id comes from the request, so without the ownership proof anyone -
+				// logged out included - could graft a return leg onto a stranger's group,
+				// or replace and delete the one already there (see below).
 				if ( $journey_type === 'return' && $return_group_id > 0 ) {
-					$outbound_ok = get_post( $return_group_id )
-						&& get_post_type( $return_group_id ) === 'wbtm_bus_booking'
-						&& (string) get_post_meta( $return_group_id, 'wbtm_order_status', true ) === 'pending';
-					if ( $outbound_ok && is_user_logged_in() ) {
-						$owner = (int) get_post_meta( $return_group_id, 'wbtm_user_id', true );
-						if ( $owner && $owner !== get_current_user_id() ) {
-							$outbound_ok = false;
-						}
-					}
-					if ( ! $outbound_ok ) {
-						// Staged outbound is gone/invalid — degrade to a standalone booking
-						// for the return leg on its own rather than failing outright.
-						$return_group_id = 0;
-					}
+					// Staged outbound gone, invalid or not the caller's: degrade to a
+					// standalone booking for the return leg on its own rather than failing.
+					$return_group_id = self::get_owned_pending_group( $return_group_id );
 				}
 
 				// Re-staging the outbound leg (customer used "Change Departure"): discard the
 				// previously-staged, still-unpaid outbound group so it stops holding seats.
 				if ( $journey_type === 'departure' ) {
 					$prev_group_id = isset( $_POST['wbtm_prev_outbound_group_id'] ) ? absint( wp_unslash( $_POST['wbtm_prev_outbound_group_id'] ) ) : 0;
-					if ( $prev_group_id > 0 && get_post_type( $prev_group_id ) === 'wbtm_bus_booking'
-						&& (string) get_post_meta( $prev_group_id, 'wbtm_order_status', true ) === 'pending' ) {
-						$prev_owner = (int) get_post_meta( $prev_group_id, 'wbtm_user_id', true );
-						$owns_prev  = ! is_user_logged_in() || ! $prev_owner || $prev_owner === get_current_user_id();
-						if ( $owns_prev ) {
-							foreach ( self::get_group_post_ids( $prev_group_id ) as $stale_id ) {
-								wp_delete_post( $stale_id, true );
-							}
+					// Same proof as the return leg: this permanently deletes every booking in
+					// the group, so a group the caller cannot prove is theirs is left alone.
+					$prev_group_id = $prev_group_id > 0 ? self::get_owned_pending_group( $prev_group_id ) : 0;
+					if ( $prev_group_id > 0 ) {
+						foreach ( self::get_group_post_ids( $prev_group_id ) as $stale_id ) {
+							wp_delete_post( $stale_id, true );
 						}
 					}
 				}
@@ -757,16 +751,20 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		}
 
 		/**
-		 * Is the visitor demonstrably the creator of this booking group - the
-		 * logged-in user it was booked by, or a guest still holding the token cookie
-		 * issued at creation? Nothing is taken on trust: a group with no secret on
-		 * record can prove nothing and returns false.
+		 * Is the visitor demonstrably the creator of this booking group? Nothing is
+		 * taken on trust, and being logged out never counts as ownership:
+		 *
+		 *  - A group booked by a member account belongs to that account alone, so the
+		 *    caller must be logged in as exactly that user.
+		 *  - A guest group (wbtm_user_id 0) must be claimed with the token cookie
+		 *    issued to the browser that created it. A group with no secret on record
+		 *    can prove nothing and returns false.
 		 */
 		private static function group_ownership_proven( $booking_id ) {
 			$head  = self::get_group_head_id( $booking_id );
 			$owner = (int) get_post_meta( $head, 'wbtm_user_id', true );
-			if ( $owner > 0 && is_user_logged_in() && $owner === get_current_user_id() ) {
-				return true;
+			if ( $owner > 0 ) {
+				return is_user_logged_in() && $owner === get_current_user_id();
 			}
 
 			$token = (string) get_post_meta( $head, self::TOKEN_META, true );
@@ -789,11 +787,11 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		 *     takeover vector against other people's completed bookings).
 		 *  2. The caller must be the booking's creator — a logged-in user matching
 		 *     wbtm_user_id, or a guest presenting the token cookie issued when the
-		 *     booking was created.
+		 *     booking was created (see group_ownership_proven()).
 		 *
-		 * Legacy bookings created before tokens existed have no token meta; for
-		 * those we fall back to the status guard alone (condition 1), which still
-		 * protects every paid booking.
+		 * A guest group with no token on record (created before tokens existed) can
+		 * no longer be claimed by anyone: letting it through on the status guard
+		 * alone let any visitor rewrite a stranger's unpaid booking.
 		 */
 		public static function can_checkout_group( $booking_id ) {
 			// Decide on the group head: status, owner and secret all live there, and a
@@ -809,13 +807,55 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 				}
 			}
 
-			if ( self::group_ownership_proven( $head ) ) {
+			return self::group_ownership_proven( $head );
+		}
+
+		/**
+		 * Resolve a caller-supplied booking id to the head of a still-pending booking
+		 * group the caller provably owns, or 0. Used wherever a request names a group
+		 * to link a leg into or to delete, so a guessed id is never enough.
+		 *
+		 * Only a real standalone group head qualifies: a WooCommerce-flow booking
+		 * (whose wbtm_order_id is a WC order, not a booking post) never does.
+		 *
+		 * @param  int $booking_id Any post id in the group, as supplied by the request.
+		 * @return int The group head id, or 0.
+		 */
+		private static function get_owned_pending_group( $booking_id ) {
+			$booking_id = absint( $booking_id );
+			if ( ! $booking_id || get_post_type( $booking_id ) !== 'wbtm_bus_booking' ) {
+				return 0;
+			}
+			$head = self::get_group_head_id( $booking_id );
+			if ( get_post_type( $head ) !== 'wbtm_bus_booking'
+				|| (string) get_post_meta( $head, 'wbtm_order_status', true ) !== 'pending'
+				|| ! self::group_ownership_proven( $head ) ) {
+				return 0;
+			}
+			return $head;
+		}
+
+		/**
+		 * Whether the current request may see a booking group on the public checkout
+		 * or confirmation page. Those pages show the itinerary, the passengers'
+		 * answers and, once paid, a ticket download link, so the numeric id alone is
+		 * not enough: the caller must own the group, or arrive on the result URL we
+		 * signed for it (which keeps a gateway return opened in another browser, such
+		 * as a payment app's, working).
+		 */
+		public static function can_view_group( $booking_id ) {
+			$booking_id = absint( $booking_id );
+			if ( ! $booking_id || get_post_type( $booking_id ) !== 'wbtm_bus_booking' ) {
+				return false;
+			}
+			$expected  = self::return_signature( $booking_id, self::VIEW_ACTION );
+			$presented = isset( $_GET[ self::SIGNATURE_ARG ] )
+				? sanitize_text_field( wp_unslash( $_GET[ self::SIGNATURE_ARG ] ) )
+				: '';
+			if ( '' !== $expected && '' !== $presented && hash_equals( $expected, $presented ) ) {
 				return true;
 			}
-
-			// No token on record (pre-upgrade booking): status guard above still
-			// applies, so only an unpaid legacy group can reach here.
-			return '' === (string) get_post_meta( $head, self::TOKEN_META, true );
+			return self::group_ownership_proven( $booking_id );
 		}
 
 		private static function get_group_post_ids( $booking_id ) {
@@ -1000,13 +1040,16 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		}
 
 		public static function get_result_page_url( $booking_id, $result ) {
-			return add_query_arg(
-				array(
-					'booking_id'          => $booking_id,
-					'wbtm_booking_result' => $result,
-				),
-				self::get_checkout_page_url()
+			$args = array(
+				'booking_id'          => $booking_id,
+				'wbtm_booking_result' => $result,
 			);
+			// Lets the page show this booking to whoever we send there - see can_view_group().
+			$signature = self::return_signature( $booking_id, self::VIEW_ACTION );
+			if ( '' !== $signature ) {
+				$args[ self::SIGNATURE_ARG ] = $signature;
+			}
+			return add_query_arg( $args, self::get_checkout_page_url() );
 		}
 
 		private function redirect_to_result( $booking_id, $result ) {

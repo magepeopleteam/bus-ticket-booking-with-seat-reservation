@@ -160,7 +160,9 @@ if ( ! class_exists( 'WBTM_Standalone_Checkout' ) ) {
 
 		public function render() {
 			$booking_id = isset( $_GET['booking_id'] ) ? absint( $_GET['booking_id'] ) : 0;
-			if ( ! $booking_id || get_post_type( $booking_id ) !== 'wbtm_bus_booking' ) {
+			// Someone else's booking gets the same answer as a missing one, so the page
+			// cannot be used to read (or probe for) other customers' bookings.
+			if ( ! $booking_id || ! WBTM_Standalone_Payment::can_view_group( $booking_id ) ) {
 				return $this->render_notice( __( 'No booking found. Please start a new booking.', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
 
