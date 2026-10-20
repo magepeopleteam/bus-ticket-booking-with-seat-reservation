@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin, raselsha
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.8
+Stable tag: 5.9.9
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
