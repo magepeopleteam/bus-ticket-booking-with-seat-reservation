@@ -1112,6 +1112,8 @@
 								array( '<code>[wbtm-bus-list]</code>', __( 'A grid or list of your buses. See the attribute table below for the full set of options.', 'bus-ticket-booking-with-seat-reservation' ), __( 'Free', 'bus-ticket-booking-with-seat-reservation' ) ),
 								array( '<code>[wbtm-bus-search-form]</code>', __( 'The search form on its own, for placing anywhere on the site.', 'bus-ticket-booking-with-seat-reservation' ), __( 'Free', 'bus-ticket-booking-with-seat-reservation' ) ),
 								array( '<code>[wbtm-bus-search]</code>', __( 'The search form together with its results.', 'bus-ticket-booking-with-seat-reservation' ), __( 'Free', 'bus-ticket-booking-with-seat-reservation' ) ),
+								array( '<code>[wbtm-bus-booking id=""]</code>', __( 'One bus on any page: its details plus the booking form (stops, date, seats, add to cart). Optional from, to, date, details="no", style="flix". Also available as the "Bus Booking" Elementor widget.', 'bus-ticket-booking-with-seat-reservation' ), __( 'Free', 'bus-ticket-booking-with-seat-reservation' ) ),
+								array( '<code>[wbtm-bus-event event=""]</code>', __( 'Every bus of an event (or of bus_ids, cat or destination): a departure overview with times, fares and seats left, and one booking form limited to those buses. Takes the destination and date from the event unless destination or date are given. Also available as the "Bus Event Booking" Elementor widget.', 'bus-ticket-booking-with-seat-reservation' ), __( 'Free', 'bus-ticket-booking-with-seat-reservation' ) ),
 								array( '<code>[view-ticket]</code>', __( 'The PIN-based ticket lookup form for passengers. The page holding it is created automatically when PRO is activated.', 'bus-ticket-booking-with-seat-reservation' ), 'PRO' ),
 								array( '<code>[wbtm_download_pdf order_id=""]</code>', __( 'A PDF ticket download button for a given order ID.', 'bus-ticket-booking-with-seat-reservation' ), 'PRO' ),
 								array( '<code>[wbtm-standalone-checkout]</code>', __( 'The plugin\'s own checkout page, used in standalone (non-WooCommerce) payment mode.', 'bus-ticket-booking-with-seat-reservation' ), 'PRO' ),
@@ -1135,6 +1137,7 @@
 								array( '<code>end</code>', __( 'empty', 'bus-ticket-booking-with-seat-reservation' ), __( 'Only include buses arriving at this stop.', 'bus-ticket-booking-with-seat-reservation' ) ),
 							),
 						),
+						array( 'type' => 'text', 'text' => __( 'Filters accepted by [wbtm-bus-search] and [wbtm-bus-list] (and by [wbtm-bus-event]): event (slug, ID or name; comma-separate several), bus_ids (comma-separated IDs), destination (a stop name) and date (YYYY-MM-DD). Each filter narrows the buses further. On [wbtm-bus-list], date keeps only buses that depart that day; on the search and event shortcodes it fixes the outbound journey date. Group buses into events under Bus → Events and assign them in each bus\'s General tab.', 'bus-ticket-booking-with-seat-reservation' ) ),
 						array(
 							'type' => 'note',
 							'text' => __( 'Some older guides mention a [wbtm-bus-details] shortcode. It is not part of the plugin — link to the bus\'s own page instead, or use [wbtm-bus-list] with start and end to narrow the listing.', 'bus-ticket-booking-with-seat-reservation' ),

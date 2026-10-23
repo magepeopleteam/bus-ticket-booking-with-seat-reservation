@@ -24,6 +24,24 @@
 				$column = $params['column'];
 				$style = $params['style'];
 				$pagination = $params['pagination'];
+				// Optional filters (event / bus_ids / destination / date) narrow the
+				// listing; none given keeps the original behaviour.
+				$scope = WBTM_Event_Shortcodes::context(array(
+					'event' => $params['event'],
+					'bus_ids' => $params['bus_ids'],
+					'destination' => $params['destination'],
+					'date' => $params['date'],
+				), true);
+				if (is_string($scope)) {
+					return WBTM_Event_Shortcodes::editor_notice($scope);
+				}
+				$scope_ids = $scope[3];
+				if ($scope_ids !== null) {
+					if (!$scope_ids) {
+						return '';
+					}
+					WBTM_Bus_Scope::push($scope_ids);
+				}
 				
 				// For pagination, we need to get total count and limit results
 				if ($pagination === 'yes' && $show > 0) {
@@ -32,6 +50,9 @@
 				} else {
 					$bus_ids = WBTM_Query::get_bus_id($start, $end, $cat);
 					$total_buses = count($bus_ids);
+				}
+				if ($scope_ids !== null) {
+					WBTM_Bus_Scope::pop();
 				}
 				ob_start();
 				if (sizeof($bus_ids) > 0) {
@@ -86,8 +107,17 @@
 			}
 			public function wbtm_bus_search($attr, $content = null) {
 				WBTM_Global_File_Load::ensure_frontend_assets();
-				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'off','left_filter_input' => 'off', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on');
+				$defaults = array("cat" => "0", "style" => '', "search-page" => '', 'left_filter' => 'off','left_filter_input' => 'off', 'left_filter_type' => 'on' ,'left_filter_operator' => 'on', 'left_filter_boarding' => 'on', 'event' => '', 'bus_ids' => '', 'destination' => '', 'date' => '');
 				$params = shortcode_atts($defaults, $attr);
+				$scope = WBTM_Event_Shortcodes::search_scope($params);
+				if (is_string($scope)) {
+					return WBTM_Event_Shortcodes::editor_notice($scope);
+				}
+				if ($scope) {
+					// Scoped forms must search in place; the results page would drop the scope.
+					$params['force_ajax'] = 1;
+					WBTM_Bus_Scope::push($scope[0], $scope[1], $scope[2]);
+				}
 
 				$cat = $params['cat'];
 				$form_style = $params['style'];
@@ -106,6 +136,9 @@
 					<?php require WBTM_Functions::template_path('layout/search_form.php'); ?>
 				</div>
 				<?php
+				if ($scope) {
+					WBTM_Bus_Scope::pop();
+				}
 				do_action('wbtm_after_search_result_section', $params);
 				return ob_get_clean();
 			}
@@ -121,6 +154,10 @@
 					"cat" => "",
 					"start" => "",
 					"end" => "",
+					"event" => "",
+					"bus_ids" => "",
+					"destination" => "",
+					"date" => "",
 				);
 			}
 		}

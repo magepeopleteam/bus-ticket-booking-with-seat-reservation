@@ -537,6 +537,9 @@
 			public static function next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, $return = false) {
 				$route = $return ? $end_route : $start_route;
 				$all_dates = WBTM_Functions::get_all_dates($post_id, $route);
+				if (!$return) {
+					$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
+				}
 				$total_date = sizeof($all_dates);
 				if ($total_date > 0) {
 					$active_date = $return ? $r_date : $j_date;
@@ -663,6 +666,8 @@
 				<?php
 			if ($start_route) {
 				$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
+				// Outbound dates only: a scoped event page can pin the journey to its event date.
+				$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
 				// Render the calendar instantly; sold-out greying loads as a separate async
 				// "chunk" (see get_wbtm_soldout_dates) so the heavy availability scan never
 				// blocks the date picker.

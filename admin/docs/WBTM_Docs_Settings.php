@@ -56,6 +56,11 @@
 						'tab'   => __( 'Frontend Display', 'bus-ticket-booking-with-seat-reservation' ),
 						'intro' => __( 'Show or hide each filter beside the search results, and decide what happens when a route has no price.', 'bus-ticket-booking-with-seat-reservation' ),
 					),
+					'wbtm_event_settings'            => array(
+						'plan'  => 'free',
+						'tab'   => __( 'Event Booking Pages', 'bus-ticket-booking-with-seat-reservation' ),
+						'intro' => __( 'How the [wbtm-bus-event] and [wbtm-bus-booking] shortcodes and their Elementor widgets behave by default; each page can still override these with shortcode attributes.', 'bus-ticket-booking-with-seat-reservation' ),
+					),
 					'wbtm_slider_settings'           => array(
 						'plan'  => 'free',
 						'tab'   => __( 'Slider Settings', 'bus-ticket-booking-with-seat-reservation' ),

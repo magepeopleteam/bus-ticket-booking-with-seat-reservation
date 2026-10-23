@@ -228,7 +228,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							}
 						}
 					} else {
-						$bus_ids = WBTM_Global_Function::get_all_post_id( WBTM_Functions::get_cpt() );
+						$bus_ids = apply_filters( 'wbtm_route_list_bus_ids', WBTM_Global_Function::get_all_post_id( WBTM_Functions::get_cpt() ) );
 						if ( sizeof( $bus_ids ) > 0 ) {
 							foreach ( $bus_ids as $bus_id ) {
 								$routes     = WBTM_Global_Function::get_post_info( $bus_id, 'wbtm_bus_bp_stops', [] );
