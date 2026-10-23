@@ -71,6 +71,12 @@
 		$search_page_redirect = WBTM_Global_Function::get_settings('wbtm_general_settings', 'search_page_redirect');
 		$redirect_url = $active_redirect_page == 'on' && $search_page_redirect && $post_id == 0 ? get_home_url() . '/' . get_page_uri($search_page_redirect) : '';
 		$redirect_url = is_admin() ? '' : $redirect_url;
+		// Scoped / embedded forms (event pages, single-bus embeds) must search in place:
+		// the global results page would drop their bus scope.
+		$force_ajax = ! empty( $params['force_ajax'] );
+		if ( $force_ajax ) {
+			$redirect_url = '';
+		}
 		/*********************************/
 		$search_info['bus_start_route'] = $start_route;
 		$search_info['bus_end_route'] = $end_route;
@@ -946,6 +952,7 @@
                     <h4><?php echo esc_html($buy_ticket_text); ?></h4>
 				<?php } ?>
                 <input type="hidden" name="wbtm_post_id" value="<?php echo esc_attr($post_id); ?>"/>
+                <?php do_action( 'wbtm_search_form_hidden_fields', $post_id, $params ); ?>
                 <form action="<?php echo esc_attr($redirect_url); ?>" method="get" class="mpForm">
 
                     <input type="hidden" name='wbtm_list_style' value="<?php echo esc_attr($style); ?>"/>
@@ -1004,7 +1011,7 @@
                         <div class="wtbm_bus_search_button_holder" style="display: flex">
                             <div class="_dFlex_fdColumn_justifyBetween_fullHeight search_button_holder">
                                 <span class="wbtm_search_button_spacer" aria-hidden="true">&nbsp;</span>
-                                <?php if ( $active_redirect_page == 'on' && $search_page_redirect ) {
+                                <?php if ( $active_redirect_page == 'on' && $search_page_redirect && ! $force_ajax ) {
                                     $redirect_btn_display = 'block';
                                     $ajax_btn_display = 'none';
                                 }else{

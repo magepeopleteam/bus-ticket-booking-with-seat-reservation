@@ -25,6 +25,20 @@ function wbtm_hide_wc_notices($) {
 		return $.trim($(this).html()) !== '';
 	}).slideUp('fast');
 }
+// Bus scope of the search form that contains `context` (event pages, single-bus
+// embeds — see inc/WBTM_Bus_Scope.php). Returns the extra AJAX fields to send so
+// the server narrows routes, dates and results to that form's own buses; an
+// unscoped form returns {} and every request stays exactly as before.
+function wbtm_bus_scope_args(context) {
+	let input = jQuery(context).closest('#wbtm_area').find('input[name="wbtm_bus_scope"]').first();
+	if (!input.length) {
+		return {};
+	}
+	return {
+		wbtm_bus_scope: input.val() || '',
+		wbtm_scope_date: input.attr('data-date') || ''
+	};
+}
 //==================================================Search area==================//
 (function ($) {
 	"use strict";
@@ -110,7 +124,7 @@ function wbtm_hide_wc_notices($) {
 			$.ajax({
 				type: "POST",
 				url: wbtm_ajax_url,
-				data: {
+				data: $.extend({
 					action: "get_wbtm_bus_list",
 					nonce: wbtm_nonce,
 					start_route: start.val(),
@@ -123,7 +137,7 @@ function wbtm_hide_wc_notices($) {
 					wbtm_bus_start_end_id: wbtm_bus_start_end,
 					left_filter_show: JSON.stringify(left_filter_show),
 					// backend_order: window.location.href.search("wbtm_backend_order"),
-				},
+				}, wbtm_bus_scope_args(parent)),
 				beforeSend: function () {
 					wbtm_set_search_button_state(parent, true);
 					wbtm_loader(parent.find(".wbtm_search_result"));
@@ -208,12 +222,12 @@ function wbtm_hide_wc_notices($) {
 				$.ajax({
 					type: 'POST',
 					url: wbtm_ajax_url,
-					data: {
+					data: $.extend({
 						"action": "get_wbtm_dropping_point",
 						"start_route": start_route,
 						"post_id": post_id,
 						"nonce": wbtm_nonce,
-					},
+					}, wbtm_bus_scope_args(parent)),
 					success: function (data) {
 						// Data loads in the background as before (still needed to
 						// populate valid destinations for this start route) — just no
@@ -268,13 +282,13 @@ function wbtm_hide_wc_notices($) {
 		$.ajax({
 			type: 'POST',
 			url: wbtm_ajax_url,
-			data: {
+			data: $.extend({
 				"action": "get_wbtm_journey_date",
 				"start_route": start_route,
 				"end_route": end_route,
 				"post_id": post_id,
 				"nonce": wbtm_nonce,
-			},
+			}, wbtm_bus_scope_args(parent)),
 			beforeSend: function () {
 				wbtm_loader_xs(target.find('.calendar'));
 			},
@@ -301,14 +315,14 @@ function wbtm_hide_wc_notices($) {
 			$.ajax({
 				type: 'POST',
 				url: wbtm_ajax_url,
-				data: {
+				data: $.extend({
 					"action": "get_wbtm_return_date",
 					"start_route": start_route,
 					"end_route": end_route,
 					"j_date": date,
 					"post_id": post_id,
 					"nonce": wbtm_nonce,
-				},
+				}, wbtm_bus_scope_args(parent)),
 				beforeSend: function () {
 					wbtm_loader_xs(target.find('.calendar'));
 				},
@@ -1206,7 +1220,7 @@ function wbtm_hide_wc_notices($) {
 		$.ajax({
 			type: 'POST',
 			url: wbtm_ajax_url,
-			data: {
+			data: $.extend({
 				action: 'get_wbtm_return_bus_list',
 				post_id: container.data('post-id'),
 				return_start: return_start,
@@ -1218,7 +1232,7 @@ function wbtm_hide_wc_notices($) {
 				left_filter_show: leftFilter,
 				floor_time: floorTime,
 				nonce: wbtm_nonce
-			},
+			}, wbtm_bus_scope_args(container)),
 			beforeSend: function () {
 				wbtm_loader(listContainer);
 			},

@@ -79,7 +79,15 @@
 				//==================//
 				require_once WBTM_PLUGIN_DIR . '/admin/WBTM_Admin.php';
 				//==================//
+				// Bus scope (event / destination / ID-limited search), Events taxonomy and the
+				// embeddable [wbtm-bus-booking] / [wbtm-bus-event] shortcodes. The scope must
+				// load before the shortcodes that push it.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Bus_Scope.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Bus_Events.php';
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Event_Shortcodes.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Shortcodes.php';
+				// Elementor widgets; registers nothing unless Elementor is active.
+				require_once WBTM_PLUGIN_DIR . '/inc/elementor/WBTM_Elementor.php';
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_Single_Bus_Details.php';
 				// Cart/checkout/order integration — entirely WooCommerce-specific.
 				if ( WBTM_Functions::is_wc_active() ) {

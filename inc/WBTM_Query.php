@@ -172,6 +172,8 @@
                         $cat_query
                     )
                 );
+                // Lets a scoped shortcode (see WBTM_Bus_Scope) narrow the search to its own buses.
+                $args = apply_filters('wbtm_bus_query_args', $args, $start, $end, $cat);
                 $bus_query = new WP_Query($args);
                 while ($bus_query->have_posts()) {
                     $bus_query->the_post();
@@ -226,6 +228,7 @@
                         $cat_query
                     )
                 );
+                $args = apply_filters('wbtm_bus_query_args', $args, $start, $end, $cat);
                 $bus_query = new WP_Query($args);
                 $total_count = $bus_query->found_posts;
                 wp_reset_postdata();

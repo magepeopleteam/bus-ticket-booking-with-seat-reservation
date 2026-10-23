@@ -1,0 +1,131 @@
+/*
+ * Event / embedded booking pages ([wbtm-bus-event], [wbtm-bus-booking]).
+ * Colours come from the plugin's own style settings (--wbtm_* variables).
+ */
+.wbtm_event_booking .wbtm_event_header {
+	margin-bottom: 16px;
+}
+.wbtm_event_booking .wbtm_event_title {
+	margin: 0 0 6px;
+}
+.wbtm_event_booking .wbtm_event_meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+	color: var(--wbtm_color_theme, #1a73e8);
+	font-weight: 600;
+}
+.wbtm_event_booking .wbtm_event_meta i {
+	margin-right: 4px;
+}
+.wbtm_event_booking .wbtm_event_description {
+	margin-top: 10px;
+}
+.wbtm_event_overview {
+	margin-bottom: 20px;
+}
+.wbtm_event_overview .wbtm_event_overview_title {
+	margin: 0 0 12px;
+}
+.wbtm_event_overview .wbtm_event_cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+	gap: 16px;
+}
+.wbtm_event_overview .wbtm_event_card {
+	background: var(--wbtm_color_white, #fff);
+	border: 1px solid var(--wbtm_color_border, #dde1e7);
+	border-radius: 10px;
+	padding: 14px 16px;
+	min-width: 0;
+}
+.wbtm_event_overview .wbtm_event_card_head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 4px 12px;
+	margin-bottom: 10px;
+}
+.wbtm_event_overview .wbtm_event_bus_meta {
+	font-size: 13px;
+	opacity: .75;
+}
+.wbtm_event_overview .wbtm_event_table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0;
+	font-size: 14px;
+}
+.wbtm_event_overview .wbtm_event_table th,
+.wbtm_event_overview .wbtm_event_table td {
+	padding: 7px 6px;
+	border: 0;
+	border-bottom: 1px solid var(--wbtm_color_border, #eef0f3);
+	text-align: left;
+	vertical-align: middle;
+}
+.wbtm_event_overview .wbtm_event_table th {
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: .4px;
+	opacity: .7;
+}
+.wbtm_event_overview .wbtm_event_table tr:last-child td {
+	border-bottom: 0;
+}
+.wbtm_event_overview .wbtm_event_action {
+	text-align: right;
+	white-space: nowrap;
+}
+.wbtm_event_overview .wbtm_event_book_btn {
+	padding: 6px 16px;
+	min-height: 0;
+	line-height: 1.4;
+	cursor: pointer;
+}
+.wbtm_event_booking .wbtm_event_empty,
+.wbtm_container .wbtm_event_notice {
+	padding: 14px 16px;
+	border: 1px dashed var(--wbtm_color_border, #dde1e7);
+	border-radius: 8px;
+	text-align: center;
+}
+/* Locked destination: the "To" field is display-only and cannot be swapped. */
+#wbtm_area.wbtm_scope_lock_to .wbtm_dropping_point .wbtm_input_select_list,
+#wbtm_area.wbtm_scope_lock_to .wbtm_search_location_toggle {
+	display: none !important;
+}
+#wbtm_area.wbtm_scope_lock_to .wbtm_dropping_point,
+#wbtm_area.wbtm_scope_lock_to .wbtm_dropping_point input.formControl {
+	cursor: default;
+}
+@media (max-width: 600px) {
+	.wbtm_event_overview .wbtm_event_table thead {
+		display: none;
+	}
+	.wbtm_event_overview .wbtm_event_table tr {
+		display: block;
+		padding: 8px 0;
+		border-bottom: 1px solid var(--wbtm_color_border, #eef0f3);
+	}
+	.wbtm_event_overview .wbtm_event_table tr:last-child {
+		border-bottom: 0;
+	}
+	.wbtm_event_overview .wbtm_event_table td {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		border: 0;
+		padding: 3px 0;
+	}
+	.wbtm_event_overview .wbtm_event_table td[data-label]::before {
+		content: attr(data-label);
+		font-weight: 600;
+		opacity: .7;
+	}
+	.wbtm_event_overview .wbtm_event_action {
+		justify-content: flex-end;
+		padding-top: 6px;
+	}
+}

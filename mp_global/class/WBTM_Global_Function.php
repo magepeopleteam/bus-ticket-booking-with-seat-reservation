@@ -270,7 +270,7 @@
 						<?php if ( ! empty( $async ) && isset( $async['post_id'], $async['start'], $async['end'] ) ) : ?>
                         // Load sold-out dates as a separate, non-blocking request and re-paint
                         // the already-visible calendar once it arrives.
-                        jQuery.post(wbtm_ajax_url, {
+                        jQuery.post(wbtm_ajax_url, jQuery.extend({
                             action: 'get_wbtm_soldout_dates',
                             nonce: wbtm_nonce,
                             post_id: <?php echo wp_json_encode( (string) $async['post_id'] ); ?>,
@@ -278,7 +278,7 @@
                             end_route: <?php echo wp_json_encode( (string) $async['end'] ); ?>,
                             leg: <?php echo wp_json_encode( isset($async['leg']) ? (string) $async['leg'] : 'outbound' ); ?>,
                             j_date: <?php echo wp_json_encode( isset($async['j_date']) ? (string) $async['j_date'] : '' ); ?>
-                        }).done(function (res) {
+                        }, typeof wbtm_bus_scope_args === 'function' ? wbtm_bus_scope_args(wbtmPicker) : {})).done(function (res) {
                             if (res && res.success && res.data && Array.isArray(res.data.soldout) && res.data.soldout.length) {
                                 soldoutDates = res.data.soldout;
                                 if (wbtmPicker.hasClass('hasDatepicker')) {

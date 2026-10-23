@@ -391,6 +391,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						'subtitle'   => __('Search result filter visibility', 'bus-ticket-booking-with-seat-reservation'),
 						'section_id' => 'wbtm_frontend_display_settings',
 					],
+					'events' => [
+						'title'      => __('Event Booking Pages', 'bus-ticket-booking-with-seat-reservation'),
+						'icon'       => 'fas fa-ticket-alt',
+						'subtitle'   => __('Event pages, embeds & shortcodes', 'bus-ticket-booking-with-seat-reservation'),
+						'section_id' => 'wbtm_event_settings',
+					],
 					'deposit' => [
 						'title'      => __('Deposit / Partial Pay', 'addon-bus--ticket-booking-with-seat-pro'),
 						'icon'       => 'fas fa-wallet',
@@ -549,6 +555,24 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'icon'     => 'fas fa-ban',
 							'label'    => __('Unpriced Routes', 'bus-ticket-booking-with-seat-reservation'),
 							'field_names' => ['unpriced_route_action', 'unpriced_route_message'],
+						],
+					],
+					'wbtm_event_settings' => [
+						'labels' => [
+							'icon'        => 'fas fa-tag',
+							'label'       => __('Labels', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['event_label', 'event_label_plural'],
+						],
+						'behaviour' => [
+							'icon'        => 'fas fa-ticket-alt',
+							'label'       => __('Event page behaviour', 'bus-ticket-booking-with-seat-reservation'),
+							'layout'      => 'toggles',
+							'field_names' => ['event_header', 'event_overview', 'event_lock_destination', 'event_auto_search'],
+						],
+						'reference' => [
+							'icon'        => 'fas fa-code',
+							'label'       => __('Shortcodes & Elementor widgets', 'bus-ticket-booking-with-seat-reservation'),
+							'field_names' => ['event_shortcode_reference'],
 						],
 					],
 					'wbtm_passenger_pdf_settings' => [

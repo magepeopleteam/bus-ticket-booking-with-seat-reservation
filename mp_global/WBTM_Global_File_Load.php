@@ -162,7 +162,7 @@
 			 * by id ([fusion_global id="712"]) — the shortcode lives in another post.
 			 */
 			private static function content_has_plugin_shortcode( string $content, int $depth = 0, array $seen = array() ): bool {
-				foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
+				foreach ( array( 'wbtm-bus-list', 'wbtm-bus-search-form', 'wbtm-bus-search', 'wbtm-bus-booking', 'wbtm-bus-event', 'view-ticket', 'wbtm_download_pdf' ) as $shortcode ) {
 					if ( has_shortcode( $content, $shortcode ) ) {
 						return true;
 					}
