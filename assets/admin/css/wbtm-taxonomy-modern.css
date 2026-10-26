@@ -730,7 +730,7 @@ body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.
    generated label by default — order pushes the label between them and
    the remove button to the far right, matching the visual layout. */
 .wbtm-modal .wbtm-icon-field .wbtm_icon_item::after {
-	content: "Icon selected";
+	content: attr(data-selected-label);
 	order: 1;
 	flex: 1;
 	font-size: 13px;
@@ -896,6 +896,16 @@ body[class*="taxonomy-wbtm_bus_drop_off"] .wrap.wbtm-taxonomy-modern-wrap table.
 }
 
 @media (max-width: 782px) {
+	/* Preserve readable column widths when localized headings need more room. */
+	.wrap.wbtm-taxonomy-modern-wrap .wbtm-taxonomy-table-scroll {
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+	.wrap.wbtm-taxonomy-modern-wrap .wbtm-taxonomy-table-scroll table.wp-list-table {
+		min-width: 720px;
+	}
+
 	.wrap.wbtm-taxonomy-modern-wrap #col-left,
 	.wrap.wbtm-taxonomy-modern-wrap #col-right {
 		flex: 1 1 100%;

@@ -312,6 +312,7 @@
 							<button type="button" class="button button-primary wbtm-add-bus-type-btn"><?php echo esc_html($bundle['addButtonLabel']); ?></button>
 						<?php endif; ?>
 					</div>
+					<div class="wbtm-taxonomy-table-scroll" tabindex="0" role="region" aria-label="<?php echo esc_attr($bundle['heading']); ?>">
 					<table class="wp-list-table widefat fixed striped">
 						<thead>
 						<tr>
@@ -358,6 +359,7 @@
 						<?php endif; ?>
 						</tbody>
 					</table>
+					</div>
 				</div>
 				<?php
 			}
@@ -639,6 +641,8 @@
 							'underStopEmpty'   => esc_html__('— Select a bus stop —', 'bus-ticket-booking-with-seat-reservation'),
 							'icon'             => esc_html__('Icon', 'bus-ticket-booking-with-seat-reservation'),
 							'iconHelp'         => esc_html__('Shown before the name wherever this feature is listed.', 'bus-ticket-booking-with-seat-reservation'),
+							'iconSelected'     => __('Icon selected', 'bus-ticket-booking-with-seat-reservation'),
+							'noIconsMatch'     => __('No icons match', 'bus-ticket-booking-with-seat-reservation'),
 							'actionsColumn'    => esc_html__('Actions', 'bus-ticket-booking-with-seat-reservation'),
 							'cancel'           => esc_html__('Cancel', 'bus-ticket-booking-with-seat-reservation'),
 							'submit'           => $bundle['submit'],

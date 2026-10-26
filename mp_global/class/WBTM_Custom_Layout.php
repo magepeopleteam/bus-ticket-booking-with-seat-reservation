@@ -253,15 +253,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_prev" aria-label="Previous image">
+                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_prev" aria-label="<?php esc_attr_e( 'Previous image', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                             </button>
-                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_next" aria-label="Next image">
+                            <button class="wbtm_gallery_slider_arrow wbtm_gallery_slider_next" aria-label="<?php esc_attr_e( 'Next image', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </button>
                             <div class="wbtm_gallery_slider_dots">
                                 <?php foreach ($all_image_urls as $index => $img_url) : ?>
-                                    <button class="wbtm_gallery_slider_dot <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo esc_attr($index); ?>" aria-label="Go to image <?php echo esc_attr($index + 1); ?>"></button>
+                                    <?php /* translators: %d: image number in the gallery. */ ?>
+                                    <button class="wbtm_gallery_slider_dot <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo esc_attr($index); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Go to image %d', 'bus-ticket-booking-with-seat-reservation' ), $index + 1 ) ); ?>"></button>
                                 <?php endforeach; ?>
                             </div>
                             <div class="wbtm_gallery_slider_counter">

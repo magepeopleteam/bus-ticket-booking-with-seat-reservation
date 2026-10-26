@@ -8,7 +8,28 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Translations')) {
 		class WBTM_Translations {
+			private static $use_defaults = false;
+
+			/** Get a locale-aware field label without applying its saved custom value. */
+			public static function get_default_translation( $method ) {
+				if ( ! is_string( $method ) ||
+					( strpos( $method, 'text_' ) !== 0 && strpos( $method, 'duration_' ) !== 0 ) ||
+					! is_callable( array( __CLASS__, $method ) ) ) {
+					return '';
+				}
+				$previous = self::$use_defaults;
+				self::$use_defaults = true;
+				try {
+					return call_user_func( array( __CLASS__, $method ) );
+				} finally {
+					self::$use_defaults = $previous;
+				}
+			}
+
 			private static function get_translation($key, $default) {
+				if ( self::$use_defaults ) {
+					return $default;
+				}
 				$translations = get_option('wbtm_translations', array());
 				$override = isset($translations[$key]) ? trim((string) $translations[$key]) : '';
 

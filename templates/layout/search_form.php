@@ -983,7 +983,7 @@
                                     </label>
                                     <?php WBTM_Layout::route_list( $post_id ); ?>
                                 </div>
-                                <div class="wbtm_search_location_toggle" id="wbtm_search_location_toggle" title="Swap locations">
+                                <div class="wbtm_search_location_toggle" id="wbtm_search_location_toggle" title="<?php esc_attr_e( 'Swap locations', 'bus-ticket-booking-with-seat-reservation' ); ?>">
                                     <i class="fas fa-exchange-alt"></i>
                                 </div>
                                 <div class="wtbm_inputList wbtm_input_select wbtm_dropping_point" data-alert="<?php echo esc_html( WBTM_Translations::text_select_wrong_route() ); ?>">

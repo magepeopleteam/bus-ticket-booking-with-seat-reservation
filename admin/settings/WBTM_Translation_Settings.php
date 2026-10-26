@@ -57,16 +57,16 @@ class WBTM_Translation_Settings {
     
     private function categorize_methods($methods) {
         $categories = array(
-            'general' => array('label' => 'General Labels', 'icon' => 'fas fa-language', 'keywords' => array('journey', 'date', 'from', 'to', 'search', 'please', 'note', 'terms')),
-            'booking' => array('label' => 'Booking & Orders', 'icon' => 'fas fa-ticket-alt', 'keywords' => array('booking', 'order', 'payment', 'transaction', 'billing')),
-            'passenger' => array('label' => 'Passenger Information', 'icon' => 'fas fa-users', 'keywords' => array('passenger', 'mobile', 'email', 'gender', 'adult', 'child', 'infant', 'nid', 'age')),
-            'bus' => array('label' => 'Bus & Route', 'icon' => 'fas fa-bus', 'keywords' => array('bus', 'route', 'departure', 'arrival', 'schedule', 'duration', 'operator')),
-            'seat' => array('label' => 'Seat & Coach', 'icon' => 'fas fa-chair', 'keywords' => array('seat', 'coach', 'available', 'sold', 'cart', 'upper', 'deck', 'plan')),
-            'location' => array('label' => 'Boarding & Dropping', 'icon' => 'fas fa-map-marker-alt', 'keywords' => array('bp', 'dp', 'boarding', 'dropping', 'pickup', 'drop_off', 'start_point', 'pin')),
-            'pricing' => array('label' => 'Price & Payment', 'icon' => 'fas fa-money-bill', 'keywords' => array('price', 'fare', 'total', 'qty', 'tax', 'discount', 'sub_total')),
-            'actions' => array('label' => 'Buttons & Actions', 'icon' => 'fas fa-toggle-on', 'keywords' => array('book', 'view', 'close', 'proceed', 'cancel', 'print', 'buy', 'action')),
-            'messages' => array('label' => 'Messages & Status', 'icon' => 'fas fa-info-circle', 'keywords' => array('no_', 'error', 'success', 'failed', 'pending', 'confirmed', 'cancelled', 'status', 'msg', 'wrong', 'security')),
-            'misc' => array('label' => 'Miscellaneous', 'icon' => 'fas fa-ellipsis-h', 'keywords' => array())
+            'general' => array('label' => __('General Labels', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-language', 'keywords' => array('journey', 'date', 'from', 'to', 'search', 'please', 'note', 'terms')),
+            'booking' => array('label' => __('Booking & Orders', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-ticket-alt', 'keywords' => array('booking', 'order', 'payment', 'transaction', 'billing')),
+            'passenger' => array('label' => __('Passenger Information', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-users', 'keywords' => array('passenger', 'mobile', 'email', 'gender', 'adult', 'child', 'infant', 'nid', 'age')),
+            'bus' => array('label' => __('Bus & Route', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-bus', 'keywords' => array('bus', 'route', 'departure', 'arrival', 'schedule', 'duration', 'operator')),
+            'seat' => array('label' => __('Seat & Coach', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-chair', 'keywords' => array('seat', 'coach', 'available', 'sold', 'cart', 'upper', 'deck', 'plan')),
+            'location' => array('label' => __('Boarding & Dropping', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-map-marker-alt', 'keywords' => array('bp', 'dp', 'boarding', 'dropping', 'pickup', 'drop_off', 'start_point', 'pin')),
+            'pricing' => array('label' => __('Price & Payment', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-money-bill', 'keywords' => array('price', 'fare', 'total', 'qty', 'tax', 'discount', 'sub_total')),
+            'actions' => array('label' => __('Buttons & Actions', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-toggle-on', 'keywords' => array('book', 'view', 'close', 'proceed', 'cancel', 'print', 'buy', 'action')),
+            'messages' => array('label' => __('Messages & Status', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-info-circle', 'keywords' => array('no_', 'error', 'success', 'failed', 'pending', 'confirmed', 'cancelled', 'status', 'msg', 'wrong', 'security')),
+            'misc' => array('label' => __('Miscellaneous', 'bus-ticket-booking-with-seat-reservation'), 'icon' => 'fas fa-ellipsis-h', 'keywords' => array())
         );
         
         $categorized = array();
@@ -233,9 +233,9 @@ class WBTM_Translation_Settings {
                     <div id="<?php echo esc_attr($section_id); ?>" class="wbtm-tab-content">
                         <?php foreach ($section['methods'] as $method) :
                             if (method_exists('WBTM_Translations', $method)) :
-                                $default_value = call_user_func(array('WBTM_Translations', $method));
+                                $default_value = WBTM_Translations::get_default_translation($method);
                                 $current_value = isset($translations[$method]) && !empty($translations[$method]) ? $translations[$method] : '';
-                                $label = ucwords(str_replace('_', ' ', str_replace('text_', '', $method)));
+                                $label = $default_value;
                         ?>
                         <div class="wbtm-field-row">
                             <div class="wbtm-field-label">

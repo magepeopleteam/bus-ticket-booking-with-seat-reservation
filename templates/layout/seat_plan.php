@@ -234,7 +234,7 @@
                                             <?php endif; ?>
                                         </div>
                                         <div class="wbtm_cabin_toggle_icon">
-                                            <span class="wbtm_toggle_arrow" aria-label="Toggle cabin seats"><?php echo $wbtm_cabin_is_first ? '▲' : '▼'; ?></span>
+                                            <span class="wbtm_toggle_arrow" aria-label="<?php esc_attr_e( 'Toggle cabin seats', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php echo $wbtm_cabin_is_first ? '▲' : '▼'; ?></span>
                                         </div>
                                     </div>
 

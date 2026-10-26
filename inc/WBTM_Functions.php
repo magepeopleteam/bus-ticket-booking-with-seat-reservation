@@ -2347,7 +2347,12 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				return 'wbtm_bus';
 			}
 			public static function get_name() {
-				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'label', esc_html__( 'Bus', 'bus-ticket-booking-with-seat-reservation' ) );
+				$name = WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'label', '' );
+				// Older settings saved the English default, which otherwise bypasses gettext.
+				if ( '' === $name || 'Bus' === $name ) {
+					return esc_html__( 'Bus', 'bus-ticket-booking-with-seat-reservation' );
+				}
+				return $name;
 			}
 			public static function get_slug() {
 				return WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus', 'bus' );
