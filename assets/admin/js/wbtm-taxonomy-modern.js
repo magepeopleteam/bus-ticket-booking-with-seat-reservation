@@ -390,6 +390,7 @@
 			preview.setAttribute('class', iconClass || '');
 		}
 		if (previewItem) {
+			previewItem.setAttribute('data-selected-label', strings.iconSelected || 'Icon selected');
 			previewItem.style.display = iconClass ? '' : 'none';
 		}
 		if (addButtonArea) {
@@ -756,8 +757,11 @@
 		$popup.find('.popup_all_icon').append(
 			'<div class="wbtm-bme-icon-noresults">' +
 				'<span class="fas fa-search wbtm-bme-nores-icon"></span>' +
-				'<p>No icons match <strong class="q"></strong></p>' +
+				'<p><span class="wbtm-icon-noresults-label"></span> <strong class="q"></strong></p>' +
 			'</div>'
+		);
+		$popup.find('.wbtm-icon-noresults-label').text(
+			((window.wbtmTaxonomyModern || {}).strings || {}).noIconsMatch || 'No icons match'
 		);
 
 		function resetSearch() {

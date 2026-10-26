@@ -9,7 +9,8 @@
 	if (!class_exists('WBTM_Dependencies')) {
 		class WBTM_Dependencies {
 			public function __construct() {
-				add_action('init', array($this, 'language_load'));
+				// Register bundled catalogs before CPTs, taxonomies and settings build labels.
+				add_action('init', array($this, 'language_load'), 0);
 				add_action('admin_init', array($this, 'wbtm_upgrade'));
 				$this->load_file();
 				add_action('wbtm_add_global_enqueue', array($this, 'global_enqueue'), 90);

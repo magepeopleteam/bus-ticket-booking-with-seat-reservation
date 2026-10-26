@@ -156,6 +156,11 @@ Upload the Bus Ticket Booking with Seat Reservation to your blog, Activate it, t
 
 == Frequently Asked Questions ==
 
+= How do I change the plugin language? =
+Choose a Site Language under Settings > General. Both the booking frontend and the dashboard use the matching WordPress translation catalog. Italian (it_IT) is bundled. In Users > Profile, select Site Default to make your dashboard follow the site language; an explicitly selected profile language takes precedence in the dashboard.
+
+Leave fields in Bus > Translations blank to follow the current language. Custom labels remain as entered. Other languages require a matching translation catalog; changing the locale does not translate custom bus names, locations, page content, or third-party theme/plugin text. WordPress language packs and Loco Translate remain supported.
+
 = What kind of payment method works =
 Our plugin supports all types of payment methods available for WooCommerce. 
 
