@@ -538,6 +538,50 @@ Seat number rotation stopped
 **Dates (Fix)**
 * Repeated-date events keep their anchor phase once the start date has passed, so the recurring pattern no longer shifts
 
+= 5.9.10 =
+
+**Event Booking Pages (New)**
+* New `[wbtm-bus-event event="..."]` shortcode: one page per concert, festival or other event that lists every bus going there (each boarding stop with departure and arrival time, fare, seats left and a Book button) above one booking form limited to those buses
+* New `[wbtm-bus-booking id="..."]` shortcode to embed one bus, with its details and the full booking flow, on any page
+* Events are managed under Bus > Events with a date and a destination, and assigned to buses in the bus editor's General tab
+* `[wbtm-bus-search]` and `[wbtm-bus-list]` now accept `event`, `bus_ids`, `destination` and `date`. Without them their output is unchanged
+* New Elementor widgets "Bus Booking" and "Bus Event Booking"
+* New "Event Booking Pages" settings tab, and the new shortcodes are listed on the Docs screen
+
+**Translations (New)**
+* Bundled Italian (it_IT) translation. The plugin follows the WordPress site language, and its labels now load before other code builds them, so they no longer stay in English. Custom labels and a user's own profile language are kept
+
+**Bus Editor (Fix)**
+* Saving a bus no longer creates a new hidden WooCommerce product every time; the bus keeps its linked product. Hidden products already created this way are left in place, because past orders can refer to them
+
+**Bookings (Fix)**
+* Fixed the "Undefined variable $has_sleeper_layout" warning logged on every bus order. The berth type (Seater or Sleeper) is now saved on the booking record, as intended since 5.9.5, so the ticket PDF, passenger list and exports can show it
+
+= 5.9.9 =
+*Release Date - 20 Oct 2026*
+
+**Security (Fix)**
+* Fixed a broken access control flaw in the Custom Payment (standalone) checkout, reported via Patchstack (#37159). With guest booking allowed, a logged-out visitor could add a return leg to another customer's pending booking group, or delete it, by sending its id
+* A booking group can now only be changed by its owner: the logged-in account that made it, or the browser holding its guest token
+* The public checkout and confirmation pages, and the ticket PDF link shown after payment, only open for the booking's owner or through the signed link a payment gateway returns to
+
+**Admin Revenue (Fix)**
+* Bus > Analytics counted an order's full total once for every seat, so multi-seat orders inflated revenue and bookings. Each order is now counted once, including fees and minus refunds, matching WooCommerce
+* The Booking List revenue, tax and balance cards counted failed, pending, cancelled and refunded seats under "All Statuses". They now count paid bookings only, with a new "Paid" status filter and a note on what the cards include
+
+**Search Results (Fix)**
+* The "Book Seat" / "Close Details" label and its arrow now follow the details panel instead of running one click behind
+* Result cards, prices and the selected date follow the saved Theme Color
+* The bus photo fills its card, and long bus-type badges wrap instead of being cut off
+* The date strip spreads its buttons across the row and shows the weekday, and clicking a date updates the date shown in the search form
+
+**Routes (Fix)**
+* Fixed arrivals shown a day late on routes where an old, hidden "Next Day Dropping" flag was stored on a boarding stop. The flag is now ignored on boarding stops and cleared when the route is saved
+* Dragging stops into a new order keeps each "Next Day Dropping" checkbox with its own stop
+
+**Telemetry**
+* Updated the bundled Appneck SDK to 0.5.0
+
 = 5.9.8 =
 
 **Booking Security (Fix)**
