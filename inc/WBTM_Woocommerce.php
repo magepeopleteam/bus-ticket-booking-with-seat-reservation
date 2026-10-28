@@ -1047,6 +1047,11 @@
 					$journey_leg     = ( $order_price_leg === 'return' ) ? 'return' : 'outbound';
 					$order_journey_type = wc_get_order_item_meta($item_id, '_wbtm_journey_type', true);
 					$journey_type_value = ( $order_journey_type === 'return' ) ? 'return' : 'departure';
+					// Fixed by Shahnur — 2026-10-28: the berth type below is only recorded for
+					// buses that offer sleepers. This flag was set in checkout_create_order_line_item()
+					// but never here, so it was undefined (a PHP warning on every bus order) and
+					// the berth type never reached the booking record.
+					$has_sleeper_layout = class_exists('WBTM_Seat_Configuration') && WBTM_Seat_Configuration::has_sleeper_seats($post_id);
 					/*************************/
 					if (sizeof($ticket_infos) > 0) {
 						$count = 0;

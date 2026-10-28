@@ -43,10 +43,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					if ( ! current_user_can( 'edit_post', $post_id ) ) {
 						return;
 					}
-					if ( !is_product() || ($this->count_hidden_wc_product( $post_id ) == 0 || empty( WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product' ) ) )) {
-						$this->create_hidden_wc_product( $post_id);
+					// Fixed by Shahnur — 2026-10-28: the old check started with `!is_product()`,
+					// which is always true in wp-admin (it only detects a product page on the
+					// frontend), so every save of a bus created a new hidden product and
+					// re-linked the bus to it, leaving the previous one orphaned. Keep the
+					// linked product (repair or re-adopt it if needed); create one only when
+					// the bus has none.
+					$product_id = self::ensure_hidden_wc_product( $post_id );
+					if ( ! $product_id ) {
+						return;
 					}
-					$product_id = WBTM_Global_Function::get_post_info( $post_id, 'link_wc_product', $post_id );
 					set_post_thumbnail( $product_id, get_post_thumbnail_id( $post_id ) );
 					wp_publish_post( $product_id );
 					$product_type = 'yes';
