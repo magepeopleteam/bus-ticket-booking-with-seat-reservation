@@ -184,6 +184,11 @@
 						$cabin_mode_enabled = WBTM_Global_Function::get_post_info($post_id, 'wbtm_cabin_mode_enabled', 'no');
 						$wbtm_bus_type = esc_html(WBTM_Functions::synchronize_bus_type($post_id));
 						$display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm_registration', 'yes');
+						// "Reservation off" closes public booking only: staff placing a counter/phone
+						// order from Bus > Purchase Ticket still get the ticket + passenger form.
+						if ($display_wbtm_registration !== 'yes' && self::is_staff_backend_order($backend_order)) {
+							$display_wbtm_registration = 'yes';
+						}
 						if ($all_info['available_seat'] > 0) {
 							$seat_infos = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_seats_info', []);
 							$seat_row = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_rows', 0);
@@ -230,6 +235,22 @@
 					}
 					die();
 				}
+			}
+			/**
+			 * Whether a Book Seat request comes from the admin "Purchase Ticket" screen
+			 * (Pro) and the current user may use it. The JS sends the position of
+			 * "wbtm_backend_order" in the page URL (-1 = another page); the capability
+			 * check is what authorises it, since the flag itself is client-supplied.
+			 *
+			 * @param string $backend_order Posted backend_order value.
+			 * @return bool
+			 */
+			private static function is_staff_backend_order($backend_order) {
+				if (!is_numeric($backend_order) || (int) $backend_order < 0 || !current_user_can('wbtm_staff_access')) {
+					return false;
+				}
+				// Return false to make the bus "Reservation on/off" switch bind staff too.
+				return (bool) apply_filters('wbtm_backend_order_ignores_reservation_off', true);
 			}
 			public static function wbtm_bus_list($post_id, $start_route, $end_route, $j_date, $r_date, $style = '', $btn_show = '', $search_info = [], $left_filter_show = [], $bus_start_end_id = '' ) {
 
