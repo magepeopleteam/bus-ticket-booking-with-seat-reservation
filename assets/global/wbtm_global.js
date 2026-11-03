@@ -1080,7 +1080,10 @@ function wbtm_bus_scope_args(context) {
 
 	$(document).on('click', '.wtbm_return_route', function (e) {
 		let outboundCard = $('#wbtm_seleced_start_bus .wbtm_selected_bus_card');
-		if (outboundCard.length === 0) {
+		// The admin "Purchase Ticket" screen (Pro) books each leg as its own order on
+		// "Book Now" and never stages the outbound card, so it has nothing to wait for.
+		let isBackendOrder = window.location.href.search("wbtm_backend_order") >= 0;
+		if (outboundCard.length === 0 && !isBackendOrder) {
 			e.preventDefault();
 			// Fixed by Shahnur - 2026-04-23 03:00 PM (Asia/Dhaka)
 			// Do not allow return-tab browsing before the outbound bus is placed.
