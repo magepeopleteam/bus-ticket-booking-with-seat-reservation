@@ -11,3 +11,4 @@ require_once __DIR__ . '/WBTM_App_Checkout.php';
 require_once __DIR__ . '/WBTM_App_Requests.php';
 require_once __DIR__ . '/WBTM_App_Native_Checkout.php';
 require_once __DIR__ . '/WBTM_App_Receipt.php';
+require_once __DIR__ . '/WBTM_App_Builder_Connection.php';
