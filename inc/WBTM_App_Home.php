@@ -168,7 +168,7 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 		}
 
 		public function register_menu() {
-			add_submenu_page( 'edit.php?post_type=wbtm_bus', __( 'Mobile App Home', 'addon-bus--ticket-booking-with-seat-pro' ), __( 'Mobile App Home', 'addon-bus--ticket-booking-with-seat-pro' ), self::CAPABILITY, self::PAGE, array( $this, 'render_page' ) );
+			add_submenu_page( 'edit.php?post_type=wbtm_bus', __( 'Mobile App', 'addon-bus--ticket-booking-with-seat-pro' ), __( 'Mobile App', 'addon-bus--ticket-booking-with-seat-pro' ), self::CAPABILITY, self::PAGE, array( $this, 'render_page' ) );
 		}
 
 		public function enqueue_assets() {
@@ -183,6 +183,8 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 			wp_localize_script( 'wbtm-app-home', 'wbtmAppHome', array(
 				'mediaTitle' => __( 'Choose app image', 'addon-bus--ticket-booking-with-seat-pro' ),
 				'mediaButton' => __( 'Use image', 'addon-bus--ticket-booking-with-seat-pro' ),
+				'codeCopied' => __( 'Code copied.', 'bus-ticket-booking-with-seat-reservation' ),
+				'codeCopyFallback' => __( 'Select and copy the code above.', 'bus-ticket-booking-with-seat-reservation' ),
 			) );
 		}
 
@@ -206,19 +208,40 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 				wp_die( esc_html__( 'You cannot manage mobile app content.', 'addon-bus--ticket-booking-with-seat-pro' ), '', array( 'response' => 403 ) );
 			}
 			$data = self::get();
+			$app_settings = WBTM_App_Settings::get();
+			$app_name = $app_settings['app_name'] ?: get_bloginfo( 'name' );
+			$tabs = array(
+				'introduction' => array( __( 'Headings & introduction', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-edit-page' ),
+				'layout' => array( __( 'Sections & order', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-layout' ),
+				'hero_slides' => array( __( 'Hero slider', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-images-alt2' ),
+				'featured_routes' => array( __( 'Featured journeys', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-location-alt' ),
+				'content_cards' => array( __( 'Content cards', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-index-card' ),
+				'features' => array( __( 'Benefits', 'addon-bus--ticket-booking-with-seat-pro' ), 'dashicons-star-filled' ),
+			);
+			$connection_token = '';
+			if ( class_exists( 'WBTM_App_Builder_Connection' ) ) {
+				$tabs['connection'] = array( __( 'Build connection', 'bus-ticket-booking-with-seat-reservation' ), 'dashicons-admin-links' );
+				$connection_token = WBTM_App_Builder_Connection::handle_actions();
+			}
+			$initial_tab = isset( $_GET['app_tab'] ) && is_string( $_GET['app_tab'] ) ? sanitize_key( wp_unslash( $_GET['app_tab'] ) ) : '';
+			$initial_tab = isset( $tabs[ $initial_tab ] ) ? $initial_tab : '';
 			$terms = get_terms( array( 'taxonomy' => 'wbtm_bus_stops', 'hide_empty' => false, 'fields' => 'names' ) );
 			$stops = is_wp_error( $terms ) ? array() : $terms;
 			?>
-			<div class="wrap wbtm-app-home">
-				<h1><?php esc_html_e( 'Mobile App Home', 'addon-bus--ticket-booking-with-seat-pro' ); ?></h1>
-				<p class="description"><?php esc_html_e( 'Create the home screen your customers see. Text, images and section order are read from this site by the app. Empty optional sections stay hidden. Journey fares and seat availability always come from live booking data.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p>
+			<div class="wrap wbtm-app-home" data-initial-tab="<?php echo esc_attr( $initial_tab ); ?>">
+				<header class="wbtm-home-header">
+					<div class="wbtm-home-heading"><span class="wbtm-home-icon dashicons dashicons-smartphone" aria-hidden="true"></span><div><span class="wbtm-home-eyebrow"><?php esc_html_e( 'CUSTOMER APP WORKSPACE', 'addon-bus--ticket-booking-with-seat-pro' ); ?></span><h1><?php esc_html_e( 'Mobile App', 'addon-bus--ticket-booking-with-seat-pro' ); ?></h1><p><?php esc_html_e( 'Manage your app content, branding and website connection in one place.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p></div></div>
+					<div class="wbtm-home-links"><a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm_settings_page&tab=wbtm_app_settings' ) ); ?>"><span class="dashicons dashicons-admin-customizer" aria-hidden="true"></span><?php esc_html_e( 'App branding & settings', 'addon-bus--ticket-booking-with-seat-pro' ); ?></a></div>
+				</header>
+				<div class="wbtm-home-overview"><div><span class="wbtm-home-status <?php echo 'yes' === $app_settings['app_enabled'] ? 'is-enabled' : ''; ?>"><?php echo esc_html( 'yes' === $app_settings['app_enabled'] ? __( 'Live app API enabled', 'addon-bus--ticket-booking-with-seat-pro' ) : __( 'App API disabled', 'addon-bus--ticket-booking-with-seat-pro' ) ); ?></span><h2><?php echo esc_html( $app_name ); ?></h2><p><?php esc_html_e( 'Your saved content syncs to the app. Bus schedules, fares and available seats always come from live booking data.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p></div><div class="wbtm-home-counts"><?php foreach ( array( 'hero_slides' => __( 'Hero slides', 'addon-bus--ticket-booking-with-seat-pro' ), 'featured_routes' => __( 'Journeys', 'addon-bus--ticket-booking-with-seat-pro' ), 'content_cards' => __( 'Content cards', 'addon-bus--ticket-booking-with-seat-pro' ), 'features' => __( 'Benefits', 'addon-bus--ticket-booking-with-seat-pro' ) ) as $group => $label ) : ?><div><strong data-count-for="<?php echo esc_attr( $group ); ?>"><?php echo esc_html( count( $data[ $group ] ) ); ?></strong><span><?php echo esc_html( $label ); ?></span></div><?php endforeach; ?></div></div>
 				<?php if ( isset( $_GET['saved'] ) && '1' === $_GET['saved'] ) : ?>
 					<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'App home content saved.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p></div>
 				<?php endif; ?>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<div class="wbtm-home-workspace"><aside class="wbtm-home-sidebar" data-home-tabs hidden><span class="wbtm-home-nav-label"><?php esc_html_e( 'APP WORKSPACE', 'addon-bus--ticket-booking-with-seat-pro' ); ?></span><div role="tablist" aria-label="<?php esc_attr_e( 'Mobile app sections', 'addon-bus--ticket-booking-with-seat-pro' ); ?>" aria-orientation="vertical"><?php foreach ( $tabs as $key => $tab ) : ?><button type="button" id="wbtm-home-tab-<?php echo esc_attr( $key ); ?>" data-home-tab="<?php echo esc_attr( $key ); ?>" role="tab" aria-controls="wbtm-home-panel-<?php echo esc_attr( $key ); ?>" aria-selected="<?php echo 'introduction' === $key ? 'true' : 'false'; ?>"><span class="dashicons <?php echo esc_attr( $tab[1] ); ?>" aria-hidden="true"></span><?php echo esc_html( $tab[0] ); ?></button><?php endforeach; ?></div><div class="wbtm-home-sidebar-note"><span class="dashicons dashicons-update" aria-hidden="true"></span><p><?php esc_html_e( 'Content updates sync without rebuilding the app. Save your changes when you are ready.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p></div></aside><div class="wbtm-home-panels">
+				<form id="wbtm-app-home-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="<?php echo esc_attr( self::ACTION ); ?>" />
 					<?php wp_nonce_field( self::ACTION ); ?>
-					<div class="wbtm-app-home-panel">
+					<div class="wbtm-app-home-panel" data-home-panel="introduction" id="wbtm-home-panel-introduction" role="tabpanel" aria-labelledby="wbtm-home-tab-introduction">
 						<h2><?php esc_html_e( 'Introduction and headings', 'addon-bus--ticket-booking-with-seat-pro' ); ?></h2>
 						<div class="wbtm-app-home-grid">
 							<?php
@@ -231,7 +254,7 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 							?>
 						</div>
 					</div>
-					<div class="wbtm-app-home-panel">
+					<div class="wbtm-app-home-panel" data-home-panel="layout" id="wbtm-home-panel-layout" role="tabpanel" aria-labelledby="wbtm-home-tab-layout">
 						<h2><?php esc_html_e( 'Section order', 'addon-bus--ticket-booking-with-seat-pro' ); ?></h2>
 						<p><?php esc_html_e( 'Use the arrows to arrange sections. Uncheck optional sections to hide them. Journey search stays available.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p>
 						<div data-order-list>
@@ -245,7 +268,7 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 						</div>
 					</div>
 					<?php foreach ( self::collections() as $group => $definition ) : ?>
-						<section class="wbtm-app-home-panel" data-collection="<?php echo esc_attr( $group ); ?>" data-limit="<?php echo esc_attr( $definition['limit'] ); ?>" data-item-label="<?php echo esc_attr( $definition['item'] ); ?>">
+						<section class="wbtm-app-home-panel" data-home-panel="<?php echo esc_attr( $group ); ?>" id="wbtm-home-panel-<?php echo esc_attr( $group ); ?>" role="tabpanel" aria-labelledby="wbtm-home-tab-<?php echo esc_attr( $group ); ?>" data-collection="<?php echo esc_attr( $group ); ?>" data-limit="<?php echo esc_attr( $definition['limit'] ); ?>" data-item-label="<?php echo esc_attr( $definition['item'] ); ?>">
 							<h2><?php echo esc_html( $definition['label'] ); ?></h2>
 							<?php if ( 'hero_slides' === $group || 'content_cards' === $group ) : ?><p class="description"><?php esc_html_e( 'Choose images from the Media Library or enter public image URLs. A button without a web address opens journey search.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p><?php endif; ?>
 							<?php if ( 'featured_routes' === $group ) : ?><p class="description"><?php esc_html_e( 'Choose registered stops. The app only shows shortcuts that remain in the live route list. These cards never contain fixed fares or seat counts.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p><?php endif; ?>
@@ -257,8 +280,14 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 							<p class="description"><?php echo esc_html( sprintf( __( 'Maximum items: %d', 'addon-bus--ticket-booking-with-seat-pro' ), $definition['limit'] ) ); ?></p>
 						</section>
 					<?php endforeach; ?>
-					<?php submit_button( __( 'Save app home', 'addon-bus--ticket-booking-with-seat-pro' ) ); ?>
+					<div class="wbtm-home-savebar"><p><span class="dashicons dashicons-saved" aria-hidden="true"></span><?php esc_html_e( 'Save all home screen changes across your tabs.', 'addon-bus--ticket-booking-with-seat-pro' ); ?></p><?php submit_button( __( 'Save app home', 'addon-bus--ticket-booking-with-seat-pro' ), 'primary', 'submit', false ); ?></div>
 				</form>
+				<?php if ( isset( $tabs['connection'] ) ) : ?>
+					<section class="wbtm-app-home-panel" data-home-panel="connection" id="wbtm-home-panel-connection" role="tabpanel" aria-labelledby="wbtm-home-tab-connection">
+						<?php WBTM_App_Builder_Connection::render_panel( $connection_token ); ?>
+					</section>
+				<?php endif; ?>
+				</div></div>
 			</div>
 			<?php
 		}

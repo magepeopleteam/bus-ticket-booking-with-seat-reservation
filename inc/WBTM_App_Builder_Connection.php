@@ -15,7 +15,25 @@ if ( ! class_exists( 'WBTM_App_Builder_Connection' ) ) {
 		}
 
 		public function menu() {
-			add_submenu_page( 'edit.php?post_type=wbtm_bus', __( 'App Build Connection', 'bus-ticket-booking-with-seat-reservation' ), __( 'App Build Connection', 'bus-ticket-booking-with-seat-reservation' ), 'manage_options', self::PAGE, array( $this, 'page' ) );
+			$hook = add_submenu_page( 'edit.php?post_type=wbtm_bus', __( 'App Build Connection', 'bus-ticket-booking-with-seat-reservation' ), __( 'App Build Connection', 'bus-ticket-booking-with-seat-reservation' ), 'manage_options', self::PAGE, array( $this, 'page' ) );
+			if ( class_exists( 'WBTM_App_Home' ) ) {
+				// Keep the registered route for bookmarks, without a second menu item.
+				remove_submenu_page( 'edit.php?post_type=wbtm_bus', self::PAGE );
+				add_action( 'load-' . $hook, array( $this, 'redirect_to_workspace' ) );
+			}
+		}
+
+		public static function workspace_url() {
+			return admin_url( 'edit.php?post_type=wbtm_bus&page=wbtm-app-home&app_tab=connection' );
+		}
+
+		public function redirect_to_workspace() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'Administrator access required.', 'bus-ticket-booking-with-seat-reservation' ), '', array( 'response' => 403 ) );
+			}
+			// Preserve submissions from an already open legacy connection form.
+			wp_safe_redirect( self::workspace_url(), 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) ? 307 : 302 );
+			exit;
 		}
 
 		public function routes() {
@@ -81,12 +99,13 @@ if ( ! class_exists( 'WBTM_App_Builder_Connection' ) ) {
 			return $response;
 		}
 
-		public function page() {
+		/** Process only the connection form; home-content saves use their own action. */
+		public static function handle_actions() {
 			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_die( esc_html__( 'Administrator access required.', 'bus-ticket-booking-with-seat-reservation' ) );
+				wp_die( esc_html__( 'Administrator access required.', 'bus-ticket-booking-with-seat-reservation' ), '', array( 'response' => 403 ) );
 			}
 			$token = '';
-			if ( 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+			if ( 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) && isset( $_POST['connection_action'] ) ) {
 				check_admin_referer( self::PAGE );
 				$action = isset( $_POST['connection_action'] ) && is_string( $_POST['connection_action'] ) ? sanitize_key( wp_unslash( $_POST['connection_action'] ) ) : '';
 				if ( 'create' === $action ) {
@@ -99,31 +118,53 @@ if ( ! class_exists( 'WBTM_App_Builder_Connection' ) ) {
 					delete_option( 'wbtm_app_builder_release' );
 				}
 			}
-			$connected = ! empty( get_option( self::OPTION, array() )['hash'] );
-			nocache_headers();
+			return $token;
+		}
+
+		/** This panel owns separate nonce-protected forms, never nested in the home form. */
+		public static function render_panel( $token = '' ) {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+			$state = get_option( self::OPTION, array() );
+			$connected = ! empty( $state['hash'] );
+			$settings = WBTM_App_Settings::get();
+			$release = get_option( 'wbtm_app_builder_release', array() );
 			?>
-			<div class="wrap">
-				<h1><?php esc_html_e( 'App Build Connection', 'bus-ticket-booking-with-seat-reservation' ); ?></h1>
-				<div class="card">
-					<h2><?php esc_html_e( 'Connect your branded customer app', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
-					<p><?php esc_html_e( 'Enable the Mobile App API and set your app name and logo under Bus → Settings → Mobile App. Create a connection code below, then enter your HTTPS website address and code in your app build dashboard.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-					<p><?php esc_html_e( 'This connection can read public app configuration and publish an Android download URL. It cannot log in as a WordPress user, read customer records, place bookings or take payments.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-					<p><strong><?php echo esc_html( $connected ? __( 'Connection enabled', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Connection disabled', 'bus-ticket-booking-with-seat-reservation' ) ); ?></strong></p>
+				<h2><?php esc_html_e( 'Build connection', 'bus-ticket-booking-with-seat-reservation' ); ?></h2>
+				<p><?php esc_html_e( 'Connect this website to your app build dashboard. Your app uses the name, logo and booking settings configured on this site.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+				<div class="wbtm-build-grid">
+				<div class="wbtm-build-card">
+					<div class="wbtm-build-card-heading"><span class="dashicons dashicons-admin-links" aria-hidden="true"></span><h3><?php esc_html_e( 'Website connection', 'bus-ticket-booking-with-seat-reservation' ); ?></h3><span class="wbtm-home-status <?php echo $connected ? 'is-enabled' : ''; ?>"><?php echo esc_html( $connected ? __( 'Code active', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Not configured', 'bus-ticket-booking-with-seat-reservation' ) ); ?></span></div>
+					<label class="wbtm-app-home-field"><span><?php esc_html_e( 'Website address', 'bus-ticket-booking-with-seat-reservation' ); ?></span><input type="url" readonly value="<?php echo esc_url( home_url( '/' ) ); ?>" /></label>
+					<?php if ( 'yes' !== $settings['app_enabled'] ) : ?><p class="wbtm-build-message"><?php esc_html_e( 'Enable the Mobile App API in App branding & settings before connecting your dashboard.', 'bus-ticket-booking-with-seat-reservation' ); ?></p><?php endif; ?>
 					<?php if ( $token ) : ?>
-						<p><?php esc_html_e( 'Copy this code into your dashboard now. It is shown once. Creating a new code revokes the old one.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-						<textarea readonly rows="3" class="large-text code" aria-label="<?php esc_attr_e( 'App build connection code', 'bus-ticket-booking-with-seat-reservation' ); ?>"><?php echo esc_textarea( $token ); ?></textarea>
+						<div class="wbtm-build-code"><label class="wbtm-app-home-field"><span><?php esc_html_e( 'Your new connection code', 'bus-ticket-booking-with-seat-reservation' ); ?></span><textarea readonly rows="3" class="large-text code" data-connection-code><?php echo esc_textarea( $token ); ?></textarea></label><button type="button" class="button" data-copy-connection><?php esc_html_e( 'Copy code', 'bus-ticket-booking-with-seat-reservation' ); ?></button><span class="wbtm-build-copy-status" data-copy-status role="status"></span><p><?php esc_html_e( 'Copy this code into your dashboard now. It is shown once. Creating a new code revokes the old one.', 'bus-ticket-booking-with-seat-reservation' ); ?></p></div>
 					<?php endif; ?>
-					<form method="post">
+					<form method="post" action="<?php echo esc_url( self::workspace_url() ); ?>" data-connection-form>
 						<?php wp_nonce_field( self::PAGE ); ?>
-						<p><button class="button button-primary" name="connection_action" value="create"><?php esc_html_e( 'Create new connection code', 'bus-ticket-booking-with-seat-reservation' ); ?></button> <button class="button" name="connection_action" value="revoke"><?php esc_html_e( 'Revoke connection', 'bus-ticket-booking-with-seat-reservation' ); ?></button></p>
+						<div class="wbtm-app-home-actions"><button class="button button-primary" name="connection_action" value="create"><?php esc_html_e( 'Create new connection code', 'bus-ticket-booking-with-seat-reservation' ); ?></button><button class="button" name="connection_action" value="revoke" <?php disabled( ! $connected ); ?>><?php esc_html_e( 'Revoke connection', 'bus-ticket-booking-with-seat-reservation' ); ?></button></div>
 					</form>
-					<details><summary><?php esc_html_e( 'Replace an existing app identity', 'bus-ticket-booking-with-seat-reservation' ); ?></summary>
-						<p><?php esc_html_e( 'Resetting permits a new app project to replace the published release. Existing installations may require a separate app installation. Keep the original project and signing key for normal updates.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
-						<form method="post"><?php wp_nonce_field( self::PAGE ); ?><button class="button" name="connection_action" value="reset"><?php esc_html_e( 'Reset release identity and revoke connection', 'bus-ticket-booking-with-seat-reservation' ); ?></button></form>
-					</details>
+					<p class="description"><?php esc_html_e( 'The code allows public app configuration and download publishing. WordPress logins, customer records and payments remain private.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
 				</div>
-			</div>
+				<div class="wbtm-build-card wbtm-build-guide"><h3><?php esc_html_e( 'From website to app', 'bus-ticket-booking-with-seat-reservation' ); ?></h3><ol><li><strong><?php esc_html_e( 'Prepare your app', 'bus-ticket-booking-with-seat-reservation' ); ?></strong><span><?php esc_html_e( 'Set your name and logo in App branding & settings, then manage your home screen in these tabs.', 'bus-ticket-booking-with-seat-reservation' ); ?></span></li><li><strong><?php esc_html_e( 'Connect your dashboard', 'bus-ticket-booking-with-seat-reservation' ); ?></strong><span><?php esc_html_e( 'Add this website address and your new connection code to the build dashboard.', 'bus-ticket-booking-with-seat-reservation' ); ?></span></li><li><strong><?php esc_html_e( 'Build and publish', 'bus-ticket-booking-with-seat-reservation' ); ?></strong><span><?php esc_html_e( 'Build your Android app, then publish the download to this website from your dashboard.', 'bus-ticket-booking-with-seat-reservation' ); ?></span></li></ol></div>
+				</div>
+				<?php if ( ! empty( $release['url'] ) ) : ?>
+					<div class="wbtm-build-card wbtm-build-release"><span class="dashicons dashicons-download" aria-hidden="true"></span><div><h3><?php esc_html_e( 'Published Android release', 'bus-ticket-booking-with-seat-reservation' ); ?></h3><p><?php echo esc_html( sprintf( __( 'Version code %1$d · %2$s', 'bus-ticket-booking-with-seat-reservation' ), (int) $release['version'], size_format( (int) $release['size'], 1 ) ) ); ?></p></div><a class="button" href="<?php echo esc_url( $release['url'] ); ?>"><?php esc_html_e( 'Download APK', 'bus-ticket-booking-with-seat-reservation' ); ?></a></div>
+				<?php endif; ?>
+					<details class="wbtm-build-advanced"><summary><?php esc_html_e( 'Replace an existing app identity', 'bus-ticket-booking-with-seat-reservation' ); ?></summary>
+						<p><?php esc_html_e( 'Resetting permits a new app project to replace the published release. Existing installations may require a separate app installation. Keep the original project and signing key for normal updates.', 'bus-ticket-booking-with-seat-reservation' ); ?></p>
+						<form method="post" action="<?php echo esc_url( self::workspace_url() ); ?>" data-connection-form><?php wp_nonce_field( self::PAGE ); ?><button class="button" name="connection_action" value="reset"><?php esc_html_e( 'Reset release identity and revoke connection', 'bus-ticket-booking-with-seat-reservation' ); ?></button></form>
+					</details>
 			<?php
+		}
+
+		public function page() {
+			$token = self::handle_actions();
+			nocache_headers();
+			echo '<div class="wrap">';
+			self::render_panel( $token );
+			echo '</div>';
 		}
 	}
 	new WBTM_App_Builder_Connection();
