@@ -827,6 +827,8 @@
 								'ticket_qty' => 1, // Each cabin seat is quantity 1
 								'cabin_name' => $cabin_seat['cabin_name'] ?? '',
 								'cabin_index' => $cabin_seat['cabin_index'] ?? 0,
+								'is_upper' => ! empty( $cabin_seat['is_upper'] ),
+								'seat_identifier' => $cabin_seat['seat_identifier'] ?? WBTM_Functions::cabin_seat_identifier( $cabin_seat['cabin_index'] ?? 0, $cabin_seat['seat_name'] ?? '', ! empty( $cabin_seat['is_upper'] ) ),
 								'price_multiplier' => $cabin_seat['price_multiplier'] ?? 1.0
 							];
 						}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "wbtm/app-download",
+  "title": "Bus App Download",
+  "category": "widgets",
+  "icon": "smartphone",
+  "description": "Editable download banner using your live Mobile App name, logo and APK link.",
+  "textdomain": "bus-ticket-booking-with-seat-reservation",
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "highlight": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "badge": {
+      "type": "string"
+    },
+    "buttonLabel": {
+      "type": "string"
+    },
+    "buttonNote": {
+      "type": "string"
+    },
+    "featureOne": {
+      "type": "string"
+    },
+    "featureTwo": {
+      "type": "string"
+    },
+    "featureThree": {
+      "type": "string"
+    },
+    "trustNote": {
+      "type": "string"
+    },
+    "accentColor": {
+      "type": "string"
+    },
+    "backgroundColor": {
+      "type": "string"
+    },
+    "iconStyle": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "align": [
+      "wide",
+      "full"
+    ]
+  },
+  "editorScript": "wbtm-app-promotion-editor",
+  "style": "wbtm-app-promotion"
+}
