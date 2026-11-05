@@ -155,9 +155,10 @@ if ( ! class_exists( 'WBTM_App_Builder_Connection' ) ) {
 					'pdf'  => class_exists( 'WBTM_Pro_Pdf' ) && is_callable( array( 'WBTM_Pro_Pdf', 'is_mpdf_available' ) ) && WBTM_Pro_Pdf::is_mpdf_available(),
 				),
 				'website'        => array(
-					'home'               => home_url( '/' ),
-					'download_block'     => 'operator' === $variant ? '' : 'wbtm/app-download',
-					'download_shortcode' => 'operator' === $variant ? '' : '[wbtm_app_download]',
+					'home'                      => home_url( '/' ),
+					'download_block'            => 'wbtm/app-download',
+					'download_block_attributes' => array( 'appVariant' => $variant ),
+					'download_shortcode'        => 'operator' === $variant ? '[wbtm_operator_app_download]' : '[wbtm_app_download]',
 				),
 			) );
 			$response->header( 'Cache-Control', 'private, no-store' );
@@ -200,10 +201,12 @@ if ( ! class_exists( 'WBTM_App_Builder_Connection' ) ) {
 			);
 			$response = new WP_REST_Response(
 				array(
-					'ok'          => true,
-					'url'         => $url,
-					'app_variant' => $variant,
-					'shortcode'   => 'operator' === $variant ? '' : '[wbtm_app_download]',
+					'ok'               => true,
+					'url'              => $url,
+					'app_variant'      => $variant,
+					'shortcode'        => 'operator' === $variant ? '[wbtm_operator_app_download]' : '[wbtm_app_download]',
+					'block'            => 'wbtm/app-download',
+					'block_attributes' => array( 'appVariant' => $variant ),
 				)
 			);
 			$response->header( 'Cache-Control', 'private, no-store' );

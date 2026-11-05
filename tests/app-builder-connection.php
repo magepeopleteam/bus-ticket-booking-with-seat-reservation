@@ -101,7 +101,7 @@ try {
 		$check( 'operator' === $operator_data['app_variant'] && true === $operator_data['capabilities']['operator'], 'Operator manifest declares an explicit enabled variant capability.' );
 		$check( 'Actual Operator Name' === $operator_data['config']['branding']['name'] && home_url( '/' ) === $operator_data['config']['site']['url'], 'Operator build uses its actual website and branding.' );
 		$check( ! isset( $operator_data['users'], $operator_data['passengers'], $operator_data['assignments'], $operator_data['config']['support'], $operator_data['config']['legal'] ), 'Only normalized build fields are exposed.' );
-		$check( '' === $operator_data['website']['download_shortcode'], 'Operator builds never promote the customer shortcode.' );
+		$check( '[wbtm_operator_app_download]' === $operator_data['website']['download_shortcode'] && 'wbtm/app-download' === $operator_data['website']['download_block'] && array( 'appVariant' => 'operator' ) === $operator_data['website']['download_block_attributes'], 'Operator builds advertise their own shortcode and selected editable block.' );
 		$check( 401 === $call( 'manifest', bin2hex( random_bytes( 32 ) ), array( 'app_variant' => 'operator' ) )->get_status(), 'Standalone operator connection still requires the correct hashed code.' );
 		foreach ( array( '/wbtm-app/v1/config', '/wbtm-app/v1/me', '/wbtm-app/v1/bookings' ) as $private_route ) {
 			$private_request = new WP_REST_Request( 'GET', $private_route );

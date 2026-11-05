@@ -5,6 +5,7 @@
  * @package WBTM_Pro
  */
 
+// phpcs:disable WordPress.Files.FileName -- Preserve the established WBTM module filename convention.
 if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
@@ -13,18 +14,19 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 	/** Uses existing global app settings without adding a public write endpoint. */
 	class WBTM_App_Promotion {
 		const STYLE_HANDLE = 'wbtm-app-promotion';
-		const BLOCK_NAME = 'wbtm/app-download';
+		const BLOCK_NAME   = 'wbtm/app-download';
 
 		/**
 		 * Avoid duplicate cards when a theme renders the content more than once.
 		 *
-		 * @var bool
+		 * @var array
 		 */
-		private $rendered = false;
+		private $rendered = array();
 
 		/** Register the public shortcode, content filter and scoped asset hook. */
 		public function __construct() {
 			add_shortcode( 'wbtm_app_download', array( $this, 'shortcode' ) );
+			add_shortcode( 'wbtm_operator_app_download', array( $this, 'operator_shortcode' ) );
 			add_action( 'init', array( $this, 'register_block' ) );
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 			// Insert generated HTML after wpautop and do_shortcode have formatted
@@ -35,22 +37,36 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 
 		/** Download branding remains available independently of native API opt-in. */
 		public function register_routes() {
-			register_rest_route( 'wbtm/v1', '/app-download-info', array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'download_info' ),
-				'permission_callback' => '__return_true',
-			) );
+			register_rest_route(
+				'wbtm/v1',
+				'/app-download-info',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'download_info' ),
+					'permission_callback' => '__return_true',
+				)
+			);
 		}
 
 		/** Only deliberately public branding is exposed, never raw settings. */
 		public function download_info() {
 			$name     = self::app_name( WBTM_App_Settings::get() );
-			$response = new WP_REST_Response( array( 'name' => $name, 'filename' => self::apk_filename( $name ) ) );
+			$response = new WP_REST_Response(
+				array(
+					'name'     => $name,
+					'filename' => self::apk_filename( $name ),
+				)
+			);
 			$response->header( 'Cache-Control', 'no-store' );
 			return $response;
 		}
 
-		/** Use the same administrator app name/site-title fallback everywhere. */
+		/**
+		 * Use the same administrator app name/site-title fallback everywhere.
+		 *
+		 * @param array $settings Sanitized presentation settings.
+		 * @return string Public app name.
+		 */
 		private static function app_name( $settings ) {
 			return $settings['app_name'] ? $settings['app_name'] : html_entity_decode( wp_strip_all_tags( get_bloginfo( 'name' ) ), ENT_QUOTES, 'UTF-8' );
 		}
@@ -107,7 +123,66 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 		 * @return bool
 		 */
 		private static function available( $settings ) {
-			return 'yes' === $settings['app_promo_enabled'] && '' !== self::apk_url( $settings['app_android_apk_url'] );
+			return 'yes' === ( $settings['app_promo_enabled'] ?? 'no' ) && '' !== self::apk_url( $settings['app_android_apk_url'] ?? '' );
+		}
+
+		/**
+		 * Resolve only public presentation from the selected settings owner.
+		 *
+		 * @param string $variant Customer or operator.
+		 * @return array Sanitized banner settings; empty if unavailable.
+		 */
+		private static function banner_settings( $variant ) {
+			if ( 'customer' === $variant ) {
+				return WBTM_App_Settings::get();
+			}
+			if ( 'operator' !== $variant || ! class_exists( 'WBTM_Operator_Settings' ) ) {
+				return array();
+			}
+			$operator = WBTM_Operator_Settings::get();
+			if ( 'yes' !== $operator['enabled'] ) {
+				return array();
+			}
+			return array(
+				'app_name'               => $operator['name'],
+				'app_logo'               => $operator['logo'],
+				'app_primary_color'      => $operator['primary_color'],
+				'app_android_apk_url'    => self::apk_url( $operator['android_apk_url'] ),
+				'app_promo_enabled'      => $operator['promo_enabled'] ?? 'no',
+				'app_promo_title'        => $operator['promo_title'] ?? '',
+				'app_promo_description'  => $operator['promo_description'] ?? '',
+				'app_promo_button_label' => $operator['promo_button_label'] ?? '',
+			);
+		}
+
+		/**
+		 * Find explicit placement of this variant without running page shortcodes.
+		 *
+		 * @param string $content Raw page content.
+		 * @param string $variant Customer or operator.
+		 * @return bool Whether the variant is explicitly placed.
+		 */
+		private static function has_placement( $content, $variant ) {
+			preg_match_all( '/' . get_shortcode_regex( array( 'wbtm_app_download', 'wbtm_operator_app_download' ) ) . '/s', $content, $matches, PREG_SET_ORDER );
+			foreach ( $matches as $match ) {
+				if ( '[' === $match[1] && ']' === $match[6] ) {
+					continue;
+				}
+				$attributes = shortcode_parse_atts( $match[3] );
+				$selected   = 'wbtm_operator_app_download' === $match[2] ? 'operator' : ( $attributes['app'] ?? 'customer' );
+				if ( $selected === $variant ) {
+					return true;
+				}
+			}
+			$blocks = parse_blocks( $content );
+			while ( $blocks ) {
+				$block = array_pop( $blocks );
+				if ( self::BLOCK_NAME === $block['blockName'] && ( $block['attrs']['appVariant'] ?? 'customer' ) === $variant ) {
+					return true;
+				}
+				$blocks = array_merge( $blocks, $block['innerBlocks'] );
+			}
+			return false;
 		}
 
 		/**
@@ -126,10 +201,11 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 				return;
 			}
 			$post = get_queried_object();
-			if ( ! $post instanceof WP_Post || post_password_required( $post ) || ! self::available( WBTM_App_Settings::get() ) ) {
+			if ( ! $post instanceof WP_Post || post_password_required( $post ) ) {
 				return;
 			}
-			if ( ! self::has_search( $post->post_content ) && ! has_shortcode( $post->post_content, 'wbtm_app_download' ) && ! has_block( self::BLOCK_NAME, $post ) ) {
+			if ( ! ( self::available( self::banner_settings( 'customer' ) ) && ( self::has_search( $post->post_content ) || self::has_placement( $post->post_content, 'customer' ) ) )
+				&& ! ( self::available( self::banner_settings( 'operator' ) ) && self::has_placement( $post->post_content, 'operator' ) ) ) {
 				return;
 			}
 			$file = '/assets/frontend/wbtm-app-promotion.css';
@@ -150,7 +226,7 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 			// Shortcodes are already rendered at this priority. Inspect the raw
 			// saved content so explicit placement still suppresses auto insertion.
 			if ( ! $post instanceof WP_Post || post_password_required( $post )
-				|| ! self::has_search( $post->post_content ) || has_shortcode( $post->post_content, 'wbtm_app_download' ) || has_block( self::BLOCK_NAME, $post ) ) {
+				|| ! self::has_search( $post->post_content ) || self::has_placement( $post->post_content, 'customer' ) ) {
 				return $content;
 			}
 			return $this->shortcode() . $content;
@@ -173,7 +249,8 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 		 * @return string Rendered download banner, once per request instance.
 		 */
 		public function shortcode( $attributes = array() ) {
-			if ( is_admin() || is_feed() || $this->rendered ) {
+			$variant = is_array( $attributes ) ? ( $attributes['app'] ?? 'customer' ) : 'customer';
+			if ( ! in_array( $variant, array( 'customer', 'operator' ), true ) || is_admin() || is_feed() || ! empty( $this->rendered[ $variant ] ) ) {
 				return '';
 			}
 			$fields     = array(
@@ -196,7 +273,10 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 				is_array( $attributes ) ? $attributes : array(),
 				'wbtm_app_download'
 			);
-			$banner     = array( 'iconStyle' => 'logo' );
+			$banner     = array(
+				'iconStyle'  => 'logo',
+				'appVariant' => $variant,
+			);
 			foreach ( $fields as $key => $field ) {
 				if ( is_string( $attributes[ $key ] ) ) {
 					$banner[ $field ] = $attributes[ $key ];
@@ -204,49 +284,78 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 			}
 			$html = $this->render_block( $banner );
 			if ( $html ) {
-				$this->rendered = true;
+				$this->rendered[ $variant ] = true;
 			}
 			return $html;
 		}
 
-		/** Only page copy and cosmetic choices can override global app settings. */
+		/**
+		 * Explicit Operator App alias; attributes cannot change the selected app.
+		 *
+		 * @param array|string $attributes Shortcode presentation attributes.
+		 * @return string Rendered operator banner.
+		 */
+		public function operator_shortcode( $attributes = array() ) {
+			$attributes        = is_array( $attributes ) ? $attributes : array();
+			$attributes['app'] = 'operator';
+			return $this->shortcode( $attributes );
+		}
+
+		/**
+		 * Only page copy and cosmetic choices can override global app settings.
+		 *
+		 * @param array $attributes Block presentation attributes.
+		 * @return string Rendered banner or empty when disabled.
+		 */
 		public function render_block( $attributes ) {
-			$settings = WBTM_App_Settings::get();
-			if ( is_feed() || ! self::available( $settings ) ) { return ''; }
 			$attributes = is_array( $attributes ) ? $attributes : array();
-			$text = static function( $key, $fallback = '' ) use ( $attributes ) {
+			$variant    = $attributes['appVariant'] ?? 'customer';
+			$settings   = self::banner_settings( $variant );
+			if ( is_feed() || ! self::available( $settings ) ) {
+				return '';
+			}
+			$operator  = 'operator' === $variant;
+			$text      = static function ( $key, $fallback = '' ) use ( $attributes ) {
 				return isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? sanitize_text_field( wp_html_excerpt( $attributes[ $key ], 1000, '' ) ) : $fallback;
 			};
-			$name = self::app_name( $settings );
-			$title = $text( 'heading', $settings['app_promo_title'] ?: $name );
-			$highlight  = $text( 'highlight', empty( $settings['app_promo_title'] ) && ! isset( $attributes['heading'] ) ? __( 'in your pocket', 'bus-ticket-booking-with-seat-reservation' ) : '' );
-			if ( '' === $title && '' === $highlight ) { $title = $settings['app_promo_title'] ?: $name; }
-			$description = $text( 'description', ( '' !== $settings['app_promo_description'] ? $settings['app_promo_description'] : __( 'Search journeys, compare fares, choose your tickets and keep your bookings together — all from your phone.', 'bus-ticket-booking-with-seat-reservation' ) ) );
-			$label = $text( 'buttonLabel', $settings['app_promo_button_label'] ?: __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' ) );
-			if ( '' === $label ) { $label = $settings['app_promo_button_label'] ?: __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' ); }
-			$badge = $text( 'badge', __( 'Android app', 'bus-ticket-booking-with-seat-reservation' ) );
-			$kicker = $text( 'buttonNote', __( 'Direct APK download', 'bus-ticket-booking-with-seat-reservation' ) );
-			$note       = $text( 'trustNote', __( 'For Android phones', 'bus-ticket-booking-with-seat-reservation' ) );
-			$features   = array_filter(
+			$name      = self::app_name( $settings );
+			$title     = $text( 'heading', $settings['app_promo_title'] ? $settings['app_promo_title'] : $name );
+			$highlight = $text( 'highlight', ! $operator && empty( $settings['app_promo_title'] ) && ! isset( $attributes['heading'] ) ? __( 'in your pocket', 'bus-ticket-booking-with-seat-reservation' ) : '' );
+			if ( '' === $title && '' === $highlight ) {
+				$title = $settings['app_promo_title'] ? $settings['app_promo_title'] : $name;
+			}
+			$description = $text( 'description', ( '' !== $settings['app_promo_description'] ? $settings['app_promo_description'] : ( $operator ? __( 'Keep your assigned journeys, passenger manifests and attendance together — ready for your next departure.', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Search journeys, compare fares, choose your tickets and keep your bookings together — all from your phone.', 'bus-ticket-booking-with-seat-reservation' ) ) ) );
+			$label       = $text( 'buttonLabel', $settings['app_promo_button_label'] ? $settings['app_promo_button_label'] : __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' ) );
+			if ( '' === $label ) {
+				$label = $settings['app_promo_button_label'] ? $settings['app_promo_button_label'] : __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' );
+			}
+			$badge       = $text( 'badge', $operator ? __( 'Operator Android app', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Android app', 'bus-ticket-booking-with-seat-reservation' ) );
+			$kicker      = $text( 'buttonNote', __( 'Direct APK download', 'bus-ticket-booking-with-seat-reservation' ) );
+			$note        = $text( 'trustNote', $operator ? __( 'Approved operator account required', 'bus-ticket-booking-with-seat-reservation' ) : __( 'For Android phones', 'bus-ticket-booking-with-seat-reservation' ) );
+			$features    = array_filter(
 				array(
-					$text( 'featureOne', __( 'Search journeys', 'bus-ticket-booking-with-seat-reservation' ) ),
-					$text( 'featureTwo', __( 'Choose tickets', 'bus-ticket-booking-with-seat-reservation' ) ),
-					$text( 'featureThree', __( 'View bookings', 'bus-ticket-booking-with-seat-reservation' ) ),
+					$text( 'featureOne', $operator ? __( 'Assigned journeys', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Search journeys', 'bus-ticket-booking-with-seat-reservation' ) ),
+					$text( 'featureTwo', $operator ? __( 'Passenger manifests', 'bus-ticket-booking-with-seat-reservation' ) : __( 'Choose tickets', 'bus-ticket-booking-with-seat-reservation' ) ),
+					$text( 'featureThree', $operator ? __( 'Attendance status', 'bus-ticket-booking-with-seat-reservation' ) : __( 'View bookings', 'bus-ticket-booking-with-seat-reservation' ) ),
 				)
 			);
-			$accent = sanitize_hex_color( $text( 'accentColor' ) ) ?: $settings['app_primary_color'];
-			$background = sanitize_hex_color( $text( 'backgroundColor' ) ) ?: '#f7f5ff';
-			$logo = 'logo' === ( $attributes['iconStyle'] ?? 'bus' ) ? ( $settings['app_logo'] ?: wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) : '';
-			$heading_id = wp_unique_id( 'wbtm-app-download-' );
-			$style = '--wbtm-app-accent:' . $accent . ';--wbtm-app-on-accent:' . self::contrast_color( $accent ) . ';--wbtm-app-soft:' . $background . ';';
+			$page_accent = ! $operator ? sanitize_hex_color( $text( 'accentColor' ) ) : '';
+			$accent      = $page_accent ? $page_accent : $settings['app_primary_color'];
+			$background  = sanitize_hex_color( $text( 'backgroundColor' ) );
+			$background  = $background ? $background : '#f7f5ff';
+			$logo        = 'logo' === ( $attributes['iconStyle'] ?? 'bus' ) ? ( $settings['app_logo'] ? $settings['app_logo'] : ( $operator ? '' : wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) ) : '';
+			$heading_id  = wp_unique_id( 'wbtm-app-download-' );
+			$style       = '--wbtm-app-accent:' . $accent . ';--wbtm-app-on-accent:' . self::contrast_color( $accent ) . ';--wbtm-app-soft:' . $background . ';';
 			wp_enqueue_style( self::STYLE_HANDLE );
 			ob_start();
 			?>
-			<section class="wbtm-app-promotion <?php echo 'full' === ( $attributes['align'] ?? '' ) ? 'alignfull' : 'alignwide'; ?>" aria-labelledby="<?php echo esc_attr( $heading_id ); ?>" style="<?php echo esc_attr( $style ); ?>">
+			<section data-app-variant="<?php echo esc_attr( $variant ); ?>" class="wbtm-app-promotion <?php echo 'full' === ( $attributes['align'] ?? '' ) ? 'alignfull' : 'alignwide'; ?>" aria-labelledby="<?php echo esc_attr( $heading_id ); ?>" style="<?php echo esc_attr( $style ); ?>">
 				<div class="wbtm-app-promotion__inner">
 					<div class="wbtm-app-promotion__icon" aria-hidden="true">
 					<?php if ( $logo ) : ?>
 						<img src="<?php echo esc_url( $logo ); ?>" alt="" width="48" height="48" loading="lazy" decoding="async" />
+					<?php elseif ( $operator ) : ?>
+						<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M11 4H5a1 1 0 0 0-1 1v6m17-7h6a1 1 0 0 1 1 1v6M4 21v6a1 1 0 0 0 1 1h6m10 0h6a1 1 0 0 0 1-1v-6M3 16h26M9 10h4v3H9zm10 0h4v3h-4zM9 20h4v3H9zm10 0h4v3h-4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 					<?php else : ?>
 						<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M4 7h17a7 7 0 0 1 7 7v10H4V7Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 16h24M11 7v9m8-9v9M5 20h3m15 0h4" stroke="currentColor" stroke-width="2.4"/><circle cx="10" cy="24" r="3" fill="white" stroke="currentColor" stroke-width="2.4"/><circle cx="23" cy="24" r="3" fill="white" stroke="currentColor" stroke-width="2.4"/></svg>
 					<?php endif; ?>

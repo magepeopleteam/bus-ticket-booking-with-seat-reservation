@@ -5,7 +5,7 @@
   "title": "Bus App Download",
   "category": "widgets",
   "icon": "smartphone",
-  "description": "Editable download banner using your live Mobile App name, logo and APK link.",
+  "description": "Editable Customer or Operator App download banner using that app\u2019s live branding and APK link.",
   "textdomain": "bus-ticket-booking-with-seat-reservation",
   "attributes": {
     "heading": {
@@ -46,11 +46,19 @@
     },
     "iconStyle": {
       "type": "string"
+    },
+    "appVariant": {
+      "type": "string",
+      "default": "customer",
+      "enum": [
+        "customer",
+        "operator"
+      ]
     }
   },
   "supports": {
     "html": false,
-    "multiple": false,
+    "multiple": true,
     "align": [
       "wide",
       "full"
