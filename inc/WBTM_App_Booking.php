@@ -289,6 +289,7 @@ if ( ! class_exists( 'WBTM_App_Booking' ) ) {
 			$result = array(
 				'id' => $id, 'engine' => $order ? 'woocommerce' : 'standalone', 'status' => $status, 'total' => $order ? (float) $order->get_total() : (float) get_post_meta( $head, 'wbtm_tp', true ),
 				'currency' => $order ? $order->get_currency() : ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD' ), 'tickets' => $tickets,
+				'admissions' => is_callable( array( 'WBTM_Admission_QR', 'for_booking_rows' ) ) ? WBTM_Admission_QR::for_booking_rows( wp_list_pluck( $rows, 'ID' ) ) : array(),
 				'placed_at' => get_post_meta( $head, 'wbtm_booking_date', true ) ?: $rows[0]->post_date,
 				'payment_required' => in_array( $status, array( 'pending', 'failed' ), true ), 'pdf_available' => class_exists( 'WBTM_Pro_Pdf' ) && class_exists( 'WBTM_Customer_Portal' ) && WBTM_Customer_Portal::is_ticket_ready( $status ),
 				'cancel_request' => get_post_meta( $head, '_wbtm_app_cancel_request', true ) ?: null, 'change_request' => get_post_meta( $head, '_wbtm_app_change_request', true ) ?: null,

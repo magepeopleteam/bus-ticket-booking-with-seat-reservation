@@ -11,7 +11,7 @@
 		tabs.forEach(function (tab) { var active = tab.dataset.homeTab === key; tab.setAttribute('aria-selected', active ? 'true' : 'false'); tab.tabIndex = active ? 0 : -1; });
 		panels.forEach(function (panel) { panel.hidden = panel.dataset.homePanel !== key; });
 		var contentForm = root.querySelector('#wbtm-app-home-form');
-		if (contentForm) contentForm.hidden = key === 'connection';
+		if (contentForm) contentForm.hidden = !Array.from(contentForm.querySelectorAll('[data-home-panel]')).some(function (panel) { return panel.dataset.homePanel === key; });
 		try { sessionStorage.setItem('wbtm-app-home-tab', key); } catch (_error) { /* Navigation works without browser storage. */ }
 		try { var url = new URL(window.location.href); url.searchParams.set('app_tab', key); window.history.replaceState(null, '', url.href); } catch (_error) { /* Tabs work without URL updates. */ }
 	}

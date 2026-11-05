@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) || ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	exit;
 }
 
-$keys = array( WBTM_App_Home::OPTION, WBTM_App_Settings::OPTION, WBTM_App_Builder_Connection::OPTION, 'wbtm_app_builder_release' );
+$keys   = array( WBTM_App_Home::OPTION, WBTM_App_Settings::OPTION, WBTM_App_Builder_Connection::OPTION, 'wbtm_app_builder_release', 'wbtm_operator_builder_release', 'wbtm_operator_settings' );
 $before = array();
 foreach ( $keys as $key ) {
 	$before[ $key ] = get_option( $key, null );
@@ -40,13 +40,36 @@ try {
 	$document->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
 	libxml_clear_errors();
 	$xpath = new DOMXPath( $document );
-	$check( 7 === $xpath->query( '//*[@role="tab"]' )->length && 7 === $xpath->query( '//*[@role="tabpanel"]' )->length, 'Seven accessible workspace tabs must render.' );
+	$tab_count = $xpath->query( '//*[@role="tab"]' )->length;
+	$check( 7 <= $tab_count && $tab_count === $xpath->query( '//*[@role="tabpanel"]' )->length, 'Core and extension workspace tabs must have matching accessible panels.' );
+	if ( class_exists( 'WBTM_Operator_Admin' ) ) {
+		$check( 1 === $xpath->query( '//*[@data-home-panel="operator"]' )->length && 0 === $xpath->query( '//form[@id="wbtm-app-home-form"]//*[@name="settings[enabled]"]' )->length, 'Operator settings render separately and cannot submit through the customer home form.' );
+	}
 	$check( 1 === $xpath->query( '//*[@data-initial-tab="connection"]' )->length, 'Connection deep links must select the connection tab.' );
-	$check( 3 === $xpath->query( '//form' )->length, 'Home content, code management and identity reset must use separate forms.' );
+	$check( 1 === $xpath->query( '//form[@id="wbtm-app-home-form"]' )->length, 'Home content has its own form.' );
+	$connection_forms = $xpath->query( '//form[@data-connection-form]' );
+	$expected_actions = array( array( 'create', 'revoke' ), array( 'reset' ), array( 'reset_operator' ) );
+	$check( count( $expected_actions ) === $connection_forms->length, 'Shared code management and each app identity reset require independent forms.' );
+	foreach ( $connection_forms as $index => $form ) {
+		$actions = array();
+		foreach ( $xpath->query( './/*[@name="connection_action"]', $form ) as $control ) {
+			$actions[] = $control->getAttribute( 'value' );
+		}
+		$check( $expected_actions[ $index ] === $actions, 'Connection forms must expose only their own shared-code or app-specific reset actions.' );
+		$nonces = $xpath->query( './/input[@name="_wpnonce"]', $form );
+		$check( 1 === $nonces->length && wp_verify_nonce( $nonces->item( 0 )->getAttribute( 'value' ), WBTM_App_Builder_Connection::PAGE ), 'Each connection form requires one valid action nonce.' );
+		$check( 'post' === strtolower( $form->getAttribute( 'method' ) ) && WBTM_App_Builder_Connection::workspace_url() === $form->getAttribute( 'action' ), 'Each connection action must submit to its protected workspace handler.' );
+	}
 	$check( 0 === $xpath->query( '//form//form' )->length, 'Forms must not be nested.' );
+	preg_match_all( '/<\/?form\b[^>]*>/i', $html, $form_tags );
+	$form_depth = 0;
+	foreach ( $form_tags[0] as $form_tag ) {
+		$form_depth += 0 === strpos( $form_tag, '</' ) ? -1 : 1;
+		$check( 0 <= $form_depth && 1 >= $form_depth, 'Rendered form markup must remain independent before HTML parser repair.' );
+	}
+	$check( 0 === $form_depth, 'Every rendered form must close.' );
 	$check( 0 === $xpath->query( '//form[@data-connection-form]//*[starts-with(@name,"wbtm_app_home[")]' )->length, 'Connection actions must not submit home content.' );
 	$check( 0 === $xpath->query( '//form[@id="wbtm-app-home-form"]//*[@name="connection_action"]' )->length, 'Home saves must not submit connection actions.' );
-	$check( 2 === $xpath->query( '//form[@data-connection-form]//input[@name="_wpnonce"]' )->length, 'Every connection form requires its nonce.' );
 	foreach ( $before as $key => $value ) {
 		$check( get_option( $key, null ) === $value, 'Read-only rendering must preserve ' . $key );
 	}
@@ -75,6 +98,32 @@ try {
 	WBTM_App_Builder_Connection::handle_actions();
 	$check( false === get_option( WBTM_App_Builder_Connection::OPTION ), 'Revocation must remove the connection hash.' );
 	$check( $before['wbtm_app_builder_release'] === get_option( 'wbtm_app_builder_release', null ), 'Revocation must retain the published identity.' );
+	$check( get_option( 'wbtm_operator_builder_release', null ) === $before['wbtm_operator_builder_release'], 'Shared revocation must retain the operator identity.' );
+	$customer_release = array(
+		'project_id' => 'customer-fixture',
+		'version'    => 3,
+	);
+	$operator_release = array(
+		'project_id' => 'operator-fixture',
+		'version'    => 7,
+	);
+	update_option( 'wbtm_app_builder_release', $customer_release, false );
+	update_option( 'wbtm_operator_builder_release', $operator_release, false );
+	$_POST['connection_action'] = 'create';
+	WBTM_App_Builder_Connection::handle_actions();
+	$shared_connection          = get_option( WBTM_App_Builder_Connection::OPTION );
+	$_POST['connection_action'] = 'reset_operator';
+	WBTM_App_Builder_Connection::handle_actions();
+	$check( false === get_option( 'wbtm_operator_builder_release' ), 'Operator reset removes only the operator release identity.' );
+	$check( get_option( 'wbtm_app_builder_release' ) === $customer_release && get_option( WBTM_App_Builder_Connection::OPTION ) === $shared_connection, 'Operator reset preserves the customer identity and shared connection.' );
+	update_option( 'wbtm_operator_builder_release', $operator_release, false );
+	$_POST['connection_action'] = 'reset';
+	WBTM_App_Builder_Connection::handle_actions();
+	$check( false === get_option( 'wbtm_app_builder_release' ) && false === get_option( WBTM_App_Builder_Connection::OPTION ), 'Customer reset removes the customer identity and revokes the shared connection.' );
+	$check( get_option( 'wbtm_operator_builder_release' ) === $operator_release, 'Customer reset preserves the independent operator identity.' );
+	foreach ( array( WBTM_App_Home::OPTION, WBTM_App_Settings::OPTION, 'wbtm_operator_settings' ) as $key ) {
+		$check( get_option( $key, null ) === $before[ $key ], 'Code management and both identity resets preserve all saved content/settings: ' . $key );
+	}
 	$redirect_handler = static function ( $location, $status ) use ( $check ) {
 		$check( WBTM_App_Builder_Connection::workspace_url() === $location, 'Legacy URL must redirect to the unified connection tab.' );
 		$check( 307 === $status, 'Legacy POST redirects must preserve the submitted method and nonce.' );
@@ -102,12 +151,25 @@ try {
 	} else {
 		$_SERVER['REQUEST_METHOD'] = $method_before;
 	}
+	// Restore raw option snapshots without introducing current sanitizer defaults.
+	$restore_filters = array();
+	foreach ( array( 'WBTM_App_Settings', 'WBTM_Operator_Settings' ) as $settings_class ) {
+		if ( class_exists( $settings_class ) && remove_filter( 'sanitize_option_' . $settings_class::OPTION, array( $settings_class, 'sanitize' ) ) ) {
+			$restore_filters[] = $settings_class;
+		}
+	}
 	foreach ( $before as $key => $value ) {
 		if ( null === $value ) {
 			delete_option( $key );
 		} else {
 			update_option( $key, $value, false );
 		}
+	}
+	foreach ( $restore_filters as $settings_class ) {
+		add_filter( 'sanitize_option_' . $settings_class::OPTION, array( $settings_class, 'sanitize' ) );
+	}
+	foreach ( $before as $key => $value ) {
+		$check( get_option( $key, null ) === $value, 'Original raw option snapshot must be restored: ' . $key );
 	}
 }
 WP_CLI::success( $checks . ' mobile app workspace checks passed; original options restored.' );

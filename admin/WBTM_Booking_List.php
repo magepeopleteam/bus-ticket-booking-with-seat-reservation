@@ -128,7 +128,7 @@
 					// active the Booking List reuses its already-registered AJAX endpoint
 					// (wbtm_bulk_update_ticket_status, secured with wbtm_pro_admin_nonce) so
 					// there is no duplicate handler. When it is not active these stay inert.
-					'qrActive' => class_exists('WBTM_QR_CODE_Functions'),
+					'qrActive' => $this->qr_active(),
 					'qrNonce'  => wp_create_nonce('wbtm_pro_admin_nonce'),
 					// Export modal: the JS assembles wbtm_bl_* args from the chosen scope
 					// and posts them to admin-post.php, one nonce per format handler.
@@ -515,7 +515,7 @@
 			 * absent every QR affordance is omitted so nothing here depends on it.
 			 */
 			private function qr_active() {
-				return class_exists('WBTM_QR_CODE_Functions');
+				return class_exists('WBTM_QR_CODE_Functions') || (class_exists('WBTM_Operator') && WBTM_Operator::enabled());
 			}
 
 			/**

@@ -119,6 +119,8 @@ if ( ! class_exists( 'WBTM_App_Config' ) ) {
 					'push' => class_exists( 'WBTM_App_Push' ) && WBTM_App_Push::enabled(),
 					'device_registration' => class_exists( 'WBTM_App_Account' ),
 					'account_deletion' => class_exists( 'WBTM_App_Account' ),
+					'attendance_read' => is_callable( array( 'WBTM_Operator', 'enabled' ) ) && WBTM_Operator::enabled(),
+					'qr_display' => is_callable( array( 'WBTM_Operator', 'enabled' ) ) && WBTM_Operator::enabled() && 'yes' === WBTM_Operator_Settings::get()['qr_enabled'],
 				), $booking_operations ),
 				'links' => array(
 					'routes' => rest_url( 'wbtm/v1/routes' ),

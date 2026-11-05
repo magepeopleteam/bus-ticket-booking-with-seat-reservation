@@ -49,6 +49,10 @@ if ( ! class_exists( 'WBTM_App_Auth' ) ) {
 			if ( 0 !== strpos( $request->get_route(), '/' . WBTM_App_Config::REST_NAMESPACE . '/' ) ) {
 				return $result;
 			}
+			// The independently enabled operator build connector owns its HTTPS/hash gate.
+			if ( class_exists( 'WBTM_App_Builder_Connection' ) && WBTM_App_Builder_Connection::is_operator_builder_request( $request ) ) {
+				return $result;
+			}
 			if ( ! self::enabled() ) {
 				return self::error( 'wbtm_app_disabled', __( 'The mobile app API is disabled.', 'addon-bus--ticket-booking-with-seat-pro' ), 404 );
 			}

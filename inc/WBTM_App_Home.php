@@ -223,6 +223,7 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 				$tabs['connection'] = array( __( 'Build connection', 'bus-ticket-booking-with-seat-reservation' ), 'dashicons-admin-links' );
 				$connection_token = WBTM_App_Builder_Connection::handle_actions();
 			}
+			$tabs = apply_filters( 'wbtm_app_workspace_tabs', $tabs );
 			$initial_tab = isset( $_GET['app_tab'] ) && is_string( $_GET['app_tab'] ) ? sanitize_key( wp_unslash( $_GET['app_tab'] ) ) : '';
 			$initial_tab = isset( $tabs[ $initial_tab ] ) ? $initial_tab : '';
 			$terms = get_terms( array( 'taxonomy' => 'wbtm_bus_stops', 'hide_empty' => false, 'fields' => 'names' ) );
@@ -287,6 +288,7 @@ if ( ! class_exists( 'WBTM_App_Home' ) ) {
 						<?php WBTM_App_Builder_Connection::render_panel( $connection_token ); ?>
 					</section>
 				<?php endif; ?>
+				<?php do_action( 'wbtm_app_workspace_panels' ); ?>
 				</div></div>
 			</div>
 			<?php

@@ -103,7 +103,7 @@ if ( ! class_exists( 'WBTM_App_Receipt' ) ) {
 			add_action( 'wbtm_ticket_mail_result', $ticket_sent, 10, 3 ); add_action( 'woocommerce_email_sent', $wc_sent, 10, 3 );
 			return static function() use ( $ticket_sent, $wc_sent ) { remove_action( 'wbtm_ticket_mail_result', $ticket_sent, 10 ); remove_action( 'woocommerce_email_sent', $wc_sent, 10 ); };
 		}
-		public static function data( $order ) {
+		public static function data( $order, $include_admissions = true ) {
 			$summary = $order->get_meta( '_wbtm_app_native_summary' ); $balance = (float) $order->get_meta( '_wbtm_remaining_balance' );
 			// Current Woo totals remain authoritative after an administrator edits an order.
 			$use_snapshot = is_array( $summary ) && abs( (float) ( $summary['totals']['due_now'] ?? -1 ) - (float) $order->get_total() ) < 0.00001 && abs( (float) ( $summary['totals']['subtotal'] ?? -1 ) - (float) $order->get_subtotal() ) < 0.00001 && abs( (float) ( $summary['totals']['discount'] ?? -1 ) - (float) $order->get_discount_total() ) < 0.00001 && abs( (float) ( $summary['totals']['tax'] ?? -1 ) - (float) $order->get_total_tax() ) < 0.00001;
@@ -129,7 +129,7 @@ if ( ! class_exists( 'WBTM_App_Receipt' ) ) {
 			}
 			if ( $order->get_meta( '_wbtm_app_native_processing_review' ) ) { $instructions = __( 'Your order was saved and needs an operator status check. Do not place this booking again.', 'addon-bus--ticket-booking-with-seat-pro' ); }
 			$paid = $order->get_date_paid() && ! in_array( $order->get_status(), array( 'cancelled', 'failed', 'refunded', 'wbtm-review' ), true );
-			return array( 'id' => $order->get_id(), 'reference' => (string) $order->get_order_number(), 'status' => $order->get_status(), 'status_label' => wc_get_order_status_name( $order->get_status() ), 'created_at' => $order->get_date_created() ? $order->get_date_created()->date( DATE_ATOM ) : '', 'currency' => $order->get_currency(), 'total' => (float) $summary['totals']['total'], 'due_now' => (float) $order->get_total(), 'balance_due' => $balance, 'payment_method' => $order->get_payment_method(), 'payment_title' => WBTM_App_Inventory::text( $order->get_payment_method_title() ), 'is_paid' => (bool) $paid, 'journeys' => $journeys, 'billing' => array( 'first_name' => $order->get_billing_first_name(), 'last_name' => $order->get_billing_last_name(), 'email' => $order->get_billing_email(), 'phone' => $order->get_billing_phone() ), 'summary' => $summary, 'ticket' => self::pdf_status( $order ), 'email' => self::email_status( $order ), 'instructions' => $instructions );
+			return array( 'id' => $order->get_id(), 'reference' => (string) $order->get_order_number(), 'status' => $order->get_status(), 'status_label' => wc_get_order_status_name( $order->get_status() ), 'created_at' => $order->get_date_created() ? $order->get_date_created()->date( DATE_ATOM ) : '', 'currency' => $order->get_currency(), 'total' => (float) $summary['totals']['total'], 'due_now' => (float) $order->get_total(), 'balance_due' => $balance, 'payment_method' => $order->get_payment_method(), 'payment_title' => WBTM_App_Inventory::text( $order->get_payment_method_title() ), 'is_paid' => (bool) $paid, 'journeys' => $journeys, 'billing' => array( 'first_name' => $order->get_billing_first_name(), 'last_name' => $order->get_billing_last_name(), 'email' => $order->get_billing_email(), 'phone' => $order->get_billing_phone() ), 'summary' => $summary, 'admissions' => $include_admissions && is_callable( array( 'WBTM_Admission_QR', 'for_order' ) ) ? WBTM_Admission_QR::for_order( $order->get_id() ) : array(), 'ticket' => self::pdf_status( $order ), 'email' => self::email_status( $order ), 'instructions' => $instructions );
 		}
 		public function bookings( $request ) {
 			if ( ! function_exists( 'wc_get_orders' ) ) { return WBTM_App_Native_Checkout::error( 'WooCommerce booking history is unavailable.', 409 ); }
@@ -139,7 +139,7 @@ if ( ! class_exists( 'WBTM_App_Receipt' ) ) {
 			$args = array( 'type' => 'shop_order', 'limit' => $per_page + 1, 'offset' => ( $page - 1 ) * $per_page, 'orderby' => 'ID', 'order' => 'DESC' );
 			if ( 'customer' === $p['kind'] ) { $args['customer_id'] = $p['user_id']; } else { $args['customer_id'] = 0; $args['meta_query'] = array( array( 'key' => '_wbtm_app_guest_owner', 'value' => $p['owner'] ) ); }
 			$orders = wc_get_orders( $args ); $has_more = count( $orders ) > $per_page; $result = array();
-			foreach ( array_slice( $orders, 0, $per_page ) as $order ) { if ( ! is_wp_error( self::owned_order( $order->get_id(), $p ) ) ) { $result[] = self::data( $order ); } }
+			foreach ( array_slice( $orders, 0, $per_page ) as $order ) { if ( ! is_wp_error( self::owned_order( $order->get_id(), $p ) ) ) { $result[] = self::data( $order, false ); } }
 			return new WP_REST_Response( array( 'bookings' => $result, 'page' => $page, 'per_page' => $per_page, 'has_more' => $has_more ) );
 		}
 		public function booking( $request ) {
