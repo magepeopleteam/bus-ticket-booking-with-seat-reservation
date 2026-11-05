@@ -165,11 +165,47 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 			register_block_type( WBTM_PLUGIN_DIR . '/blocks/app-download', array( 'render_callback' => array( $this, 'render_block' ) ) );
 		}
 
-		/** Keep old automatic/shortcode placement compatible; explicit blocks take priority. */
-		public function shortcode() {
-			if ( is_admin() || is_feed() || $this->rendered ) { return ''; }
-			$html = $this->render_block( array( 'iconStyle' => 'logo' ) );
-			if ( $html ) { $this->rendered = true; }
+		/**
+		 * Share editable banner copy with Shortcode widgets, including Elementor.
+		 * The app identity and APK destination always come from global settings.
+		 *
+		 * @param array|string $attributes Shortcode attributes supplied by WordPress.
+		 * @return string Rendered download banner, once per request instance.
+		 */
+		public function shortcode( $attributes = array() ) {
+			if ( is_admin() || is_feed() || $this->rendered ) {
+				return '';
+			}
+			$fields     = array(
+				'heading'          => 'heading',
+				'highlight'        => 'highlight',
+				'description'      => 'description',
+				'badge'            => 'badge',
+				'button_label'     => 'buttonLabel',
+				'button_note'      => 'buttonNote',
+				'feature_one'      => 'featureOne',
+				'feature_two'      => 'featureTwo',
+				'feature_three'    => 'featureThree',
+				'trust_note'       => 'trustNote',
+				'accent_color'     => 'accentColor',
+				'background_color' => 'backgroundColor',
+				'icon_style'       => 'iconStyle',
+			);
+			$attributes = shortcode_atts(
+				array_fill_keys( array_keys( $fields ), null ),
+				is_array( $attributes ) ? $attributes : array(),
+				'wbtm_app_download'
+			);
+			$banner     = array( 'iconStyle' => 'logo' );
+			foreach ( $fields as $key => $field ) {
+				if ( is_string( $attributes[ $key ] ) ) {
+					$banner[ $field ] = $attributes[ $key ];
+				}
+			}
+			$html = $this->render_block( $banner );
+			if ( $html ) {
+				$this->rendered = true;
+			}
 			return $html;
 		}
 
@@ -183,15 +219,21 @@ if ( ! class_exists( 'WBTM_App_Promotion' ) ) {
 			};
 			$name = self::app_name( $settings );
 			$title = $text( 'heading', $settings['app_promo_title'] ?: $name );
-			$highlight = $text( 'highlight' );
+			$highlight  = $text( 'highlight', empty( $settings['app_promo_title'] ) && ! isset( $attributes['heading'] ) ? __( 'in your pocket', 'bus-ticket-booking-with-seat-reservation' ) : '' );
 			if ( '' === $title && '' === $highlight ) { $title = $settings['app_promo_title'] ?: $name; }
-			$description = $text( 'description', $settings['app_promo_description'] );
+			$description = $text( 'description', ( '' !== $settings['app_promo_description'] ? $settings['app_promo_description'] : __( 'Search journeys, compare fares, choose your tickets and keep your bookings together — all from your phone.', 'bus-ticket-booking-with-seat-reservation' ) ) );
 			$label = $text( 'buttonLabel', $settings['app_promo_button_label'] ?: __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' ) );
 			if ( '' === $label ) { $label = $settings['app_promo_button_label'] ?: __( 'Download for Android', 'bus-ticket-booking-with-seat-reservation' ); }
 			$badge = $text( 'badge', __( 'Android app', 'bus-ticket-booking-with-seat-reservation' ) );
 			$kicker = $text( 'buttonNote', __( 'Direct APK download', 'bus-ticket-booking-with-seat-reservation' ) );
-			$note = $text( 'trustNote' );
-			$features = array_filter( array( $text( 'featureOne' ), $text( 'featureTwo' ), $text( 'featureThree' ) ) );
+			$note       = $text( 'trustNote', __( 'For Android phones', 'bus-ticket-booking-with-seat-reservation' ) );
+			$features   = array_filter(
+				array(
+					$text( 'featureOne', __( 'Search journeys', 'bus-ticket-booking-with-seat-reservation' ) ),
+					$text( 'featureTwo', __( 'Choose tickets', 'bus-ticket-booking-with-seat-reservation' ) ),
+					$text( 'featureThree', __( 'View bookings', 'bus-ticket-booking-with-seat-reservation' ) ),
+				)
+			);
 			$accent = sanitize_hex_color( $text( 'accentColor' ) ) ?: $settings['app_primary_color'];
 			$background = sanitize_hex_color( $text( 'backgroundColor' ) ) ?: '#f7f5ff';
 			$logo = 'logo' === ( $attributes['iconStyle'] ?? 'bus' ) ? ( $settings['app_logo'] ?: wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) : '';
