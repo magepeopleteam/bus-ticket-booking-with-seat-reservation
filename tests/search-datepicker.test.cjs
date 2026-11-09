@@ -102,3 +102,40 @@ test('reinitialization does not accumulate click handlers', async () => {
         assert.equal(events.click.filter(event => event.namespace === 'wbtmDatePicker').length, 1);
     } finally { dom.window.close(); }
 });
+
+test('the results-page calendar stays above its page-builder stacking context', async () => {
+    const { w, $, dom } = await fixture();
+    try {
+        $('label').wrapAll('<main class="jupiterx-main" style="position: relative; z-index: 20"></main>');
+        $('main').append('<div class="wbtm_search_result" style="background: white">Bus results</div>');
+        const style = w.document.createElement('style');
+        style.textContent = fs.readFileSync(path.join(plugin, 'assets/frontend/wbtm.css'), 'utf8');
+        w.document.head.appendChild(style);
+
+        const importantLayers = (rules, element) => Array.from(rules).flatMap(rule => {
+            if (rule.cssRules) {
+                return importantLayers(rule.cssRules, element);
+            }
+            if (rule.selectorText && rule.style.getPropertyPriority('z-index') === 'important') {
+                try { return element.matches(rule.selectorText) ? [rule.style.getPropertyValue('z-index')] : []; }
+                catch { return []; }
+            }
+            return [];
+        });
+
+        for (const pageLayer of [20, 200]) {
+            $('main').css('z-index', pageLayer);
+            $('#journey')[0].focus();
+            $('#journey').trigger('click');
+            const calendar = $('#ui-datepicker-div')[0];
+            // jsdom does not resolve media-query !important rules against inline styles.
+            // Read the real stylesheet's overrides via CSSOM for its desktop rules.
+            const forced = importantLayers(style.sheet.cssRules, calendar);
+            const effectiveLayer = Number(forced.at(-1) || calendar.style.zIndex);
+            assert.ok(effectiveLayer > pageLayer, `Calendar layer ${effectiveLayer} is hidden behind page layer ${pageLayer}`);
+            assert.equal(calendar.style.position, 'absolute');
+            $('#journey').datepicker('hide');
+            $('#journey')[0].blur();
+        }
+    } finally { dom.window.close(); }
+});
