@@ -55,6 +55,14 @@ add_action( 'plugins_loaded', function () {
  */
 if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 	class WBTM_Cart_Helper {
+		/** Keep explicitly cancelled passengers from being re-reserved by a later payment callback. */
+		public static function synced_booking_status( $booking_id, $status ) {
+			if ( get_post_meta( $booking_id, '_wbtm_mcp_cancelled', true ) && ! in_array( $status, array( 'canceled', 'cancelled', 'failed', 'refunded' ), true ) ) {
+				return 'canceled';
+			}
+			return $status;
+		}
+
 		/** Re-entrant within one request; MySQL connections own advisory locks. */
 		private static $held_locks = array();
 

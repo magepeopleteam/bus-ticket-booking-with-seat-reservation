@@ -249,7 +249,11 @@ if ( ! class_exists( 'WBTM_App_Booking' ) ) {
 				'wbtm_extra_services' => $q['extras'], 'wbtm_passenger_info' => $passengers, 'wbtm_price_leg' => $t['price_leg'], 'wbtm_journey_type' => 'return' === $t['price_leg'] ? 'return' : 'departure',
 				'wbtm_booking_mode' => $q['booking_mode'], 'wbtm_full_bus_base_price' => $q['full_bus']['base_price'] ?? 0, 'wbtm_full_bus_discount' => $q['full_bus']['discount'] ?? 0, 'wbtm_full_bus_seat_count' => 'full_bus' === $q['booking_mode'] ? $t['total_seat'] : 0,
 			);
-			do_action( 'woocommerce_checkout_create_order_line_item', $item, 'wbtm_app', $values, $order );
+			if ( apply_filters( 'wbtm_app_direct_bus_item_builder', false ) ) {
+				WBTM_Woocommerce::populate_bus_order_item( $item, $values );
+			} else {
+				do_action( 'woocommerce_checkout_create_order_line_item', $item, 'wbtm_app', $values, $order );
+			}
 			$order->add_item( $item ); $order->calculate_totals( false ); $order->save();
 			WBTM_Woocommerce::add_billing_data( $item->get_id(), $order->get_id() );
 			return $order->get_id();

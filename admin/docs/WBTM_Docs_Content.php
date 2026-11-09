@@ -1259,6 +1259,14 @@
 				 *
 				 * @param array $chapters
 				 */
+				$chapters[] = array(
+					'id' => 'mcp-server', 'group' => 'help', 'plan' => 'pro', 'icon' => 'fas fa-plug',
+					'title' => __( 'MCP Server — Restricted AI Connections', 'bus-ticket-booking-with-seat-reservation' ),
+					'intro' => __( 'PRO connects compatible AI clients to approved Free and PRO bus operations. Free alone does not expose an MCP endpoint.', 'bus-ticket-booking-with-seat-reservation' ),
+					'blocks' => array(
+						array( 'type' => 'text', 'text' => __( 'With PRO active, open Bus > MCP Server to enable access and issue expiring read-only, fleet-management or Bookings and passengers keys. The full connection guide appears here. Code, files, credentials, plugin installation, charges and refunds are excluded. Remote clients require HTTPS; custom-header Streamable HTTP clients and a bundled Python stdio bridge are supported.', 'bus-ticket-booking-with-seat-reservation' ) ),
+					),
+				);
 				return apply_filters( 'wbtm_docs_chapters', $chapters );
 			}
 		}
