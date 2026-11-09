@@ -768,6 +768,10 @@
 				}
 			}
 			public function checkout_create_order_line_item($item, $cart_item_key, $values) {
+				self::populate_bus_order_item($item, $values);
+			}
+			/** Populate a manual bus line without dispatching unrelated product-type checkout handlers. */
+			public static function populate_bus_order_item($item, $values) {
 				$post_id = array_key_exists('wbtm_bus_id', $values) ? $values['wbtm_bus_id'] : 0;
 				if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
 					// echo '<pre>';print_r($item);echo '</pre>';die();
@@ -1341,7 +1345,7 @@
 				$loop = new WP_Query($args);
 				foreach ($loop->posts as $user) {
 					$user_id = $user->ID;
-					update_post_meta($user_id, 'wbtm_order_status', $order_status);
+					update_post_meta($user_id, 'wbtm_order_status', WBTM_Cart_Helper::synced_booking_status($user_id, $order_status));
 				}
 				$ex_args = array(
 					'post_type' => 'wbtm_service_booking',
