@@ -55,11 +55,16 @@ add_action( 'plugins_loaded', function () {
  */
 if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 	class WBTM_Cart_Helper {
+		/** Re-entrant within one request; MySQL connections own advisory locks. */
+		private static $held_locks = array();
 
 		public static function get_trip_lock_key( $post_id, $bp, $dp, $date ) {
 			global $wpdb;
-			$date = $date ? gmdate( 'Y-m-d', strtotime( $date ) ) : '';
-			return substr( $wpdb->prefix . 'wbtm_lock_' . md5( $post_id . '|' . $bp . '|' . $dp . '|' . $date ), 0, 64 );
+			// Every origin/destination segment shares physical seats. A bus-wide lock
+			// also covers overnight boarding dates and same-bus return journeys without
+			// guessing a run date from a passenger's boarding date. Critical sections
+			// only validate/write inventory; no payment/network work belongs inside.
+			return substr( $wpdb->prefix . 'wbtm_lock_bus_' . absint( $post_id ), 0, 64 );
 		}
 
 		/**
@@ -73,12 +78,17 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 		public static function acquire_trip_lock( $post_id, $bp, $dp, $date, $timeout = 30 ) {
 			global $wpdb;
 			$key    = self::get_trip_lock_key( $post_id, $bp, $dp, $date );
-			$result = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, %d)", $key, $timeout ) );
-			// If the DB does not support advisory locks (NULL), fall back to no lock rather than failing the order.
-			if ( null === $result ) {
+			if ( isset( self::$held_locks[ $key ] ) ) {
+				self::$held_locks[ $key ]++;
 				return true;
 			}
-			return ( 1 === (int) $result );
+			$result = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, %d)", $key, $timeout ) );
+			// Fail closed: accepting a sale without serialization can double-book.
+			if ( 1 === (int) $result ) {
+				self::$held_locks[ $key ] = 1;
+				return true;
+			}
+			return false;
 		}
 
 		/**
@@ -92,6 +102,13 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 		public static function release_trip_lock( $post_id, $bp, $dp, $date ) {
 			global $wpdb;
 			$key = self::get_trip_lock_key( $post_id, $bp, $dp, $date );
+			if ( ! isset( self::$held_locks[ $key ] ) ) {
+				return;
+			}
+			if ( --self::$held_locks[ $key ] > 0 ) {
+				return;
+			}
+			unset( self::$held_locks[ $key ] );
 			$wpdb->query( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $key ) );
 		}
 
@@ -125,6 +142,18 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 				);
 			}
 			$booking_mode = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
+			// Booking rows are keyed by the physical departure, which can be the
+			// previous day for a passenger boarding after midnight at an intermediate
+			// stop. Keep the boarding time above for the sales cutoff, then use the
+			// same authoritative run date as frontend availability for inventory.
+			$boarding_day = $date ? gmdate( 'Y-m-d', strtotime( $date ) ) : '';
+			$trip_info = $boarding_day ? WBTM_Functions::get_bus_all_info( $post_id, $boarding_day, $bp, $dp ) : array();
+			$inventory_date = $trip_info['start_time'] ?? $date;
+			// A whole-bus reservation has the label "Full Bus", rather than every
+			// physical seat name. Checking only a requested seat would miss it.
+			if ( self::route_has_full_bus_booking( $post_id, $bp, $dp, $inventory_date, true ) ) {
+				return new WP_Error( 'wbtm_full_bus_reserved', __( 'This bus is already reserved for this journey.', 'bus-ticket-booking-with-seat-reservation' ) );
+			}
 			// Reject segments with no fare configured so they can't be booked at 0,
 			// even via a crafted request that bypasses the hidden UI. Full-bus pricing
 			// is validated separately, so this guard applies to seat bookings only.
@@ -138,7 +167,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 			}
 			if ( $booking_mode === 'full_bus' ) {
 				$total_seat = class_exists( 'WBTM_Seat_Configuration' ) ? WBTM_Seat_Configuration::count_actual_seats( $post_id ) : (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
-				$sold_seat  = WBTM_Query::query_total_booked( $post_id, $bp, $dp, $date );
+				$sold_seat  = WBTM_Query::query_total_booked( $post_id, $bp, $dp, $inventory_date );
 				if ( $sold_seat > 0 || (int) $full_bus_seat_count > $total_seat ) {
 					return new WP_Error(
 						'wbtm_full_bus_unavailable',
@@ -165,7 +194,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 						} else {
 							$check_seat = ( $cabin_index !== '' ) ? 'cabin_' . $cabin_index . '_' . $seat_name : $seat_name;
 						}
-						if ( WBTM_Query::query_total_booked( $post_id, $bp, $dp, $date, '', $check_seat ) > 0 ) {
+						if ( WBTM_Query::query_total_booked( $post_id, $bp, $dp, $inventory_date, '', $check_seat ) > 0 ) {
 							return new WP_Error(
 								'wbtm_seat_unavailable',
 								esc_html__( 'Sorry, your selected seat is already booked by another user.', 'bus-ticket-booking-with-seat-reservation' )
@@ -177,7 +206,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 			}
 			// Without seat plan: validate total ticket quantity against remaining capacity.
 			$total_seat = class_exists( 'WBTM_Seat_Configuration' ) ? WBTM_Seat_Configuration::count_actual_seats( $post_id ) : (int) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_get_total_seat', 0 );
-			$sold_seat  = WBTM_Query::query_total_booked( $post_id, $bp, $dp, $date );
+			$sold_seat  = WBTM_Query::query_total_booked( $post_id, $bp, $dp, $inventory_date );
 			$total_qty  = 0;
 			if ( is_array( $ticket_infos ) && sizeof( $ticket_infos ) > 0 ) {
 				foreach ( $ticket_infos as $ticket_info ) {
@@ -192,6 +221,17 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 				);
 			}
 			return true;
+		}
+
+		/** Whole-bus claims exclude individual seats on all overlapping segments. */
+		public static function route_has_full_bus_booking( $post_id, $bp, $dp, $date, $date_is_run = false ) {
+			$day = $date ? gmdate( 'Y-m-d', strtotime( $date ) ) : '';
+			if ( ! $day ) { return false; }
+			if ( ! $date_is_run ) { $trip = WBTM_Functions::get_bus_all_info( $post_id, $day, $bp, $dp ); if ( ! empty( $trip['start_time'] ) ) { $day = gmdate( 'Y-m-d', strtotime( $trip['start_time'] ) ); } }
+			foreach ( WBTM_Query::query_booking_rows_for_route( $post_id, $bp, $dp, $day . ' 00:00', $day . ' 23:59:59' ) as $row ) {
+				if ( 'full_bus' === $row->booking_mode ) { return true; }
+			}
+			return false;
 		}
 
 		public static function get_cart_cabin_seat_info( $post_id, $cabin_config ) {
@@ -462,9 +502,14 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 				);
 			}
 			$post_id = wp_insert_post( $new_post );
-			if ( sizeof( $meta_data ) > 0 ) {
+			if ( $post_id && ! is_wp_error( $post_id ) && sizeof( $meta_data ) > 0 ) {
+				// This is a new booking. Read metadata installed by save_post hooks
+				// once; new keys can use core's add API without repeated existence
+				// queries/cache reloads for every passenger field.
+				$existing_meta = get_post_meta( $post_id );
 				foreach ( $meta_data as $key => $value ) {
-					update_post_meta( $post_id, $key, $value );
+					if ( array_key_exists( $key, $existing_meta ) ) { update_post_meta( $post_id, $key, $value ); }
+					else { add_post_meta( $post_id, $key, $value ); }
 				}
 			}
 			return $post_id;

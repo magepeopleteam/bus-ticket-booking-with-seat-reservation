@@ -108,6 +108,8 @@
 				//==================//
 				// Public read-only REST API (wbtm/v1) — registers its routes on rest_api_init.
 				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_REST_API.php';
+				// Customer app adapters use the same Free services and optional PRO modules.
+				require_once WBTM_PLUGIN_DIR . '/inc/WBTM_App.php';
 				//==================//
 			}
 			public function global_enqueue() {
