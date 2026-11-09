@@ -452,7 +452,7 @@
 			 *
 			 * @return array<int,object> rows with ->start_time, ->seat, ->booking_mode, ->full_count
 			 */
-			public static function query_booking_rows_for_route( $post_id, $start, $end, $min_date = '' ) {
+			public static function query_booking_rows_for_route( $post_id, $start, $end, $min_date = '', $max_date = '' ) {
 				global $wpdb;
 				$rows = array();
 				if ( ! ( $post_id && $start && $end ) ) {
@@ -491,6 +491,9 @@
 				if ( $min_date ) {
 					$date_floor = ' AND pm_time.meta_value >= %s ';
 				}
+				if ( $max_date ) {
+					$date_floor .= ' AND pm_time.meta_value <= %s ';
+				}
 
 				$sql = "
 					SELECT p.ID AS booking_id,
@@ -514,7 +517,8 @@
 				$params[] = (int) $post_id;
 				$params   = array_merge( $params, $statuses, $boarding_in, $dropping_in );
 				if ( $date_floor ) {
-					$params[] = $min_date;
+					if ( $min_date ) { $params[] = $min_date; }
+					if ( $max_date ) { $params[] = $max_date; }
 				}
 
 				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- placeholders built from fixed counts above.
