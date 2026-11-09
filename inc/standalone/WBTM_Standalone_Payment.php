@@ -976,7 +976,7 @@ if ( ! class_exists( 'WBTM_Standalone_Payment' ) ) {
 		private function mark_group_status( $booking_id, $status ) {
 			$bus_id = 0;
 			foreach ( self::get_group_post_ids( $booking_id ) as $id ) {
-				update_post_meta( $id, 'wbtm_order_status', $status );
+				update_post_meta( $id, 'wbtm_order_status', WBTM_Cart_Helper::synced_booking_status( $id, $status ) );
 				delete_post_meta( $id, 'wbtm_awaiting_gateway' );
 				if ( ! $bus_id ) {
 					$bus_id = (int) get_post_meta( $id, 'wbtm_bus_id', true );

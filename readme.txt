@@ -156,6 +156,9 @@ Upload the Bus Ticket Booking with Seat Reservation to your blog, Activate it, t
 
 == Frequently Asked Questions ==
 
+= Can I manage buses with an MCP-compatible AI client? =
+Yes. The PRO addon provides a restricted MCP server under Bus > MCP Server, covering approved Free and PRO bus operations. Choose read-only, fleet management, or a separate Bookings and passengers permission. Code, files, credentials, plugin installation, charges and refunds are excluded. MCP starts disabled. Setup, tool details and limits are included under Bus > Documents and in PRO's MCP.md. Free alone does not expose an MCP endpoint.
+
 = How do I change the plugin language? =
 Choose a Site Language under Settings > General. Both the booking frontend and the dashboard use the matching WordPress translation catalog. Italian (it_IT) is bundled. In Users > Profile, select Site Default to make your dashboard follow the site language; an explicitly selected profile language takes precedence in the dashboard.
 
