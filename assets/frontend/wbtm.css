@@ -1617,11 +1617,6 @@ div.wbtm_bus_list_area div.wbtm_seat_plan_upper div.seat_in_cart .seat_visual {
     font-size: 14px;
   }
 
-  #ui-datepicker-div {
-    position: inherit;
-    z-index: 2 !important;
-  }
-
   .wbtm_search_result .wbtm-date-suggetion .wbtm_next_date:last-child {
     margin-right: 0;
   }

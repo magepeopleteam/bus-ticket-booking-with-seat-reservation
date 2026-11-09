@@ -257,6 +257,11 @@
                                 jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
                             }
                         });
+                        // A selected date can leave this readonly input focused, so
+                        // clicking it again must open the picker without another focus event.
+                        wbtmPicker.off('click.wbtmDatePicker').on('click.wbtmDatePicker', function () {
+                            jQuery(this).datepicker('show');
+                        });
                         function WorkingDates(date) {
                             let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
                             if (jQuery.inArray(dmy, soldoutDates) !== -1) {
