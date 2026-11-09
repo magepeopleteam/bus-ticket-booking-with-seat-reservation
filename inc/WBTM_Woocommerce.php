@@ -14,6 +14,7 @@
 				// state (it's the entry point for both the WC-cart flow and the Standalone flow),
 				// so it can no longer live only inside this WC-gated class.
 				add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
+				add_filter( 'wcml_add_to_cart_sold_individually', array( $this, 'wcml_check_bus_sold_individually' ), 10, 2 );
 				add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'));
 				add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
 				add_filter('woocommerce_get_item_data', array($this, 'get_item_data'), 20, 2);
@@ -42,6 +43,23 @@
 				add_filter('woocommerce_cart_item_subtotal', array($this, 'cmv_fix_cart_item_subtotal'), 10, 3);
 				// Prevent add to cart notices when redirect is enabled
 				add_filter('wc_add_to_cart_message_html', array($this, 'maybe_remove_add_to_cart_message'), 10, 3);
+			}
+			/**
+			 * Let WooCommerce compare complete booking lines instead of only product IDs.
+			 *
+			 * WCML otherwise rejects a return journey for the same hidden bus product.
+			 * WooCommerce's native cart-key check still blocks identical booking lines.
+			 *
+			 * @param bool  $check          Whether WCML should check translated products.
+			 * @param array $cart_item_data Booking metadata for the new cart line.
+			 * @return bool
+			 */
+			public function wcml_check_bus_sold_individually( $check, $cart_item_data ) {
+				$bus_id = isset( $cart_item_data['wbtm_bus_id'] ) ? absint( $cart_item_data['wbtm_bus_id'] ) : 0;
+				if ( $bus_id && get_post_type( $bus_id ) === WBTM_Functions::get_cpt() ) {
+					return false;
+				}
+				return $check;
 			}
 			//Price of product in mini cart
 			public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {
