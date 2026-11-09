@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin, raselsha
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 5.9.9
+Stable tag: 6.0.0
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -196,6 +196,18 @@ Appneck SDK **does not gather any data by default.** The SDK only starts gatheri
 Learn more about how [Appneck collects and uses this data](https://appneck.com/privacy-policy/).
 
 == Changelog ==
+
+= 6.0.0 =
+* New: Add event booking pages, single-bus embed shortcode and Elementor widgets.
+* New: Add dynamic customer and operator app integration.
+* New: Add compatibility for restricted PRO bus operations.
+* Improvement: Define the sleeper flag when creating booking records.
+* Improvement: Show the booking form on Purchase Ticket when Reservation is off.
+* Improvement: Purchase Ticket: let the Return tab open on the admin booking screen.
+* Fix: Locale-driven labels and add Italian translations.
+* Fix: Stop creating a new hidden product on every bus save.
+* Fix: Allow WCML return bookings and date reselection.
+* Fix: Keep travel calendars above results page content.
 
 = 1.0 =
 *Initial Release Date - 10 Sep 2018*
