@@ -77,7 +77,8 @@
 					$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
 					$start_route = isset($_POST['start_route']) ? sanitize_text_field(wp_unslash($_POST['start_route'])) : '';
 					$end_route = isset($_POST['end_route']) ? sanitize_text_field(wp_unslash($_POST['end_route'])) : '';
-					self::journey_date_picker($post_id, $start_route, $end_route);
+					$date = isset($_POST['j_date']) ? sanitize_text_field(wp_unslash($_POST['j_date'])) : '';
+					self::journey_date_picker($post_id, $start_route, $end_route, $date);
 					die();
 				}
 			}
@@ -87,7 +88,8 @@
 					$start_route = isset($_POST['start_route']) ? sanitize_text_field(wp_unslash($_POST['start_route'])) : '';
 					$end_route = isset($_POST['end_route']) ? sanitize_text_field(wp_unslash($_POST['end_route'])) : '';
 					$j_date = isset($_POST['j_date']) ? sanitize_text_field(wp_unslash($_POST['j_date'])) : '';
-					self::return_date_picker($post_id, $end_route, $start_route, $j_date);
+					$date = isset($_POST['r_date']) ? sanitize_text_field(wp_unslash($_POST['r_date'])) : '';
+					self::return_date_picker($post_id, $end_route, $start_route, $j_date, $date);
 					die();
 				}
 			}
@@ -675,6 +677,16 @@
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
+				$all_dates = [];
+				if ($start_route) {
+					$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
+					// Keep a selected date only when the new route (and event scope) allows it.
+					$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
+				}
+				if ($hidden_date && !in_array($hidden_date, $all_dates, true)) {
+					$hidden_date = '';
+					$visible_date = '';
+				}
 				?>
                 <label class="wtbm_fdColumn">
 					<?php echo esc_html(WBTM_Translations::text_journey_date()); ?>
@@ -686,9 +698,6 @@
                 </label>
 				<?php
 			if ($start_route) {
-				$all_dates = WBTM_Functions::get_all_dates($post_id, $start_route, $end_route);
-				// Outbound dates only: a scoped event page can pin the journey to its event date.
-				$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
 				// Render the calendar instantly; sold-out greying loads as a separate async
 				// "chunk" (see get_wbtm_soldout_dates) so the heavy availability scan never
 				// blocks the date picker.
@@ -712,6 +721,18 @@
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
+				$all_dates = $end_route && $j_date ? WBTM_Functions::get_all_dates($post_id, $end_route, $start_route) : [];
+				$date_list = [];
+				$journey_time = strtotime($j_date);
+				foreach ($all_dates as $available_date) {
+					if (strtotime($available_date) >= $journey_time) {
+						$date_list[] = $available_date;
+					}
+				}
+				if ($hidden_date && !in_array($hidden_date, $date_list, true)) {
+					$hidden_date = '';
+					$visible_date = '';
+				}
 				?>
                 <label class="wtbm_fdColumn">
 					<?php
@@ -747,19 +768,11 @@
                 </label>
 				<?php
 			if ($end_route && $j_date) {
-				$all_dates = WBTM_Functions::get_all_dates($post_id, $end_route, $start_route);
 				if (sizeof($all_dates) > 0) {
-					$j_date = strtotime($j_date);
-					$date_list = [];
-					foreach ($all_dates as $date) {
-						if (strtotime($date) >= $j_date) {
-							$date_list[] = $date;
-						}
-					}
 					// Instant render; sold-out greying arrives via the async chunk, filtered
 					// server-side to dates on/after the outbound journey date.
 					$async = self::soldout_highlight_enabled()
-						? ['post_id' => $post_id, 'start' => $end_route, 'end' => $start_route, 'leg' => 'return', 'j_date' => gmdate('Y-m-d', $j_date)]
+						? ['post_id' => $post_id, 'start' => $end_route, 'end' => $start_route, 'leg' => 'return', 'j_date' => gmdate('Y-m-d', strtotime($j_date))]
 						: [];
 					do_action('wbtm_load_date_picker_js', '#wbtm_return_date', $date_list, [], $async);
 				}

@@ -52,7 +52,7 @@ async function fixture(dates = ['2026-11-10', '2026-11-11', '2026-11-12'], soldo
     };
     initialize('#journey');
     initialize('#return');
-    await new Promise(resolve => w.setTimeout(resolve, 25));
+    await new Promise(resolve => $(resolve));
     return { dom, w, $, initialize };
 }
 
@@ -97,7 +97,7 @@ test('reinitialization does not accumulate click handlers', async () => {
     const { w, $, dom, initialize } = await fixture();
     try {
         initialize('#journey');
-        await new Promise(resolve => w.setTimeout(resolve, 25));
+        await new Promise(resolve => $(resolve));
         const events = $._data($('#journey')[0], 'events');
         assert.equal(events.click.filter(event => event.namespace === 'wbtmDatePicker').length, 1);
     } finally { dom.window.close(); }
