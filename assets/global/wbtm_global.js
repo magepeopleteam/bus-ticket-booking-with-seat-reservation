@@ -201,12 +201,28 @@ function wbtm_bus_scope_args(context) {
 		// min/max range, and the field must show the date being searched.
 		input.val($.datepicker.formatDate(format, dateObj));
 	}
-	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function () {
+	// A newer route/date selection owns the field; late responses must not replace it.
+	function wbtm_cancel_search_reload(target) {
+		let pending = target.data('wbtmSearchReload');
+		target.removeData('wbtmSearchReload');
+		if (pending && pending.xhr) {
+			pending.xhr.abort();
+		}
+	}
+	function wbtm_pause_date_picker(target) {
+		wbtm_cancel_search_reload(target);
+		target.find('input.hasDatepicker').datepicker('hide');
+		target.find('input.formControl').prop('disabled', true);
+	}
+	$(document).on("mp_change", "div.wbtm_search_area .wbtm_start_point input.formControl", function (event, next_route) {
 		let current = $(this);
 		let start_route = current.val();
 		let parent = current.closest('.wbtm_search_area');
 		let target = parent.find('.wbtm_dropping_point');
 		wbtm_hide_wc_notices($);
+		wbtm_cancel_search_reload(target);
+		wbtm_pause_date_picker(parent.find('.wbtm_journey_date'));
+		wbtm_pause_date_picker(parent.find('.wbtm_return_date'));
 		parent.find('.wbtm_dropping_point .wbtm_input_select_list').remove();
 		target.find('input.formControl').val('');
 		wbtm_loader_xs(target.find('.marker'));
@@ -219,7 +235,9 @@ function wbtm_bus_scope_args(context) {
 		}).promise().done(function () {
 			if (exit_route > 0) {
 				let post_id = parent.find('[name="wbtm_post_id"]').val();
-				$.ajax({
+				let pending = {};
+				target.data('wbtmSearchReload', pending);
+				pending.xhr = $.ajax({
 					type: 'POST',
 					url: wbtm_ajax_url,
 					data: $.extend({
@@ -229,6 +247,10 @@ function wbtm_bus_scope_args(context) {
 						"nonce": wbtm_nonce,
 					}, wbtm_bus_scope_args(parent)),
 					success: function (data) {
+						if (target.data('wbtmSearchReload') !== pending || current.val() !== start_route) {
+							return;
+						}
+						target.removeData('wbtmSearchReload');
 						// Data loads in the background as before (still needed to
 						// populate valid destinations for this start route) — just no
 						// longer force-opens the Drop-Off Point field afterwards, so
@@ -236,12 +258,21 @@ function wbtm_bus_scope_args(context) {
 						// ready to pick "To" themselves.
 						target.append(data).promise().done(function () {
 							wbtm_loaderRemove(parent);
+							// The swap button uses the same validated route/date refresh path.
+							if (next_route && target.find('li').filter(function () {
+								return $(this).data('value') === next_route;
+							}).length) {
+								target.find('input.formControl').val(next_route).trigger('mp_change');
+							}
 						});
 					},
-					error: function (response) {
+					error: function (response, status) {
+						if (status === 'abort' || target.data('wbtmSearchReload') !== pending) {
+							return;
+						}
+						target.removeData('wbtmSearchReload');
 						wbtm_loaderRemove(parent);
 						wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_dropping_point : 'Could not load destinations. Please try again.');
-						console.log(response);
 					}
 				});
 			} else {
@@ -263,80 +294,91 @@ function wbtm_bus_scope_args(context) {
 				exit_route = 1;
 			}
 		}).promise().done(function () {
-			wbtm_load_journey_date(parent);
-		}).promise().done(function () {
-			// Valid dates still load in the background above (still needed so the
-			// Journey Date calendar only shows bookable dates) — just no longer
-			// force-focuses/opens that picker afterwards, same reasoning as the
-			// Drop-Off Point auto-open removed above.
+			// Refresh availability only for a valid destination. The customer
+			// opens the updated calendar when ready; do not move focus here.
 			if (exit_route === 0) {
 				current.val('').trigger('click');
+			} else {
+				wbtm_load_journey_date(parent);
 			}
 		});
 	});
 	function wbtm_load_journey_date(parent) {
-		let post_id = parent.find('[name="wbtm_post_id"]').val();
+		let target = parent.find('.wbtm_journey_date');
+		wbtm_pause_date_picker(parent.find('.wbtm_return_date'));
+		wbtm_reload_search_date(parent, target, {
+			action: 'get_wbtm_journey_date',
+			j_date: target.find('input[name="j_date"]').val() || ''
+		}, function () {
+			wbtm_load_return_date(parent);
+		});
+	}
+	function wbtm_reload_search_date(parent, target, args, on_load) {
+		wbtm_pause_date_picker(target);
 		let start_route = parent.find('[name="bus_start_route"]').val();
 		let end_route = parent.find('[name="bus_end_route"]').val();
-		let target = parent.find('.wbtm_journey_date');
-		$.ajax({
+		if (!target.length || !start_route || !end_route) {
+			return;
+		}
+		let pending = {};
+		target.data('wbtmSearchReload', pending);
+		pending.xhr = $.ajax({
 			type: 'POST',
 			url: wbtm_ajax_url,
 			data: $.extend({
-				"action": "get_wbtm_journey_date",
 				"start_route": start_route,
 				"end_route": end_route,
-				"post_id": post_id,
+				"post_id": parent.find('[name="wbtm_post_id"]').val(),
 				"nonce": wbtm_nonce,
-			}, wbtm_bus_scope_args(parent)),
+			}, args, wbtm_bus_scope_args(parent)),
 			beforeSend: function () {
 				wbtm_loader_xs(target.find('.calendar'));
 			},
 			success: function (data) {
+				if (target.data('wbtmSearchReload') !== pending
+					|| parent.find('[name="bus_start_route"]').val() !== start_route
+					|| parent.find('[name="bus_end_route"]').val() !== end_route
+					|| (args.action === 'get_wbtm_return_date' && parent.find('[name="j_date"]').val() !== args.j_date)) {
+					return;
+				}
+				target.removeData('wbtmSearchReload');
+				target.find('input.hasDatepicker').datepicker('destroy');
 				target.html(data);
 				wbtm_loaderRemove(target);
+				if (on_load) {
+					on_load();
+				}
 			},
-			error: function (response) {
+			error: function (response, status) {
+				if (status === 'abort' || target.data('wbtmSearchReload') !== pending) {
+					return;
+				}
+				target.removeData('wbtmSearchReload');
+				target.find('input.formControl').prop('disabled', false);
 				wbtm_loaderRemove(target);
-				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_journey_date : 'Could not load journey dates. Please try again.');
-				console.log(response);
+				let key = args.action === 'get_wbtm_return_date' ? 'error_return_date' : 'error_journey_date';
+				wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings[key] : 'Could not load travel dates. Please try again.');
 			}
 		});
 	}
-	$(document).on("change", "#wbtm_area input[name='j_date']", function () {
-		let date = $(this).val();
-		let parent = $(this).closest('#wbtm_area');
+	function wbtm_load_return_date(parent) {
+		let date = parent.find('input[name="j_date"]').val();
 		let target = parent.find('.wbtm_return_date');
-		wbtm_hide_wc_notices($);
 		if (target.length > 0 && date) {
-			let start_route = parent.find('[name="bus_start_route"]').val();
-			let end_route = parent.find('input[name="bus_end_route"]').val();
-			let post_id = parent.find('[name="wbtm_post_id"]').val();
-			$.ajax({
-				type: 'POST',
-				url: wbtm_ajax_url,
-				data: $.extend({
-					"action": "get_wbtm_return_date",
-					"start_route": start_route,
-					"end_route": end_route,
-					"j_date": date,
-					"post_id": post_id,
-					"nonce": wbtm_nonce,
-				}, wbtm_bus_scope_args(parent)),
-				beforeSend: function () {
-					wbtm_loader_xs(target.find('.calendar'));
-				},
-				success: function (data) {
-					target.html(data);
-					wbtm_loaderRemove(target);
-				},
-				error: function (response) {
-					wbtm_loaderRemove(target);
-					wbtm_toast(typeof wbtm_strings !== 'undefined' ? wbtm_strings.error_return_date : 'Could not load return dates. Please try again.');
-					console.log(response);
-				}
+			wbtm_reload_search_date(parent, target, {
+				action: 'get_wbtm_return_date',
+				j_date: date,
+				r_date: target.find('input[name="r_date"]').val() || ''
 			});
+		} else {
+			wbtm_pause_date_picker(target);
+			target.find('input.hasDatepicker').datepicker('destroy');
+			target.find('input').val('');
 		}
+	}
+	$(document).on("change", "#wbtm_area .wbtm_search_area input[name='j_date']", function () {
+		wbtm_hide_wc_notices($);
+		wbtm_load_return_date($(this).closest('.wbtm_search_area'));
 	});
 	$(document).on("click", "#wbtm_area #wbtm_journey_date", function () {
 		let parent = $(this).closest('#wbtm_area');

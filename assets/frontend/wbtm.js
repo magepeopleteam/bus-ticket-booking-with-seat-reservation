@@ -32,8 +32,9 @@ jQuery(document).ready(function ($) {
     $(document).on( 'click', '#wbtm_search_location_toggle', function () {
 
         let toggleBtn = $(this);
-        let startInput = $('input[name="bus_start_route"]');
-        let endInput   = $('input[name="bus_end_route"]');
+        let searchArea = toggleBtn.closest('.wbtm_search_area');
+        let startInput = searchArea.find('input[name="bus_start_route"]');
+        let endInput   = searchArea.find('input[name="bus_end_route"]');
         let startVal = startInput.val();
         let endVal   = endInput.val();
 
@@ -46,8 +47,7 @@ jQuery(document).ready(function ($) {
         // $('.wbtm_start_point, .wbtm_dropping_point').addClass('swap-animation');
 
         setTimeout(function () {
-            startInput.val(endVal);
-            endInput.val(startVal);
+            startInput.val(endVal).trigger('mp_change', [startVal]);
             // $('.wbtm_start_point, .wbtm_dropping_point').removeClass('swap-animation');
         }, 300);
 
