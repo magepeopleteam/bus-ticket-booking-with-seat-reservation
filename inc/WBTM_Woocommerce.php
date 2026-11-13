@@ -8,6 +8,12 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Woocommerce')) {
 		class WBTM_Woocommerce {
+			/**
+			 * Bus lines WCML would drop, one snapshot per nested calculate_totals() call.
+			 *
+			 * @var array[]
+			 */
+			private $wcml_held_bus_items = array();
 			public function __construct() {
 				// wbtm_ajax_add_to_cart is registered by the always-loaded WBTM_Booking_Controller
 				// instead (inc/WBTM_Booking_Controller.php) — it must run regardless of WooCommerce
@@ -34,6 +40,9 @@
 				add_action('woocommerce_payment_complete', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_order_status_processing', array($this, 'auto_complete_paid_order'));
 				add_action('woocommerce_before_calculate_totals', array($this, 'prevent_duplicate_bookings'), 5);
+				// Bracket WCML's cart language switch (priority 100) so it cannot drop bus tickets.
+				add_action( 'woocommerce_before_calculate_totals', array( $this, 'wcml_hold_untranslated_bus_items' ), 99 );
+				add_action( 'woocommerce_before_calculate_totals', array( $this, 'wcml_restore_untranslated_bus_items' ), 101 );
 				// Add redirect logic after adding to cart
 				add_filter('woocommerce_add_to_cart_redirect', array($this, 'maybe_redirect_to_checkout'), 10, 1);
 				add_action('wp_footer', array($this, 'add_checkout_redirect_script'));
@@ -60,6 +69,69 @@
 					return false;
 				}
 				return $check;
+			}
+			/**
+			 * Remember bus lines whose hidden product has no translation in the current language.
+			 *
+			 * WCML rebuilds the cart for the visitor's language on woocommerce_before_calculate_totals
+			 * (priority 100) and keeps a line only when its product exists in that language, unless
+			 * products are set to "display as translated". Each bus is sold through one hidden mirror
+			 * product that is never translated, so on a secondary-language page every ticket was
+			 * silently removed from the cart and the booking could not be paid.
+			 *
+			 * @param WC_Cart $cart Cart being totalled.
+			 * @return void
+			 */
+			public function wcml_hold_untranslated_bus_items( $cart ) {
+				$contents = is_object( $cart ) && is_array( $cart->cart_contents ) ? $cart->cart_contents : array();
+				$held     = array();
+				if ( $contents && has_filter( 'wpml_object_id' ) ) {
+					$language = apply_filters( 'wpml_current_language', null );
+					foreach ( $contents as $key => $item ) {
+						$bus_id     = isset( $item['wbtm_bus_id'] ) ? absint( $item['wbtm_bus_id'] ) : 0;
+						$product_id = isset( $item['product_id'] ) ? absint( $item['product_id'] ) : 0;
+						if ( ! $bus_id || ! $product_id || get_post_type( $bus_id ) !== WBTM_Functions::get_cpt() ) {
+							continue;
+						}
+						if ( null === apply_filters( 'wpml_object_id', $product_id, 'product', false, $language ) ) {
+							$held[ $key ] = $item;
+						}
+					}
+				}
+				// Always push, even when empty, so nested calculate_totals() calls stay paired.
+				$this->wcml_held_bus_items[] = array(
+					'keys'  => array_keys( $contents ),
+					'items' => $held,
+				);
+			}
+			/**
+			 * Put back the bus lines WCML removed, in their original cart order.
+			 *
+			 * WooCommerce saves the cart to the session after the totals are calculated, so the
+			 * restored lines persist and checkout sees them.
+			 *
+			 * @param WC_Cart $cart Cart being totalled.
+			 * @return void
+			 */
+			public function wcml_restore_untranslated_bus_items( $cart ) {
+				$snapshot = array_pop( $this->wcml_held_bus_items );
+				if ( empty( $snapshot['items'] ) || ! is_object( $cart ) || ! is_array( $cart->cart_contents ) ) {
+					return;
+				}
+				$missing = array_diff_key( $snapshot['items'], $cart->cart_contents );
+				if ( ! $missing ) {
+					return;
+				}
+				$restored = array();
+				foreach ( $snapshot['keys'] as $key ) {
+					if ( isset( $cart->cart_contents[ $key ] ) ) {
+						$restored[ $key ] = $cart->cart_contents[ $key ];
+					} elseif ( isset( $missing[ $key ] ) ) {
+						$restored[ $key ] = $missing[ $key ];
+					}
+				}
+				// Lines WCML re-keyed to a translated product keep their new position at the end.
+				$cart->cart_contents = $restored + $cart->cart_contents;
 			}
 			//Price of product in mini cart
 			public function cmv_fix_cart_dropdown_price($price, $cart_item, $cart_item_key) {
