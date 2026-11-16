@@ -954,7 +954,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						break;
 
 					case 'number':
-						echo '<input class="bm-gs__input bm-gs__input--sm ' . esc_attr($class) . '" type="number" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '">';
+						// Honour a field's declared step (e.g. "any" for fractional hours);
+						// without it the browser enforces step 1 and rejects decimals.
+						$step_attr = (isset($field['step']) && '' !== (string) $field['step']) ? ' step="' . esc_attr($field['step']) . '"' : '';
+						echo '<input class="bm-gs__input bm-gs__input--sm ' . esc_attr($class) . '" type="number" name="' . $id_attr . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '"' . $step_attr . '>';
 						break;
 
 					case 'textarea':
@@ -1272,7 +1275,8 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							'type'        => 'number',
 							'default'     => 12,
 							'min'         => 0,
-							'step'        => 0.5,
+							// "any" so fractional hours save (0.25 = 15 min); the cut-off math already handles decimals.
+							'step'        => 'any',
 							'placeholder' => esc_html__( 'Ex: 12', 'bus-ticket-booking-with-seat-reservation' ),
 						),
 						array(
