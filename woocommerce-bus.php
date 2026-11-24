@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	require_once __DIR__ . '/vendor/appneck/wordpress-sdk/appneck-wordpress-sdk/appneck-sdk.php';
 	appneck_sdk_load_latest();
 
-	$GLOBALS['my_plugin_sdk'] = \Appneck\Sdk\Sdk::bootstrap(
+	$GLOBALS['bus_ticket_booking_with_seat_reservation_appneck_sdk'] = \Appneck\Sdk\Sdk::bootstrap(
 		'pk_LJCy1QGqGUuqBvvR6vpRyhHwMuAoNr5y',  // your API key
 		'sk_sE2I1kvOriyLU1t2HbDmGvtSud4JTjIhK9GxbXKEKhrrpCqp', // your product secret
 		'https://appneck.com',                  // the Appneck server URL
