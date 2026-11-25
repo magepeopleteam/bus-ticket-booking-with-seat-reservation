@@ -490,6 +490,22 @@ function wbtm_bus_scope_args(context) {
 		}
 	}
 
+	function wbtm_point_surcharge_price(parent, total_qty) {
+		let total = 0;
+		let seats = parseInt(total_qty);
+		seats = seats > 0 ? seats : 1;
+		parent.find('select[name="wbtm_pickup_point"], select[name="wbtm_drop_off_point"]').each(function () {
+			let sel = $(this);
+			let fee = parseFloat(sel.find('option:selected').attr('data-fee'));
+			if (!(fee > 0)) {
+				return;
+			}
+			let mode = sel.attr('data-fee-mode') || 'per_booking';
+			let mult = mode === 'per_passenger' ? seats : 1;
+			total += fee * mult;
+		});
+		return total;
+	}
 	function wbtm_price_calculation(parent) {
 		let total_qty = wbtm_seat_qty(parent);
 		wbtm_seat_calculation(parent, total_qty);
@@ -501,7 +517,7 @@ function wbtm_bus_scope_args(context) {
 		if (total_qty > 0) {
 			parent.find('.wbtm_ex_service_area').slideDown('fast');
 			parent.find('.wbtm_form_submit_area').slideDown('fast');
-			total = total + wbtm_ex_service_price(parent, total_qty);
+			total = total + wbtm_ex_service_price(parent, total_qty) + wbtm_point_surcharge_price(parent, total_qty);
 			target_summary.html(wbtm_price_format(total));
 		} else {
 			parent.find('.wbtm_ex_service_area').slideUp('fast');
@@ -673,13 +689,16 @@ function wbtm_bus_scope_args(context) {
 		let parent = $(this).closest('.wbtm_registration_area');
 		wbtm_price_calculation(parent);
 	});
-	$(document).on('change', '.wbtm_registration_area [name="extra_service_qty[]"]', function () {
+	$(document).on('change', '.wbtm_registration_area [name="extra_service_qty[]"], .wbtm_registration_area [name="wbtm_pickup_point"], .wbtm_registration_area [name="wbtm_drop_off_point"]', function () {
 		let parent = $(this).closest('.wbtm_registration_area');
 		wbtm_price_calculation(parent);
 	});
 	$(document).on('click', '.wbtm_registration_area .seat_available', function () {
 		let current = $(this);
 		let parent = current.closest('.wbtm_registration_area');
+		if (!current.hasClass('seat_selected') && $(document).triggerHandler('wbtm_can_select_seat', [current, parent]) === false) {
+			return;
+		}
 
 		// Allow multiple seat selection within the same cabin/coach
 		// No restrictions needed - users can select multiple seats per cabin

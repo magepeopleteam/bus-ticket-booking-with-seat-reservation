@@ -222,6 +222,7 @@
                             <input type="time" name="wbtm_pickup_time[<?php echo esc_attr($unique_name); ?>][]" class='formControl' value="<?php echo esc_attr($bp_time); ?>"/>
                         </label>
                     </td>
+					<?php do_action('wbtm_pickup_point_item_fields', $unique_name, $pickup_info); ?>
                     <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
                 </tr>
 				<?php
@@ -308,6 +309,7 @@
 							<?php WBTM_Layout::msg(esc_html__('You have no Bus route. Please add Price and Route and save ,then you can edit Drop-Off point.', 'bus-ticket-booking-with-seat-reservation')); ?>
 						<?php } ?>
                     </div>
+					<?php do_action('wbtm_pickup_point_settings_after', $post_id); ?>
                 </div>
 				<?php
 			}
@@ -376,6 +378,7 @@
                             <input type="time" name="wbtm_drop_off_time[<?php echo esc_attr($unique_name); ?>][]" class='formControl' value="<?php echo esc_attr($dp_time); ?>"/>
                         </label>
                     </td>
+					<?php do_action('wbtm_drop_off_point_item_fields', $unique_name, $drop_off_info); ?>
                     <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>
                 </tr>
 				<?php

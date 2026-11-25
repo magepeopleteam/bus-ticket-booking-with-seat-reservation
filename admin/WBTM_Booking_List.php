@@ -2518,7 +2518,7 @@
 							<?php endif; ?>
 						<?php endif; ?>
 					</td>
-					<td data-col="status" data-label="<?php echo esc_attr__('Status', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'status'); ?>><?php echo wp_kses_post($this->status_badge($status)); ?></td>
+					<td data-col="status" data-label="<?php echo esc_attr__('Status', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'status'); ?>><?php echo wp_kses_post($this->status_badge($status)); ?><?php do_action('wbtm_booking_list_after_status_badge', $id); ?></td>
 					<td data-col="booked_on" data-label="<?php echo esc_attr__('Booked On', 'bus-ticket-booking-with-seat-reservation'); ?>"<?php echo $this->col_style($vis, 'booked_on'); ?>><?php echo esc_html($booking_date ?: get_the_date('Y-m-d H:i', $id)); ?></td>
 					<?php if ($this->qr_active()) : ?>
 						<td data-col="check_in" data-label="<?php echo esc_attr__('Check In', 'bus-ticket-booking-with-seat-reservation'); ?>" class="wbtm-bkl-checkin-cell"<?php echo $this->col_style($vis, 'check_in'); ?>><?php do_action('wbtm_qr_ticket_status_text', $id); ?></td>
@@ -2604,6 +2604,8 @@
 										<span class="dashicons dashicons-email-alt"></span><?php esc_html_e('Resend E-Voucher', 'bus-ticket-booking-with-seat-reservation'); ?>
 									</button>
 								<?php endif; ?>
+
+								<?php do_action('wbtm_booking_list_row_actions', $id, $order_id, $status); ?>
 
 								<?php if ($is_admin) : ?>
 									<div class="wbtm-bkl-dropdown-divider" role="separator"></div>

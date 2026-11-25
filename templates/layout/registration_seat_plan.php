@@ -22,6 +22,7 @@
 	if (sizeof($ticket_infos) > 0) {
 		?>
 			<?php if ($display_wbtm_registration == 'yes') { ?>
+				<?php do_action('wbtm_before_seat_booking_ui', $post_id, $ticket_infos); ?>
 				<div class="mpRow justifyBetween">
 					<div class="col_4 col_5_1000 col_6_900 col_12_800">
 						<?php require WBTM_Functions::template_path('layout/seat_plan.php'); ?>

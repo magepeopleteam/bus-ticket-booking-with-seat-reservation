@@ -490,10 +490,16 @@
 								foreach ($pickups as $key => $pickup) {
 									if ($pickup && $pickup_times[$key]) {
 										$pickup_infos[$count]['bp_point'] = $wbtm_pickup_bp[$hidden_id];
-										$pickup_infos[$count]['pickup_info'][] = [
-											'pickup_point' => $pickup,
-											'time' => $pickup_times[$key],
-										];
+										$pickup_infos[$count]['pickup_info'][] = apply_filters(
+											'wbtm_sanitize_pickup_info_row',
+											[
+												'pickup_point' => $pickup,
+												'time'         => $pickup_times[$key],
+											],
+											$hidden_id,
+											$key,
+											$post_id
+										);
 									}
 								}
 							}
@@ -520,10 +526,16 @@
 								foreach ($drop_offs as $key => $drop_off) {
 									if ($drop_off && $drop_off_times[$key]) {
 										$drop_off_infos[$d_count]['dp_point'] = $wbtm_dp_pickup[$d_hidden_id];
-										$drop_off_infos[$d_count]['drop_off_info'][] = [
-											'drop_off_point' => $drop_off,
-											'time' => $drop_off_times[$key],
-										];
+										$drop_off_infos[$d_count]['drop_off_info'][] = apply_filters(
+											'wbtm_sanitize_drop_off_info_row',
+											[
+												'drop_off_point' => $drop_off,
+												'time'           => $drop_off_times[$key],
+											],
+											$d_hidden_id,
+											$key,
+											$post_id
+										);
 									}
 								}
 							}

@@ -284,7 +284,7 @@
 					if ( empty( $ticket_name ) && empty( $seat_name ) ) {
 						$cached = self::booked_map_total( $post_id, $start, $end, $date );
 						if ( $cached !== null ) {
-							return $cached;
+							return $cached + max( 0, (int) apply_filters( 'wbtm_extra_blocked_seat_count', 0, $post_id, $date, $start, $end ) );
 						}
 					}
 					// A seat held (temporarily reserved) by another visitor counts as booked
@@ -292,6 +292,9 @@
 					// unavailable. The seat-name path bypasses the booked map above, so the
 					// hold check drops in cleanly here. Holds are bus-wide per date.
 					if ( $seat_name && class_exists( 'WBTM_Seat_Hold' ) && WBTM_Seat_Hold::is_held_by_other( $post_id, $date, $seat_name ) ) {
+						return 1;
+					}
+					if ( $seat_name && apply_filters( 'wbtm_is_seat_blocked', false, $post_id, $date, $seat_name, $start, $end ) ) {
 						return 1;
 					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
@@ -366,6 +369,9 @@
 						}
                         wp_reset_postdata();
 					}
+				}
+				if ( empty( $ticket_name ) && empty( $seat_name ) && $post_id && $start && $end && $date ) {
+					$total_booked += max( 0, (int) apply_filters( 'wbtm_extra_blocked_seat_count', 0, $post_id, $date, $start, $end ) );
 				}
 				return $total_booked;
 			}

@@ -1230,7 +1230,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 										// Ticket-sale deadline = operational buffer AND the optional
 										// admin "Ticket Sale Cut-off" (whichever closes sales first),
 										// evaluated in the WordPress timezone.
-										if ( self::is_ticket_sale_open( $bp_date ) ) {
+										if ( self::is_ticket_sale_open( $bp_date, $post_id ) ) {
 											$seat_type  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_seat_type_conf' );
 											if ( $seat_type == 'wbtm_seat_plan' && class_exists( 'WBTM_Seat_Configuration' ) ) {
 												$total_seat = WBTM_Seat_Configuration::count_actual_seats( $post_id );
@@ -1733,16 +1733,16 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * @param string $bp_date Departure/boarding datetime.
 			 * @return DateTimeImmutable|null Null when the departure is unparseable.
 			 */
-			private static function ticket_sale_deadline_dt( $bp_date ) {
+			private static function ticket_sale_deadline_dt( $bp_date, $post_id = 0 ) {
 				$departure = self::wbtm_local_datetime( $bp_date );
 				if ( ! $departure ) {
 					return null;
 				}
 				// Operational buffer: Buffer Time is stored in minutes.
-				$buffer_min = max( 0, (int) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ) );
+				$buffer_min = max( 0, (int) apply_filters( 'wbtm_ticket_sale_buffer_minutes', (int) WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'bus_buffer_time', 0 ), (int) $post_id ) );
 				$deadline   = $buffer_min > 0 ? $departure->modify( "-{$buffer_min} minutes" ) : $departure;
 
-				$cutoff = self::ticket_sale_cutoff_dt( $departure );
+				$cutoff = self::ticket_sale_cutoff_dt( $departure, (int) $post_id );
 				if ( $cutoff instanceof DateTimeInterface && $cutoff < $deadline ) {
 					$deadline = $cutoff;
 				}
@@ -1753,10 +1753,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * 'Y-m-d H:i' wall-clock string in the WordPress timezone.
 			 *
 			 * @param string $bp_date Departure/boarding datetime.
+			 * @param int    $post_id Optional bus ID for per-bus cut-off overrides.
 			 * @return string Deadline, or '' when the departure is unparseable.
 			 */
-			public static function ticket_sale_deadline( $bp_date ) {
-				$dt = self::ticket_sale_deadline_dt( $bp_date );
+			public static function ticket_sale_deadline( $bp_date, $post_id = 0 ) {
+				$dt = self::ticket_sale_deadline_dt( $bp_date, (int) $post_id );
 				return $dt ? $dt->format( 'Y-m-d H:i' ) : '';
 			}
 			/**
@@ -1764,10 +1765,11 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * compared in the WordPress timezone.
 			 *
 			 * @param string $bp_date Departure/boarding datetime.
+			 * @param int    $post_id Optional bus ID for per-bus cut-off overrides.
 			 * @return bool True when sales are open (or the deadline can't be determined).
 			 */
-			public static function is_ticket_sale_open( $bp_date ) {
-				$deadline = self::ticket_sale_deadline_dt( $bp_date );
+			public static function is_ticket_sale_open( $bp_date, $post_id = 0 ) {
+				$deadline = self::ticket_sale_deadline_dt( $bp_date, (int) $post_id );
 				if ( ! $deadline ) {
 					return true;
 				}
@@ -1778,9 +1780,17 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 * timezone-aware moment, or null when the cut-off is disabled/misconfigured.
 			 *
 			 * @param DateTimeImmutable $departure Departure moment (WP timezone).
+			 * @param int               $post_id   Optional bus ID for per-bus cut-off overrides.
 			 * @return DateTimeImmutable|null
 			 */
-			private static function ticket_sale_cutoff_dt( DateTimeImmutable $departure ) {
+			private static function ticket_sale_cutoff_dt( DateTimeImmutable $departure, $post_id = 0 ) {
+				$override = apply_filters( 'wbtm_ticket_sale_cutoff_override', null, $departure, (int) $post_id );
+				if ( $override === false ) {
+					return null;
+				}
+				if ( $override instanceof DateTimeInterface ) {
+					return DateTimeImmutable::createFromInterface( $override );
+				}
 				if ( 'enable' !== WBTM_Global_Function::get_settings( 'wbtm_general_settings', 'ticket_sale_cutoff_enable', 'disable' ) ) {
 					return null;
 				}
