@@ -143,7 +143,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 			// sale deadline has passed can't be booked, even via a crafted request that
 			// bypasses the hidden search UI. Covers the WooCommerce, Standalone and
 			// backend (counter) flows, since they all validate through this method.
-			if ( $date && ! WBTM_Functions::is_ticket_sale_open( $date ) ) {
+			if ( $date && ! WBTM_Functions::is_ticket_sale_open( $date, $post_id ) ) {
 				return new WP_Error(
 					'wbtm_sale_closed',
 					esc_html__( 'Ticket sales for this trip are closed.', 'bus-ticket-booking-with-seat-reservation' )
@@ -218,6 +218,10 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 						}
 					}
 				}
+				$custom_error = apply_filters( 'wbtm_validate_bus_availability', null, $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, $cabin_seats, $full_bus_seat_count, $inventory_date );
+				if ( is_wp_error( $custom_error ) ) {
+					return $custom_error;
+				}
 				return true;
 			}
 			// Without seat plan: validate total ticket quantity against remaining capacity.
@@ -235,6 +239,10 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 					'wbtm_tickets_unavailable',
 					esc_html__( 'Sorry, your selected ticket quantity is no longer available.', 'bus-ticket-booking-with-seat-reservation' )
 				);
+			}
+			$custom_error = apply_filters( 'wbtm_validate_bus_availability', null, $post_id, $bp, $dp, $date, $booking_mode, $ticket_infos, $cabin_seats, $full_bus_seat_count, $inventory_date );
+			if ( is_wp_error( $custom_error ) ) {
+				return $custom_error;
 			}
 			return true;
 		}

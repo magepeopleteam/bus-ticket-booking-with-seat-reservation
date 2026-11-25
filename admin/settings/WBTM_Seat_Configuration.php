@@ -698,6 +698,7 @@
 						</div>
                         </div>
                     </div>
+					<?php do_action('wbtm_seat_configuration_settings_after', $post_id); ?>
                 </div>
 				<?php
 			}

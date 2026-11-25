@@ -28,16 +28,22 @@ if (!defined('ABSPATH')) {
                     <div class="wbtm_pickup_point _bgLight padding_xs mB mT">
                         <label class="justifyBetween">
                             <span class="_mR"><?php echo esc_html( WBTM_Translations::text_pickup_point() ); ?></span>
-                            <select class="formControl" name="wbtm_pickup_point" id="wbtm_pickup_point" <?php echo ($pickup_required == 'yes') ? 'required' : ''; ?>>
-                                <option selected value=""><?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point() ); ?></option>
+                            <select class="formControl" name="wbtm_pickup_point" id="wbtm_pickup_point" <?php echo ($pickup_required == 'yes') ? 'required' : ''; ?> <?php echo apply_filters('wbtm_pickup_point_select_attrs', '', $post_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                                <option selected value="" data-fee="0"><?php echo esc_html( WBTM_Translations::text_please_select() . ' ' . WBTM_Translations::text_pickup_point() ); ?></option>
                                 <?php
                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                 foreach ($pickup_infos as $pickup_info) {
                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                      $pickup_time = gmdate('Y-m-d H:i', strtotime($date . ' ' . $pickup_info['time']));
                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                     $pickup_time = WBTM_Global_Function::date_format($pickup_time, 'time'); ?>
-                                    <option value="<?php echo esc_attr($pickup_info['pickup_point'] . ' ' . esc_html($pickup_time ) ) ?>"><?php echo esc_html($pickup_info['pickup_point']) . ' ' . ' (' . esc_html($pickup_time) . ')'; ?></option>
+                                     $pickup_time = WBTM_Global_Function::date_format($pickup_time, 'time');
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                     $pickup_label = $pickup_info['pickup_point'] . '  (' . $pickup_time . ')';
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                     $pickup_label = apply_filters('wbtm_pickup_point_option_label', $pickup_label, $pickup_info, $post_id, $start_route, $date);
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                     $pickup_fee   = max(0.0, (float) apply_filters('wbtm_pickup_point_option_fee', 0.0, $pickup_info, $post_id, $start_route, $date)); ?>
+                                    <option value="<?php echo esc_attr($pickup_info['pickup_point'] . ' ' . $pickup_time); ?>" data-fee="<?php echo esc_attr($pickup_fee); ?>"><?php echo esc_html($pickup_label); ?></option>
                                 <?php } ?>
                             </select>
                         </label>

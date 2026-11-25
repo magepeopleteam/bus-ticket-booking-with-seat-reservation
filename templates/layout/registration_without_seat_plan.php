@@ -20,6 +20,7 @@ $display_wbtm_registration = WBTM_Global_Function::get_post_info($post_id, 'wbtm
     <div class="_dLayout_mZero col_12_600 col_6">
         <?php if (sizeof($ticket_infos) > 0) { ?>
             <?php if ($display_wbtm_registration == 'yes') { ?>
+                <?php do_action('wbtm_before_seat_booking_ui', $post_id, $ticket_infos); ?>
                 <?php require WBTM_Functions::template_path('layout/regular_ticket.php'); ?>
                 <?php require WBTM_Functions::template_path('layout/bus_total_price.php'); ?>
                 <?php require WBTM_Functions::template_path('layout/pickup_point.php'); ?>

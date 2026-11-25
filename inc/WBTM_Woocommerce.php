@@ -453,7 +453,25 @@
 						if ($ex_service_price < 0) {
 							$ex_service_price = 0;
 						}
-						$total_price = $seat_price + $ex_service_price;
+						$pickup_point = isset($_POST['wbtm_pickup_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_pickup_point'])) : '';
+						$drop_off_point = isset($_POST['wbtm_drop_off_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_drop_off_point'])) : '';
+						$point_surcharge = max(
+							0.0,
+							(float) apply_filters(
+								'wbtm_calculate_point_surcharge',
+								0.0,
+								$post_id,
+								[
+									'wbtm_bp_place'       => $bp,
+									'wbtm_dp_place'       => $dp,
+									'wbtm_pickup_point'   => $pickup_point,
+									'wbtm_drop_off_point' => $drop_off_point,
+									'wbtm_booking_mode'   => $booking_mode === 'full_bus' ? 'full_bus' : 'seat',
+								],
+								$ex_seat_count
+							)
+						);
+						$total_price = $seat_price + $ex_service_price + $point_surcharge;
 						// Ensure total_price is valid
 						$total_price = max(0, floatval($total_price));
 						$cart_item_data['wbtm_bus_id'] = $post_id;
@@ -470,8 +488,9 @@
 						$journey_type_raw = isset( $_POST['wbtm_journey_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wbtm_journey_type'] ) ) : '';
 						$cart_item_data['wbtm_journey_type'] = $journey_type_raw === 'return' ? 'return' : 'departure';
 						$cart_item_data['wbtm_booking_mode'] = $booking_mode === 'full_bus' ? 'full_bus' : 'seat';
-						$cart_item_data['wbtm_pickup_point'] = isset($_POST['wbtm_pickup_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_pickup_point'])) : '';
-						$cart_item_data['wbtm_drop_off_point'] = isset($_POST['wbtm_drop_off_point']) ? sanitize_text_field(wp_unslash($_POST['wbtm_drop_off_point'])) : '';
+						$cart_item_data['wbtm_pickup_point'] = $pickup_point;
+						$cart_item_data['wbtm_drop_off_point'] = $drop_off_point;
+						$cart_item_data['wbtm_point_surcharge'] = $point_surcharge;
 						// Handle cabin-specific seat data
 						if ($booking_mode === 'full_bus') {
 							$cart_item_data['wbtm_seats'] = $ticket_infos;
@@ -705,8 +724,13 @@
 								$cart_object->cart_contents[$key]['wbtm_extra_services'][$idx]['price'] = 0;
 							}
 						}
-						$total_price = max(0, floatval($seat_price) + floatval($ex_service_price));
+						$point_surcharge = max(
+							0.0,
+							(float) apply_filters( 'wbtm_calculate_point_surcharge', 0.0, $post_id, $value, $ex_seat_count )
+						);
+						$total_price = max(0, floatval($seat_price) + floatval($ex_service_price) + $point_surcharge);
 						// Update all cached price fields
+						$cart_object->cart_contents[$key]['wbtm_point_surcharge'] = $point_surcharge;
 						$cart_object->cart_contents[$key]['wbtm_tp']           = $total_price;
 						$cart_object->cart_contents[$key]['wbtm_base_price']   = $seat_price;
 						$cart_object->cart_contents[$key]['wbtm_base_ex_price'] = $ex_service_price;

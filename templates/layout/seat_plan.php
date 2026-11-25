@@ -129,6 +129,7 @@
                         <?php esc_html_e('Sleeper', 'bus-ticket-booking-with-seat-reservation'); ?>
                     </span>
                 <?php } ?>
+                <?php do_action('wbtm_after_seat_legend_items', $post_id); ?>
             </div>
             <?php
         }
@@ -327,11 +328,17 @@
                                                                 }
                                                                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                                 $cabin_price = floatval($cell_base_cabin) * floatval($price_multiplier);
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $cabin_cell_extra_cls = (string) apply_filters('wbtm_frontend_seat_cell_classes', '', $post_id, $seat_name, false, $cabin_index);
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $cabin_cell_extra_attrs = (string) apply_filters('wbtm_frontend_seat_attrs', '', $post_id, $seat_name, false, $cabin_index);
+                                                                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                                $cabin_booked_title = apply_filters('wbtm_frontend_booked_seat_title', WBTM_Translations::text_already_sold() . ' : ' . $seat_name, $post_id, $cabin_seat_identifier, $date, false, $cabin_index);
                                                                 ?>
                                                                 <th>
-                                                                    <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class)); ?>">
+                                                                    <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class . ' ' . $cabin_cell_extra_cls)); ?>">
                                                                         <?php if ($is_booked): ?>
-                                                                            <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
+                                                                            <div class="mp_seat seat_booked" title="<?php echo esc_attr($cabin_booked_title); ?>">
                                                                                 <div class="seat_visual"></div>
                                                                                 <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
                                                                             </div>
@@ -341,12 +348,13 @@
                                                                                 <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
                                                                             </div>
                                                                         <?php else: ?>
-                                                                            <div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
+                                                                            <div class="mp_seat seat_available <?php echo esc_attr(trim($cabin_cell_extra_cls)); ?>" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
                                                                                 data-seat_name="<?php echo esc_attr($seat_name); ?>"
                                                                                 data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                                 data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
                                                                                 data-seat_price="<?php echo esc_attr($cabin_price); ?>"
                                                                                 data-cabin_index="<?php echo esc_attr($cabin_index); ?>"
+                                                                                <?php echo $cabin_cell_extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered HTML data attributes built with esc_attr in hook. ?>
                                                                             >
                                                                                 <div class="seat_visual"></div>
                                                                                 <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
@@ -485,9 +493,15 @@
                                                     if ($cell_lower === false) {
                                                         $cell_lower = 0;
                                                     }
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $lower_extra_cls = (string) apply_filters('wbtm_frontend_seat_cell_classes', '', $post_id, $seat_name, false, null);
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $lower_extra_attrs = (string) apply_filters('wbtm_frontend_seat_attrs', '', $post_id, $seat_name, false, null);
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $lower_booked_title = apply_filters('wbtm_frontend_booked_seat_title', WBTM_Translations::text_already_sold() . ' : ' . $seat_name, $post_id, $seat_name, $date, false, null);
                                                     ?>
                                                     <th>
-                                                        <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class)); ?>">
+                                                        <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class . ' ' . $lower_extra_cls)); ?>">
                                                             <?php
                                                             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                             $is_booked_legacy = in_array($seat_name, $seat_booked);
@@ -495,7 +509,7 @@
                                                             $is_in_cart_legacy = !$is_booked_legacy && WBTM_Functions::check_seat_in_cart($post_id, $start_route, $end_route, $date, $seat_name);
                                                             ?>
                                                             <?php if ($is_booked_legacy) { ?>
-                                                                <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
+                                                                <div class="mp_seat seat_booked" title="<?php echo esc_attr($lower_booked_title); ?>">
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
                                                                 </div>
@@ -505,11 +519,12 @@
                                                                     <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
                                                                 </div>
                                                             <?php } else { ?>
-                                                                <div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
+                                                                <div class="mp_seat seat_available <?php echo esc_attr(trim($lower_extra_cls)); ?>" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
                                                                     data-seat_name="<?php echo esc_attr($seat_name); ?>"
                                                                     data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                     data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
                                                                     data-seat_price="<?php echo esc_attr($cell_lower); ?>"
+                                                                    <?php echo $lower_extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered HTML data attributes built with esc_attr in hook. ?>
                                                                 >
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($seat_name); ?></div>
@@ -607,11 +622,17 @@
 
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $upper_extra_cls = (string) apply_filters('wbtm_frontend_seat_cell_classes', '', $post_id, $info, true, null);
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $upper_extra_attrs = (string) apply_filters('wbtm_frontend_seat_attrs', '', $post_id, $info, true, null);
+                                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+                                                    $upper_booked_title = apply_filters('wbtm_frontend_booked_seat_title', WBTM_Translations::text_already_sold() . ' : ' . $info, $post_id, $info, $date, true, null);
                                                     ?>
                                                     <th>
-                                                        <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class)); ?>">
+                                                        <div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class . ' ' . $upper_extra_cls)); ?>">
                                                             <?php if ($seat_available > 0) { ?>
-                                                                <div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($info) ); ?>">
+                                                                <div class="mp_seat seat_booked" title="<?php echo esc_attr($upper_booked_title); ?>">
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($info); ?></div>
                                                                 </div>
@@ -621,11 +642,12 @@
                                                                     <div class="seat_number"><?php echo esc_html($info); ?></div>
                                                                 </div>
                                                             <?php } else { ?>
-                                                                <div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($info); ?>"
+                                                                <div class="mp_seat seat_available <?php echo esc_attr(trim($upper_extra_cls)); ?>" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($info); ?>"
                                                                     data-seat_name="<?php echo esc_attr($info); ?>"
                                                                     data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                     data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
                                                                     data-seat_price="<?php echo esc_attr($cell_upper); ?>"
+                                                                    <?php echo $upper_extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered HTML data attributes built with esc_attr in hook. ?>
                                                                 >
                                                                     <div class="seat_visual"></div>
                                                                     <div class="seat_number"><?php echo esc_html($info); ?></div>

@@ -89,11 +89,14 @@
 								$cell_base_cabin = 0;
 							}
 							$cabin_price = floatval($cell_base_cabin) * floatval($wbtm_grid_price_multiplier);
+							$cabin_grid_extra_cls = (string) apply_filters('wbtm_frontend_seat_cell_classes', '', $post_id, $seat_name, $wbtm_grid_is_upper, $wbtm_grid_cabin_index);
+							$cabin_grid_extra_attrs = (string) apply_filters('wbtm_frontend_seat_attrs', '', $post_id, $seat_name, $wbtm_grid_is_upper, $wbtm_grid_cabin_index);
+							$cabin_grid_booked_title = apply_filters('wbtm_frontend_booked_seat_title', WBTM_Translations::text_already_sold() . ' : ' . $seat_name, $post_id, $cabin_seat_identifier, $date, $wbtm_grid_is_upper, $wbtm_grid_cabin_index);
 							?>
 							<th>
-								<div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class)); ?>">
+								<div class="mp_seat_item <?php echo esc_attr(trim($rotation_class . ' ' . $seat_layout_class . ' ' . $cabin_grid_extra_cls)); ?>">
 									<?php if ($is_booked): ?>
-										<div class="mp_seat seat_booked" title="<?php echo esc_html( WBTM_Translations::text_already_sold() . ' : ' . esc_attr($seat_name) ); ?>">
+										<div class="mp_seat seat_booked" title="<?php echo esc_attr($cabin_grid_booked_title); ?>">
 											<div class="seat_visual"></div>
 											<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 										</div>
@@ -103,12 +106,13 @@
 											<div class="seat_number"><?php echo esc_html($seat_name); ?></div>
 										</div>
 									<?php else: ?>
-										<div class="mp_seat seat_available" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
+										<div class="mp_seat seat_available <?php echo esc_attr(trim($cabin_grid_extra_cls)); ?>" title="<?php echo esc_attr(WBTM_Translations::text_available_seat()) . '  : ' . esc_attr($seat_name); ?>"
 											 data-seat_name="<?php echo esc_attr($seat_name); ?>"
 											 data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
 											 data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
 											 data-seat_price="<?php echo esc_attr($cabin_price); ?>"
 											 data-cabin_index="<?php echo esc_attr($wbtm_grid_data_cabin_index); ?>"
+											 <?php echo $cabin_grid_extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered HTML data attributes built with esc_attr in hook. ?>
 										>
 											<div class="seat_visual"></div>
 											<div class="seat_number"><?php echo esc_html($seat_name); ?></div>

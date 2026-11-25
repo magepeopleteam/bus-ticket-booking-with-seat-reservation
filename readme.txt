@@ -197,6 +197,14 @@ Learn more about how [Appneck collects and uses this data](https://appneck.com/p
 
 == Changelog ==
 
+= Unreleased (Post 6.0.0 — Nov 2026) =
+* New: Extension hooks and filters for PRO route stop/pair On/Off controls, per-bus sale cut-off and buffer overrides, seat blocking without orders, min/max seat limits, seat attribute tags, pickup/drop-off point surcharge calculation, and Booking List portal request actions.
+* Fix(search): Retain valid travel dates when route stops change.
+* Fix(cart): Preserve bus tickets in cart when WCML switches the active cart language.
+* Fix(settings): Accept fractional hours (e.g. `0.5`) for the ticket sale cut-off configuration.
+* Fix(sdk): Use a dedicated variable name for the AppNeck SDK instance to avoid global collisions.
+* Docs(mcp): Clarify MCP security boundaries, OAuth sign-in flow, and connection token usage.
+
 = 6.0.0 =
 * New: Add event booking pages, single-bus embed shortcode and Elementor widgets.
 * New: Add dynamic customer and operator app integration.
