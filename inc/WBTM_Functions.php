@@ -213,6 +213,69 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			public static function is_full_bus_feature_enabled() {
 				return self::is_pro_active();
 			}
+			/**
+			 * Whether Pro per-stop / per-route-pair On/Off control is active.
+			 */
+			public static function is_route_stop_control_enabled() {
+				return (bool) apply_filters( 'wbtm_enable_route_stop_control', false );
+			}
+			/**
+			 * Whether a single route-stop row (wbtm_route_info / wbtm_return_route_info) is enabled.
+			 * Missing 'enabled' defaults to true for full backward compatibility.
+			 *
+			 * @param array<string, mixed>|mixed $route_info
+			 */
+			public static function is_route_stop_enabled( $route_info ) {
+				if ( ! self::is_route_stop_control_enabled() || ! is_array( $route_info ) ) {
+					return true;
+				}
+				if ( array_key_exists( 'enabled', $route_info ) ) {
+					$val = $route_info['enabled'];
+					// WBTM_Global_Function::get_post_info() passes stored values through sanitize_text_field(),
+					// which turns boolean false into '' and true into '1'. Treat '' when the key is explicitly present as disabled.
+					if ( $val === false || $val === '' || $val === 'no' || $val === '0' || $val === 0 || $val === 'false' || $val === null ) {
+						return false;
+					}
+				}
+				return true;
+			}
+			/**
+			 * Whether an origin -> destination pair on a given leg is active (neither stop disabled,
+			 * nor the specific price-matrix row turned off).
+			 *
+			 * @param int    $post_id
+			 * @param string $bp
+			 * @param string $dp
+			 * @param string $price_leg 'outbound' | 'return'
+			 */
+			public static function is_route_pair_enabled( $post_id, $bp, $dp, $price_leg = 'outbound' ) {
+				if ( ! self::is_route_stop_control_enabled() ) {
+					return true;
+				}
+				$price_leg = $price_leg === 'return' ? 'return' : 'outbound';
+				return (bool) apply_filters( 'wbtm_is_route_pair_enabled', true, (int) $post_id, (string) $bp, (string) $dp, $price_leg );
+			}
+			/**
+			 * Filter destination stop names by route-pair enabled state for one leg.
+			 *
+			 * @param int                  $post_id
+			 * @param string               $start_route
+			 * @param array<int, string>   $dests
+			 * @param string               $price_leg
+			 * @return array<int, string>
+			 */
+			private static function filter_enabled_route_dests( $post_id, $start_route, $dests, $price_leg = 'outbound' ) {
+				if ( ! self::is_route_stop_control_enabled() || ! $post_id || ! $start_route || empty( $dests ) ) {
+					return $dests;
+				}
+				$filtered = [];
+				foreach ( $dests as $dp ) {
+					if ( self::is_route_pair_enabled( $post_id, $start_route, $dp, $price_leg ) ) {
+						$filtered[] = $dp;
+					}
+				}
+				return $filtered;
+			}
 			//==========================//
 			public static function get_bus_route( $post_id = 0, $start_route = '' ) {
 				$all_routes = [];
@@ -244,14 +307,24 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				if ( ! $start_route ) {
 					return self::single_bus_route_from_infos( $forward, '' );
 				}
-				$forward_dests = self::single_bus_route_from_infos( $forward, $start_route );
+				$forward_dests = self::filter_enabled_route_dests(
+					$post_id,
+					$start_route,
+					self::single_bus_route_from_infos( $forward, $start_route ),
+					'outbound'
+				);
 				$r             = $forward_dests;
 
 				if ( self::is_same_bus_return_enabled( $post_id ) ) {
 					// Destinations reachable on the return leg from this same boarding point.
 					$return_dests = [];
 					foreach ( self::get_same_bus_return_route_candidates( $post_id, $forward ) as $infos ) {
-						$candidate = self::single_bus_route_from_infos( $infos, $start_route );
+						$candidate = self::filter_enabled_route_dests(
+							$post_id,
+							$start_route,
+							self::single_bus_route_from_infos( $infos, $start_route ),
+							'return'
+						);
 						if ( sizeof( $candidate ) > 0 ) {
 							$return_dests = $candidate;
 							break;
@@ -280,8 +353,15 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 						// Offer every stop reachable later on EITHER physical leg (by position) so
 						// intermediate->intermediate trips work even when stops are boarding-only.
 						$merged = [];
-						foreach ( self::get_same_bus_physical_legs( $post_id, $forward ) as $leg ) {
-							$merged = self::merge_unique_routes( $merged, self::dests_after_by_position( $leg, $start_route ) );
+						foreach ( self::get_same_bus_physical_legs( $post_id, $forward ) as $leg_idx => $leg ) {
+							$leg_name  = $leg_idx === 0 ? 'outbound' : 'return';
+							$leg_dests = self::filter_enabled_route_dests(
+								$post_id,
+								$start_route,
+								self::dests_after_by_position( $leg, $start_route ),
+								$leg_name
+							);
+							$merged = self::merge_unique_routes( $merged, $leg_dests );
 						}
 						$r = $merged;
 					} elseif ( sizeof( $forward_dests ) === 0 ) {
@@ -321,6 +401,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$count_next = 0;
 				if ( sizeof( $full_route_infos ) > 0 ) {
 					foreach ( $full_route_infos as $info ) {
+						if ( ! self::is_route_stop_enabled( $info ) ) {
+							continue;
+						}
 						if ( $start_route ) {
 							if ( $count_next > 0 && ( $info['type'] == 'dp' || $info['type'] == 'both' ) ) {
 								$all_routes[] = $info['place'];
@@ -395,7 +478,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					return false;
 				}
 				foreach ( $route_infos as $row ) {
-					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) || ! self::is_route_stop_enabled( $row ) ) {
 						continue;
 					}
 					$t = isset( $row['type'] ) ? $row['type'] : '';
@@ -417,7 +500,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				$started = false;
 				foreach ( $route_infos as $row ) {
-					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) || ! self::is_route_stop_enabled( $row ) ) {
 						continue;
 					}
 					$t = isset( $row['type'] ) ? $row['type'] : '';
@@ -503,6 +586,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$ref_date = current_time( 'Y-m-d' );
 				$best_dur = null;
 				foreach ( $candidates as $index => $candidate_rows ) {
+					$candidate_leg = $index === 0 ? 'outbound' : 'return';
+					if ( ! self::is_route_pair_enabled( $post_id, $start_route, $end_route, $candidate_leg ) ) {
+						continue;
+					}
 					// Same-bus-return (bidirectional) buses connect any stop to a later stop on a
 					// leg regardless of bp/dp type; normal buses honour the configured types.
 					$supported = $same_bus_return
@@ -519,7 +606,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					// Strict "<" so the outbound leg (checked first) wins ties.
 					if ( $best_dur === null || $duration < $best_dur ) {
 						$best_dur               = $duration;
-						$result['leg']         = $index === 0 ? 'outbound' : 'return';
+						$result['leg']         = $candidate_leg;
 						$result['route_infos'] = $candidate_rows;
 					}
 				}
@@ -555,7 +642,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				$started = false;
 				if ( is_array( $route_infos ) ) {
 					foreach ( $route_infos as $row ) {
-						if ( ! is_array( $row ) || ! isset( $row['place'] ) || $row['place'] === '' ) {
+						if ( ! is_array( $row ) || ! isset( $row['place'] ) || $row['place'] === '' || ! self::is_route_stop_enabled( $row ) ) {
 							continue;
 						}
 						if ( $started ) {
@@ -579,7 +666,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				}
 				$started = false;
 				foreach ( $route_infos as $row ) {
-					if ( ! is_array( $row ) || ! isset( $row['place'] ) ) {
+					if ( ! is_array( $row ) || ! isset( $row['place'] ) || ! self::is_route_stop_enabled( $row ) ) {
 						continue;
 					}
 					$place = strtolower( (string) $row['place'] );
@@ -612,6 +699,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				foreach ( $expanded as $rows ) {
 					$bp_time = '';
 					foreach ( $rows as $info ) {
+						if ( ! self::is_route_stop_enabled( $info ) ) {
+							continue;
+						}
 						$is_bp = $ignore_types || $info['type'] === 'bp' || $info['type'] === 'both';
 						$is_dp = $ignore_types || $info['type'] === 'dp' || $info['type'] === 'both';
 						if ( ! $bp_time && $is_bp && strtolower( (string) $info['place'] ) === strtolower( (string) $start_route ) ) {
@@ -684,6 +774,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 				foreach ( $expanded as $route_info ) {
 					if ( sizeof( $route_info ) > 0 ) {
 						foreach ( $route_info as $info ) {
+							if ( ! self::is_route_stop_enabled( $info ) ) {
+								continue;
+							}
 							if ( ( $info['type'] === 'bp' || $info['type'] === 'both' ) && strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) ) {
 								$out[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 							}
@@ -877,6 +970,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			 */
 			public static function get_ticket_info( $post_id, $start_route, $end_route, $price_leg = 'outbound', $try_reverse_return = true ) {
 				$price_leg    = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
+				if ( $post_id && $start_route && $end_route && ! self::is_route_pair_enabled( $post_id, $start_route, $end_route, $price_leg ) ) {
+					return [];
+				}
 				$ticket_infos = [];
 				if ( $post_id && $start_route && $end_route ) {
 					$price_infos  = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
@@ -924,6 +1020,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 					return [];
 				}
 				$price_leg = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
+				if ( $post_id && $start_route && $end_route && ! self::is_route_pair_enabled( $post_id, $start_route, $end_route, $price_leg ) ) {
+					return [];
+				}
 				if ( $post_id && $start_route && $end_route ) {
 					$price_infos = WBTM_Global_Function::get_post_info( $post_id, 'wbtm_bus_prices', [] );
 					if ( sizeof( $price_infos ) > 0 ) {
@@ -1106,6 +1205,10 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 
 			public static function get_bus_all_info( $post_id, $date, $start_route, $end_route, $price_leg = 'outbound' ) {
 				if ( $post_id > 0 && $date && $start_route && $end_route ) {
+					$resolved_leg_slug = self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route, $price_leg );
+					if ( ! self::is_route_pair_enabled( $post_id, $start_route, $end_route, $resolved_leg_slug ) ) {
+						return [];
+					}
 					$all_dates        = WBTM_Functions::get_post_date( $post_id );
 					$resolved_leg     = self::resolve_route_infos_for_od_pair( $post_id, $start_route, $end_route );
 					// Same-bus-return buses connect stops by position, so a boarding-only intermediate
@@ -1117,6 +1220,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							$bp_date = '';
 							if ( sizeof( $route_info ) > 0 ) {
 								foreach ( $route_info as $info ) {
+									if ( ! self::is_route_stop_enabled( $info ) ) {
+										continue;
+									}
 									if ( strtolower( (string) $start_route ) === strtolower( (string) $info['place'] ) && ( $ignore_types || $info['type'] == 'bp' || $info['type'] == 'both' ) && strtotime( $date ) == strtotime( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) ) ) {
 										$bp_date = $info['time'];
 									}
@@ -1322,12 +1428,18 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 			public static function get_all_dates( $post_id = 0, $start_route = '' ,$end_route='') {
 				$all_dates = [];
 				if ( $post_id > 0 ) {
+					if ( $start_route && $end_route && ! self::is_route_pair_enabled( $post_id, $start_route, $end_route, self::resolve_price_leg_for_od_pair( $post_id, $start_route, $end_route ) ) ) {
+						return [];
+					}
 					$all_dates = self::get_route_date( $post_id, $start_route );
 				} else {
 					if ( $start_route ) {
 						$bus_ids = WBTM_Query::get_bus_id( $start_route ,$end_route);
 						if ( sizeof( $bus_ids ) > 0 ) {
 							foreach ( $bus_ids as $bus_id ) {
+								if ( $end_route && ! self::is_route_pair_enabled( $bus_id, $start_route, $end_route, self::resolve_price_leg_for_od_pair( $bus_id, $start_route, $end_route ) ) ) {
+									continue;
+								}
 								$dates     = self::get_route_date( $bus_id, $start_route );
 								$all_dates = array_merge( $all_dates, $dates );
 							}
@@ -1363,6 +1475,9 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 							foreach ( $route_infos as $route_info ) {
 								if ( sizeof( $route_info ) > 0 ) {
 									foreach ( $route_info as $info ) {
+										if ( ! self::is_route_stop_enabled( $info ) ) {
+											continue;
+										}
 										if ( $info['type'] == 'bp' || $info['type'] == 'both' ) {
 											$all_dates[] = gmdate( 'Y-m-d', strtotime( $info['time'] ) );
 										}

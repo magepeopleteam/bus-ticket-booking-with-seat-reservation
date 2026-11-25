@@ -320,6 +320,9 @@
 					$seen       = array();
 					$dest_found = false;
 					foreach ( $route_infos as $info ) {
+						if ( ! WBTM_Functions::is_route_stop_enabled( $info ) ) {
+							continue;
+						}
 						$place = isset( $info['place'] ) ? (string) $info['place'] : '';
 						$type  = $info['type'] ?? '';
 						if ( $place === '' ) {
@@ -327,13 +330,18 @@
 						}
 						$key = WBTM_Bus_Scope::normalize_place( $place );
 						if ( $dest_key !== '' && $key === $dest_key ) {
-							$dest_found = true;
+							if ( in_array( $type, array( 'dp', 'both' ), true ) ) {
+								$dest_found = true;
+							}
 							if ( ! $date ) {
 								break; // Timetable mode: only stops before the destination.
 							}
 							continue;
 						}
 						if ( isset( $seen[ $key ] ) || ! in_array( $type, array( 'bp', 'both' ), true ) ) {
+							continue;
+						}
+						if ( $dest_key !== '' && ! WBTM_Functions::is_route_pair_enabled( $bus_id, $place, $destination, WBTM_Functions::resolve_price_leg_for_od_pair( $bus_id, $place, $destination ) ) ) {
 							continue;
 						}
 						$seen[ $key ] = true;

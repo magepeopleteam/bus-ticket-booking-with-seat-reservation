@@ -59,7 +59,7 @@
                                 <!-- create new bus route -->
                                 <div class="wbtm_hidden_content">
                                     <div class="wbtm_hidden_item">
-										<?php $this->add_stops_item($bus_stop_lists, [], 0); ?>
+										<?php $this->add_stops_item($bus_stop_lists, [], '__tpl__'); ?>
                                     </div>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                             </div>
                             <div class="wbtm_return_hidden_content wbtm_hidden_content">
                                 <div class="wbtm_hidden_item">
-									<?php $this->add_return_stops_item($bus_stop_lists, [], 0); ?>
+									<?php $this->add_return_stops_item($bus_stop_lists, [], '__tpl__'); ?>
                                 </div>
                             </div>
                         </div>
@@ -164,8 +164,10 @@
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
 				//$interval = array_key_exists('interval', $full_route_info) ? $full_route_info['interval'] : 0;
 				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
+				$stop_enabled = WBTM_Functions::is_route_stop_enabled($full_route_info);
+				$stop_disabled_class = !$stop_enabled ? ' wbtm-stop-disabled' : '';
 				?>
-                <div class="wbtm_remove_area col_12_mB  wbtm_stop_item ">
+                <div class="wbtm_remove_area col_12_mB wbtm_stop_item<?php echo esc_attr($stop_disabled_class); ?>" data-stop-place="<?php echo esc_attr($palace); ?>">
                     <div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
 						<?php
 							$location = '';
@@ -194,6 +196,7 @@
                                 <i class="far fa-clock"></i>&nbsp;--:-- --
 							<?php endif; ?>
                         </label>
+						<?php do_action('wbtm_route_stop_header_actions', $full_route_info, $key, 'outbound'); ?>
 						<?php WBTM_Custom_Layout::edit_move_remove_button(); ?>
                     </div>
                     <div class="wbtm_stop_item_content" data-collapse="">
@@ -260,8 +263,10 @@
 				$time = array_key_exists('time', $full_route_info) ? $full_route_info['time'] : '';
 				$type = array_key_exists('type', $full_route_info) ? $full_route_info['type'] : '';
 				$next_day = array_key_exists('next_day', $full_route_info) ? $full_route_info['next_day'] : false;
+				$stop_enabled = WBTM_Functions::is_route_stop_enabled($full_route_info);
+				$stop_disabled_class = !$stop_enabled ? ' wbtm-stop-disabled' : '';
 				?>
-                <div class="wbtm_remove_area col_12_mB wbtm_return_stop_item">
+                <div class="wbtm_remove_area col_12_mB wbtm_return_stop_item<?php echo esc_attr($stop_disabled_class); ?>" data-stop-place="<?php echo esc_attr($palace); ?>">
                     <div class="_bgLight_dFlex_justifyBetween_alignCenter wbtm_stop_item_header" data-collapse-target="">
 						<?php
 						$location = '';
@@ -290,6 +295,7 @@
                                 <i class="far fa-clock"></i>&nbsp;--:-- --
 							<?php endif; ?>
                         </label>
+						<?php do_action('wbtm_route_stop_header_actions', $full_route_info, $key, 'return'); ?>
 						<?php WBTM_Custom_Layout::edit_move_remove_button(); ?>
                     </div>
                     <div class="wbtm_stop_item_content" data-collapse="">
@@ -392,6 +398,8 @@
 						$sanitized_ticket_type_id = sanitize_key($ticket_type_id);
 						if ($sanitized_ticket_type_id === '__full_bus_discount') {
 							$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = sanitize_text_field((string) $ticket_price);
+						} elseif ($sanitized_ticket_type_id === '__enabled') {
+							$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = ($ticket_price === 'no' || $ticket_price === '0' || $ticket_price === false) ? 'no' : 'yes';
 						} else {
 							$sanitized_price_map[$sanitized_route_key][$sanitized_ticket_type_id] = $ticket_price === '' ? '' : (float) sanitize_text_field((string) $ticket_price);
 						}
@@ -448,6 +456,9 @@
 											? $request_price_map[ $route_price_key ][ $ticket_type_id ]
 											: WBTM_Functions::get_ticket_price_by_type( $stored_price_info, $ticket_type_id );
 									}
+									$row_enabled = array_key_exists( $route_price_key, $request_price_map ) && array_key_exists( '__enabled', $request_price_map[ $route_price_key ] )
+										? ( $request_price_map[ $route_price_key ]['__enabled'] !== 'no' )
+										: ( ! isset( $stored_price_info['wbtm_route_price_enabled'] ) || $stored_price_info['wbtm_route_price_enabled'] !== 'no' );
 									$rows[] = [
 										'bp'              => $bp,
 										'dp'              => $dp,
@@ -461,6 +472,9 @@
 											: ( isset( $stored_price_info['wbtm_full_bus_discount'] ) ? $stored_price_info['wbtm_full_bus_discount'] : '' ),
 										'is_return_leg'   => $is_return_leg,
 										'price_leg'       => $price_leg,
+										'row_enabled'     => $row_enabled,
+										'bp_enabled'      => WBTM_Functions::is_route_stop_enabled( $full_route_info ),
+										'dp_enabled'      => WBTM_Functions::is_route_stop_enabled( $next_info ),
 									];
 								}
 							}
@@ -523,6 +537,9 @@
 										? $request_price_map[ $rev_key ][ $ticket_type_id ]
 										: WBTM_Functions::get_ticket_price_by_type( $stored_price_info, $ticket_type_id );
 								}
+								$row_enabled = array_key_exists( $rev_key, $request_price_map ) && array_key_exists( '__enabled', $request_price_map[ $rev_key ] )
+									? ( $request_price_map[ $rev_key ]['__enabled'] !== 'no' )
+									: ( ! isset( $stored_price_info['wbtm_route_price_enabled'] ) || $stored_price_info['wbtm_route_price_enabled'] !== 'no' );
 								$all_price_info[] = [
 									'bp'              => $dp,
 									'dp'              => $bp,
@@ -536,6 +553,9 @@
 										: ( isset( $stored_price_info['wbtm_full_bus_discount'] ) ? $stored_price_info['wbtm_full_bus_discount'] : '' ),
 									'is_return_leg'   => true,
 									'price_leg'       => 'return',
+									'row_enabled'     => $row_enabled,
+									'bp_enabled'      => isset( $row['dp_enabled'] ) ? $row['dp_enabled'] : true,
+									'dp_enabled'      => isset( $row['bp_enabled'] ) ? $row['bp_enabled'] : true,
 								];
 							}
 						}
@@ -569,15 +589,24 @@
                                 <th><?php esc_html_e('Full Bus Price', 'bus-ticket-booking-with-seat-reservation'); ?></th>
                                 <th><?php esc_html_e('Full Bus Discount', 'bus-ticket-booking-with-seat-reservation'); ?></th>
 							<?php } ?>
+							<?php do_action('wbtm_pricing_table_header_end', $post_id); ?>
                         </tr>
                         </thead>
                         <tbody>
 						<?php
 						foreach ( $all_price_info as $row_index => $price_info ) {
 							$is_return_row = ! empty( $price_info['is_return_leg'] );
-							$row_class       = $is_return_row ? 'wbtm_price_row_return' : 'wbtm_price_row_outbound';
+							$row_enabled   = ! isset( $price_info['row_enabled'] ) || $price_info['row_enabled'];
+							$stop_disabled = ( isset( $price_info['bp_enabled'] ) && ! $price_info['bp_enabled'] ) || ( isset( $price_info['dp_enabled'] ) && ! $price_info['dp_enabled'] );
+							$row_class     = $is_return_row ? 'wbtm_price_row_return' : 'wbtm_price_row_outbound';
+							if ( ! $row_enabled ) {
+								$row_class .= ' wbtm-price-row-disabled';
+							}
+							if ( $stop_disabled ) {
+								$row_class .= ' wbtm-price-row-stop-disabled';
+							}
 							?>
-                            <tr class="<?php echo esc_attr( $row_class ); ?>" data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>" data-wbtm-return-leg="<?php echo esc_attr( $is_return_row ? '1' : '0' ); ?>">
+                            <tr class="<?php echo esc_attr( $row_class ); ?>" data-price-key="<?php echo esc_attr($price_info['route_price_key']); ?>" data-wbtm-return-leg="<?php echo esc_attr( $is_return_row ? '1' : '0' ); ?>" data-bp-place="<?php echo esc_attr( $price_info['bp'] ); ?>" data-dp-place="<?php echo esc_attr( $price_info['dp'] ); ?>">
                                 <td colspan="2">
                                     <div class="_dFlex_justifyBetween_pT_xs _dFlex_alignCenter">
                                         <div class="col_5 _textLeft_pL_xs">
@@ -639,6 +668,7 @@
                                         </label>
                                     </td>
 								<?php } ?>
+								<?php do_action('wbtm_pricing_table_row_end', $post_id, $row_index, $price_info); ?>
                             </tr>
 						<?php } ?>
                         </tbody>
@@ -660,6 +690,7 @@
 				$post_id = isset($_POST['post_id']) ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
 				$places = isset($_POST['places']) ? array_map('sanitize_text_field', wp_unslash($_POST['places'])) : [];
 				$types = isset($_POST['types']) ? array_map('sanitize_text_field', wp_unslash($_POST['types'])) : [];
+				$stop_enabled = isset($_POST['stop_enabled']) ? array_map('sanitize_text_field', wp_unslash((array) $_POST['stop_enabled'])) : [];
 				$ticket_types_json = isset($_POST['ticket_types_json']) ? wp_unslash($_POST['ticket_types_json']) : '[]';
 				$price_map_json = isset($_POST['price_map_json']) ? wp_unslash($_POST['price_map_json']) : '{}';
 				$ticket_types = json_decode($ticket_types_json, true);
@@ -669,6 +700,7 @@
                     foreach ($places as $key=>$place){
 	                    $route_infos[$key]['place'] = $place;
 	                    $route_infos[$key]['type'] = $types[$key];
+	                    $route_infos[$key]['enabled'] = !array_key_exists($key, $stop_enabled) || $stop_enabled[$key] !== '0';
                     }
                 }
 				$this->route_pricing($post_id, $route_infos, $ticket_types, $price_map);

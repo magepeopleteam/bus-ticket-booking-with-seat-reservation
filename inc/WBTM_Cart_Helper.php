@@ -162,6 +162,14 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 			if ( self::route_has_full_bus_booking( $post_id, $bp, $dp, $inventory_date, true ) ) {
 				return new WP_Error( 'wbtm_full_bus_reserved', __( 'This bus is already reserved for this journey.', 'bus-ticket-booking-with-seat-reservation' ) );
 			}
+			// Reject disabled stops or route segments so crafted requests cannot book them.
+			$requested_leg = WBTM_Functions::resolve_price_leg_for_od_pair( $post_id, $bp, $dp, WBTM_Functions::get_requested_price_leg() );
+			if ( ! WBTM_Functions::is_route_pair_enabled( $post_id, $bp, $dp, $requested_leg ) ) {
+				return new WP_Error(
+					'wbtm_route_disabled',
+					esc_html__( 'This route or stop is currently disabled for booking.', 'bus-ticket-booking-with-seat-reservation' )
+				);
+			}
 			// Reject segments with no fare configured so they can't be booked at 0,
 			// even via a crafted request that bypasses the hidden UI. Full-bus pricing
 			// is validated separately, so this guard applies to seat bookings only.

@@ -271,7 +271,7 @@ if (!class_exists('WBTM_REST_API')) {
 			$route_info  = (array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_route_info', []);
 			$route_stops = array();
 			foreach ($route_info as $info) {
-				if (!isset($info['place'], $info['time'])) {
+				if (!isset($info['place'], $info['time']) || !WBTM_Functions::is_route_stop_enabled($info)) {
 					continue;
 				}
 				$route_stops[] = array(
