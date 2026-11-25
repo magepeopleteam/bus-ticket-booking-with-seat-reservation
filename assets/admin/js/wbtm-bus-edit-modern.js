@@ -1453,10 +1453,22 @@
 		}
 
 		// Collapse the split Boarding/Dropping header cell into one label.
-		var $bdHeader = $priceArea.find('thead th[colspan="2"]').first();
-		if ($bdHeader.length && !$bdHeader.find('.wbtm-bme__price-bd-label').length) {
-			$bdHeader.html('<span class="wbtm-bme__price-bd-label">Boarding &rarr; Dropping</span>');
+		function formatPricingHeader() {
+			if (!$priceArea.find('> .wbtm-bme__pricing-card-title').length) {
+				$priceArea.prepend(
+					'<div class="wbtm-bme__pricing-card-title">Route Pricing Matrix' +
+					'<span>Set ticket prices for each route and segment.</span></div>'
+				);
+			}
+			var $bdHeader = $priceArea.find('thead th[colspan="2"]').first();
+			if ($bdHeader.length && !$bdHeader.find('.wbtm-bme__price-bd-label').length) {
+				$bdHeader.html('<span class="wbtm-bme__price-bd-label">Boarding &rarr; Dropping</span>');
+			}
 		}
+		formatPricingHeader();
+		$(document).on('wbtm_pricing_reloaded', function () {
+			formatPricingHeader();
+		});
 	})();
 
 	/* ---------------------------------------------------------------- *

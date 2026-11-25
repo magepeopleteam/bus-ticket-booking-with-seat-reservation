@@ -101,7 +101,7 @@
 							<?php
 							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							foreach ($full_route_infos as $full_route_info) { ?>
-								<?php if ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both') { ?>
+								<?php if (WBTM_Functions::is_route_stop_enabled($full_route_info) && ($full_route_info['type'] == 'bp' || $full_route_info['type'] == 'both')) { ?>
 									<div class="wbtm_sm_stop">
 										<span class="wbtm_sm_pin"></span>
 										<span class="wbtm_sm_stop_name"><?php echo esc_html($full_route_info['place']); ?></span>
@@ -122,7 +122,7 @@
 							<?php
 							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 							foreach ($full_route_infos as $full_route_info) { ?>
-								<?php if ($full_route_info['type'] == 'dp' || $full_route_info['type'] == 'both') { ?>
+								<?php if (WBTM_Functions::is_route_stop_enabled($full_route_info) && ($full_route_info['type'] == 'dp' || $full_route_info['type'] == 'both')) { ?>
 									<div class="wbtm_sm_stop">
 										<span class="wbtm_sm_pin"></span>
 										<span class="wbtm_sm_stop_name"><?php echo esc_html($full_route_info['place']); ?></span>
@@ -157,7 +157,7 @@
 						<?php
 						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 						foreach ( $return_route_infos as $return_route_info ) {
-							if ( ! is_array( $return_route_info ) || empty( $return_route_info['type'] ) ) {
+							if ( ! is_array( $return_route_info ) || empty( $return_route_info['type'] ) || ! WBTM_Functions::is_route_stop_enabled( $return_route_info ) ) {
 								continue;
 							}
 							if ( 'bp' === $return_route_info['type'] || 'both' === $return_route_info['type'] ) { ?>
@@ -179,7 +179,7 @@
 						<?php
 						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 						foreach ( $return_route_infos as $return_route_info ) {
-							if ( ! is_array( $return_route_info ) || empty( $return_route_info['type'] ) ) {
+							if ( ! is_array( $return_route_info ) || empty( $return_route_info['type'] ) || ! WBTM_Functions::is_route_stop_enabled( $return_route_info ) ) {
 								continue;
 							}
 							if ( 'dp' === $return_route_info['type'] || 'both' === $return_route_info['type'] ) { ?>

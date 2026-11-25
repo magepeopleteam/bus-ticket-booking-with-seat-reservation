@@ -28,6 +28,10 @@
             });
             priceMap[routeKey].__full_bus = $(this).find('[data-full-bus-price]').val() || "";
             priceMap[routeKey].__full_bus_discount = $(this).find('[data-full-bus-discount]').val() || "";
+            let $rowToggle = $(this).find('.wbtm-price-row-toggle');
+            if ($rowToggle.length) {
+                priceMap[routeKey].__enabled = $rowToggle.is(':checked') ? 'yes' : 'no';
+            }
         });
         return priceMap;
     }
@@ -36,16 +40,22 @@
         let target = parent.find(".wbtm_price_setting_area");
         let places = {};
         let types = {};
+        let stop_enabled = {};
         let ticketTypes = wbtm_collect_ticket_types(parent);
         let priceMap = wbtm_collect_price_map(parent);
         let count = 0;
         parent.find(".wbtm_stop_item").each(function () {
+            if ($(this).closest(".wbtm_hidden_content").length) {
+                return;
+            }
             let place = $(this).find('[name="wbtm_route_place[]"]').val();
             let time = $(this).find('[name="wbtm_route_time[]"]').val();
             let type = $(this).find('[name="wbtm_route_type[]"]').val();
             if (place && time && type) {
                 places[count] = place;
                 types[count] = count < 1 ? "bp" : type;
+                let $stopCb = $(this).find(".wbtm-stop-status-checkbox");
+                stop_enabled[count] = $stopCb.length ? ($stopCb.is(":checked") ? "1" : "0") : "1";
                 count++;
             }
         }).promise().done(function () {
@@ -59,6 +69,7 @@
                         post_id: post_id,
                         places: places,
                         types: types,
+                        stop_enabled: stop_enabled,
                         ticket_types_json: JSON.stringify(ticketTypes),
                         price_map_json: JSON.stringify(priceMap),
                         nonce: wbtm_admin_var.nonce
@@ -69,6 +80,7 @@
                     success: function (data) {
                         target.html(data);
                         wbtm_loaderRemove(parent);
+                        $(document).trigger("wbtm_pricing_reloaded", [parent]);
                     },
                     error: function (response) {
                         console.log(response);

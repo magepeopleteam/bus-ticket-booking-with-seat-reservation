@@ -81,6 +81,12 @@
 				$checked_pickup_point = $display_pickup_point == 'no' ? '' : 'checked';
 				$pickup_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point', []);
 				$bp_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_bp_stops', []);
+				foreach ( (array) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] ) as $route_stop ) {
+					if ( is_array( $route_stop ) && ! empty( $route_stop['place'] ) && isset( $route_stop['type'] ) && ( $route_stop['type'] === 'bp' || $route_stop['type'] === 'both' ) ) {
+						$bp_points[] = $route_stop['place'];
+					}
+				}
+				$bp_points = array_values( array_unique( array_filter( $bp_points ) ) );
 				$wbtm_pickup_point_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_pickup_point_required', 'no');
 				$checked_wbtm_pickup_point_required = $wbtm_pickup_point_required == 'no' ? '' : 'checked';
 				?>
@@ -228,6 +234,12 @@
 				$checked_drop_off_point = $display_drop_off_point == 'no' ? '' : 'checked';
 				$drop_off_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_drop_off_point', []);
 				$dp_points = WBTM_Global_Function::get_post_info($post_id, 'wbtm_bus_next_stops', []);
+				foreach ( (array) WBTM_Global_Function::get_post_info( $post_id, 'wbtm_route_info', [] ) as $route_stop ) {
+					if ( is_array( $route_stop ) && ! empty( $route_stop['place'] ) && isset( $route_stop['type'] ) && ( $route_stop['type'] === 'dp' || $route_stop['type'] === 'both' ) ) {
+						$dp_points[] = $route_stop['place'];
+					}
+				}
+				$dp_points = array_values( array_unique( array_filter( $dp_points ) ) );
 				$wbtm_dropping_point_required = WBTM_Global_Function::get_post_info($post_id, 'wbtm_dropping_point_required', 'no');
 				$checked_wbtm_dropping_point_required = $wbtm_dropping_point_required == 'no' ? '' : 'checked';
 				?>

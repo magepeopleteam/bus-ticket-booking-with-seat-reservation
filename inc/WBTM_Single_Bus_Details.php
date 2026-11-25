@@ -137,7 +137,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                                     <?php if ( ! empty( $full_route_infos ) ) : ?>
                                         <ul class="mp_list">
                                             <?php foreach ( $full_route_infos as $info ) : ?>
-                                                <?php if ( $info['type'] === 'bp' || $info['type'] === 'both' ) : ?>
+                                                <?php if ( WBTM_Functions::is_route_stop_enabled( $info ) && ( $info['type'] === 'bp' || $info['type'] === 'both' ) ) : ?>
                                                     <li>
                                                         <i class="mi mi-marker _mR_xs_textTheme"></i>
                                                         <?php
@@ -160,7 +160,7 @@ if (!class_exists('WBTM_Single_Bus_Details')) {
                                     <?php if ( ! empty( $full_route_infos ) ) : ?>
                                         <ul class="mp_list">
                                             <?php foreach ( $full_route_infos as $info ) : ?>
-                                                <?php if ( $info['type'] === 'dp' || $info['type'] === 'both' ) : ?>
+                                                <?php if ( WBTM_Functions::is_route_stop_enabled( $info ) && ( $info['type'] === 'dp' || $info['type'] === 'both' ) ) : ?>
                                                     <li>
                                                         <i class="mi mi-marker _mR_xs_textTheme"></i>
                                                         <?php
