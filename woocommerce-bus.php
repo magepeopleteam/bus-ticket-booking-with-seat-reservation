@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	 * Plugin Name: Bus Ticket Booking with Seat Reservation
 	 * Plugin URI: http://mage-people.com
 	 * Description: A Complete Bus Ticketing System for WordPress & WooCommerce
-	 * Version: 6.0.0
+	 * Version: 6.0.1
 	 * Requires PHP: 8.0
 	 * Author: MagePeople Team
 	 * Author URI: http://www.mage-people.com/
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 	}
 	// Stable asset version for cache-busting (replaces time()-based versioning).
 	if (!defined('WBTM_VERSION')) {
-		define('WBTM_VERSION', '6.0.0');
+		define('WBTM_VERSION', '6.0.1');
 	}
 
 	require_once WBTM_PLUGIN_DIR . '/mp_global/WBTM_Global_File_Load.php';

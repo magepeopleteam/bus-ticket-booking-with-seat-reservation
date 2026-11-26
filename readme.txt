@@ -2,7 +2,7 @@
 Contributors: magepeopleteam, aamahin, raselsha
 Tags: bus ticket booking with seat reservation,bus ticket booking for wordpress, woocommerce seat reservation for wordpress woocommerce
 Requires at least: 4.5
-Stable tag: 6.0.0
+Stable tag: 6.0.1
 Tested up to: 6.9
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -196,6 +196,14 @@ Appneck SDK **does not gather any data by default.** The SDK only starts gatheri
 Learn more about how [Appneck collects and uses this data](https://appneck.com/privacy-policy/).
 
 == Changelog ==
+
+= 6.0.1 =
+* New: Add hooks and enforcement for PRO per-stop and pair On/Off controls.
+* New: Add extension hooks for PRO booking controls and update changelog.
+* Fix: Retain valid travel dates when routes change.
+* Fix: Keep bus tickets when WCML switches the cart language.
+* Fix: Accept fractional hours for the ticket sale cut-off.
+* Fix: Give the AppNeck SDK instance its own variable name.
 
 = Unreleased (Post 6.0.0 — Nov 2026) =
 * New: Extension hooks and filters for PRO route stop/pair On/Off controls, per-bus sale cut-off and buffer overrides, seat blocking without orders, min/max seat limits, seat attribute tags, pickup/drop-off point surcharge calculation, and Booking List portal request actions.
