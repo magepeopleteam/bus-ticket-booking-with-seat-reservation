@@ -301,7 +301,7 @@ if ( ! class_exists( 'WBTM_Cart_Helper' ) ) {
 							}
 							$seen_seats[ $seat_identifier ] = true;
 							$seat_type = isset( $seat_types[ $seat_index ] ) ? $seat_types[ $seat_index ] : 0;
-							$base_price = WBTM_Functions::get_seat_price( $post_id, $bp, $dp, $seat_type, false, $price_leg_cart, $seat_name, $cabin_index, $journey_date );
+							$base_price = WBTM_Functions::get_seat_price( $post_id, $bp, $dp, $seat_type, $is_upper, $price_leg_cart, $seat_name, $cabin_index, $journey_date );
 							// false = the posted ticket type has no fare on this route (unknown
 							// or forged type id). Refuse the whole selection — never price it at 0.
 							if ( $base_price === false ) {

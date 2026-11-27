@@ -1510,7 +1510,7 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
 
             <!-- Reset — below every filter section, at the bottom of the list. -->
             <div class="wbtm-filter-reset-row">
-                <span class="wbtm-filter-reset-btn wbtm_reset_filter-checkbox">
+                <span class="wbtm-filter-reset-btn wbtm_reset_<?php echo esc_attr($filter_by_box); ?>">
                     <?php esc_html_e('Reset', 'bus-ticket-booking-with-seat-reservation'); ?>
                 </span>
             </div>
@@ -1691,7 +1691,7 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
                     <!-- times + duration visual -->
                     <div class="wbtm-card-times">
                         <div class="wbtm-time-depart">
-                            <?php echo esc_html(date_i18n('H:i', $bp_ts)); ?>
+                            <?php echo esc_html($bp_time ? WBTM_Global_Function::date_format($bp_time, 'time') : ''); ?>
                         </div>
                         <div class="wbtm-city-depart">
                             <?php echo esc_html($all_info['bp']); ?>
@@ -1701,7 +1701,7 @@ body .wbtm-full-bus-booking > .wbtm_full_bus_book_now:hover {
                             <div class="wbtm-track-duration"><?php echo esc_html($duration_formatted); ?></div>
                         </div>
                         <div class="wbtm-time-arrive">
-                            <?php echo esc_html(date_i18n('H:i', $dp_ts)); ?>
+                            <?php echo esc_html($dp_time ? WBTM_Global_Function::date_format($dp_time, 'time') : ''); ?>
                             <?php if ($next_day == '1') : ?>
                                 <span style="font-size:11px;color:#e8510f">+1</span>
                             <?php endif; ?>

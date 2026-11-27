@@ -205,14 +205,21 @@
 				if (empty($ids)) {
 					wp_send_json_error(array('message' => esc_html__('Invalid booking.', 'bus-ticket-booking-with-seat-reservation')));
 				}
+				$deleted = array();
 				foreach ($ids as $id) {
-					wp_delete_post($id, true);
+					if (get_post_type($id) === 'wbtm_bus_booking') {
+						wp_delete_post($id, true);
+						$deleted[] = $id;
+					}
+				}
+				if (empty($deleted)) {
+					wp_send_json_error(array('message' => esc_html__('Invalid booking.', 'bus-ticket-booking-with-seat-reservation')));
 				}
 				wp_send_json_success(array(
-					'ids'     => $ids,
-					'message' => count($ids) > 1
+					'ids'     => $deleted,
+					'message' => count($deleted) > 1
 						/* translators: %d: number of bookings deleted. */
-						? sprintf(esc_html__('%d bookings deleted.', 'bus-ticket-booking-with-seat-reservation'), count($ids))
+						? sprintf(esc_html__('%d bookings deleted.', 'bus-ticket-booking-with-seat-reservation'), count($deleted))
 						: esc_html__('Booking deleted.', 'bus-ticket-booking-with-seat-reservation'),
 				));
 			}
@@ -615,10 +622,11 @@
 				header('Content-Type: text/csv; charset=utf-8');
 				header('Content-Disposition: attachment; filename=wbtm-bookings-' . gmdate('Y-m-d') . '.csv');
 				$out = fopen('php://output', 'w');
+				fwrite($out, "\xEF\xBB\xBF");
 				// 'Total' is tax-inclusive (store prices include tax); 'Tax (incl.)' is the
 				// portion of it that is tax and 'Net (excl. Tax)' the remainder — they are
 				// breakdowns of Total, not additions to it.
-				$header = array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On');
+				$header = array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Seat Layout', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On');
 				foreach ($pax_cols as $pax_label) {
 					$header[] = $pax_label;
 				}
@@ -664,6 +672,7 @@
 							get_post_meta($id, 'wbtm_dropping_point', true),
 							get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true),
 							$this->seat_label($id),
+							class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::get_booking_seat_layout_label($id) : (string) get_post_meta($id, 'wbtm_seat_layout', true),
 							get_post_meta($id, 'wbtm_ticket', true),
 							$fare,
 							$extras,
@@ -684,6 +693,12 @@
 								$row[] = $this->passenger_field_answer($answers, $field_id, $pax_label);
 							}
 						}
+						$row = array_map(function ($cell) {
+							if (is_string($cell) && $cell !== '' && in_array($cell[0], array('=', '+', '-', '@', "\t", "\r"), true)) {
+								return "'" . $cell;
+							}
+							return $cell;
+						}, $row);
 						fputcsv($out, $row);
 					}
 					$this->release_meta_cache($chunk);

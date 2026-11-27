@@ -536,6 +536,7 @@
 				if ($post_id && $date && $ex_name) {
 					$date = gmdate('Y-m-d', strtotime($date));
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
+					$seat_booked_status = array_unique( array_merge( (array) $seat_booked_status, array( 'pending' ) ) );
 					$args = array(
 						'post_type' => 'wbtm_service_booking',
 						'posts_per_page' => -1,

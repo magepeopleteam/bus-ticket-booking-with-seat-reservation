@@ -166,10 +166,15 @@
         function (e) {
             if (e.result) {
                 let parent = $(".wbtm_settings_seat");
+                let hiddenTarget = parent.find('[name="wbtm_seat_rows_hidden"]');
                 let target = parent.find('[name="wbtm_seat_rows"]');
-                let value = parseInt(target.val()) - 1;
+                let currentRows = parseInt(hiddenTarget.val(), 10);
+                if (isNaN(currentRows)) {
+                    currentRows = parseInt(target.val(), 10) || 0;
+                }
+                let value = Math.max(0, currentRows - 1);
                 target.val(value);
-                parent.find('[name="wbtm_seat_rows_hidden"]').val(value);
+                hiddenTarget.val(value);
             }
         }
     );
@@ -179,10 +184,15 @@
         function (e) {
             if (e.result) {
                 let parent = $(".wbtm_settings_seat");
+                let hiddenTarget = parent.find('[name="wbtm_seat_rows_hidden"]');
                 let target = parent.find('[name="wbtm_seat_rows"]');
-                let value = parseInt(target.val()) + 1;
+                let currentRows = parseInt(hiddenTarget.val(), 10);
+                if (isNaN(currentRows)) {
+                    currentRows = parseInt(target.val(), 10) || 0;
+                }
+                let value = currentRows + 1;
                 target.val(value);
-                parent.find('[name="wbtm_seat_rows_hidden"]').val(value);
+                hiddenTarget.val(value);
                 // Bind drag-and-drop + badges on the freshly cloned row's cells.
                 $(document).trigger("wbtm_seat_plan_dom_updated");
             }
@@ -1075,5 +1085,22 @@
         wbtmWriteOverridesState(all);
         wbtmSyncSeatPriceBadges($('.wbtm_settings_seat'));
         $('#wbtm_seat_price_modal').hide();
+    });
+    function wbtmReindexRouteNextDay() {
+        $(".wbtm_settings_pricing_routing .mp_stop_items").not(".wbtm_return_item_insert").find(".wbtm_stop_item").each(function (idx) {
+            $(this).find('[name^="wbtm_route_next_day["]').attr("name", "wbtm_route_next_day[" + idx + "]");
+        });
+        $(".wbtm_return_route_settings_area .wbtm_return_item_insert .wbtm_stop_item").each(function (idx) {
+            $(this).find('[name^="wbtm_return_route_next_day["]').attr("name", "wbtm_return_route_next_day[" + idx + "]");
+        });
+    }
+    $(document).on("click", ".wbtm_settings_pricing_routing .wbtm_add_item, .wbtm_settings_pricing_routing .wbtm_add_return_route_item, .wbtm_settings_pricing_routing .wbtm_item_remove", function () {
+        setTimeout(wbtmReindexRouteNextDay, 50);
+    });
+    $(document).on("sortstop", ".wbtm_settings_pricing_routing .wbtm_sortable_area", function () {
+        wbtmReindexRouteNextDay();
+    });
+    $(document).on("submit", "#post", function () {
+        wbtmReindexRouteNextDay();
     });
 })(jQuery);

@@ -1253,6 +1253,7 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
 												'bp_time'        => $bp_date,
 												'dp'             => $end_route,
 												'dp_time'        => $info['time'],
+												'next_day'       => ( gmdate( 'Y-m-d', strtotime( $info['time'] ) ) > gmdate( 'Y-m-d', strtotime( $bp_date ) ) ) ? '1' : '0',
 												'price'          => WBTM_Functions::get_seat_price( $post_id, $start_route, $end_route, 0, false, $price_leg, '', null, $bp_date ),
 												'total_seat'     => $total_seat,
 												'sold_seat'      => $sold_seat,

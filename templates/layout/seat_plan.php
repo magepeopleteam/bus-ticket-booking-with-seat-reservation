@@ -621,7 +621,7 @@
                                                     }
 
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-                                                    $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $info);
+                                                    $seat_available = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $bus_start_time, '', $info);
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                                                     $upper_extra_cls = (string) apply_filters('wbtm_frontend_seat_cell_classes', '', $post_id, $info, true, null);
                                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -647,6 +647,7 @@
                                                                     data-seat_label="<?php echo esc_attr($ticket_infos[0]['name']); ?>"
                                                                     data-seat_type="<?php echo esc_attr($ticket_infos[0]['type']); ?>"
                                                                     data-seat_price="<?php echo esc_attr($cell_upper); ?>"
+                                                                    data-dd="1"
                                                                     <?php echo $upper_extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- filtered HTML data attributes built with esc_attr in hook. ?>
                                                                 >
                                                                     <div class="seat_visual"></div>

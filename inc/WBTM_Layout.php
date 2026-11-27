@@ -558,10 +558,16 @@
 				}
 			}
 			public static function next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, $return = false) {
-				$route = $return ? $end_route : $start_route;
-				$all_dates = WBTM_Functions::get_all_dates($post_id, $route);
+				$route_from = $return ? $end_route : $start_route;
+				$route_to   = $return ? $start_route : $end_route;
+				$all_dates  = WBTM_Functions::get_all_dates($post_id, $route_from, $route_to);
 				if (!$return) {
 					$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
+				} elseif ($j_date) {
+					$j_ts = strtotime($j_date);
+					$all_dates = array_values(array_filter($all_dates, function ($d) use ($j_ts) {
+						return strtotime($d) >= $j_ts;
+					}));
 				}
 				$total_date = sizeof($all_dates);
 				if ($total_date > 0) {
