@@ -1883,6 +1883,39 @@ function wbtm_bus_scope_args(context) {
 	$(document).ready(function () {
 		$('.wbtm-sort-select').val('earliest');
 	});
+
+	// Find N adjacent available seats on the same row for families/groups.
+	window.wbtmFindAdjacentSeats = function (parent, partySize) {
+		var n = parseInt(partySize, 10) || 2;
+		if (n < 2) n = 2;
+		var found = null;
+		$(parent).find('.wbtm_seat_plan_area table tr').each(function () {
+			var run = [];
+			$(this).find('th, td').each(function () {
+				var seat = $(this).find('.seat_available').first();
+				if (seat.length) {
+					run.push(seat);
+					if (run.length === n) {
+						found = run;
+						return false;
+					}
+				} else {
+					run = [];
+				}
+			});
+			if (found) return false;
+		});
+		if (found) {
+			$(parent).find('.seat_available.seat_selected').trigger('click');
+			$.each(found, function (_, s) {
+				if (!s.hasClass('seat_selected')) {
+					s.trigger('click');
+				}
+			});
+			return true;
+		}
+		return false;
+	};
 }(jQuery));
 
 

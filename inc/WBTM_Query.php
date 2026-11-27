@@ -298,9 +298,9 @@
 						return 1;
 					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
-					// Pending orders have already reserved seats during checkout, so they must be
-					// counted as booked to prevent duplicate sales while payment is finalised.
-					$seat_booked_status = array_filter( array_unique( array_merge( (array) $seat_booked_status, array( 'pending' ) ) ) );
+					// Pending and on-hold (e.g. BACS/cheque) orders reserve seats during checkout
+					// to prevent duplicate sales while payment is finalised.
+					$seat_booked_status = array_filter( array_unique( array_merge( (array) $seat_booked_status, array( 'pending', 'on-hold' ) ) ) );
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$norm = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );
@@ -385,9 +385,8 @@
 						return apply_filters( 'wbtm_query_seat_booked', $cached, $post_id, $start, $end, $date );
 					}
 					$seat_booked_status = WBTM_Global_Function::get_settings('wbtm_general_settings', 'set_book_status', array('processing', 'completed'));
-					// Pending orders have already reserved seats during checkout, so they must be
-					// reflected in the seat map to keep the frontend and backend views consistent.
-					$seat_booked_status = array_filter( array_unique( array_merge( (array) $seat_booked_status, array( 'pending' ) ) ) );
+					// Pending and on-hold orders reserve seats during checkout.
+					$seat_booked_status = array_filter( array_unique( array_merge( (array) $seat_booked_status, array( 'pending', 'on-hold' ) ) ) );
 					$routes = WBTM_Global_Function::get_post_info($post_id, 'wbtm_route_direction', []);
 					if (sizeof($routes) > 0) {
 						$norm = self::wbtm_normalize_route_for_booking_query( $routes, $start, $end );

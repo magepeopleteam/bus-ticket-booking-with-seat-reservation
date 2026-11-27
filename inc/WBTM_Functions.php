@@ -3010,5 +3010,36 @@ if ( ! defined( 'ABSPATH' ) ) { die; }
                 return array_values($selected_features);
             }
 
+			/**
+			 * Return pickup point directions (gate, landmark, map_url) for a bus/boarding/pickup point.
+			 */
+			public static function get_pickup_point_details($bus_id, $boarding_point, $pickup_point) {
+				$details = array('gate' => '', 'landmark' => '', 'map_url' => '');
+				if (!$bus_id || !$pickup_point) {
+					return $details;
+				}
+				$all_pickups = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_pickup_point', []);
+				if (!is_array($all_pickups)) {
+					return $details;
+				}
+				foreach ($all_pickups as $group) {
+					if (!is_array($group)) {
+						continue;
+					}
+					if ($boarding_point && !empty($group['bp_point']) && strtolower((string) $group['bp_point']) !== strtolower((string) $boarding_point)) {
+						continue;
+					}
+					foreach ((array) ($group['pickup_info'] ?? []) as $row) {
+						if (is_array($row) && strtolower((string) ($row['pickup_point'] ?? '')) === strtolower((string) $pickup_point)) {
+							$details['gate']     = (string) ($row['gate'] ?? '');
+							$details['landmark'] = (string) ($row['landmark'] ?? '');
+							$details['map_url']  = (string) ($row['map_url'] ?? '');
+							return $details;
+						}
+					}
+				}
+				return $details;
+			}
+
 		}
 	}

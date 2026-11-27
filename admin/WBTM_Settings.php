@@ -483,10 +483,16 @@
 					$wbtm_pickup_bp = isset($_POST['wbtm_bp_pickup']) ? array_map('sanitize_text_field', wp_unslash($_POST['wbtm_bp_pickup'])) : [];
 					$wbtm_pickup = isset($_POST['wbtm_pickup_name']) ? wp_unslash($_POST['wbtm_pickup_name']) : [];
 					$wbtm_pickup_time = isset($_POST['wbtm_pickup_time']) ? wp_unslash($_POST['wbtm_pickup_time']) : [];
+					$wbtm_pickup_gate = isset($_POST['wbtm_pickup_gate']) ? wp_unslash($_POST['wbtm_pickup_gate']) : [];
+					$wbtm_pickup_landmark = isset($_POST['wbtm_pickup_landmark']) ? wp_unslash($_POST['wbtm_pickup_landmark']) : [];
+					$wbtm_pickup_map_url = isset($_POST['wbtm_pickup_map_url']) ? wp_unslash($_POST['wbtm_pickup_map_url']) : [];
 					if (sizeof($hidden_ids) > 0) {
 						foreach ($hidden_ids as $hidden_id) {
 							$pickups = array_key_exists($hidden_id, $wbtm_pickup) ? $wbtm_pickup[$hidden_id] : [];
 							$pickup_times = array_key_exists($hidden_id, $wbtm_pickup_time) ? $wbtm_pickup_time[$hidden_id] : '';
+							$pickup_gates = array_key_exists($hidden_id, $wbtm_pickup_gate) ? (array) $wbtm_pickup_gate[$hidden_id] : [];
+							$pickup_landmarks = array_key_exists($hidden_id, $wbtm_pickup_landmark) ? (array) $wbtm_pickup_landmark[$hidden_id] : [];
+							$pickup_maps = array_key_exists($hidden_id, $wbtm_pickup_map_url) ? (array) $wbtm_pickup_map_url[$hidden_id] : [];
 							if (array_key_exists($hidden_id, $wbtm_pickup_bp) && $wbtm_pickup_bp[$hidden_id] && is_array($pickups) && sizeof($pickups) > 0 && is_array($pickup_times) &&  sizeof($pickup_times) > 0) {
 								foreach ($pickups as $key => $pickup) {
 									if ($pickup && $pickup_times[$key]) {
@@ -496,6 +502,9 @@
 											[
 												'pickup_point' => $pickup,
 												'time'         => $pickup_times[$key],
+												'gate'         => isset($pickup_gates[$key]) ? sanitize_text_field($pickup_gates[$key]) : '',
+												'landmark'     => isset($pickup_landmarks[$key]) ? sanitize_text_field($pickup_landmarks[$key]) : '',
+												'map_url'      => isset($pickup_maps[$key]) ? esc_url_raw($pickup_maps[$key]) : '',
 											],
 											$hidden_id,
 											$key,

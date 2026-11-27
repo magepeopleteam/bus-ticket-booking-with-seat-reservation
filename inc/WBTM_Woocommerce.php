@@ -33,6 +33,7 @@
 				/**********************************************/
 				add_action('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
 				add_action('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				add_action('woocommerce_order_refunded', array($this, 'on_order_refunded'), 10, 2);
 				add_action('woocommerce_trash_order', array($this, 'on_order_trashed'), 10, 1);
 				add_action('wp_trash_post', array($this, 'on_order_trashed'), 10, 1);
 				// make_processing_completed: also fire when order actually enters processing (async gateways)
@@ -1293,16 +1294,21 @@
 							$seat_left = $seat_left - $count;
 							if ($minimum_seat_treshold != -1 && $minimum_seat_treshold >= $seat_left) {
 								$minimum_seat_treshold_email_content = str_replace(
-									array('{bus_name}', '{journey_date}'),
-									array($bus_name, $start_time),
-									$minimum_seat_treshold_email_content
+									array('{bus_name}', '{journey_date}', '{seats_left}'),
+									array($bus_name, $start_time, max(0, (int) $seat_left)),
+									(string) $minimum_seat_treshold_email_content
 								);
 								$notification_receiver_email = WBTM_Global_Function::get_settings('wbtm_email_settings', 'pdf_admin_notification_email');
+								if (!$notification_receiver_email || !is_email($notification_receiver_email)) {
+									$notification_receiver_email = get_option('admin_email');
+								}
 								$formatted_date = str_replace([' ', ':'], '', $start_time);
 								$bus_unique_string = $formatted_date . $bus_name_short;
 								$email_sent = get_option($bus_unique_string);
-								if ($email_sent !== 'yes') {
-									$email_result = wp_mail($notification_receiver_email, 'Bus Minimum Seat Treshold', $minimum_seat_treshold_email_content);
+								if ($email_sent !== 'yes' && is_email($notification_receiver_email)) {
+									$treshold_headers = array('Content-Type: text/html; charset=UTF-8');
+									$treshold_subject = esc_html__('Bus Minimum Seat Threshold', 'bus-ticket-booking-with-seat-reservation');
+									$email_result = wp_mail($notification_receiver_email, $treshold_subject, nl2br($minimum_seat_treshold_email_content), $treshold_headers);
 									if ($email_result) {
 										$update_result = update_option($bus_unique_string, 'yes');
 									}
@@ -1464,6 +1470,36 @@
 					do_action('wbtm_order_status_change', 'cancelled', $representative_bus_id, $order_id);
 				}
 			}
+			/**
+			 * Release seats when a WooCommerce partial/full refund is created for specific line items.
+			 */
+			public function on_order_refunded($order_id, $refund_id) {
+				$refund = wc_get_order($refund_id);
+				if (!$refund) {
+					return;
+				}
+				foreach ($refund->get_items() as $refund_item) {
+					$orig_item_id = (int) $refund_item->get_meta('_refunded_item_id');
+					if (!$orig_item_id) {
+						continue;
+					}
+					$bookings = get_posts(array(
+						'post_type'      => 'wbtm_bus_booking',
+						'post_status'    => 'any',
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_query'     => array(
+							'relation' => 'AND',
+							array('key' => 'wbtm_order_id', 'value' => $order_id, 'compare' => '='),
+							array('key' => 'wbtm_item_id', 'value' => $orig_item_id, 'compare' => '='),
+						),
+					));
+					foreach ($bookings as $bid) {
+						update_post_meta($bid, 'wbtm_order_status', 'refunded');
+						update_post_meta($bid, '_wbtm_removed', 1);
+					}
+				}
+			}
 			public function wc_order_status_change($order_status, $post_id, $order_id) {
 				$args = array(
 					'post_type' => 'wbtm_bus_booking',
@@ -1487,6 +1523,9 @@
 				$loop = new WP_Query($args);
 				foreach ($loop->posts as $user) {
 					$user_id = $user->ID;
+					if (get_post_meta($user_id, '_wbtm_removed', true)) {
+						continue;
+					}
 					update_post_meta($user_id, 'wbtm_order_status', WBTM_Cart_Helper::synced_booking_status($user_id, $order_status));
 				}
 				$ex_args = array(

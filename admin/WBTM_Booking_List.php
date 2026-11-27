@@ -232,12 +232,35 @@
 			private function set_booking_status($id, $status) {
 				$old_status = get_post_meta($id, 'wbtm_order_status', true);
 				update_post_meta($id, 'wbtm_order_status', $status);
+				if (in_array($status, array('cancelled', 'canceled', 'refunded'), true)) {
+					update_post_meta($id, '_wbtm_removed', 1);
+				} else {
+					delete_post_meta($id, '_wbtm_removed');
+				}
 
 				$order_id = get_post_meta($id, 'wbtm_order_id', true);
 				if ($order_id && class_exists('WBTM_Functions') && WBTM_Functions::is_wc_active() && function_exists('wc_get_order')) {
-					$order = wc_get_order($order_id);
-					if ($order) {
-						$order->update_status($status);
+					$siblings = get_posts(array(
+						'post_type'      => 'wbtm_bus_booking',
+						'post_status'    => 'any',
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_query'     => array(
+							array('key' => 'wbtm_order_id', 'value' => $order_id, 'compare' => '='),
+						),
+					));
+					$all_match = true;
+					foreach ($siblings as $sid) {
+						if ((string) get_post_meta($sid, 'wbtm_order_status', true) !== (string) $status) {
+							$all_match = false;
+							break;
+						}
+					}
+					if ($all_match) {
+						$order = wc_get_order($order_id);
+						if ($order) {
+							$order->update_status($status);
+						}
 					}
 				}
 
