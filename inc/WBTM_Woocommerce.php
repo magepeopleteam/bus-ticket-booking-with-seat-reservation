@@ -33,6 +33,9 @@
 				/**********************************************/
 				add_action('woocommerce_thankyou', array($this, 'update_order_status'), 10, 1);
 				add_action('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 4);
+				add_action('woocommerce_order_refunded', array($this, 'on_order_refunded'), 10, 2);
+				add_action('woocommerce_trash_order', array($this, 'on_order_trashed'), 10, 1);
+				add_action('wp_trash_post', array($this, 'on_order_trashed'), 10, 1);
 				// make_processing_completed: also fire when order actually enters processing (async gateways)
 				add_action('woocommerce_order_status_processing', array($this, 'update_order_status'), 20);
 				add_action('woocommerce_payment_complete', array($this, 'update_order_status'), 20);
@@ -539,8 +542,8 @@
 						// Sum both decks of a double-decker cabin (lower + upper), each priced
 						// by its own multiplier.
 						$deck_keys = [
-							'wbtm_selected_seat_cabin_' . $cabin_index    => [ 'type' => 'wbtm_selected_seat_type_cabin_' . $cabin_index, 'mult' => $price_multiplier ],
-							'wbtm_selected_seat_cabin_dd_' . $cabin_index => [ 'type' => 'wbtm_selected_seat_type_cabin_dd_' . $cabin_index, 'mult' => $upper_multiplier ],
+							'wbtm_selected_seat_cabin_' . $cabin_index    => [ 'type' => 'wbtm_selected_seat_type_cabin_' . $cabin_index, 'mult' => $price_multiplier, 'is_upper' => false ],
+							'wbtm_selected_seat_cabin_dd_' . $cabin_index => [ 'type' => 'wbtm_selected_seat_type_cabin_dd_' . $cabin_index, 'mult' => $upper_multiplier, 'is_upper' => true ],
 						];
 						foreach ($deck_keys as $key_name => $deck_meta) {
 							$selected_seats = isset($_POST[$key_name]) ? sanitize_text_field(wp_unslash($_POST[$key_name])) : '';
@@ -554,7 +557,7 @@
 							$seat_types = $seat_types ? explode(',', $seat_types) : [];
 							foreach ($seat_names as $seat_index => $seat_name) {
 								$seat_type = isset($seat_types[$seat_index]) ? $seat_types[$seat_index] : 0;
-								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_name, $cabin_index, $journey_date);
+								$base = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $deck_meta['is_upper'], $price_leg, $seat_name, $cabin_index, $journey_date);
 								if ($base === false) {
 									// Unknown ticket type: get_cart_cabin_seat_info() refuses the
 									// selection, so this seat is never in the cart item — don't price it.
@@ -620,8 +623,10 @@
 								$seat_type = isset($cabin_seat['seat_type']) ? $cabin_seat['seat_type'] : 0;
 								$cabin_index = isset($cabin_seat['cabin_index']) ? $cabin_seat['cabin_index'] : 0;
 								$seat_label = isset($cabin_seat['seat_name']) ? $cabin_seat['seat_name'] : '';
-								$price_multiplier = isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0;
 								$cabin_is_upper = !empty($cabin_seat['is_upper']) || (isset($cabin_seat['deck']) && $cabin_seat['deck'] === 'upper');
+								$price_multiplier = $cabin_is_upper
+									? (isset($cabin_config[$cabin_index]['upper_price_multiplier']) ? floatval($cabin_config[$cabin_index]['upper_price_multiplier']) : 1.0)
+									: (isset($cabin_config[$cabin_index]['price_multiplier']) ? floatval($cabin_config[$cabin_index]['price_multiplier']) : 1.0);
 								$plan_key = $cabin_index . ($cabin_is_upper ? '_dd' : '');
 								if (!isset($plan_seats[$plan_key])) {
 									$plan_seats[$plan_key] = WBTM_Functions::get_plan_seat_names($post_id, $cabin_is_upper, $cabin_index);
@@ -630,7 +635,7 @@
 									$has_invalid_seat = true;
 									break;
 								}
-								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, false, $price_leg, $seat_label, $cabin_index, $journey_date);
+								$unit = WBTM_Functions::get_seat_price($post_id, $bp, $dp, $seat_type, $cabin_is_upper, $price_leg, $seat_label, $cabin_index, $journey_date);
 								if ($unit === false) {
 									$has_invalid_seat = true;
 									break;
@@ -827,13 +832,16 @@
 						$date = array_key_exists('wbtm_bp_time', $cart_item) ? $cart_item['wbtm_bp_time'] : '';
 						$seats_qty = array_key_exists('wbtm_seats_qty', $cart_item) ? $cart_item['wbtm_seats_qty'] : '';
 						if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+							if ($date && !WBTM_Functions::is_ticket_sale_open($date, $post_id)) {
+								wc_add_notice(esc_html__('Ticket sales for this trip are closed.', 'bus-ticket-booking-with-seat-reservation'), 'error');
+								continue;
+							}
 							$seat_type = WBTM_Global_Function::get_post_info($post_id, 'wbtm_seat_type_conf');
 							if (isset($cart_item['wbtm_booking_mode']) && $cart_item['wbtm_booking_mode'] === 'full_bus') {
 								$total_seat = class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::count_actual_seats($post_id) : (int) WBTM_Global_Function::get_post_info($post_id, 'wbtm_get_total_seat', 0);
 								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 							$full_bus_seat_count = isset($cart_item['wbtm_full_bus_seat_count']) ? (int) $cart_item['wbtm_full_bus_seat_count'] : 0;
 							if ($sold_seat > 0 || $full_bus_seat_count < $total_seat) {
-								WC()->cart->empty_cart();
 								wc_add_notice(esc_html__("Sorry, this full bus is no longer available.", 'bus-ticket-booking-with-seat-reservation'), 'error');
 							}
 							} elseif ($seat_type == 'wbtm_seat_plan') {
@@ -844,7 +852,6 @@
 									foreach ($cart_seat_infos as $seat_info) {
 										$seat_name = array_key_exists('seat_name', $seat_info) ? $seat_info['seat_name'] : '';
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $seat_name) > 0) {
-											WC()->cart->empty_cart();
 											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 										}
 									}
@@ -862,7 +869,6 @@
 											? $seat_info['seat_identifier']
 											: 'cabin_' . $cabin_index . '_' . $seat_name;
 										if ($seat_name && WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date, '', $cabin_seat_identifier) > 0) {
-											WC()->cart->empty_cart();
 											wc_add_notice(esc_html__("Sorry, Your Selected seat Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 										}
 									}
@@ -873,7 +879,6 @@
 								$sold_seat = WBTM_Query::query_total_booked($post_id, $start_route, $end_route, $date);
 								$available_seat = max(0, $total_seat - $sold_seat);
 								if ($available_seat < $seats_qty) {
-									WC()->cart->empty_cart();
 									wc_add_notice(esc_html__("Sorry, Your Selected ticket Already Booked by another user", 'bus-ticket-booking-with-seat-reservation'), 'error');
 								}
 							}
@@ -1083,7 +1088,7 @@
 												$failed_message = esc_html__( 'The system is busy. Please try again in a moment.', 'bus-ticket-booking-with-seat-reservation' );
 												wc_add_notice( $failed_message, 'error' );
 												$order->update_status( 'failed', $failed_message );
-												return;
+												throw new \Exception( $failed_message );
 											}
 											$locks[ $lock_key ] = [ $post_id, $bp, $dp, $date ];
 										}
@@ -1092,7 +1097,7 @@
 											$failed_message = $valid->get_error_message();
 											wc_add_notice( $failed_message, 'error' );
 											$order->update_status( 'failed', $failed_message );
-											return;
+											throw new \Exception( $failed_message );
 										}
 									}
 									foreach ($order->get_items() as $item_id => $item) {
@@ -1289,16 +1294,21 @@
 							$seat_left = $seat_left - $count;
 							if ($minimum_seat_treshold != -1 && $minimum_seat_treshold >= $seat_left) {
 								$minimum_seat_treshold_email_content = str_replace(
-									array('{bus_name}', '{journey_date}'),
-									array($bus_name, $start_time),
-									$minimum_seat_treshold_email_content
+									array('{bus_name}', '{journey_date}', '{seats_left}'),
+									array($bus_name, $start_time, max(0, (int) $seat_left)),
+									(string) $minimum_seat_treshold_email_content
 								);
 								$notification_receiver_email = WBTM_Global_Function::get_settings('wbtm_email_settings', 'pdf_admin_notification_email');
+								if (!$notification_receiver_email || !is_email($notification_receiver_email)) {
+									$notification_receiver_email = get_option('admin_email');
+								}
 								$formatted_date = str_replace([' ', ':'], '', $start_time);
 								$bus_unique_string = $formatted_date . $bus_name_short;
 								$email_sent = get_option($bus_unique_string);
-								if ($email_sent !== 'yes') {
-									$email_result = wp_mail($notification_receiver_email, 'Bus Minimum Seat Treshold', $minimum_seat_treshold_email_content);
+								if ($email_sent !== 'yes' && is_email($notification_receiver_email)) {
+									$treshold_headers = array('Content-Type: text/html; charset=UTF-8');
+									$treshold_subject = esc_html__('Bus Minimum Seat Threshold', 'bus-ticket-booking-with-seat-reservation');
+									$email_result = wp_mail($notification_receiver_email, $treshold_subject, nl2br($minimum_seat_treshold_email_content), $treshold_headers);
 									if ($email_result) {
 										$update_result = update_option($bus_unique_string, 'yes');
 									}
@@ -1436,6 +1446,60 @@
 					do_action('wbtm_order_status_change', $order_status, $representative_bus_id, $order_id);
 				}
 			}
+			/**
+			 * Release seats when an unpaid/active WooCommerce order is trashed directly.
+			 *
+			 * @param int $order_id Order post ID.
+			 */
+			public function on_order_trashed($order_id) {
+				$order = wc_get_order($order_id);
+				if (!$order) {
+					return;
+				}
+				$representative_bus_id = 0;
+				foreach ($order->get_items() as $item_id => $item_values) {
+					$post_id = wc_get_order_item_meta($item_id, '_wbtm_bus_id');
+					if (get_post_type($post_id) == WBTM_Functions::get_cpt()) {
+						$this->wc_order_status_change('cancelled', $post_id, $order_id);
+						if (!$representative_bus_id) {
+							$representative_bus_id = (int) $post_id;
+						}
+					}
+				}
+				if ($representative_bus_id) {
+					do_action('wbtm_order_status_change', 'cancelled', $representative_bus_id, $order_id);
+				}
+			}
+			/**
+			 * Release seats when a WooCommerce partial/full refund is created for specific line items.
+			 */
+			public function on_order_refunded($order_id, $refund_id) {
+				$refund = wc_get_order($refund_id);
+				if (!$refund) {
+					return;
+				}
+				foreach ($refund->get_items() as $refund_item) {
+					$orig_item_id = (int) $refund_item->get_meta('_refunded_item_id');
+					if (!$orig_item_id) {
+						continue;
+					}
+					$bookings = get_posts(array(
+						'post_type'      => 'wbtm_bus_booking',
+						'post_status'    => 'any',
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_query'     => array(
+							'relation' => 'AND',
+							array('key' => 'wbtm_order_id', 'value' => $order_id, 'compare' => '='),
+							array('key' => 'wbtm_item_id', 'value' => $orig_item_id, 'compare' => '='),
+						),
+					));
+					foreach ($bookings as $bid) {
+						update_post_meta($bid, 'wbtm_order_status', 'refunded');
+						update_post_meta($bid, '_wbtm_removed', 1);
+					}
+				}
+			}
 			public function wc_order_status_change($order_status, $post_id, $order_id) {
 				$args = array(
 					'post_type' => 'wbtm_bus_booking',
@@ -1459,6 +1523,9 @@
 				$loop = new WP_Query($args);
 				foreach ($loop->posts as $user) {
 					$user_id = $user->ID;
+					if (get_post_meta($user_id, '_wbtm_removed', true)) {
+						continue;
+					}
 					update_post_meta($user_id, 'wbtm_order_status', WBTM_Cart_Helper::synced_booking_status($user_id, $order_status));
 				}
 				$ex_args = array(

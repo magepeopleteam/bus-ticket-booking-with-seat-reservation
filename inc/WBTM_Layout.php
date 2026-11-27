@@ -558,10 +558,16 @@
 				}
 			}
 			public static function next_date_suggestion($post_id, $start_route, $end_route, $j_date, $r_date, $return = false) {
-				$route = $return ? $end_route : $start_route;
-				$all_dates = WBTM_Functions::get_all_dates($post_id, $route);
+				$route_from = $return ? $end_route : $start_route;
+				$route_to   = $return ? $start_route : $end_route;
+				$all_dates  = WBTM_Functions::get_all_dates($post_id, $route_from, $route_to);
 				if (!$return) {
 					$all_dates = apply_filters('wbtm_journey_dates', $all_dates, $post_id, $start_route, $end_route);
+				} elseif ($j_date) {
+					$j_ts = strtotime($j_date);
+					$all_dates = array_values(array_filter($all_dates, function ($d) use ($j_ts) {
+						return strtotime($d) >= $j_ts;
+					}));
 				}
 				$total_date = sizeof($all_dates);
 				if ($total_date > 0) {
@@ -571,13 +577,24 @@
 						$start_key = $key > 2 ? $key - 2 : 0;
 						$start_key = $total_date - 3 <= $key ? max(0, $total_date - 6) : $start_key;
 						$all_dates = array_slice($all_dates, $start_key, 6);
+						$avail_map = ($post_id > 0 && method_exists('WBTM_Functions', 'bus_availability_map'))
+							? WBTM_Functions::bus_availability_map($post_id, $route_from, $route_to, current_time('Y-m-d'))
+							: array();
 						?>
                         <div class="_xs_equalChild ">
 							<?php foreach ($all_dates as $date) { ?>
-								<?php $btn_class = strtotime($date) == strtotime($active_date) ? 'active' : ''; ?>
+								<?php
+								$btn_class = strtotime($date) == strtotime($active_date) ? 'active' : '';
+								$seats_left = isset($avail_map[$date]) ? (int) $avail_map[$date] : null;
+								?>
                                 <button type="button" class="wbtm_next_date <?php echo esc_attr($btn_class); ?>" data-date="<?php echo esc_attr($date); ?>">
                                     <span class="wbtm_next_date_day"><?php echo esc_html(date_i18n('D', strtotime($date))); ?></span>
                                     <span class="wbtm_next_date_label"><?php echo esc_html(WBTM_Global_Function::date_format($date)); ?></span>
+									<?php if ($seats_left !== null) : ?>
+										<span class="wbtm_next_date_seats" style="display:block;font-size:10px;opacity:.8;">
+											<?php echo $seats_left > 0 ? esc_html(sprintf(__('%d left', 'bus-ticket-booking-with-seat-reservation'), $seats_left)) : esc_html__('Full', 'bus-ticket-booking-with-seat-reservation'); ?>
+										</span>
+									<?php endif; ?>
                                 </button>
 							<?php } ?>
                         </div>

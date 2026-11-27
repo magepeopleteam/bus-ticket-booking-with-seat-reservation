@@ -205,6 +205,9 @@
 			public function pickup_point_item($unique_name, $pickup_points, $pickup_info = []) {
 				$bp_point = array_key_exists('pickup_point', $pickup_info) ? $pickup_info['pickup_point'] : '';
 				$bp_time = array_key_exists('time', $pickup_info) ? $pickup_info['time'] : '';
+				$bp_gate = array_key_exists('gate', $pickup_info) ? $pickup_info['gate'] : '';
+				$bp_landmark = array_key_exists('landmark', $pickup_info) ? $pickup_info['landmark'] : '';
+				$bp_map_url = array_key_exists('map_url', $pickup_info) ? $pickup_info['map_url'] : '';
 				?>
                 <tr class="wbtm_remove_area">
                     <td>
@@ -221,6 +224,15 @@
                         <label class="_mR">
                             <input type="time" name="wbtm_pickup_time[<?php echo esc_attr($unique_name); ?>][]" class='formControl' value="<?php echo esc_attr($bp_time); ?>"/>
                         </label>
+                    </td>
+                    <td>
+                        <input type="text" name="wbtm_pickup_gate[<?php echo esc_attr($unique_name); ?>][]" class="formControl" placeholder="<?php esc_attr_e('Gate / Bay', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($bp_gate); ?>"/>
+                    </td>
+                    <td>
+                        <input type="text" name="wbtm_pickup_landmark[<?php echo esc_attr($unique_name); ?>][]" class="formControl" placeholder="<?php esc_attr_e('Landmark', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($bp_landmark); ?>"/>
+                    </td>
+                    <td>
+                        <input type="url" name="wbtm_pickup_map_url[<?php echo esc_attr($unique_name); ?>][]" class="formControl" placeholder="<?php esc_attr_e('Map URL', 'bus-ticket-booking-with-seat-reservation'); ?>" value="<?php echo esc_attr($bp_map_url); ?>"/>
                     </td>
 					<?php do_action('wbtm_pickup_point_item_fields', $unique_name, $pickup_info); ?>
                     <td class="_w_100"><?php WBTM_Custom_Layout::move_remove_button(); ?></td>

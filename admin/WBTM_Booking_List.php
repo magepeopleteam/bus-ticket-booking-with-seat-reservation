@@ -205,14 +205,21 @@
 				if (empty($ids)) {
 					wp_send_json_error(array('message' => esc_html__('Invalid booking.', 'bus-ticket-booking-with-seat-reservation')));
 				}
+				$deleted = array();
 				foreach ($ids as $id) {
-					wp_delete_post($id, true);
+					if (get_post_type($id) === 'wbtm_bus_booking') {
+						wp_delete_post($id, true);
+						$deleted[] = $id;
+					}
+				}
+				if (empty($deleted)) {
+					wp_send_json_error(array('message' => esc_html__('Invalid booking.', 'bus-ticket-booking-with-seat-reservation')));
 				}
 				wp_send_json_success(array(
-					'ids'     => $ids,
-					'message' => count($ids) > 1
+					'ids'     => $deleted,
+					'message' => count($deleted) > 1
 						/* translators: %d: number of bookings deleted. */
-						? sprintf(esc_html__('%d bookings deleted.', 'bus-ticket-booking-with-seat-reservation'), count($ids))
+						? sprintf(esc_html__('%d bookings deleted.', 'bus-ticket-booking-with-seat-reservation'), count($deleted))
 						: esc_html__('Booking deleted.', 'bus-ticket-booking-with-seat-reservation'),
 				));
 			}
@@ -225,12 +232,35 @@
 			private function set_booking_status($id, $status) {
 				$old_status = get_post_meta($id, 'wbtm_order_status', true);
 				update_post_meta($id, 'wbtm_order_status', $status);
+				if (in_array($status, array('cancelled', 'canceled', 'refunded'), true)) {
+					update_post_meta($id, '_wbtm_removed', 1);
+				} else {
+					delete_post_meta($id, '_wbtm_removed');
+				}
 
 				$order_id = get_post_meta($id, 'wbtm_order_id', true);
 				if ($order_id && class_exists('WBTM_Functions') && WBTM_Functions::is_wc_active() && function_exists('wc_get_order')) {
-					$order = wc_get_order($order_id);
-					if ($order) {
-						$order->update_status($status);
+					$siblings = get_posts(array(
+						'post_type'      => 'wbtm_bus_booking',
+						'post_status'    => 'any',
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_query'     => array(
+							array('key' => 'wbtm_order_id', 'value' => $order_id, 'compare' => '='),
+						),
+					));
+					$all_match = true;
+					foreach ($siblings as $sid) {
+						if ((string) get_post_meta($sid, 'wbtm_order_status', true) !== (string) $status) {
+							$all_match = false;
+							break;
+						}
+					}
+					if ($all_match) {
+						$order = wc_get_order($order_id);
+						if ($order) {
+							$order->update_status($status);
+						}
 					}
 				}
 
@@ -615,10 +645,11 @@
 				header('Content-Type: text/csv; charset=utf-8');
 				header('Content-Disposition: attachment; filename=wbtm-bookings-' . gmdate('Y-m-d') . '.csv');
 				$out = fopen('php://output', 'w');
+				fwrite($out, "\xEF\xBB\xBF");
 				// 'Total' is tax-inclusive (store prices include tax); 'Tax (incl.)' is the
 				// portion of it that is tax and 'Net (excl. Tax)' the remainder — they are
 				// breakdowns of Total, not additions to it.
-				$header = array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On');
+				$header = array('Booking ID', 'Order ID', 'Source', 'Customer', 'Email', 'Phone', 'Address', 'Passenger', 'Journey Leg', 'Bus', 'Boarding', 'Dropping', 'Journey Date', 'Seat', 'Seat Layout', 'Ticket', 'Fare', 'Extra Services', 'Extra Service Details', 'Total', 'Tax (incl.)', 'Net (excl. Tax)', 'Payment Plan', 'Deposit Paid', 'Remaining Due', 'Balance Due Date', 'Status', 'Booked On');
 				foreach ($pax_cols as $pax_label) {
 					$header[] = $pax_label;
 				}
@@ -664,6 +695,7 @@
 							get_post_meta($id, 'wbtm_dropping_point', true),
 							get_post_meta($id, 'wbtm_boarding_time', true) ?: get_post_meta($id, 'wbtm_booking_date', true),
 							$this->seat_label($id),
+							class_exists('WBTM_Seat_Configuration') ? WBTM_Seat_Configuration::get_booking_seat_layout_label($id) : (string) get_post_meta($id, 'wbtm_seat_layout', true),
 							get_post_meta($id, 'wbtm_ticket', true),
 							$fare,
 							$extras,
@@ -684,6 +716,12 @@
 								$row[] = $this->passenger_field_answer($answers, $field_id, $pax_label);
 							}
 						}
+						$row = array_map(function ($cell) {
+							if (is_string($cell) && $cell !== '' && in_array($cell[0], array('=', '+', '-', '@', "\t", "\r"), true)) {
+								return "'" . $cell;
+							}
+							return $cell;
+						}, $row);
 						fputcsv($out, $row);
 					}
 					$this->release_meta_cache($chunk);

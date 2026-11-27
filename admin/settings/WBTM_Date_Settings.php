@@ -210,7 +210,7 @@
                                         </div>
                                         <div class="wbtm_hidden_content">
                                             <div class="wbtm_hidden_item">
-												<?php $this->off_day_range('wbtm_offday_range'); ?>
+												<?php $this->off_day_range(); ?>
                                             </div>
                                         </div>
                                     </div>

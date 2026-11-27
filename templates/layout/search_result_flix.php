@@ -237,7 +237,7 @@ if (sizeof($bus_ids) > 0) {
 		?>
 
 			<!-- short code new style flix if set -->
-			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($post_id) ? 'in_cart' : ''); ?>"
+			<div class="wbtm-bus-flix-style wtbm_bus_counter <?php echo esc_attr( $wbtm_bus_search ); echo esc_attr(WBTM_Global_Function::check_product_in_cart($bus_id) ? ' in_cart' : ''); ?>"
                  data-bus-id="<?php echo esc_attr( $bus_id ); ?>"
                  data-same-bus-return="<?php echo WBTM_Functions::is_same_bus_return_enabled( $bus_id ) ? '1' : '0'; ?>"
                  data-bp-time="<?php echo esc_attr($all_info['bp_time']); ?>"

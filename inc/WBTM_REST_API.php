@@ -72,7 +72,7 @@ if (!class_exists('WBTM_REST_API')) {
 		 */
 		private function validate_date($date, $param = 'date') {
 			$date = trim((string) $date);
-			if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) || !strtotime($date)) {
+			if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date, $parts) || !checkdate((int) $parts[2], (int) $parts[3], (int) $parts[1])) {
 				return new WP_Error(
 					'wbtm_invalid_date',
 					/* translators: %s: parameter name */
@@ -80,7 +80,7 @@ if (!class_exists('WBTM_REST_API')) {
 					array('status' => 400)
 				);
 			}
-			return gmdate('Y-m-d', strtotime($date));
+			return $date;
 		}
 		/**
 		 * Load a published wbtm_bus post or return a 400 error.
@@ -347,26 +347,52 @@ if (!class_exists('WBTM_REST_API')) {
 			);
 			if ($seat_type === 'wbtm_seat_plan') {
 				$decks = array();
-				$lower = $this->build_deck(
-					(array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_seats_info', []),
-					$booked,
-					$bus_id,
-					$date
-				);
-				if ($lower) {
-					$lower['deck'] = 'lower';
-					$decks[]       = $lower;
-				}
-				if (WBTM_Global_Function::get_post_info($bus_id, 'show_upper_desk')) {
-					$upper = $this->build_deck(
-						(array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_seats_info_dd', []),
+				$cabin_enabled = WBTM_Global_Function::get_post_info($bus_id, 'wbtm_cabin_mode_enabled', 'no') === 'yes';
+				$cabin_config  = $cabin_enabled ? (array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_cabin_config', []) : [];
+				if ($cabin_enabled && !empty($cabin_config)) {
+					foreach ($cabin_config as $cabin_index => $cabin) {
+						if (($cabin['enabled'] ?? 'yes') !== 'yes') {
+							continue;
+						}
+						$c_lower = $this->build_deck((array) ($cabin['seats_info'] ?? []), $booked, $bus_id, $date);
+						if ($c_lower) {
+							$c_lower['deck']        = 'cabin_' . $cabin_index . '_lower';
+							$c_lower['cabin_index'] = (int) $cabin_index;
+							$c_lower['cabin_name']  = (string) ($cabin['name'] ?? '');
+							$decks[] = $c_lower;
+						}
+						if (($cabin['show_upper_deck'] ?? 'no') === 'yes' && !empty($cabin['seats_info_dd'])) {
+							$c_upper = $this->build_deck((array) $cabin['seats_info_dd'], $booked, $bus_id, $date);
+							if ($c_upper) {
+								$c_upper['deck']        = 'cabin_' . $cabin_index . '_upper';
+								$c_upper['cabin_index'] = (int) $cabin_index;
+								$c_upper['cabin_name']  = (string) ($cabin['name'] ?? '');
+								$decks[] = $c_upper;
+							}
+						}
+					}
+				} else {
+					$lower = $this->build_deck(
+						(array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_seats_info', []),
 						$booked,
 						$bus_id,
 						$date
 					);
-					if ($upper) {
-						$upper['deck'] = 'upper';
-						$decks[]       = $upper;
+					if ($lower) {
+						$lower['deck'] = 'lower';
+						$decks[]       = $lower;
+					}
+					if (WBTM_Global_Function::get_post_info($bus_id, 'show_upper_desk')) {
+						$upper = $this->build_deck(
+							(array) WBTM_Global_Function::get_post_info($bus_id, 'wbtm_bus_seats_info_dd', []),
+							$booked,
+							$bus_id,
+							$date
+						);
+						if ($upper) {
+							$upper['deck'] = 'upper';
+							$decks[]       = $upper;
+						}
 					}
 				}
 				$response['decks'] = $decks;

@@ -4,6 +4,7 @@
 	} // Cannot access pages directly.
 	if (!class_exists('WBTM_Analytics_Dashboard')) {
 		class WBTM_Analytics_Dashboard {
+			private $cached_stats = null;
 			public function __construct() {
 				add_action('admin_menu', array($this, 'add_analytics_menu'));
 				add_action('admin_enqueue_scripts', array($this, 'enqueue_analytics_scripts'));
@@ -42,6 +43,9 @@
 				));
 			}
 			public function get_booking_stats() {
+				if ($this->cached_stats !== null) {
+					return $this->cached_stats;
+				}
 				$stats = array(
 					'total_bookings' => 0,
 					'total_revenue' => 0,
@@ -158,7 +162,7 @@
 									$stats['ticket_types'][$ticket_type]++;
 									// Track bus types and revenue
 									$bus_id = get_post_meta($booking->ID, 'wbtm_bus_id', true);
-									$bus_type = get_post_meta($bus_id, 'wbtm_bus_type', true);
+									$bus_type = get_post_meta($bus_id, 'wbtm_bus_category', true);
 									if (!isset($stats['bus_types'][$bus_type])) {
 										$stats['bus_types'][$bus_type] = array(
 											'revenue' => 0,
@@ -177,11 +181,14 @@
 									}
 									$stats['bus_types'][$bus_type]['seats']++;
 									$stats['bus_types'][$bus_type]['revenue'] += $seat_revenue;
-									// Calculate occupancy rates
-									$total_seats = get_post_meta($bus_id, 'wbtm_total_seat', true);
-									if ($total_seats) {
-										$occupancy = ($total_seats > 0) ? ($stats['total_seats'] / $total_seats) * 100 : 0;
-										$stats['occupancy_rates'][$bus_id] = $occupancy;
+									// Calculate per-bus seat count & occupancy rate
+									if (!isset($bus_booked_seats[$bus_id])) {
+										$bus_booked_seats[$bus_id] = 0;
+									}
+									$bus_booked_seats[$bus_id]++;
+									$total_seats = (int) get_post_meta($bus_id, 'wbtm_get_total_seat', true);
+									if ($total_seats > 0) {
+										$stats['occupancy_rates'][$bus_id] = min(100, ($bus_booked_seats[$bus_id] / $total_seats) * 100);
 									}
 									// Weekly booking patterns
 									$booking_day = gmdate('w', strtotime($booking->post_date));
@@ -200,10 +207,23 @@
 					}
 				} catch (Exception $e) {
 				}
-				// Calculate return customer rate
-				$unique_customers = array_unique(array_column($bookings, 'post_author'));
-				$repeat_customers = array_diff_assoc(array_column($bookings, 'post_author'), $unique_customers);
-				$stats['return_customers'] = count($repeat_customers);
+				// Calculate return customer rate (registered customers with 2+ distinct orders)
+				$customer_orders = array();
+				foreach ($bookings as $booking) {
+					$uid = (int) $booking->post_author;
+					$oid = (int) get_post_meta($booking->ID, 'wbtm_order_id', true);
+					if ($uid > 0 && $oid > 0) {
+						$customer_orders[$uid][$oid] = true;
+					}
+				}
+				$repeat_count = 0;
+				foreach ($customer_orders as $orders) {
+					if (count($orders) > 1) {
+						$repeat_count++;
+					}
+				}
+				$stats['return_customers'] = $repeat_count;
+				$this->cached_stats = $stats;
 				return $stats;
 			}
 			public function analytics_dashboard_page() {
